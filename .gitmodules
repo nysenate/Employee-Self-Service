@@ -1,0 +1,3 @@
+[submodule "time-attendance"]
+	path = time-attendance
+	url = https://github.com/nysenate/ESS-Time-Attendance.git
