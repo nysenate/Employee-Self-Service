@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <modules>
-      <module>Timesheets</module>
+      <module>time-attendance</module>
   </modules>
   
   <properties>
