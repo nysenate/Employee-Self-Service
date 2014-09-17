@@ -22,10 +22,11 @@
       <junit.version>4.8.2</junit.version>
       <oracle.driver.version>10.2.0.5</oracle.driver.version>
       <postgres.driver.version>9.1-901.jdbc4</postgres.driver.version>
-      <jackson.version>2.3.0</jackson.version>
+      <jackson.version>2.4.0</jackson.version>
       <woodstox.version>4.2.0</woodstox.version>
       <slf4j.version>1.7.5</slf4j.version>
       <tomcat.servlet.version>7.0.47</tomcat.servlet.version>
+      <guava.version>17.0</guava.version>
   </properties>
 
   <dependencies>
@@ -117,6 +118,18 @@
       </dependency>
 
       <dependency>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-jsr310</artifactId>
+          <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+          <artifactId>jackson-datatype-guava</artifactId>
+          <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
           <groupId>org.codehaus.woodstox</groupId>
           <artifactId>woodstox-core-asl</artifactId>
           <version>${woodstox.version}</version>
@@ -189,6 +202,13 @@
           <scope>provided</scope>
       </dependency>
 
+      <!-- Guava -->
+      <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>17.0</version>
+      </dependency>
+
       <!-- JUnit | Unit Testing. -->
       <dependency>
           <groupId>junit</groupId>
@@ -212,8 +232,8 @@
               <artifactId>maven-compiler-plugin</artifactId>
               <version>3.1</version>
               <configuration>
-                  <source>1.7</source>
-                  <target>1.7</target>
+                  <source>1.8</source>
+                  <target>1.8</target>
               </configuration>
           </plugin>
           <plugin>
