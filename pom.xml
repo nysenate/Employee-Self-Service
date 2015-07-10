@@ -11,6 +11,7 @@
 
   <modules>
       <module>time-attendance</module>
+      <module>ess-common</module>
   </modules>
   
   <properties>
@@ -19,7 +20,7 @@
       <apache.shiro.version>1.2.3</apache.shiro.version>
       <spring.ldap.version>2.0.3.RELEASE</spring.ldap.version>
       <eh-cache.version>2.10.0</eh-cache.version>
-      <junit.version>4.8.2</junit.version>
+      <junit.version>4.12</junit.version>
       <oracle.driver.version>10.2.0.5</oracle.driver.version>
       <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
       <jackson.version>2.5.4</jackson.version>
@@ -27,6 +28,8 @@
       <slf4j.version>1.7.5</slf4j.version>
       <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
       <guava.version>18.0</guava.version>
+      <commons.io.version>2.4</commons.io.version>
+      <commons.lang3.version>3.1</commons.lang3.version>
   </properties>
 
   <dependencies>
@@ -36,6 +39,19 @@
           <groupId>jstl</groupId>
           <artifactId>jstl</artifactId>
           <version>${jstl.version}</version>
+      </dependency>
+
+      <!-- Apache -->
+      <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+          <version>${commons.lang3.version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+          <version>${commons.io.version}</version>
       </dependency>
 
       <!-- Spring Core | Core Framework packages. -->
