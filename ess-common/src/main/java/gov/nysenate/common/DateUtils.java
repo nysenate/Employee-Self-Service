@@ -110,6 +110,9 @@ public class DateUtils
      */
     public static LocalDate getLocalDate(Date date) {
         if (date == null) return null;
+        if (date instanceof java.sql.Date) {
+            return ((java.sql.Date) date).toLocalDate();
+        }
         return getLocalDateTime(date).toLocalDate();
     }
 
