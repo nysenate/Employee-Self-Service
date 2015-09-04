@@ -29,7 +29,7 @@
       <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
       <guava.version>18.0</guava.version>
       <commons.io.version>2.4</commons.io.version>
-      <commons.lang3.version>3.1</commons.lang3.version>
+      <commons.lang3.version>3.4</commons.lang3.version>
   </properties>
 
   <dependencies>
