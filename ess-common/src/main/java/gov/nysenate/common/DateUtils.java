@@ -162,4 +162,15 @@ public class DateUtils
         throw new IllegalArgumentException("Supplied localDateTimeRange is null.");
     }
 
+    /**
+     * Returns a new LocalDate for the first day of the year prior to the one in the given 'date'.
+     * For example, given date 'Sep 2, 2015', this will return 'Jan 1, 2014'.
+     *
+     * @param date LocalDate
+     * @return LocalDate
+     */
+    public static LocalDate firstDayOfPreviousYear(LocalDate date) {
+        return LocalDate.from(date).minusYears(1).withDayOfYear(1);
+    }
+
 }
