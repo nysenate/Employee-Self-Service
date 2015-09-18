@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import static java.util.Map.Entry;
 
-public class RangeUtils {
-
+public class RangeUtils
+{
     /**
      * Creates a range map out of a map with comparable keys
      * This essentially transforms each key into a range of [current key, next highest key)
@@ -30,10 +30,22 @@ public class RangeUtils {
             lastEntry = entry;
         }
         if (lastEntry != null) {
-            rangeMap.put(Range.closed(lastEntry.getKey(), endKey), lastEntry.getValue());
+            if (endKey == null) {
+                rangeMap.put(Range.atLeast(lastEntry.getKey()), lastEntry.getValue());
+            }
+            else {
+                rangeMap.put(Range.closed(lastEntry.getKey(), endKey), lastEntry.getValue());
+            }
         }
-
         return rangeMap;
+    }
+
+    /**
+     * Overload with no end date (infinity).
+     * @see #toRangeMap(SortedMap, Comparable)
+     */
+    public static <K extends Comparable<? super K>, V> RangeMap<K, V> toRangeMap(SortedMap<K, V> map) {
+        return toRangeMap(map, null);
     }
 
     /**
