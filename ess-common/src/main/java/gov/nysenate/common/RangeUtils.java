@@ -102,8 +102,8 @@ public class RangeUtils
      * @param <E> E
      * @return TreeSet<E>
      */
-    public static <E extends Comparable<? super E>> TreeSet<Range<E>> toRanges(SortedSet<E> set, E endElement) {
-        TreeSet<Range<E>> rangeSet = new TreeSet<>();
+    public static <E extends Comparable<? super E>> List<Range<E>> toRanges(SortedSet<E> set, E endElement) {
+        List<Range<E>> ranges = new ArrayList<>();
 
         Iterator<E> backIterator = set.iterator();
         Iterator<E> frontIterator = set.iterator();
@@ -112,12 +112,12 @@ public class RangeUtils
         }
 
         while (backIterator.hasNext()) {
-            rangeSet.add(frontIterator.hasNext()
+            ranges.add(frontIterator.hasNext()
                     ? Range.openClosed(backIterator.next(), frontIterator.next())
                     : Range.closed(backIterator.next(), endElement));
         }
 
-        return rangeSet;
+        return ranges;
     }
 
     /**
