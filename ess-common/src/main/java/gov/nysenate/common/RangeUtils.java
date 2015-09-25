@@ -138,4 +138,16 @@ public class RangeUtils
         return intersection;
     }
 
+    public static <T extends Comparable<? super T>> boolean intersects(Range<T> lhs, Range<T> rhs) {
+        return lhs.isConnected(rhs) && !lhs.intersection(rhs).isEmpty();
+    }
+
+    public static <K extends Comparable<? super K>, V> boolean removeIntersecting(RangeMap<K, V> rangeMap, Range<K> range) {
+        List<Range<K>> intersectingKeys = rangeMap.asMapOfRanges().keySet().stream()
+                .filter(rng -> intersects(rng, range))
+                .collect(Collectors.toList());
+        intersectingKeys.forEach(rangeMap::remove);
+        return !intersectingKeys.isEmpty();
+    }
+
 }
