@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class DateUtilsTests
 {
