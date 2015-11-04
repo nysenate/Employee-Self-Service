@@ -1,0 +1,110 @@
+#--------------------------------------------#
+# Senate Electronic Timesheets Configuration #
+#--------------------------------------------#
+
+# Runtime level (dev/test/prod)
+runtime.level = dev
+
+# --- Security Settings -------------------------------------------------------
+
+# Set to true to enforce authentication. Otherwise you will be able to login as
+# anyone if the profile is set to dev!
+auth.enabled = true
+
+# If auth is disabled, this password will be used to login as any user.
+auth.master.pass =
+
+# LDAP Configuration
+ldap.url = ldap://webmail.senate.state.ny.us:389
+ldap.dn.template = CN={0},O=senate
+
+# Number of bytes generated for XSRF token
+xsrf.token.bytes = 128
+
+# --- Database Configuration --------------------------------------------------
+
+# Local Postgres Database
+db.local.driver = org.postgresql.Driver
+db.local.type = postgresql:
+db.local.host = localhost
+db.local.name = ess
+db.local.user =
+db.local.pass =
+
+# Remote Oracle Database
+db.remote.driver = oracle.jdbc.OracleDriver
+db.remote.type = oracle:thin:@
+db.remote.host = nysdbdev
+db.remote.name = dev
+db.remote.user =
+db.remote.pass =
+
+# Schema Configuration
+
+# The schema containing the read-only tables
+master.schema =
+
+# The schema containing read-write tables for timesheets
+ts.schema =
+
+# --- Mail Configuration ------------------------------------------------------
+
+# Connection information for sending emails
+mail.smtp.host = imap.gmail.com
+mail.smtp.port = 587
+mail.smtp.auth = true
+mail.smtp.starttls.enable = true
+mail.smtp.user = nysenatedev
+mail.smtp.password =
+mail.debug = false
+
+# --- Eh Cache Configuration --------------------------------------------------
+
+# The amount of memory to allocate to Eh Cache for all heap based caches (MB).
+# This value cannot exceed the maximum jvm heap size or the application will
+# fail to startup. (Recommended: 1000)
+cache.max.size = 1000
+
+# Set to true if caches should be warmed when the application deploys, false
+# otherwise.
+cache.warm.onstartup = true
+
+# Holiday cache
+cache.cron.holiday = 0 0 0 * * *
+
+# Pay Period cache
+cache.cron.period = 0 0 0 * * *
+
+# Delay (ms) during which the transactions cache is refreshed from the DB.
+cache.poll.delay.transactions = 60000
+# Delay (ms) during which the employee cache is refreshed from the DB.
+cache.poll.delay.employees = 60000
+# Delay (ms) during which the supervisor cache is refreshed from the DB.
+cache.poll.delay.employees = 60000
+
+# --- URL Configuration -------------------------------------------------------
+
+# The url path to be used for accessing resources (css/js)
+resource.path = /assets/**
+
+# The directory in which the actual css/js subdirectories are contained
+resource.location = /assets/
+
+# Url Details
+
+login.url = /login
+login.success.url = /time/record/entry
+
+# --- Scheduling Configuration ------------------------------------------------
+
+# Determines if the scheduled ensure all time records function will run
+# (Default: false)
+scheduler.timerecord.ensureall.enabled = false
+
+# Cron expressions that dictate scheduling for scheduled services
+# Format "{second} {minute} {hour} {day of month} {month} {day of week}"
+
+# Determines when the function that checks/generates time records for all employees runs
+# (Default every night at midnight: 0 0 0 * * *)
+scheduler.timerecord.ensureall.cron = 0 0 0 * * *
+

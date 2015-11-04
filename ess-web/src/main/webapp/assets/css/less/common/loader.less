@@ -1,0 +1,76 @@
+@import "../lesshat";
+/* Credit to http://codepen.io/desandro/pen/igHbG */
+/* change font size to change size */
+
+.loader {
+  font-size: 20px;
+  position: relative;
+  width: 4em;
+  height: 1em;
+  margin: 100px auto;
+}
+
+.dot {
+  width: 1em;
+  height: 1em;
+  border-radius: 0.5em;
+  background: #ddd;
+  position: absolute;
+  .animation-duration(0.5s);
+  .animation-timing-function(ease);
+  .animation-iteration-count(infinite);
+}
+
+.dot1, .dot2 {
+  left: 0;
+}
+
+.dot3 { left: 1.5em; }
+
+.dot4 { left: 3em; }
+
+@-webkit-keyframes reveal {
+  from { .transform(scale(0.001)) }
+  to { .transform(scale(1)) }
+}
+@-webkit-keyframes slide {
+  to { .transform(translateX(1.5em)) }
+}
+
+@-moz-keyframes reveal {
+  from { .transform(scale(0.001)) }
+  to { .transform(scale(1)) }
+}
+@-moz-keyframes slide {
+  to { .transform(translateX(1.5em)) }
+}
+
+@-o-keyframes reveal {
+  from { .transform(scale(0.001)) }
+  to { .transform(scale(1)) }
+}
+@-o-keyframes slide {
+  to { .transform(translateX(1.5em)) }
+}
+
+@keyframes reveal {
+  from { .transform(scale(0.001)) }
+  to { .transform(scale(1)) }
+}
+@keyframes slide {
+  to { .transform(translateX(1.5em)) }
+}
+
+
+.dot1 {
+  .animation-name(reveal);
+}
+
+.dot2, .dot3 {
+  .animation-name(slide);
+}
+
+.dot4 {
+  .animation-name(reveal);
+  .animation-direction(reverse); /* thx @HugoGiraudel */
+}

@@ -1,0 +1,24 @@
+<web-app version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<display-name>Senate Electronic Timesheets</display-name>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error/404</location>
+    </error-page>
+
+    <session-config>
+        <!-- Disables URL-based sessions (no more 'jsessionid' in the URL using Tomcat) -->
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
+
+    <!-- Configures the Spring profile -->
+    <context-param>
+        <param-name>spring.profiles.active</param-name>
+        <param-value>dev</param-value>
+    </context-param>
+
+</web-app>

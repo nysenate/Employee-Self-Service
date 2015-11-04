@@ -1,0 +1,53 @@
+@import "../lesshat";
+@import "./colors";
+
+table.ess-table {
+  width: 100%;
+
+  &.center-align {
+    thead tr th, tbody tr td {
+      text-align: center;
+    }
+  }
+
+  thead {
+    background: white;
+    tr {
+      color: #333;
+      font-size: .9em;
+      border-bottom: 1px solid #155C69;
+      th {
+        padding: 10px 5px;
+      }
+    }
+  }
+
+  &.no-focus {
+    tbody {
+      tr {
+        &:hover {
+          background: #cff09e;
+          .transition(.5s);
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid #bbb;
+
+      td {
+        text-align: left;
+        &.invalid, input.ng-invalid {
+          background: #FFBCBC
+        }
+      }
+
+      &.active {
+        background: #DAE5EE;
+      }
+    }
+  }
+}

@@ -4,14 +4,16 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>gov.nysenate</groupId>
-  <artifactId>ess</artifactId>
+  <groupId>gov.nysenate.ess</groupId>
+  <artifactId>master</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
 
   <modules>
-      <module>time-attendance</module>
-      <module>ess-common</module>
+      <module>ess-core</module>
+      <module>ess-web</module>
+      <module>ess-seta</module>
+      <module>ess-supply</module>
   </modules>
   
   <properties>
@@ -176,7 +178,7 @@
           <groupId>com.oracle</groupId>
           <artifactId>ojdbc14</artifactId>
           <version>${oracle.driver.version}</version>
-          <scope>provided</scope>
+          <scope>runtime</scope>
       </dependency>
 
       <dependency>

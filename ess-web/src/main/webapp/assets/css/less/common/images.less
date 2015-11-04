@@ -1,0 +1,28 @@
+@root-path: "/timesheets/assets/img";
+
+.image-size (@size: 40px) {
+  height: @size;
+  width: @size;
+  background-size: @size;
+  background-repeat: no-repeat;
+}
+
+.nysslogo (@size: 200px) {
+  background: url('@{root-path}/nysslogo.png');
+  .image-size(@size);
+}
+
+.icon-image(@dir, @name) {
+  background: url('@{root-path}/@{dir}/@{name}');
+}
+
+.user-default-icon (@size: 20px) {
+  background: url('@{root-path}/user.png');
+  .image-size(@size);
+}
+
+/** Loading sprites */
+.loading-colors {
+  background: url('@{root-path}/loading.GIF');
+  background-repeat: no-repeat;
+}
