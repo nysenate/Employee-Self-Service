@@ -1,6 +1,6 @@
 package gov.nysenate.ess.web.config;
 
-import gov.nysenate.ess.web.controller.rest.BaseRestCtrl;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -74,6 +74,6 @@ public class WebIntializer implements WebApplicationInitializer
         /** Registers the restApiFilter which affects all REST API calls. */
         DelegatingFilterProxy restApiFilter = new DelegatingFilterProxy("restApiFilter", dispatcherContext);
         servletContext.addFilter("restApiFilter", restApiFilter)
-                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestCtrl.REST_PATH + "*");
+                .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, INCLUDE), false, BaseRestApiCtrl.REST_PATH + "*");
     }
 }

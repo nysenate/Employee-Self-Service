@@ -3,7 +3,7 @@ package gov.nysenate.ess.web.security.filter;
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
-import gov.nysenate.ess.web.client.response.auth.AuthenticationResponse;
+import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;

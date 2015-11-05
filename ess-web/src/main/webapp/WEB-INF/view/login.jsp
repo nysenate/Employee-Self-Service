@@ -4,7 +4,7 @@
 <%@ taglib prefix="ess-layout" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <ess-layout:head>
-    <jsp:attribute name="pageTitle">Timesheet Login</jsp:attribute>
+    <jsp:attribute name="pageTitle">ESS Login</jsp:attribute>
     <jsp:body>
         <ess:ts-assets/>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/auth/login.js"></script>
