@@ -1,6 +1,6 @@
 package gov.nysenate.ess.web.client.response.record;
 
-import gov.nysenate.ess.web.client.view.AccrualsView;
+import gov.nysenate.ess.seta.client.view.AccrualsView;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

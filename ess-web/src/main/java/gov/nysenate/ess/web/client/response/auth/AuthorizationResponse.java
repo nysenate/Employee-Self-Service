@@ -1,6 +1,6 @@
 package gov.nysenate.ess.web.client.response.auth;
 
-import gov.nysenate.ess.web.client.view.AuthorizationStatusView;
+import gov.nysenate.ess.core.client.view.AuthorizationStatusView;
 import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
 import org.apache.shiro.subject.Subject;
 

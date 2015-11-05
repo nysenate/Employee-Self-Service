@@ -1,6 +1,8 @@
 package gov.nysenate.ess.web.model.attendance;
 
 import gov.nysenate.ess.core.annotation.ProperTest;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -8,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @ProperTest
 public class TimeRecordScopeTests

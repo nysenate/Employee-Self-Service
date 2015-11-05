@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.model.personnel;
 
-import gov.nysenate.ess.web.model.payroll.PayType;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.unit.Location;
 
 import java.time.LocalDateTime;

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import gov.nysenate.ess.core.client.view.base.ListView;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.web.client.view.base.ViewObject;
-import gov.nysenate.ess.web.client.view.base.ListView;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;

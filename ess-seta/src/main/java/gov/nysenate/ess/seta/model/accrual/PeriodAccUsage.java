@@ -1,7 +1,6 @@
 package gov.nysenate.ess.seta.model.accrual;
 
-import gov.nysenate.ess.seta.model.accrual.AccrualUsage;
-import gov.nysenate.ess.web.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 
 public class PeriodAccUsage extends AccrualUsage
 {

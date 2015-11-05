@@ -1,7 +1,6 @@
 package gov.nysenate.ess.seta.model.accrual;
 
-import gov.nysenate.ess.seta.model.accrual.AccrualState;
-import gov.nysenate.ess.web.model.payroll.PayType;
+import gov.nysenate.ess.core.model.payroll.PayType;
 
 import java.math.BigDecimal;
 

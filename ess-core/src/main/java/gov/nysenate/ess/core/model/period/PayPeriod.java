@@ -2,14 +2,10 @@ package gov.nysenate.ess.core.model.period;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
-import gov.nysenate.ess.web.model.attendance.TimeRecord;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -49,6 +45,7 @@ public class PayPeriod implements Comparable<PayPeriod>
 
     /** --- Functions --- */
 
+    /* FIXME: This should be moved to the seta module
     public boolean isEnclosedBy(Collection<TimeRecord> records) {
         if (records != null) {
             RangeSet<LocalDate> rangeSet = TreeRangeSet.create();
@@ -56,7 +53,7 @@ public class PayPeriod implements Comparable<PayPeriod>
             return rangeSet.encloses(this.getDateRange());
         }
         return false;
-    }
+    } */
 
     /** --- Functional Getters/Setters --- */
 

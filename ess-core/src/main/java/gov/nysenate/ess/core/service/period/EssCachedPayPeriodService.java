@@ -1,14 +1,16 @@
 package gov.nysenate.ess.core.service.period;
 
-import com.google.common.collect.*;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeMap;
+import com.google.common.collect.TreeRangeMap;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.period.PayPeriodDao;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodNotFoundEx;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.web.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
+import gov.nysenate.ess.core.util.SortOrder;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -32,7 +34,6 @@ public class EssCachedPayPeriodService implements PayPeriodService
     @Autowired private PayPeriodDao payPeriodDao;
     @Autowired private EventBus eventBus;
     @Autowired private EhCacheManageService cacheManageService;
-    @Autowired private AttendanceDao attendanceDao;
 
     private Cache payPeriodCache;
 
@@ -95,12 +96,6 @@ public class EssCachedPayPeriodService implements PayPeriodService
             }
         }
         return payPeriodDao.getPayPeriods(type, dateRange, dateOrder);
-    }
-
-    @Override
-    public List<PayPeriod> getOpenPayPeriods(PayPeriodType type, Integer empId, SortOrder dateOrder) {
-        RangeSet<LocalDate> openDates = attendanceDao.getOpenDates(empId);
-        return openDates.isEmpty() ? Collections.emptyList() : getPayPeriods(type, openDates.span(), dateOrder);
     }
 
     /** --- Internal Methods --- */

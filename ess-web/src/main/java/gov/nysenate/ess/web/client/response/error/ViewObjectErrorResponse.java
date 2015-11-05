@@ -1,6 +1,6 @@
 package gov.nysenate.ess.web.client.response.error;
 
-import gov.nysenate.ess.web.client.view.base.ViewObject;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 
 public class ViewObjectErrorResponse extends ErrorResponse{
 

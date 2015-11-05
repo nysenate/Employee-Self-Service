@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.dao.period.mapper;
 
-import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.model.period.Holiday;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

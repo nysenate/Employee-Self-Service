@@ -1,14 +1,14 @@
 package gov.nysenate.ess.core.dao.period;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.OrderBy;
-import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.dao.period.mapper.PayPeriodRowMapper;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodException;
 import gov.nysenate.ess.core.model.period.PayPeriodNotFoundEx;
-import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -18,10 +18,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static gov.nysenate.ess.core.util.DateUtils.endOfDateRange;
-import static gov.nysenate.ess.core.util.DateUtils.startOfDateRange;
 import static gov.nysenate.ess.core.dao.period.SqlPayPeriodQuery.GET_PAY_PERIODS_IN_RANGE_SQL;
 import static gov.nysenate.ess.core.dao.period.SqlPayPeriodQuery.GET_PAY_PERIOD_SQL;
+import static gov.nysenate.ess.core.util.DateUtils.endOfDateRange;
+import static gov.nysenate.ess.core.util.DateUtils.startOfDateRange;
 
 /** {@inheritDoc} */
 @Repository

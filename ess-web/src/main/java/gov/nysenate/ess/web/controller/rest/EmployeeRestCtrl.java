@@ -1,14 +1,14 @@
 package gov.nysenate.ess.web.controller.rest;
 
-import gov.nysenate.ess.web.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.web.client.response.base.BaseResponse;
 import gov.nysenate.ess.web.client.response.base.ListViewResponse;
-import gov.nysenate.ess.web.client.view.DetailedEmployeeView;
-import gov.nysenate.ess.web.client.view.EmployeeView;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.web.client.response.base.ViewObjectResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

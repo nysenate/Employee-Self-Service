@@ -1,8 +1,9 @@
 package gov.nysenate.ess.web.dao.attendance;
 
 import com.google.common.collect.ListMultimap;
+import gov.nysenate.ess.seta.dao.attendance.SqlAttendanceDao;
+import gov.nysenate.ess.seta.model.attendance.AttendanceRecord;
 import gov.nysenate.ess.web.BaseTests;
-import gov.nysenate.ess.web.model.attendance.AttendanceRecord;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,8 @@ public class SqlAttendanceDaoTest extends BaseTests
 
     private static final Logger logger = LoggerFactory.getLogger(SqlAttendanceDaoTest.class);
 
-    @Autowired SqlAttendanceDao attendanceDao;
+    @Autowired
+    SqlAttendanceDao attendanceDao;
 
     @Test
     public void getOpenAttRecsTest() {

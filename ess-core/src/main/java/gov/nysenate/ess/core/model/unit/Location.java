@@ -1,7 +1,5 @@
 package gov.nysenate.ess.core.model.unit;
 
-import gov.nysenate.ess.core.model.unit.Address;
-
 /**
  * Typically used to represent a Senate employee's place of work or some other location
  * that serves a business purpose.

@@ -1,11 +1,11 @@
 package gov.nysenate.ess.core.model.transaction;
 
 import com.google.common.collect.*;
+import gov.nysenate.ess.core.model.payroll.PayType;
+import gov.nysenate.ess.core.model.payroll.SalaryRec;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.web.model.payroll.SalaryRec;
-import gov.nysenate.ess.web.model.payroll.PayType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;

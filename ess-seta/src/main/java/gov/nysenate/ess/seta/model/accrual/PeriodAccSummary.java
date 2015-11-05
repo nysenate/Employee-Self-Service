@@ -1,6 +1,6 @@
 package gov.nysenate.ess.seta.model.accrual;
 
-import gov.nysenate.ess.web.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

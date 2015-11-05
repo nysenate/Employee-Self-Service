@@ -1,16 +1,18 @@
 package gov.nysenate.ess.core.dao.transaction.mapper;
 
+import gov.nysenate.ess.core.dao.base.BaseHandler;
+import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.dao.base.BaseHandler;
-import gov.nysenate.ess.web.dao.transaction.EmpTransDaoOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class TransHistoryHandler extends BaseHandler
 {

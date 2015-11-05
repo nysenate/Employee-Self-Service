@@ -1,28 +1,28 @@
 package gov.nysenate.ess.web.controller.rest;
 
 import com.google.common.collect.*;
+import gov.nysenate.ess.core.client.view.base.ListView;
+import gov.nysenate.ess.core.client.view.base.MapView;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.seta.client.view.TimeRecordView;
+import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
+import gov.nysenate.ess.seta.model.personnel.SupervisorException;
+import gov.nysenate.ess.seta.service.accrual.AccrualInfoService;
+import gov.nysenate.ess.seta.service.attendance.ActiveTimeRecordCacheEvictEvent;
+import gov.nysenate.ess.seta.service.attendance.TimeRecordManager;
+import gov.nysenate.ess.seta.service.attendance.TimeRecordService;
+import gov.nysenate.ess.seta.service.attendance.validation.InvalidTimeRecordException;
+import gov.nysenate.ess.seta.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.web.client.response.base.BaseResponse;
 import gov.nysenate.ess.web.client.response.base.ListViewResponse;
+import gov.nysenate.ess.web.client.response.base.SimpleResponse;
 import gov.nysenate.ess.web.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.web.client.response.error.InvalidTimeRecordResponse;
-import gov.nysenate.ess.web.client.view.TimeRecordView;
-import gov.nysenate.ess.web.client.view.base.MapView;
-import gov.nysenate.ess.web.client.view.base.ViewObject;
-import gov.nysenate.ess.web.model.attendance.TimeRecord;
-import gov.nysenate.ess.web.model.attendance.TimeRecordScope;
-import gov.nysenate.ess.web.model.attendance.TimeRecordStatus;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.web.service.attendance.ActiveTimeRecordCacheEvictEvent;
-import gov.nysenate.ess.web.service.attendance.validation.TimeRecordValidationService;
-import gov.nysenate.ess.web.client.response.base.SimpleResponse;
-import gov.nysenate.ess.web.client.view.base.ListView;
-import gov.nysenate.ess.web.model.exception.SupervisorException;
-import gov.nysenate.ess.web.service.accrual.AccrualInfoService;
-import gov.nysenate.ess.web.service.attendance.validation.InvalidTimeRecordException;
-import gov.nysenate.ess.web.service.attendance.TimeRecordManager;
-import gov.nysenate.ess.web.service.attendance.TimeRecordService;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +47,7 @@ public class TimeRecordRestCtrl extends BaseRestCtrl
     @Autowired AccrualInfoService accrualInfoService;
     @Autowired TimeRecordManager timeRecordManager;
 
-    @Autowired
-    TimeRecordValidationService validationService;
+    @Autowired TimeRecordValidationService validationService;
 
     /**
      * Get Time Record API

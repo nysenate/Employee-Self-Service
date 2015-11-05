@@ -1,10 +1,10 @@
 package gov.nysenate.ess.core.service.personnel;
 
 import com.google.common.collect.RangeSet;
-import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.personnel.Person;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.model.personnel.Person;
+import gov.nysenate.ess.core.util.DateUtils;
 
 import java.time.LocalDate;
 import java.util.List;

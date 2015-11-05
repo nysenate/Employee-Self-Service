@@ -1,13 +1,13 @@
 package gov.nysenate.ess.core.service.transaction;
 
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
-import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.transaction.TransactionHistory;
+import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
+import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;

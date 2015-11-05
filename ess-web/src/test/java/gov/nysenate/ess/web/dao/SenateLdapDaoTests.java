@@ -1,8 +1,8 @@
 package gov.nysenate.ess.web.dao;
 
-import gov.nysenate.ess.web.BaseTests;
 import gov.nysenate.ess.core.dao.personnel.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
+import gov.nysenate.ess.web.BaseTests;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

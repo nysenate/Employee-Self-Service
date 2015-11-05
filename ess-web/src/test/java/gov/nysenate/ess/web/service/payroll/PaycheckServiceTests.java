@@ -1,7 +1,8 @@
 package gov.nysenate.ess.web.service.payroll;
 
+import gov.nysenate.ess.seta.model.payroll.Paycheck;
+import gov.nysenate.ess.seta.service.payroll.PaycheckService;
 import gov.nysenate.ess.web.BaseTests;
-import gov.nysenate.ess.web.model.payroll.Paycheck;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -18,7 +19,8 @@ public class PaycheckServiceTests extends BaseTests
 {
     private static final Logger logger = LoggerFactory.getLogger(PaycheckServiceTests.class);
 
-    @Autowired PaycheckService paycheckService;
+    @Autowired
+    PaycheckService paycheckService;
     private final int empId = 11168;
     private final int year = 2015;
     private List<Paycheck> paychecks;

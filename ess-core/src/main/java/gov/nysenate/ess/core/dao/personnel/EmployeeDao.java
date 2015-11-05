@@ -1,8 +1,8 @@
 package gov.nysenate.ess.core.dao.personnel;
 
+import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
-import gov.nysenate.ess.core.dao.base.BaseDao;
 
 import java.time.LocalDateTime;
 import java.util.List;

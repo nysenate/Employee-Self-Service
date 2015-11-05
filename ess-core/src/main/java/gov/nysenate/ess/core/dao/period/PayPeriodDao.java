@@ -1,11 +1,11 @@
 package gov.nysenate.ess.core.dao.period;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.dao.base.BaseDao;
-import gov.nysenate.ess.core.model.period.PayPeriodException;
 import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.period.PayPeriodException;
+import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.util.SortOrder;
 
 import java.time.LocalDate;
 import java.util.List;

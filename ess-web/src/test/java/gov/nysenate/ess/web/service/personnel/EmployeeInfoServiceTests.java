@@ -1,10 +1,10 @@
 package gov.nysenate.ess.web.service.personnel;
 
 import com.google.common.collect.RangeSet;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.web.BaseTests;
-import gov.nysenate.ess.core.model.personnel.Employee;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

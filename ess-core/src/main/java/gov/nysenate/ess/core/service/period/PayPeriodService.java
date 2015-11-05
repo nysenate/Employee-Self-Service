@@ -10,10 +10,7 @@ import java.util.List;
 
 public interface PayPeriodService
 {
-    public PayPeriod getPayPeriod(PayPeriodType type, LocalDate date);
+    PayPeriod getPayPeriod(PayPeriodType type, LocalDate date);
 
-    public List<PayPeriod> getPayPeriods(PayPeriodType type, Range<LocalDate> dateRange, SortOrder dateOrder);
-
-    /** Get a list of pay periods that are currently open for the given employee */
-    public List<PayPeriod> getOpenPayPeriods(PayPeriodType type, Integer empId, SortOrder dateOrder);
+    List<PayPeriod> getPayPeriods(PayPeriodType type, Range<LocalDate> dateRange, SortOrder dateOrder);
 }

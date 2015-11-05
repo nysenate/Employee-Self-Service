@@ -1,9 +1,9 @@
 package gov.nysenate.ess.web.controller.rest;
 
 import com.google.common.collect.Sets;
-import gov.nysenate.ess.web.service.allowance.AllowanceService;
+import gov.nysenate.ess.seta.client.view.AllowanceUsageView;
+import gov.nysenate.ess.seta.service.allowance.AllowanceService;
 import gov.nysenate.ess.web.client.response.base.ListViewResponse;
-import gov.nysenate.ess.web.client.view.AllowanceUsageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

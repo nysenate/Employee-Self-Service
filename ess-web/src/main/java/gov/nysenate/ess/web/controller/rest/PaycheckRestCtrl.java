@@ -1,10 +1,10 @@
 package gov.nysenate.ess.web.controller.rest;
 
+import gov.nysenate.ess.seta.client.view.PaycheckView;
+import gov.nysenate.ess.seta.model.payroll.Paycheck;
+import gov.nysenate.ess.seta.service.payroll.PaycheckService;
 import gov.nysenate.ess.web.client.response.base.BaseResponse;
 import gov.nysenate.ess.web.client.response.base.ListViewResponse;
-import gov.nysenate.ess.web.client.view.PaycheckView;
-import gov.nysenate.ess.web.model.payroll.Paycheck;
-import gov.nysenate.ess.web.service.payroll.PaycheckService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

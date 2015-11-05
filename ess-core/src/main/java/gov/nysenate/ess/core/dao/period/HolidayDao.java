@@ -1,9 +1,9 @@
 package gov.nysenate.ess.core.dao.period;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.period.Holiday;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDate;

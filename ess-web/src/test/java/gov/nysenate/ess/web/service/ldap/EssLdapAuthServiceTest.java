@@ -1,9 +1,9 @@
 package gov.nysenate.ess.web.service.ldap;
 
-import gov.nysenate.ess.web.BaseTests;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.service.auth.EssLdapAuthService;
+import gov.nysenate.ess.web.BaseTests;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

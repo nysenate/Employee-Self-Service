@@ -1,12 +1,12 @@
 package gov.nysenate.ess.web.dao;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.web.BaseTests;
 import gov.nysenate.ess.core.dao.period.PayPeriodDao;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.web.BaseTests;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.junit.Test;

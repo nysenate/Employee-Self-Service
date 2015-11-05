@@ -1,13 +1,13 @@
 package gov.nysenate.ess.core.dao.transaction;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransHistoryHandler;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransRecordRowMapper;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.util.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;

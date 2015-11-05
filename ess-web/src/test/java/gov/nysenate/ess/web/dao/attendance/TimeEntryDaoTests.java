@@ -1,9 +1,10 @@
 package gov.nysenate.ess.web.dao.attendance;
 
-import gov.nysenate.ess.web.BaseTests;
-import gov.nysenate.ess.web.model.attendance.TimeEntry;
 import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.web.model.payroll.MiscLeaveType;
+import gov.nysenate.ess.seta.dao.attendance.TimeEntryDao;
+import gov.nysenate.ess.seta.model.attendance.TimeEntry;
+import gov.nysenate.ess.seta.model.payroll.MiscLeaveType;
+import gov.nysenate.ess.web.BaseTests;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

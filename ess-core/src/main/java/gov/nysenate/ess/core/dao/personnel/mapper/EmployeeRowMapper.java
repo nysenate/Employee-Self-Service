@@ -1,10 +1,9 @@
 package gov.nysenate.ess.core.dao.personnel.mapper;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
-import gov.nysenate.ess.web.dao.payroll.mapper.RespCenterRowMapper;
-import gov.nysenate.ess.web.dao.unit.AddressRowMapper;
-import gov.nysenate.ess.web.dao.unit.LocationRowMapper;
-import gov.nysenate.ess.web.model.payroll.PayType;
+import gov.nysenate.ess.core.dao.unit.AddressRowMapper;
+import gov.nysenate.ess.core.dao.unit.LocationRowMapper;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.Gender;
 import gov.nysenate.ess.core.model.personnel.MaritalStatus;

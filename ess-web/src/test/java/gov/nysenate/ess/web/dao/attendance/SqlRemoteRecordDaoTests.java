@@ -2,6 +2,7 @@ package gov.nysenate.ess.web.dao.attendance;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.seta.dao.attendance.SqlTimeRecordDao;
 import gov.nysenate.ess.web.BaseTests;
 import org.junit.Test;
 import org.slf4j.Logger;

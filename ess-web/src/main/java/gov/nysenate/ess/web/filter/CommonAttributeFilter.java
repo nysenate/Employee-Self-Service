@@ -1,7 +1,7 @@
 package gov.nysenate.ess.web.filter;
 
+import gov.nysenate.ess.seta.model.payroll.MiscLeaveType;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
-import gov.nysenate.ess.web.model.payroll.MiscLeaveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

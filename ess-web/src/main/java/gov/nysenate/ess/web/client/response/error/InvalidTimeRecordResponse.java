@@ -1,10 +1,10 @@
 package gov.nysenate.ess.web.client.response.error;
 
-import gov.nysenate.ess.web.client.view.base.MapView;
-import gov.nysenate.ess.web.client.view.base.ViewObject;
-import gov.nysenate.ess.web.client.view.TimeRecordView;
+import gov.nysenate.ess.core.client.view.base.MapView;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.seta.client.view.TimeRecordView;
+import gov.nysenate.ess.seta.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.web.client.view.error.TimeRecordErrorView;
-import gov.nysenate.ess.web.service.attendance.validation.TimeRecordErrorCode;
 
 import java.util.Map;
 import java.util.stream.Collectors;

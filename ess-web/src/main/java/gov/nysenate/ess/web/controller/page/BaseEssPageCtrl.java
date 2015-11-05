@@ -1,8 +1,8 @@
 package gov.nysenate.ess.web.controller.page;
 
-import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.util.OutputUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.subject.Subject;

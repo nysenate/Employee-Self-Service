@@ -1,7 +1,7 @@
 package gov.nysenate.ess.seta.model.accrual;
 
-import gov.nysenate.ess.web.model.period.PayPeriod;
-import gov.nysenate.ess.web.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 
 import java.time.LocalDate;
 import java.util.LinkedList;

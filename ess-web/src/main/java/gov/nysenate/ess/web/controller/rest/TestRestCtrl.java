@@ -2,8 +2,8 @@ package gov.nysenate.ess.web.controller.rest;
 
 import gov.nysenate.ess.core.dao.period.PayPeriodDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.web.dao.personnel.SupervisorDao;
-import gov.nysenate.ess.web.dao.accrual.AccrualDao;
+import gov.nysenate.ess.seta.dao.accrual.AccrualDao;
+import gov.nysenate.ess.seta.dao.personnel.SupervisorDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

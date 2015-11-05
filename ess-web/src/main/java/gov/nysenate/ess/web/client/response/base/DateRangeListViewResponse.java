@@ -1,10 +1,10 @@
 package gov.nysenate.ess.web.client.response.base;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.client.view.base.ListView;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.web.client.view.base.ViewObject;
-import gov.nysenate.ess.web.client.view.base.ListView;
 
 import java.time.LocalDateTime;
 import java.util.List;

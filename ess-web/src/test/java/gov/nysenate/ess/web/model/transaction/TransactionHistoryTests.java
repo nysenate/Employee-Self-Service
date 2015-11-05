@@ -1,12 +1,12 @@
 package gov.nysenate.ess.web.model.transaction;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.web.BaseTests;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
+import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.web.BaseTests;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

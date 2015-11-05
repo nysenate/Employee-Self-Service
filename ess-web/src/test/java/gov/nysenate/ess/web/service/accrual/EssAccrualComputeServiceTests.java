@@ -1,12 +1,13 @@
 package gov.nysenate.ess.web.service.accrual;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.web.BaseTests;
 import gov.nysenate.ess.core.dao.period.PayPeriodDao;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.seta.service.accrual.EssAccrualComputeService;
+import gov.nysenate.ess.web.BaseTests;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,8 @@ public class EssAccrualComputeServiceTests extends BaseTests
 
     @Autowired
     PayPeriodDao payPeriodDao;
-    @Autowired EssAccrualComputeService accrualComputeService;
+    @Autowired
+    EssAccrualComputeService accrualComputeService;
 
     @Test
     public void testGetAccruals() throws Exception {

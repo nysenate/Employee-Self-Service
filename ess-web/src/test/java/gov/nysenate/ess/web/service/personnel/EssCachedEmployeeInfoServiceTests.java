@@ -1,9 +1,9 @@
 package gov.nysenate.ess.web.service.personnel;
 
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.web.BaseTests;
 import gov.nysenate.ess.core.annotation.ProperTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.web.BaseTests;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

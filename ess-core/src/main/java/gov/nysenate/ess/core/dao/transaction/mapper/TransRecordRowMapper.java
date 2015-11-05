@@ -1,8 +1,8 @@
 package gov.nysenate.ess.core.dao.transaction.mapper;
 
+import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.web.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.model.transaction.TransactionType;
 import org.springframework.jdbc.core.RowMapper;
 
