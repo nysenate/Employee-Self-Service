@@ -2,6 +2,7 @@ package gov.nysenate.ess.web.service.transaction;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.BoundType;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
@@ -9,6 +10,8 @@ import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
 import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
+import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
+import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.transaction.EssCachedEmpTransactionService;
 import gov.nysenate.ess.web.BaseTests;
 import org.junit.Test;
@@ -17,16 +20,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class CachedTransactionServiceTests extends BaseTests
-{
+public class CachedTransactionServiceTests extends BaseTests {
 
     private static final Logger logger = LoggerFactory.getLogger(CachedTransactionServiceTests.class);
 
     @Autowired EmpTransactionDao transDao;
-    @Autowired
-    EssCachedEmpTransactionService transService;
+    @Autowired EssCachedEmpTransactionService transService;
 
     @Autowired EventBus eventBus;
 
@@ -58,5 +61,12 @@ public class CachedTransactionServiceTests extends BaseTests
     public void testTransactions() throws Exception {
         TransactionHistory transHistory = transDao.getTransHistory(1719, EmpTransDaoOption.NONE);
         logger.info("{}", transHistory.getEffectiveAccrualStatus(Range.upTo(LocalDate.now(), BoundType.CLOSED)));
+    }
+
+    @Test
+    public void transHistoryUpdateEventTest() {
+        ImmutableCollection<TransactionRecord> transactionRecords =
+                transService.getTransHistory(439).getRecordsByCode().values();
+        eventBus.post(new TransactionHistoryUpdateEvent(new ArrayList<>(transactionRecords), LocalDateTime.now()));
     }
 }

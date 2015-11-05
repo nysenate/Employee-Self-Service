@@ -1,18 +1,20 @@
 package gov.nysenate.ess.seta.service.personnel;
 
 import com.google.common.collect.BoundType;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.util.DateUtils;
+import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
-import gov.nysenate.ess.seta.model.personnel.*;
-import gov.nysenate.ess.seta.dao.personnel.SupervisorDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
-import gov.nysenate.ess.seta.model.personnel.SupervisorException;
-import gov.nysenate.ess.seta.model.personnel.SupervisorNotFoundEx;
+import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
+import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.seta.dao.personnel.SupervisorDao;
+import gov.nysenate.ess.seta.model.personnel.*;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -27,10 +29,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
+
 @Service
 public class EssCachedSupervisorInfoService implements SupervisorInfoService
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedSupervisorInfoService.class);
+
+    /** A set of transactions that can affect a supervisor employee group */
+    private static final ImmutableSet<TransactionCode> supervisorTransCodes = ImmutableSet.of(SUP, APP, RTP, EMP);
 
     @Autowired private EmpTransactionService empTransService;
     @Autowired private SupervisorDao supervisorDao;
@@ -172,41 +179,43 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService
     }
 
     /**
-     * Check for updates to supervisor assignments and update the cache as necessary
+     * If any new transactions are posted that affect supervisor employee groups,
+     *  recache the affected supervisor's groups
+     * @param transUpdateEvent TransactionHistoryUpdateEvent
+     */
+    @Subscribe
+    public void handleSupervisorTransactions(TransactionHistoryUpdateEvent transUpdateEvent) {
+        long updatedSups = transUpdateEvent.getTransRecs().stream()
+                .filter(rec -> supervisorTransCodes.contains(rec.getTransCode()))
+                .flatMap(rec -> {
+                    // Add any sups that were active immediately before or after the transaction effect date
+                    TransactionHistory transHistory = empTransService.getTransHistory(rec.getEmployeeId());
+                    Range<LocalDate> relevantDates = Range.closedOpen(
+                            rec.getEffectDate().minusDays(1), rec.getEffectDate().plusDays(1));
+                    return transHistory.getEffectiveSupervisorIds(relevantDates).values().stream();
+                })
+                .distinct()
+                .peek(this::getAndCacheSupEmpGroup)
+                .count();
+        if (updatedSups > 0) {
+            logger.info("Updated {} supervisor employee groups in response to new transactions", updatedSups);
+        }
+    }
+
+    /**
+     * Check for updates to supervisor overrides and update the cache as necessary
      */
     @WorkInProgress(author = "sam", since = "11/2/2015", desc = "insufficient live testing")
     @Scheduled(fixedDelayString = "${cache.poll.delay.supervisors:60000}")
     public void syncSupervisorCache() {
+        logger.debug("Checking for supervisor override updates...");
         Set<Integer> modifiedSups = new HashSet<>();
-        logger.debug("Checking for supervisor updates...");
 
-        modifiedSups.addAll(getTransUpdatedSups());
         modifiedSups.addAll(getOvrUpdatedSups());
 
         modifiedSups.forEach(this::getAndCacheSupEmpGroup);
 
         logger.debug("Refreshed {} supervisor emp groups", modifiedSups.size());
-    }
-
-    /**
-     * @return Set<Integer> - supervisor ids whose employee group has been changed by a transaction since the last check
-     * todo scrap this and use transaction update events instead
-     */
-    private Set<Integer> getTransUpdatedSups() {
-        Set<Integer> modifiedSups = new HashSet<>();
-
-        supervisorDao.getSupTransChanges(lastSupTransUpdate).forEach(transInfo -> {
-            // Add any sups that were active before or after the transaction effect date
-            TransactionHistory transHistory = empTransService.getTransHistory(transInfo.getEmployeeId());
-            Range<LocalDate> relevantDates = Range.closedOpen(
-                    transInfo.getEffectDate().minusDays(1), transInfo.getEffectDate().plusDays(1));
-            modifiedSups.addAll(transHistory.getEffectiveSupervisorIds(relevantDates).values());
-
-            lastSupTransUpdate = transInfo.getUpdateDate().isAfter(lastSupTransUpdate)
-                    ? transInfo.getUpdateDate() : lastSupTransUpdate;
-        });
-
-        return modifiedSups;
     }
 
     /**
