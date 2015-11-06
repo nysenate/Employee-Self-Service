@@ -25,7 +25,7 @@ essTime.directive('recordValidator', ['$timeout', 'activeRow', function($timeout
     }
 }]);
 
-/** Adds invalid class to a input if its invalid. Only run when 'validateRecord' event is broadcast. */
+/** Adds invalid class to a input if its invalid. Only run when 'validateRecordEntries' event is broadcast. */
 essTime.directive('entryValidator', ['$timeout', function($timeout) {
     return {
         restrict: 'A',
