@@ -39,7 +39,8 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         SUBMIT_ACK: 6,
         SUBMITTING: 7,
         SUBMITTED: 8,
-        SUBMIT_FAILURE: 9
+        SUBMIT_FAILURE: 9,
+        VALIDATE_FAILURE: 10
     };
 
     // Create a new state from the values in the default state.
@@ -124,9 +125,15 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     $scope.saveRecord = function(submit) {
         var record = $scope.state.records[$scope.state.iSelectedRecord];
         console.log(submit ? 'submitting' : 'saving', 'record', record);
-        // TODO: Validate the current record
+        $scope.checkRecordForErrors();
+        var errors = $scope.errorTypes.raSa.errors || $scope.errorTypes.te.errors;
+        if (errors) {
+            $scope.$broadcast('validateRecordEntries');
+            $scope.state.pageState = $scope.pageStates.VALIDATE_FAILURE;
+            modals.open('validate-indicator', {'record': record});
+        }
         // Open the modal to indicate save/submit
-        if (submit) {
+        else if (submit) {
             $scope.state.pageState = $scope.pageStates.SUBMIT_ACK;
             modals.open('submit-indicator', {'record': record});
         }
@@ -274,7 +281,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
      */
     $scope.recordSubmittable = function () {
         var record = $scope.state.records[$scope.state.iSelectedRecord];
-        return record && !$scope.errorTypes.raSa.errors && !$scope.errorTypes.te.errors && !moment(record.endDate).isAfter(moment(), 'day');
+        return record && !moment(record.endDate).isAfter(moment(), 'day');
     };
 
     /**
@@ -351,7 +358,6 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         recordUtils.calculateDailyTotals(record);
         $scope.state.totals = recordUtils.getRecordTotals(record);
         calculateAllowanceUsage();
-        checkRecordForErrors(record);
     }
 
     /**
@@ -502,7 +508,8 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     /** --- Validation --- **/
 
     /** Check for errors in the record, any errors are reflected in the $scope.errorTypes object. */
-    function checkRecordForErrors(record) {
+    $scope.checkRecordForErrors = function() {
+        var record = $scope.state.records[$scope.state.iSelectedRecord];
         if (record && record.timeEntries) {
             $scope.errorTypes.reset();
             angular.forEach(record.timeEntries, function (entry) {
@@ -517,7 +524,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             $scope.errorTypes.raSa.errors = !allFalse($scope.errorTypes.raSa);
             $scope.errorTypes.te.errors = !allFalse($scope.errorTypes.te);
         }
-    }
+    };
 
     /** Checks all input in a salaried employees time entry record for errors. */
     function checkSalariedEntryForErrors(entry) {
@@ -551,7 +558,6 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         if ($scope.state.totals.sickEmpHours + $scope.state.totals.sickFamHours > $scope.state.accrual.sickAvailable) {
             $scope.errorTypes.raSa.notEnoughSickTime = true;
         }
-        // TODO: delay this some so they have a chance to enter a misc type.
         if (typeof entry.miscHours !== 'undefined' && entry.miscHours !== null && entry.miscType === null) {
             $scope.errorTypes.raSa.noMiscTypeGiven = true;
         }
@@ -703,8 +709,11 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         return entry.total >= 0 && entry.total <= 24;
     };
 
-    $scope.isMiscTypeMissing = function(entry) {
-        return entry.miscHours > 0 && entry.miscType === null;
+    $scope.isMiscTypeValid = function(entry) {
+        if (typeof entry.miscHours === 'undefined' || entry.miscHours === null) {
+            return true;
+        }
+        return entry.miscHours > 0 && entry.miscType !== null;
     };
 
     function allEntryValuesInHalfHourIncrements(entry) {

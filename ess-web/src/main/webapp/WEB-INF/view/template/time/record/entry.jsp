@@ -158,13 +158,13 @@
               <th>Total</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody record-validator="checkRecordForErrors()">
           <tr class="time-record-row highlight-first"
               ng-repeat="(i,entry) in regRecords = (state.records[state.iSelectedRecord].timeEntries | filter:{payType: '!TE'})"
               ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}"
               ng-init="numRecs = regRecords.length">
             <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
-            <td ng-class="{invalid: !areWorkHoursValid(entry)}">
+            <td entry-validator="areWorkHoursValid(entry)">
               <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
                      ng-model="entry.workHours" tabindex="1" name="numWorkHours"/>
@@ -173,37 +173,37 @@
               <input type="number" readonly time-record-input class="hours-input"
                      step=".5" min="0" max="7" ng-model="entry.holidayHours" name="numHolidayHours"/>
             </td>
-            <td ng-class="{invalid: !areVacationHoursValid(entry)}">
+            <td entry-validator="areVacationHoursValid(entry)">
               <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      ng-model="entry.vacationHours" name="numVacationHours"
                      tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.vacationHours == null) ? 2 : 1}}"/>
             </td>
-            <td ng-class="{invalid: !arePersonalHoursValid(entry)}">
+            <td entry-validator="arePersonalHoursValid(entry)">
               <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.personalHours == null) ? 3 : 1}}"
                      ng-model="entry.personalHours" name="numPersonalHours"/>
             </td>
-            <td ng-class="{invalid: !areEmpSickHoursValid(entry)}">
+            <td entry-validator="areEmpSickHoursValid(entry)">
               <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.sickEmpHours == null) ? 4 : 1}}"
                      ng-model="entry.sickEmpHours" name="numSickEmpHours"/>
             </td>
-            <td ng-class="{invalid: !areFamSickHoursValid(entry)}">
+            <td entry-validator="areFamSickHoursValid(entry)">
               <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.sickFamHours == null) ? 5 : 1}}"
                      ng-model="entry.sickFamHours" name="numSickFamHours"/>
             </td>
-            <td ng-class="{invalid: !areMiscHoursValid(entry)}">
+            <td entry-validator="areMiscHoursValid(entry)">
               <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.miscHours == null) ? 6 : 1}}"
                      ng-model="entry.miscHours" name="numMiscHours"/>
             </td>
-            <td ng-class="{invalid: isMiscTypeMissing(entry)}">
+            <td entry-validator="isMiscTypeValid(entry)">
               <select style="font-size:.9em;" name="miscHourType"
                       ng-model="entry.miscType" ng-change="setDirty()"
                       tabindex="{{!entry.miscHours ? 7 : 1}}"
@@ -211,7 +211,7 @@
                 <option value="">No Misc Hours</option>
               </select>
             </td>
-            <td ng-class="{invalid: !areTotalHoursValid(entry)}">
+            <td entry-validator="areTotalHoursValid(entry)">
               <span>{{entry.total | number}}</span>
             </td>
           </tr>
@@ -308,12 +308,12 @@
               <th>Work Time Description / Comments</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody record-validator="checkRecordForErrors()">
             <tr class="time-record-row highlight-first"
                 ng-repeat="(i,entry) in state.records[state.iSelectedRecord].timeEntries | filter:{payType: 'TE'}"
                 ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}">
               <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
-              <td ng-class="{invalid: !areWorkHoursValid(entry)}">
+              <td entry-validator="areWorkHoursValid(entry)">
                 <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
                        placeholder="--" step="0.25" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
                        ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
@@ -340,7 +340,7 @@
         </div>
         <div class="float-right">
           <input ng-click="saveRecord(false)" class="submit-button" type="button" value="Save Record"
-                 ng-disabled="!state.records[state.iSelectedRecord].dirty || !recordSubmittable()"/>
+                 ng-disabled="!state.records[state.iSelectedRecord].dirty"/>
           <input ng-click="saveRecord(true)" class="submit-button" type="button" value="Submit Record"
                  ng-disabled="!recordSubmittable()"/>
         </div>
@@ -351,6 +351,15 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
+    <% /** Modals for validation. */%>
+    <div ng-if="isOpen('validate-indicator')" class="save-progress-modal">
+      <div ng-show="state.pageState === pageStates.VALIDATE_FAILURE">
+        <h3 class="content-info" style="margin-bottom:0;">Time record has errors</h3>
+        <h4>Your record has not been saved.</h4>
+        <h4>Errors must be fixed before you can continue.</h4>
+        <input ng-click="closeModal()" class="reject-button" type="button" value="Go back to ESS"/>
+      </div>
+    </div>
     <% /** Modals for record save. */ %>
     <div ng-if="isOpen('save-indicator')" class="save-progress-modal">
       <div ng-show="state.pageState === pageStates.SAVING">
