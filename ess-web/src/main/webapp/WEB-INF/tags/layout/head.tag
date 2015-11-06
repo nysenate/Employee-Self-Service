@@ -6,7 +6,7 @@
 <html id="ng-app" ng-app="ess">
 <head>
     <title><jsp:invoke fragment="pageTitle"/></title>
-    <base href="${ctxPath}" />
+    <base href="<c:out value="${empty ctxPath ? '/' : ctxPath}" />"/>
     <script>
         window.globalProps = {
             ctxPath: '${ctxPath}',
