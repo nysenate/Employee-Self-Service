@@ -96,13 +96,14 @@ public class RangeUtils
     /**
      * Creates a range set out of a set with comparable keys
      * This essentially transforms each element into a range of [current ele, next highest ele)
-     * The value with the highest element will be assigned a range of [highest ele, end ele] with end key being provided as an arg
+     * The value with the highest element will be assigned a range of [highest ele, end ele) or [highest ele, end ele]
+     * with end key and bound type provided as an argument
      * @param set SortedSet<E>
      * @param endElement E
      * @param <E> E
      * @return TreeSet<E>
      */
-    public static <E extends Comparable<? super E>> List<Range<E>> toRanges(SortedSet<E> set, E endElement) {
+    public static <E extends Comparable<? super E>> List<Range<E>> toRanges(SortedSet<E> set, E endElement, BoundType upperBoundType) {
         List<Range<E>> ranges = new ArrayList<>();
 
         Iterator<E> backIterator = set.iterator();
@@ -113,8 +114,8 @@ public class RangeUtils
 
         while (backIterator.hasNext()) {
             ranges.add(frontIterator.hasNext()
-                    ? Range.openClosed(backIterator.next(), frontIterator.next())
-                    : Range.closed(backIterator.next(), endElement));
+                    ? Range.closedOpen(backIterator.next(), frontIterator.next())
+                    : Range.range(backIterator.next(), BoundType.CLOSED, endElement, upperBoundType));
         }
 
         return ranges;
