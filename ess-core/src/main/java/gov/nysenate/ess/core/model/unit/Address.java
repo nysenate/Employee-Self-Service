@@ -51,10 +51,10 @@ public class Address
     @Override
     public String toString() {
         if (isParsed()) {
-            return ((!addr1.equals("") ? addr1 : "") + (!addr2.equals("") ? " " + addr2 + "" : "")
-                    + (!addr1.equals("") || !addr2.equals("") ? "," : "")
-                    + (!city.equals("") ? " " + city + "," : "") + ( !state.equals("") ? " " + state : "")
-                    + (!zip5.equals("") ? " " + zip5 : "") + ( !zip4.equals("")  ? "-"+zip4 : "")).trim();
+            return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
+                    + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
+                    + (!city.isEmpty() ? " " + city + "," : "") + (!state.isEmpty() ? " " + state : "")
+                    + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-"+zip4 : "")).trim();
         }
         else {
             return addr1;
@@ -66,7 +66,7 @@ public class Address
      * - Remove the dash within the building number
      * @return String
      */
-    public String toNormalizedString() {
+    public String toStringStripBuildingNumber() {
         return toString().replaceFirst("^(\\d+)(-)(\\d+)","$1$3");
     }
 

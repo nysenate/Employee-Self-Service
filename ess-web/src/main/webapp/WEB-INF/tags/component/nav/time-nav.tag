@@ -8,7 +8,6 @@
     <h3 class="main-topic">My Attendance</h3>
     <ul class="sub-topic-list">
         <li class="sub-topic"><a href="${ctxPath}/time/record/entry">Enter Time Record</a></li>
-        <!--<li class="sub-topic"><a href="${ctxPath}/time/timeoff/request">Time Off Requests</a></li>-->
         <li class="sub-topic"><a href="${ctxPath}/time/record/history">Attendance History</a></li>
         <li class="sub-topic"><a href="${ctxPath}/time/period/calendar">Pay Period Calendar</a></li>
     </ul>
@@ -27,8 +26,4 @@
             <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Privileges</a></li>
         </ul>
     </shiro:hasRole>
-    <%--<h3 class="main-topic">Preferences</h3>--%>
-    <%--<ul class="sub-topic-list">--%>
-        <%--<li class="sub-topic"><a href="${ctxPath}/ui/time/emailprefs">Email Reminders</a></li>--%>
-    <%--</ul>--%>
 </section>

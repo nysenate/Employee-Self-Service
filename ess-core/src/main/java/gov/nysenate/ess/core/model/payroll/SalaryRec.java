@@ -6,8 +6,8 @@ import gov.nysenate.ess.core.util.DateUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class SalaryRec {
-
+public class SalaryRec
+{
     /** The amount paid to the employee per pay period/hour/year */
     private BigDecimal salaryRate;
 

@@ -13,13 +13,14 @@ public enum LocationType
     char code;
     String name;
 
-    private LocationType(char code, String name) {
+    LocationType(char code, String name) {
         this.code = code;
         this.name = name;
     }
 
     public static LocationType valueOfCode(char code) {
         for (LocationType type : LocationType.values()) {
+            code = Character.toUpperCase(code);
             if (type.code == code) {
                 return type;
             }
