@@ -43,18 +43,6 @@ public class PayPeriod implements Comparable<PayPeriod>
         this.active = active;
     }
 
-    /** --- Functions --- */
-
-    /* FIXME: This should be moved to the seta module
-    public boolean isEnclosedBy(Collection<TimeRecord> records) {
-        if (records != null) {
-            RangeSet<LocalDate> rangeSet = TreeRangeSet.create();
-            records.forEach(rec -> rangeSet.add(rec.getDateRange()));
-            return rangeSet.encloses(this.getDateRange());
-        }
-        return false;
-    } */
-
     /** --- Functional Getters/Setters --- */
 
     /**
