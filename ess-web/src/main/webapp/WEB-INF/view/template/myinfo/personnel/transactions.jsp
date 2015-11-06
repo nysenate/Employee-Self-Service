@@ -4,14 +4,14 @@
     <div class="my-info-hero">
         <h2>Employee Updates</h2>
     </div>
-    <div class="padding-10">
-        <ess-notification ng-show="state.timeline === false" level="info"
-                          message="No relevant updates are available for your account.">
-        </ess-notification>
-        <ess-notification level="info" ng-show="state.timeline"
-                          message="Relevant changes to your personnel record are listed below. It is
+    <ess-notification ng-show="state.timeline === false" level="info"
+                      message="No relevant updates are available for your account.">
+    </ess-notification>
+    <ess-notification level="info" ng-show="state.timeline"
+                      message="Relevant changes to your personnel record are listed below. It is
                           not a complete listing of all updates that have been posted.">
-        </ess-notification>
+    </ess-notification>
+    <div class="padding-10">
         <div ng-repeat="(date,txArr) in state.timeline">
             <h2 class="tx-effect-date">{{date | moment:'ll'}}</h2>
             <div class="grid tx-container" ng-repeat="tx in txArr">

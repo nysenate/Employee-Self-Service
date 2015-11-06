@@ -65,7 +65,7 @@
   </div>
 
   <% /** If there are no active records for the user, display a warning message indicating such. */ %>
-  <div class="margin-10" ess-notification level="error" title="No time records available to enter."
+  <div class="margin-10-0" ess-notification level="error" title="No time records available to enter."
        ng-show="state.pageState === pageStates.FETCHED && state.records.length == 0"
        message="Please contact Senate Personnel at (518) 455-3376 if you require any assistance."></div>
 

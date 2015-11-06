@@ -1,24 +1,29 @@
 @import "./colors";
 
 .ess-notification {
-  padding: 10px;
-  border-width: 1px;
-  border-style: solid;
-  background: white;
-  text-align: center;
+  padding:.3em;
+  font-weight: bold;
+  text-align:center;
+  border-bottom: 1px solid #ddd;
+  h1 {
+    font-size: 2.5em;
+  }
+  h1, h2, h3, h4, p, span {
+    color: white;
+  }
   ul {
     padding: 0;
   }
   &.info {
-    color: @navy;
-    border-color: @light-teal;
+    background: white;
+    h1, h2, h3, h4, p, span {
+      color: @navy;
+    }
   }
   &.warn {
-    color: @brown;
-    border-color: @orange;
+    background: @orange;
   }
   &.error {
-    color: @redorange;
-    border-color: @redorange;
+    background: @redorange;
   }
 }
