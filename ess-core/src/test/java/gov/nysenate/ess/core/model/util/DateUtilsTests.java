@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core;
+package gov.nysenate.ess.core.model.util;
 
 import gov.nysenate.ess.core.util.DateUtils;
 import org.junit.Test;
