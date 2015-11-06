@@ -38,7 +38,6 @@
 
 <ess-layout:body>
     <jsp:body>
-        <base href="/" />
         <ess-component-nav:top-nav activeTopic="time"/>
         <section class="content-wrapper" ng-controller="TimeMainCtrl">
             <ess-component-nav:time-nav/>

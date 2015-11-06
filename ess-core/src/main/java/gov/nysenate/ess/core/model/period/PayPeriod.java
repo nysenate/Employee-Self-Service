@@ -5,7 +5,7 @@ import com.google.common.collect.Range;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -43,18 +43,6 @@ public class PayPeriod implements Comparable<PayPeriod>
         this.active = active;
     }
 
-    /** --- Functions --- */
-
-    /* FIXME: This should be moved to the seta module
-    public boolean isEnclosedBy(Collection<TimeRecord> records) {
-        if (records != null) {
-            RangeSet<LocalDate> rangeSet = TreeRangeSet.create();
-            records.forEach(rec -> rangeSet.add(rec.getDateRange()));
-            return rangeSet.encloses(this.getDateRange());
-        }
-        return false;
-    } */
-
     /** --- Functional Getters/Setters --- */
 
     /**
@@ -63,7 +51,10 @@ public class PayPeriod implements Comparable<PayPeriod>
      */
     public int getNumDaysInPeriod() {
         if (startDate != null && endDate != null) {
-            return Period.between(startDate, endDate.plusDays(1)).getDays();
+            if (endDate.isBefore(startDate)) {
+                throw new IllegalStateException("Pay period end date cannot be before start date");
+            }
+            return (int) ChronoUnit.DAYS.between(startDate, endDate.plusDays(1));
         }
         throw new IllegalStateException("Start date and/or end date is null. " +
                                         "Cannot compute number of pay period days");
@@ -75,6 +66,9 @@ public class PayPeriod implements Comparable<PayPeriod>
      */
     public int getNumWeekDaysInPeriod() {
         if (startDate != null && endDate != null) {
+            if (endDate.isBefore(startDate)) {
+                throw new IllegalStateException("Pay period end date cannot be before start date");
+            }
             LocalDate date = startDate;
             int workDays = 0;
             while (!date.isAfter(endDate)) {
@@ -113,7 +107,6 @@ public class PayPeriod implements Comparable<PayPeriod>
     public Range<LocalDate> getDateRange() {
         if (startDate != null && endDate != null) {
             return Range.closedOpen(startDate, endDate.plusDays(1));
-//            return Range.closed(startDate, endDate);
         }
         throw new IllegalArgumentException("Cannot return date range since start and/or end dates are null!");
     }

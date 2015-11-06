@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core;
+package gov.nysenate.ess.core.model.util;
 
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.annotation.ProperTest;
