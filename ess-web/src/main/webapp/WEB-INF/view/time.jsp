@@ -20,6 +20,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/supervisor-record-list.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-review-modal.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-emp-history-ctrl.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-validation.js"></script>
 
         <!-- Time Off Requests -->
         <script type="text/javascript" src="${ctxPath}/assets/js/src/time/timeoff/new-request-ctrl.js"></script>
