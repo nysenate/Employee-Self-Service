@@ -24,9 +24,9 @@ public abstract class BaseMapper
     }
 
     /**
-     * Interpret "A" as true and everything else as false.
+     * Interpret "A" or "Y" as true and everything else as false.
      */
     public static boolean getStatusFromCode(String code) {
-        return code != null && code.trim().equalsIgnoreCase("A");
+        return code != null && (code.trim().equalsIgnoreCase("A") || code.trim().equalsIgnoreCase("Y"));
     }
 }
