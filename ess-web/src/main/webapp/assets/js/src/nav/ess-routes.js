@@ -68,6 +68,15 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/accrual/projections'
     });
 
+    /** Supply */
+    $routeProvider.when(ctxPath + '/supply', {
+        redirectTo: ctxPath + '/supply/requisition/order'
+    });
+
+    $routeProvider.when(ctxPath + '/supply/requisition/order', {
+        templateUrl: ctxPath + '/template/supply/requisition/order'
+    });
+
     /** Help */
 
     $routeProvider.when(ctxPath + '/help/ta/plan', {
