@@ -1,4 +1,4 @@
-var essApp = angular.module('ess').controller('SupplyOrderController',
+var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'modals', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, modals) {

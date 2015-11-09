@@ -1,6 +1,6 @@
-var essApp = angular.module('ess');
+var essSupply = angular.module('essSupply');
 
-essApp.directive('requisitionQuantitySelector', [function() {
+essSupply.directive('requisitionQuantitySelector', [function() {
     return {
         restrict: 'A',
         link: function(scope, element, attributes) {
