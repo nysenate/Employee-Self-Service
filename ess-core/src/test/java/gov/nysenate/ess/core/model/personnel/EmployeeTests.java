@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.model.unit.Location;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@ProperTest
+@Category(ProperTest.class)
 public class EmployeeTests
 {
     /** A senator is an employee with an agency code of 04210 */

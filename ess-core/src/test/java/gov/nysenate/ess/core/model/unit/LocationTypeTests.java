@@ -2,10 +2,11 @@ package gov.nysenate.ess.core.model.unit;
 
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 
-@ProperTest
+@Category(ProperTest.class)
 public class LocationTypeTests
 {
     /** Test the value of code method, should be case insensitive. */

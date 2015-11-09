@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.util;
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-@ProperTest
+@Category(ProperTest.class)
 public class RangeUtilsTests
 {
     private Logger logger = LoggerFactory.getLogger(RangeUtilsTests.class);

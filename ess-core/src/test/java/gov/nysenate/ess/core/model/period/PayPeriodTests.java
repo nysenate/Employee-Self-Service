@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 
 import static org.junit.Assert.*;
 
-@ProperTest
+@Category(ProperTest.class)
 public class PayPeriodTests
 {
     private static final Logger logger = LoggerFactory.getLogger(PayPeriodTests.class);

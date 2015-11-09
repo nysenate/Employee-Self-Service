@@ -2,10 +2,11 @@ package gov.nysenate.ess.core.model.payroll;
 
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@ProperTest
+@Category(ProperTest.class)
 public class PayTypeTests
 {
     /** Checks the minimum hours for each pay type */

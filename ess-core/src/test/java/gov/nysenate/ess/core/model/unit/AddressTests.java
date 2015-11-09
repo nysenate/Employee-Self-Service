@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.model.unit;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@ProperTest
+@Category(ProperTest.class)
 public class AddressTests
 {
     public static List<Address> addressList;
