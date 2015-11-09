@@ -14,6 +14,8 @@ import java.util.List;
  */
 public abstract class SqlQueryUtils
 {
+    static final Integer ORACLE_MAX_ROW_LIMIT = 100000;
+
     /**
      * Wraps the input sql query with a limit offset clause. The returned query will have the
      * proper syntax according to the supplied 'vendor'.
@@ -25,21 +27,22 @@ public abstract class SqlQueryUtils
      */
     public static String withLimitOffsetClause(String sql, LimitOffset limitOffset, DbVendor vendor) {
         String limitClause = "";
-        if (limitOffset != null) {
+        sql = (sql == null) ? "" : sql;
+        if (limitOffset != null && limitOffset != LimitOffset.ALL) {
             // If the database supports the LIMIT x OFFSET n clause, it's pretty simple.
             if (vendor.supportsLimitOffset()) {
                 if (limitOffset.hasLimit()) {
                     limitClause = String.format(" LIMIT %d", limitOffset.getLimit());
                 }
                 if (limitOffset.hasOffset()) {
-                    limitClause += String.format(" OFFSET %d", limitOffset.getOffsetStart());
+                    limitClause += String.format(" OFFSET %d", limitOffset.getOffsetStart() - 1);
                 }
                 return sql + limitClause;
             }
             // Otherwise use ORACLE's subquery approach
             else {
                 Integer start = (limitOffset.hasOffset()) ? limitOffset.getOffsetStart() : 1;
-                Integer end = (limitOffset.hasLimit()) ? start + limitOffset.getLimit() - 1 : 100000;
+                Integer end = (limitOffset.hasLimit()) ? start + limitOffset.getLimit() - 1 : ORACLE_MAX_ROW_LIMIT;
                 return String.format(
                     "SELECT * FROM (SELECT ROWNUM AS rn, q.* FROM (%s) q)\n" +
                     "WHERE rn >= %s AND rn <= %s", sql, start, end);
@@ -70,6 +73,7 @@ public abstract class SqlQueryUtils
                 clause += "\nORDER BY " + StringUtils.join(orderClauses, ", ");
             }
         }
+        if (sql == null) sql = "";
         return sql + clause;
     }
 }

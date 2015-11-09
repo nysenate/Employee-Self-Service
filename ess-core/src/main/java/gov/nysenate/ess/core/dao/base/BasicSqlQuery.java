@@ -11,12 +11,12 @@ public interface BasicSqlQuery
     /**
      * Return the sql query as defined..
      */
-    public String getSql();
+    String getSql();
 
     /**
      * Return the sql query as is with the given schemas.
      */
-    public default String getSql(Map<String, String> schemaMap) {
+    default String getSql(Map<String, String> schemaMap) {
         StrSubstitutor strSub = new StrSubstitutor(schemaMap);
         return strSub.replace(getSql());
     }
@@ -24,19 +24,19 @@ public interface BasicSqlQuery
     /**
      * Return which database this query is targeting.
      */
-    public DbVendor getVendor();
+    DbVendor getVendor();
 
     /**
      * Returns a sql query that is formatted to support the given limit offset operations.*
      */
-    public default String getSql(Map<String, String> schemaMap, LimitOffset limitOffset) {
+    default String getSql(Map<String, String> schemaMap, LimitOffset limitOffset) {
         return SqlQueryUtils.withLimitOffsetClause(getSql(schemaMap), limitOffset, getVendor());
     }
 
     /**
      * Returns a sql string with an order by clause set according to the supplied OrderBy instance.
      */
-    public default String getSql(Map<String, String> schemaMap, OrderBy orderBy) {
+    default String getSql(Map<String, String> schemaMap, OrderBy orderBy) {
         return SqlQueryUtils.withOrderByClause(getSql(schemaMap), orderBy);
     }
 
@@ -44,7 +44,7 @@ public interface BasicSqlQuery
      * Returns a sql string with a limit offset according to the supplied LimitOffset and an
      * order by clause set according to the supplied OrderBy instance.
      */
-    public default String getSql(Map<String, String> schemaMap, OrderBy orderBy, LimitOffset limitOffset) {
+    default String getSql(Map<String, String> schemaMap, OrderBy orderBy, LimitOffset limitOffset) {
         return SqlQueryUtils.withLimitOffsetClause(SqlQueryUtils.withOrderByClause(getSql(schemaMap), orderBy), limitOffset, getVendor());
     }
 }
