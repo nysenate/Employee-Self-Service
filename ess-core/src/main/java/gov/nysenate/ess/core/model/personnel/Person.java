@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.unit.Address;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Represents basic information that is associated with a person.
@@ -47,13 +48,13 @@ public class Person
     /**
      * Returns the age of the person in years based on dateOfBirth.
      * @return int - age
-     * @throws NullPointerException if date of birth is not set.
+     * @throws IllegalStateException if date of birth is not set.
      */
     public int getAge() {
         if (dateOfBirth != null) {
-            return Period.between(dateOfBirth, LocalDate.now()).getYears();
+            return (int) ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now());
         }
-        throw new NullPointerException("Cannot compute age if date of birth is null");
+        throw new IllegalStateException("Cannot compute age if date of birth is null");
     }
 
     /** Basic Getters/Setters */

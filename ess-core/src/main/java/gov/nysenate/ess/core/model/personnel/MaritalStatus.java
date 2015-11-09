@@ -19,9 +19,11 @@ public enum MaritalStatus
     }
 
     public static MaritalStatus valueOfCode(String code) {
-        for (MaritalStatus status : MaritalStatus.values()) {
-            if (status.code.equals(code)) {
-                return status;
+        if (code != null) {
+            for (MaritalStatus status : MaritalStatus.values()) {
+                if (status.code.equalsIgnoreCase(code)) {
+                    return status;
+                }
             }
         }
         return null;
