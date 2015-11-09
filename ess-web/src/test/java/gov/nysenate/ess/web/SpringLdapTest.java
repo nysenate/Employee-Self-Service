@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
-public class SpringLdapTest extends BaseTests
+public class SpringLdapTest extends WebTests
 {
     private static final Logger logger = LoggerFactory.getLogger(SpringLdapTest.class);
 

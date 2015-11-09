@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A sample file to run misc tests.
  */
-public class SillyTests extends BaseTests
+public class SillyTests extends WebTests
 {
     private static final Logger logger = LoggerFactory.getLogger(SillyTests.class);
 }

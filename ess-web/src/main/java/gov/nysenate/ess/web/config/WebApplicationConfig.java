@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import gov.nysenate.ess.core.config.BaseConfig;
 import gov.nysenate.ess.web.util.AsciiArt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,7 @@ import java.util.List;
 @EnableWebMvc
 @ComponentScan("gov.nysenate.ess")
 @Profile({"test", "dev", "prod"})
-@Import({PropertyConfig.class, LdapConfig.class, EventBusConfig.class, SchedulerConfig.class,
-         SecurityConfig.class, DbConnectionPoolConfig.class, DatabaseConfig.class, CacheConfig.class})
+@Import({BaseConfig.class, SecurityConfig.class})
 public class WebApplicationConfig extends WebMvcConfigurerAdapter
 {
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationConfig.class);

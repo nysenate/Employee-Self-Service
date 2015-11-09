@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.util;
 
 import com.google.common.collect.*;
+import gov.nysenate.ess.core.CoreTests;
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -13,7 +14,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 @Category(ProperTest.class)
-public class RangeUtilsTests
+public class RangeUtilsTests extends CoreTests
 {
     private Logger logger = LoggerFactory.getLogger(RangeUtilsTests.class);
 
