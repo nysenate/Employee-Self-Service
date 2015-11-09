@@ -19,7 +19,7 @@
                 <li id="timeAttendanceLink" class="main-topic teal <c:if test='${activeTopic == "time"}'>active</c:if>">
                     <a target="_self" href="${ctxPath}/time"><img class="nav-icon" src="${ctxPath}/assets/img/20px-ffffff/clock.png"/>Time</a>
                 </li>
-                <li id="supplyLink" class="main-topic gray <c:if test='${activeTopic == "supply"}'>active</c:if>">
+                <li id="supplyLink" class="main-topic blue-purple <c:if test='${activeTopic == "supply"}'>active</c:if>">
                     <a target="_self" href="${ctxPath}/supply"><img class="nav-icon" src="${ctxPath}/assets/img/20px-ffffff/clock.png"/>Supply</a>
                 </li>
                 <li id="helpLink" class="main-topic orange <c:if test='${activeTopic == "help"}'>active</c:if>">
