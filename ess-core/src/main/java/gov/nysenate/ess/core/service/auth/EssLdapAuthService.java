@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.ldap.CommunicationException;
 import org.springframework.ldap.NamingException;
@@ -23,8 +24,7 @@ public class EssLdapAuthService implements LdapAuthService
 {
     private static final Logger logger = LoggerFactory.getLogger(EssLdapAuthService.class);
 
-    @Autowired
-    private LdapAuthDao ldapAuthDao;
+    @Autowired private LdapAuthDao ldapAuthDao;
 
     /** {@inheritDoc} */
     @Override
@@ -52,6 +52,10 @@ public class EssLdapAuthService implements LdapAuthService
         catch(NamingException ex) {
             logger.debug("Authentication exception thrown when trying to authenticate {}", uid);
             logger.error(ex.getMessage(), ex.getExplanation());
+            authStatus = LdapAuthStatus.AUTHENTICATION_EXCEPTION;
+        }
+        catch(EmptyResultDataAccessException ex) {
+            logger.debug("No match found when trying to authenticate {}", uid);
             authStatus = LdapAuthStatus.AUTHENTICATION_EXCEPTION;
         }
         catch(IncorrectResultSizeDataAccessException ex) {
