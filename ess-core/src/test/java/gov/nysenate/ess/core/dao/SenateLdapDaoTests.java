@@ -1,12 +1,15 @@
 package gov.nysenate.ess.core.dao;
 
 import gov.nysenate.ess.core.CoreTests;
+import gov.nysenate.ess.core.annotation.ProperTest;
 import gov.nysenate.ess.core.dao.personnel.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.NameNotFoundException;
 
@@ -16,6 +19,7 @@ import javax.naming.ldap.LdapName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Category(ProperTest.class)
 public class SenateLdapDaoTests extends CoreTests
 {
     @Autowired
@@ -72,13 +76,13 @@ public class SenateLdapDaoTests extends CoreTests
         ldapAuthDao.authenticateByUid(validUid, "clearlyAWrongPassword");
     }
 
-    @Test(expected = AuthenticationException.class)
-    public void testAuthenticateByUidWithWrongUidAndPassword_throwsAuthenticationException() throws Exception {
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void testAuthenticateByUidWithWrongUidAndPassword_throwsEmptyResultException() throws Exception {
         ldapAuthDao.authenticateByUid(invalidUid, "clearlyAWrongPassword");
     }
 
-    @Test(expected = AuthenticationException.class)
-    public void testAuthenticateByUidWithNullUidAndPassword_throwsAuthenticationException() throws Exception {
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void testAuthenticateByUidWithNullUidAndPassword_throwsEmptyResultException() throws Exception {
         ldapAuthDao.authenticateByUid(null, null);
     }
 }
