@@ -398,6 +398,16 @@ table.simple-table {
               border-bottom: 3px solid @orange;
             }
           }
+          &.blue-purple {
+            &.active, &:hover {
+              border-bottom: 3px solid @blue-purple;
+            }
+          }
+          &.gray {
+            &.active, &:hover {
+              border-bottom: 3px solid @gray;
+            }
+          }
           .nav-icon {
             margin-right:5px;
             vertical-align: middle;
@@ -527,6 +537,12 @@ table.simple-table {
   }
   &.orange {
     background: darken(@orange, 5%);
+  }
+  &.blue-purple {
+    background: darken(@blue-purple, 5%);
+  }
+  &.gray {
+    background: darken(@gray, 5%);
   }
 
   .border-radius(2px 0 0 0);
@@ -1377,6 +1393,82 @@ record-review-modal, [record-review-modal] {
     }
   }
 }
+
+/** --- Supply --- */
+.supply-order-hero {
+  .page-hero(@blue-purple, white);
+}
+
+.dark-blue-purple {
+  color: darken(@blue-purple, 20%)
+}
+
+.dark-gray {
+  color: darken(@gray, 20%)
+}
+
+.warn-option {
+  background-color: #ffbcbc;
+}
+
+.warn-select {
+  box-shadow: 0 0 10px 50px #ffbcbc inset;
+  -webkit-box-shadow : 0 0 10px 50px #ffbcbc inset;
+}
+
+label.custom-select {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-select select {
+  display: inline-block;
+  border: 2px solid #81ad1f;
+  padding: 2px 25px 3px 5px;
+  margin: 0;
+  font: inherit;
+  outline:none; /* remove focus ring from Webkit */
+  line-height: 1.2;
+  background: #f8f8f8;
+
+  -webkit-appearance:none; /* remove the strong OSX influence from Webkit */
+
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  height: 30px;
+
+  &.warn-select {
+    -webkit-box-shadow: 0 0 10px 100px #ffbcbc inset;
+    -moz-box-shadow: 0 0 10px 100px #ffbcbc inset;
+    box-shadow: 0 0 10px 100px #ffbcbc inset;
+  }
+}
+
+/* Select arrow styling */
+.custom-select:after {
+  content: "▼";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  font-size: 60%;
+  line-height: 30px;
+  padding: 0 7px;
+  background: #81ad1f;
+  color: white;
+
+  pointer-events:none;
+
+  -webkit-border-radius: 0 6px 6px 0;
+  -moz-border-radius: 0 6px 6px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.no-pointer-events .custom-select:after {
+  content: none;
+}
+
 
 // Reject Modals
 
