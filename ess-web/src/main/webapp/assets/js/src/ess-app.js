@@ -3,13 +3,14 @@ var essApi = angular.module('essApi', ['essCore']);
 
 var essMyInfo = angular.module('essMyInfo', ['essApi']);
 var essTime = angular.module('essTime', ['essApi']);
+var essSupply = angular.module('essSupply', ['essApi']);
 var essHelp = angular.module('essHelp', ['essApi']);
 
 var essApp = angular.module('ess', [
     // Angular modules
     'ngRoute', 'ngResource', 'ngAnimate',
     // Local modules
-    'essMyInfo', 'essTime', 'essHelp',
+    'essMyInfo', 'essTime', 'essSupply', 'essHelp',
     // Third party modules
     'floatThead']);
 
