@@ -2,13 +2,16 @@ package gov.nysenate.ess.core.util;
 
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
 
-@ProperTest
+@Category(ProperTest.class)
 public class OutputUtilsTests
 {
     @Test(expected = IllegalAccessException.class)

@@ -1,8 +1,7 @@
-package gov.nysenate.ess.core.model.util;
+package gov.nysenate.ess.core.util;
 
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.annotation.ProperTest;
-import gov.nysenate.ess.core.util.RangeUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

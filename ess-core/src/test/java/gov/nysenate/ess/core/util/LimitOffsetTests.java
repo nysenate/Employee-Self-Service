@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.util;
 
 import gov.nysenate.ess.core.annotation.ProperTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +10,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
-@ProperTest
+@Category(ProperTest.class)
 public class LimitOffsetTests
 {
     /** Limit list will return a subset of an array. */
