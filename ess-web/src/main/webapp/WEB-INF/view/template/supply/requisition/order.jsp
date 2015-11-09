@@ -2,18 +2,18 @@
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 
 <div ng-controller="SupplyOrderController">
-<section class="left-nav" ess-navigation>
-  <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
-  <%--<h3 class="main-topic">Categories</h3>--%>
-  <ul class="sub-topic-list" style="padding-top: 5px">
-    <li ng-repeat="cat in categories">
-      <input type="checkbox" ng-model="cat.value" ng-change="filterByCategories()">
-      <label>{{cat.categoryName}}</label>
-    </li>
-  </ul>
-</section>
+  <section class="left-nav" ess-navigation>
+    <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
+    <%--<h3 class="main-topic">Categories</h3>--%>
+    <ul class="sub-topic-list" style="padding-top: 5px">
+      <li ng-repeat="cat in categories">
+        <input type="checkbox" ng-model="cat.selected" ng-change="filterByCategories()">
+        <label>{{cat.categoryName}}</label>
+      </li>
+    </ul>
+  </section>
 
-<div class="view-animate-container">
+  <div class="view-animate-container">
     <div class="supply-order-hero">
       <h2>Supply Requisition Form</h2>
     </div>
@@ -23,7 +23,7 @@
       -webkit-column-gap: 0px; -moz-column-gap: 0px; column-gap: 0px;">
         <li ng-repeat="product in products" style="text-align: center; padding-bottom: 15px; padding-top: 15px; border-bottom: 1px solid #ddd;
         -webkit-column-break-inside: avoid; page-break-inside: avoid; break-inside: avoid; ">
-            <img ng-src="{{product.img}}" style="height: 140px;">
+          <img ng-src="{{product.img}}" style="height: 140px;">
           <div style="">
             <h2 class="dark-gray" style="font-weight: bold">{{product.name}}</h2>
             <p class="dark-gray">{{product.description}}</p>
@@ -34,6 +34,9 @@
               <select requisition-quantity-selector ng-model="quantity" ng-options="qty for qty in orderSizeRange(product)"></select>
             </label>
             <input ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
+          </div>
+          <div ng-show="product.inCart" class="green padding-top-5 bold">
+            &#x2713; Added to cart.
           </div>
         </li>
       </ul>
