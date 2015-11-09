@@ -1,28 +1,28 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'appProps', 'modals', supplyOrderController]);
+    ['$scope', 'appProps', 'modals', 'supplyCart', supplyOrderController]);
 
-function supplyOrderController($scope, appProps, modals) {
+function supplyOrderController($scope, appProps, modals, supplyCart) {
 
     $scope.categories = [
         {
             id: 1,
             categoryName: "Pencils",
-            value: false
+            selected: false
         },
         {
             id: 2,
             categoryName: "Pens",
-            value: false
+            selected: false
         },
         {
             id: 3,
             categoryName: "Index Cards",
-            value: false
+            selected: false
         },
         {
             id: 4,
             categoryName: "Clips",
-            value: false
+            selected: false
         }
     ];
 
@@ -35,7 +35,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 24,
                 categoryId: 1,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/m002303302_sc7?$splssku$",
@@ -44,7 +45,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 1,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0381386_sc7?$std$",
@@ -53,7 +55,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 100,
                 categoryId: 3,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0240366_sc7?$std$",
@@ -62,7 +65,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 100,
                 categoryId: 3,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0240368_sc7?$std$",
@@ -71,7 +75,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 100,
                 categoryId: 3,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/m002304304_sc7?$std$",
@@ -80,7 +85,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 2,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0903749_sc7?$std$",
@@ -89,7 +95,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 2,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/m002304307_sc7?$std$",
@@ -98,7 +105,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 2,
                 warnQuantity: 2,
-                maxQuantity: 4
+                maxQuantity: 4,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0630083_sc7?$std$",
@@ -107,7 +115,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 100,
                 categoryId: 4,
                 warnQuantity: 11,
-                maxQuantity: 20
+                maxQuantity: 20,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0165682_sc7?$std$",
@@ -116,7 +125,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 4,
                 warnQuantity: 11,
-                maxQuantity: 20
+                maxQuantity: 20,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0165669_sc7?$std$",
@@ -125,7 +135,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 4,
                 warnQuantity: 4,
-                maxQuantity: 8
+                maxQuantity: 8,
+                inCart: false
             },
             {
                 img: "http://www.staples-3p.com/s7/is/image/Staples/s0165672_sc7?$std$",
@@ -134,7 +145,8 @@ function supplyOrderController($scope, appProps, modals) {
                 unitSize: 12,
                 categoryId: 4,
                 warnQuantity: 4,
-                maxQuantity: 8
+                maxQuantity: 8,
+                inCart: false
             }
     ];
 
@@ -147,7 +159,8 @@ function supplyOrderController($scope, appProps, modals) {
     };
 
     $scope.addToCart = function(product, qty) {
-        console.log("adding " + qty + " " + product.name + " to cart.");
+        supplyCart.addToCart(product, qty);
+        product.inCart = true;
     };
 
     /** Return an array with range from 1 to products max quantity */
@@ -163,7 +176,7 @@ function supplyOrderController($scope, appProps, modals) {
     $scope.filterByCategories = function() {
         $scope.products = [];
         angular.forEach($scope.categories, function(category) {
-            if (category.value === true) {
+            if (category.selected === true) {
                 angular.forEach(productsModel, function(product) {
                     if (category.id === product.categoryId) {
                         $scope.products.push(product);
