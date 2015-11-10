@@ -10,13 +10,24 @@ essSupply.service('supplyCart', [function() {
 
     return {
         addToCart: function(product, quantity) {
-            // TODO: if already in cart, add to quantity
-            console.log("Adding " + quantity + " " + product.name + " to cart.");
-            items.push(new CartItem(product, quantity));
-            console.log("There are " + this.getSize() + " items in your cart.");
+            var cartItem = this.getItemById(product.id);
+            if (!cartItem) {
+                items.push(new CartItem(product, quantity));
+            }
+            else {
+                cartItem.quantity += quantity;
+            }
         },
         getItems: function() {
             return items;
+        },
+        getItemById: function(id) {
+            var item = false;
+            var search = $.grep(items, function(cartItem) {return cartItem.product.id === id});
+            if (search.length > 0) {
+                item = search[0];
+            }
+            return item;
         },
         getSize: function() {
             var size = 0;
