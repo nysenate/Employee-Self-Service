@@ -5,5 +5,5 @@ import gov.nysenate.ess.supply.config.SupplyConfig;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = SupplyConfig.class)
-public class SupplyTests extends BaseTests {
+public abstract class SupplyTests extends BaseTests {
 }

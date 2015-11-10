@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A TransactionRecord represents a single unit of change that was made to an
@@ -78,6 +80,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
      * Returns the value of the given column name, parsed into a LocalDate
      * @param colName String
      * @return LocalDate
+     * @throws java.time.format.DateTimeParseException if the column value cannot be parsed into a date
      */
     public LocalDate getLocalDateValue(String colName) {
         String dateString = getValue(colName);
@@ -89,6 +92,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
      * @param colName String
      * @param returnZero boolean - if this is true, 0 will be returned when the column value is null, otherwise null
      * @return BigDecimal
+     * @throws NumberFormatException if the value of the column cannot be parsed into a BigDecimal
      */
     public BigDecimal getBigDecimalValue(String colName, boolean returnZero) {
         String numString = getValue(colName);
@@ -114,15 +118,9 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
      * @return Map<String, String>
      */
     public Map<String, String> getValuesForCols(Set<String> colNames) {
-        Map<String, String> subValueMap = new HashMap<>();
-        colNames.stream()
+        return colNames.stream()
                 .filter(valueMap::containsKey)
-                .forEach(colName -> subValueMap.put(colName, valueMap.get(colName)));
-        return subValueMap;
-    }
-
-    public TransactionType getTransType() {
-        return transCode.getType();
+                .collect(Collectors.toMap(Function.identity(), valueMap::get));
     }
 
     /** --- Overridden Methods --- */

@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.model.transaction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Contains metadata for a single employee payroll/personnel transaction.
@@ -49,6 +50,12 @@ public class TransactionInfo {
         this.effectDate = other.effectDate;
         this.originalDate = other.originalDate;
         this.updateDate = other.updateDate;
+    }
+
+    /** --- Functional Getters / Setters --- */
+
+    public TransactionType getTransType() {
+        return transCode.getType();
     }
 
     /** --- Getters / Setters --- */

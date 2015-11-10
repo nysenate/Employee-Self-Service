@@ -5,5 +5,5 @@ import gov.nysenate.ess.seta.config.SetaConfig;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration(classes = SetaConfig.class)
-public class SetaTests extends BaseTests {
+public abstract class SetaTests extends BaseTests {
 }
