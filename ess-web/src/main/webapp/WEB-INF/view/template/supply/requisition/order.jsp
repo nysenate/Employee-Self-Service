@@ -35,7 +35,7 @@
             </label>
             <input ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
           </div>
-          <div ng-show="product.inCart" class="green padding-top-5 bold">
+          <div ng-class="{'visibility-hidden': !isInCart(product)}" class="green padding-top-5 bold">
             &#x2713; Added to cart.
           </div>
         </li>
