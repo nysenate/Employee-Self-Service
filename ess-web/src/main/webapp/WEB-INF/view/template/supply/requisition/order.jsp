@@ -12,10 +12,13 @@
       </li>
     </ul>
   </section>
-
   <div class="view-animate-container">
-    <div class="supply-order-hero">
-      <h2>Supply Requisition Form</h2>
+    <div class="supply-order-hero" style="display: inline-block; width: 100%">
+      <%--Padding in h2 is to offset being 'pushed' left by cart image... TODO definately a better way--%>
+      <h2 style="display: inline-block; padding-left: 100px">Supply Requisition Form</h2>
+      <a href="${ctxPath}/supply/cart/contents">
+      <cart-summary style="display: inline-block; float: right;"></cart-summary>
+      </a>
     </div>
     <div style="margin-top: 20px;" class="content-container">
       <ul style="list-style: none; padding-left: 0px;

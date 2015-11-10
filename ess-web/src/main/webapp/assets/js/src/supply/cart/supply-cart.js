@@ -29,7 +29,7 @@ essSupply.service('supplyCart', [function() {
             }
             return item;
         },
-        getSize: function() {
+        getTotalItems: function() {
             var size = 0;
             angular.forEach(items, function(item) {
                 size += item.quantity;
