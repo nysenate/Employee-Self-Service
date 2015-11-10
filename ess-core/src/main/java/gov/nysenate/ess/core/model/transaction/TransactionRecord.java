@@ -118,9 +118,11 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
      * @return Map<String, String>
      */
     public Map<String, String> getValuesForCols(Set<String> colNames) {
-        return colNames.stream()
+        Map<String, String> subValueMap = new HashMap<>();
+        colNames.stream()
                 .filter(valueMap::containsKey)
-                .collect(Collectors.toMap(Function.identity(), valueMap::get));
+                .forEach(colName -> subValueMap.put(colName, valueMap.get(colName)));
+        return subValueMap;
     }
 
     /** --- Overridden Methods --- */
