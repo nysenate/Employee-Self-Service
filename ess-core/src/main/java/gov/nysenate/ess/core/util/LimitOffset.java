@@ -36,6 +36,7 @@ public class LimitOffset
     }
 
     public LimitOffset(int limit, int offset) {
+        if (limit < 0) throw new IllegalArgumentException("Limit must be greater than 0");
         this.limit = limit;
         this.offset = (offset > 1) ? offset : 1;
     }

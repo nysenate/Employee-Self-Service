@@ -23,7 +23,7 @@ public interface PayPeriodDao extends BaseDao
      * @return PayPeriod
      * @throws PayPeriodException - PayPeriodNotFoundEx if no matches were found.
      */
-    public PayPeriod getPayPeriod(PayPeriodType type, LocalDate date) throws PayPeriodException;
+    PayPeriod getPayPeriod(PayPeriodType type, LocalDate date) throws PayPeriodException;
 
     /**
      * Retrieves the pay periods of the given type within the given dateRange. The returned pay periods
@@ -34,5 +34,5 @@ public interface PayPeriodDao extends BaseDao
      * @param dateOrder SortOrder - Order by the start date of the pay period
      * @return List<PayPeriod>
      */
-    public List<PayPeriod> getPayPeriods(PayPeriodType type, Range<LocalDate> dateRange, SortOrder dateOrder);
+    List<PayPeriod> getPayPeriods(PayPeriodType type, Range<LocalDate> dateRange, SortOrder dateOrder);
 }

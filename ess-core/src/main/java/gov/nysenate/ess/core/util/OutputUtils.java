@@ -16,6 +16,8 @@ public class OutputUtils
     private static ObjectMapper jsonMapper = new ObjectMapper();
     private static XmlMapper xmlMapper = new XmlMapper();
 
+    private OutputUtils() {}
+
     static {
         jsonMapper.enable(SerializationFeature.INDENT_OUTPUT);
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);

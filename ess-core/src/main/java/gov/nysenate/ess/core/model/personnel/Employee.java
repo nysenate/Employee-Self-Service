@@ -38,6 +38,7 @@ public class Employee extends Person
         this.nid = other.nid;
         this.respCenter = other.respCenter;
         this.workLocation = other.workLocation;
+        this.updateDateTime = other.updateDateTime;
     }
 
     /** --- Functional Getters --- */
@@ -46,7 +47,7 @@ public class Employee extends Person
         return respCenter != null && respCenter.getAgency() != null && "04210".equals(respCenter.getAgency().getCode());
     }
 
-    /** Basic Getters/Setters */
+    /** --- Basic Getters/Setters --- */
 
     public int getEmployeeId() {
         return employeeId;

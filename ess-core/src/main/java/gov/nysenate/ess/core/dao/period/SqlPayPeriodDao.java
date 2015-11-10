@@ -29,21 +29,29 @@ public class SqlPayPeriodDao extends SqlBaseDao implements PayPeriodDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlPayPeriodDao.class);
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * @throws IllegalArgumentException if date is null
+     */
     @Override
     public PayPeriod getPayPeriod(PayPeriodType type, LocalDate date) throws PayPeriodException {
-        PayPeriod payPeriod;
+        // Short circuit
+        if (date == null) {
+            throw new IllegalArgumentException("Pay period date cannot be null.");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("Pay period type cannot be null.");
+        }
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("periodType", type.getCode());
         params.addValue("date", toDate(date));
         try {
-            payPeriod = remoteNamedJdbc.queryForObject(GET_PAY_PERIOD_SQL.getSql(schemaMap()), params, new PayPeriodRowMapper(""));
+            return remoteNamedJdbc.queryForObject(GET_PAY_PERIOD_SQL.getSql(schemaMap()), params, new PayPeriodRowMapper(""));
         }
         catch (DataRetrievalFailureException ex) {
-            logger.warn("Retrieve pay period of type: {} during: {} error: {}", type, date, ex.getMessage());
+            logger.warn("Error retrieving pay period of type: {} during: {} | {}", type, date, ex.getMessage());
             throw new PayPeriodNotFoundEx("No matching pay period(s) of type " + type + " during " + date);
         }
-        return payPeriod;
     }
 
     /** {@inheritDoc} */
