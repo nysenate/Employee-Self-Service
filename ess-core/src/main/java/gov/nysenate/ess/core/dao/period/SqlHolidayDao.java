@@ -4,10 +4,13 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.period.mapper.HolidayRowMapper;
 import gov.nysenate.ess.core.model.period.Holiday;
+import gov.nysenate.ess.core.model.period.HolidayException;
+import gov.nysenate.ess.core.model.period.HolidayNotFoundForDateEx;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -27,9 +30,17 @@ public class SqlHolidayDao extends SqlBaseDao implements HolidayDao
 
     /** {@inheritDoc} */
     @Override
-    public Holiday getHoliday(LocalDate date) throws EmptyResultDataAccessException {
+    public Holiday getHoliday(LocalDate date) {
         MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(date));
-        return remoteNamedJdbc.queryForObject(GET_HOLIDAY_SQL.getSql(schemaMap()), params, new HolidayRowMapper(""));
+        try {
+            return remoteNamedJdbc.queryForObject(GET_HOLIDAY_SQL.getSql(schemaMap()), params, new HolidayRowMapper(""));
+        }
+        catch (EmptyResultDataAccessException ex) {
+            throw new HolidayNotFoundForDateEx(date);
+        }
+        catch (DataRetrievalFailureException ex) {
+            throw new HolidayException("Failed to retrieve holiday " + ex.getMessage());
+        }
     }
 
     /** {@inheritDoc} */

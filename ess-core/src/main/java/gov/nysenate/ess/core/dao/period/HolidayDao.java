@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.dao.period;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.period.Holiday;
+import gov.nysenate.ess.core.model.period.HolidayException;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -17,11 +18,11 @@ public interface HolidayDao extends BaseDao
     /**
      * Returns a holiday if it exists for the given date. Throws exception otherwise.
      *
-     * @param date Date
+     * @param date LocalDate
      * @return Holiday
-     * @throws EmptyResultDataAccessException if a holiday was not found for given date.
+     * @throws HolidayException if a holiday was not found for given date.
      */
-    public Holiday getHoliday(LocalDate date) throws EmptyResultDataAccessException;
+    public Holiday getHoliday(LocalDate date) throws HolidayException;
 
     /**
      * Retrieves a list of all the non-questionable holidays that occur within the given range.
