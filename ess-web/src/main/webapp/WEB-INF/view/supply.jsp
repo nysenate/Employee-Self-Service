@@ -20,10 +20,10 @@
     <base href="/" />
     <ess-component-nav:top-nav activeTopic="supply"/>
     <section class="content-wrapper" ng-controller="MainCtrl as main">
-        <%--<ess-component-nav:supply-nav/>--%>
-        <%--<div class="view-animate-container">--%>
-      <div ng-view></div>
-        <%--</div>--%>
+      <ess-component-nav:supply-nav/>
+      <div class="view-animate-container">
+        <div ng-view></div>
+      </div>
     </section>
   </jsp:body>
 </ess-layout:body>

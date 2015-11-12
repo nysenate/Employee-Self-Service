@@ -28,3 +28,10 @@ essSupply.directive('requisitionQuantitySelector', [function() {
     }
 }]);
 
+essSupply.directive('categoryNavigation', ['appProps', function(appProps) {
+    return {
+        restrict: 'E',
+        templateUrl: appProps.ctxPath + '/template/supply/requisition/categories'
+    }
+}]);
+
