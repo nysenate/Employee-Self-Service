@@ -1,17 +1,25 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'appProps', 'modals', 'SupplyInventoryService', 'SupplyCategoryService',
+    ['$scope', 'SupplyInventoryService', 'SupplyCategoryService',
         'SupplyCart', supplyOrderController]);
 
-function supplyOrderController($scope, appProps, modals, SupplyInventoryService,
+function supplyOrderController($scope, SupplyInventoryService,
                                SupplyCategoryService, SupplyCart) {
 
+    $scope.products = null;
     $scope.quantity = 1;
 
-    /** ----- Controller Logic ----- */
-
     $scope.init = function() {
-        //$scope.products = angular.extend({}, productsModel);
         $scope.products = SupplyInventoryService.getCopyOfProducts();
+    };
+
+    // Called by ng-hide in the view. Returns true if a product does not belong to the selected categories.
+    $scope.hideProduct = function(product) {
+        var ids = SupplyCategoryService.getSelectedCategoryIds();
+        // If no filters selected, show all products.
+        if (ids.length === 0) {
+            return false;
+        }
+        return ids.indexOf(product.categoryId) === -1;
     };
 
     $scope.addToCart = function(product, qty) {
@@ -22,31 +30,8 @@ function supplyOrderController($scope, appProps, modals, SupplyInventoryService,
         return SupplyCart.getItemById(product.id) !== false
     };
 
-    /** Return an array with range from 1 to products max quantity */
-    $scope.orderSizeRange = function(product) {
-        return Array.apply(null, Array(product.maxQuantity)).map(function (_, i) {return i + 1;})
-    };
-
-    /**
-     * Called whenever a category is selected/deselected.
-     * Updates displayed products to only display products belonging to selected category.
-     * If no categories are selected, display all products.
-     */
-    $scope.filterByCategories = function() {
-        $scope.products = [];
-        angular.forEach($scope.categories, function(category) {
-            if (category.selected === true) {
-                angular.forEach(productsModel, function(product) {
-                    if (category.id === product.categoryId) {
-                        $scope.products.push(product);
-                    }
-                });
-            }
-        });
-        // If no category selected, display all.
-        if ($scope.products.length === 0) {
-            $scope.products = angular.extend({}, productsModel);
-        }
+    $scope.orderQuantityRange = function(product) {
+        return SupplyInventoryService.orderQuantityRange(product);
     };
 
     $scope.init();

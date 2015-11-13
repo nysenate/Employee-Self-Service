@@ -12,7 +12,8 @@
     <ul style="list-style: none; padding-left: 0px;
       -webkit-columns: 3 180px; -moz-columns: 3 180px; columns: 3 180px;
       -webkit-column-gap: 0px; -moz-column-gap: 0px; column-gap: 0px;">
-      <li ng-repeat="product in products" style="text-align: center; padding-bottom: 15px; padding-top: 15px; border-bottom: 1px solid #ddd;
+      <li ng-repeat="product in products" ng-hide="hideProduct(product)"
+          style="text-align: center; padding-bottom: 15px; padding-top: 15px; border-bottom: 1px solid #ddd;
         -webkit-column-break-inside: avoid; page-break-inside: avoid; break-inside: avoid; ">
         <img ng-src="{{product.img}}" style="height: 140px;">
         <div style="">
@@ -22,7 +23,7 @@
         </div>
         <div style="">
           <label class="custom-select">Qty:
-            <select requisition-quantity-selector ng-model="quantity" ng-options="qty for qty in orderSizeRange(product)"></select>
+            <select requisition-quantity-selector ng-model="quantity" ng-options="qty for qty in orderQuantityRange(product)"></select>
           </label>
           <input ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
         </div>

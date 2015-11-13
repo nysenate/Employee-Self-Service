@@ -3,6 +3,7 @@ var essSupply = angular.module('essSupply');
 essSupply.service('SupplyInventoryService', [function() {
 
     // TODO will eventually get from api dependency.
+    // Canonical source of available products.
     var products = [
             {
                 id: 1,
@@ -143,11 +144,24 @@ essSupply.service('SupplyInventoryService', [function() {
     }
 
     return {
+        /** Return copy of products so this.products never gets altered by a 3rd party. */
         getCopyOfProducts: function() {
             if (products.length === 0) {
                 initInventory();
             }
-            return angular.extend({}, products);
+            return angular.copy(products);
+        },
+
+        /** Return an array of all int's from 1 to product's max quantity.
+         * This represents allowable order quantities. */
+        orderQuantityRange: function(product) {
+            return Array.apply(null, Array(product.maxQuantity)).map(function (_, i) {return i + 1;})
+        },
+
+        /** Returns true if a given quantitiy is above the products warn quantity.
+         * Signifies that the quantity is above the recommended order size and may require approval. */
+        isWarningQuantity: function(product, quantity) {
+            return typeof quantity !== 'undefined' && quantity >= product.warnQuantity;
         }
     }
 }]);

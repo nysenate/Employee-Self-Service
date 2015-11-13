@@ -34,6 +34,15 @@ essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyInventoryServic
                 initCategories();
             }
             return categories;
+        },
+        getSelectedCategoryIds: function() {
+            var selected = [];
+            angular.forEach(categories, function(cat) {
+                if (cat.selected === true) {
+                    selected.push(cat.id);
+                }
+            });
+            return selected;
         }
     }
 }]);
