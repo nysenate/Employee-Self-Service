@@ -8,8 +8,11 @@
   <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
   <jsp:body>
     <ess:ts-assets/>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/supply-inventory-service.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/supply-category-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-order-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-requisition-directives.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-category-nav-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart-directives.js"></script>
   </jsp:body>

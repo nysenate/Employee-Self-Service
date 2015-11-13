@@ -12,6 +12,13 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/cart/cart">Cart</a></li>
     </ul>
   </section>
-  <%--TODO: if in order page. --%>
-  <category-navigation></category-navigation>
+  <section class="left-nav-content margin-top-20" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
+    <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
+    <ul class="sub-topic-list">
+      <li ng-repeat="cat in categories">
+        <input type="checkbox" ng-model="cat.selected">
+        <label>{{cat.name}}</label>
+      </li>
+    </ul>
+  </section>
 </div>

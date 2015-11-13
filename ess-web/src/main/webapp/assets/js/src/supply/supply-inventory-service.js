@@ -143,11 +143,11 @@ essSupply.service('SupplyInventoryService', [function() {
     }
 
     return {
-        getProducts: function() {
+        getCopyOfProducts: function() {
             if (products.length === 0) {
                 initInventory();
             }
-            return products;
+            return angular.extend({}, products);
         }
     }
 }]);

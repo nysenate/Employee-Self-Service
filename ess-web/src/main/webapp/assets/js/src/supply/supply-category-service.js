@@ -1,6 +1,6 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCategoryService', ['SupplyInventoryService', function(supplyInventoryService) {
+essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyInventoryService', function($rootScope, SupplyInventoryService) {
 
     function Category(id, name) {
         this.id = id;
@@ -11,17 +11,21 @@ essSupply.service('SupplyCategoryService', ['SupplyInventoryService', function(s
     var categories = [];
 
     function initCategories() {
-        var products = supplyInventoryService.getProducts();
+        var products = SupplyInventoryService.getCopyOfProducts();
         angular.forEach(products, function(product) {
-            if ($.inArray(product, categories) ===  -1) {
+            if (!findById(product.categoryId)) {
                 categories.push(new Category(product.categoryId, product.categoryName));
             }
         });
     }
 
+    /** Searches for and returns a category by id. If no category found, returns false. */
     function findById(id) {
-        // TODO: handle errors if a bad call is made.
-        return $.grep(categories, function(cat){ return cat.id === id; })[0];
+        var cats = $.grep(categories, function(cat){ return cat.id === id; });
+        if (cats.length > 0) {
+            return cats[0];
+        }
+        return false;
     }
 
     return {
@@ -30,24 +34,6 @@ essSupply.service('SupplyCategoryService', ['SupplyInventoryService', function(s
                 initCategories();
             }
             return categories;
-        },
-        markAsSelected: function(id) {
-            var cat = findById(id);
-            cat.selected = true;
-        },
-        removeSelection: function(id) {
-            var cat = findById(id);
-            cat.selected = false;
-        },
-        getSelected: function() {
-            var selected = [];
-            angular.forEach(categories, function(cat) {
-                if (cat.selected === true) {
-                    selected.push(cat);
-                }
-            });
-            return selected;
         }
-
     }
 }]);

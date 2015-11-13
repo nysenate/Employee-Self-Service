@@ -77,10 +77,6 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/requisition/order'
     });
 
-    $routeProvider.when(ctxPath + '/supply/requisition/categories', {
-        templateUrl: ctxPath + '/template/supply/requisition/categories'
-    });
-
     $routeProvider.when(ctxPath + '/supply/cart/cart', {
         templateUrl: ctxPath + '/template/supply/cart/cart'
     });
