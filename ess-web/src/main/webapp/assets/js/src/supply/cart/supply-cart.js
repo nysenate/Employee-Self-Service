@@ -6,6 +6,7 @@ essSupply.service('SupplyCart', [function() {
         this.quantity = quantity;
     }
 
+    /** Array of CartItem's */
     var items = [];
 
     return {
@@ -35,6 +36,13 @@ essSupply.service('SupplyCart', [function() {
                 size += item.quantity;
             });
             return size;
+        },
+        removeFromCart: function(product) {
+            $.grep(items, function(cartItem, index) {
+                if (cartItem && cartItem.product.id === product.id) {
+                    items.splice(index, 1);
+                }
+            });
         }
     }
 }]);

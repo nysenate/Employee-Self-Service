@@ -161,7 +161,7 @@ essSupply.service('SupplyInventoryService', [function() {
         /** Returns true if a given quantitiy is above the products warn quantity.
          * Signifies that the quantity is above the recommended order size and may require approval. */
         isWarningQuantity: function(product, quantity) {
-            return typeof quantity !== 'undefined' && quantity >= product.warnQuantity;
+            return typeof product !== 'undefined' && quantity >= product.warnQuantity;
         }
     }
 }]);

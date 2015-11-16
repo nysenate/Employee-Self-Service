@@ -17,13 +17,14 @@
         -webkit-column-break-inside: avoid; page-break-inside: avoid; break-inside: avoid; ">
         <img ng-src="{{product.img}}" style="height: 140px;">
         <div style="">
-          <h2 class="dark-gray" style="font-weight: bold">{{product.name}}</h2>
+          <h2 class="dark-gray bold">{{product.name}}</h2>
           <p class="dark-gray">{{product.description}}</p>
           <p class="dark-gray bold">{{product.unitSize}}/Pack</p>
         </div>
         <div style="">
           <label class="custom-select">Qty:
-            <select requisition-quantity-selector ng-model="quantity" ng-options="qty for qty in orderQuantityRange(product)"></select>
+            <select requisition-quantity-selector product="product"
+                    ng-model="quantity" ng-options="qty for qty in orderQuantityRange(product)"></select>
           </label>
           <input ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
         </div>

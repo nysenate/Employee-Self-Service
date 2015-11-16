@@ -15,6 +15,7 @@
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-category-nav-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart-directives.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart-ctrl.js"></script>
   </jsp:body>
 </ess-layout:head>
 

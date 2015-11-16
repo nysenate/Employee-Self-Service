@@ -3,6 +3,10 @@ var essSupply = angular.module('essSupply');
 essSupply.directive('requisitionQuantitySelector', ['SupplyInventoryService', function(SupplyInventoryService) {
     return {
         restrict: 'A',
+        scope: {
+            product: '=product'
+        },
+        // TODO: refactor alll of this mess.
         link: function(scope, element, attributes) {
             element.on('mouseover', function(event) { // TODO: better event than mouseover?
                 $(this).children().each(function() {
