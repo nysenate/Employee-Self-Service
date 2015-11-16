@@ -28,7 +28,7 @@
         <div class="content">
           <p class="dark-gray bold">{{cartItem.product.unitSize}}/Pack</p>
           <label class="custom-select">Qty:
-            <select requisition-quantity-selector product="cartItem.product"
+            <select requisition-quantity-selector product="cartItem.product" warn-qty="cartItem.product.warnQuantity"
                     ng-model="cartItem.quantity" ng-options="qty for qty in orderQuantityRange(cartItem.product)"></select>
           </label>
         </div>

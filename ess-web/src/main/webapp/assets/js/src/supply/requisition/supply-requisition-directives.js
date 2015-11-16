@@ -1,24 +1,31 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.directive('requisitionQuantitySelector', ['SupplyInventoryService', function(SupplyInventoryService) {
+essSupply.directive('requisitionQuantitySelector', [function() {
+    var getValue = function(el) {
+        if (typeof el !== 'undefined') {
+            var parts = el.val().split(':');
+            if (parts.length > 1) {
+                return parts[1];
+            }
+        }
+    };
+
     return {
         restrict: 'A',
         scope: {
-            product: '=product'
+            product: '=product',
+            warnQty: '=warnQty'
         },
-        // TODO: refactor alll of this mess.
         link: function(scope, element, attributes) {
             element.on('mouseover', function(event) { // TODO: better event than mouseover?
                 $(this).children().each(function() {
-                    var qty = $(this).val().split(':')[1]; // TODO: hack
-                    if (SupplyInventoryService.isWarningQuantity(scope.product, qty)) {
+                    if (getValue($(this)) >= scope.warnQty) {
                         $(this).addClass("warn-option");
                     }
                 });
             });
             element.on('change', function(event) {
-                var qty = $(this).val().split(':')[1]; // TODO: hack
-                if (SupplyInventoryService.isWarningQuantity(scope.product, qty)) {
+                if (getValue($(this)) >= scope.warnQty) {
                     $(this).addClass("warn-select");
                 }
                 else {

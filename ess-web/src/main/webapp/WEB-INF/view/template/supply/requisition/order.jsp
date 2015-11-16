@@ -23,7 +23,7 @@
         </div>
         <div style="">
           <label class="custom-select">Qty:
-            <select requisition-quantity-selector product="product"
+            <select requisition-quantity-selector product="product" warn-qty="product.warnQuantity"
                     ng-model="quantity" ng-options="qty for qty in orderQuantityRange(product)"></select>
           </label>
           <input ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
