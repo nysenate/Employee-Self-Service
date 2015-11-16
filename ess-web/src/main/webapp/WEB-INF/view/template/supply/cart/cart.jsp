@@ -9,6 +9,13 @@
       <cart-summary style="display: inline-block; float: right;"></cart-summary>
     </a>
   </div>
+  <%--Empty cart--%>
+  <div class="content-container" ng-show="!cartHasItems()">
+    <div class="content-info">
+      <h2 class="dark-gray">Your cart is empty.</h2>
+    </div>
+  </div>
+
   <div class="content-container">
     <div class="grid grid-pad" ng-repeat="cartItem in myCartItems()">
       <hr ng-if="!$first"/>
