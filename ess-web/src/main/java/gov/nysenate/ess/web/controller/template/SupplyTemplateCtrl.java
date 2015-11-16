@@ -17,6 +17,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/requisition/order";
     }
 
+    @RequestMapping(value="/requisition/manage")
+    public String manageOrder() {
+        return SUPPLY_TMPL_BASE_URL + "/requisition/manage";
+    }
+
     @RequestMapping(value="/cart/cart-summary")
     public String cartSummary() {
         return SUPPLY_TMPL_BASE_URL + "/cart/cart-summary";

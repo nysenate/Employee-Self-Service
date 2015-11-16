@@ -11,6 +11,11 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/requisition/order">Requisition Form</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/cart/cart">Cart</a></li>
     </ul>
+    <%--TODO: if management.--%>
+    <h3 class="main-topic">Manage Supply</h3>
+    <ul class="sub-topic-list">
+      <li class="sub-topic"><a href="${ctxPath}/supply/requisition/manage">Manage Requisitions</a></li>
+    </ul>
   </section>
   <section class="left-nav-content margin-top-20" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
