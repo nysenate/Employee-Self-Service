@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.model.transaction;
 
 import com.google.common.collect.ImmutableMap;
 import gov.nysenate.ess.core.annotation.ProperTest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +25,14 @@ public class TransactionRecordTests {
     private static final String testCol = "TESTCOL";
     private static final String testValue = "TESTVAL";
     private static final ImmutableMap<String, String> testValMap = ImmutableMap.of(testCol, testValue);
+    private static final TransactionCode testCode = TransactionCode.ACC;
+    private static final String testCodeCol = testCode.getDbColumnList().stream().findAny().orElse(":/");
+
+    @Before
+    public void setUp() {
+        assertEquals(testValue, testValMap.get(testCol));
+        assertTrue(testCode.getDbColumnList().contains(testCodeCol));
+    }
 
     @Test
     public void hasValuesTest() {
@@ -110,10 +120,8 @@ public class TransactionRecordTests {
 
     @Test(expected = NumberFormatException.class)
     public void getBigDecimalValueTest_unparseable() {
-        HashMap<String, String> valMap = new HashMap<>();
-        valMap.put(testCol, "NaN");
         TransactionRecord rec = new TransactionRecord();
-        rec.setValueMap(valMap);
+        rec.setValueMap(ImmutableMap.of(testCol, "NaN"));
         rec.getBigDecimalValue(testCol);
     }
 
@@ -149,6 +157,21 @@ public class TransactionRecordTests {
             assertEquals(codeCols, subMap.keySet());
             codeCols.forEach(colName -> assertEquals(colName + "-value", subMap.get(colName)));
         }
+    }
+
+    @Test
+    public void supportsNullValuesTest() {
+        Map<String, String> valMap = new HashMap<>();
+        valMap.put(testCodeCol, null);
+
+        TransactionRecord rec = new TransactionRecord();
+        rec.setTransCode(testCode);
+        rec.setValueMap(valMap);
+
+        assertFalse(rec.hasNonNullValue(testCodeCol));
+        assertNull(rec.getValue(testCodeCol));
+        assertNull(rec.getValuesForCols(Collections.singleton(testCodeCol)).get(testCodeCol));
+        assertNull(rec.getValuesForCode().get(testCodeCol));
     }
 
 }

@@ -113,17 +113,4 @@ public class RangeUtilsTests extends CoreTests
         assertTrue(RangeUtils.intersects(r1, r4));
         assertFalse(RangeUtils.intersects(r1, r5));
     }
-    
-    @Test
-    public void removeIntersectingTest() {
-        Range<Integer> r1 = Range.closedOpen(1, 3);
-        Range<Integer> r2 = Range.closedOpen(2, 4);
-        Range<Integer> r3 = Range.closedOpen(3, 4);
-        Object derpus = new Object();
-        RangeMap<Integer, Object> rangeMap = TreeRangeMap.create();
-        rangeMap.put(r1, derpus);
-        rangeMap.put(r3, derpus);
-        RangeUtils.removeIntersecting(rangeMap, r2);
-        assertTrue(rangeMap.asMapOfRanges().isEmpty());
-    }
 }

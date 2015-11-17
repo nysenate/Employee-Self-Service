@@ -2,6 +2,8 @@ package gov.nysenate.ess.core.util;
 
 import com.google.common.collect.*;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -133,22 +135,109 @@ public class RangeUtils
         return rangeSet;
     }
 
+    /**
+     * Get a range set that contains the intersection of the two given range sets
+     * @param lhs RangeSet<T>
+     * @param rhs RangeSet<T>
+     * @param <T> Class<T>
+     * @return RangeSet<T>
+     */
     public static <T extends Comparable<? super T>> RangeSet<T> intersection(RangeSet<T> lhs, RangeSet<T> rhs) {
         RangeSet<T> intersection = TreeRangeSet.create();
         rhs.asRanges().forEach(range -> intersection.addAll(lhs.subRangeSet(range)));
         return intersection;
     }
 
+    /**
+     * Returns true iff the two given ranges intersect
+     * @param lhs Range<T>
+     * @param rhs Range<T>
+     * @param <T> Class<T>
+     * @return boolean
+     */
     public static <T extends Comparable<? super T>> boolean intersects(Range<T> lhs, Range<T> rhs) {
         return lhs.isConnected(rhs) && !lhs.intersection(rhs).isEmpty();
     }
 
-    public static <K extends Comparable<? super K>, V> boolean removeIntersecting(RangeMap<K, V> rangeMap, Range<K> range) {
-        List<Range<K>> intersectingKeys = rangeMap.asMapOfRanges().keySet().stream()
-                .filter(rng -> intersects(rng, range))
-                .collect(Collectors.toList());
-        intersectingKeys.forEach(rangeMap::remove);
-        return !intersectingKeys.isEmpty();
+    /**
+     * Returns an iterator that produces values of the specified discrete class that are in the given range, in default order
+     * @param range Range<T>
+     * @param domain DiscreteDomain<T> - a discrete domain implementation that supports the class of the range
+     * @param <T> Class<T>
+     * @return Iterator<T>
+     */
+    public static <T extends Comparable<? super T>> Iterator<T> getRangeIterator(Range<T> range, DiscreteDomain<T> domain) {
+        return ContiguousSet.create(range, domain).iterator();
+    }
+
+    /**
+     * An implementation of
+     * @see #getRangeIterator(Range, DiscreteDomain)
+     * that uses the LocalDate discrete domain
+     * @param dateRange Range<LocalDate>
+     * @return Iterator<LocalDate>
+     */
+    public static Iterator<LocalDate> getDateRangeIterator(Range<LocalDate> dateRange) {
+        return getRangeIterator(dateRange, getLocalDateDiscreteDomain());
+    }
+
+    /**
+     * An implementation of
+     * @see #getRangeIterator(Range, DiscreteDomain)
+     * that uses the Integer discrete domain
+     * @param intRange Range<Integer>
+     * @return Iterator<Integer>
+     */
+    public static Iterator<Integer> getCounter(Range<Integer> intRange) {
+        return getRangeIterator(intRange, DiscreteDomain.integers());
+    }
+
+    /**
+     * A default implementation of
+     * @see #getCounter(Range)
+     * that iterates over all integers greater than 0
+     * @return Iterator<Integer>
+     */
+    public static Iterator<Integer> getCounter() {
+        return getCounter(Range.greaterThan(0));
+    }
+
+    /**
+     * --- Discrete Domains ---
+     * Custom implementations of the DiscreteDomain class for various data types that enable more range functionality
+     */
+
+    public static DiscreteDomain<LocalDate> getLocalDateDiscreteDomain() {
+        return LocalDateDomain.INSTANCE;
+    }
+    private static final class LocalDateDomain extends DiscreteDomain<LocalDate>
+    {
+        private static final LocalDateDomain INSTANCE = new LocalDateDomain();
+
+        @Override
+        public LocalDate next(LocalDate value) {
+            return (LocalDate.MAX.equals(value)) ? null : value.plusDays(1);
+        }
+
+        @Override
+        public LocalDate previous(LocalDate value) {
+            return (LocalDate.MIN.equals(value)) ? null : value.minusDays(1);
+        }
+
+        @Override
+        public long distance(LocalDate start, LocalDate end) {
+            return Period.between(start, end).getDays();
+        }
+
+        @Override
+        public LocalDate minValue() {
+            return LocalDate.MIN;
+        }
+
+        @Override
+        public LocalDate maxValue() {
+            return LocalDate.MAX;
+        }
     }
 
 }

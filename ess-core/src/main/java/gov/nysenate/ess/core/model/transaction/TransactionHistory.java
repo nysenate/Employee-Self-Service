@@ -223,7 +223,7 @@ public class TransactionHistory
             }
         }
         else {
-            throw new IllegalArgumentException("Cannot addUsage a null record to the transaction history!");
+            throw new IllegalArgumentException("Cannot add a null record to the transaction history!");
         }
     }
 
