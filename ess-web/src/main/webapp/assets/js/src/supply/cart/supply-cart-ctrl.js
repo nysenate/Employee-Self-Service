@@ -17,5 +17,5 @@ function supplyCartController($scope, SupplyCart, SupplyInventoryService) {
 
     $scope.removeFromCart = function(product) {
         SupplyCart.removeFromCart(product);
-    }
+    };
 }

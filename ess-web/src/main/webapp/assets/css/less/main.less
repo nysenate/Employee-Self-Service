@@ -1492,6 +1492,42 @@ label.custom-select {
   content: none;
 }
 
+.supply-manage-table {
+  tbody {
+    tr {
+      border-bottom: 1px solid #eee !important;
+      &.warn {
+        background: #ffbcbc;
+        border-bottom: 1px solid #ffbcbc !important;
+        &:hover {
+          background: darken(#ffbcbc, 10%);
+        }
+        &:nth-child(even) {
+          background: fade(#ffbcbc, 60%);
+          border-bottom: 1px solid fade(#ffbcbc, 60%) !important;
+          &:hover {
+            background: darken(#ffbcbc, 10%);
+          }
+        }
+      }
+      &:hover {
+        background: #e9eeff;
+      }
+      &:nth-child(even) {
+        background: fade(#333, 5%);
+        &:hover {
+          background: #e9eeff;
+        }
+      }
+      td {
+        text-align: center !important;
+        white-space: nowrap;
+        padding: .5em;
+        border: 0;
+      }
+    }
+  }
+}
 
 // Reject Modals
 
