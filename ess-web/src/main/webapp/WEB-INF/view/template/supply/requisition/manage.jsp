@@ -17,7 +17,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-class="{warn: highlightOrder(order)}" ng-repeat="order in pendingOrders" ng-click="showDetails(req)">
+        <tr ng-class="{warn: highlightOrder(order)}" ng-repeat="order in pendingOrders()" ng-click="showDetails(req)">
           <td>{{order.locCode}}</td>
           <td>{{order.locType}}</td>
           <td>{{order.purchaser}}</td>
