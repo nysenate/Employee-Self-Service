@@ -1,7 +1,7 @@
 var essSupply = angular.module('essSupply');
 
 // Most of this is temporary until a real backend gets created.
-essSupply.service('SupplyOrderService', [function() {
+essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supplyInventoryService) {
     function SupplyOrder(id, locCode, locType, dateTime, purchaser, items) {
         this.id = id;
         this.locCode = locCode;
@@ -12,7 +12,7 @@ essSupply.service('SupplyOrderService', [function() {
     }
 
     function Item(productId, quantity) {
-        this.id = productId;
+        this.product = supplyInventoryService.getProductById(productId);
         this.quantity = quantity;
     }
 

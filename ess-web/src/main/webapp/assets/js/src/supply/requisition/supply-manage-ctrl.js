@@ -3,6 +3,10 @@ essSupply = angular.module('essSupply').controller('SupplyManageController', ['$
 
 function supplyManageController($scope, modals, supplyInventoryService, supplyOrderService) {
 
+    $scope.selected = null;
+
+    $scope.order = supplyOrderService.getPendingOrders()[0];
+
     $scope.pendingOrders = function() {
         return supplyOrderService.getPendingOrders();
     };
@@ -18,10 +22,23 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
     $scope.highlightOrder = function(order) {
         var highlight = false;
         angular.forEach(order.items, function(item) {
-            if (item.quantity >= supplyInventoryService.getProductById(item.id).warnQuantity) {
+            if (item.quantity >= item.product.warnQuantity) {
                 highlight = true;
             }
         });
         return highlight;
     };
+
+    $scope.setSelected = function(order) {
+        if ($scope.selected && order.id === $scope.selected.id) {
+            $scope.selected = null;
+        }
+        else {
+            $scope.selected = order;
+        }
+    };
+
+    $scope.selectedOrder = function(order) {
+        return $scope.selected && order.id === $scope.selected.id;
+    }
 }
