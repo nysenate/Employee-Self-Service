@@ -48,5 +48,13 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
 
     $scope.selectedOrder = function(order) {
         return $scope.selected && order.id === $scope.selected.id;
+    };
+
+    $scope.processOrder = function(order) {
+        supplyOrderService.setOrderToInprocess(order.id, "CASEIRAS");
+    };
+
+    $scope.completeOrder = function(order) {
+        supplyOrderService.completeOrder(order.id);
     }
 }

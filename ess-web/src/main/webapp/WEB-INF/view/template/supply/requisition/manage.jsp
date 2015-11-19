@@ -9,10 +9,7 @@
     <div style="padding: 0px 10px 10px 10px;">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
-          Location Code
-        </div>
-        <div class="col-2-12">
-          Location Type
+          Location
         </div>
         <div class="col-2-12">
           Employee
@@ -23,27 +20,33 @@
         <div class="col-2-12">
           Order Date
         </div>
+        <div class="col-2-12">
+          Process Order
+        </div>
+        <div class="col-2-12">
+          Reject Order
+        </div>
       </div>
 
       <div  ng-repeat="order in pendingOrders()">
-        <div class="grid grid-padding supply-manage-rows" ng-click="setSelected(order)">
-          <div class="col-2-12">
-            {{order.locCode}}
+        <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}">
+          <div class="col-2-12" ng-click="setSelected(order)">
+            {{order.locCode}} - {{order.locType}}
           </div>
-          <div class="col-2-12">
-            {{order.locType}}
-          </div>
-          <div class="col-2-12">
+          <div class="col-2-12" ng-click="setSelected(order)">
             {{order.purchaser}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12" ng-click="setSelected(order)">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12">
-            {{order.dateTime.format('YYYY-MM-DD hh:mm A')}}
+          <div class="col-2-12" ng-click="setSelected(order)">
+            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
           <div class="col-2-12">
-            Process Btn
+            <input ng-click="processOrder(order)" class="submit-button" type="button" value="Process">
+          </div>
+          <div class="col-2-12">
+            <input ng-click="rejectOrder(order)" class="reject-button" type="button" value="Reject">
           </div>
         </div>
 
@@ -88,10 +91,7 @@
     <div style="padding: 0px 10px 10px 10px;">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
-          Location Code
-        </div>
-        <div class="col-2-12">
-          Location Type
+          Location
         </div>
         <div class="col-2-12">
           Employee
@@ -102,27 +102,33 @@
         <div class="col-2-12">
           Order Date
         </div>
+        <div class="col-2-12">
+          Issuing Employee
+        </div>
+        <div class="col-2-12">
+          Complete Order
+        </div>
       </div>
 
       <div  ng-repeat="order in inprocessOrders()">
-        <div class="grid grid-padding supply-manage-rows" ng-click="setSelected(order)">
-          <div class="col-2-12">
-            {{order.locCode}}
+        <div class="grid grid-padding supply-manage-rows">
+          <div class="col-2-12" ng-click="setSelected(order)">
+            {{order.locCode}} - {{order.locType}}
           </div>
-          <div class="col-2-12">
-            {{order.locType}}
-          </div>
-          <div class="col-2-12">
+          <div class="col-2-12" ng-click="setSelected(order)">
             {{order.purchaser}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12" ng-click="setSelected(order)">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12">
-            {{order.dateTime.format('YYYY-MM-DD hh:mm A')}}
+          <div class="col-2-12" ng-click="setSelected(order)">
+            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+          </div>
+          <div class="col-2-12" ng-click="setSelected(order)">
+            {{order.issueEmployee}}
           </div>
           <div class="col-2-12">
-            Process Btn
+            <input ng-click="completeOrder(order)" class="submit-button" type="button" value="Complete">
           </div>
         </div>
 
@@ -167,10 +173,7 @@
     <div style="padding: 0px 10px 10px 10px;">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
-          Location Code
-        </div>
-        <div class="col-2-12">
-          Location Type
+          Location
         </div>
         <div class="col-2-12">
           Employee
@@ -181,15 +184,15 @@
         <div class="col-2-12">
           Order Date
         </div>
+        <div class="col-2-12">
+          Issued By
+        </div>
       </div>
 
       <div  ng-repeat="order in completedOrders()">
         <div class="grid grid-padding supply-manage-rows" ng-click="setSelected(order)">
           <div class="col-2-12">
-            {{order.locCode}}
-          </div>
-          <div class="col-2-12">
-            {{order.locType}}
+            {{order.locCode}} - {{order.locType}}
           </div>
           <div class="col-2-12">
             {{order.purchaser}}
@@ -198,10 +201,10 @@
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12">
-            {{order.dateTime.format('YYYY-MM-DD hh:mm A')}}
+            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
           <div class="col-2-12">
-            Process Btn
+            {{order.issueEmployee}}
           </div>
         </div>
 

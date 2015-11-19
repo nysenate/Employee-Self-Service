@@ -1493,8 +1493,6 @@ label.custom-select {
 }
 
 .supply-manage-header {
-  //.padding-10;
-  //border-bottom: 1px solid #eee !important;
   color: #333;
   font-size: .9em;
   border-bottom: 1px solid #155C69;
@@ -1508,6 +1506,7 @@ label.custom-select {
 .supply-manage-rows {
   text-align: center;
   border-bottom: 1px solid #eee !important;
+  cursor: pointer;
   &.warn {
     background: #ffbcbc;
     border-bottom: 1px solid #ffbcbc !important;
@@ -1531,7 +1530,6 @@ label.custom-select {
       background: #e9eeff;
     }
   }
-
   div {
     white-space: nowrap;
     padding: .5em;
@@ -1541,6 +1539,7 @@ label.custom-select {
 
 .supply-details-table {
   margin-left: 80px;
+  margin-bottom: 20px;
   background: fade(#eee, 40%);
 }
 
@@ -1552,6 +1551,9 @@ label.custom-select {
 .supply-detail-rows {
   border-bottom: 1px solid #eee !important;
   text-align: center;
+  &:nth-child(even) {
+    background: fade(#333, 5%);
+  }
   div {
     white-space: nowrap;
     padding: .5em;

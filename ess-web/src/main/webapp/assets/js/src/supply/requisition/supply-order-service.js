@@ -9,14 +9,15 @@ essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supp
         COMPLETED: 3
     };
 
-    function SupplyOrder(id, locCode, locType, dateTime, purchaser, items, status) {
+    function SupplyOrder(id, locCode, locType, dateTime, purchaser, items, status, issueEmp) {
         this.id = id;
         this.locCode = locCode;
         this.locType = locType;
         this.dateTime = dateTime;
         this.purchaser = purchaser;
         this.items = items;
-        this.status = status
+        this.status = status;
+        this.issueEmployee = issueEmp;
     }
 
     function Item(productId, quantity) {
@@ -34,22 +35,22 @@ essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supp
                 [new Item(7, 4), new Item(6, 4), new Item(8, 4)], status.PENDING));
             orders.push(new SupplyOrder(12, 'A42FB', 'W', moment("2015-11-17 11:11"), 'JOHNSON',
                 [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2), new Item(8, 4), new Item(9, 12),
-                    new Item(10, 5), new Item(12, 4), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.INPROCESS));
+                    new Item(10, 5), new Item(12, 4), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.INPROCESS, "JOHN"));
             orders.push(new SupplyOrder(9, 'LC144', 'W', moment("2015-11-16 15:41"), 'STEVEN',
-                [new Item(2, 2), new Item(3, 1), new Item(6, 1), new Item(7, 2), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.COMPLETED));
+                [new Item(2, 2), new Item(3, 1), new Item(6, 1), new Item(7, 2), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.COMPLETED, "MIKE"));
             orders.push(new SupplyOrder(8, 'D5001', 'W', moment("2015-11-16 16:04"), 'MATT',
-                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2)], status.COMPLETED));
+                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2)], status.COMPLETED, "JOHN"));
             orders.push(new SupplyOrder(1, 'D8001', 'W', moment("2015-11-14 15:34"), 'CASEIRAS',
                 [new Item(2, 1), new Item(3, 1), new Item(6, 1), new Item(7, 2),
-                    new Item(10, 2), new Item(12, 4), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.COMPLETED));
+                    new Item(10, 2), new Item(12, 4), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.COMPLETED, "SAM"));
             orders.push(new SupplyOrder(2, 'CL100', 'W', moment("2015-11-14 10:34"), 'GEORGE',
-                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2)], status.COMPLETED));
+                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2)], status.COMPLETED, "JOHN"));
             orders.push(new SupplyOrder(3, 'D9011', 'W', moment("2015-11-17 10:58"), 'BRENCHEN',
-                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2)], status.COMPLETED));
+                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2)], status.COMPLETED, "MIKE"));
             orders.push(new SupplyOrder(4, 'D4501', 'W', moment("2015-11-17 09:04"), 'STEVEN',
-                [new Item(6, 1), new Item(7, 2)], status.COMPLETED));
+                [new Item(6, 1), new Item(7, 2)], status.COMPLETED, "SAM"));
             orders.push(new SupplyOrder(5, 'A9889', 'W', moment("2015-11-17 08:32"), 'SHEILA',
-                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(7, 2)], status.COMPLETED));
+                [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(7, 2)], status.COMPLETED, "JOHN"));
         }
     }
 
@@ -101,6 +102,15 @@ essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supp
             if (search.length > 0) {
                 return search[0];
             }
+        },
+        setOrderToInprocess: function(id, employee) {
+            var order = this.getOrderById(id);
+            order.status = status.INPROCESS;
+            order.issueEmployee = employee;
+        },
+        completeOrder: function(id) {
+            var order = this.getOrderById(id);
+            order.status = status.COMPLETED;
         }
     }
 }]);
