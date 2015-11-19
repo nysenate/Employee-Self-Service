@@ -11,6 +11,14 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
         return supplyOrderService.getPendingOrders();
     };
 
+    $scope.inprocessOrders = function() {
+        return supplyOrderService.getInprocessOrders();
+    };
+
+    $scope.completedOrders = function() {
+        return supplyOrderService.getCompletedOrders();
+    };
+
     $scope.getOrderQuantity = function(supplyOrder) {
         var size = 0;
         angular.forEach(supplyOrder.items, function(item) {
