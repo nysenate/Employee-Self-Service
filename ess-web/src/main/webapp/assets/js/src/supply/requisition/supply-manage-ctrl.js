@@ -16,7 +16,7 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
     };
 
     $scope.completedOrders = function() {
-        return supplyOrderService.getCompletedOrders();
+        return supplyOrderService.getTodaysCompletedOrders();
     };
 
     $scope.getOrderQuantity = function(supplyOrder) {
