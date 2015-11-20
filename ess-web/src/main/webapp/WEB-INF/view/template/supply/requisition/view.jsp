@@ -1,6 +1,6 @@
 <div ng-controller="SupplyViewController">
   <div class="supply-order-hero">
-    <h2>Order History</h2>
+    <h2>Requisition Order</h2>
   </div>
 
   <div class="content-container">

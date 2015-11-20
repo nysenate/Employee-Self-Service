@@ -185,6 +185,9 @@
           Order Date
         </div>
         <div class="col-2-12">
+          Completed Date
+        </div>
+        <div class="col-2-12">
           Issued By
         </div>
       </div>
@@ -202,6 +205,9 @@
           </div>
           <div class="col-2-12 supply-text-cell">
             {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+          </div>
+          <div class="col-2-12 supply-text-cell">
+            {{order.completeDate.format('MM-DD-YYYY hh:mm A')}}
           </div>
           <div class="col-2-12 supply-text-cell">
             {{order.issueEmployee}}
