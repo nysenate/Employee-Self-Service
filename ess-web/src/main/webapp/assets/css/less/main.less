@@ -1507,6 +1507,7 @@ label.custom-select {
   text-align: center;
   border-bottom: 1px solid #eee !important;
   cursor: pointer;
+  white-space: nowrap;
   &.warn {
     background: #ffbcbc;
     border-bottom: 1px solid #ffbcbc !important;
@@ -1530,17 +1531,23 @@ label.custom-select {
       background: #e9eeff;
     }
   }
-  div {
-    white-space: nowrap;
+}
+
+.supply-text-cell {
     padding: .5em;
     border: 0;
-  }
+}
+
+.supply-button-cell {
+  padding: .2em;
 }
 
 .supply-details-table {
   margin-left: 80px;
   margin-bottom: 20px;
   background: fade(#eee, 40%);
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .supply-detail-header {
@@ -1558,6 +1565,10 @@ label.custom-select {
     white-space: nowrap;
     padding: .5em;
     border: 0;
+  }
+  &.warn {
+    background: #ffbcbc;
+    border-bottom: 1px solid #ffbcbc !important;
   }
 }
 

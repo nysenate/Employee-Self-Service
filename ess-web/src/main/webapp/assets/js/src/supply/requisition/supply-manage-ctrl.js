@@ -37,6 +37,10 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
         return highlight;
     };
 
+    $scope.highlightLineItem = function(item) {
+        return item.quantity >= item.product.warnQuantity
+    };
+
     $scope.setSelected = function(order) {
         if ($scope.selected && order.id === $scope.selected.id) {
             $scope.selected = null;
@@ -52,9 +56,11 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
 
     $scope.processOrder = function(order) {
         supplyOrderService.setOrderToInprocess(order.id, "CASEIRAS");
+        $scope.selected = null;
     };
 
     $scope.completeOrder = function(order) {
         supplyOrderService.completeOrder(order.id);
+        $scope.selected = null;
     }
 }

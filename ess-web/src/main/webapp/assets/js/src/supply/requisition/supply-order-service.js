@@ -32,7 +32,7 @@ essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supp
             orders.push(new SupplyOrder(10, 'D56004', 'W', moment("2015-11-17 13:54"), 'CASEIRAS',
                 [new Item(1, 1), new Item(4, 1), new Item(9, 2)], status.PENDING));
             orders.push(new SupplyOrder(11, 'CM330', 'W', moment("2015-11-17 12:43"), 'SMITH',
-                [new Item(7, 4), new Item(6, 4), new Item(8, 4)], status.PENDING));
+                [new Item(7, 1), new Item(6, 1), new Item(8, 4)], status.PENDING));
             orders.push(new SupplyOrder(12, 'A42FB', 'W', moment("2015-11-17 11:11"), 'JOHNSON',
                 [new Item(2, 2), new Item(3, 1), new Item(4, 1), new Item(6, 1), new Item(7, 2), new Item(8, 4), new Item(9, 12),
                     new Item(10, 5), new Item(12, 4), new Item(11, 2), new Item(1, 1), new Item(5, 2)], status.INPROCESS, "JOHN"));

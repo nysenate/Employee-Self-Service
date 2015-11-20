@@ -30,23 +30,23 @@
 
       <div  ng-repeat="order in pendingOrders()">
         <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}">
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.locCode}} - {{order.locType}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.purchaser}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
-          <div class="col-2-12">
-            <input ng-click="processOrder(order)" class="submit-button" type="button" value="Process">
+          <div class="col-2-12 supply-button-cell">
+            <input ng-click="processOrder(order)" class="submit-button" type="button" value="Process" style="padding: 3px 8px">
           </div>
-          <div class="col-2-12">
-            <input ng-click="rejectOrder(order)" class="reject-button" type="button" value="Reject">
+          <div class="col-2-12 supply-button-cell">
+            <input ng-click="rejectOrder(order)" class="reject-button" type="button" value="Reject" style="padding: 3px 8px">
           </div>
         </div>
 
@@ -66,7 +66,7 @@
               Quantity
             </div>
           </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows">
+          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows" ng-class="{warn: highlightLineItem(item)}">
             <div class="col-3-12">
               {{item.product.commodityCode}}
             </div>
@@ -112,23 +112,23 @@
 
       <div  ng-repeat="order in inprocessOrders()">
         <div class="grid grid-padding supply-manage-rows">
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.locCode}} - {{order.locType}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.purchaser}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
-          <div class="col-2-12" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.issueEmployee}}
           </div>
-          <div class="col-2-12">
-            <input ng-click="completeOrder(order)" class="submit-button" type="button" value="Complete">
+          <div class="col-2-12 supply-button-cell">
+            <input ng-click="completeOrder(order)" class="submit-button" type="button" value="Complete" style="padding: 3px 8px">
           </div>
         </div>
 
@@ -191,19 +191,19 @@
 
       <div  ng-repeat="order in completedOrders()">
         <div class="grid grid-padding supply-manage-rows" ng-click="setSelected(order)">
-          <div class="col-2-12">
+          <div class="col-2-12 supply-text-cell">
             {{order.locCode}} - {{order.locType}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12 supply-text-cell">
             {{order.purchaser}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12 supply-text-cell">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12 supply-text-cell">
             {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12 supply-text-cell">
             {{order.issueEmployee}}
           </div>
         </div>
