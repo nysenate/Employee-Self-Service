@@ -89,16 +89,6 @@ essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supp
             });
             return todaysCompleted;
         },
-        getHistoricalOrders: function() {
-            var historical = [];
-            initOrders();
-            angular.forEach(orders, function(order) {
-                if (order.status === status.COMPLETED) {
-                    historical.push(order);
-                }
-            });
-            return historical;
-        },
         getOrderById: function(id) {
             initOrders();
             var search = $.grep(orders, function(order){ return order.id == id; });

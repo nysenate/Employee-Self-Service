@@ -15,8 +15,8 @@
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/requisition/manage">Manage Requisitions</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/requisition/history">Requisition History</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/reconciliation/reconciliation">Reconciliation</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/requisition/history">Requisition History</a></li>
     </ul>
   </section>
   <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
