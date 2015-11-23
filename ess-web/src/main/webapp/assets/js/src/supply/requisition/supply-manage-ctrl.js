@@ -62,5 +62,9 @@ function supplyManageController($scope, modals, supplyInventoryService, supplyOr
     $scope.completeOrder = function(order) {
         supplyOrderService.completeOrder(order.id);
         $scope.selected = null;
-    }
+    };
+
+    $scope.rejectOrder = function(order) {
+        supplyOrderService.rejectOrder(order);
+    };
 }

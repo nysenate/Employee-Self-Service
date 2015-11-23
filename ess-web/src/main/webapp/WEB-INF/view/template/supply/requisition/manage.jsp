@@ -43,7 +43,9 @@
             {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
           <div class="col-2-12 supply-button-cell">
+            <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
             <input ng-click="processOrder(order)" class="submit-button" type="button" value="Process" style="padding: 3px 8px">
+            </a>
           </div>
           <div class="col-2-12 supply-button-cell">
             <input ng-click="rejectOrder(order)" class="reject-button" type="button" value="Reject" style="padding: 3px 8px">
