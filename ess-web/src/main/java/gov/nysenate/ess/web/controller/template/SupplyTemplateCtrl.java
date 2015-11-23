@@ -41,4 +41,9 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     public String cart() {
         return SUPPLY_TMPL_BASE_URL + "/cart/cart";
     }
+
+    @RequestMapping(value="/reconciliation/reconciliation")
+    public String reconciliation() {
+        return SUPPLY_TMPL_BASE_URL + "/reconciliation/reconciliation";
+    }
 }

@@ -22,7 +22,7 @@ function supplyHistoryController($scope, supplyOrderService, locationService) {
 
     $scope.initLocations = function() {
         if ($scope.locations.length === 0) {
-            $scope.locations.push("");
+            $scope.locations.push("All");
             var orders = supplyOrderService.getCompletedOrders();
             angular.forEach(orders, function (order) {
                 if ($scope.locations.indexOf(order.locCode) === -1) {
@@ -33,7 +33,7 @@ function supplyHistoryController($scope, supplyOrderService, locationService) {
     };
 
     $scope.shouldShowOrder = function(order) {
-        if ($scope.selectedLocation === "") {
+        if ($scope.selectedLocation === "All") {
             return true;
         }
         else {
