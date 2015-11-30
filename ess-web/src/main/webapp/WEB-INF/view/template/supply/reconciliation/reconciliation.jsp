@@ -5,7 +5,7 @@
 
   <div class="content-container">
     <p class="content-info">
-      All items in requisition requests completed today.
+      All items shipped today.
     </p>
     <div class="padding-10">
       <table class="ess-table supply-listing-table">
