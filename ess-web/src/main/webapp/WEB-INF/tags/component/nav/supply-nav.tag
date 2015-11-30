@@ -4,7 +4,7 @@
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
 <div class="left-nav-div">
-  <section class="left-nav-content" ess-navigation>
+  <section class="left-nav-content no-print" ess-navigation>
     <ess-component-nav:nav-header topicTitle="Supply Menu" colorClass="blue-purple"/>
     <h3 class="main-topic">My Supply</h3>
     <ul class="sub-topic-list">
@@ -15,10 +15,11 @@
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/requisition/manage">Manage Requisitions</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/reconciliation/reconciliation">Reconciliation</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/requisition/history">Requisition History</a></li>
     </ul>
   </section>
-  <section class="left-nav-content margin-top-20" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
+  <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
     <ul class="sub-topic-list">
       <li ng-repeat="cat in categories">

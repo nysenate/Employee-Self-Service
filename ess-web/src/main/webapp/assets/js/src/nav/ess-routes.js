@@ -93,6 +93,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/cart/cart'
     });
 
+    $routeProvider.when(ctxPath + '/supply/reconciliation/reconciliation', {
+        templateUrl: ctxPath + '/template/supply/reconciliation/reconciliation'
+    });
+
     /** Help */
 
     $routeProvider.when(ctxPath + '/help/ta/plan', {

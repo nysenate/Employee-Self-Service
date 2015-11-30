@@ -6,7 +6,12 @@
   <%--   Pending Orders   --%>
   <div class="content-container">
     <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
-    <div style="padding: 0px 10px 10px 10px;">
+
+    <div class="content-info" ng-show="pendingOrders().length == 0">
+        <h2 class="dark-gray">No Pending Requests.</h2>
+    </div>
+
+    <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders().length > 0">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
           Location
@@ -43,7 +48,9 @@
             {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
           </div>
           <div class="col-2-12 supply-button-cell">
+            <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
             <input ng-click="processOrder(order)" class="submit-button" type="button" value="Process" style="padding: 3px 8px">
+            </a>
           </div>
           <div class="col-2-12 supply-button-cell">
             <input ng-click="rejectOrder(order)" class="reject-button" type="button" value="Reject" style="padding: 3px 8px">
@@ -88,7 +95,12 @@
   <%--   InProcess Orders   --%>
   <div class="content-container">
     <h1 style="background: #4196A7; color: white;">Inprocess Requisition Requests</h1>
-    <div style="padding: 0px 10px 10px 10px;">
+
+    <div class="content-info" ng-show="inprocessOrders().length == 0">
+      <h2 class="dark-gray">No Inprocess Requests.</h2>
+    </div>
+
+    <div style="padding: 0px 10px 10px 10px;" ng-show="inprocessOrders().length > 0">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
           Location
@@ -170,7 +182,12 @@
   <%--   Completed Orders   --%>
   <div class="content-container">
     <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
-    <div style="padding: 0px 10px 10px 10px;">
+
+    <div class="content-info" ng-show="completedOrders().length == 0">
+      <h2 class="dark-gray">No Completed Requests.</h2>
+    </div>
+
+    <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders().length > 0">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
           Location

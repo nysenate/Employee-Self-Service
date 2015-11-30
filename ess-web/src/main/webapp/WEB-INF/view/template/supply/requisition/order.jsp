@@ -26,7 +26,7 @@
             <select requisition-quantity-selector product="product" warn-qty="product.warnQuantity"
                     ng-model="quantity" ng-options="qty for qty in orderQuantityRange(product)"></select>
           </label>
-          <input ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
+          <input style="padding-top: 7px; padding-bottom: 6px;" ng-click="addToCart(product, quantity)" class="submit-button" type="button" value="Add to Cart">
         </div>
         <div ng-class="{'visibility-hidden': !isInCart(product)}" class="green padding-top-5 bold">
           &#x2713; Added to cart.

@@ -17,8 +17,10 @@
         <div class="col-6-12 supply-title">
           Ordered By: {{order.purchaser}}
         </div>
-        <div class="col-6-12 supply-title">
-          Print
+        <div class="col-6-12">
+          <a href="javascript:if(window.print)window.print()">
+            Print
+          </a>
         </div>
       </div>
     </div>

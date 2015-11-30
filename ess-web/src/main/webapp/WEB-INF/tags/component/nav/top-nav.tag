@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="activeTopic" required="true" description="A key indicating which nav topic should be active." %>
 
-<header class="ess-top-header">
+<header class="ess-top-header no-print">
     <div class="fixed-width-header">
         <div class="left-header-area">
             <div class="nysslogo"></div>
