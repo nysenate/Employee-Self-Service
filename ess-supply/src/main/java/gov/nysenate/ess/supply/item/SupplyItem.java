@@ -2,21 +2,27 @@ package gov.nysenate.ess.supply.item;
 
 public final class SupplyItem {
 
-    private final String commodityCode; // uniquely identifies items
+    private final int id;
+    private final String commodityCode;
     private final String name;
     private final String description;
     private final int unitsize;
     private final String category;
     private final int warnQuantity;
 
-    public SupplyItem(String commodityCode, String name, String description, int unitsize,
+    public SupplyItem(int id, String commodityCode, String name, String description, int unitsize,
                       String category, int warnQuantity) {
+        this.id = id;
         this.commodityCode = commodityCode;
         this.name = name;
         this.description = description;
         this.unitsize = unitsize;
         this.category = category;
         this.warnQuantity = warnQuantity;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getCommodityCode() {

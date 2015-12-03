@@ -11,14 +11,13 @@ import java.util.Map;
 @Repository
 public class InMemorySupplyItem implements SupplyItemDao {
 
-    private Map<String, SupplyItem> items;
+    private Map<Integer, SupplyItem> items;
 
     public InMemorySupplyItem() {
         items = new HashMap<>();
-        items.put("P2", new SupplyItem("P2", "Pencils", "Number 2 Yellow Pencils",
+        items.put(1, new SupplyItem(1, "P2", "Pencils", "Number 2 Yellow Pencils",
                                        24, "Pencils", 2));
-
-        items.put("PBL", new SupplyItem("PBL", "Blue Ballpoint Pens", "Blue ink, bold point",
+        items.put(2, new SupplyItem(2, "PBL", "Blue Ballpoint Pens", "Blue ink, bold point",
                                        12, "Pens", 2));
 
     }
