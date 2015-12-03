@@ -16,7 +16,7 @@ public class Order {
     private LocalDateTime processedDateTime;
     private LocalDateTime completedDateTime;
     private OrderStatus status;
-    private Map<String, Integer> items;
+    private Map<Integer, Integer> items;
 
     public Order(int id, Employee customer, LocalDateTime orderDateTime, Location location) {
         this(id, customer, orderDateTime, location, OrderStatus.PENDING);
@@ -78,11 +78,11 @@ public class Order {
         this.status = status;
     }
 
-    public Map<String, Integer> getItems() {
+    public Map<Integer, Integer> getItems() {
         return items;
     }
 
-    public void setItems(Map<String, Integer> items) {
+    public void setItems(Map<Integer, Integer> items) {
         this.items = items;
     }
 }

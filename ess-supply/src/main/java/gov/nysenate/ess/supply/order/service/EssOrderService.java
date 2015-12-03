@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EssOrderService implements OrderService {
@@ -18,7 +20,7 @@ public class EssOrderService implements OrderService {
     private OrderDao orderDao;
 
     @Override
-    public synchronized int submitOrder(Employee customer, Location location, Map<String, Integer> items) {
+    public synchronized int submitOrder(Employee customer, Location location, Map<Integer, Integer> items) {
         int id = orderDao.getUniqueId();
         Order order = new Order(id, customer, LocalDateTime.now(), location);
         order.setItems(items);
@@ -32,7 +34,7 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public void updateOrderItems(int orderId, Map<String, Integer> newItems) {
+    public void updateOrderItems(int orderId, Map<Integer, Integer> newItems) {
         Order order = orderDao.getOrderById(orderId);
         order.setItems(newItems);
         orderDao.saveOrder(order);
@@ -45,4 +47,21 @@ public class EssOrderService implements OrderService {
         orderDao.saveOrder(order);
     }
 
+    @Override
+    public void processOrder(int orderId, Employee issuingEmployee) {
+        Order order = orderDao.getOrderById(orderId);
+        order.setIssuingEmployee(issuingEmployee);
+        order.setStatus(OrderStatus.PROCESSING);
+        orderDao.saveOrder(order);
+    }
+
+    @Override
+    public List<Order> getOrders() {
+        return orderDao.getOrders();
+    }
+
+    @Override
+    public List<Order> getProcessingOrders() {
+        return this.getOrders().stream().filter(order -> order.getStatus() == OrderStatus.PROCESSING).collect(Collectors.toList());
+    }
 }
