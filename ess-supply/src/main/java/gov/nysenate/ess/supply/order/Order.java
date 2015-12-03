@@ -15,7 +15,7 @@ public class Order {
     private Employee issuingEmployee;
     private LocalDateTime processedDateTime;
     private LocalDateTime completedDateTime;
-    private final OrderStatus status;
+    private OrderStatus status;
     private Map<String, Integer> items;
 
     public Order(int id, Employee customer, LocalDateTime orderDateTime, Location location) {
@@ -72,6 +72,10 @@ public class Order {
 
     public OrderStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public Map<String, Integer> getItems() {

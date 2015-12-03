@@ -1,32 +1,28 @@
 package gov.nysenate.ess.supply.order.dao;
 
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.order.Order;
-import gov.nysenate.ess.supply.order.OrderStatus;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Repository
 public class InMemoryOrder implements OrderDao {
 
-    private Map<Integer, Order> orders = new HashMap<>();
+    private Map<Integer, Order> orders = new TreeMap<>();
 
     @Override
-    public int submitOrder(Employee customer, LocalDateTime orderDateTime, Location location, Map<String, Integer> items, OrderStatus status) {
-        int id = orders.size() + 1;
-        Order order = new Order(id, customer, orderDateTime, location, status);
-        order.setItems(items);
-        orders.put(id, order);
-        return id;
+    public int getUniqueId() {
+        return orders.size() + 1;
     }
 
     @Override
-    public Order getOrderById(int id) {
-        return orders.get(id);
+    public void saveOrder(Order order) {
+        orders.put(order.getId(), order);
     }
 
+    @Override
+    public Order getOrderById(int orderId) {
+        return orders.get(orderId);
+    }
 }

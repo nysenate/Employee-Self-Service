@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -27,32 +26,49 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void newOrderShouldBeGivenId() {
-        int id = submitNewOrder();
+        int id = submitOrder();
         assertTrue(id > 0);
     }
 
     @Test
     public void newOrderDateTimeShouldBeInitialized() {
-        int id = submitNewOrder();
+        int id = submitOrder();
         Order order = orderService.getOrderById(id);
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
     }
 
     @Test
     public void newOrderShouldHavePendingStatus() {
-        int id = submitNewOrder();
+        int id = submitOrder();
         Order order = orderService.getOrderById(id);
         assertEquals(order.getStatus(), OrderStatus.PENDING);
     }
 
     @Test
     public void canGetOrderById() {
-        int id = submitNewOrder();
+        int id = submitOrder();
         Order order = orderService.getOrderById(id);
         assertNotNull(order);
     }
 
-    private int submitNewOrder() {
+    @Test
+    public void canEditOrderItems() {
+        int id = submitOrder();
+        Map<String, Integer> originalItems = orderService.getOrderById(id).getItems();
+        Map<String, Integer> newItems = incrementItemQuantities(originalItems);
+        orderService.updateOrderItems(id, newItems);
+        assertEquals(orderService.getOrderById(id).getItems(), newItems);
+    }
+
+    @Test
+    public void canRejectOrder() {
+        int id = submitOrder();
+        assertEquals(orderService.getOrderById(id).getStatus(), OrderStatus.PENDING);
+        orderService.rejectOrder(id);
+        assertEquals(orderService.getOrderById(id).getStatus(), OrderStatus.REJECTED);
+    }
+
+    private int submitOrder() {
         return orderService.submitOrder(createEmployee(), createLocation(), orderedItemsToQuantitiesMap());
     }
 
@@ -75,6 +91,14 @@ public class OrderTests extends SupplyTests {
             orderedItemsToQuantities.put(item.getCommodityCode(), 1);
         }
         return orderedItemsToQuantities;
+    }
+
+    private Map<String,Integer> incrementItemQuantities(Map<String, Integer> originalItems) {
+        Map<String, Integer> newItems = new TreeMap<>();
+        for (Map.Entry<String, Integer> entry : originalItems.entrySet()) {
+            newItems.put(entry.getKey(), entry.getValue() + 1);
+        }
+        return newItems;
     }
 
     private void assertDateLessThan5SecondsOld(LocalDateTime orderDateTime) {

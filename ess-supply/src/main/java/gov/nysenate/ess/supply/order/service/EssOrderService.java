@@ -18,13 +18,31 @@ public class EssOrderService implements OrderService {
     private OrderDao orderDao;
 
     @Override
-    public int submitOrder(Employee customer, Location location, Map<String, Integer> items) {
-        return orderDao.submitOrder(customer, LocalDateTime.now(), location, items, OrderStatus.PENDING);
+    public synchronized int submitOrder(Employee customer, Location location, Map<String, Integer> items) {
+        int id = orderDao.getUniqueId();
+        Order order = new Order(id, customer, LocalDateTime.now(), location);
+        order.setItems(items);
+        orderDao.saveOrder(order);
+        return id;
     }
 
     @Override
-    public Order getOrderById(int id) {
-        return orderDao.getOrderById(id);
+    public Order getOrderById(int orderId) {
+        return orderDao.getOrderById(orderId);
+    }
+
+    @Override
+    public void updateOrderItems(int orderId, Map<String, Integer> newItems) {
+        Order order = orderDao.getOrderById(orderId);
+        order.setItems(newItems);
+        orderDao.saveOrder(order);
+    }
+
+    @Override
+    public void rejectOrder(int orderId) {
+        Order order = orderDao.getOrderById(orderId);
+        order.setStatus(OrderStatus.REJECTED);
+        orderDao.saveOrder(order);
     }
 
 }
