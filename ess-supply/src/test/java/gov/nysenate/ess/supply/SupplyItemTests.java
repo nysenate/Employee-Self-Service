@@ -16,12 +16,9 @@ public class SupplyItemTests extends SupplyTests {
     @Autowired
     private SupplyItemService supplyItemService;
 
-    @Autowired
-    private TestUtils testUtils;
-
     @Before
     public void before() {
-        testUtils.resetInMemoryDaos();
+        TestUtils.resetInMemoryDaos();
     }
 
     @Test

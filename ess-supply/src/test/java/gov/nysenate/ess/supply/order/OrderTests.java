@@ -23,37 +23,35 @@ public class OrderTests extends SupplyTests {
     private OrderService orderService;
     @Autowired
     private SupplyItemService itemService;
-    @Autowired
-    private TestUtils testUtils;
 
     @Before
     public void before() {
-        testUtils.resetInMemoryDaos();
+        TestUtils.resetInMemoryDaos();
     }
 
     @Test
     public void newOrderShouldBeGivenId() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         assertTrue(orderId > 0);
     }
 
     @Test
     public void newOrderDateTimeShouldBeInitialized() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         Order order = orderService.getOrderById(orderId);
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
     }
 
     @Test
     public void newOrderShouldHavePendingStatus() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         Order order = orderService.getOrderById(orderId);
         assertEquals(order.getStatus(), OrderStatus.PENDING);
     }
 
     @Test
     public void canGetOrderById() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         Order order = orderService.getOrderById(orderId);
         assertNotNull(order);
     }
@@ -61,13 +59,13 @@ public class OrderTests extends SupplyTests {
     @Test
     public void canGetAllOrders() {
         assertTrue(orderService.getOrders().size() == 0);
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         assertTrue(orderService.getOrders().contains(orderService.getOrderById(orderId)));
     }
 
     @Test
     public void canGetOrdersInProcessing() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         orderService.processOrder(orderId, new Employee());
         List<Order> processingOrders = orderService.getProcessingOrders();
         assertTrue(processingOrders.contains(orderService.getOrderById(orderId)));
@@ -75,7 +73,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canEditOrderItems() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         Map<Integer, Integer> originalItems = orderService.getOrderById(orderId).getItems();
         Map<Integer, Integer> newItems = incrementItemQuantities(originalItems);
         orderService.updateOrderItems(orderId, newItems);
@@ -84,7 +82,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canRejectOrder() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
         orderService.rejectOrder(orderId);
         assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.REJECTED);
@@ -92,7 +90,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void processingOrderShouldUpdateStatus() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
         orderService.processOrder(orderId, new Employee());
         assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PROCESSING);
@@ -100,9 +98,9 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void processingOrderSetsIssuingEmployee() {
-        int orderId = testUtils.submitOrder();
+        int orderId = TestUtils.submitOrder();
         assertNull(orderService.getOrderById(orderId).getIssuingEmployee());
-        Employee issuingEmployee = testUtils.createEmployee();
+        Employee issuingEmployee = TestUtils.createEmployee();
         orderService.processOrder(orderId, issuingEmployee);
         assertEquals(orderService.getOrderById(orderId).getIssuingEmployee(), issuingEmployee);
     }
