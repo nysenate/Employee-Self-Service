@@ -3,7 +3,6 @@ package gov.nysenate.ess.supply.order;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.TestUtils;
-import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +20,6 @@ public class OrderTests extends SupplyTests {
 
     @Autowired
     private OrderService orderService;
-    @Autowired
-    private SupplyItemService itemService;
 
     @Before
     public void before() {
@@ -50,42 +47,12 @@ public class OrderTests extends SupplyTests {
     }
 
     @Test
-    public void canGetOrderById() {
-        int orderId = TestUtils.submitOrder();
-        Order order = orderService.getOrderById(orderId);
-        assertNotNull(order);
-    }
-
-    @Test
-    public void canGetAllOrders() {
-        assertTrue(orderService.getOrders().size() == 0);
-        int orderId = TestUtils.submitOrder();
-        assertTrue(orderService.getOrders().contains(orderService.getOrderById(orderId)));
-    }
-
-    @Test
-    public void canGetOrdersInProcessing() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        List<Order> processingOrders = orderService.getProcessingOrders();
-        assertTrue(processingOrders.contains(orderService.getOrderById(orderId)));
-    }
-
-    @Test
     public void canEditOrderItems() {
         int orderId = TestUtils.submitOrder();
         Map<Integer, Integer> originalItems = orderService.getOrderById(orderId).getItems();
         Map<Integer, Integer> newItems = incrementItemQuantities(originalItems);
         orderService.updateOrderItems(orderId, newItems);
         assertEquals(orderService.getOrderById(orderId).getItems(), newItems);
-    }
-
-    @Test
-    public void canRejectOrder() {
-        int orderId = TestUtils.submitOrder();
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
-        orderService.rejectOrder(orderId);
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.REJECTED);
     }
 
     @Test
@@ -103,6 +70,50 @@ public class OrderTests extends SupplyTests {
         Employee issuingEmployee = TestUtils.createEmployee();
         orderService.processOrder(orderId, issuingEmployee);
         assertEquals(orderService.getOrderById(orderId).getIssuingEmployee(), issuingEmployee);
+    }
+
+    @Test
+    public void processingOrderSetsProcessedDateTime() {
+        int orderId = TestUtils.submitOrder();
+        assertNull(orderService.getOrderById(orderId).getProcessedDateTime());
+        orderService.processOrder(orderId, new Employee());
+        assertDateLessThan5SecondsOld(orderService.getOrderById(orderId).getProcessedDateTime());
+    }
+
+    @Test
+    public void canGetOrderById() {
+        int orderId = TestUtils.submitOrder();
+        Order order = orderService.getOrderById(orderId);
+        assertNotNull(order);
+    }
+
+    @Test
+    public void canGetAllOrders() {
+        assertTrue(orderService.getOrders().size() == 0);
+        int orderId = TestUtils.submitOrder();
+        assertTrue(orderService.getOrders().contains(orderService.getOrderById(orderId)));
+    }
+
+    @Test
+    public void canGetPendingOrders() {
+        int orderId = TestUtils.submitOrder();
+        List<Order> pendingOrders = orderService.getPendingOrders();
+        assertTrue(pendingOrders.contains(orderService.getOrderById(orderId)));
+    }
+    @Test
+    public void canGetOrdersInProcessing() {
+        int orderId = TestUtils.submitOrder();
+        orderService.processOrder(orderId, new Employee());
+        List<Order> processingOrders = orderService.getProcessingOrders();
+        assertTrue(processingOrders.contains(orderService.getOrderById(orderId)));
+    }
+
+    @Test
+    public void canRejectOrder() {
+        int orderId = TestUtils.submitOrder();
+        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
+        orderService.rejectOrder(orderId);
+        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.REJECTED);
     }
 
     private Map<Integer,Integer> incrementItemQuantities(Map<Integer, Integer> originalItems) {

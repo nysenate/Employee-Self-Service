@@ -21,6 +21,8 @@ public interface OrderService {
 
     List<Order> getOrders();
 
+    List<Order> getPendingOrders();
+
     List<Order> getProcessingOrders();
 
 }

@@ -52,6 +52,7 @@ public class EssOrderService implements OrderService {
         Order order = orderDao.getOrderById(orderId);
         order.setIssuingEmployee(issuingEmployee);
         order.setStatus(OrderStatus.PROCESSING);
+        order.setProcessedDateTime(LocalDateTime.now());
         orderDao.saveOrder(order);
     }
 
@@ -61,7 +62,16 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
+    public List<Order> getPendingOrders() {
+        return getOrdersByStatus(OrderStatus.PENDING);
+    }
+
+    @Override
     public List<Order> getProcessingOrders() {
-        return this.getOrders().stream().filter(order -> order.getStatus() == OrderStatus.PROCESSING).collect(Collectors.toList());
+        return getOrdersByStatus(OrderStatus.PROCESSING);
+    }
+
+    private List<Order> getOrdersByStatus(OrderStatus status) {
+        return this.getOrders().stream().filter(order -> order.getStatus() == status).collect(Collectors.toList());
     }
 }
