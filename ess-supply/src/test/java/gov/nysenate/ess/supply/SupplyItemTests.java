@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply;
 
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,14 @@ public class SupplyItemTests extends SupplyTests {
 
     @Autowired
     private SupplyItemService supplyItemService;
+
+    @Autowired
+    private TestUtils testUtils;
+
+    @Before
+    public void before() {
+        testUtils.resetInMemoryDaos();
+    }
 
     @Test
     public void canGetAllSupplyItems() {

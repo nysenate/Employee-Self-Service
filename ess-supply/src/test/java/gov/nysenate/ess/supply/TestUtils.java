@@ -4,7 +4,9 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
+import gov.nysenate.ess.supply.order.dao.InMemoryOrder;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,15 @@ import java.util.TreeMap;
 @Service
 public class TestUtils {
 
-    @Autowired OrderService orderService;
-    @Autowired SupplyItemService itemService;
+    @Autowired private OrderService orderService;
+    @Autowired private SupplyItemService itemService;
+    @Autowired private InMemoryOrder orderDao;
+    @Autowired private InMemorySupplyItem supplyItemDao;
+
+    public void resetInMemoryDaos() {
+        orderDao.reset();
+        supplyItemDao.reset();
+    }
 
     public int submitOrder() {
         return orderService.submitOrder(createEmployee(), createLocation(), orderedItemsToQuantitiesMap());

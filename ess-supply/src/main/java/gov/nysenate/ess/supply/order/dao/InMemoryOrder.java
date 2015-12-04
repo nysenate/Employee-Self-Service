@@ -13,6 +13,14 @@ public class InMemoryOrder implements OrderDao {
 
     private Map<Integer, Order> orders = new TreeMap<>();
 
+    public InMemoryOrder() {
+        reset();
+    }
+
+    public void reset() {
+        orders = new TreeMap<>();
+    }
+
     @Override
     public int getUniqueId() {
         return orders.size() + 1;
