@@ -25,4 +25,5 @@ public interface OrderService {
 
     List<Order> getProcessingOrders();
 
+    void completeOrder(int orderId);
 }
