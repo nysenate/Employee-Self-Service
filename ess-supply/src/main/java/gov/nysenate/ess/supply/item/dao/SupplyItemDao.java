@@ -7,4 +7,6 @@ import java.util.List;
 public interface SupplyItemDao {
 
     List<SupplyItem> getSupplyItems();
+
+    SupplyItem getItemById(Integer id);
 }

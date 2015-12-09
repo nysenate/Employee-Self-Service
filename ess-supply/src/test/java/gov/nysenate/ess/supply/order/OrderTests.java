@@ -3,11 +3,14 @@ package gov.nysenate.ess.supply.order;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.TestUtils;
+import gov.nysenate.ess.supply.order.dao.OrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,10 +22,12 @@ import static org.junit.Assert.*;
 
 public class OrderTests extends SupplyTests {
 
-    // TODO: validate employees performing tasks have permission.
-
     @Autowired
     private OrderService orderService;
+
+    @Qualifier("sfmsInMemoryOrder")
+    @Autowired
+    private OrderDao sfmsDao;
 
     @Before
     public void before() {
@@ -142,7 +147,14 @@ public class OrderTests extends SupplyTests {
         orderService.completeOrder(orderId);
     }
 
-    // todo: completing an order updates sfms
+    @Test
+    public void completingOrderUpdatesSfms() {
+        int orderId = TestUtils.submitOrder();
+        orderService.processOrder(orderId, new Employee());
+        assertTrue(sfmsDao.getOrders().size() == 0);
+        orderService.completeOrder(orderId);
+        assertTrue(sfmsDao.getOrders().size() == 1);
+    }
 
     @Test
     public void canGetOrderById() {

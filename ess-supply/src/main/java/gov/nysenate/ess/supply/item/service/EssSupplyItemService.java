@@ -16,4 +16,9 @@ public class EssSupplyItemService implements SupplyItemService {
     public List<SupplyItem> getSupplyItems() {
         return supplyItemDao.getSupplyItems();
     }
+
+    @Override
+    public SupplyItem getItemById(Integer id) {
+        return supplyItemDao.getItemById(id);
+    }
 }

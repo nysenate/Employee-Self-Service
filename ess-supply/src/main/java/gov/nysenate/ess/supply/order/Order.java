@@ -16,6 +16,7 @@ public class Order {
     private LocalDateTime processedDateTime;
     private LocalDateTime completedDateTime;
     private OrderStatus status;
+    /** Map of item ids to order quantities */
     private Map<Integer, Integer> items;
 
     public Order(int id, Employee customer, LocalDateTime orderDateTime, Location location) {

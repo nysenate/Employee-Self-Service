@@ -29,4 +29,9 @@ public class InMemorySupplyItem implements SupplyItemDao {
     public List<SupplyItem> getSupplyItems() {
         return new ArrayList<>(items.values());
     }
+
+    @Override
+    public SupplyItem getItemById(Integer id) {
+        return items.get(id);
+    }
 }

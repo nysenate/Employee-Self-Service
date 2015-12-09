@@ -7,6 +7,7 @@ import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrder;
+import gov.nysenate.ess.supply.order.dao.SfmsInMemoryOrder;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,19 +21,22 @@ public class TestUtils {
     private static OrderService orderService;
     private static SupplyItemService itemService;
     private static InMemoryOrder orderDao;
+    private static SfmsInMemoryOrder sfmsDao;
     private static InMemorySupplyItem supplyItemDao;
 
     @Autowired
     public TestUtils(OrderService orderService, SupplyItemService itemService, InMemoryOrder orderDao,
-                     InMemorySupplyItem supplyItemDao) {
+                     SfmsInMemoryOrder sfmsDao, InMemorySupplyItem supplyItemDao) {
         this.orderService = orderService;
         this.itemService = itemService;
         this.orderDao = orderDao;
+        this.sfmsDao = sfmsDao;
         this.supplyItemDao = supplyItemDao;
     }
 
     public static void resetInMemoryDaos() {
         orderDao.reset();
+        sfmsDao.reset();
         supplyItemDao.reset();
     }
 

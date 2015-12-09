@@ -8,4 +8,5 @@ public interface SupplyItemService {
 
     List<SupplyItem> getSupplyItems();
 
+    SupplyItem getItemById(Integer id);
 }

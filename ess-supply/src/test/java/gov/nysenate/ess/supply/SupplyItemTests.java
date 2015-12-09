@@ -26,4 +26,10 @@ public class SupplyItemTests extends SupplyTests {
         List<SupplyItem> items = supplyItemService.getSupplyItems();
         assertTrue(items.size() > 0);
     }
+
+    @Test
+    public void canGetItemById() {
+        SupplyItem item = supplyItemService.getItemById(1);
+        assertTrue(item.getId() == 1);
+    }
 }

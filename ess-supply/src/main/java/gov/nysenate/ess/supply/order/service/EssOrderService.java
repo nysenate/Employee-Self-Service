@@ -7,6 +7,7 @@ import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,13 @@ import java.util.stream.Collectors;
 @Service
 public class EssOrderService implements OrderService {
 
+    @Qualifier("inMemoryOrder")
     @Autowired
     private OrderDao orderDao;
+
+    @Qualifier("sfmsInMemoryOrder")
+    @Autowired
+    private OrderDao sfmsDao;
 
     @Override
     public synchronized int submitOrder(Employee customer, Location location, Map<Integer, Integer> items) {
@@ -89,7 +95,9 @@ public class EssOrderService implements OrderService {
         }
         order.setStatus(OrderStatus.COMPLETED);
         order.setCompletedDateTime(LocalDateTime.now());
+        // TODO: both these saves should be in same transaction.
         orderDao.saveOrder(order);
+        sfmsDao.saveOrder(order);
     }
 
     private List<Order> getOrdersByStatus(OrderStatus status) {
