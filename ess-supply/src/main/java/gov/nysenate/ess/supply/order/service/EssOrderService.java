@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -98,6 +99,31 @@ public class EssOrderService implements OrderService {
         // TODO: both these saves should be in same transaction.
         orderDao.saveOrder(order);
         sfmsDao.saveOrder(order);
+    }
+
+    @Override
+    public List<Order> getCompletedOrdersBetween() {
+        return getOrdersByStatus(OrderStatus.COMPLETED);
+    }
+
+    @Override
+    public List<Order> getCompletedOrdersBetween(LocalDateTime start, LocalDateTime end) {
+        List<Order> orders = new ArrayList<>();
+        for (Order order : getOrdersByStatus(OrderStatus.COMPLETED)) {
+            if (betweenStartAndEndTime(order.getCompletedDateTime(), start, end))
+                orders.add(order);
+        }
+        return orders;
+    }
+
+    /** Return true if dateTime is between start and end date time's, inclusive.*/
+    private boolean betweenStartAndEndTime(LocalDateTime dateTime, LocalDateTime start, LocalDateTime end) {
+        if (dateTime.isEqual(start) || dateTime.isAfter(start)) {
+            if (dateTime.isEqual(end) || dateTime.isBefore(end)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private List<Order> getOrdersByStatus(OrderStatus status) {

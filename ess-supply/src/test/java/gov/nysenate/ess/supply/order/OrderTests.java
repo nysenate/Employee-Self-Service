@@ -7,7 +7,6 @@ import gov.nysenate.ess.supply.order.dao.OrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -185,6 +184,29 @@ public class OrderTests extends SupplyTests {
     }
 
     @Test
+    public void canGetCompletedOrders() {
+        int orderId = TestUtils.submitOrder();
+        orderService.processOrder(orderId, new Employee());
+        orderService.completeOrder(orderId);
+        orderService.getCompletedOrdersBetween();
+    }
+
+    @Test
+    public void canGetCompletedOrdersInDateRange() {
+        int outOfRangeId = TestUtils.submitOrder();
+        orderService.processOrder(outOfRangeId, new Employee());
+        orderService.completeOrder(outOfRangeId);
+        sleep(10);
+        LocalDateTime start = LocalDateTime.now();
+        int inRangeId = TestUtils.submitOrder();
+        orderService.processOrder(inRangeId, new Employee());
+        orderService.completeOrder(inRangeId);
+        LocalDateTime end = LocalDateTime.now();
+        assertTrue(orderService.getCompletedOrdersBetween(start, end).contains(orderService.getOrderById(inRangeId)));
+        assertFalse(orderService.getCompletedOrdersBetween(start, end).contains(orderService.getOrderById(outOfRangeId)));
+    }
+
+    @Test
     public void canRejectOrder() {
         int orderId = TestUtils.submitOrder();
         assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
@@ -224,5 +246,13 @@ public class OrderTests extends SupplyTests {
 
     private void assertDateLessThan5SecondsOld(LocalDateTime orderDateTime) {
         assertTrue(orderDateTime.toInstant(ZoneOffset.UTC).isAfter(LocalDateTime.now().minusSeconds(5).toInstant(ZoneOffset.UTC)));
+    }
+
+    private void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

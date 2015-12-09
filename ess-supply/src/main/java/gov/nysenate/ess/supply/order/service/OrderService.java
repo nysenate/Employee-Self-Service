@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.order.Order;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,8 @@ public interface OrderService {
     List<Order> getProcessingOrders();
 
     void completeOrder(int orderId);
+
+    List<Order> getCompletedOrdersBetween();
+
+    List<Order> getCompletedOrdersBetween(LocalDateTime start, LocalDateTime end);
 }
