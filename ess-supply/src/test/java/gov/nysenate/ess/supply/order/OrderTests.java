@@ -29,211 +29,199 @@ public class OrderTests extends SupplyTests {
     private OrderDao sfmsDao;
 
     @Before
-    public void before() {
+    public void setUp() {
         TestUtils.resetInMemoryDaos();
     }
 
     @Test
     public void newOrderShouldBeGivenId() {
-        int orderId = TestUtils.submitOrder();
-        assertTrue(orderId > 0);
+        Order order = submitOrder();
+        assertTrue(order.getId() > 0);
     }
 
     @Test
     public void newOrderDateTimeShouldBeInitialized() {
-        int orderId = TestUtils.submitOrder();
-        Order order = orderService.getOrderById(orderId);
+        Order order = submitOrder();
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
     }
 
     @Test
     public void newOrderShouldHavePendingStatus() {
-        int orderId = TestUtils.submitOrder();
-        Order order = orderService.getOrderById(orderId);
+        Order order = submitOrder();
         assertEquals(order.getStatus(), OrderStatus.PENDING);
     }
 
     @Test
     public void canEditOrderItems() {
-        int orderId = TestUtils.submitOrder();
-        Map<Integer, Integer> originalItems = orderService.getOrderById(orderId).getItems();
+        Order order = submitOrder();
+        Map<Integer, Integer> originalItems = order.getItems();
         Map<Integer, Integer> newItems = incrementItemQuantities(originalItems);
-        orderService.updateOrderItems(orderId, newItems);
-        assertEquals(orderService.getOrderById(orderId).getItems(), newItems);
+        orderService.updateOrderItems(order.getId(), newItems);
+        assertEquals(order.getItems(), newItems);
     }
 
     @Test
     public void processingOrderShouldUpdateStatus() {
-        int orderId = TestUtils.submitOrder();
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
-        orderService.processOrder(orderId, new Employee());
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PROCESSING);
+        Order order = submitAndProcessOrder();
+        assertEquals(order.getStatus(), OrderStatus.PROCESSING);
     }
 
     @Test
     public void processingOrderSetsIssuingEmployee() {
-        int orderId = TestUtils.submitOrder();
-        assertNull(orderService.getOrderById(orderId).getIssuingEmployee());
+        Order order = submitOrder();
         Employee issuingEmployee = TestUtils.createEmployee();
-        orderService.processOrder(orderId, issuingEmployee);
-        assertEquals(orderService.getOrderById(orderId).getIssuingEmployee(), issuingEmployee);
+        orderService.processOrder(order.getId(), issuingEmployee);
+        assertEquals(order.getIssuingEmployee(), issuingEmployee);
     }
 
     @Test
     public void processingOrderSetsProcessedDateTime() {
-        int orderId = TestUtils.submitOrder();
-        assertNull(orderService.getOrderById(orderId).getProcessedDateTime());
-        orderService.processOrder(orderId, new Employee());
-        assertDateLessThan5SecondsOld(orderService.getOrderById(orderId).getProcessedDateTime());
+        Order order = submitAndProcessOrder();
+        assertDateLessThan5SecondsOld(order.getProcessedDateTime());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessAnAlreadyProcessingOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.processOrder(orderId, new Employee());
+        Order order = submitAndProcessOrder();
+        orderService.processOrder(order.getId(), new Employee());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessACompletedOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.completeOrder(orderId);
-        orderService.processOrder(orderId, new Employee());
+        Order order = submitProcessAndCompleteOrder();
+        orderService.processOrder(order.getId(), new Employee());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.rejectOrder(orderId);
-        orderService.processOrder(orderId, new Employee());
+        Order order = submitOrder();
+        orderService.rejectOrder(order.getId());
+        orderService.processOrder(order.getId(), new Employee());
     }
 
     @Test
     public void completingOrderShouldUpdateStatus() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.completeOrder(orderId);
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.COMPLETED);
+        Order order = submitProcessAndCompleteOrder();
+        assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
 
     @Test
     public void completingOrderSetsCompletedDateTime() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.completeOrder(orderId);
-        assertDateLessThan5SecondsOld(orderService.getOrderById(orderId).getCompletedDateTime());
+        Order order = submitProcessAndCompleteOrder();
+        assertDateLessThan5SecondsOld(order.getCompletedDateTime());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAPendingOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.completeOrder(orderId);
+        Order order = submitOrder();
+        orderService.completeOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAnAlreadyCompleteOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.completeOrder(orderId);
-        orderService.completeOrder(orderId);
+        Order order = submitProcessAndCompleteOrder();
+        orderService.completeOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteRejectedOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.rejectOrder(orderId);
-        orderService.completeOrder(orderId);
+        Order order = submitOrder();
+        orderService.rejectOrder(order.getId());
+        orderService.completeOrder(order.getId());
     }
 
     @Test
     public void completingOrderUpdatesSfms() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
+        Order order = submitAndProcessOrder();
         assertTrue(sfmsDao.getOrders().size() == 0);
-        orderService.completeOrder(orderId);
+        orderService.completeOrder(order.getId());
         assertTrue(sfmsDao.getOrders().size() == 1);
     }
 
     @Test
     public void canGetOrderById() {
-        int orderId = TestUtils.submitOrder();
-        Order order = orderService.getOrderById(orderId);
+        Order order = orderService.getOrderById(submitOrder().getId());
         assertNotNull(order);
     }
 
     @Test
     public void canGetAllOrders() {
         assertTrue(orderService.getOrders().size() == 0);
-        int orderId = TestUtils.submitOrder();
-        assertTrue(orderService.getOrders().contains(orderService.getOrderById(orderId)));
+        Order order = submitOrder();
+        assertTrue(orderService.getOrders().contains(order));
     }
 
     @Test
     public void canGetPendingOrders() {
-        int orderId = TestUtils.submitOrder();
+        Order order = submitOrder();
         List<Order> pendingOrders = orderService.getPendingOrders();
-        assertTrue(pendingOrders.contains(orderService.getOrderById(orderId)));
+        assertTrue(pendingOrders.contains(order));
     }
     @Test
     public void canGetOrdersInProcessing() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
+        Order order = submitAndProcessOrder();
         List<Order> processingOrders = orderService.getProcessingOrders();
-        assertTrue(processingOrders.contains(orderService.getOrderById(orderId)));
+        assertTrue(processingOrders.contains(order));
     }
 
     @Test
     public void canGetCompletedOrders() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.completeOrder(orderId);
-        orderService.getCompletedOrdersBetween();
+        submitProcessAndCompleteOrder();
+        assertTrue(orderService.getCompletedOrders().size() > 0);
     }
 
     @Test
     public void canGetCompletedOrdersInDateRange() {
-        int outOfRangeId = TestUtils.submitOrder();
-        orderService.processOrder(outOfRangeId, new Employee());
-        orderService.completeOrder(outOfRangeId);
+        Order outOfRange = submitProcessAndCompleteOrder();
         sleep(10);
         LocalDateTime start = LocalDateTime.now();
-        int inRangeId = TestUtils.submitOrder();
-        orderService.processOrder(inRangeId, new Employee());
-        orderService.completeOrder(inRangeId);
+        Order inRange = submitProcessAndCompleteOrder();
         LocalDateTime end = LocalDateTime.now();
-        assertTrue(orderService.getCompletedOrdersBetween(start, end).contains(orderService.getOrderById(inRangeId)));
-        assertFalse(orderService.getCompletedOrdersBetween(start, end).contains(orderService.getOrderById(outOfRangeId)));
+        assertTrue(orderService.getCompletedOrdersBetween(start, end).contains(inRange));
+        assertFalse(orderService.getCompletedOrdersBetween(start, end).contains(outOfRange));
     }
 
     @Test
     public void canRejectOrder() {
-        int orderId = TestUtils.submitOrder();
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.PENDING);
-        orderService.rejectOrder(orderId);
-        assertEquals(orderService.getOrderById(orderId).getStatus(), OrderStatus.REJECTED);
+        Order order = submitOrder();
+        assertEquals(order.getStatus(), OrderStatus.PENDING);
+        orderService.rejectOrder(order.getId());
+        assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantRejectProcessingOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.rejectOrder(orderId);
+        Order order = submitAndProcessOrder();
+        orderService.rejectOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantRejectCompletedOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.processOrder(orderId, new Employee());
-        orderService.completeOrder(orderId);
-        orderService.rejectOrder(orderId);
+        Order order = submitProcessAndCompleteOrder();
+        orderService.rejectOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantRejectRejectedOrder() {
-        int orderId = TestUtils.submitOrder();
-        orderService.rejectOrder(orderId);
-        orderService.rejectOrder(orderId);
+        Order order = submitOrder();
+        orderService.rejectOrder(order.getId());
+        orderService.rejectOrder(order.getId());
+    }
+
+    private Order submitOrder() {
+        return orderService.submitOrder(TestUtils.createEmployee(), TestUtils.createLocation(), TestUtils.orderedItemsToQuantitiesMap());
+    }
+
+    private Order submitAndProcessOrder() {
+        Order order = submitOrder();
+        orderService.processOrder(order.getId(), new Employee());
+        return order;
+    }
+
+    private Order submitProcessAndCompleteOrder() {
+        Order order = submitAndProcessOrder();
+        orderService.completeOrder(order.getId());
+        return order;
     }
 
     private Map<Integer,Integer> incrementItemQuantities(Map<Integer, Integer> originalItems) {

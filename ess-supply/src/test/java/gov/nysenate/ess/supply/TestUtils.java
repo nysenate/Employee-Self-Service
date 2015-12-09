@@ -18,16 +18,14 @@ import java.util.TreeMap;
 @Service
 public class TestUtils {
 
-    private static OrderService orderService;
     private static SupplyItemService itemService;
     private static InMemoryOrder orderDao;
     private static SfmsInMemoryOrder sfmsDao;
     private static InMemorySupplyItem supplyItemDao;
 
     @Autowired
-    public TestUtils(OrderService orderService, SupplyItemService itemService, InMemoryOrder orderDao,
+    public TestUtils(SupplyItemService itemService, InMemoryOrder orderDao,
                      SfmsInMemoryOrder sfmsDao, InMemorySupplyItem supplyItemDao) {
-        this.orderService = orderService;
         this.itemService = itemService;
         this.orderDao = orderDao;
         this.sfmsDao = sfmsDao;
@@ -40,24 +38,20 @@ public class TestUtils {
         supplyItemDao.reset();
     }
 
-    public static int submitOrder() {
-        return orderService.submitOrder(createEmployee(), createLocation(), orderedItemsToQuantitiesMap());
-    }
-
     public static Employee createEmployee() {
         Employee emp = new Employee();
         emp.setUid("JOHNSON");
         return emp;
     }
 
-    private static Location createLocation() {
+    public static Location createLocation() {
         Location location = new Location();
         location.setCode("AF2FB");
         location.setType(LocationType.WORK);
         return location;
     }
 
-    private static Map<Integer, Integer> orderedItemsToQuantitiesMap() {
+    public static Map<Integer, Integer> orderedItemsToQuantitiesMap() {
         TreeMap<Integer, Integer> orderedItemsToQuantities = new TreeMap<>();
         for (SupplyItem item : itemService.getSupplyItems()) {
             orderedItemsToQuantities.put(item.getId(), 1);

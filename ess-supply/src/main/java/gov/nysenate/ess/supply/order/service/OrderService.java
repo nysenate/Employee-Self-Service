@@ -10,15 +10,15 @@ import java.util.Map;
 
 public interface OrderService {
 
-    int submitOrder(Employee customer, Location location, Map<Integer, Integer> items);
+    Order submitOrder(Employee customer, Location location, Map<Integer, Integer> items);
 
     Order getOrderById(int orderId);
 
-    void updateOrderItems(int orderId, Map<Integer, Integer> newItems);
+    Order updateOrderItems(int orderId, Map<Integer, Integer> newItems);
 
-    void rejectOrder(int orderId);
+    Order rejectOrder(int orderId);
 
-    void processOrder(int orderId, Employee issuingEmployee);
+    Order processOrder(int orderId, Employee issuingEmployee);
 
     List<Order> getOrders();
 
@@ -26,9 +26,9 @@ public interface OrderService {
 
     List<Order> getProcessingOrders();
 
-    void completeOrder(int orderId);
+    Order completeOrder(int orderId);
 
-    List<Order> getCompletedOrdersBetween();
+    List<Order> getCompletedOrders();
 
     List<Order> getCompletedOrdersBetween(LocalDateTime start, LocalDateTime end);
 }

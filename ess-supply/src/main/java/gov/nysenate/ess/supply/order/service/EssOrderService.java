@@ -28,12 +28,11 @@ public class EssOrderService implements OrderService {
     private OrderDao sfmsDao;
 
     @Override
-    public synchronized int submitOrder(Employee customer, Location location, Map<Integer, Integer> items) {
-        int id = orderDao.getUniqueId();
-        Order order = new Order(id, customer, LocalDateTime.now(), location);
+    public synchronized Order submitOrder(Employee customer, Location location, Map<Integer, Integer> items) {
+        Order order = new Order(orderDao.getUniqueId(), customer, LocalDateTime.now(), location);
         order.setItems(items);
         orderDao.saveOrder(order);
-        return id;
+        return order;
     }
 
     @Override
@@ -42,14 +41,15 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public void updateOrderItems(int orderId, Map<Integer, Integer> newItems) {
+    public Order updateOrderItems(int orderId, Map<Integer, Integer> newItems) {
         Order order = orderDao.getOrderById(orderId);
         order.setItems(newItems);
         orderDao.saveOrder(order);
+        return order;
     }
 
     @Override
-    public void rejectOrder(int orderId) {
+    public Order rejectOrder(int orderId) {
         Order order = orderDao.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new WrongOrderStatusException("Can only reject orders with status of " + OrderStatus.PENDING +
@@ -57,10 +57,11 @@ public class EssOrderService implements OrderService {
         }
         order.setStatus(OrderStatus.REJECTED);
         orderDao.saveOrder(order);
+        return order;
     }
 
     @Override
-    public void processOrder(int orderId, Employee issuingEmployee) {
+    public Order processOrder(int orderId, Employee issuingEmployee) {
         Order order = orderDao.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new WrongOrderStatusException("Can only process orders with status of " + OrderStatus.PENDING +
@@ -70,6 +71,7 @@ public class EssOrderService implements OrderService {
         order.setStatus(OrderStatus.PROCESSING);
         order.setProcessedDateTime(LocalDateTime.now());
         orderDao.saveOrder(order);
+        return order;
     }
 
     @Override
@@ -88,7 +90,7 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public void completeOrder(int orderId) {
+    public Order completeOrder(int orderId) {
         Order order = orderDao.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PROCESSING) {
             throw new WrongOrderStatusException("Can only complete orders with status of " + OrderStatus.PROCESSING +
@@ -99,10 +101,11 @@ public class EssOrderService implements OrderService {
         // TODO: both these saves should be in same transaction.
         orderDao.saveOrder(order);
         sfmsDao.saveOrder(order);
+        return order;
     }
 
     @Override
-    public List<Order> getCompletedOrdersBetween() {
+    public List<Order> getCompletedOrders() {
         return getOrdersByStatus(OrderStatus.COMPLETED);
     }
 
