@@ -20,9 +20,9 @@ public class InMemorySupplyItem implements SupplyItemDao {
     public void reset() {
         items = new HashMap<>();
         items.put(1, new SupplyItem(1, "P2", "Pencils", "Number 2 Yellow Pencils",
-                                       24, "Pencils", 2));
+                                       24, "Pencils", 1));
         items.put(2, new SupplyItem(2, "PBL", "Blue Ballpoint Pens", "Blue ink, bold point",
-                                       12, "Pens", 2));
+                                       12, "Pens", 1));
     }
 
     @Override

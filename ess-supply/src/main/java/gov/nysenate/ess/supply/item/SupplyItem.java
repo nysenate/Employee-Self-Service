@@ -6,19 +6,19 @@ public final class SupplyItem {
     private final String commodityCode;
     private final String name;
     private final String description;
-    private final int unitsize;
+    private final int unitSize;
     private final String category;
-    private final int warnQuantity;
+    private final int suggestedMaxQty;
 
-    public SupplyItem(int id, String commodityCode, String name, String description, int unitsize,
-                      String category, int warnQuantity) {
+    public SupplyItem(int id, String commodityCode, String name, String description, int unitSize,
+                      String category, int suggestedMaxQty) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.name = name;
         this.description = description;
-        this.unitsize = unitsize;
+        this.unitSize = unitSize;
         this.category = category;
-        this.warnQuantity = warnQuantity;
+        this.suggestedMaxQty = suggestedMaxQty;
     }
 
     public int getId() {
@@ -37,15 +37,15 @@ public final class SupplyItem {
         return description;
     }
 
-    public int getUnitsize() {
-        return unitsize;
+    public int getUnitSize() {
+        return unitSize;
     }
 
     public String getCategory() {
         return category;
     }
 
-    public int getWarnQuantity() {
-        return warnQuantity;
+    public int getSuggestedMaxQty() {
+        return suggestedMaxQty;
     }
 }

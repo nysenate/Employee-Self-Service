@@ -13,7 +13,7 @@ essSupply.directive('requisitionQuantitySelector', [function() {
     return {
         restrict: 'A',
         scope: {
-            product: '=product',
+            item: '=item',
             warnQty: '=warnQty'
         },
         link: function(scope, element, attributes) {
