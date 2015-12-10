@@ -56,7 +56,7 @@ public class OrderTests extends SupplyTests {
         Order order = submitOrder();
         Map<Integer, Integer> originalItems = order.getItems();
         Map<Integer, Integer> newItems = incrementItemQuantities(originalItems);
-        orderService.updateOrderItems(order.getId(), newItems);
+        order = orderService.updateOrderItems(order.getId(), newItems);
         assertEquals(order.getItems(), newItems);
     }
 
@@ -70,7 +70,7 @@ public class OrderTests extends SupplyTests {
     public void processingOrderSetsIssuingEmployee() {
         Order order = submitOrder();
         Employee issuingEmployee = TestUtils.createEmployee();
-        orderService.processOrder(order.getId(), issuingEmployee);
+        order = orderService.processOrder(order.getId(), issuingEmployee);
         assertEquals(order.getIssuingEmployee(), issuingEmployee);
     }
 
@@ -95,7 +95,7 @@ public class OrderTests extends SupplyTests {
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
         Order order = submitOrder();
-        orderService.rejectOrder(order.getId());
+        order = orderService.rejectOrder(order.getId());
         orderService.processOrder(order.getId(), new Employee());
     }
 
@@ -126,7 +126,7 @@ public class OrderTests extends SupplyTests {
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteRejectedOrder() {
         Order order = submitOrder();
-        orderService.rejectOrder(order.getId());
+        order = orderService.rejectOrder(order.getId());
         orderService.completeOrder(order.getId());
     }
 
@@ -185,7 +185,7 @@ public class OrderTests extends SupplyTests {
     public void canRejectOrder() {
         Order order = submitOrder();
         assertEquals(order.getStatus(), OrderStatus.PENDING);
-        orderService.rejectOrder(order.getId());
+        order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
@@ -204,7 +204,7 @@ public class OrderTests extends SupplyTests {
     @Test(expected = WrongOrderStatusException.class)
     public void cantRejectRejectedOrder() {
         Order order = submitOrder();
-        orderService.rejectOrder(order.getId());
+        order = orderService.rejectOrder(order.getId());
         orderService.rejectOrder(order.getId());
     }
 
@@ -214,14 +214,12 @@ public class OrderTests extends SupplyTests {
 
     private Order submitAndProcessOrder() {
         Order order = submitOrder();
-        orderService.processOrder(order.getId(), new Employee());
-        return order;
+        return orderService.processOrder(order.getId(), new Employee());
     }
 
     private Order submitProcessAndCompleteOrder() {
         Order order = submitAndProcessOrder();
-        orderService.completeOrder(order.getId());
-        return order;
+        return orderService.completeOrder(order.getId());
     }
 
     private Map<Integer,Integer> incrementItemQuantities(Map<Integer, Integer> originalItems) {

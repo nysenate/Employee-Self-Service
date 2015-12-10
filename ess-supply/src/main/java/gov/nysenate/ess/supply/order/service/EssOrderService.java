@@ -29,8 +29,8 @@ public class EssOrderService implements OrderService {
 
     @Override
     public synchronized Order submitOrder(Employee customer, Location location, Map<Integer, Integer> items) {
-        Order order = new Order(orderDao.getUniqueId(), customer, LocalDateTime.now(), location);
-        order.setItems(items);
+        Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING).build();
+        order = order.setItems(items);
         orderDao.saveOrder(order);
         return order;
     }
@@ -43,7 +43,7 @@ public class EssOrderService implements OrderService {
     @Override
     public Order updateOrderItems(int orderId, Map<Integer, Integer> newItems) {
         Order order = orderDao.getOrderById(orderId);
-        order.setItems(newItems);
+        order = order.setItems(newItems);
         orderDao.saveOrder(order);
         return order;
     }
@@ -55,7 +55,7 @@ public class EssOrderService implements OrderService {
             throw new WrongOrderStatusException("Can only reject orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
         }
-        order.setStatus(OrderStatus.REJECTED);
+        order = order.setStatus(OrderStatus.REJECTED);
         orderDao.saveOrder(order);
         return order;
     }
@@ -67,9 +67,9 @@ public class EssOrderService implements OrderService {
             throw new WrongOrderStatusException("Can only process orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to process order with status of " + order.getStatus().toString());
         }
-        order.setIssuingEmployee(issuingEmployee);
-        order.setStatus(OrderStatus.PROCESSING);
-        order.setProcessedDateTime(LocalDateTime.now());
+        order = order.setIssuingEmployee(issuingEmployee);
+        order = order.setStatus(OrderStatus.PROCESSING);
+        order = order.setProcessedDateTime(LocalDateTime.now());
         orderDao.saveOrder(order);
         return order;
     }
@@ -96,8 +96,8 @@ public class EssOrderService implements OrderService {
             throw new WrongOrderStatusException("Can only complete orders with status of " + OrderStatus.PROCESSING +
                                                 ". Tried to complete order with status of " + order.getStatus().toString());
         }
-        order.setStatus(OrderStatus.COMPLETED);
-        order.setCompletedDateTime(LocalDateTime.now());
+        order = order.setStatus(OrderStatus.COMPLETED);
+        order = order.setCompletedDateTime(LocalDateTime.now());
         // TODO: both these saves should be in same transaction.
         orderDao.saveOrder(order);
         sfmsDao.saveOrder(order);
