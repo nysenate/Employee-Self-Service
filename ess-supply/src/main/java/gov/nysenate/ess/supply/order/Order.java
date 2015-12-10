@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.Set;
 
 public final class Order {
 
@@ -16,8 +16,7 @@ public final class Order {
     private final LocalDateTime processedDateTime;
     private final LocalDateTime completedDateTime;
     private final OrderStatus status;
-    /** Map of item ids to order quantities */
-    private final Map<Integer, Integer> items;
+    private final Set<LineItem> items;
 
     public static class Builder {
         private int id;
@@ -28,7 +27,7 @@ public final class Order {
         private LocalDateTime processedDateTime;
         private LocalDateTime completedDateTime;
         private OrderStatus status;
-        private Map<Integer, Integer> items;
+        private Set<LineItem> items;
 
         public Builder(int id, Employee customer, LocalDateTime orderDateTime, Location location, OrderStatus status) {
             this.id = id;
@@ -60,7 +59,7 @@ public final class Order {
             this.status = status;
             return this;
         }
-        public Builder items(Map<Integer, Integer> items) {
+        public Builder items(Set<LineItem> items) {
             this.items = items;
             return this;
         }
@@ -139,11 +138,11 @@ public final class Order {
         return copy().status(status).build();
     }
 
-    public Map<Integer, Integer> getItems() {
+    public Set<LineItem> getItems() {
         return items;
     }
 
-    public Order setItems(Map<Integer, Integer> items) {
+    public Order setItems(Set<LineItem> items) {
         return copy().items(items).build();
     }
 }

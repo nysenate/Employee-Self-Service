@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.order.service;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.supply.order.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +29,7 @@ public class EssOrderService implements OrderService {
     private OrderDao sfmsDao;
 
     @Override
-    public synchronized Order submitOrder(Employee customer, Location location, Map<Integer, Integer> items) {
+    public synchronized Order submitOrder(Employee customer, Location location, Set<LineItem> items) {
         Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING).build();
         order = order.setItems(items);
         orderDao.saveOrder(order);
@@ -41,7 +42,7 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public Order updateOrderItems(int orderId, Map<Integer, Integer> newItems) {
+    public Order updateOrderItems(int orderId, Set<LineItem> newItems) {
         Order order = orderDao.getOrderById(orderId);
         order = order.setItems(newItems);
         orderDao.saveOrder(order);

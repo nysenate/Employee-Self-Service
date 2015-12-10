@@ -6,14 +6,14 @@ import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
+import gov.nysenate.ess.supply.order.LineItem;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrder;
 import gov.nysenate.ess.supply.order.dao.SfmsInMemoryOrder;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Service
 public class TestUtils {
@@ -51,10 +51,10 @@ public class TestUtils {
         return location;
     }
 
-    public static Map<Integer, Integer> orderedItemsToQuantitiesMap() {
-        TreeMap<Integer, Integer> orderedItemsToQuantities = new TreeMap<>();
+    public static Set<LineItem> orderedItemsToQuantitiesMap() {
+        Set<LineItem> orderedItemsToQuantities = new HashSet<>();
         for (SupplyItem item : itemService.getSupplyItems()) {
-            orderedItemsToQuantities.put(item.getId(), 1);
+            orderedItemsToQuantities.add(new LineItem(item.getId(), 1));
         }
         return orderedItemsToQuantities;
     }

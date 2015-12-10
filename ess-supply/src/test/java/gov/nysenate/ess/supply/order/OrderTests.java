@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -54,8 +52,8 @@ public class OrderTests extends SupplyTests {
     @Test
     public void canEditOrderItems() {
         Order order = submitOrder();
-        Map<Integer, Integer> originalItems = order.getItems();
-        Map<Integer, Integer> newItems = incrementItemQuantities(originalItems);
+        Set<LineItem> originalItems = order.getItems();
+        Set<LineItem> newItems = incrementItemQuantities(originalItems);
         order = orderService.updateOrderItems(order.getId(), newItems);
         assertEquals(order.getItems(), newItems);
     }
@@ -222,10 +220,10 @@ public class OrderTests extends SupplyTests {
         return orderService.completeOrder(order.getId());
     }
 
-    private Map<Integer,Integer> incrementItemQuantities(Map<Integer, Integer> originalItems) {
-        Map<Integer, Integer> newItems = new TreeMap<>();
-        for (Map.Entry<Integer, Integer> entry : originalItems.entrySet()) {
-            newItems.put(entry.getKey(), entry.getValue() + 1);
+    private Set<LineItem> incrementItemQuantities(Set<LineItem> originalItems) {
+        Set<LineItem> newItems = new HashSet<>();
+        for (LineItem lineItem : originalItems) {
+            newItems.add(new LineItem(lineItem.getItemId(), lineItem.getQuantity() + 1));
         }
         return newItems;
     }
