@@ -1,7 +1,7 @@
-essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'modals', 'SupplyInventoryService',
+essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'modals',
     'SupplyOrderService', supplyManageController]);
 
-function supplyManageController($scope, modals, supplyInventoryService, supplyOrderService) {
+function supplyManageController($scope, modals, supplyOrderService) {
 
     $scope.selected = null;
 

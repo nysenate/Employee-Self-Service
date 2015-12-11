@@ -70,7 +70,16 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     /** Supply */
     $routeProvider.when(ctxPath + '/supply', {
-        redirectTo: ctxPath + '/supply/requisition/order'
+        redirectTo: ctxPath + '/supply/requisition/order',
+        resolve: {
+            'MyInventoryServiceData': function(SupplyInventoryService) {
+                return SupplyInventoryService.promise;
+            },
+            'MyCategoryServiceData': function(SupplyCategoryService) {
+                return SupplyCategoryService.promise;
+            }
+        }
+
     });
 
     $routeProvider.when(ctxPath + '/supply/requisition/order', {

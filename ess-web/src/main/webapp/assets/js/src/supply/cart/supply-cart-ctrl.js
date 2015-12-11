@@ -1,21 +1,21 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
 '$scope', 'SupplyCart', 'SupplyInventoryService', supplyCartController]);
 
-function supplyCartController($scope, SupplyCart, SupplyInventoryService) {
+function supplyCartController($scope, supplyCart, supplyInventoryService) {
 
     $scope.myCartItems = function() {
-        return SupplyCart.getItems();
+        return supplyCart.getItems();
     };
 
-    $scope.orderQuantityRange = function(product) {
-        return SupplyInventoryService.orderQuantityRange(product);
+    $scope.orderQuantityRange = function(item) {
+        return supplyInventoryService.orderQuantityRange(item);
     };
 
     $scope.cartHasItems = function() {
-        return SupplyCart.getItems().length > 0
+        return supplyCart.getItems().length > 0
     };
 
-    $scope.removeFromCart = function(product) {
-        SupplyCart.removeFromCart(product);
+    $scope.removeFromCart = function(item) {
+        supplyCart.removeFromCart(item);
     };
 }
