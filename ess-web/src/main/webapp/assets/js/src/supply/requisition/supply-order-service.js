@@ -30,7 +30,7 @@ essSupply.service('SupplyOrderService', ['SupplyInventoryService', function(supp
 
     function initOrders() {
         if (orders.length === 0) {
-            orders.push(new SupplyOrder(10, 'D56004', 'W', moment("2015-11-17 13:54"), 'CASEIRAS',
+            orders.push(new SupplyOrder(10, 'D5600', 'W', moment("2015-11-17 13:54"), 'RICHARDSON',
                 [new Item(1, 1), new Item(4, 1), new Item(9, 2)], status.PENDING));
             orders.push(new SupplyOrder(11, 'LC300', 'W', moment("2015-11-17 12:43"), 'SMITH',
                 [new Item(7, 1), new Item(6, 1), new Item(8, 4)], status.PENDING));

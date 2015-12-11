@@ -94,10 +94,10 @@
 
   <%--   InProcess Orders   --%>
   <div class="content-container">
-    <h1 style="background: #4196A7; color: white;">Inprocess Requisition Requests</h1>
+    <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
 
     <div class="content-info" ng-show="inprocessOrders().length == 0">
-      <h2 class="dark-gray">No Inprocess Requests.</h2>
+      <h2 class="dark-gray">No Processing Requests.</h2>
     </div>
 
     <div style="padding: 0px 10px 10px 10px;" ng-show="inprocessOrders().length > 0">

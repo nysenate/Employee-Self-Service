@@ -47,7 +47,7 @@
       <div class="col-8-12" style="min-height: 1px;"></div> <%--min height to prevent horizontal collapsing--%>
       <div class="col-2-12">
         <a href="${ctxPath}/supply/requisition/order">
-          <input class="submit-button margin-10" type="button" value="Continue Shopping">
+          <input class="submit-button margin-10" type="button" value="Continue Browsing">
         </a>
       </div>
       <div class="col-2-12">

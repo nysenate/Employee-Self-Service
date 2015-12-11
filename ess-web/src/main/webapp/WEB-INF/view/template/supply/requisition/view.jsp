@@ -18,13 +18,15 @@
           Ordered By: {{order.purchaser}}
         </div>
         <div class="col-6-12">
-          <a href="javascript:if(window.print)window.print()">
-            Print
+          <a class="supply-title" href="javascript:if(window.print)window.print()">
+            Print Page
           </a>
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="content-container">
     <div class="padding-10">
       <table class="ess-table supply-listing-table">
         <thead>
