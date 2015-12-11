@@ -2,7 +2,8 @@ package gov.nysenate.ess.supply.order.service;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.supply.order.LineItem;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
@@ -28,8 +29,13 @@ public class EssOrderService implements OrderService {
     @Autowired
     private OrderDao sfmsDao;
 
+    @Autowired
+    private EmployeeInfoService employeeInfoService;
+
     @Override
-    public synchronized Order submitOrder(Employee customer, Location location, Set<LineItem> items) {
+    public synchronized Order submitOrder(int empId, Set<LineItem> items) {
+        Employee customer = employeeInfoService.getEmployee(empId);
+        Location location = customer.getWorkLocation();
         Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING).build();
         order = order.setItems(items);
         orderDao.saveOrder(order);
@@ -62,7 +68,8 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public Order processOrder(int orderId, Employee issuingEmployee) {
+    public Order processOrder(int orderId, int issuingEmpId) {
+        Employee issuingEmployee = employeeInfoService.getEmployee(issuingEmpId);
         Order order = orderDao.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new WrongOrderStatusException("Can only process orders with status of " + OrderStatus.PENDING +

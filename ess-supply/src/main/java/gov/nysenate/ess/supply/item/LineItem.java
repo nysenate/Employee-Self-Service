@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.order;
+package gov.nysenate.ess.supply.item;
 
 /** A Line item represents an item in an order.
  * It contains the an item id and the quantity ordered. */

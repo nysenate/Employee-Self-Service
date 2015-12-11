@@ -1,8 +1,8 @@
 package gov.nysenate.ess.supply.order;
 
-import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.TestUtils;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderService;
@@ -67,9 +67,8 @@ public class OrderTests extends SupplyTests {
     @Test
     public void processingOrderSetsIssuingEmployee() {
         Order order = submitOrder();
-        Employee issuingEmployee = TestUtils.createEmployee();
-        order = orderService.processOrder(order.getId(), issuingEmployee);
-        assertEquals(order.getIssuingEmployee(), issuingEmployee);
+        order = orderService.processOrder(order.getId(), 2);
+        assertEquals(order.getIssuingEmployee().getEmployeeId(), 2);
     }
 
     @Test
@@ -81,20 +80,20 @@ public class OrderTests extends SupplyTests {
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessAnAlreadyProcessingOrder() {
         Order order = submitAndProcessOrder();
-        orderService.processOrder(order.getId(), new Employee());
+        orderService.processOrder(order.getId(), 2);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessACompletedOrder() {
         Order order = submitProcessAndCompleteOrder();
-        orderService.processOrder(order.getId(), new Employee());
+        orderService.processOrder(order.getId(), 2);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
         Order order = submitOrder();
         order = orderService.rejectOrder(order.getId());
-        orderService.processOrder(order.getId(), new Employee());
+        orderService.processOrder(order.getId(), 2);
     }
 
     @Test
@@ -207,12 +206,12 @@ public class OrderTests extends SupplyTests {
     }
 
     private Order submitOrder() {
-        return orderService.submitOrder(TestUtils.createEmployee(), TestUtils.createLocation(), TestUtils.orderedItemsToQuantitiesMap());
+        return orderService.submitOrder(1, TestUtils.orderedItemsToQuantitiesMap());
     }
 
     private Order submitAndProcessOrder() {
         Order order = submitOrder();
-        return orderService.processOrder(order.getId(), new Employee());
+        return orderService.processOrder(order.getId(), 2);
     }
 
     private Order submitProcessAndCompleteOrder() {
