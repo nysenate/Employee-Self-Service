@@ -70,7 +70,11 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     /** Supply */
     $routeProvider.when(ctxPath + '/supply', {
-        redirectTo: ctxPath + '/supply/requisition/order',
+        redirectTo: ctxPath + '/supply/requisition/order'
+    });
+
+    $routeProvider.when(ctxPath + '/supply/requisition/order', {
+        templateUrl: ctxPath + '/template/supply/requisition/order',
         resolve: {
             'MyInventoryServiceData': function(SupplyInventoryService) {
                 return SupplyInventoryService.promise;
@@ -79,11 +83,6 @@ essApp.config(function($routeProvider, $locationProvider) {
                 return SupplyCategoryService.promise;
             }
         }
-
-    });
-
-    $routeProvider.when(ctxPath + '/supply/requisition/order', {
-        templateUrl: ctxPath + '/template/supply/requisition/order'
     });
 
     $routeProvider.when(ctxPath + '/supply/requisition/view', {

@@ -104,3 +104,13 @@ essApi.factory('EmpCheckHistoryApi',  ['$resource', 'appProps', function($resour
 essApi.factory('SupplyItemApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supplyItems.json')
 }]);
+
+/** --- Supply Order API --- */
+
+essApi.factory('SupplyAllOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders.json')
+}]);
+
+essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/submitOrder')
+}]);

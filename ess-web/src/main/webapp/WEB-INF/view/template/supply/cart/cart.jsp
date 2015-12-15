@@ -51,9 +51,7 @@
         </a>
       </div>
       <div class="col-2-12">
-        <a href="${ctxPath}/supply/requisition/order">
-          <input ng-click="" class="submit-button margin-10" type="button" value="Checkout">
-        </a>
+          <input ng-click="submitOrder()" class="submit-button margin-10" type="button" value="Checkout">
       </div>
     </div>
   </div>
