@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supplyOrders")
@@ -36,14 +37,64 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/submitOrder", method = RequestMethod.POST, consumes = "application/json")
-    public void submitOrder(@RequestBody NewOrderView newOrder) {
+    public BaseResponse submitOrder(@RequestBody NewOrderView newOrder) {
         int customerId = newOrder.getCustomerId();
         Set<LineItem> lineItems = new HashSet<>();
         for (LineItemView lineItemView: newOrder.getItems()) {
             lineItems.add(lineItemView.toLineItem());
         }
-        orderService.submitOrder(customerId, lineItems);
+        Order order = orderService.submitOrder(customerId, lineItems);
+        return new ViewObjectResponse<>(new OrderView(order));
     }
 
+    // TODO sort by submitted date asc/desc?
+    @RequestMapping("/getPending")
+    public BaseResponse getPendingOrders() {
+        List<Order> pendingOrders = orderService.getPendingOrders();
+        return ListViewResponse.of(pendingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+    }
+
+    @RequestMapping("/getProcessing")
+    public BaseResponse getProcessingOrders() {
+        List<Order> processingOrders = orderService.getProcessingOrders();
+        return ListViewResponse.of(processingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+    }
+
+    /** Return list of orders completed today. */
+    @RequestMapping("/getCompleted")
+    public BaseResponse getCompletedOrders() {
+        List<Order> completedOrders = orderService.getCompletedOrders();
+        return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+    }
+
+    @RequestMapping("/getRejected")
+    public BaseResponse getRejectedOrders() {
+        // TODO:
+//        List<Order> completedOrders = orderService.get();
+//        return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+        return null;
+    }
+
+    @RequestMapping(value = "/process", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse processOrder(@RequestBody OrderView orderView) {
+        Order order = orderService.processOrder(orderView.getId(), orderView.getIssuingEmployee().getEmployeeId());
+        return new ViewObjectResponse<>(new OrderView(order));
+    }
+
+    @RequestMapping(value = "/complete", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse completeOrder(@RequestBody OrderView orderView) {
+        Order order = orderService.completeOrder(orderView.getId());
+        return new ViewObjectResponse<>(new OrderView(order));
+    }
+
+    // TODO: add rejected by user.
+
+    @RequestMapping(value = "/reject", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse rejectOrder(@RequestParam OrderView orderView) {
+        Order order = orderService.rejectOrder(orderView.getId());
+        return new ViewObjectResponse<>(new OrderView(order));
+    }
+
+    // edit order
 
 }

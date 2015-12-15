@@ -27,7 +27,7 @@ essSupply.service('SupplyInventoryService', ['SupplyItemApi', function(supplyIte
             return range;
         },
 
-        getProductById: function(id) {
+        getItemById: function(id) {
             var item = false;
             var search = $.grep(items, function(prod){ return prod.id === id; });
             if (search.length > 0) {

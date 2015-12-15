@@ -114,3 +114,27 @@ essApi.factory('SupplyAllOrdersApi', ['$resource', 'appProps', function($resourc
 essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supplyOrders/submitOrder')
 }]);
+
+essApi.factory('SupplyGetPendingOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/getPending.json')
+}]);
+
+essApi.factory('SupplyGetProcessingOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/getProcessing.json')
+}]);
+
+essApi.factory('SupplyGetCompletedOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/getCompleted.json')
+}]);
+
+essApi.factory('SupplyProcessOrderApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/process')
+}]);
+
+essApi.factory('SupplyCompleteOrderApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/complete')
+}]);
+
+essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supplyOrders/reject')
+}]);

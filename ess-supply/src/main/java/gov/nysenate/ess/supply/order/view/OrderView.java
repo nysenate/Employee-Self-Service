@@ -28,7 +28,7 @@ public class OrderView implements ViewObject {
         this.id = order.getId();
         this.customer = new EmployeeView(order.getCustomer());
         this.orderDateTime = order.getOrderDateTime();
-        this.location = order.getLocation().getCode() + "-" + order.getLocation().getType().getName();
+        this.location = order.getLocation().getCode() + "-" + order.getLocation().getType().getCode();
         this.issuingEmployee = new EmployeeView(order.getIssuingEmployee());
         this.processedDateTime = order.getProcessedDateTime();
         this.completedDateTime = order.getCompletedDateTime();

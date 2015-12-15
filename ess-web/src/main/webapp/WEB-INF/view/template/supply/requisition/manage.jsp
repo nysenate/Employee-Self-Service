@@ -7,11 +7,11 @@
   <div class="content-container">
     <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
 
-    <div class="content-info" ng-show="pendingOrders().length == 0">
+    <div class="content-info" ng-show="pendingOrders.length == 0">
         <h2 class="dark-gray">No Pending Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders().length > 0">
+    <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders.length > 0">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
           Location
@@ -33,19 +33,19 @@
         </div>
       </div>
 
-      <div  ng-repeat="order in pendingOrders()">
+      <div  ng-repeat="order in pendingOrders">
         <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}">
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.locCode}} - {{order.locType}}
+            {{order.location}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.purchaser}}
+            {{order.customer.lastName}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+            {{order.orderDateTime}}
           </div>
           <div class="col-2-12 supply-button-cell">
             <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
@@ -73,18 +73,18 @@
               Quantity
             </div>
           </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows" ng-class="{warn: highlightLineItem(item)}">
+          <div ng-repeat="lineItem in order.items" class="grid grid-padding supply-detail-rows" ng-class="{warn: highlightLineItem(lineItem)}">
             <div class="col-3-12">
-              {{item.product.commodityCode}}
+              {{getItemCommodityCode(lineItem.itemId)}}
             </div>
             <div class="col-3-12">
-              {{item.product.name}}
+              {{getItemName(lineItem.itemId)}}
             </div>
             <div class="col-3-12">
-              {{item.product.unitSize}}/Pack
+              {{getItemUnitSize(lineItem.itemId)}}/Pack
             </div>
             <div class="col-3-12">
-              {{item.quantity}}
+              {{lineItem.quantity}}
             </div>
           </div>
         </div>
@@ -92,15 +92,15 @@
     </div>
   </div>
 
-  <%--   InProcess Orders   --%>
+  <%--   Processing Orders   --%>
   <div class="content-container">
     <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
 
-    <div class="content-info" ng-show="inprocessOrders().length == 0">
+    <div class="content-info" ng-show="processingOrders.length == 0">
       <h2 class="dark-gray">No Processing Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="inprocessOrders().length > 0">
+    <div style="padding: 0px 10px 10px 10px;" ng-show="processingOrders.length > 0">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
           Location
@@ -122,22 +122,22 @@
         </div>
       </div>
 
-      <div  ng-repeat="order in inprocessOrders()">
+      <div  ng-repeat="order in processingOrders">
         <div class="grid grid-padding supply-manage-rows">
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.locCode}} - {{order.locType}}
+            {{order.location}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.purchaser}}
+            {{order.customer.lastName}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+            {{order.orderDateTime}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.issueEmployee}}
+            {{order.issuingEmployee.lastName}}
           </div>
           <div class="col-2-12 supply-button-cell">
             <input ng-click="completeOrder(order)" class="submit-button" type="button" value="Complete" style="padding: 3px 8px">
@@ -160,18 +160,18 @@
               Quantity
             </div>
           </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows">
+          <div ng-repeat="lineItem in order.items" class="grid grid-padding supply-detail-rows">
             <div class="col-3-12">
-              {{item.product.commodityCode}}
+              {{getItemCommodityCode(lineItem.itemId)}}
             </div>
             <div class="col-3-12">
-              {{item.product.name}}
+              {{getItemName(lineItem.itemId)}}
             </div>
             <div class="col-3-12">
-              {{item.product.unitSize}}/Pack
+              {{getItemUnitSize(lineItem.itemId)}}/Pack
             </div>
             <div class="col-3-12">
-              {{item.quantity}}
+              {{lineItem.quantity}}
             </div>
           </div>
         </div>
@@ -183,11 +183,11 @@
   <div class="content-container">
     <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
 
-    <div class="content-info" ng-show="completedOrders().length == 0">
+    <div class="content-info" ng-show="completedOrders.length == 0">
       <h2 class="dark-gray">No Completed Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders().length > 0">
+    <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders.length > 0">
       <div class="grid grid-padding supply-manage-header">
         <div class="col-2-12">
           Location
@@ -209,25 +209,25 @@
         </div>
       </div>
 
-      <div  ng-repeat="order in completedOrders()">
+      <div  ng-repeat="order in completedOrders">
         <div class="grid grid-padding supply-manage-rows" ng-click="setSelected(order)">
           <div class="col-2-12 supply-text-cell">
-            {{order.locCode}} - {{order.locType}}
+            {{order.location}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.purchaser}}
+            {{order.customer.lastName}}
           </div>
           <div class="col-2-12 supply-text-cell">
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+            {{order.orderDateTime}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.completeDate.format('MM-DD-YYYY hh:mm A')}}
+            {{order.completedDateTime}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.issueEmployee}}
+            {{order.issuingEmployee.lastName}}
           </div>
         </div>
 
@@ -247,18 +247,18 @@
               Quantity
             </div>
           </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows">
+          <div ng-repeat="lineItem in order.items" class="grid grid-padding supply-detail-rows">
             <div class="col-3-12">
-              {{item.product.commodityCode}}
+              {{getItemCommodityCode(lineItem.itemId)}}
             </div>
             <div class="col-3-12">
-              {{item.product.name}}
+              {{getItemName(lineItem.itemId)}}
             </div>
             <div class="col-3-12">
-              {{item.product.unitSize}}/Pack
+              {{getItemUnitSize(lineItem.itemId)}}/Pack
             </div>
             <div class="col-3-12">
-              {{item.quantity}}
+              {{lineItem.quantity}}
             </div>
           </div>
         </div>
