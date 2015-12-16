@@ -1,19 +1,23 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-['$scope', 'SupplyOrderService', supplyReconciliationController]);
+['$scope', 'SupplyInventoryService', 'SupplyGetTodaysCompletedOrdersApi', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, supplyOrderService) {
+function supplyReconciliationController($scope, inventoryService, getTodaysCompletedOrdersApi) {
 
     $scope.reconcilableItems = [];
 
     function initItems() {
-        var orders = supplyOrderService.getTodaysCompletedOrders();
-        angular.forEach(orders, function(order) {
-            angular.forEach(order.items, function(item) {
-                var search = $.grep($scope.reconcilableItems, function(i){ return i.id === item.product.id; });
-                if (search.length === 0) {
-                    $scope.reconcilableItems.push(item.product);
-                }
-            })
+        getTodaysCompletedOrdersApi.get(function(response) {
+            var orders = response.result;
+            angular.forEach(orders, function(order) {
+                angular.forEach(order.items, function(item) {
+                    var search = $.grep($scope.reconcilableItems, function(i){ return i.id === item.itemId; });
+                    if (search.length === 0) {
+                        $scope.reconcilableItems.push(inventoryService.getItemById(item.itemId));
+                    }
+                })
+            });
+        }, function(response) {
+
         });
     }
 

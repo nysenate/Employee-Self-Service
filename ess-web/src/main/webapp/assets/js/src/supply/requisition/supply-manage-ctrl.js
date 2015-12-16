@@ -1,9 +1,9 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'appProps', 'SupplyInventoryService',
-    'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetCompletedOrdersApi', 'SupplyProcessOrderApi',
+    'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi', 'SupplyProcessOrderApi',
     'SupplyCompleteOrderApi', 'SupplyRejectOrderApi', supplyManageController]);
 
 function supplyManageController($scope, appProps, supplyInventoryService, getPendingOrdersApi,
-                                getProcessingOrdersApi, getCompletedOrdersApi, processOrderApi,
+                                getProcessingOrdersApi, getTodaysCompletedOrdersApi, processOrderApi,
                                 completeOrderApi, rejectOrderApi) {
 
     $scope.selected = null;
@@ -34,7 +34,7 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
     }
 
     function getCompletedOrders() {
-        getCompletedOrdersApi.get(null, function(response) {
+        getTodaysCompletedOrdersApi.get(null, function(response) {
             $scope.completedOrders = response.result;
         }, function(response) {
 

@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supplyOrders")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/orders")
 public class OrderRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderRestApiCtrl.class);
@@ -36,7 +36,13 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(orderViews);
     }
 
-    @RequestMapping(value = "/submitOrder", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping("/id")
+    public BaseResponse getOrderById(@RequestParam int id) {
+        Order order = orderService.getOrderById(id);
+        return new ViewObjectResponse<>(new OrderView(order));
+    }
+
+    @RequestMapping(value = "/submit", method = RequestMethod.POST, consumes = "application/json")
     public BaseResponse submitOrder(@RequestBody NewOrderView newOrder) {
         int customerId = newOrder.getCustomerId();
         Set<LineItem> lineItems = new HashSet<>();
@@ -48,26 +54,39 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     }
 
     // TODO sort by submitted date asc/desc?
-    @RequestMapping("/getPending")
+    @RequestMapping("/pending")
     public BaseResponse getPendingOrders() {
         List<Order> pendingOrders = orderService.getPendingOrders();
         return ListViewResponse.of(pendingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
     }
 
-    @RequestMapping("/getProcessing")
+    @RequestMapping("/processing")
     public BaseResponse getProcessingOrders() {
         List<Order> processingOrders = orderService.getProcessingOrders();
         return ListViewResponse.of(processingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
     }
 
     /** Return list of orders completed today. */
-    @RequestMapping("/getCompleted")
-    public BaseResponse getCompletedOrders() {
+    @RequestMapping("/completed/today")
+    public BaseResponse getTodaysCompletedOrders() {
         List<Order> completedOrders = orderService.getCompletedOrders();
         return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
     }
 
-    @RequestMapping("/getRejected")
+    /** Return list of orders completed in year. */
+    @RequestMapping("/completed")
+    public BaseResponse getCompletedOrdersInYear(@RequestParam int year) {
+        List<Order> ordersInYear = new ArrayList<>();
+        List<Order> completedOrders = orderService.getCompletedOrders();
+        for (Order order : completedOrders) {
+            if (order.getCompletedDateTime().getYear() == year) {
+                ordersInYear.add(order);
+            }
+        }
+        return ListViewResponse.of(ordersInYear.stream().map(OrderView::new).collect(Collectors.toList()));
+    }
+
+    @RequestMapping("/rejected")
     public BaseResponse getRejectedOrders() {
         // TODO:
 //        List<Order> completedOrders = orderService.get();
