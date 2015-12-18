@@ -5,8 +5,10 @@ essSupply.service('SupplyInventoryService', ['SupplyItemApi', function(supplyIte
     // Canonical source of available items.
     var items = [];
 
-    var promise = supplyItemApi.get(function(response) {
+    var promise = false;
+    supplyItemApi.get(function(response) {
         items = response.result;
+        promise = true;
     });
 
     return {

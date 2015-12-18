@@ -12,7 +12,7 @@ function supplyOrderController($scope, supplyInventoryService, supplyCategorySer
     };
 
     // Called by ng-hide in the view. Returns true if a item does not belong to the selected categories.
-    $scope.hideProduct = function(item) {
+    $scope.hideItem = function(item) {
         var names = supplyCategoryService.getSelectedCategoryNames();
         // If no filters selected, show all items.
         if (names.length === 0) {

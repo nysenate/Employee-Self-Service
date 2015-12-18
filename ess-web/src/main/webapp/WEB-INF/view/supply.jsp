@@ -10,11 +10,11 @@
     <ess:ts-assets/>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/supply-inventory-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/supply-category-service.js"></script>
+
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-order-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-requisition-directives.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-category-nav-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-manage-ctrl.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-order-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-view-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-history-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart.js"></script>
