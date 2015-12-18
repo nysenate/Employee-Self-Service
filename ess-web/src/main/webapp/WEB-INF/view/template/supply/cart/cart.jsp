@@ -2,11 +2,10 @@
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 
 <div ng-controller="SupplyCartController">
-  <div class="supply-order-hero" style="display: inline-block; width: 100%">
-    <%--Padding in h2 is to offset being 'pushed' left by cart image... TODO definately a better way--%>
-    <h2 style="display: inline-block; padding-left: 100px">Shopping Cart</h2>
+  <div class="supply-order-hero inline-block width-100">
+    <h2 class="requisition-title">Shopping Cart</h2>
     <a href="${ctxPath}/supply/cart/cart">
-      <cart-summary style="display: inline-block; float: right;"></cart-summary>
+      <cart-summary class="cart-widget"></cart-summary>
     </a>
   </div>
   <%--Empty cart--%>
@@ -17,34 +16,34 @@
   </div>
 
   <div class="content-container">
-    <div class="grid grid-pad" ng-repeat="cartItem in myCartItems()">
+    <div class="grid" ng-class="{'padding-top-10': $first}" ng-repeat="cartItem in myCartItems()">
       <hr ng-if="!$first"/>
-      <div class="col-3-12">
+      <div class="col-4-12 text-align-center">
         <div class="content">
-          <img ng-src="{{cartItem.product.img}}" style="height: 140px">
+          <img ng-src="${ctxPath}/assets/img/supply/{{cartItem.item.id}}.jpg" class="supply-item-image-big">
         </div>
       </div>
-      <div class="col-7-12">
+      <div class="col-6-12">
         <div class="content">
-          <h2 class="dark-gray bold">{{cartItem.product.name}}</h2>
-          <p class="dark-gray">{{cartItem.product.description}}</p>
-          <a ng-click="removeFromCart(cartItem.product)" href="#">delete</a>
+          <h2 class="dark-gray bold">{{cartItem.item.name}}</h2>
+          <p class="dark-gray">{{cartItem.item.description}}</p>
+          <a ng-click="removeFromCart(cartItem.item)" href="#">delete</a>
         </div>
       </div>
       <div class="col-2-12">
         <div class="content">
-          <p class="dark-gray bold">{{cartItem.product.unitSize}}/Pack</p>
+          <p class="dark-gray bold cart-unit-size">{{cartItem.item.unitSize}}/Pack</p>
           <label class="custom-select">Qty:
-            <select requisition-quantity-selector product="cartItem.product" warn-qty="cartItem.product.warnQuantity"
-                    ng-model="cartItem.quantity" ng-options="qty for qty in orderQuantityRange(cartItem.product)"></select>
+            <select requisition-quantity-selector item="cartItem.item" warn-qty="cartItem.item.suggestedMaxQty + 1"
+                    ng-model="cartItem.quantity" ng-options="qty for qty in orderQuantityRange(cartItem.item)"></select>
           </label>
         </div>
       </div>
     </div>
 
-    <div ng-show="cartHasItems()" class="grid grid-pad">
+    <div ng-show="cartHasItems()" class="grid">
       <hr/>
-      <div class="col-8-12" style="min-height: 1px;"></div> <%--min height to prevent horizontal collapsing--%>
+      <div class="col-8-12 force-min-height"></div>
       <div class="col-2-12">
         <a href="${ctxPath}/supply/requisition/order">
           <input class="submit-button margin-10" type="button" value="Continue Browsing">

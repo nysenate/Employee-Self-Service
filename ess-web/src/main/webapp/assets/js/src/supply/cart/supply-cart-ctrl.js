@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-'$scope', 'SupplyCart', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', '$http', supplyCartController]);
+'$scope', 'SupplyCart', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', 'LocationService', supplyCartController]);
 
-function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, $http) {
+function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService) {
 
     $scope.myCartItems = function() {
         return supplyCart.getItems();
@@ -21,11 +21,16 @@ function supplyCartController($scope, supplyCart, supplyInventoryService, supply
 
     $scope.submitOrder = function() {
         var lineItems = [];
-        angular.forEach(supplyCart.getItems(), function(item) {
-            lineItems.push({itemId: item.product.id, quantity: item.quantity});
+        angular.forEach(supplyCart.getItems(), function(cartItem) {
+            lineItems.push({itemId: cartItem.item.id, quantity: cartItem.quantity});
         });
 
         var params = {customerId: appProps.user.employeeId, items: lineItems};
-        supplySubmitOrderApi.save(params);
+        supplySubmitOrderApi.save(params, function(response) {
+            supplyCart.reset();
+            locationService.go("/supply/requisition/order", false);
+        }, function(response) {
+            console.log("Error submitting order")
+        });
     }
 }
