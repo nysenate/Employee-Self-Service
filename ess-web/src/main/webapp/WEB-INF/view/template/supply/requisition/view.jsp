@@ -7,7 +7,7 @@
     <div class="order-view-header">
       <div class="grid grid-padding padding-10" style="text-align: center">
         <div class="col-6-12 supply-title">
-          Location Code: {{order.location}}
+          Location Code: {{order.location.code + '-' + order.location.locationTypeCode}}
         </div>
         <div class="col-6-12 supply-title">
           Order Date: {{order.orderDateTime}}

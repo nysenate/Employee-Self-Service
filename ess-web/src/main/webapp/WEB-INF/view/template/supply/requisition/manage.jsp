@@ -30,7 +30,7 @@
       <div  ng-repeat="order in pendingOrders">
         <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showPendingDetails(order)">
           <div class="col-3-12 supply-text-cell" >
-            {{order.location}}
+            {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
           <div class="col-3-12 supply-text-cell">
             {{order.customer.lastName}}
@@ -76,7 +76,7 @@
       <div  ng-repeat="order in processingOrders">
         <div class="grid grid-padding supply-manage-rows" ng-click="showProcessingDetails(order)">
           <div class="col-2-12 supply-text-cell">
-            {{order.location}}
+            {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
           <div class="col-2-12 supply-text-cell">
             {{order.customer.lastName}}
@@ -128,7 +128,7 @@
       <div  ng-repeat="order in completedOrders">
         <div class="grid grid-padding supply-manage-rows" ng-click="showCompletedDetails(order)">
           <div class="col-2-12 supply-text-cell">
-            {{order.location}}
+            {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
           <div class="col-2-12 supply-text-cell">
             {{order.customer.lastName}}

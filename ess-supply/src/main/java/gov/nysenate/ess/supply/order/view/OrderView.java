@@ -1,7 +1,9 @@
 package gov.nysenate.ess.supply.order.view;
 
 import gov.nysenate.ess.core.client.view.EmployeeView;
+import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
 
@@ -13,7 +15,7 @@ public class OrderView implements ViewObject {
     protected int id;
     protected EmployeeView customer;
     protected LocalDateTime orderDateTime;
-    protected String location;
+    protected LocationView location;
     protected EmployeeView issuingEmployee;
     protected LocalDateTime processedDateTime;
     protected LocalDateTime completedDateTime;
@@ -28,7 +30,7 @@ public class OrderView implements ViewObject {
         this.id = order.getId();
         this.customer = new EmployeeView(order.getCustomer());
         this.orderDateTime = order.getOrderDateTime();
-        this.location = order.getLocation().getCode() + "-" + order.getLocation().getType().getCode();
+        this.location = new LocationView(order.getLocation());
         this.issuingEmployee = new EmployeeView(order.getIssuingEmployee());
         this.processedDateTime = order.getProcessedDateTime();
         this.completedDateTime = order.getCompletedDateTime();
@@ -60,11 +62,11 @@ public class OrderView implements ViewObject {
         this.orderDateTime = orderDateTime;
     }
 
-    public String getLocation() {
+    public LocationView getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(LocationView location) {
         this.location = location;
     }
 

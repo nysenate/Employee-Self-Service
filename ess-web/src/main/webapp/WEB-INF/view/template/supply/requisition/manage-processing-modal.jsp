@@ -34,7 +34,7 @@
     <%--Right Margin--%>
 
     <div class="col-4-12">
-      <h3 class="content-info">Location: {{order.location}}</h3>
+      <h3 class="content-info">Location: {{order.location.code + '-' + order.location.locationTypeCode}}</h3>
       <h3 class="content-info">Ordered: {{order.orderDateTime | date:'MM/dd/yy h:mm a'}}</h3>
       <div>
         <label>Assign to: </label>

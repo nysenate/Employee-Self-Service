@@ -24,8 +24,8 @@ function supplyHistoryController($scope, getTodaysCompletedOrdersApi, locationSe
         if ($scope.locations.length === 0) {
             $scope.locations.push("All");
             angular.forEach($scope.orders, function (order) {
-                if ($scope.locations.indexOf(order.location) === -1) {
-                    $scope.locations.push(order.location);
+                if ($scope.locations.indexOf(order.location.code + "-" + order.location.locationTypeCode) === -1) {
+                    $scope.locations.push(order.location.code + "-" + order.location.locationTypeCode);
                 }
             });
         }

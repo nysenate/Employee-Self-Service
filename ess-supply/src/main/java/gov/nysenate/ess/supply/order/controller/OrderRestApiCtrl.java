@@ -113,9 +113,9 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
-    @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = "application/json")
-    public BaseResponse saveOrder(@RequestBody OrderView orderView) {
-        // TODO:
+    @RequestMapping(value = "/save/items", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse updateOrderItems(@RequestBody OrderView orderView) {
+//        Order order = orderService.updateOrderItems(orderView.getId(), orderView.to)
         return null;
     }
 

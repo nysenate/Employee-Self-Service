@@ -27,6 +27,10 @@ public class AddressView implements ViewObject
         this.zip4 = address.getZip4();
     }
 
+    public Address toAddress() {
+        return new Address(addr1, addr2, city, state, zip5, zip4);
+    }
+
     @Override
     @XmlElement
     public String getViewType() {
