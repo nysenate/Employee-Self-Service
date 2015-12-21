@@ -20,7 +20,7 @@
           Employee
         </div>
         <div class="col-3-12">
-          Quantity
+          Item Count
         </div>
         <div class="col-3-12">
           Order Date
@@ -63,31 +63,31 @@
           Employee
         </div>
         <div class="col-2-12">
-          Quantity
+          Item Count
         </div>
-        <div class="col-2-12">
+        <div class="col-3-12">
           Order Date
         </div>
-        <div class="col-2-12">
+        <div class="col-3-12">
           Issuing Employee
         </div>
       </div>
 
       <div  ng-repeat="order in processingOrders">
         <div class="grid grid-padding supply-manage-rows" ng-click="showProcessingDetails(order)">
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell">
             {{order.location}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell">
             {{order.customer.lastName}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-3-12 supply-text-cell">
             {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-3-12 supply-text-cell">
             {{order.issuingEmployee.lastName}}
           </div>
         </div>
@@ -112,7 +112,7 @@
           Employee
         </div>
         <div class="col-2-12">
-          Quantity
+          Item Count
         </div>
         <div class="col-2-12">
           Order Date

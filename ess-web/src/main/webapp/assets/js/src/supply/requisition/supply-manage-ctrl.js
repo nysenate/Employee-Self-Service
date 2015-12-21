@@ -1,10 +1,10 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'appProps', 'SupplyInventoryService',
     'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi', 'SupplyProcessOrderApi',
-    'SupplyCompleteOrderApi', 'SupplyRejectOrderApi', 'modals', supplyManageController]);
+    'SupplyCompleteOrderApi', 'SupplyRejectOrderApi', 'modals', 'LocationService', supplyManageController]);
 
 function supplyManageController($scope, appProps, supplyInventoryService, getPendingOrdersApi,
                                 getProcessingOrdersApi, getTodaysCompletedOrdersApi, processOrderApi,
-                                completeOrderApi, rejectOrderApi, modals) {
+                                completeOrderApi, rejectOrderApi, modals, locationService) {
 
     $scope.selected = null;
     $scope.pendingOrders = null;
@@ -16,6 +16,8 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         getProcessingOrders();
         getCompletedOrders();
     };
+
+    $scope.init();
 
     /** --- Api Calls --- */
 
@@ -45,24 +47,13 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
 
     /** --- Util methods --- */
 
-    /* Return the number of distict items in an order */
+    /* Return the number of distinct items in an order */
     $scope.getOrderQuantity = function(supplyOrder) {
         var size = 0;
         angular.forEach(supplyOrder.items, function(item) {
             size++;
         });
         return size;
-    };
-
-    $scope.processOrder = function(order) {
-        order.issuingEmployee.employeeId = appProps.user.employeeId;
-        processOrderApi.save(order);
-        $scope.selected = null;
-    };
-
-    $scope.completeOrder = function(order) {
-        completeOrderApi.save(order);
-        $scope.selected = null;
     };
 
     $scope.rejectOrder = function(order) {
@@ -78,11 +69,6 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
     $scope.getItemName = function(itemId) {
         var item = supplyInventoryService.getItemById(itemId);
         return item.name;
-    };
-
-    $scope.getItemUnitSize = function(itemId) {
-        var item = supplyInventoryService.getItemById(itemId);
-        return item.unitSize;
     };
 
     /** --- Highlighting --- */
@@ -103,10 +89,7 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         return lineItem.quantity > item.suggestedMaxQty
     };
 
-
-    $scope.init();
-
-    //////////////////////////////////////////////////////////////////////
+    /** --- Modals --- */
 
     $scope.showPendingDetails = function(order) {
         modals.open('manage-pending-modal', order);
@@ -116,20 +99,16 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         modals.open('manage-processing-modal', order);
     };
 
+    $scope.completeOrder = function(order) {
+        completeOrderApi.save(order);
+    };
+
     $scope.showCompletedDetails = function(order) {
         modals.open('manage-completed-modal', order);
     };
 
-    $scope.setSelected = function(order) {
-        if ($scope.selected && order.id === $scope.selected.id) {
-            $scope.selected = null;
-        }
-        else {
-            $scope.selected = order;
-        }
+    $scope.close = function() {
+        modals.resolve();
     };
 
-    $scope.selectedOrder = function(order) {
-        return $scope.selected && order.id === $scope.selected.id;
-    };
 }
