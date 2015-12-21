@@ -135,6 +135,7 @@ label.custom-select {
 }
 
 .supply-manage-rows {
+  width: auto;
   text-align: center;
   border-bottom: 1px solid #eee !important;
   cursor: pointer;
@@ -181,44 +182,26 @@ label.custom-select {
   overflow-y: auto;
 }
 
-.supply-detail-header {
-  border-top: 1px solid #155C69;
-  .supply-manage-header;
-}
-
-.supply-detail-rows {
-  border-bottom: 1px solid #eee !important;
-  text-align: center;
-  &:nth-child(even) {
-    background: fade(#333, 5%);
-  }
-  div {
-    white-space: nowrap;
-    padding: .5em;
-    border: 0;
-  }
-  &.warn {
-    background: #ffbcbc;
-    border-bottom: 1px solid #ffbcbc !important;
-  }
-}
-
 .supply-listing-table {
   .attendance-listing-table;
+  padding-top: 0px;
   tr {
+    &.warn {
+      background: #ffbcbc;
+      &:hover {
+        background: darken(#ffbcbc, 10%);
+      }
+    }
     td {
       text-align: center !important;
     }
   }
+
 }
 
 .supply-title {
   color: @blue-purple;
   font-weight: bold;
-}
-
-.order-view-header {
-  //border-bottom: solid 1px @blue-purple;
 }
 
 /** --- Other --- */

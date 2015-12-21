@@ -1,10 +1,10 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'appProps', 'SupplyInventoryService',
     'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi', 'SupplyProcessOrderApi',
-    'SupplyCompleteOrderApi', 'SupplyRejectOrderApi', supplyManageController]);
+    'SupplyCompleteOrderApi', 'SupplyRejectOrderApi', 'modals', supplyManageController]);
 
 function supplyManageController($scope, appProps, supplyInventoryService, getPendingOrdersApi,
                                 getProcessingOrdersApi, getTodaysCompletedOrdersApi, processOrderApi,
-                                completeOrderApi, rejectOrderApi) {
+                                completeOrderApi, rejectOrderApi, modals) {
 
     $scope.selected = null;
     $scope.pendingOrders = null;
@@ -16,6 +16,8 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         getProcessingOrders();
         getCompletedOrders();
     };
+
+    /** --- Api Calls --- */
 
     function getPendingOrders() {
         getPendingOrdersApi.get(null, function(response) {
@@ -41,6 +43,9 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         })
     }
 
+    /** --- Util methods --- */
+
+    /* Return the number of distict items in an order */
     $scope.getOrderQuantity = function(supplyOrder) {
         var size = 0;
         angular.forEach(supplyOrder.items, function(item) {
@@ -80,6 +85,8 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         return item.unitSize;
     };
 
+    /** --- Highlighting --- */
+
     $scope.highlightOrder = function(order) {
         var highlight = false;
         angular.forEach(order.items, function(lineItem) {
@@ -91,12 +98,26 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         return highlight;
     };
 
-    $scope.init();
-
-
     $scope.highlightLineItem = function(lineItem) {
         var item = supplyInventoryService.getItemById(lineItem.itemId);
         return lineItem.quantity > item.suggestedMaxQty
+    };
+
+
+    $scope.init();
+
+    //////////////////////////////////////////////////////////////////////
+
+    $scope.showPendingDetails = function(order) {
+        modals.open('manage-pending-modal', order);
+    };
+
+    $scope.showProcessingDetails = function(order) {
+        modals.open('manage-processing-modal', order);
+    };
+
+    $scope.showCompletedDetails = function(order) {
+        modals.open('manage-completed-modal', order);
     };
 
     $scope.setSelected = function(order) {
