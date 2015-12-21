@@ -45,7 +45,7 @@
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.orderDateTime}}
+            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-2-12 supply-button-cell">
             <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
@@ -134,7 +134,7 @@
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.orderDateTime}}
+            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
             {{order.issuingEmployee.lastName}}
@@ -221,10 +221,10 @@
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.orderDateTime}}
+            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.completedDateTime}}
+            {{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-2-12 supply-text-cell">
             {{order.issuingEmployee.lastName}}
