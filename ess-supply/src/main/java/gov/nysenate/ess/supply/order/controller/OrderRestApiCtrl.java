@@ -115,8 +115,9 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/save/items", method = RequestMethod.POST, consumes = "application/json")
     public BaseResponse updateOrderItems(@RequestBody OrderView orderView) {
-//        Order order = orderService.updateOrderItems(orderView.getId(), orderView.to)
-        return null;
+        Set<LineItem> items = Arrays.asList(orderView.getItems()).stream().map(LineItemView::toLineItem).collect(Collectors.toSet());
+        Order order = orderService.updateOrderItems(orderView.getId(), items);
+        return new ViewObjectResponse<>(new OrderView(order));
     }
 
 }

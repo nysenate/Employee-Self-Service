@@ -184,12 +184,20 @@ label.custom-select {
 
 .supply-listing-table {
   .attendance-listing-table;
-  padding-top: 0px;
+  padding-top: 0;
   tr {
     &.warn {
       background: #ffbcbc;
+      border-bottom: 1px solid #ffbcbc !important;
       &:hover {
         background: darken(#ffbcbc, 10%);
+      }
+      &:nth-child(even) {
+        background: fade(#ffbcbc, 60%);
+        border-bottom: 1px solid fade(#ffbcbc, 60%) !important;
+        &:hover {
+          background: darken(#ffbcbc, 10%);
+        }
       }
     }
     td {

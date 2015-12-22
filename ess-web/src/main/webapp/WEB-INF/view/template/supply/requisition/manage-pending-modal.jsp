@@ -25,7 +25,7 @@
             <td>{{getItemCommodityCode(lineItem.itemId)}}</td>
             <td>{{getItemName(lineItem.itemId)}}</td>
             <td><input type="number" ng-change="setDirty()" ng-model="lineItem.quantity" style="width:13%"></td>
-            <%--<td contenteditable="true">{{lineItem.quantity}}</td>--%>
+            <td ng-click="removeLineItem(lineItem)">&times</td>
           </tr>
           </tbody>
         </table>
@@ -37,7 +37,7 @@
     <div class="col-4-12">
       <h3 class="content-info">Location: {{order.location.code + '-' + order.location.locationTypeCode}}</h3>
       <h3 class="content-info">Ordered: {{order.orderDateTime | date:'MM/dd/yy h:mm a'}}</h3>
-      <div class="text-align-center" style="padding-bottom: 15px">
+      <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
         <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
           Print
         </a>
