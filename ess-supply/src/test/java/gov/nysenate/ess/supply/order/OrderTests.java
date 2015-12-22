@@ -52,10 +52,9 @@ public class OrderTests extends SupplyTests {
     @Test
     public void canEditOrderItems() {
         Order order = submitOrder();
-        Set<LineItem> originalItems = order.getItems();
-        Set<LineItem> newItems = incrementItemQuantities(originalItems);
-        order = orderService.updateOrderItems(order.getId(), newItems);
-        assertEquals(order.getItems(), newItems);
+        Set<LineItem> newItems = incrementItemQuantities(order.getItems());
+        orderService.saveOrder(order.setItems(newItems));
+        assertNotEquals(order, orderService.getOrderById(order.getId()));
     }
 
     @Test

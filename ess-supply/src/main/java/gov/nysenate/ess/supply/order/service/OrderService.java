@@ -13,7 +13,7 @@ public interface OrderService {
 
     Order getOrderById(int orderId);
 
-    Order updateOrderItems(int orderId, Set<LineItem> newItems);
+    void saveOrder(Order order);
 
     Order rejectOrder(int orderId);
 

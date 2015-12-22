@@ -48,11 +48,8 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public Order updateOrderItems(int orderId, Set<LineItem> newItems) {
-        Order order = orderDao.getOrderById(orderId);
-        order = order.setItems(newItems);
+    public void saveOrder(Order order) {
         orderDao.saveOrder(order);
-        return order;
     }
 
     @Override

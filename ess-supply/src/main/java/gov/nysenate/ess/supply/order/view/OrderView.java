@@ -6,8 +6,10 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.OrderStatus;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class OrderView implements ViewObject {
@@ -36,6 +38,19 @@ public class OrderView implements ViewObject {
         this.completedDateTime = order.getCompletedDateTime();
         this.status = order.getStatus().toString();
         this.items = order.getItems().stream().map(LineItemView::new).collect(Collectors.toList()).toArray(new LineItemView[order.getItems().size()]);
+    }
+
+    public Order toOrder() {
+        Order.Builder builder = new Order.Builder(id, customer.toEmployee(), orderDateTime, location.toLocation(), OrderStatus.valueOf(status))
+                .processedDateTime(processedDateTime)
+                .completedDateTime(completedDateTime)
+                .items(Arrays.asList(items).stream().map(LineItemView::toLineItem).collect(Collectors.toSet()));
+
+        // Cant construct issuing employee if there is not one.
+        if (issuingEmployee.getEmployeeId() != 0) {
+            builder.issuingEmployee(issuingEmployee.toEmployee());
+        }
+        return builder.build();
     }
 
     public int getId() {
