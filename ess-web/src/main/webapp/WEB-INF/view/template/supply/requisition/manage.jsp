@@ -28,7 +28,7 @@
       </div>
 
       <div  ng-repeat="order in pendingOrders">
-        <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showPendingDetails(order)">
+        <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
           <div class="col-3-12 supply-text-cell" >
             {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
@@ -74,7 +74,7 @@
       </div>
 
       <div  ng-repeat="order in processingOrders">
-        <div class="grid grid-padding supply-manage-rows" ng-click="showProcessingDetails(order)">
+        <div class="grid grid-padding supply-manage-rows" ng-click="showEditingDetails(order)">
           <div class="col-2-12 supply-text-cell">
             {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
@@ -152,8 +152,7 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <div manage-pending-modal ng-if="isOpen('manage-pending-modal')"></div>
-    <div manage-processing-modal ng-if="isOpen('manage-processing-modal')"></div>
+    <div manage-editing-modal ng-if="isOpen('manage-editing-modal')"></div>
     <div manage-completed-modal ng-if="isOpen('manage-completed-modal')"></div>
 
   </div>

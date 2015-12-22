@@ -91,12 +91,8 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
 
     /** --- Modals --- */
 
-    $scope.showPendingDetails = function(order) {
-        modals.open('manage-pending-modal', order);
-    };
-
-    $scope.showProcessingDetails = function(order) {
-        modals.open('manage-processing-modal', order);
+    $scope.showEditingDetails = function(order) {
+        modals.open('manage-editing-modal', order);
     };
 
     $scope.completeOrder = function(order) {

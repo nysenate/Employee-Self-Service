@@ -35,3 +35,34 @@ essSupply.directive('requisitionQuantitySelector', [function() {
         }
     }
 }]);
+
+essSupply.directive('editableOrderListing', ['appProps', 'modals', function(appProps, modals) {
+    return {
+        restrict: 'A',
+        templateUrl: appProps.ctxPath + '/template/supply/requisition/editable/order/listing',
+        link: function($scope, $element, $attrs) {
+
+            /** Original order */
+            $scope.order = modals.params();
+
+            /** Order containing any user edits */
+            $scope.dirtyOrder = angular.copy($scope.order);
+
+            $scope.init = function() {
+                // sort items by their itemId for consistency.
+                $scope.dirtyOrder.items.sort(function(a, b) {return a.itemId - b.itemId});
+            };
+
+            $scope.init();
+
+            $scope.removeLineItem = function(lineItem) {
+                angular.forEach($scope.dirtyOrder.items, function (dirtyItem) {
+                    if (lineItem.itemId === dirtyItem.itemId) {
+                        $scope.dirtyOrder.items.splice($scope.dirtyOrder.items.indexOf(lineItem), 1);
+                        $scope.setDirty();
+                    }
+                });
+            };
+        }
+    }
+}]);

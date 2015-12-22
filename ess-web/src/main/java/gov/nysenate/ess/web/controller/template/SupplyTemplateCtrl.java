@@ -22,19 +22,19 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/requisition/manage";
     }
 
-    @RequestMapping(value="/requisition/manage/pending/modal")
+    @RequestMapping(value="/requisition/manage/editing/modal")
     public String managePendingModal() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/manage-pending-modal";
-    }
-
-    @RequestMapping(value="/requisition/manage/processing/modal")
-    public String manageProcessingModal() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/manage-processing-modal";
+        return SUPPLY_TMPL_BASE_URL + "/requisition/manage-editing-modal";
     }
 
     @RequestMapping(value="/requisition/manage/completed/modal")
     public String manageCompletedModal() {
         return SUPPLY_TMPL_BASE_URL + "/requisition/manage-completed-modal";
+    }
+
+    @RequestMapping(value="/requisition/editable/order/listing")
+    public String editableOrderListing() {
+        return SUPPLY_TMPL_BASE_URL + "/requisition/editable-order-listing";
     }
 
     @RequestMapping(value="/requisition/view")

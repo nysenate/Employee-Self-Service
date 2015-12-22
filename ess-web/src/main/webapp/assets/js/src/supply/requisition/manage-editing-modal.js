@@ -1,25 +1,24 @@
 var essApp = angular.module('ess');
 
-essApp.directive('managePendingModal', ['appProps', 'modals', 'SupplyProcessOrderApi', 'SupplyUpdateOrderItemsApi', 'LocationService',
+essApp.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessOrderApi', 'SupplyUpdateOrderItemsApi', 'LocationService',
     function (appProps, modals, processOrderApi, updateOrderItemsApi, locationService) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/requisition/manage/pending/modal',
+        templateUrl: appProps.ctxPath + '/template/supply/requisition/manage/editing/modal',
         link: link
     };
 
     function link($scope, $elem, $attrs) {
 
-        /** Original order */
-        $scope.order = modals.params();
+        // TODO: temporary until implemented in server.
+        $scope.assignedTo = "Caseiras";
+        $scope.supplyEmployees = ["Caseiras", "Smith", "Johnson", "Maloy", "Richard"];
 
-        /** Order containing any user edits */
-        $scope.dirtyOrder = angular.copy($scope.order);
-
+        /** Status of order, either 'PENDING' or 'PROCESSING'*/
+        $scope.status = null;
         $scope.dirty = false;
 
         $scope.init = function() {
-            // sort items by their itemId for consistency.
-            $scope.dirtyOrder.items.sort(function(a, b) {return a.itemId - b.itemId});
+            $scope.status = modals.params().status;
         };
 
         $scope.init();
@@ -38,16 +37,7 @@ essApp.directive('managePendingModal', ['appProps', 'modals', 'SupplyProcessOrde
             reload();
         };
 
-        $scope.removeLineItem = function(lineItem) {
-            angular.forEach($scope.dirtyOrder.items, function(dirtyItem) {
-                if (lineItem.itemId === dirtyItem.itemId) {
-                    $scope.dirtyOrder.items.splice($scope.dirtyOrder.items.indexOf(lineItem), 1);
-                    $scope.setDirty();
-                }
-            });
-        };
-
-        $scope.setDirty = function() {
+       $scope.setDirty = function() {
             $scope.dirty = true;
         };
 
