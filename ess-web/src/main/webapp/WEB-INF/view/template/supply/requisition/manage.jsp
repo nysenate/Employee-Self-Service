@@ -154,7 +154,6 @@
   <div modal-container>
     <div manage-editing-modal ng-if="isOpen('manage-editing-modal')"></div>
     <div manage-completed-modal ng-if="isOpen('manage-completed-modal')"></div>
-
   </div>
 
 </div>

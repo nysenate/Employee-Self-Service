@@ -143,6 +143,6 @@ essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resou
     return $resource(appProps.apiPath + '/supply/orders/reject')
 }]);
 
-essApi.factory('SupplyUpdateOrderItemsApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/save/items')
+essApi.factory('SupplySaveOrderApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/save')
 }]);

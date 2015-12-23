@@ -24,7 +24,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="order in filteredOrders" ng-click="viewOrder(order)" ng-show="shouldShowOrder(order)">
-          <td>{{order.location}}</td>
+          <td>{{order.location.code + '-' + order.location.locationTypeCode}}</td>
           <td>{{getOrderQuantity(order)}}</td>
           <td>{{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
           <td>{{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>

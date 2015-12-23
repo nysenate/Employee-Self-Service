@@ -1,10 +1,9 @@
-essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'appProps', 'SupplyInventoryService',
-    'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi', 'SupplyProcessOrderApi',
-    'SupplyCompleteOrderApi', 'SupplyRejectOrderApi', 'modals', 'LocationService', supplyManageController]);
+essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
+    'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi',
+    'SupplyCompleteOrderApi', 'modals', supplyManageController]);
 
-function supplyManageController($scope, appProps, supplyInventoryService, getPendingOrdersApi,
-                                getProcessingOrdersApi, getTodaysCompletedOrdersApi, processOrderApi,
-                                completeOrderApi, rejectOrderApi, modals, locationService) {
+function supplyManageController($scope, supplyInventoryService, getPendingOrdersApi, getProcessingOrdersApi,
+                                getTodaysCompletedOrdersApi, completeOrderApi, modals) {
 
     $scope.selected = null;
     $scope.pendingOrders = null;
@@ -56,11 +55,6 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         return size;
     };
 
-    $scope.rejectOrder = function(order) {
-        rejectOrderApi.save(appProps.user.employeeId, order.id);
-        $scope.selected = null;
-    };
-
     $scope.getItemCommodityCode = function(itemId) {
         var item = supplyInventoryService.getItemById(itemId);
         return item.commodityCode;
@@ -95,16 +89,7 @@ function supplyManageController($scope, appProps, supplyInventoryService, getPen
         modals.open('manage-editing-modal', order);
     };
 
-    $scope.completeOrder = function(order) {
-        completeOrderApi.save(order);
-    };
-
     $scope.showCompletedDetails = function(order) {
         modals.open('manage-completed-modal', order);
     };
-
-    $scope.close = function() {
-        modals.resolve();
-    };
-
 }

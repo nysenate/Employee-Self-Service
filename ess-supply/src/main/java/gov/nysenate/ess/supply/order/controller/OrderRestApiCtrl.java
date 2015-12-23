@@ -108,7 +108,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
 
     // TODO: save employee who rejected order
     @RequestMapping(value = "/reject", method = RequestMethod.POST, consumes = "application/json")
-    public BaseResponse rejectOrder(@RequestParam OrderView orderView) {
+    public BaseResponse rejectOrder(@RequestBody OrderView orderView) {
         Order order = orderService.rejectOrder(orderView.getId());
         return new ViewObjectResponse<>(new OrderView(order));
     }

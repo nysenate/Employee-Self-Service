@@ -1,6 +1,6 @@
-var essApp = angular.module('ess');
+var essSupply = angular.module('essSupply');
 
-essApp.directive('manageCompletedModal', ['appProps', 'modals', function (appProps, modals) {
+essSupply.directive('manageCompletedModal', ['appProps', 'modals', function (appProps, modals) {
     return {
         templateUrl: appProps.ctxPath + '/template/supply/requisition/manage/completed/modal',
         link: link

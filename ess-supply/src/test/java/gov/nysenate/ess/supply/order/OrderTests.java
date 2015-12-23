@@ -178,27 +178,28 @@ public class OrderTests extends SupplyTests {
     }
 
     @Test
-    public void canRejectOrder() {
+    public void canRejectPendingOrder() {
         Order order = submitOrder();
         assertEquals(order.getStatus(), OrderStatus.PENDING);
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
-    @Test(expected = WrongOrderStatusException.class)
-    public void cantRejectProcessingOrder() {
+    @Test
+    public void canRejectProcessingOrder() {
         Order order = submitAndProcessOrder();
-        orderService.rejectOrder(order.getId());
+        order = orderService.rejectOrder(order.getId());
+        assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
     @Test(expected = WrongOrderStatusException.class)
-    public void cantRejectCompletedOrder() {
+    public void canNotRejectCompletedOrder() {
         Order order = submitProcessAndCompleteOrder();
         orderService.rejectOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
-    public void cantRejectRejectedOrder() {
+    public void canNotRejectRejectedOrder() {
         Order order = submitOrder();
         order = orderService.rejectOrder(order.getId());
         orderService.rejectOrder(order.getId());

@@ -55,13 +55,17 @@ public class EssOrderService implements OrderService {
     @Override
     public Order rejectOrder(int orderId) {
         Order order = orderDao.getOrderById(orderId);
-        if (order.getStatus() != OrderStatus.PENDING) {
+        if (!statusIsPendingOrProcessing(order)) {
             throw new WrongOrderStatusException("Can only reject orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
         }
         order = order.setStatus(OrderStatus.REJECTED);
         orderDao.saveOrder(order);
         return order;
+    }
+
+    private boolean statusIsPendingOrProcessing(Order order) {
+        return order.getStatus() == OrderStatus.PENDING || order.getStatus() == OrderStatus.PROCESSING;
     }
 
     @Override
