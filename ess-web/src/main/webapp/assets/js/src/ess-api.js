@@ -135,6 +135,10 @@ essApi.factory('SupplyProcessOrderApi', ['$resource', 'appProps', function($reso
     return $resource(appProps.apiPath + '/supply/orders/process')
 }]);
 
+essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/complete/undo')
+}]);
+
 essApi.factory('SupplyCompleteOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders/complete')
 }]);

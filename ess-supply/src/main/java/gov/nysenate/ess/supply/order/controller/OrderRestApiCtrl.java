@@ -120,4 +120,11 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
+    @RequestMapping(value = "/complete/undo", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse undoCompletion(@RequestBody OrderView orderView) {
+        Order order = orderView.toOrder();
+        orderService.undoCompletion(order.getId());
+        return new ViewObjectResponse<>(new OrderView(order));
+    }
+
 }

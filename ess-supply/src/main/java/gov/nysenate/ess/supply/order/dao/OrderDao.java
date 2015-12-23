@@ -13,4 +13,6 @@ public interface OrderDao {
     List<Order> getOrders();
 
     Order getOrderById(int orderId);
+
+    void undoCompletion(Order order);
 }

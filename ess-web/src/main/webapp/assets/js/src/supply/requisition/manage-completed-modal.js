@@ -1,7 +1,7 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.directive('manageCompletedModal', ['appProps', 'modals', 'LocationService',
-    function (appProps, modals, locationService) {
+essSupply.directive('manageCompletedModal', ['appProps', 'modals', 'LocationService', 'SupplyUndoCompletionApi',
+    function (appProps, modals, locationService, undoCompletionApi) {
     return {
         templateUrl: appProps.ctxPath + '/template/supply/requisition/manage/completed/modal',
         link: link
@@ -11,8 +11,7 @@ essSupply.directive('manageCompletedModal', ['appProps', 'modals', 'LocationServ
         $scope.order = modals.params();
 
         $scope.undo = function(order) {
-            // TODO: needs to be implemented.
-            console.log("undo");
+            undoCompletionApi.save(order);
             $scope.close();
             reload();
         };

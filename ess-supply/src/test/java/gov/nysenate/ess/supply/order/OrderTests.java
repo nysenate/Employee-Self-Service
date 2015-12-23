@@ -205,6 +205,14 @@ public class OrderTests extends SupplyTests {
         orderService.rejectOrder(order.getId());
     }
 
+    @Test
+    public void canUndoACompletion() {
+        Order order = submitProcessAndCompleteOrder();
+        order = orderService.undoCompletion(order.getId());
+        assertEquals(order.getStatus(), OrderStatus.PROCESSING);
+        assertEquals(order.getCompletedDateTime(), null);
+    }
+
     private Order submitOrder() {
         return orderService.submitOrder(1, TestUtils.orderedItemsToQuantitiesMap());
     }

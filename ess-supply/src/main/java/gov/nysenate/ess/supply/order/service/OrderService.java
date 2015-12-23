@@ -30,4 +30,6 @@ public interface OrderService {
     List<Order> getCompletedOrders();
 
     List<Order> getCompletedOrdersBetween(LocalDateTime start, LocalDateTime end);
+
+    Order undoCompletion(int id);
 }

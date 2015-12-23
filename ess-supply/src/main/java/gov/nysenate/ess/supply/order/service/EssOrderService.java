@@ -128,6 +128,17 @@ public class EssOrderService implements OrderService {
         return orders;
     }
 
+    @Override
+    public Order undoCompletion(int id) {
+        Order order = orderDao.getOrderById(id);
+        orderDao.undoCompletion(order);
+        sfmsDao.undoCompletion(order);
+        order = order.setStatus(OrderStatus.PROCESSING);
+        order = order.setCompletedDateTime(null);
+        orderDao.saveOrder(order);
+        return order;
+    }
+
     /** Return true if dateTime is between start and end date time's, inclusive.*/
     private boolean betweenStartAndEndTime(LocalDateTime dateTime, LocalDateTime start, LocalDateTime end) {
         if (dateTime.isEqual(start) || dateTime.isAfter(start)) {
