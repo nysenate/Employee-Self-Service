@@ -4,7 +4,7 @@
 
 <div class="padding-10">
   <div>
-    <h3 class="content-info">Order submitted by {{order.customer.lastName}}</h3>
+    <h3 class="content-info">Order from {{order.customer.firstName}} {{order.customer.initial}} {{order.customer.lastName}}</h3>
   </div>
 
   <%--Order content--%>
@@ -19,8 +19,8 @@
     <%--Right Margin--%>
 
     <div class="col-4-12">
-      <h3 class="content-info">Location: {{order.location.code + '-' + order.location.locationTypeCode}}</h3>
-      <h3 class="content-info">Ordered: {{order.orderDateTime | date:'MM/dd/yy h:mm a'}}</h3>
+      <h4 class="content-info">Location: {{order.location.code + '-' + order.location.locationTypeCode}}</h4>
+      <h4 class="content-info">Ordered: {{order.orderDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
         <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
           Print
