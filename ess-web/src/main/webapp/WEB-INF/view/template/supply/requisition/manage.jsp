@@ -12,7 +12,7 @@
     </div>
 
     <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders.length > 0">
-      <div class="grid grid-padding supply-manage-header">
+      <div class="grid grid-padding expandable-div-header">
         <div class="col-3-12">
           Location
         </div>
@@ -28,7 +28,7 @@
       </div>
 
       <div  ng-repeat="order in pendingOrders">
-        <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
+        <div class="grid grid-padding expandable-div-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
           <div class="col-3-12 supply-text-cell" >
             {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
@@ -55,7 +55,7 @@
     </div>
 
     <div style="padding: 0px 10px 10px 10px;" ng-show="processingOrders.length > 0">
-      <div class="grid grid-padding supply-manage-header">
+      <div class="grid grid-padding expandable-div-header">
         <div class="col-2-12">
           Location
         </div>
@@ -74,7 +74,7 @@
       </div>
 
       <div  ng-repeat="order in processingOrders">
-        <div class="grid grid-padding supply-manage-rows" ng-click="showEditingDetails(order)">
+        <div class="grid grid-padding expandable-div-rows" ng-click="showEditingDetails(order)">
           <div class="col-2-12 supply-text-cell">
             {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
@@ -104,7 +104,7 @@
     </div>
 
     <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders.length > 0">
-      <div class="grid grid-padding supply-manage-header">
+      <div class="grid grid-padding expandable-div-header">
         <div class="col-2-12">
           Location
         </div>
@@ -126,7 +126,7 @@
       </div>
 
       <div  ng-repeat="order in completedOrders">
-        <div class="grid grid-padding supply-manage-rows" ng-click="showCompletedDetails(order)">
+        <div class="grid grid-padding expandable-div-rows" ng-click="showCompletedDetails(order)">
           <div class="col-2-12 supply-text-cell">
             {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
