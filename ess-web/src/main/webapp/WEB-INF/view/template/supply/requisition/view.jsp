@@ -7,15 +7,15 @@
     <div class="order-view-header">
       <div class="grid grid-padding padding-10" style="text-align: center">
         <div class="col-6-12 supply-title">
-          Location Code: {{order.locCode}}-{{order.locType}}
+          Location Code: {{order.location.code + '-' + order.location.locationTypeCode}}
         </div>
         <div class="col-6-12 supply-title">
-          Order Date: {{order.dateTime.format('YYYY-MM-DD hh:mm A')}}
+          Order Date: {{order.orderDateTime}}
         </div>
       </div>
       <div class="grid grid-padding padding-10" style="text-align: center">
         <div class="col-6-12 supply-title">
-          Ordered By: {{order.purchaser}}
+          Ordered By: {{order.customer.lastName}}
         </div>
         <div class="col-6-12">
           <a class="supply-title" href="javascript:if(window.print)window.print()">
@@ -38,11 +38,11 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-class="{warn: highlightOrder(order)}" ng-repeat="item in order.items">
-          <td>{{item.product.commodityCode}}</td>
-          <td>{{item.product.name}}</td>
-          <td>{{item.product.unitSize}}</td>
-          <td>{{item.quantity}}</td>
+        <tr ng-class="{warn: highlightOrder(order)}" ng-repeat="lineItem in order.items">
+          <td>{{getItemCommodityCode(lineItem.itemId)}}</td>
+          <td>{{getItemName(lineItem.itemId)}}</td>
+          <td>{{getItemUnitSize(lineItem.itemId)}}</td>
+          <td>{{lineItem.quantity}}</td>
         </tr>
         </tbody>
       </table>

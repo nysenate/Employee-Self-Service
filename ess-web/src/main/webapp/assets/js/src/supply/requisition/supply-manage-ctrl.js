@@ -1,70 +1,95 @@
-essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'modals', 'SupplyInventoryService',
-    'SupplyOrderService', supplyManageController]);
+essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
+    'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi',
+    'SupplyCompleteOrderApi', 'modals', supplyManageController]);
 
-function supplyManageController($scope, modals, supplyInventoryService, supplyOrderService) {
+function supplyManageController($scope, supplyInventoryService, getPendingOrdersApi, getProcessingOrdersApi,
+                                getTodaysCompletedOrdersApi, completeOrderApi, modals) {
 
     $scope.selected = null;
+    $scope.pendingOrders = null;
+    $scope.processingOrders = null;
+    $scope.completedOrders = null;
 
-    $scope.order = supplyOrderService.getPendingOrders()[0];
-
-    $scope.pendingOrders = function() {
-        return supplyOrderService.getPendingOrders();
+    $scope.init = function() {
+        getPendingOrders();
+        getProcessingOrders();
+        getCompletedOrders();
     };
 
-    $scope.inprocessOrders = function() {
-        return supplyOrderService.getInprocessOrders();
-    };
+    $scope.init();
 
-    $scope.completedOrders = function() {
-        return supplyOrderService.getTodaysCompletedOrders();
-    };
+    /** --- Api Calls --- */
 
+    function getPendingOrders() {
+        getPendingOrdersApi.get(null, function(response) {
+            $scope.pendingOrders = response.result;
+        }, function(response) {
+            // TODO error
+        })
+    }
+
+    function getProcessingOrders() {
+        getProcessingOrdersApi.get(null, function(response) {
+            $scope.processingOrders = response.result;
+        }, function(response) {
+
+        })
+    }
+
+    function getCompletedOrders() {
+        getTodaysCompletedOrdersApi.get(null, function(response) {
+            $scope.completedOrders = response.result;
+        }, function(response) {
+
+        })
+    }
+
+    /** --- Util methods --- */
+
+    /* Return the number of distinct items in an order */
     $scope.getOrderQuantity = function(supplyOrder) {
         var size = 0;
         angular.forEach(supplyOrder.items, function(item) {
-            size += item.quantity;
+            size++;
         });
         return size;
     };
 
+    $scope.getItemCommodityCode = function(itemId) {
+        var item = supplyInventoryService.getItemById(itemId);
+        return item.commodityCode;
+    };
+
+    $scope.getItemName = function(itemId) {
+        var item = supplyInventoryService.getItemById(itemId);
+        return item.name;
+    };
+
+    /** --- Highlighting --- */
+
     $scope.highlightOrder = function(order) {
         var highlight = false;
-        angular.forEach(order.items, function(item) {
-            if (item.quantity >= item.product.warnQuantity) {
+        angular.forEach(order.items, function(lineItem) {
+            var item = supplyInventoryService.getItemById(lineItem.itemId);
+            if (lineItem.quantity > item.suggestedMaxQty) {
                 highlight = true;
             }
         });
         return highlight;
     };
 
-    $scope.highlightLineItem = function(item) {
-        return item.quantity >= item.product.warnQuantity
+    $scope.highlightLineItem = function(lineItem) {
+        var item = supplyInventoryService.getItemById(lineItem.itemId);
+        return lineItem.quantity > item.suggestedMaxQty
     };
 
-    $scope.setSelected = function(order) {
-        if ($scope.selected && order.id === $scope.selected.id) {
-            $scope.selected = null;
-        }
-        else {
-            $scope.selected = order;
-        }
+    /** --- Modals --- */
+
+    $scope.showEditingDetails = function(order) {
+        modals.open('manage-editing-modal', order);
     };
 
-    $scope.selectedOrder = function(order) {
-        return $scope.selected && order.id === $scope.selected.id;
-    };
-
-    $scope.processOrder = function(order) {
-        supplyOrderService.setOrderToInprocess(order.id, "CASEIRAS");
-        $scope.selected = null;
-    };
-
-    $scope.completeOrder = function(order) {
-        supplyOrderService.completeOrder(order.id);
-        $scope.selected = null;
-    };
-
-    $scope.rejectOrder = function(order) {
-        supplyOrderService.rejectOrder(order);
+    $scope.showCompletedDetails = function(order) {
+        modals.open('manage-completed-modal', order);
     };
 }

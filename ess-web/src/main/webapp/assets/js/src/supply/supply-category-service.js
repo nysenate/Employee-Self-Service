@@ -1,45 +1,44 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyInventoryService', function($rootScope, SupplyInventoryService) {
+essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemApi',
+    function($rootScope, supplyItemApi) {
 
-    function Category(id, name) {
-        this.id = id;
+    function Category(name) {
         this.name = name;
         this.selected = false;
     }
 
     var categories = [];
 
-    function initCategories() {
-        var products = SupplyInventoryService.getCopyOfProducts();
-        angular.forEach(products, function(product) {
-            if (!findById(product.categoryId)) {
-                categories.push(new Category(product.categoryId, product.categoryName));
+    function initCategories(items) {
+        angular.forEach(items, function(item) {
+            if (isDistinctCategory(item.category)) {
+                categories.push(new Category(item.category));
             }
         });
     }
 
-    /** Searches for and returns a category by id. If no category found, returns false. */
-    function findById(id) {
-        var cats = $.grep(categories, function(cat){ return cat.id === id; });
-        if (cats.length > 0) {
-            return cats[0];
-        }
-        return false;
+    /** Returns true if a category is not yet in the category array, false otherwise. */
+    function isDistinctCategory(name) {
+        var cats = $.grep(categories, function(cat){ return cat.name === name; });
+        return !cats.length > 0;
     }
 
+    var promise = supplyItemApi.get(function(response) {
+        initCategories(response.result);
+    });
+
     return {
+        promise: promise,
+
         getCategories: function() {
-            if (categories.length === 0) {
-                initCategories();
-            }
             return categories;
         },
-        getSelectedCategoryIds: function() {
+        getSelectedCategoryNames: function() {
             var selected = [];
             angular.forEach(categories, function(cat) {
                 if (cat.selected === true) {
-                    selected.push(cat.id);
+                    selected.push(cat.name);
                 }
             });
             return selected;

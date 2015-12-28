@@ -24,11 +24,11 @@
         </thead>
         <tbody>
         <tr ng-repeat="order in filteredOrders" ng-click="viewOrder(order)" ng-show="shouldShowOrder(order)">
-          <td>{{order.locCode}} - {{order.locType}}</td>
+          <td>{{order.location.code + '-' + order.location.locationTypeCode}}</td>
           <td>{{getOrderQuantity(order)}}</td>
-          <td>{{order.dateTime.format('MM-DD-YYYY hh:mm A')}}</td>
-          <td>{{order.completeDate.format('MM-DD-YYYY hh:mm A')}}</td>
-          <td>{{order.issueEmployee}}</td>
+          <td>{{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+          <td>{{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+          <td>{{order.issuingEmployee.lastName}}</td>
         </tr>
         </tbody>
       </table>

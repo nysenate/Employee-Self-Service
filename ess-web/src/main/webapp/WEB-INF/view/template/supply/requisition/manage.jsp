@@ -7,101 +7,55 @@
   <div class="content-container">
     <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
 
-    <div class="content-info" ng-show="pendingOrders().length == 0">
+    <div class="content-info" ng-show="pendingOrders.length == 0">
         <h2 class="dark-gray">No Pending Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders().length > 0">
-      <div class="grid grid-padding supply-manage-header">
-        <div class="col-2-12">
+    <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders.length > 0">
+      <div class="grid grid-padding expandable-div-header">
+        <div class="col-3-12">
           Location
         </div>
-        <div class="col-2-12">
+        <div class="col-3-12">
           Employee
         </div>
-        <div class="col-2-12">
-          Quantity
+        <div class="col-3-12">
+          Item Count
         </div>
-        <div class="col-2-12">
+        <div class="col-3-12">
           Order Date
-        </div>
-        <div class="col-2-12">
-          Process Order
-        </div>
-        <div class="col-2-12">
-          Reject Order
         </div>
       </div>
 
-      <div  ng-repeat="order in pendingOrders()">
-        <div class="grid grid-padding supply-manage-rows" ng-class="{warn: highlightOrder(order)}">
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.locCode}} - {{order.locType}}
+      <div  ng-repeat="order in pendingOrders">
+        <div class="grid grid-padding expandable-div-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
+          <div class="col-3-12 supply-text-cell" >
+            {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.purchaser}}
+          <div class="col-3-12 supply-text-cell">
+            {{order.customer.lastName}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-3-12 supply-text-cell">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
-          </div>
-          <div class="col-2-12 supply-button-cell">
-            <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
-            <input ng-click="processOrder(order)" class="submit-button" type="button" value="Process" style="padding: 3px 8px">
-            </a>
-          </div>
-          <div class="col-2-12 supply-button-cell">
-            <input ng-click="rejectOrder(order)" class="reject-button" type="button" value="Reject" style="padding: 3px 8px">
-          </div>
-        </div>
-
-        <%--Order details--%>
-        <div ng-show="selectedOrder(order)" class="supply-details-table">
-          <div class="grid grid-padding supply-detail-header">
-            <div class="col-3-12">
-              Commodity Code
-            </div>
-            <div class="col-3-12">
-              Item Name
-            </div>
-            <div class="col-3-12">
-              Unit Size
-            </div>
-            <div class="col-3-12">
-              Quantity
-            </div>
-          </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows" ng-class="{warn: highlightLineItem(item)}">
-            <div class="col-3-12">
-              {{item.product.commodityCode}}
-            </div>
-            <div class="col-3-12">
-              {{item.product.name}}
-            </div>
-            <div class="col-3-12">
-              {{item.product.unitSize}}/Pack
-            </div>
-            <div class="col-3-12">
-              {{item.quantity}}
-            </div>
+          <div class="col-3-12 supply-text-cell">
+            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <%--   InProcess Orders   --%>
+  <%--   Processing Orders   --%>
   <div class="content-container">
     <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
 
-    <div class="content-info" ng-show="inprocessOrders().length == 0">
+    <div class="content-info" ng-show="processingOrders.length == 0">
       <h2 class="dark-gray">No Processing Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="inprocessOrders().length > 0">
-      <div class="grid grid-padding supply-manage-header">
+    <div style="padding: 0px 10px 10px 10px;" ng-show="processingOrders.length > 0">
+      <div class="grid grid-padding expandable-div-header">
         <div class="col-2-12">
           Location
         </div>
@@ -109,70 +63,32 @@
           Employee
         </div>
         <div class="col-2-12">
-          Quantity
+          Item Count
         </div>
-        <div class="col-2-12">
+        <div class="col-3-12">
           Order Date
         </div>
-        <div class="col-2-12">
+        <div class="col-3-12">
           Issuing Employee
-        </div>
-        <div class="col-2-12">
-          Complete Order
         </div>
       </div>
 
-      <div  ng-repeat="order in inprocessOrders()">
-        <div class="grid grid-padding supply-manage-rows">
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.locCode}} - {{order.locType}}
+      <div  ng-repeat="order in processingOrders">
+        <div class="grid grid-padding expandable-div-rows" ng-click="showEditingDetails(order)">
+          <div class="col-2-12 supply-text-cell">
+            {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.purchaser}}
+          <div class="col-2-12 supply-text-cell">
+            {{order.customer.lastName}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
+          <div class="col-2-12 supply-text-cell">
             {{getOrderQuantity(order)}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+          <div class="col-3-12 supply-text-cell">
+            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
-          <div class="col-2-12 supply-text-cell" ng-click="setSelected(order)">
-            {{order.issueEmployee}}
-          </div>
-          <div class="col-2-12 supply-button-cell">
-            <input ng-click="completeOrder(order)" class="submit-button" type="button" value="Complete" style="padding: 3px 8px">
-          </div>
-        </div>
-
-        <%--Order details--%>
-        <div ng-show="selectedOrder(order)" class="supply-details-table">
-          <div class="grid grid-padding supply-detail-header">
-            <div class="col-3-12">
-              Commodity Code
-            </div>
-            <div class="col-3-12">
-              Item Name
-            </div>
-            <div class="col-3-12">
-              Unit Size
-            </div>
-            <div class="col-3-12">
-              Quantity
-            </div>
-          </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows">
-            <div class="col-3-12">
-              {{item.product.commodityCode}}
-            </div>
-            <div class="col-3-12">
-              {{item.product.name}}
-            </div>
-            <div class="col-3-12">
-              {{item.product.unitSize}}/Pack
-            </div>
-            <div class="col-3-12">
-              {{item.quantity}}
-            </div>
+          <div class="col-3-12 supply-text-cell">
+            {{order.issuingEmployee.lastName}}
           </div>
         </div>
       </div>
@@ -183,12 +99,12 @@
   <div class="content-container">
     <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
 
-    <div class="content-info" ng-show="completedOrders().length == 0">
+    <div class="content-info" ng-show="completedOrders.length == 0">
       <h2 class="dark-gray">No Completed Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders().length > 0">
-      <div class="grid grid-padding supply-manage-header">
+    <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders.length > 0">
+      <div class="grid grid-padding expandable-div-header">
         <div class="col-2-12">
           Location
         </div>
@@ -196,7 +112,7 @@
           Employee
         </div>
         <div class="col-2-12">
-          Quantity
+          Item Count
         </div>
         <div class="col-2-12">
           Order Date
@@ -209,61 +125,35 @@
         </div>
       </div>
 
-      <div  ng-repeat="order in completedOrders()">
-        <div class="grid grid-padding supply-manage-rows" ng-click="setSelected(order)">
+      <div  ng-repeat="order in completedOrders">
+        <div class="grid grid-padding expandable-div-rows" ng-click="showCompletedDetails(order)">
           <div class="col-2-12 supply-text-cell">
-            {{order.locCode}} - {{order.locType}}
+            {{order.location.code + '-' + order.location.locationTypeCode}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.purchaser}}
+            {{order.customer.lastName}}
           </div>
           <div class="col-2-12 supply-text-cell">
             {{getOrderQuantity(order)}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.dateTime.format('MM-DD-YYYY hh:mm A')}}
+            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.completeDate.format('MM-DD-YYYY hh:mm A')}}
+            {{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-2-12 supply-text-cell">
-            {{order.issueEmployee}}
-          </div>
-        </div>
-
-        <%--Order details--%>
-        <div ng-show="selectedOrder(order)" class="supply-details-table">
-          <div class="grid grid-padding supply-detail-header">
-            <div class="col-3-12">
-              Commodity Code
-            </div>
-            <div class="col-3-12">
-              Item Name
-            </div>
-            <div class="col-3-12">
-              Unit Size
-            </div>
-            <div class="col-3-12">
-              Quantity
-            </div>
-          </div>
-          <div ng-repeat="item in order.items" class="grid grid-padding supply-detail-rows">
-            <div class="col-3-12">
-              {{item.product.commodityCode}}
-            </div>
-            <div class="col-3-12">
-              {{item.product.name}}
-            </div>
-            <div class="col-3-12">
-              {{item.product.unitSize}}/Pack
-            </div>
-            <div class="col-3-12">
-              {{item.quantity}}
-            </div>
+            {{order.issuingEmployee.lastName}}
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <% /** Container for all modal dialogs */ %>
+  <div modal-container>
+    <div manage-editing-modal ng-if="isOpen('manage-editing-modal')"></div>
+    <div manage-completed-modal ng-if="isOpen('manage-completed-modal')"></div>
   </div>
 
 </div>

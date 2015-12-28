@@ -2,7 +2,8 @@ package gov.nysenate.ess.supply.order.service;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.supply.order.LineItem;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
@@ -28,8 +29,13 @@ public class EssOrderService implements OrderService {
     @Autowired
     private OrderDao sfmsDao;
 
+    @Autowired
+    private EmployeeInfoService employeeInfoService;
+
     @Override
-    public synchronized Order submitOrder(Employee customer, Location location, Set<LineItem> items) {
+    public synchronized Order submitOrder(int empId, Set<LineItem> items) {
+        Employee customer = employeeInfoService.getEmployee(empId);
+        Location location = customer.getWorkLocation();
         Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING).build();
         order = order.setItems(items);
         orderDao.saveOrder(order);
@@ -42,17 +48,14 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public Order updateOrderItems(int orderId, Set<LineItem> newItems) {
-        Order order = orderDao.getOrderById(orderId);
-        order = order.setItems(newItems);
+    public void saveOrder(Order order) {
         orderDao.saveOrder(order);
-        return order;
     }
 
     @Override
     public Order rejectOrder(int orderId) {
         Order order = orderDao.getOrderById(orderId);
-        if (order.getStatus() != OrderStatus.PENDING) {
+        if (!statusIsPendingOrProcessing(order)) {
             throw new WrongOrderStatusException("Can only reject orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
         }
@@ -61,8 +64,13 @@ public class EssOrderService implements OrderService {
         return order;
     }
 
+    private boolean statusIsPendingOrProcessing(Order order) {
+        return order.getStatus() == OrderStatus.PENDING || order.getStatus() == OrderStatus.PROCESSING;
+    }
+
     @Override
-    public Order processOrder(int orderId, Employee issuingEmployee) {
+    public Order processOrder(int orderId, int issuingEmpId) {
+        Employee issuingEmployee = employeeInfoService.getEmployee(issuingEmpId);
         Order order = orderDao.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new WrongOrderStatusException("Can only process orders with status of " + OrderStatus.PENDING +
@@ -118,6 +126,17 @@ public class EssOrderService implements OrderService {
                 orders.add(order);
         }
         return orders;
+    }
+
+    @Override
+    public Order undoCompletion(int id) {
+        Order order = orderDao.getOrderById(id);
+        orderDao.undoCompletion(order);
+        sfmsDao.undoCompletion(order);
+        order = order.setStatus(OrderStatus.PROCESSING);
+        order = order.setCompletedDateTime(null);
+        orderDao.saveOrder(order);
+        return order;
     }
 
     /** Return true if dateTime is between start and end date time's, inclusive.*/

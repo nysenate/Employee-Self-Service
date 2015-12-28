@@ -40,4 +40,9 @@ public class SfmsInMemoryOrder implements OrderDao {
     public Order getOrderById(int orderId) {
         return null;
     }
+
+    @Override
+    public void undoCompletion(Order order) {
+
+    }
 }

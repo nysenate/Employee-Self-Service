@@ -41,4 +41,9 @@ public class InMemoryOrder implements OrderDao {
         return orders.get(orderId);
     }
 
+    @Override
+    public void undoCompletion(Order order) {
+
+    }
+
 }

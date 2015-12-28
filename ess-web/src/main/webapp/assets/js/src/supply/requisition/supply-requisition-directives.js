@@ -35,3 +35,11 @@ essSupply.directive('requisitionQuantitySelector', [function() {
         }
     }
 }]);
+
+essSupply.directive('editableOrderListing', ['appProps', function(appProps) {
+    return {
+        restrict: 'A',
+        scope: false,
+        templateUrl: appProps.ctxPath + '/template/supply/requisition/editable/order/listing',
+    }
+}]);

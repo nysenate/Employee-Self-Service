@@ -1,11 +1,11 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-['$scope', 'SupplyOrderService', 'LocationService', supplyHistoryController]);
+['$scope', 'SupplyGetTodaysCompletedOrdersApi', 'LocationService', supplyHistoryController]);
 
-function supplyHistoryController($scope, supplyOrderService, locationService) {
+function supplyHistoryController($scope, getTodaysCompletedOrdersApi, locationService) {
 
     $scope.locations = [];
     $scope.selectedLocation = null;
-    $scope.orders = [];
+    $scope.orders = null;
     $scope.filteredOrders = [];
 
     $scope.getOrderQuantity = function(supplyOrder) {
@@ -23,10 +23,9 @@ function supplyHistoryController($scope, supplyOrderService, locationService) {
     $scope.initLocations = function() {
         if ($scope.locations.length === 0) {
             $scope.locations.push("All");
-            var orders = supplyOrderService.getCompletedOrders();
-            angular.forEach(orders, function (order) {
-                if ($scope.locations.indexOf(order.locCode) === -1) {
-                    $scope.locations.push(order.locCode);
+            angular.forEach($scope.orders, function (order) {
+                if ($scope.locations.indexOf(order.location.code + "-" + order.location.locationTypeCode) === -1) {
+                    $scope.locations.push(order.location.code + "-" + order.location.locationTypeCode);
                 }
             });
         }
@@ -37,7 +36,7 @@ function supplyHistoryController($scope, supplyOrderService, locationService) {
             return true;
         }
         else {
-            if (order.locCode === $scope.selectedLocation) {
+            if (order.location === $scope.selectedLocation) {
                 return true;
             }
         }
@@ -45,11 +44,19 @@ function supplyHistoryController($scope, supplyOrderService, locationService) {
     };
 
     $scope.init = function() {
-        $scope.orders = supplyOrderService.getCompletedOrders();
-        $scope.filteredOrders = $scope.orders;
-        $scope.initLocations();
-        $scope.selectedLocation = $scope.locations[0];
+        getCompletedOrders();
     };
+
+    function getCompletedOrders() {
+        getTodaysCompletedOrdersApi.get(2015, function(response) {
+            $scope.orders = response.result;
+            $scope.filteredOrders = $scope.orders;
+            $scope.initLocations();
+            $scope.selectedLocation = $scope.locations[0];
+        }, function(response) {
+
+        })
+    }
 
     $scope.init();
 }

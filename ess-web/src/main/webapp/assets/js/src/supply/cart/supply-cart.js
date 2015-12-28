@@ -1,8 +1,8 @@
 var essSupply = angular.module('essSupply');
 
 essSupply.service('SupplyCart', [function() {
-    function CartItem(product, quantity) {
-        this.product = product;
+    function CartItem(item, quantity) {
+        this.item = item;
         this.quantity = quantity;
     }
 
@@ -10,10 +10,10 @@ essSupply.service('SupplyCart', [function() {
     var items = [];
 
     return {
-        addToCart: function(product, quantity) {
-            var cartItem = this.getItemById(product.id);
+        addToCart: function(item, quantity) {
+            var cartItem = this.getItemById(item.id);
             if (!cartItem) {
-                items.push(new CartItem(product, quantity));
+                items.push(new CartItem(item, quantity));
             }
             else {
                 cartItem.quantity += quantity;
@@ -24,7 +24,7 @@ essSupply.service('SupplyCart', [function() {
         },
         getItemById: function(id) {
             var item = false;
-            var search = $.grep(items, function(cartItem) {return cartItem.product.id === id});
+            var search = $.grep(items, function(cartItem) {return cartItem.item.id === id});
             if (search.length > 0) {
                 item = search[0];
             }
@@ -37,12 +37,16 @@ essSupply.service('SupplyCart', [function() {
             });
             return size;
         },
-        removeFromCart: function(product) {
+        removeFromCart: function(item) {
             $.grep(items, function(cartItem, index) {
-                if (cartItem && cartItem.product.id === product.id) {
+                if (cartItem && cartItem.item.id === item.id) {
                     items.splice(index, 1);
                 }
             });
+        },
+        reset: function() {
+            items = [];
         }
+
     }
 }]);
