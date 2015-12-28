@@ -23,7 +23,6 @@ import java.util.List;
 @EnableCaching
 public class CacheConfig implements CachingConfigurer
 {
-
     @Value("${cache.max.size}") private String cacheMaxHeapSize;
 
     @Bean(destroyMethod = "shutdown")
@@ -69,14 +68,5 @@ public class CacheConfig implements CachingConfigurer
     @Override
     public CacheErrorHandler errorHandler() {
         return null;
-    }
-
-    @Bean
-    public List<Cache> springCaches() {
-        Cache employeeCache = new ConcurrentMapCache("employees");
-        Cache supervisorCache = new ConcurrentMapCache("supervisors");
-        Cache supervisorEmpCache = new ConcurrentMapCache("supervisorEmps");
-        Cache transactionCache = new ConcurrentMapCache("transactions");
-        return Arrays.asList(employeeCache, supervisorCache, supervisorEmpCache, transactionCache);
     }
 }

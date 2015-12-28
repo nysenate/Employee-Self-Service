@@ -19,9 +19,4 @@ public class LoginPageCtrl
     public String loginPage(HttpServletRequest request, HttpServletResponse response) {
         return "login";
     }
-
-    @RequestMapping(method = RequestMethod.POST)
-    public String loginPagePost(HttpServletRequest request, HttpServletResponse response) {
-        return "login";
-    }
 }

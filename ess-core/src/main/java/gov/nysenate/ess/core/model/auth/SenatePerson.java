@@ -6,11 +6,11 @@ package gov.nysenate.ess.core.model.auth;
  */
 public interface SenatePerson
 {
-    public String getUid();
+    String getUid();
 
-    public Integer getEmployeeId();
+    Integer getEmployeeId();
 
-    public String getFullName();
+    String getFullName();
 
-    public String getEmail();
+    String getEmail();
 }

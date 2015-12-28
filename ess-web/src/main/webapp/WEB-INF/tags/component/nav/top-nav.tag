@@ -30,7 +30,7 @@
         <div class="right-header-area">
             <c:if test="${runtimeLevel != 'prod'}">
                 <div class="header-label-segment dark-red">
-                    <span class="dark-red">Running in ${runtimeLevel} mode.</span>
+                    <span class="dark-red">${runtimeLevel}</span>
                 </div>
             </c:if>
             <div class="header-label-segment">Hi, ${principal.getFullName()}</div>
