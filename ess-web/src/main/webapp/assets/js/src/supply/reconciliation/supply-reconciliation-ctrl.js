@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-['$scope', 'SupplyInventoryService', 'SupplyGetTodaysCompletedOrdersApi', supplyReconciliationController]);
+['$scope', 'SupplyInventoryService', 'SupplyGetTodaysCompletedOrdersApi', 'LocationService', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, inventoryService, getTodaysCompletedOrdersApi) {
+function supplyReconciliationController($scope, inventoryService, getTodaysCompletedOrdersApi, locationService) {
 
     $scope.selectedItem = null;
     $scope.reconcilableItems = [];
@@ -52,6 +52,10 @@ function supplyReconciliationController($scope, inventoryService, getTodaysCompl
                 return order.items[i].quantity;
             }
         }
+    };
+
+    $scope.viewOrder = function(order){
+        locationService.go("/supply/requisition/view", false, "order=" + order.id);
     };
 
     $scope.init = function() {
