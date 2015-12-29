@@ -4,21 +4,29 @@
   </div>
 
   <div class="content-container">
-    <div class="order-view-header">
-      <div class="grid grid-padding padding-10" style="text-align: center">
-        <div class="col-6-12 supply-title">
-          Location Code: {{order.location.code + '-' + order.location.locationTypeCode}}
-        </div>
-        <div class="col-6-12 supply-title">
-          Order Date: {{order.orderDateTime}}
-        </div>
-      </div>
-      <div class="grid grid-padding padding-10" style="text-align: center">
-        <div class="col-6-12 supply-title">
-          Ordered By: {{order.customer.lastName}}
+    <div class="content-info">
+      <div class="grid padding-10">
+        <div class="col-6-12">
+          <b>Location Code:</b> {{order.location.code + '-' + order.location.locationTypeCode}}
         </div>
         <div class="col-6-12">
-          <a class="supply-title" href="javascript:if(window.print)window.print()">
+          <b>Order Date:</b> {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
+        </div>
+      </div>
+      <div class="grid padding-10">
+        <div class="col-6-12">
+          <b>Ordered By:</b> {{order.customer.lastName}}
+        </div>
+        <div class="col-6-12" ng-show="order.completedDateTime">
+          <b>Completed Date:</b> {{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+        </div>
+      </div>
+      <div class="grid padding-10">
+        <div class="col-6-12" ng-show="order.issuingEmployee.lastName">
+          <b>Issued By:</b> {{order.issuingEmployee.lastName}}
+        </div>
+        <div class="col-6-12 no-print">
+          <a class="" href="javascript:if(window.print)window.print()">
             Print Page
           </a>
         </div>
@@ -33,15 +41,13 @@
         <tr>
           <th>Commodity Code</th>
           <th>Item Name</th>
-          <th>Unit Size</th>
           <th>Quantity</th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-class="{warn: highlightOrder(order)}" ng-repeat="lineItem in order.items">
+        <tr ng-repeat="lineItem in order.items">
           <td>{{getItemCommodityCode(lineItem.itemId)}}</td>
           <td>{{getItemName(lineItem.itemId)}}</td>
-          <td>{{getItemUnitSize(lineItem.itemId)}}</td>
           <td>{{lineItem.quantity}}</td>
         </tr>
         </tbody>
