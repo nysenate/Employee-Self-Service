@@ -19,6 +19,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  *
@@ -93,7 +94,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
      * @param response
      * @return
      */
-    protected boolean executeLogin(ServletRequest request, ServletResponse response) {
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws IOException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String username = getUsernameFromRequest(request);
         String password = getPasswordFromRequest(request);
@@ -141,16 +142,17 @@ public class EssAuthenticationFilter extends AuthenticationFilter
      * @return
      */
     protected boolean onLoginSuccess(AuthenticationToken token, AuthenticationStatus authStatus, Subject subject,
-                                     ServletRequest request, ServletResponse response) {
+                                     ServletRequest request, ServletResponse response) throws IOException {
 
         SenateLdapPerson user = (SenateLdapPerson) subject.getPrincipal();
         String redirectUrl = getSuccessRedirectUrl(request);
 
         AuthenticationResponse authResponse = new AuthenticationResponse(authStatus, user.getUid(), redirectUrl);
         HttpResponseUtils.writeHttpResponse((HttpServletRequest) request, (HttpServletResponse) response, authResponse);
+        response.flushBuffer();
 
         logger.debug("Login for user {} was successful.", user);
-        return true;
+        return false;
     }
 
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationStatus authStatus, Subject subject,

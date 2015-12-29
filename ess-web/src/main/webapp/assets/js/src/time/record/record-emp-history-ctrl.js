@@ -94,7 +94,7 @@ essTime.controller('EmpRecordHistoryCtrl', ['$scope', 'appProps',  'ActiveYearsT
                                 to: endMoment.format('YYYY-MM-DD')},
                 function(resp) {
                     if (resp.success) {
-                        $scope.state.records = resp.result.items[emp.empId];
+                        $scope.state.records = resp.result.items[emp.empId].reverse();
                         for(var i in $scope.state.records) {
                             var record = $scope.state.records[i];
                             recordUtils.calculateDailyTotals(record);

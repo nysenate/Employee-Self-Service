@@ -7,9 +7,9 @@
     <ess-component-nav:nav-header topicTitle="Time And Attendance Menu" colorClass="teal"/>
     <h3 class="main-topic">My Attendance</h3>
     <ul class="sub-topic-list">
-        <li class="sub-topic"><a href="${ctxPath}/time/record/entry">Enter Time Record</a></li>
+        <li class="sub-topic"><a href="${ctxPath}/time/record/entry">Attendance Record Entry</a></li>
         <li class="sub-topic"><a href="${ctxPath}/time/record/history">Attendance History</a></li>
-        <li class="sub-topic"><a href="${ctxPath}/time/period/calendar">Pay Period Calendar</a></li>
+        <li class="sub-topic"><a href="${ctxPath}/time/period/calendar">Payroll Calendar</a></li>
     </ul>
     <h3 class="main-topic">My Accruals</h3>
         <ul class="sub-topic-list">

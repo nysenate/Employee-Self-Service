@@ -1,8 +1,21 @@
 /*! Login Page */
 var essApp = angular.module('ess');
 
-essApp.controller('LoginController', ['$scope', '$http', '$window', 'appProps',
-    function($scope, $http, $window, appProps) {
+essApp.factory('LoginApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.ctxPath + appProps.loginUrl, {}, {
+        'login': {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            withCredentials: true
+        }
+    });
+}]);
+
+essApp.controller('LoginController', ['$scope', '$http', '$window', 'appProps', 'LoginApi',
+    function($scope, $http, $window, appProps, LoginApi) {
     $scope.credentials = {
         username: '',
         password: '',
@@ -31,56 +44,47 @@ essApp.controller('LoginController', ['$scope', '$http', '$window', 'appProps',
     };
 
     $scope.validate = function() {
-        this.errorFields.reset();
-        this.showError = false;
-        if (!this.credentials.username) {
-            this.errorMessage = "Please enter your username.";
-            this.errorFields.username = true;
+        $scope.errorFields.reset();
+        $scope.showError = false;
+        if (!$scope.credentials.username) {
+            $scope.errorMessage = "Please enter your username.";
+            $scope.errorFields.username = true;
         }
-        else if (!this.credentials.password) {
-            this.errorMessage = "Please enter your password.";
-            this.errorFields.password = true;
+        else if (!$scope.credentials.password) {
+            $scope.errorMessage = "Please enter your password.";
+            $scope.errorFields.password = true;
         }
         else {
             return true;
         }
-        this.showError = true;
+        $scope.showError = true;
         return false;
     };
 
     $scope.login = function() {
         if ($scope.validate()) {
-            var loginUrl = appProps.ctxPath + appProps.loginUrl;
-            var credentialsParam = $.param($scope.credentials);
-            var config = {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            };
             $scope.loginInProgress = true;
-            $http.post(loginUrl, credentialsParam, config)
-                .success(function(authResponse, status) {
-                    if (authResponse) {
-                        if (authResponse.authenticated === true) {
-                            $window.location.href = authResponse.redirectUrl;
-                        }
-                        else {
-                            $scope.errorMessage = authResponse.message;
-                            $scope.showError = true;
-                            if (authResponse.status == 'UNKNOWN_ACCOUNT') {
-                                $scope.errorFields.username = true;
-                            }
-                            else if (authResponse.status == 'INCORRECT_CREDENTIALS') {
-                                $scope.errorFields.password = true;
-                            }
-                            $scope.loginInProgress = false;
-                        }
+            LoginApi.login($.param($scope.credentials), function(authResponse, status) {
+                if (authResponse) {
+                    if (authResponse.authenticated === true) {
+                        $window.location.href = authResponse.redirectUrl;
                     }
-                })
-                .error(function(data, status, headers, config) {
-                    $scope.loginInProgress = false;
-                });
+                    else {
+                        $scope.errorMessage = authResponse.message;
+                        $scope.showError = true;
+                        if (authResponse.status == 'UNKNOWN_ACCOUNT') {
+                            $scope.errorFields.username = true;
+                        }
+                        else if (authResponse.status == 'INCORRECT_CREDENTIALS') {
+                            $scope.errorFields.password = true;
+                        }
+                        $scope.loginInProgress = false;
+                    }
+                }
+            }, function(data) {
+                $scope.loginInProgress = false;
+                alert("There was an issue logging in. Please try again.");
+            });
         }
     }
 }]);
