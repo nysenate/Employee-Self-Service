@@ -32,154 +32,94 @@ public class OrderTests extends SupplyTests {
     }
 
     @Test
-    public void newOrderShouldBeGivenId() {
-        Order order = submitOrder();
+    public void newOrderInitializedCorrectly() {
+        Order order = TestUtils.submitOrder();
         assertTrue(order.getId() > 0);
-    }
-
-    @Test
-    public void newOrderDateTimeShouldBeInitialized() {
-        Order order = submitOrder();
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
-    }
-
-    @Test
-    public void newOrderShouldHavePendingStatus() {
-        Order order = submitOrder();
         assertEquals(order.getStatus(), OrderStatus.PENDING);
     }
 
     @Test
-    public void canEditOrderItems() {
-        Order order = submitOrder();
+    public void canEditAnOrdersItems() {
+        Order order = TestUtils.submitOrder();
         Set<LineItem> newItems = incrementItemQuantities(order.getItems());
         orderService.saveOrder(order.setItems(newItems));
         assertNotEquals(order, orderService.getOrderById(order.getId()));
     }
 
     @Test
-    public void processingOrderShouldUpdateStatus() {
-        Order order = submitAndProcessOrder();
-        assertEquals(order.getStatus(), OrderStatus.PROCESSING);
-    }
-
-    @Test
-    public void processingOrderSetsIssuingEmployee() {
-        Order order = submitOrder();
+    public void orderProcessedCorrectly() {
+        Order order = TestUtils.submitOrder();
         order = orderService.processOrder(order.getId(), 2);
         assertEquals(order.getIssuingEmployee().getEmployeeId(), 2);
-    }
-
-    @Test
-    public void processingOrderSetsProcessedDateTime() {
-        Order order = submitAndProcessOrder();
         assertDateLessThan5SecondsOld(order.getProcessedDateTime());
+        assertEquals(order.getStatus(), OrderStatus.PROCESSING);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessAnAlreadyProcessingOrder() {
-        Order order = submitAndProcessOrder();
+        Order order = TestUtils.submitAndProcessOrder();
         orderService.processOrder(order.getId(), 2);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessACompletedOrder() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = TestUtils.submitProcessAndCompleteOrder();
         orderService.processOrder(order.getId(), 2);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
-        Order order = submitOrder();
+        Order order = TestUtils.submitOrder();
         order = orderService.rejectOrder(order.getId());
         orderService.processOrder(order.getId(), 2);
     }
 
     @Test
-    public void completingOrderShouldUpdateStatus() {
-        Order order = submitProcessAndCompleteOrder();
+    public void orderCompletedCorrectly() {
+        Order order = TestUtils.submitProcessAndCompleteOrder();
+        assertDateLessThan5SecondsOld(order.getCompletedDateTime());
         assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
 
     @Test
-    public void completingOrderSetsCompletedDateTime() {
-        Order order = submitProcessAndCompleteOrder();
-        assertDateLessThan5SecondsOld(order.getCompletedDateTime());
-    }
-
-    @Test(expected = WrongOrderStatusException.class)
-    public void cannotCompleteAPendingOrder() {
-        Order order = submitOrder();
-        orderService.completeOrder(order.getId());
-    }
-
-    @Test(expected = WrongOrderStatusException.class)
-    public void cannotCompleteAnAlreadyCompleteOrder() {
-        Order order = submitProcessAndCompleteOrder();
-        orderService.completeOrder(order.getId());
-    }
-
-    @Test(expected = WrongOrderStatusException.class)
-    public void cannotCompleteRejectedOrder() {
-        Order order = submitOrder();
-        order = orderService.rejectOrder(order.getId());
-        orderService.completeOrder(order.getId());
-    }
-
-    @Test
     public void completingOrderUpdatesSfms() {
-        Order order = submitAndProcessOrder();
+        Order order = TestUtils.submitAndProcessOrder();
         assertTrue(sfmsDao.getOrders().size() == 0);
         orderService.completeOrder(order.getId());
         assertTrue(sfmsDao.getOrders().size() == 1);
     }
 
     @Test
-    public void canGetOrderById() {
-        Order order = orderService.getOrderById(submitOrder().getId());
-        assertNotNull(order);
+    public void canUndoACompletion() {
+        Order order = TestUtils.submitProcessAndCompleteOrder();
+        order = orderService.undoCompletion(order.getId());
+        assertEquals(order.getStatus(), OrderStatus.PROCESSING);
+        assertEquals(order.getCompletedDateTime(), null);
     }
 
-    @Test
-    public void canGetAllOrders() {
-        assertTrue(orderService.getOrders().size() == 0);
-        Order order = submitOrder();
-        assertTrue(orderService.getOrders().contains(order));
+    @Test(expected = WrongOrderStatusException.class)
+    public void cannotCompleteAPendingOrder() {
+        Order order = TestUtils.submitOrder();
+        orderService.completeOrder(order.getId());
     }
 
-    @Test
-    public void canGetPendingOrders() {
-        Order order = submitOrder();
-        List<Order> pendingOrders = orderService.getPendingOrders();
-        assertTrue(pendingOrders.contains(order));
-    }
-    @Test
-    public void canGetOrdersInProcessing() {
-        Order order = submitAndProcessOrder();
-        List<Order> processingOrders = orderService.getProcessingOrders();
-        assertTrue(processingOrders.contains(order));
+    @Test(expected = WrongOrderStatusException.class)
+    public void cannotCompleteAnAlreadyCompleteOrder() {
+        Order order = TestUtils.submitProcessAndCompleteOrder();
+        orderService.completeOrder(order.getId());
     }
 
-    @Test
-    public void canGetCompletedOrders() {
-        submitProcessAndCompleteOrder();
-        assertTrue(orderService.getCompletedOrders().size() > 0);
-    }
-
-    @Test
-    public void canGetCompletedOrdersInDateRange() {
-        Order outOfRange = submitProcessAndCompleteOrder();
-        sleep(10);
-        LocalDateTime start = LocalDateTime.now();
-        Order inRange = submitProcessAndCompleteOrder();
-        LocalDateTime end = LocalDateTime.now();
-        assertTrue(orderService.getCompletedOrdersBetween(start, end).contains(inRange));
-        assertFalse(orderService.getCompletedOrdersBetween(start, end).contains(outOfRange));
+    @Test(expected = WrongOrderStatusException.class)
+    public void cannotCompleteRejectedOrder() {
+        Order order = TestUtils.submitOrder();
+        order = orderService.rejectOrder(order.getId());
+        orderService.completeOrder(order.getId());
     }
 
     @Test
     public void canRejectPendingOrder() {
-        Order order = submitOrder();
+        Order order = TestUtils.submitOrder();
         assertEquals(order.getStatus(), OrderStatus.PENDING);
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
@@ -187,44 +127,22 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canRejectProcessingOrder() {
-        Order order = submitAndProcessOrder();
+        Order order = TestUtils.submitAndProcessOrder();
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectCompletedOrder() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = TestUtils.submitProcessAndCompleteOrder();
         orderService.rejectOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectRejectedOrder() {
-        Order order = submitOrder();
+        Order order = TestUtils.submitOrder();
         order = orderService.rejectOrder(order.getId());
         orderService.rejectOrder(order.getId());
-    }
-
-    @Test
-    public void canUndoACompletion() {
-        Order order = submitProcessAndCompleteOrder();
-        order = orderService.undoCompletion(order.getId());
-        assertEquals(order.getStatus(), OrderStatus.PROCESSING);
-        assertEquals(order.getCompletedDateTime(), null);
-    }
-
-    private Order submitOrder() {
-        return orderService.submitOrder(1, TestUtils.orderedItemsToQuantitiesMap());
-    }
-
-    private Order submitAndProcessOrder() {
-        Order order = submitOrder();
-        return orderService.processOrder(order.getId(), 2);
-    }
-
-    private Order submitProcessAndCompleteOrder() {
-        Order order = submitAndProcessOrder();
-        return orderService.completeOrder(order.getId());
     }
 
     private Set<LineItem> incrementItemQuantities(Set<LineItem> originalItems) {
@@ -237,13 +155,5 @@ public class OrderTests extends SupplyTests {
 
     private void assertDateLessThan5SecondsOld(LocalDateTime orderDateTime) {
         assertTrue(orderDateTime.toInstant(ZoneOffset.UTC).isAfter(LocalDateTime.now().minusSeconds(5).toInstant(ZoneOffset.UTC)));
-    }
-
-    private void sleep(int milliseconds) {
-        try {
-            Thread.sleep(milliseconds);
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
     }
 }
