@@ -20,6 +20,7 @@
 
         <!-- Common Directives -->
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/toggle-panel-directive.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/common/pagination-model.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/ess-notifications.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/loader-indicator-directive.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/odometer-directive.js"></script>

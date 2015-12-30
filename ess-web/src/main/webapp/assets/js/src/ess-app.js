@@ -12,7 +12,7 @@ var essApp = angular.module('ess', [
     // Local modules
     'essMyInfo', 'essTime', 'essSupply', 'essHelp',
     // Third party modules
-    'floatThead']);
+    'floatThead', 'angularUtils.directives.dirPagination']);
 
 /** Transfers properties stored on the global window var into the root module. */
 essCore.constant('appProps', globalProps);
