@@ -30,7 +30,7 @@
         </a>
       </div>
 
-      <div ng-show="status === 'PROCESSING'" style="padding-bottom: 20px;">
+      <div class="text-align-center" ng-show="status === 'PROCESSING'" style="padding-bottom: 20px;">
         <label>Assign to: </label>
         <select ng-model="assignedTo" ng-change="setIssuedBy()" ng-options="emp for emp in supplyEmployees"></select>
       </div>

@@ -90,7 +90,12 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/supply/requisition/manage', {
-        templateUrl: ctxPath + '/template/supply/requisition/manage'
+        templateUrl: ctxPath + '/template/supply/requisition/manage',
+        resolve: {
+            'MyInventoryServiceData': function (SupplyInventoryService) {
+                return SupplyInventoryService.promise;
+            }
+        }
     });
 
     $routeProvider.when(ctxPath + '/supply/requisition/history', {
@@ -102,7 +107,12 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/supply/reconciliation/reconciliation', {
-        templateUrl: ctxPath + '/template/supply/reconciliation/reconciliation'
+        templateUrl: ctxPath + '/template/supply/reconciliation/reconciliation',
+        resolve: {
+            'MyInventoryServiceData': function (SupplyInventoryService) {
+                return SupplyInventoryService.promise;
+            }
+        }
     });
 
     /** Help */

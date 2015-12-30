@@ -54,6 +54,7 @@ module.exports = function(grunt) {
                          '<%= bowerRoot %>/angular-route/angular-route.min.js',
                          '<%= bowerRoot %>/angular-resource/angular-resource.min.js',
                          '<%= bowerRoot %>/angular-animate/angular-animate.min.js',
+                         '<%= bowerRoot %>/angular-utils-pagination/dirPagination.js',
                          '<%= bowerRoot %>/odometer/odometer.min.js',
                          '<%= bowerRoot %>/moment/min/moment.min.js',
                          '<%= bowerRoot %>/floatThead/dist/jquery.floatThead.min.js',

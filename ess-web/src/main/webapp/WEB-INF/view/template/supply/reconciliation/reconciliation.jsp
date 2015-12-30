@@ -23,7 +23,7 @@
       </div>
       <%--Item rows--%>
       <div ng-repeat="item in reconcilableItems">
-        <div class="grid expandable-div-rows" ng-click="setSelected(item)">
+        <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'" ng-click="setSelected(item)">
           <div class="col-4-12">
             {{item.commodityCode}}
           </div>
@@ -53,7 +53,8 @@
             </div>
           </div>
           <%--Detail rows--%>
-          <div class="grid expandable-div-rows" ng-repeat="order in getOrdersForItem(item)" ng-click="viewOrder(order)">
+          <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'"
+               ng-repeat="order in getOrdersForItem(item)" ng-click="viewOrder(order)">
             <div class="col-3-12">
               {{order.location.code + '-' + order.location.locationTypeCode}}
             </div>

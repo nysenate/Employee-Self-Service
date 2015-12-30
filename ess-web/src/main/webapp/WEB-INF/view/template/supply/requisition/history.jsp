@@ -5,8 +5,22 @@
 
   <div class="content-container">
     <div class="content-info">
-      <label>Filter by Location:</label>
-      <select ng-model="selectedLocation" ng-options="location for location in locations"></select>
+      <h3 class="content-info">Filter By:</h3>
+      <div class="grid">
+        <div class="col-6-12">
+          <label class="bold">Customer:</label>
+        </div>
+        <div class="col-6-12">
+          <label class="bold">Location:</label>
+          <select ng-model="selectedLocation" ng-options="location for location in locations"></select>
+        </div>
+        <div class="col-6-12">
+          <label class="bold">Issuer:</label>
+        </div>
+        <div class="col-6-12">
+          <label class="bold">Date:</label>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -23,7 +37,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="order in filteredOrders" ng-click="viewOrder(order)" ng-show="shouldShowOrder(order)">
+        <tr ng-repeat="order in filteredOrders" ng-click="viewOrder(order)" ng-show="isInFilter(order)">
           <td>{{order.location.code + '-' + order.location.locationTypeCode}}</td>
           <td>{{getOrderQuantity(order)}}</td>
           <td>{{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}</td>

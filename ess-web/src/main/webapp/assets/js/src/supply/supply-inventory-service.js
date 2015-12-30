@@ -8,6 +8,7 @@ essSupply.service('SupplyInventoryService', ['SupplyItemApi', function(supplyIte
     var promise = false;
     supplyItemApi.get(function(response) {
         items = response.result;
+        console.log("inventory service items : " + items);
         promise = true;
     });
 
