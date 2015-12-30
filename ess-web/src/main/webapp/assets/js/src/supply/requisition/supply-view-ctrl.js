@@ -13,11 +13,6 @@ function supplyViewController($scope, orderByIdApi, inventoryService, locationSe
         return item.name;
     };
 
-    $scope.getItemUnitSize = function(itemId) {
-        var item = inventoryService.getItemById(itemId);
-        return item.unitSize;
-    };
-
     $scope.init = function() {
         var id = locationService.getSearchParam('order');
 

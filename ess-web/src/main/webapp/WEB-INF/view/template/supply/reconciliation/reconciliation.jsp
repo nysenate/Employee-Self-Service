@@ -22,19 +22,21 @@
         </div>
       </div>
       <%--Item rows--%>
-      <div class="grid expandable-div-rows" ng-repeat="item in reconcilableItems" ng-click="setSelected(item)">
-        <div class="col-4-12">
-          {{item.commodityCode}}
-        </div>
-        <div class="col-4-12">
-          {{item.name}}
-        </div>
-        <div class="col-4-12">
-          &nbsp;
+      <div ng-repeat="item in reconcilableItems">
+        <div class="grid expandable-div-rows" ng-click="setSelected(item)">
+          <div class="col-4-12">
+            {{item.commodityCode}}
+          </div>
+          <div class="col-4-12">
+            {{item.name}}
+          </div>
+          <div class="col-4-12">
+            &nbsp;
+          </div>
         </div>
 
         <%--Details--%>
-        <div ng-show="isItemSelected(item)" style="padding-left: 40px; padding-top: 25px">
+        <div ng-show="isItemSelected(item)" style="padding-left: 40px; padding-top: 0px; padding-bottom: 20px;">
           <%--Detail header--%>
           <div class="grid expandable-div-header">
             <div class="col-3-12">
@@ -51,7 +53,7 @@
             </div>
           </div>
           <%--Detail rows--%>
-          <div class="grid expandable-div-rows" ng-repeat="order in getOrdersForItem(item)">
+          <div class="grid expandable-div-rows" ng-repeat="order in getOrdersForItem(item)" ng-click="viewOrder(order)">
             <div class="col-3-12">
               {{order.location.code + '-' + order.location.locationTypeCode}}
             </div>

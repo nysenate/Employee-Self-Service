@@ -11,39 +11,24 @@
         <h2 class="dark-gray">No Pending Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="pendingOrders.length > 0">
-      <div class="grid grid-padding expandable-div-header">
-        <div class="col-3-12">
-          Location
-        </div>
-        <div class="col-3-12">
-          Employee
-        </div>
-        <div class="col-3-12">
-          Item Count
-        </div>
-        <div class="col-3-12">
-          Order Date
-        </div>
-      </div>
-
-      <div  ng-repeat="order in pendingOrders">
-        <div class="grid grid-padding expandable-div-rows" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
-          <div class="col-3-12 supply-text-cell" >
-            {{order.location.code + '-' + order.location.locationTypeCode}}
-          </div>
-          <div class="col-3-12 supply-text-cell">
-            {{order.customer.lastName}}
-          </div>
-          <div class="col-3-12 supply-text-cell">
-            {{getOrderQuantity(order)}}
-          </div>
-          <div class="col-3-12 supply-text-cell">
-            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
-          </div>
-        </div>
-      </div>
-    </div>
+    <table class="ess-table supply-listing-table" ng-show="pendingOrders.length > 0">
+      <thead>
+      <tr>
+        <th>Location</th>
+        <th>Employee</th>
+        <th>Item Count</th>
+        <th>Order Date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="order in pendingOrders" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
+        <td>{{order.location.code + '-' + order.location.locationTypeCode}}</td>
+        <td>{{order.customer.lastName}}</td>
+        <td>{{getOrderQuantity(order)}}</td>
+        <td>{{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 
   <%--   Processing Orders   --%>
@@ -54,45 +39,26 @@
       <h2 class="dark-gray">No Processing Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="processingOrders.length > 0">
-      <div class="grid grid-padding expandable-div-header">
-        <div class="col-2-12">
-          Location
-        </div>
-        <div class="col-2-12">
-          Employee
-        </div>
-        <div class="col-2-12">
-          Item Count
-        </div>
-        <div class="col-3-12">
-          Order Date
-        </div>
-        <div class="col-3-12">
-          Issuing Employee
-        </div>
-      </div>
-
-      <div  ng-repeat="order in processingOrders">
-        <div class="grid grid-padding expandable-div-rows" ng-click="showEditingDetails(order)">
-          <div class="col-2-12 supply-text-cell">
-            {{order.location.code + '-' + order.location.locationTypeCode}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{order.customer.lastName}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{getOrderQuantity(order)}}
-          </div>
-          <div class="col-3-12 supply-text-cell">
-            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
-          </div>
-          <div class="col-3-12 supply-text-cell">
-            {{order.issuingEmployee.lastName}}
-          </div>
-        </div>
-      </div>
-    </div>
+    <table class="ess-table supply-listing-table" ng-show="processingOrders.length > 0">
+      <thead>
+      <tr>
+        <th>Location</th>
+        <th>Employee</th>
+        <th>Item Count</th>
+        <th>Order Date</th>
+        <th>Issuing Employee</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="order in processingOrders" ng-class="{warn: highlightOrder(order)}" ng-click="showEditingDetails(order)">
+        <td>{{order.location.code + '-' + order.location.locationTypeCode}}</td>
+        <td>{{order.customer.lastName}}</td>
+        <td>{{getOrderQuantity(order)}}</td>
+        <td>{{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{order.issuingEmployee.lastName}}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 
   <%--   Completed Orders   --%>
@@ -103,51 +69,28 @@
       <h2 class="dark-gray">No Completed Requests.</h2>
     </div>
 
-    <div style="padding: 0px 10px 10px 10px;" ng-show="completedOrders.length > 0">
-      <div class="grid grid-padding expandable-div-header">
-        <div class="col-2-12">
-          Location
-        </div>
-        <div class="col-2-12">
-          Employee
-        </div>
-        <div class="col-2-12">
-          Item Count
-        </div>
-        <div class="col-2-12">
-          Order Date
-        </div>
-        <div class="col-2-12">
-          Completed Date
-        </div>
-        <div class="col-2-12">
-          Issued By
-        </div>
-      </div>
-
-      <div  ng-repeat="order in completedOrders">
-        <div class="grid grid-padding expandable-div-rows" ng-click="showCompletedDetails(order)">
-          <div class="col-2-12 supply-text-cell">
-            {{order.location.code + '-' + order.location.locationTypeCode}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{order.customer.lastName}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{getOrderQuantity(order)}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
-          </div>
-          <div class="col-2-12 supply-text-cell">
-            {{order.issuingEmployee.lastName}}
-          </div>
-        </div>
-      </div>
-    </div>
+    <table class="ess-table supply-listing-table" ng-show="completedOrders.length > 0">
+      <thead>
+      <tr>
+        <th>Location</th>
+        <th>Employee</th>
+        <th>Item Count</th>
+        <th>Order Date</th>
+        <th>Completed Date</th>
+        <th>Issuing Employee</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="order in completedOrders" ng-click="showCompletedDetails(order)">
+        <td>{{order.location.code + '-' + order.location.locationTypeCode}}</td>
+        <td>{{order.customer.lastName}}</td>
+        <td>{{getOrderQuantity(order)}}</td>
+        <td>{{order.orderDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{order.issuingEmployee.lastName}}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 
   <% /** Container for all modal dialogs */ %>
