@@ -8,9 +8,6 @@
       <h3 class="content-info">Filter By:</h3>
       <div class="grid">
         <div class="col-6-12">
-          <label class="bold">Customer:</label>
-        </div>
-        <div class="col-6-12">
           <label class="bold">Location:</label>
           <select ng-model="selectedLocation" ng-options="location for location in locations"></select>
         </div>

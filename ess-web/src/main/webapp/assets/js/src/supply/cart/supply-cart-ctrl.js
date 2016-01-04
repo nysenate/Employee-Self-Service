@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-'$scope', 'SupplyCart', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', 'LocationService', supplyCartController]);
+'$scope', 'SupplyCart', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', 'LocationService', 'modals', supplyCartController]);
 
-function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService) {
+function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService, modals) {
 
     $scope.myCartItems = function() {
         return supplyCart.getItems();
@@ -28,9 +28,14 @@ function supplyCartController($scope, supplyCart, supplyInventoryService, supply
         var params = {customerId: appProps.user.employeeId, items: lineItems};
         supplySubmitOrderApi.save(params, function(response) {
             supplyCart.reset();
-            locationService.go("/supply/requisition/order", false);
+            modals.open('supply-cart-checkout-modal');
         }, function(response) {
             console.log("Error submitting order")
         });
+    };
+
+    $scope.closeModal = function() {
+        modals.resolve();
+        locationService.go("/supply/requisition/order", false);
     }
 }

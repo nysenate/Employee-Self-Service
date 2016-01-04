@@ -12,6 +12,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     private static final Logger logger = LoggerFactory.getLogger(SupplyTemplateCtrl.class);
     protected static final String SUPPLY_TMPL_BASE_URL = TMPL_BASE_URL + "/supply";
 
+    @RequestMapping(value="/location/history")
+    public String locationHistory() {
+        return SUPPLY_TMPL_BASE_URL + "/requisition/location-history";
+    }
+
     @RequestMapping(value="/requisition/order")
     public String supplyOrder() {
         return SUPPLY_TMPL_BASE_URL + "/requisition/order";

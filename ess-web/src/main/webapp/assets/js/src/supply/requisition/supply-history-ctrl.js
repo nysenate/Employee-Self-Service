@@ -59,7 +59,7 @@ function supplyHistoryController($scope, getTodaysCompletedOrdersApi, locationSe
             return true;
         }
         else {
-            if (order.location === $scope.selectedLocation) {
+            if (order.location.code + '-' + order.location.locationTypeCode === $scope.selectedLocation) {
                 return true;
             }
         }

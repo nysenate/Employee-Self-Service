@@ -10,6 +10,7 @@
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/requisition/order">Requisition Form</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/cart/cart">Cart</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/location/history">My Location History</a></li>
     </ul>
     <%--TODO: if management.--%>
     <h3 class="main-topic">Manage Supply</h3>

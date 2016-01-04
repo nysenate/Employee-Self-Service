@@ -14,6 +14,8 @@
 
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-order-ctrl.js"></script>
 
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-location-history-ctrl.js"></script>
+
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-requisition-directives.js"></script>
 
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-manage-ctrl.js"></script>
