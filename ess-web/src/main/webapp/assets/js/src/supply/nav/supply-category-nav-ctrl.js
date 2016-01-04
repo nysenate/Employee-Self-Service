@@ -15,7 +15,7 @@ function supplyNavigationController($scope, appProps, SupplyCategoryService) {
     });
 
     function onRequisitionOrderPage(url) {
-        return url.indexOf(appProps.ctxPath + "/supply/requisition/order") > -1;
+        return url.indexOf(appProps.ctxPath + "/supply/order/order") > -1;
     }
 
     $scope.init();

@@ -8,7 +8,7 @@ essSupply.directive('cartSummary', ['appProps', function(appProps) {
                 return SupplyCart.getTotalItems();
             }
         },
-        templateUrl: appProps.ctxPath + '/template/supply/cart/cart-summary',
+        templateUrl: appProps.ctxPath + '/template/supply/order/cart/cart-summary',
         transclude: true
     }
 }]);

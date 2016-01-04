@@ -8,16 +8,16 @@
     <ess-component-nav:nav-header topicTitle="Supply Menu" colorClass="blue-purple"/>
     <h3 class="main-topic">My Supply</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/supply/requisition/order">Requisition Form</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/cart/cart">Cart</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/location/history">My Location History</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/order/order">Requisition Form</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/order/cart/cart">Cart</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/history/location-history">My Location History</a></li>
     </ul>
     <%--TODO: if management.--%>
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/supply/requisition/manage">Manage Requisitions</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/reconciliation/reconciliation">Reconciliation</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/requisition/history">Requisition History</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/manage/manage">Manage Requisitions</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/history/history">Requisition History</a></li>
     </ul>
   </section>
   <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">

@@ -9,6 +9,7 @@ function supplyOrderController($scope, supplyInventoryService, supplyCategorySer
 
     $scope.init = function() {
         $scope.items = supplyInventoryService.getCopyOfItems();
+        console.log("init order");
     };
 
     // Called by ng-hide in the view. Returns true if a item does not belong to the selected categories.

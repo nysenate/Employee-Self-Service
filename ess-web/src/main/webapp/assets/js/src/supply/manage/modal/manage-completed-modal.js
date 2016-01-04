@@ -3,7 +3,7 @@ var essSupply = angular.module('essSupply');
 essSupply.directive('manageCompletedModal', ['appProps', 'modals', 'LocationService', 'SupplyUndoCompletionApi',
     function (appProps, modals, locationService, undoCompletionApi) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/requisition/manage/completed/modal',
+        templateUrl: appProps.ctxPath + '/template/supply/manage/modal/completed-modal',
         link: link
     };
 
@@ -21,7 +21,7 @@ essSupply.directive('manageCompletedModal', ['appProps', 'modals', 'LocationServ
         };
 
         function reload() {
-            locationService.go("/supply/requisition/manage", true);
+            locationService.go("/supply/manage/manage", true);
         }
     }
 }]);

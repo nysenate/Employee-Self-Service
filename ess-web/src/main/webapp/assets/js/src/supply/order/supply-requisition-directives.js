@@ -40,6 +40,6 @@ essSupply.directive('editableOrderListing', ['appProps', function(appProps) {
     return {
         restrict: 'A',
         scope: false,
-        templateUrl: appProps.ctxPath + '/template/supply/requisition/editable/order/listing',
+        templateUrl: appProps.ctxPath + '/template/supply/manage/editable-order-listing',
     }
 }]);

@@ -4,7 +4,7 @@
 <div ng-controller="SupplyCartController">
   <div class="supply-order-hero inline-block width-100">
     <h2 class="requisition-title">Shopping Cart</h2>
-    <a href="${ctxPath}/supply/cart/cart">
+    <a href="${ctxPath}/supply/order/cart/cart">
       <cart-summary class="cart-widget"></cart-summary>
     </a>
   </div>
@@ -45,7 +45,7 @@
       <hr/>
       <div class="col-8-12 force-min-height"></div>
       <div class="col-2-12">
-        <a href="${ctxPath}/supply/requisition/order">
+        <a href="${ctxPath}/supply/order/order">
           <input class="submit-button margin-10" type="button" value="Continue Browsing">
         </a>
       </div>

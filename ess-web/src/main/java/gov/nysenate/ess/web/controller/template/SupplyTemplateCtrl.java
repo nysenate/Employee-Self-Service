@@ -12,58 +12,69 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     private static final Logger logger = LoggerFactory.getLogger(SupplyTemplateCtrl.class);
     protected static final String SUPPLY_TMPL_BASE_URL = TMPL_BASE_URL + "/supply";
 
-    @RequestMapping(value="/location/history")
+    /** --- History --- */
+
+    @RequestMapping(value="/history/history")
+    public String orderHistory() {
+        return SUPPLY_TMPL_BASE_URL + "/history/history";
+    }
+
+    @RequestMapping(value="/history/location-history")
     public String locationHistory() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/location-history";
+        return SUPPLY_TMPL_BASE_URL + "/history/location-history";
     }
 
-    @RequestMapping(value="/requisition/order")
-    public String supplyOrder() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/order";
-    }
+    /** --- Manage --- */
 
-    @RequestMapping(value="/requisition/manage")
+    @RequestMapping(value="/manage/manage")
     public String manageOrder() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/manage";
+        return SUPPLY_TMPL_BASE_URL + "/manage/manage";
     }
 
-    @RequestMapping(value="/requisition/manage/editing/modal")
+    @RequestMapping(value="/manage/reconciliation")
+    public String reconciliation() {
+        return SUPPLY_TMPL_BASE_URL + "/manage/reconciliation";
+    }
+
+    @RequestMapping(value="/manage/modal/editing-modal")
     public String managePendingModal() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/manage-editing-modal";
+        return SUPPLY_TMPL_BASE_URL + "/manage/modal/manage-editing-modal";
     }
 
-    @RequestMapping(value="/requisition/manage/completed/modal")
+    @RequestMapping(value="/manage/modal/completed-modal")
     public String manageCompletedModal() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/manage-completed-modal";
+        return SUPPLY_TMPL_BASE_URL + "/manage/modal/manage-completed-modal";
     }
 
-    @RequestMapping(value="/requisition/editable/order/listing")
+    @RequestMapping(value="/manage/editable-order-listing")
     public String editableOrderListing() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/editable-order-listing";
+        return SUPPLY_TMPL_BASE_URL + "/manage/editable-order-listing";
     }
+
+    /** --- Order --- */
+
+    @RequestMapping(value="/order/order")
+    public String supplyOrder() {
+        return SUPPLY_TMPL_BASE_URL + "/order/order";
+    }
+
+    /** --- Cart --- */
+
+    @RequestMapping(value="/order/cart/cart")
+    public String cart() {
+        return SUPPLY_TMPL_BASE_URL + "/order/cart/cart";
+    }
+
+    @RequestMapping(value="/order/cart/cart-summary")
+    public String cartSummary() {
+        return SUPPLY_TMPL_BASE_URL + "/order/cart/cart-summary";
+    }
+
+    /** --- Requisition --- */
 
     @RequestMapping(value="/requisition/view")
     public String viewOrder() {
         return SUPPLY_TMPL_BASE_URL + "/requisition/view";
     }
 
-    @RequestMapping(value="/requisition/history")
-    public String orderHistory() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/history";
-    }
-
-    @RequestMapping(value="/cart/cart-summary")
-    public String cartSummary() {
-        return SUPPLY_TMPL_BASE_URL + "/cart/cart-summary";
-    }
-
-    @RequestMapping(value="/cart/cart")
-    public String cart() {
-        return SUPPLY_TMPL_BASE_URL + "/cart/cart";
-    }
-
-    @RequestMapping(value="/reconciliation/reconciliation")
-    public String reconciliation() {
-        return SUPPLY_TMPL_BASE_URL + "/reconciliation/reconciliation";
-    }
 }

@@ -8,28 +8,31 @@
   <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
   <jsp:body>
     <ess:ts-assets/>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-category-nav-ctrl.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/supply-inventory-service.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/supply-category-service.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/nav/supply-category-nav-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-inventory-service.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-category-service.js"></script>
 
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-order-ctrl.js"></script>
+    <%-- History --%>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-history-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-location-history-ctrl.js"></script>
 
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-location-history-ctrl.js"></script>
+    <%-- Manage --%>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/supply-manage-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/supply-reconciliation-ctrl.js"></script>
 
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-requisition-directives.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-editing-modal.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-completed-modal.js"></script>
+    <%-- Order --%>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-requisition-directives.js"></script>
 
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-manage-ctrl.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/manage-editing-modal.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/manage-completed-modal.js"></script>
+    <%-- Cart --%>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-directives.js"></script>
 
+    <%-- Requisition --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-view-ctrl.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-history-ctrl.js"></script>
-
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart-directives.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/cart/supply-cart-ctrl.js"></script>
-
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/reconciliation/supply-reconciliation-ctrl.js"></script>
   </jsp:body>
 </ess-layout:head>
 

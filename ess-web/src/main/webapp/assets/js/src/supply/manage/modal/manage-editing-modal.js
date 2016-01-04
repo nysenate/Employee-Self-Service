@@ -4,7 +4,7 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessO
     'SupplySaveOrderApi', 'SupplyRejectOrderApi', 'LocationService',
     function (appProps, modals, processOrderApi, completeOrderApi, saveOrderApi, rejectOrderApi, locationService) {
         return {
-            templateUrl: appProps.ctxPath + '/template/supply/requisition/manage/editing/modal',
+            templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
             link: link
         };
 
@@ -104,7 +104,7 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessO
             };
 
             function reload() {
-                locationService.go("/supply/requisition/manage", true);
+                locationService.go("/supply/manage/manage", true);
             }
         }
     }]);

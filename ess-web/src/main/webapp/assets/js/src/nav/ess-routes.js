@@ -69,16 +69,13 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     /** Supply */
-    $routeProvider.when(ctxPath + '/supply/location/history', {
-        templateUrl: ctxPath + '/template/supply/location/history'
-    });
 
     $routeProvider.when(ctxPath + '/supply', {
-        redirectTo: ctxPath + '/supply/requisition/order'
+        redirectTo: ctxPath + '/supply/order/order'
     });
 
-    $routeProvider.when(ctxPath + '/supply/requisition/order', {
-        templateUrl: ctxPath + '/template/supply/requisition/order',
+    $routeProvider.when(ctxPath + '/supply/order/order', {
+        templateUrl: ctxPath + '/template/supply/order/order',
         resolve: {
             'MyInventoryServiceData': function(SupplyInventoryService) {
                 return SupplyInventoryService.promise;
@@ -89,34 +86,38 @@ essApp.config(function($routeProvider, $locationProvider) {
         }
     });
 
+    $routeProvider.when(ctxPath + '/supply/order/cart/cart', {
+        templateUrl: ctxPath + '/template/supply/order/cart/cart'
+    });
+
+    $routeProvider.when(ctxPath + '/supply/manage/manage', {
+        templateUrl: ctxPath + '/template/supply/manage/manage',
+        resolve: {
+            'MyInventoryServiceData': function (SupplyInventoryService) {
+                return SupplyInventoryService.promise;
+            }
+        }
+    });
+
+    $routeProvider.when(ctxPath + '/supply/manage/reconciliation', {
+        templateUrl: ctxPath + '/template/supply/manage/reconciliation',
+        resolve: {
+            'MyInventoryServiceData': function (SupplyInventoryService) {
+                return SupplyInventoryService.promise;
+            }
+        }
+    });
+
+    $routeProvider.when(ctxPath + '/supply/history/history', {
+        templateUrl: ctxPath + '/template/supply/history/history'
+    });
+
+    $routeProvider.when(ctxPath + '/supply/history/location-history', {
+        templateUrl: ctxPath + '/template/supply/history/location-history'
+    });
+
     $routeProvider.when(ctxPath + '/supply/requisition/view', {
         templateUrl: ctxPath + '/template/supply/requisition/view'
-    });
-
-    $routeProvider.when(ctxPath + '/supply/requisition/manage', {
-        templateUrl: ctxPath + '/template/supply/requisition/manage',
-        resolve: {
-            'MyInventoryServiceData': function (SupplyInventoryService) {
-                return SupplyInventoryService.promise;
-            }
-        }
-    });
-
-    $routeProvider.when(ctxPath + '/supply/requisition/history', {
-        templateUrl: ctxPath + '/template/supply/requisition/history'
-    });
-
-    $routeProvider.when(ctxPath + '/supply/cart/cart', {
-        templateUrl: ctxPath + '/template/supply/cart/cart'
-    });
-
-    $routeProvider.when(ctxPath + '/supply/reconciliation/reconciliation', {
-        templateUrl: ctxPath + '/template/supply/reconciliation/reconciliation',
-        resolve: {
-            'MyInventoryServiceData': function (SupplyInventoryService) {
-                return SupplyInventoryService.promise;
-            }
-        }
     });
 
     /** Help */
