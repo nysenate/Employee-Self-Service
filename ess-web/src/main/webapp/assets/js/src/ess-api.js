@@ -107,40 +107,28 @@ essApi.factory('SupplyItemApi', ['$resource', 'appProps', function($resource, ap
 
 /** --- Supply Order API --- */
 
-essApi.factory('SupplyAllOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
+essApi.factory('SupplyOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders.json')
 }]);
 
 essApi.factory('SupplyOrderByIdApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/id')
+    return $resource(appProps.apiPath + '/supply/orders/:id', {id: '@id'})
 }]);
 
 essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders/submit')
 }]);
 
-essApi.factory('SupplyGetPendingOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/pending.json')
-}]);
-
-essApi.factory('SupplyGetProcessingOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/processing.json')
-}]);
-
-essApi.factory('SupplyGetTodaysCompletedOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/completed/today.json')
-}]);
-
 essApi.factory('SupplyProcessOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders/process')
 }]);
 
-essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/complete/undo')
-}]);
-
 essApi.factory('SupplyCompleteOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders/complete')
+}]);
+
+essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/complete/undo')
 }]);
 
 essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resource, appProps) {

@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import gov.nysenate.ess.supply.order.view.NewOrderView;
 import gov.nysenate.ess.supply.order.view.OrderView;
@@ -29,17 +30,29 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private OrderService orderService;
 
-//    @RequestMapping("")
-//    public BaseResponse getAllOrders() {
-//        List<OrderView> orderViews = new ArrayList<>();
-//        for (Order order : orderService.getOrders(Range.closed(LocalDate.MIN, LocalDate.now()))) {
-//            orderViews.add(new OrderView(order));
-//        }
-//        return ListViewResponse.of(orderViews);
-//    }
+    /**
+     * Get orders by status and date range.
+     * @param status Array of OrderStatus's. Orders with these statuses will be included in response.
+     *               Valid types are: PENDING, PROCESSING, COMPLETED, REJECTED.
+     *               Defaults to all statuses.
+     * @param from Start of date range
+     * @param to End of date range
+     */
+    @RequestMapping("")
+    public BaseResponse getOrders(@RequestParam(required = false) String[] status,
+                                  @RequestParam(required = false) String from,
+                                  @RequestParam(required = false) String to) {
+        EnumSet<OrderStatus> statusEnumSet = parseStatuses(status);
+        Range<LocalDate> dateRange = parseDateRange(from, to);
+        return ListViewResponse.of(orderService.getOrders(statusEnumSet, dateRange).stream()
+                                               .map(OrderView::new).collect(Collectors.toList()));
+    }
 
-    @RequestMapping("/id")
-    public BaseResponse getOrderById(@RequestParam int id) {
+    /**
+     * Gets an order by it's id.
+     */
+    @RequestMapping("/{id:\\d}")
+    public BaseResponse getOrderById(@PathVariable int id) {
         Order order = orderService.getOrderById(id);
         return new ViewObjectResponse<>(new OrderView(order));
     }
@@ -53,47 +66,6 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         }
         Order order = orderService.submitOrder(customerId, lineItems);
         return new ViewObjectResponse<>(new OrderView(order));
-    }
-
-//    // TODO sort by submitted date asc/desc?
-//    @RequestMapping("/pending")
-//    public BaseResponse getPendingOrders() {
-//        List<Order> pendingOrders = orderService.getPendingOrders();
-//        return ListViewResponse.of(pendingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-//    }
-//
-//    @RequestMapping("/processing")
-//    public BaseResponse getProcessingOrders() {
-//        List<Order> processingOrders = orderService.getProcessingOrders();
-//        return ListViewResponse.of(processingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-//    }
-//
-//    /** Return list of orders completed today. */
-//    @RequestMapping("/completed/today")
-//    public BaseResponse getTodaysCompletedOrders() {
-//        List<Order> completedOrders = orderService.getCompletedOrders();
-//        return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-//    }
-//
-//    /** Return list of orders completed in year. */
-//    @RequestMapping("/completed")
-//    public BaseResponse getCompletedOrdersInYear(@RequestParam int year) {
-//        List<Order> ordersInYear = new ArrayList<>();
-//        List<Order> completedOrders = orderService.getCompletedOrders();
-//        for (Order order : completedOrders) {
-//            if (order.getCompletedDateTime().getYear() == year) {
-//                ordersInYear.add(order);
-//            }
-//        }
-//        return ListViewResponse.of(ordersInYear.stream().map(OrderView::new).collect(Collectors.toList()));
-//    }
-
-    @RequestMapping("/rejected")
-    public BaseResponse getRejectedOrders() {
-        // TODO:
-//        List<Order> completedOrders = orderService.get();
-//        return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-        return null;
     }
 
     @RequestMapping(value = "/process", method = RequestMethod.POST, consumes = "application/json")
@@ -129,4 +101,20 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
+    private EnumSet<OrderStatus> parseStatuses(String[] statuses) {
+        if (statuses != null && statuses.length > 0) {
+            return EnumSet.copyOf(Arrays.asList(statuses).stream()
+                                        .map(status -> getEnumParameter("status", status, OrderStatus.class))
+                                        .collect(Collectors.toSet()));
+        }
+        else {
+            return EnumSet.allOf(OrderStatus.class);
+        }
+    }
+
+    private Range<LocalDate> parseDateRange(String from, String to) {
+        LocalDate toDate = to == null ? LocalDate.now() : parseISODate(to, "to");
+        LocalDate fromDate = from == null ? LocalDate.of(toDate.getYear(), 1, 1) : parseISODate(from, "from");
+        return getClosedRange(fromDate, toDate, "from", "to");
+    }
 }

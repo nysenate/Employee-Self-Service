@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-['$scope', 'SupplyGetTodaysCompletedOrdersApi', 'LocationService', supplyHistoryController]);
+['$scope', 'SupplyOrdersApi', 'LocationService', supplyHistoryController]);
 
-function supplyHistoryController($scope, getTodaysCompletedOrdersApi, locationService) {
+function supplyHistoryController($scope, supplyOrdersApi, locationService) {
 
     var filterTypes = {
         NONE: 0,
@@ -31,7 +31,10 @@ function supplyHistoryController($scope, getTodaysCompletedOrdersApi, locationSe
     $scope.init();
 
     function getCompletedOrders() {
-        getTodaysCompletedOrdersApi.get(2015, function(response) {
+        var params = {
+            status: "COMPLETED"
+        };
+        supplyOrdersApi.get(params, function(response) {
             $scope.orders = response.result;
             $scope.filteredOrders = $scope.orders;
             $scope.initFilters();

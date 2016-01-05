@@ -1,9 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
-    'SupplyGetPendingOrdersApi', 'SupplyGetProcessingOrdersApi', 'SupplyGetTodaysCompletedOrdersApi',
-    'SupplyCompleteOrderApi', 'modals', supplyManageController]);
+    'SupplyOrdersApi', 'modals', supplyManageController]);
 
-function supplyManageController($scope, supplyInventoryService, getPendingOrdersApi, getProcessingOrdersApi,
-                                getTodaysCompletedOrdersApi, completeOrderApi, modals) {
+function supplyManageController($scope, supplyInventoryService, supplyOrdersApi, modals) {
 
     $scope.selected = null;
     $scope.pendingOrders = null;
@@ -21,7 +19,12 @@ function supplyManageController($scope, supplyInventoryService, getPendingOrders
     /** --- Api Calls --- */
 
     function getPendingOrders() {
-        getPendingOrdersApi.get(null, function(response) {
+        var params = {
+            status: "PENDING",
+            from: moment.unix(1).format('YYYY-MM-DD'),
+            to: moment().format('YYYY-MM-DD')
+        };
+        supplyOrdersApi.get(params, function(response) {
             $scope.pendingOrders = response.result;
         }, function(response) {
             // TODO error
@@ -29,7 +32,12 @@ function supplyManageController($scope, supplyInventoryService, getPendingOrders
     }
 
     function getProcessingOrders() {
-        getProcessingOrdersApi.get(null, function(response) {
+        var params = {
+            status: "PROCESSING",
+            from: moment.unix(1).format('YYYY-MM-DD'),
+            to: moment().format('YYYY-MM-DD')
+        };
+        supplyOrdersApi.get(params, function(response) {
             $scope.processingOrders = response.result;
         }, function(response) {
 
@@ -37,7 +45,12 @@ function supplyManageController($scope, supplyInventoryService, getPendingOrders
     }
 
     function getCompletedOrders() {
-        getTodaysCompletedOrdersApi.get(null, function(response) {
+        var params = {
+            status: "COMPLETED",
+            from: moment().format('YYYY-MM-DD'),
+            to: moment().format('YYYY-MM-DD')
+        };
+        supplyOrdersApi.get(params, function(response) {
             $scope.completedOrders = response.result;
         }, function(response) {
 

@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-['$scope', 'SupplyInventoryService', 'SupplyGetTodaysCompletedOrdersApi', 'LocationService', supplyReconciliationController]);
+['$scope', 'SupplyInventoryService', 'SupplyOrdersApi', 'LocationService', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, inventoryService, getTodaysCompletedOrdersApi, locationService) {
+function supplyReconciliationController($scope, inventoryService, supplyOrdersApi, locationService) {
 
     $scope.selectedItem = null;
     $scope.reconcilableItems = [];
@@ -9,7 +9,12 @@ function supplyReconciliationController($scope, inventoryService, getTodaysCompl
     $scope.reconcilableItemMap= {};
 
     function initItems() {
-        getTodaysCompletedOrdersApi.get(function(response) {
+        var params = {
+            status: "COMPLETED",
+            from: moment().format('YYYY-MM-DD'),
+            to: moment().format('YYYY-MM-DD')
+        };
+        supplyOrdersApi.get(params, function(response) {
             var orders = response.result;
             angular.forEach(orders, function(order) {
                 angular.forEach(order.items, function(item) {
