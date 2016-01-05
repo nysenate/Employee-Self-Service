@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
@@ -11,6 +12,7 @@ import gov.nysenate.ess.supply.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -58,5 +60,9 @@ public class TestUtils {
     public static Order submitProcessAndCompleteOrder() {
         Order order = submitAndProcessOrder();
         return orderService.completeOrder(order.getId());
+    }
+
+    public static Range<LocalDate> getDateRange() {
+        return Range.closed(LocalDate.MIN, LocalDate.now());
     }
 }

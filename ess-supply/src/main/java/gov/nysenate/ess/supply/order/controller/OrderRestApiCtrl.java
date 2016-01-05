@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.order.controller;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,14 +29,14 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private OrderService orderService;
 
-    @RequestMapping("")
-    public BaseResponse getAllOrders() {
-        List<OrderView> orderViews = new ArrayList<>();
-        for (Order order : orderService.getOrders()) {
-            orderViews.add(new OrderView(order));
-        }
-        return ListViewResponse.of(orderViews);
-    }
+//    @RequestMapping("")
+//    public BaseResponse getAllOrders() {
+//        List<OrderView> orderViews = new ArrayList<>();
+//        for (Order order : orderService.getOrders(Range.closed(LocalDate.MIN, LocalDate.now()))) {
+//            orderViews.add(new OrderView(order));
+//        }
+//        return ListViewResponse.of(orderViews);
+//    }
 
     @RequestMapping("/id")
     public BaseResponse getOrderById(@RequestParam int id) {
@@ -53,38 +55,38 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
-    // TODO sort by submitted date asc/desc?
-    @RequestMapping("/pending")
-    public BaseResponse getPendingOrders() {
-        List<Order> pendingOrders = orderService.getPendingOrders();
-        return ListViewResponse.of(pendingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-    }
-
-    @RequestMapping("/processing")
-    public BaseResponse getProcessingOrders() {
-        List<Order> processingOrders = orderService.getProcessingOrders();
-        return ListViewResponse.of(processingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-    }
-
-    /** Return list of orders completed today. */
-    @RequestMapping("/completed/today")
-    public BaseResponse getTodaysCompletedOrders() {
-        List<Order> completedOrders = orderService.getCompletedOrders();
-        return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
-    }
-
-    /** Return list of orders completed in year. */
-    @RequestMapping("/completed")
-    public BaseResponse getCompletedOrdersInYear(@RequestParam int year) {
-        List<Order> ordersInYear = new ArrayList<>();
-        List<Order> completedOrders = orderService.getCompletedOrders();
-        for (Order order : completedOrders) {
-            if (order.getCompletedDateTime().getYear() == year) {
-                ordersInYear.add(order);
-            }
-        }
-        return ListViewResponse.of(ordersInYear.stream().map(OrderView::new).collect(Collectors.toList()));
-    }
+//    // TODO sort by submitted date asc/desc?
+//    @RequestMapping("/pending")
+//    public BaseResponse getPendingOrders() {
+//        List<Order> pendingOrders = orderService.getPendingOrders();
+//        return ListViewResponse.of(pendingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+//    }
+//
+//    @RequestMapping("/processing")
+//    public BaseResponse getProcessingOrders() {
+//        List<Order> processingOrders = orderService.getProcessingOrders();
+//        return ListViewResponse.of(processingOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+//    }
+//
+//    /** Return list of orders completed today. */
+//    @RequestMapping("/completed/today")
+//    public BaseResponse getTodaysCompletedOrders() {
+//        List<Order> completedOrders = orderService.getCompletedOrders();
+//        return ListViewResponse.of(completedOrders.stream().map(OrderView::new).collect(Collectors.toList()));
+//    }
+//
+//    /** Return list of orders completed in year. */
+//    @RequestMapping("/completed")
+//    public BaseResponse getCompletedOrdersInYear(@RequestParam int year) {
+//        List<Order> ordersInYear = new ArrayList<>();
+//        List<Order> completedOrders = orderService.getCompletedOrders();
+//        for (Order order : completedOrders) {
+//            if (order.getCompletedDateTime().getYear() == year) {
+//                ordersInYear.add(order);
+//            }
+//        }
+//        return ListViewResponse.of(ordersInYear.stream().map(OrderView::new).collect(Collectors.toList()));
+//    }
 
     @RequestMapping("/rejected")
     public BaseResponse getRejectedOrders() {

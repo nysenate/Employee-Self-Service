@@ -1,44 +1,45 @@
 package gov.nysenate.ess.supply.order.dao;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.OrderStatus;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryOrder implements OrderDao {
 
-    private Map<Integer, Order> orders = new TreeMap<>();
+    private Map<Integer, Order> orderDB = new TreeMap<>();
 
     public InMemoryOrder() {
         reset();
     }
 
     public void reset() {
-        orders = new TreeMap<>();
+        orderDB = new TreeMap<>();
     }
 
     @Override
     public int getUniqueId() {
-        return orders.size() + 1;
+        return orderDB.size() + 1;
     }
 
     @Override
     public void saveOrder(Order order) {
-        orders.put(order.getId(), order);
+        orderDB.put(order.getId(), order);
     }
 
     @Override
-    public List<Order> getOrders() {
-        return new ArrayList<>(orders.values());
+    public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange) {
+        return orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
     }
 
     @Override
     public Order getOrderById(int orderId) {
-        return orders.get(orderId);
+        return orderDB.get(orderId);
     }
 
     @Override

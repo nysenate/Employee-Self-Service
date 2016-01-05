@@ -1,15 +1,15 @@
 package gov.nysenate.ess.supply.order.dao;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.OrderStatus;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.time.LocalDate;
+import java.util.*;
 
 @Repository
-public class SfmsInMemoryOrder implements OrderDao {
+public class SfmsInMemoryOrder {
 
     private Map<Integer, Order> orders = new TreeMap<>();
 
@@ -21,27 +21,22 @@ public class SfmsInMemoryOrder implements OrderDao {
         orders = new TreeMap<>();
     }
 
-    @Override
     public int getUniqueId() {
         return 0;
     }
 
-    @Override
     public void saveOrder(Order order) {
         orders.put(order.getId(), order);
     }
 
-    @Override
-    public List<Order> getOrders() {
+    public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange) {
         return new ArrayList<>(orders.values());
     }
 
-    @Override
     public Order getOrderById(int orderId) {
         return null;
     }
 
-    @Override
     public void undoCompletion(Order order) {
 
     }

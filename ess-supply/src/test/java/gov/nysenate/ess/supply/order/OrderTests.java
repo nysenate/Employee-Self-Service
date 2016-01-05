@@ -4,6 +4,7 @@ import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.TestUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
+import gov.nysenate.ess.supply.order.dao.SfmsInMemoryOrder;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.junit.Before;
@@ -19,12 +20,13 @@ import static org.junit.Assert.*;
 
 public class OrderTests extends SupplyTests {
 
+    private static int EMP_ID = 2;
+
     @Autowired
     private OrderService orderService;
 
-    @Qualifier("sfmsInMemoryOrder")
     @Autowired
-    private OrderDao sfmsDao;
+    private SfmsInMemoryOrder sfmsDao;
 
     @Before
     public void setUp() {
@@ -50,8 +52,8 @@ public class OrderTests extends SupplyTests {
     @Test
     public void orderProcessedCorrectly() {
         Order order = TestUtils.submitOrder();
-        order = orderService.processOrder(order.getId(), 2);
-        assertEquals(order.getIssuingEmployee().getEmployeeId(), 2);
+        order = orderService.processOrder(order.getId(), EMP_ID);
+        assertEquals(order.getIssuingEmployee().getEmployeeId(), EMP_ID);
         assertDateLessThan5SecondsOld(order.getProcessedDateTime());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
     }
@@ -59,20 +61,20 @@ public class OrderTests extends SupplyTests {
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessAnAlreadyProcessingOrder() {
         Order order = TestUtils.submitAndProcessOrder();
-        orderService.processOrder(order.getId(), 2);
+        orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessACompletedOrder() {
         Order order = TestUtils.submitProcessAndCompleteOrder();
-        orderService.processOrder(order.getId(), 2);
+        orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
         Order order = TestUtils.submitOrder();
         order = orderService.rejectOrder(order.getId());
-        orderService.processOrder(order.getId(), 2);
+        orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test
@@ -85,9 +87,9 @@ public class OrderTests extends SupplyTests {
     @Test
     public void completingOrderUpdatesSfms() {
         Order order = TestUtils.submitAndProcessOrder();
-        assertTrue(sfmsDao.getOrders().size() == 0);
+        assertTrue(sfmsDao.getOrders(EnumSet.allOf(OrderStatus.class), TestUtils.getDateRange()).size() == 0);
         orderService.completeOrder(order.getId());
-        assertTrue(sfmsDao.getOrders().size() == 1);
+        assertTrue(sfmsDao.getOrders(EnumSet.allOf(OrderStatus.class), TestUtils.getDateRange()).size() == 1);
     }
 
     @Test
