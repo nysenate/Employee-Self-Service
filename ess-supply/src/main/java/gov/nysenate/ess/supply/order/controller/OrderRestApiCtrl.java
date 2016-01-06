@@ -33,24 +33,33 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     private OrderService orderService;
 
     /**
-     * Get orders by status and date range.
-     * Request Parameters: status - OrderStatus's that should be returned.
+     * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date range.
+     * Request Parameters: locCode - Location code.
+     *                     locType - Location type.
+     *                     issuerEmpId - Issuing Employee's id.
+     *                     status - OrderStatus's that should be returned.
      *                              Valid types are: PENDING, PROCESSING, COMPLETED, REJECTED.
      *                     from - Start of date range.
      *                     to - End of date range
      *
-     * Defaults: YTD range including all order statuses.
+     * Defaults to any locCode, any locType, any issuerEmpId, YTD range, all order statuses.
      */
     @RequestMapping("")
-    public BaseResponse getOrders(@RequestParam(required = false) String[] status,
+    public BaseResponse getOrders(@RequestParam(required = false) String locCode,
+                                  @RequestParam(required = false) String locType,
+                                  @RequestParam(required = false) String issuerEmpId,
+                                  @RequestParam(required = false) String[] status,
                                   @RequestParam(required = false) String from,
                                   @RequestParam(required = false) String to,
                                   WebRequest webRequest) {
         LimitOffset limOff = getLimitOffset(webRequest, 25);
         EnumSet<OrderStatus> statusEnumSet = parseStatuses(status);
         Range<LocalDate> dateRange = parseDateRange(from, to);
-        return ListViewResponse.of(orderService.getOrders(statusEnumSet, dateRange, limOff).stream()
-                                               .map(OrderView::new).collect(Collectors.toList()));
+        String locCodeTerm = (locCode != null && locCode.length() > 0) ? locCode.toUpperCase() : "all";
+        String locTypeTerm = (locType != null && locType.length() > 0) ? locType.toUpperCase() : "all";
+        String issuerTerm = (issuerEmpId != null && issuerEmpId.length() > 0) ? issuerEmpId : "all";
+        return ListViewResponse.of(orderService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff)
+                                               .stream().map(OrderView::new).collect(Collectors.toList()));
     }
 
     /**

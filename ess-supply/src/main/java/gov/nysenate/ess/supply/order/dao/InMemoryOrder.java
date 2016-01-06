@@ -1,6 +1,8 @@
 package gov.nysenate.ess.supply.order.dao;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
@@ -33,9 +35,36 @@ public class InMemoryOrder implements OrderDao {
         orderDB.put(order.getId(), order);
     }
 
+    /**
+     * Not fully functional
+     */
     @Override
-    public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff) {
-        return orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
+    public List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
+                                    Range<LocalDate> dateRange, LimitOffset limOff) {
+        List<Order> filteredOrders = orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
+        for (Order order : filteredOrders) {
+            if (!locCode.equals("all")) {
+                if (!order.getLocation().getCode().equals(locCode)) {
+                    filteredOrders.remove(order);
+                    break;
+                }
+            }
+            if (!locType.equals("all")) {
+                if (!String.valueOf(order.getLocation().getType().getCode()).equals(locType)) {
+                    filteredOrders.remove(order);
+                    break;
+                }
+            }
+            // TODO: only search by issuer if status != pending/rejected
+            if (!issuerEmpId.equals("all")) {
+                // TODO: should verify issuerEmpId can be converted to int.
+                if (order.getIssuingEmployee().getEmployeeId() != Integer.valueOf(issuerEmpId)) {
+                    filteredOrders.remove(order);
+                    break;
+                }
+            }
+        }
+        return filteredOrders;
     }
 
     @Override
@@ -47,5 +76,4 @@ public class InMemoryOrder implements OrderDao {
     public void undoCompletion(Order order) {
 
     }
-
 }

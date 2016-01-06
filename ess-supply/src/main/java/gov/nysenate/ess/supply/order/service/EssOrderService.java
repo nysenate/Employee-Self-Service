@@ -39,7 +39,13 @@ public class EssOrderService implements OrderService {
 
     @Override
     public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff) {
-        return orderDao.getOrders(statuses, dateRange, limOff);
+        return getOrders("all", "all", "all", statuses, dateRange, limOff);
+    }
+
+    @Override
+    public List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
+                                    Range<LocalDate> dateRange, LimitOffset limOff) {
+        return orderDao.getOrders(locCode, locType, issuerEmpId, statuses, dateRange, limOff);
     }
 
     @Override
