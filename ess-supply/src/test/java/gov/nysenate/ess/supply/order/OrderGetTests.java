@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.order;
 
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.TestUtils;
 import gov.nysenate.ess.supply.order.service.OrderService;
@@ -23,6 +24,7 @@ public class OrderGetTests extends SupplyTests {
     private Order processing;
     private Order completed;
     private Order rejected;
+    private LimitOffset limOff;
 
     @Before
     public void setUp() {
@@ -31,6 +33,7 @@ public class OrderGetTests extends SupplyTests {
         processing = TestUtils.submitAndProcessOrder();
         completed = TestUtils.submitProcessAndCompleteOrder();
         rejected = createRejectedOrder();
+        limOff = LimitOffset.ALL;
     }
 
     @Test
@@ -100,7 +103,7 @@ public class OrderGetTests extends SupplyTests {
     }
 
     private List<Order> getOrders(EnumSet<OrderStatus> statuses) {
-        return orderService.getOrders(statuses, TestUtils.getDateRange());
+        return orderService.getOrders(statuses, TestUtils.getDateRange(), limOff);
     }
 
     private Order createRejectedOrder() {

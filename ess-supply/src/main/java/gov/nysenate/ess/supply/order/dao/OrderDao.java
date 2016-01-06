@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.order.dao;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 
@@ -14,7 +15,7 @@ public interface OrderDao {
 
     void saveOrder(Order order);
 
-    List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange);
+    List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff);
 
     Order getOrderById(int orderId);
 

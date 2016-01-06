@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -32,19 +34,22 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Get orders by status and date range.
-     * @param status Array of OrderStatus's. Orders with these statuses will be included in response.
-     *               Valid types are: PENDING, PROCESSING, COMPLETED, REJECTED.
-     *               Defaults to all statuses.
-     * @param from Start of date range
-     * @param to End of date range
+     * Request Parameters: status - OrderStatus's that should be returned.
+     *                              Valid types are: PENDING, PROCESSING, COMPLETED, REJECTED.
+     *                     from - Start of date range.
+     *                     to - End of date range
+     *
+     * Defaults: YTD range including all order statuses.
      */
     @RequestMapping("")
     public BaseResponse getOrders(@RequestParam(required = false) String[] status,
                                   @RequestParam(required = false) String from,
-                                  @RequestParam(required = false) String to) {
+                                  @RequestParam(required = false) String to,
+                                  WebRequest webRequest) {
+        LimitOffset limOff = getLimitOffset(webRequest, 25);
         EnumSet<OrderStatus> statusEnumSet = parseStatuses(status);
         Range<LocalDate> dateRange = parseDateRange(from, to);
-        return ListViewResponse.of(orderService.getOrders(statusEnumSet, dateRange).stream()
+        return ListViewResponse.of(orderService.getOrders(statusEnumSet, dateRange, limOff).stream()
                                                .map(OrderView::new).collect(Collectors.toList()));
     }
 

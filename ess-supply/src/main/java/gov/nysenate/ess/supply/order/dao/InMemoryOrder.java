@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.order.dao;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import org.springframework.stereotype.Repository;
@@ -33,7 +34,7 @@ public class InMemoryOrder implements OrderDao {
     }
 
     @Override
-    public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange) {
+    public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff) {
         return orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
     }
 

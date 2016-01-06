@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.order.service;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
@@ -15,7 +16,7 @@ public interface OrderService {
 
     Order getOrderById(int orderId);
 
-    List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange);
+    List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff);
 
     Order submitOrder(int empId, Set<LineItem> items);
 

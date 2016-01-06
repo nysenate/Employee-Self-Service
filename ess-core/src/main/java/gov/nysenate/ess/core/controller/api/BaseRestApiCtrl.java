@@ -9,8 +9,10 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
+import gov.nysenate.ess.core.util.LimitOffset;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
@@ -34,6 +37,9 @@ public class BaseRestApiCtrl
     private static final Logger logger = LoggerFactory.getLogger(BaseRestApiCtrl.class);
 
     public static final String REST_PATH = "/api/v1/";
+
+    /** Maximum number of results that can be requested via the query params. */
+    private static final int MAX_LIMIT = 1000;
 
     @Autowired protected EventBus eventBus;
 
@@ -183,6 +189,35 @@ public class BaseRestApiCtrl
                                                             String paramValue, T defaultValue) {
         T result = mapFunction.apply(paramValue);
         return result != null ? result : defaultValue;
+    }
+
+    /**
+     * Returns a limit + offset extracted from the given web request parameters
+     * Returns the given default limit offset if no such parameters exist
+     *
+     * @param webRequest WebRequest
+     * @param defaultLimit int - The default limit to use, 0 for no limit
+     * @return LimitOffset
+     */
+    protected LimitOffset getLimitOffset(WebRequest webRequest, int defaultLimit) {
+        int limit = defaultLimit;
+        int offset = 0;
+        if (webRequest.getParameter("limit") != null) {
+            String limitStr = webRequest.getParameter("limit");
+            if (limitStr.equalsIgnoreCase("all")) {
+                limit = 0;
+            }
+            else {
+                limit = NumberUtils.toInt(limitStr, defaultLimit);
+                if (limit > MAX_LIMIT) {
+                    throw new InvalidRequestParamEx(limitStr, "limit", "int", "Must be <= " + MAX_LIMIT);
+                }
+            }
+        }
+        if (webRequest.getParameter("offset") != null) {
+            offset = NumberUtils.toInt(webRequest.getParameter("offset"), 0);
+        }
+        return new LimitOffset(limit, offset);
     }
 
     /** --- Generic Exception Handlers --- */
