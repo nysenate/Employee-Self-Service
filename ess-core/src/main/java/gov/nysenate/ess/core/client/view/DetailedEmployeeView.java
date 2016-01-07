@@ -15,7 +15,6 @@ public class DetailedEmployeeView extends EmployeeView
     // Keep the private fields to store some data from the Employee model in case we need to recreate it.
     @JsonIgnore private PayType empPayType;
     @JsonIgnore private ResponsibilityCenter empRespCtr;
-    @JsonIgnore private Location empWorkLocation;
 
     protected String nid;
     protected int supervisorId;
@@ -23,6 +22,7 @@ public class DetailedEmployeeView extends EmployeeView
     protected String payType;
     protected RespCenterView respCtr;
     protected AddressView workAddress;
+    protected LocationView empWorkLocation;
 
     public DetailedEmployeeView() {}
 
@@ -36,7 +36,7 @@ public class DetailedEmployeeView extends EmployeeView
         this.empRespCtr = employee.getRespCenter();
         this.respCtr = new RespCenterView(employee.getRespCenter());
         if (employee.getWorkLocation() != null) {
-            this.empWorkLocation = employee.getWorkLocation();
+            this.empWorkLocation = new LocationView(employee.getWorkLocation());
             this.workAddress = new AddressView(employee.getWorkLocation().getAddress());
         }
     }
@@ -49,7 +49,7 @@ public class DetailedEmployeeView extends EmployeeView
         emp.setJobTitle(jobTitle);
         emp.setRespCenter(empRespCtr);
         emp.setPayType(empPayType);
-        emp.setWorkLocation(empWorkLocation);
+        emp.setWorkLocation(empWorkLocation.toLocation());
         return emp;
     }
 
@@ -87,5 +87,10 @@ public class DetailedEmployeeView extends EmployeeView
     @XmlElement
     public AddressView getWorkAddress() {
         return workAddress;
+    }
+
+    @XmlElement
+    public LocationView getEmpWorkLocation() {
+        return empWorkLocation;
     }
 }

@@ -11,17 +11,7 @@ public class LocationView implements ViewObject {
     protected char locationTypeCode;
     protected AddressView address;
 
-    public Location toLocation() {
-        Location location = new Location();
-        location.setCode(code);
-        location.setType(LocationType.valueOfCode(locationTypeCode));
-        location.setAddress(address.toAddress());
-        return location;
-    }
-
-    public LocationView() {
-
-    }
+    public LocationView() {}
 
     public LocationView(Location loc) {
         this.code = loc.getCode();
@@ -30,36 +20,28 @@ public class LocationView implements ViewObject {
         this.address = new AddressView(loc.getAddress());
     }
 
-    public String getCode() {
-        return code;
+    public Location toLocation() {
+        Location location = new Location();
+        location.setCode(code);
+        location.setType(LocationType.valueOfCode(locationTypeCode));
+        location.setAddress(address.toAddress());
+        return location;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public String getCode() {
+        return code;
     }
 
     public String getLocationType() {
         return locationType;
     }
 
-    public void setLocationType(String locationType) {
-        this.locationType = locationType;
-    }
-
     public char getLocationTypeCode() {
         return locationTypeCode;
     }
 
-    public void setLocationTypeCode(char locationTypeCode) {
-        this.locationTypeCode = locationTypeCode;
-    }
-
     public AddressView getAddress() {
         return address;
-    }
-
-    public void setAddress(AddressView address) {
-        this.address = address;
     }
 
     @Override
