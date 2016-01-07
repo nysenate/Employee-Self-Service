@@ -10,7 +10,7 @@
 
   <div class="content-container">
     <div class="grid grid-pad">
-      <div class="col-3-12 requisition-form-item" ng-repeat="item in items track by $index" ng-hide="hideItem(item)">
+      <div class="col-3-12 text-align-center" ng-repeat="item in items track by $index" ng-hide="hideItem(item)">
         <img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">
         <div>
           <h3 class="dark-gray bold">{{item.name}}</h3>

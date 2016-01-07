@@ -10,6 +10,14 @@
   }
 }
 
+.supply-order-hero {
+  .page-hero(@blue-purple, white);
+}
+
+.dark-blue-purple {
+  color: darken(@blue-purple, 20%)
+}
+
 .requisition-title {
   .inline-block;
   padding-left: 100px;
@@ -18,10 +26,6 @@
 .cart-widget {
   .inline-block;
   float: right;
-}
-
-.requisition-form-item {
-  .text-align-center;
 }
 
 .supply-item-image {
@@ -45,16 +49,8 @@
   padding-left: 25px;
 }
 
-.supply-order-hero {
-  .page-hero(@blue-purple, white);
-}
-
 .force-min-height {
   min-height: 1px;
-}
-
-.dark-blue-purple {
-  color: darken(@blue-purple, 20%)
 }
 
 .dark-gray {
@@ -69,6 +65,82 @@
   box-shadow: 0 0 10px 50px #ffbcbc inset;
   -webkit-box-shadow : 0 0 10px 50px #ffbcbc inset;
 }
+
+.supply-title {
+  color: @blue-purple;
+  font-weight: bold;
+}
+
+.expandable-div-header {
+  color: #333;
+  font-size: .9em;
+  border-bottom: 1px solid #155C69;
+  text-align: center !important;
+  div {
+    .bold;
+    padding: 10px 5px;
+  }
+}
+
+.expandable-div-rows {
+  padding: 6.5px;
+  width: auto;
+  text-align: center;
+  border-bottom: 1px solid #eee !important;
+  cursor: pointer;
+  white-space: nowrap;
+  &:hover {
+    background: #e9eeff;
+  }
+}
+
+.expandable-dark-background {
+  background: fade(#333, 5%);
+}
+
+.supply-listing-table {
+  tbody {
+    tr {
+      border-bottom: 0px solid #eee !important;
+      cursor: pointer;
+      &:hover {
+        background: #e9eeff;
+      }
+      &:nth-child(even) {
+        background: fade(#333, 5%);
+        &:hover {
+          background: #e9eeff;
+        }
+      }
+      &.warn {
+        background: #ffbcbc;
+        border-bottom: 0px solid #ffbcbc !important;
+        &:hover {
+          background: darken(#ffbcbc, 10%);
+        }
+        &:nth-child(even) {
+          background: fade(#ffbcbc, 60%);
+          border-bottom: 0px solid fade(#ffbcbc, 60%) !important;
+          &:hover {
+            background: darken(#ffbcbc, 10%);
+          }
+        }
+      }
+      td {
+        padding: .5em;
+        border: 0;
+        text-align: center !important;
+        .action-link {
+          font-size: .9em;
+        }
+      }
+    }
+  }
+  padding-top: 0;
+}
+
+
+/* --- Custom Select --- */
 
 label.custom-select {
   position: relative;
@@ -123,78 +195,24 @@ label.custom-select {
   content: none;
 }
 
-.expandable-div-header {
-  color: #333;
-  font-size: .9em;
-  border-bottom: 1px solid #155C69;
-  text-align: center !important;
-  div {
-    .bold;
-    padding: 10px 5px;
-  }
+/* Custom Rows */
+
+.pending-cell {
+  background: @orange;
+  color: @white;
+  .bold;
 }
 
-.expandable-div-rows {
-  padding: 6.5px;
-  width: auto;
-  text-align: center;
-  border-bottom: 1px solid #eee !important;
-  cursor: pointer;
-  white-space: nowrap;
-  &:hover {
-    background: #e9eeff;
-  }
+.processing-cell {
+  background: fade(@teal, 75%);
+  color: @white;
+  .bold;
 }
 
-.expandable-dark-background {
-  background: fade(#333, 5%);
-}
-
-.supply-text-cell {
-  padding: .5em;
-  border: 0;
-}
-
-.supply-button-cell {
-  padding: .2em;
-}
-
-.supply-details-table {
-  margin-left: 80px;
-  margin-bottom: 20px;
-  background: fade(#eee, 40%);
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.supply-listing-table {
-  .attendance-listing-table;
-  padding-top: 0;
-  tr {
-    &.warn {
-      background: #ffbcbc;
-      border-bottom: 1px solid #ffbcbc !important;
-      &:hover {
-        background: darken(#ffbcbc, 10%);
-      }
-      &:nth-child(even) {
-        background: fade(#ffbcbc, 60%);
-        border-bottom: 1px solid fade(#ffbcbc, 60%) !important;
-        &:hover {
-          background: darken(#ffbcbc, 10%);
-        }
-      }
-    }
-    td {
-      text-align: center !important;
-    }
-  }
-
-}
-
-.supply-title {
-  color: @blue-purple;
-  font-weight: bold;
+.completed-cell {
+  background: @green;
+  color: @white;
+  .bold;
 }
 
 /** --- Other --- */
