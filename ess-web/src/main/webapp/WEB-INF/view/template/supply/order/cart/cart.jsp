@@ -56,14 +56,11 @@
   </div>
 
   <div modal-container>
-    <div ng-if="isOpen('supply-cart-checkout-modal')">
-      <div class="padding-10">
-        <h3 class="content-info">Requisition Request submitted!</h3>
-        <div class="text-align-center">
-          <p>You can view the status of your request in the My Location History Page.</p>
-          <input ng-click="closeModal()" class="submit-button" type="button" value="View Location History"/>
-        </div>
-      </div>
+    <div ng-if="isOpen('supply-cart-checkout-modal')" class="save-progress-modal">
+      <h3 class="content-info" style="margin-bottom:0;">Your Requisition Request has been submitted!</h3>
+      <h4>What would you like to do next?</h4>
+      <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
+      <input ng-click="viewOrder()" class="submit-button" type="button" value="View Order"/>
     </div>
   </div>
 

@@ -3,7 +3,13 @@
     <h2>Reconciliation</h2>
   </div>
 
-  <div class="content-container">
+  <div class="content-container" ng-show="reconcilableItems.length == 0">
+    <div class="content-info">
+      <h2 class="dark-gray">Reconciliation Not Required</h2>
+    </div>
+  </div>
+
+  <div class="content-container" ng-show="reconcilableItems.length > 0">
     <p class="content-info">
       All items shipped today.
     </p>

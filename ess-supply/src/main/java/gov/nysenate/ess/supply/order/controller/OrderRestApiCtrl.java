@@ -32,6 +32,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private OrderService orderService;
 
+    // TODO: add category filter.
     /**
      * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date range.
      * Request Parameters: locCode - Location code.

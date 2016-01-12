@@ -36,6 +36,10 @@ function supplyCartController($scope, supplyCart, supplyInventoryService, supply
 
     $scope.closeModal = function() {
         modals.resolve();
+    };
+
+    $scope.viewOrder = function() {
+        modals.resolve();
         locationService.go("/supply/history/location-history", false);
     }
 }
