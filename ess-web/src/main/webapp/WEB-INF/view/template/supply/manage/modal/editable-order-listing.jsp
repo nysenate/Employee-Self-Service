@@ -11,7 +11,6 @@
     <td>{{getItemCommodityCode(lineItem.itemId)}}</td>
     <td>{{getItemName(lineItem.itemId)}}</td>
     <td><input type="number" ng-change="setDirty()" ng-model="lineItem.quantity" style="width:13%"></td>
-    <td ng-click="removeLineItem(lineItem)">&times</td>
   </tr>
   </tbody>
 </table>

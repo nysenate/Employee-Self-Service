@@ -46,9 +46,9 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/manage/modal/manage-completed-modal";
     }
 
-    @RequestMapping(value="/manage/editable-order-listing")
+    @RequestMapping(value="/manage/modal/editable-order-listing")
     public String editableOrderListing() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/editable-order-listing";
+        return SUPPLY_TMPL_BASE_URL + "/manage/modal/editable-order-listing";
     }
 
     /** --- Order --- */

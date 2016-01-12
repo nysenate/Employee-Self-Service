@@ -32,7 +32,6 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private OrderService orderService;
 
-    // TODO: add category filter.
     /**
      * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date range.
      * Request Parameters: locCode - Location code.
@@ -44,6 +43,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
      *                     to - End of date range
      *
      * Defaults to any locCode, any locType, any issuerEmpId, YTD range, all order statuses.
+     * Dates refer to Order.orderDateTime. TODO: need to filter by other dates?
      */
     @RequestMapping("")
     public BaseResponse getOrders(@RequestParam(required = false) String locCode,

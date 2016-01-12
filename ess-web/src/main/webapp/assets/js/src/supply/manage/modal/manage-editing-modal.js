@@ -80,14 +80,14 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessO
                 reload();
             };
 
-            $scope.removeLineItem = function(lineItem) {
-                angular.forEach($scope.dirtyOrder.items, function (dirtyItem) {
-                    if (lineItem.itemId === dirtyItem.itemId) {
-                        $scope.dirtyOrder.items.splice($scope.dirtyOrder.items.indexOf(lineItem), 1);
-                        $scope.setDirty();
-                    }
-                });
-            };
+            //$scope.removeLineItem = function(lineItem) {
+            //    angular.forEach($scope.dirtyOrder.items, function (dirtyItem) {
+            //        if (lineItem.itemId === dirtyItem.itemId) {
+            //            $scope.dirtyOrder.items.splice($scope.dirtyOrder.items.indexOf(lineItem), 1);
+            //            $scope.setDirty();
+            //        }
+            //    });
+            //};
 
             // TODO: cant save this until we get full EmployeeView objects from server.
             $scope.setIssuedBy = function() {
