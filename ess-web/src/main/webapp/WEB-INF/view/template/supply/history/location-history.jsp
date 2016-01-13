@@ -6,7 +6,7 @@
   <div loader-indicator ng-show="state.searching === true"></div>
 
   <div class="content-container" ng-show="state.searching === false">
-    <h4 class="content-info dark-blue-purple">Recent requisitions for {{empLocation.code + '-' + empLocation.locationTypeCode}}</h4>
+    <h4 class="content-info dark-blue-purple" style="margin-bottom: 0;">Recent requisitions for {{empLocation.code + '-' + empLocation.locationTypeCode}}</h4>
 
     <div class="content-info" ng-show="locOrders.length == 0">
       <h2 class="dark-gray">No Recent History.</h2>

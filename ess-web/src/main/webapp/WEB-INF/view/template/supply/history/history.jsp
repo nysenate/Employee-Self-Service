@@ -31,7 +31,7 @@
     </div>
   </div>
 
-  <div class="content-container">
+  <div class="content-container" ng-show="orders.length > 0">
     <div class="padding-10">
       <table class="ess-table supply-listing-table">
         <thead>

@@ -32,39 +32,17 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessO
 
             /** Save any changes, then process order */
             $scope.processOrder = function() {
-                var process = function() {
-                    $scope.dirtyOrder.issuingEmployee.employeeId = appProps.user.employeeId;
-                    processOrderApi.save($scope.dirtyOrder);
-                    $scope.close();
-                    reload();
-                };
-
-                if($scope.dirty) {
-                    saveOrderApi.save($scope.dirtyOrder, function(successRes) {
-                        process();
-                    })
-                }
-                else {
-                    process();
-                }
+                $scope.dirtyOrder.issuingEmployee.employeeId = appProps.user.employeeId;
+                processOrderApi.save($scope.dirtyOrder);
+                $scope.close();
+                reload();
             };
 
             /** Save any changes, then complete order */
             $scope.completeOrder = function() {
-                var complete = function() {
-                    completeOrderApi.save($scope.dirtyOrder);
-                    $scope.close();
-                    reload();
-                };
-
-                if($scope.dirty) {
-                    saveOrderApi.save($scope.dirtyOrder, function(successRes) {
-                        complete();
-                    })
-                }
-                else {
-                    complete();
-                }
+                completeOrderApi.save($scope.dirtyOrder);
+                $scope.close();
+                reload();
             };
 
             /** Save the changes made to dirtyOrder */
