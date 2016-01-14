@@ -41,30 +41,28 @@ public class InMemoryOrder implements OrderDao {
     @Override
     public List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                     Range<LocalDate> dateRange, LimitOffset limOff) {
-        List<Order> filteredOrders = orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
-        for (Order order : filteredOrders) {
-            if (!locCode.equals("all")) {
-                if (!order.getLocation().getCode().equals(locCode)) {
-                    filteredOrders.remove(order);
-                    break;
-                }
-            }
-            if (!locType.equals("all")) {
-                if (!String.valueOf(order.getLocation().getType().getCode()).equals(locType)) {
-                    filteredOrders.remove(order);
-                    break;
-                }
-            }
-            // TODO: only search by issuer if status != pending/rejected
-            if (!issuerEmpId.equals("all")) {
-                // TODO: should verify issuerEmpId can be converted to int.
-                if (order.getIssuingEmployee().getEmployeeId() != Integer.valueOf(issuerEmpId)) {
-                    filteredOrders.remove(order);
-                    break;
-                }
+        List<Order> filteredOrders = new ArrayList<>();
+        List<Order> allOrders = orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
+        for (Order order : allOrders) {
+            if (matchesLocCode(locCode, order) && matchesLocType(locType, order) && matchesIssuer(issuerEmpId, order)) {
+                filteredOrders.add(order);
             }
         }
         return filteredOrders;
+    }
+
+    private boolean matchesLocCode(String locCode, Order order) {
+        return locCode.equals("all") || order.getLocation().getCode().equals(locCode);
+    }
+
+    private boolean matchesLocType(String locType, Order order) {
+        return locType.equals("all") || String.valueOf(order.getLocation().getType().getCode()).equals(locType);
+    }
+
+    private boolean matchesIssuer(String issuerEmpId, Order order) {
+        // TODO: only search by issuer if status != pending/rejected
+        // TODO: should verify issuerEmpId can be converted to int.
+        return issuerEmpId.equals("all") || order.getIssuingEmployee().getEmployeeId() == Integer.valueOf(issuerEmpId);
     }
 
     @Override
