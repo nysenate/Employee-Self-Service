@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.item.controller;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,9 +26,15 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private SupplyItemService supplyItemService;
 
+    /**
+     * Supply Items API.
+     * Request Parameters: limit - Limit the number of results.
+     *                     offset - Start results from an offset.
+     */
     @RequestMapping("")
-    public BaseResponse getSupplyItems() {
-        List<SupplyItem> items = supplyItemService.getSupplyItems();
+    public BaseResponse getSupplyItems(WebRequest webRequest) {
+        LimitOffset limOff = getLimitOffset(webRequest, 16);
+        List<SupplyItem> items = supplyItemService.getSupplyItems(limOff);
         List<SupplyItemView> itemViews = items.stream().map(SupplyItemView::new).collect(Collectors.toList());
         return ListViewResponse.of(itemViews);
     }

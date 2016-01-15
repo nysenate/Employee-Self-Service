@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.item.dao;
 
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import org.springframework.stereotype.Repository;
 
@@ -32,7 +33,7 @@ public class InMemorySupplyItem implements SupplyItemDao {
     }
 
     @Override
-    public List<SupplyItem> getSupplyItems() {
+    public List<SupplyItem> getSupplyItems(LimitOffset limOff) {
         return new ArrayList<>(items.values());
     }
 

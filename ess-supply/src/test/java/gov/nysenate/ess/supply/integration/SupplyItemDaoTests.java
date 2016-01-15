@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.integration;
 
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
@@ -17,8 +18,14 @@ public class SupplyItemDaoTests extends SupplyTests {
 
     @Test
     public void canGetItems() {
-        List<SupplyItem> items = itemService.getSupplyItems();
+        List<SupplyItem> items = itemService.getSupplyItems(LimitOffset.ALL);
         assertTrue(items.size() > 0);
+    }
+
+    @Test
+    public void canLimitResults() {
+        List<SupplyItem> items = itemService.getSupplyItems(LimitOffset.TWENTY_FIVE);
+        assertTrue(items.size() == 25);
     }
 
     @Test

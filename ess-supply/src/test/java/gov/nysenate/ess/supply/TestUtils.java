@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
 import gov.nysenate.ess.supply.item.service.EssSupplyItemService;
@@ -42,7 +43,7 @@ public class TestUtils {
 
     public static Set<LineItem> orderedItemsToQuantitiesMap() {
         Set<LineItem> orderedItemsToQuantities = new HashSet<>();
-        for (SupplyItem item : itemService.getSupplyItems()) {
+        for (SupplyItem item : itemService.getSupplyItems(LimitOffset.TEN)) {
             orderedItemsToQuantities.add(new LineItem(item.getId(), 1));
         }
         return orderedItemsToQuantities;
