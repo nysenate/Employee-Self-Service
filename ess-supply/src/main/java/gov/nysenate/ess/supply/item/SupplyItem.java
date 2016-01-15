@@ -6,17 +6,17 @@ public final class SupplyItem {
     private final String commodityCode;
     private final String name;
     private final String description;
-    private final int unitSize;
+    private final String unit;
     private final String category;
     private final int suggestedMaxQty;
 
-    public SupplyItem(int id, String commodityCode, String name, String description, int unitSize,
+    public SupplyItem(int id, String commodityCode, String name, String description, String unit,
                       String category, int suggestedMaxQty) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.name = name;
         this.description = description;
-        this.unitSize = unitSize;
+        this.unit = unit;
         this.category = category;
         this.suggestedMaxQty = suggestedMaxQty;
     }
@@ -37,8 +37,8 @@ public final class SupplyItem {
         return description;
     }
 
-    public int getUnitSize() {
-        return unitSize;
+    public String getUnitSize() {
+        return unit;
     }
 
     public String getCategory() {

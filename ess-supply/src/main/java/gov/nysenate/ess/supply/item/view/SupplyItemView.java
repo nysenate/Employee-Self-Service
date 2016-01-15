@@ -9,7 +9,7 @@ public final class SupplyItemView implements ViewObject {
     protected final String commodityCode;
     protected final String name;
     protected final String description;
-    protected final int unitSize;
+    protected final String unit;
     protected final String category;
     protected final int suggestedMaxQty;
 
@@ -18,7 +18,7 @@ public final class SupplyItemView implements ViewObject {
         this.commodityCode = item.getCommodityCode();
         this.name = item.getName();
         this.description = item.getDescription();
-        this.unitSize = item.getUnitSize();
+        this.unit = item.getUnitSize();
         this.category = item.getCategory();
         this.suggestedMaxQty = item.getSuggestedMaxQty();
     }
@@ -39,8 +39,8 @@ public final class SupplyItemView implements ViewObject {
         return description;
     }
 
-    public int getUnitSize() {
-        return unitSize;
+    public String getUnit() {
+        return unit;
     }
 
     public String getCategory() {

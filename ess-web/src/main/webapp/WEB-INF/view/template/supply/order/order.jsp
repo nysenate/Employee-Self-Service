@@ -15,7 +15,7 @@
         <div>
           <h3 class="dark-gray bold">{{item.name}}</h3>
           <p class="dark-gray">{{item.description}}</p>
-          <p class="dark-gray bold">{{item.unitSize}}/Pack</p>
+          <p class="dark-gray bold">{{item.unit}}</p>
         </div>
         <div style="">
           <label class="custom-select">

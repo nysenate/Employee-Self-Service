@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
+import gov.nysenate.ess.supply.item.service.EssSupplyItemService;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
@@ -18,16 +19,15 @@ import java.util.*;
 @Service
 public class TestUtils {
 
-    private static SupplyItemService itemService;
+    private static SupplyItemService itemService = new EssSupplyItemService(new InMemorySupplyItem());
     private static InMemoryOrder orderDao;
     private static SfmsInMemoryOrder sfmsDao;
     private static InMemorySupplyItem supplyItemDao;
     private static OrderService orderService;
 
     @Autowired
-    public TestUtils(SupplyItemService itemService, InMemoryOrder orderDao,
-                     SfmsInMemoryOrder sfmsDao, InMemorySupplyItem supplyItemDao, OrderService orderService) {
-        this.itemService = itemService;
+    public TestUtils(InMemoryOrder orderDao, SfmsInMemoryOrder sfmsDao,
+                     InMemorySupplyItem supplyItemDao, OrderService orderService) {
         this.orderDao = orderDao;
         this.sfmsDao = sfmsDao;
         this.supplyItemDao = supplyItemDao;

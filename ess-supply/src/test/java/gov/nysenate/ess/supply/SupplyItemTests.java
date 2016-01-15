@@ -1,6 +1,8 @@
 package gov.nysenate.ess.supply;
 
 import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
+import gov.nysenate.ess.supply.item.service.EssSupplyItemService;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -13,8 +15,7 @@ import static org.junit.Assert.*;
 
 public class SupplyItemTests extends SupplyTests {
 
-    @Autowired
-    private SupplyItemService supplyItemService;
+    private SupplyItemService supplyItemService = new EssSupplyItemService(new InMemorySupplyItem());
 
     @Before
     public void before() {
