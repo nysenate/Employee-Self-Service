@@ -9,7 +9,7 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
-import gov.nysenate.ess.supply.order.dao.SfmsInMemoryOrder;
+import gov.nysenate.ess.supply.order.dao.sfms.SfmsOrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class EssOrderService implements OrderService {
     private OrderDao orderDao;
 
     @Autowired
-    private SfmsInMemoryOrder sfmsDao;
+    private SfmsOrderDao sfmsDao;
 
     @Autowired
     private EmployeeInfoService employeeInfoService;
@@ -46,6 +46,16 @@ public class EssOrderService implements OrderService {
     public List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                     Range<LocalDate> dateRange, LimitOffset limOff) {
         return orderDao.getOrders(locCode, locType, issuerEmpId, statuses, dateRange, limOff);
+    }
+
+    @Override
+    public List<Order> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
+        return null;
+    }
+
+    @Override
+    public List<Order> getSfmsOrders(String locCode, String locType, String issuerEmpId, Range<LocalDate> dateRange, LimitOffset limOff) {
+        return null;
     }
 
     @Override
@@ -95,12 +105,12 @@ public class EssOrderService implements OrderService {
         return order;
     }
 
-
+    // TODO: are we keeping this functionality?
     @Override
     public Order undoCompletion(int id) {
         Order order = orderDao.getOrderById(id);
         orderDao.undoCompletion(order);
-        sfmsDao.undoCompletion(order);
+//        sfmsDao.undoCompletion(order);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setCompletedDateTime(null);
         orderDao.saveOrder(order);

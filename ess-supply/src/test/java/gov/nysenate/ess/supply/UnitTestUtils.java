@@ -4,12 +4,11 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItem;
-import gov.nysenate.ess.supply.item.service.EssSupplyItemService;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrder;
-import gov.nysenate.ess.supply.order.dao.SfmsInMemoryOrder;
+import gov.nysenate.ess.supply.order.dao.sfms.SfmsInMemoryOrder;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,18 +16,22 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Util methods for unit tests. Uses mock dao's.
+ */
 @Service
-public class TestUtils {
+public class UnitTestUtils {
 
-    private static SupplyItemService itemService = new EssSupplyItemService(new InMemorySupplyItem());
+    private static SupplyItemService itemService;
     private static InMemoryOrder orderDao;
     private static SfmsInMemoryOrder sfmsDao;
     private static InMemorySupplyItem supplyItemDao;
     private static OrderService orderService;
 
     @Autowired
-    public TestUtils(InMemoryOrder orderDao, SfmsInMemoryOrder sfmsDao,
-                     InMemorySupplyItem supplyItemDao, OrderService orderService) {
+    public UnitTestUtils(SupplyItemService itemService, InMemoryOrder orderDao, SfmsInMemoryOrder sfmsDao,
+                         InMemorySupplyItem supplyItemDao, OrderService orderService) {
+        this.itemService = itemService;
         this.orderDao = orderDao;
         this.sfmsDao = sfmsDao;
         this.supplyItemDao = supplyItemDao;
@@ -50,7 +53,7 @@ public class TestUtils {
     }
 
     public static Order submitOrder() {
-        return orderService.submitOrder(1, TestUtils.orderedItemsToQuantitiesMap());
+        return orderService.submitOrder(1, UnitTestUtils.orderedItemsToQuantitiesMap());
     }
 
     public static Order submitAndProcessOrder() {

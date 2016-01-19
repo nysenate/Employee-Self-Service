@@ -5,13 +5,11 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.supply.item.SupplyItem;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Primary
 @Repository
 public class OracleSupplyItemDao extends SqlBaseDao implements SupplyItemDao {
 

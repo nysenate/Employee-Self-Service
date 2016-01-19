@@ -32,6 +32,20 @@ public interface OrderService {
     List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                     Range<LocalDate> dateRange, LimitOffset limOff);
 
+    List<Order> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff);
+
+    /**
+     * Get orders from the SFMS Oracle databse.
+     * Can filter results by any of the parameters.
+     * @param locCode Location Code
+     * @param locType Location Type
+     * @param issuerEmpId Issuing Employee Id
+     * @param dateRange Date Range
+     * @param limOff Limit Offset
+     */
+    List<Order> getSfmsOrders(String locCode, String locType, String issuerEmpId,
+                              Range<LocalDate> dateRange, LimitOffset limOff);
+
     Order submitOrder(int empId, Set<LineItem> items);
 
     void saveOrder(Order order);

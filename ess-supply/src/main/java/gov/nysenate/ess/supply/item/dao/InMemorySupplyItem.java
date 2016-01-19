@@ -2,6 +2,8 @@ package gov.nysenate.ess.supply.item.dao;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.SupplyItem;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Primary
+@Profile("test")
 @Repository
 public class InMemorySupplyItem implements SupplyItemDao {
 
