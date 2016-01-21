@@ -50,12 +50,12 @@ public class EssOrderService implements OrderService {
 
     @Override
     public List<Order> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
-        return null;
+        return getSfmsOrders("all", "all", "all", dateRange, limOff);
     }
 
     @Override
     public List<Order> getSfmsOrders(String locCode, String locType, String issuerEmpId, Range<LocalDate> dateRange, LimitOffset limOff) {
-        return null;
+        return sfmsDao.getOrders(locCode, locType, issuerEmpId, dateRange, limOff);
     }
 
     @Override

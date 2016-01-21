@@ -11,7 +11,6 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -20,16 +19,12 @@ import java.util.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-@ActiveProfiles("test")
 public class OrderTests extends SupplyTests {
 
     private static int EMP_ID = 2;
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private SfmsOrderDao sfmsDao;
 
     @Before
     public void setUp() {
@@ -90,9 +85,9 @@ public class OrderTests extends SupplyTests {
     @Test
     public void completingOrderUpdatesSfms() {
         Order order = UnitTestUtils.submitAndProcessOrder();
-        assertThat(sfmsDao.getOrders(UnitTestUtils.getDateRange(), LimitOffset.ALL).size(), is(0));
+        assertThat(orderService.getSfmsOrders(UnitTestUtils.getDateRange(), LimitOffset.ALL).size(), is(0));
         orderService.completeOrder(order.getId());
-        assertThat(sfmsDao.getOrders(UnitTestUtils.getDateRange(), LimitOffset.ALL).size(), is(1));
+        assertThat(orderService.getSfmsOrders(UnitTestUtils.getDateRange(), LimitOffset.ALL).size(), is(1));
     }
 
     // TODO: May not keep this functionality.

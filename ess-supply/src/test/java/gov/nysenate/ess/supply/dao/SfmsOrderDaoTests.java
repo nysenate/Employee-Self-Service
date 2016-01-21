@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.dao.sfms.EssSfmsOrderDao;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -19,9 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class SfmsOrderDaoTests extends SupplyTests {
 
     @Autowired
-    private OrderService orderService;
-
-    private Range<LocalDate> oneWeekRange = Range.closed(LocalDate.now().minusWeeks(1), LocalDate.now());
+    private EssSfmsOrderDao orderDao;
 
     @Before
     public void setUp() {
@@ -32,8 +31,8 @@ public class SfmsOrderDaoTests extends SupplyTests {
     @Ignore
     @Test
     public void canGetOrdersByDateRange() {
-        List<Order> actualOrders = orderService.getSfmsOrders(oneWeekRange, LimitOffset.TWENTY_FIVE);
-        assertTrue(actualOrders.size() > 0);
+//        List<Order> actualOrders = orderDao.getOrders(ONE_WEEK_RANGE, LimitOffset.TWENTY_FIVE);
+//        assertTrue(actualOrders.size() > 0);
     }
 
     @Ignore

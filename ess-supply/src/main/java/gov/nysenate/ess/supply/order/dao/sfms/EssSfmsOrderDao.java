@@ -17,11 +17,6 @@ public class EssSfmsOrderDao implements SfmsOrderDao {
     }
 
     @Override
-    public List<Order> getOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
-        return null;
-    }
-
-    @Override
     public List<Order> getOrders(String locCode, String locType, String issuerEmpId, Range<LocalDate> dateRange, LimitOffset limOff) {
         return null;
     }

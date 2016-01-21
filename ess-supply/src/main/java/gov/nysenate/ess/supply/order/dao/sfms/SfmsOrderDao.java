@@ -16,8 +16,6 @@ public interface SfmsOrderDao {
      */
     int getNuIssue();
 
-    List<Order> getOrders(Range<LocalDate> dateRange, LimitOffset limOff);
-
     /**
      * Get orders from SFMS Oracle database.
      * Can filter by Location code, Location type, Issuing Employee Id, Date range and Limit Offset.

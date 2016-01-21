@@ -31,11 +31,6 @@ public class SfmsInMemoryOrder implements SfmsOrderDao {
     }
 
     @Override
-    public List<Order> getOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
-        return getOrders("all", "all", "all", dateRange, limOff);
-    }
-
-    @Override
     public List<Order> getOrders(String locCode, String locType, String issuerEmpId, Range<LocalDate> dateRange, LimitOffset limOff) {
         List<Order> filteredOrders = new ArrayList<>();
         for (Order order : orderDB.values()) {
