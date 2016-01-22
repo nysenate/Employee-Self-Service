@@ -11,4 +11,6 @@ import java.time.LocalDate;
 public abstract class SupplyTests extends BaseTests {
 
     protected static final Range<LocalDate> ONE_WEEK_RANGE = Range.closed(LocalDate.now().minusWeeks(1), LocalDate.now());
+    protected static final Range<LocalDate> THREE_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(3), LocalDate.now());
+    protected static final Range<LocalDate> SIX_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(6), LocalDate.now());
 }

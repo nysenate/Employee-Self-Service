@@ -1,8 +1,9 @@
-package gov.nysenate.ess.supply.order.dao.sfms;
+package gov.nysenate.ess.supply.sfms.dao;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.sfms.SfmsOrder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,14 +19,13 @@ public interface SfmsOrderDao {
 
     /**
      * Get orders from SFMS Oracle database.
-     * Can filter by Location code, Location type, Issuing Employee Id, Date range and Limit Offset.
+     * Can filter by Location code, Location type, Issuing Employee Name, Date range and Limit Offset.
      *
      * locCode, locType, issuerEmpId should be set to "all" if you do not want to filter by those parameters.
+     * @param issueEmpName Usually the last name of the issuing employee.
      */
-    List<Order> getOrders(String locCode, String locType, String issuerEmpId,
+    List<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
                           Range<LocalDate> dateRange, LimitOffset limOff);
 
     void saveOrder(Order order);
-
-    void updateOrder(Order order);
 }

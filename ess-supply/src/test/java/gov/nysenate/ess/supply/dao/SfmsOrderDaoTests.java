@@ -1,62 +1,37 @@
 package gov.nysenate.ess.supply.dao;
 
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
+import gov.nysenate.ess.supply.UnitTestUtils;
 import gov.nysenate.ess.supply.order.Order;
-import gov.nysenate.ess.supply.order.dao.sfms.EssSfmsOrderDao;
-import gov.nysenate.ess.supply.order.service.OrderService;
-import org.junit.Before;
+import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.dao.EssSfmsOrderDao;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class SfmsOrderDaoTests extends SupplyTests {
 
     @Autowired
     private EssSfmsOrderDao orderDao;
 
-    @Before
-    public void setUp() {
+    @Test
+    public void canGetSfmsOrders() {
+        List<SfmsOrder> actualOrders = orderDao.getOrders("all", "all", "all", SIX_MONTH_RANGE, LimitOffset.TWENTY_FIVE);
+        assertThat(actualOrders.size(), greaterThan(0));
     }
 
-    // TODO: add custom data to database and add more checks in tests.
-
-    @Ignore
     @Test
-    public void canGetOrdersByDateRange() {
-//        List<Order> actualOrders = orderDao.getOrders(ONE_WEEK_RANGE, LimitOffset.TWENTY_FIVE);
-//        assertTrue(actualOrders.size() > 0);
-    }
-
-    @Ignore
-    @Test
-    public void canGetOnlyPendingOrders() {
-    }
-
-    @Ignore
-    @Test
-    public void canGetOnlyProcessingOrders() {
-    }
-
-    @Ignore
-    @Test
-    public void canGetOnlyCompletedOrders() {
-    }
-
-    @Ignore
-    @Test
-    public void canGetOnlyRejectedOrders() {
-    }
-
-    @Ignore
-    @Test
-    public void canGetPendingAndProcessingOrders() {
+    public void canSaveSfmsOrder() {
+        List<SfmsOrder> originalOrders = orderDao.getOrders("all", "all", "all", SIX_MONTH_RANGE, LimitOffset.ALL);
+        Order order = UnitTestUtils.submitProcessAndCompleteOrder();
+        orderDao.saveOrder(order);
+        List<SfmsOrder> newOrders = orderDao.getOrders("all", "all", "all", SIX_MONTH_RANGE, LimitOffset.ALL);
+        assertThat(newOrders.size(), greaterThan(originalOrders.size()));
     }
 }

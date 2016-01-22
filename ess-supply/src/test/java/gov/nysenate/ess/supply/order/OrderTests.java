@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.UnitTestUtils;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.order.dao.sfms.SfmsOrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import jdk.nashorn.internal.ir.annotations.Ignore;

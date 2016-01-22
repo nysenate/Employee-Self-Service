@@ -8,7 +8,7 @@ import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrder;
-import gov.nysenate.ess.supply.order.dao.sfms.SfmsInMemoryOrder;
+import gov.nysenate.ess.supply.sfms.dao.SfmsInMemoryOrder;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

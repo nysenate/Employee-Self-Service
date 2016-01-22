@@ -9,7 +9,8 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
-import gov.nysenate.ess.supply.order.dao.sfms.SfmsOrderDao;
+import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.dao.SfmsOrderDao;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,13 +50,13 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public List<Order> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
+    public List<SfmsOrder> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
         return getSfmsOrders("all", "all", "all", dateRange, limOff);
     }
 
     @Override
-    public List<Order> getSfmsOrders(String locCode, String locType, String issuerEmpId, Range<LocalDate> dateRange, LimitOffset limOff) {
-        return sfmsDao.getOrders(locCode, locType, issuerEmpId, dateRange, limOff);
+    public List<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
+        return sfmsDao.getOrders(locCode, locType, issueEmpName, dateRange, limOff);
     }
 
     @Override
