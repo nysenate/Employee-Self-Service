@@ -13,11 +13,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class InMemoryOrder implements OrderDao {
+public class InMemoryOrderDao implements OrderDao {
 
     private Map<Integer, Order> orderDB = new TreeMap<>();
 
-    public InMemoryOrder() {
+    public InMemoryOrderDao() {
         reset();
     }
 

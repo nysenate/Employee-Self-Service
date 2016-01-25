@@ -2,7 +2,6 @@ package gov.nysenate.ess.supply.order;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
-import gov.nysenate.ess.supply.UnitTestUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderService;
@@ -27,12 +26,12 @@ public class OrderTests extends SupplyTests {
 
     @Before
     public void setUp() {
-        UnitTestUtils.resetInMemoryDaos();
+        resetInMemoryDaos();
     }
 
     @Test
     public void newOrderInitializedCorrectly() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         assertTrue(order.getId() > 0);
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
         assertEquals(order.getStatus(), OrderStatus.PENDING);
@@ -40,7 +39,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canEditAnOrdersItems() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         Set<LineItem> newItems = incrementItemQuantities(order.getItems());
         orderService.saveOrder(order.setItems(newItems));
         assertNotEquals(order, orderService.getOrderById(order.getId()));
@@ -48,7 +47,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void orderProcessedCorrectly() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         order = orderService.processOrder(order.getId(), EMP_ID);
         assertEquals(order.getIssuingEmployee().getEmployeeId(), EMP_ID);
         assertDateLessThan5SecondsOld(order.getProcessedDateTime());
@@ -57,43 +56,43 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessAnAlreadyProcessingOrder() {
-        Order order = UnitTestUtils.submitAndProcessOrder();
+        Order order = submitAndProcessOrder();
         orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessACompletedOrder() {
-        Order order = UnitTestUtils.submitProcessAndCompleteOrder();
+        Order order = submitProcessAndCompleteOrder();
         orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         order = orderService.rejectOrder(order.getId());
         orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test
     public void orderCompletedCorrectly() {
-        Order order = UnitTestUtils.submitProcessAndCompleteOrder();
+        Order order = submitProcessAndCompleteOrder();
         assertDateLessThan5SecondsOld(order.getCompletedDateTime());
         assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
 
     @Test
     public void completingOrderUpdatesSfms() {
-        Order order = UnitTestUtils.submitAndProcessOrder();
-        assertThat(orderService.getSfmsOrders(UnitTestUtils.getDateRange(), LimitOffset.ALL).size(), is(0));
+        Order order = submitAndProcessOrder();
+        assertThat(orderService.getSfmsOrders(getDateRange(), LimitOffset.ALL).size(), is(0));
         orderService.completeOrder(order.getId());
-        assertThat(orderService.getSfmsOrders(UnitTestUtils.getDateRange(), LimitOffset.ALL).size(), is(1));
+        assertThat(orderService.getSfmsOrders(getDateRange(), LimitOffset.ALL).size(), is(1));
     }
 
     // TODO: May not keep this functionality.
     @Ignore
     @Test
     public void canUndoACompletion() {
-        Order order = UnitTestUtils.submitProcessAndCompleteOrder();
+        Order order = submitProcessAndCompleteOrder();
         order = orderService.undoCompletion(order.getId());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
         assertEquals(order.getCompletedDateTime(), null);
@@ -102,26 +101,26 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAPendingOrder() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         orderService.completeOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAnAlreadyCompleteOrder() {
-        Order order = UnitTestUtils.submitProcessAndCompleteOrder();
+        Order order = submitProcessAndCompleteOrder();
         orderService.completeOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteRejectedOrder() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         order = orderService.rejectOrder(order.getId());
         orderService.completeOrder(order.getId());
     }
 
     @Test
     public void canRejectPendingOrder() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         assertEquals(order.getStatus(), OrderStatus.PENDING);
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
@@ -129,20 +128,20 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canRejectProcessingOrder() {
-        Order order = UnitTestUtils.submitAndProcessOrder();
+        Order order = submitAndProcessOrder();
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectCompletedOrder() {
-        Order order = UnitTestUtils.submitProcessAndCompleteOrder();
+        Order order = submitProcessAndCompleteOrder();
         orderService.rejectOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectRejectedOrder() {
-        Order order = UnitTestUtils.submitOrder();
+        Order order = submitOrder();
         order = orderService.rejectOrder(order.getId());
         orderService.rejectOrder(order.getId());
     }

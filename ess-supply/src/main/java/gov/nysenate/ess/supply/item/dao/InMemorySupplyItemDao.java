@@ -14,11 +14,11 @@ import java.util.Map;
 @Primary
 @Profile("test")
 @Repository
-public class InMemorySupplyItem implements SupplyItemDao {
+public class InMemorySupplyItemDao implements SupplyItemDao {
 
     private Map<Integer, SupplyItem> items;
 
-    public InMemorySupplyItem() {
+    public InMemorySupplyItemDao() {
         reset();
     }
 

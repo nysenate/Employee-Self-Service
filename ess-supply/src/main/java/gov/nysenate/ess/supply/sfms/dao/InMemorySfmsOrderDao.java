@@ -14,11 +14,11 @@ import java.util.*;
 @Primary
 @Profile("test")
 @Repository
-public class SfmsInMemoryOrder implements SfmsOrderDao {
+public class InMemorySfmsOrderDao implements SfmsOrderDao {
 
     private Map<Integer, SfmsOrder> orderDB = new TreeMap<>();
 
-    public SfmsInMemoryOrder() {
+    public InMemorySfmsOrderDao() {
         reset();
     }
 
