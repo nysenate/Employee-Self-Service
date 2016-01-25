@@ -18,7 +18,7 @@ public final class SupplyItemView implements ViewObject {
         this.commodityCode = item.getCommodityCode();
         this.name = item.getName();
         this.description = item.getDescription();
-        this.unit = item.getUnitSize();
+        this.unit = item.getUnit();
         this.category = item.getCategory();
         this.suggestedMaxQty = item.getSuggestedMaxQty();
     }

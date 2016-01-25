@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
 
     @Override
     public int getNuIssue() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -35,16 +36,24 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
         locType = formatForOracle(locType);
         issueEmpName = formatForOracle(issueEmpName);
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("nuIssue", getNuIssue())
                 .addValue("locCode", locCode)
                 .addValue("locType", locType)
                 .addValue("issueEmpName", issueEmpName)
                 .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
-                .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)));
+                .addValue("endDate", getEndDate(dateRange));
         String sql = EssSfmsOrderQuery.GET_ORDERS.getSql(schemaMap(), limOff);
         SfmsOrderHandler handler = new SfmsOrderHandler(itemService);
         remoteNamedJdbc.query(sql, params, handler);
         return handler.getSfmsOrders();
+    }
+
+    /**
+     * @param dateRange
+     * @return The last day to include from a date range. Must add an day to this value to make inclusive in oracle query.
+     */
+    private Date getEndDate(Range<LocalDate> dateRange) {
+        // Must add a day here, otherwise oracle interprets it as the start of the day and returns no results.
+        return toDate(DateUtils.endOfDateRange(dateRange).plusDays(1));
     }
 
     @Override
@@ -54,17 +63,23 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
         baseParams.put("issueDate", toDate(order.getCompletedDateTime()));
         baseParams.put("locType", String.valueOf(order.getLocation().getType().getCode()));
         baseParams.put("locCode", order.getLocation().getCode());
-        baseParams.put("issueEmpName", order.getIssuingEmployee().getLastName());
-        baseParams.put("completingUserUid", order.getIssuingEmployee().getUid());
+        baseParams.put("issueEmpName", order.getIssuingEmployee().getLastName().toUpperCase());
+        baseParams.put("completingUserUid", order.getIssuingEmployee().getUid().toUpperCase());
 
         List<MapSqlParameterSource> batchParams = new ArrayList<>();
         for (LineItem lineItem: order.getItems()) {
             MapSqlParameterSource params = new MapSqlParameterSource(baseParams)
-                    .addValue("itemId", "")
-                    .addValue("quantity", "")
-                    .addValue("unit", "");
+                    .addValue("itemId", lineItem.getItem().getId())
+                    .addValue("quantity", lineItem.getQuantity())
+                    .addValue("unit", lineItem.getItem().getUnit());
+            batchParams.add(params);
         }
+        String sql = EssSfmsOrderQuery.INSERT_ORDER.getSql(schemaMap());
+        remoteNamedJdbc.batchUpdate(sql, toArray(batchParams));
+    }
 
+    private MapSqlParameterSource[] toArray(List<MapSqlParameterSource> batchParams) {
+        return batchParams.toArray(new MapSqlParameterSource[batchParams.size()]);
     }
 
     private String formatForOracle(String param) {

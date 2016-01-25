@@ -37,7 +37,7 @@ public final class SupplyItem {
         return description;
     }
 
-    public String getUnitSize() {
+    public String getUnit() {
         return unit;
     }
 

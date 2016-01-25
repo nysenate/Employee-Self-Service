@@ -58,7 +58,7 @@ public class UnitTestUtils {
 
     public static Order submitAndProcessOrder() {
         Order order = submitOrder();
-        return orderService.processOrder(order.getId(), 2);
+        return orderService.processOrder(order.getId(), 11168);
     }
 
     public static Order submitProcessAndCompleteOrder() {
