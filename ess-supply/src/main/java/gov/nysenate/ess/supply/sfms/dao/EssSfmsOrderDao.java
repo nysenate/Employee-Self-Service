@@ -5,8 +5,10 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +20,9 @@ import java.util.Map;
 
 @Repository
 public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
+
+    @Autowired
+    private SupplyItemService itemService;
 
     @Override
     public int getNuIssue() {
@@ -37,7 +42,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
                 .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
                 .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)));
         String sql = EssSfmsOrderQuery.GET_ORDERS.getSql(schemaMap(), limOff);
-        SfmsOrderHandler handler = new SfmsOrderHandler();
+        SfmsOrderHandler handler = new SfmsOrderHandler(itemService);
         remoteNamedJdbc.query(sql, params, handler);
         return handler.getSfmsOrders();
     }

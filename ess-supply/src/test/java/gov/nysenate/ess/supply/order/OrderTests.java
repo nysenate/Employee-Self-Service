@@ -150,7 +150,7 @@ public class OrderTests extends SupplyTests {
     private Set<LineItem> incrementItemQuantities(Set<LineItem> originalItems) {
         Set<LineItem> newItems = new HashSet<>();
         for (LineItem lineItem : originalItems) {
-            newItems.add(new LineItem(lineItem.getItemId(), lineItem.getQuantity() + 1));
+            newItems.add(new LineItem(lineItem.getItem(), lineItem.getQuantity() + 1));
         }
         return newItems;
     }

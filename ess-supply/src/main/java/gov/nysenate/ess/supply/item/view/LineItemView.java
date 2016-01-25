@@ -5,7 +5,7 @@ import gov.nysenate.ess.supply.item.LineItem;
 
 public class LineItemView implements ViewObject {
 
-    protected int itemId;
+    protected SupplyItemView item;
     protected int quantity;
 
     public LineItemView() {
@@ -13,20 +13,20 @@ public class LineItemView implements ViewObject {
     }
 
     public LineItemView(LineItem lineItem) {
-        this.itemId = lineItem.getItemId();
+        this.item = new SupplyItemView(lineItem.getItem());
         this.quantity = lineItem.getQuantity();
     }
 
     public LineItem toLineItem() {
-        return new LineItem(this.itemId, this.quantity);
+        return new LineItem(item.toSupplyItem(), this.quantity);
     }
 
-    public int getItemId() {
-        return itemId;
+    public SupplyItemView getItem() {
+        return item;
     }
 
-    public void setItemId(int itemId) {
-        this.itemId = itemId;
+    public void setItem(SupplyItemView item) {
+        this.item = item;
     }
 
     public int getQuantity() {

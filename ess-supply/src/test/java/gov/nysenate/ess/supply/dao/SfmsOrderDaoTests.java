@@ -26,6 +26,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
         assertThat(actualOrders.size(), greaterThan(0));
     }
 
+    @Ignore
     @Test
     public void canSaveSfmsOrder() {
         List<SfmsOrder> originalOrders = orderDao.getOrders("all", "all", "all", SIX_MONTH_RANGE, LimitOffset.ALL);

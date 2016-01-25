@@ -4,16 +4,16 @@ package gov.nysenate.ess.supply.item;
  * It contains the an item id and the quantity ordered. */
 public final class LineItem {
 
-    private final int itemId;
+    private final SupplyItem item;
     private final int quantity;
 
-    public LineItem(int itemId, int quantity) {
-        this.itemId = itemId;
+    public LineItem(SupplyItem itemId, int quantity) {
+        this.item = itemId;
         this.quantity = quantity;
     }
 
-    public int getItemId() {
-        return itemId;
+    public SupplyItem getItem() {
+        return item;
     }
 
     public int getQuantity() {

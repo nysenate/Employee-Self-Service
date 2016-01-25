@@ -47,7 +47,7 @@ public class UnitTestUtils {
     public static Set<LineItem> orderedItemsToQuantitiesMap() {
         Set<LineItem> orderedItemsToQuantities = new HashSet<>();
         for (SupplyItem item : itemService.getSupplyItems(LimitOffset.TEN)) {
-            orderedItemsToQuantities.add(new LineItem(item.getId(), 1));
+            orderedItemsToQuantities.add(new LineItem(item, 1));
         }
         return orderedItemsToQuantities;
     }

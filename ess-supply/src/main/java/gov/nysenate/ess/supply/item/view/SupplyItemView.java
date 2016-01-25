@@ -23,6 +23,10 @@ public final class SupplyItemView implements ViewObject {
         this.suggestedMaxQty = item.getSuggestedMaxQty();
     }
 
+    public SupplyItem toSupplyItem() {
+        return new SupplyItem(id, commodityCode, name, description, unit, category, suggestedMaxQty);
+    }
+
     public int getId() {
         return id;
     }
