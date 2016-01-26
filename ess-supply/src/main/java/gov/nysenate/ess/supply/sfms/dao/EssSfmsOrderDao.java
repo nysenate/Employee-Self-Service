@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,27 +39,18 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
                 .addValue("locType", locType)
                 .addValue("issueEmpName", issueEmpName)
                 .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
-                .addValue("endDate", getEndDate(dateRange));
+                .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)));
         String sql = EssSfmsOrderQuery.GET_ORDERS.getSql(schemaMap(), limOff);
         SfmsOrderHandler handler = new SfmsOrderHandler(itemService);
         remoteNamedJdbc.query(sql, params, handler);
         return handler.getSfmsOrders();
     }
 
-    /**
-     * @param dateRange
-     * @return The last day to include from a date range. Must add an day to this value to make inclusive in oracle query.
-     */
-    private Date getEndDate(Range<LocalDate> dateRange) {
-        // Must add a day here, otherwise oracle interprets it as the start of the day and returns no results.
-        return toDate(DateUtils.endOfDateRange(dateRange).plusDays(1));
-    }
-
     @Override
     public void saveOrder(Order order) {
         Map<String, Object> baseParams = new HashMap<>();
         baseParams.put("nuIssue", getNuIssue());
-        baseParams.put("issueDate", toDate(order.getCompletedDateTime()));
+        baseParams.put("issueDate", toDate(order.getCompletedDateTime().toLocalDate()));
         baseParams.put("locType", String.valueOf(order.getLocation().getType().getCode()));
         baseParams.put("locCode", order.getLocation().getCode());
         baseParams.put("issueEmpName", order.getIssuingEmployee().getLastName().toUpperCase());
