@@ -2,13 +2,17 @@ package gov.nysenate.ess.supply.sfms.dao;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.sfms.SfmsLineItem;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Primary
@@ -42,11 +46,11 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
     }
 
     private boolean matchesLocCode(String locCode, SfmsOrder order) {
-        return locCode.equals("all") || order.getLocCode().equals(locCode);
+        return locCode.equals("all") || order.getOrderId().getToLocationCode().equals(locCode);
     }
 
     private boolean matchesLocType(String locType, SfmsOrder order) {
-        return locType.equals("all") || order.getLocType().equals(locType);
+        return locType.equals("all") || order.getOrderId().getToLocationType().equals(locType);
     }
 
     private boolean matchesIssuer(String issueEmpName, SfmsOrder order) {
@@ -56,6 +60,24 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
 
     @Override
     public void saveOrder(Order order) {
-        orderDB.put(order.getId(), SfmsOrder.fromOrder(order));
+        SfmsOrderId id = new SfmsOrderId(1, order.getOrderDateTime().toLocalDate(), order.getLocation().getCode(),
+                                         String.valueOf(order.getLocation().getType().getCode()));
+        SfmsOrder sfmsOrder = new SfmsOrder(id);
+        sfmsOrder.setFromLocationCode("LC100S");
+        sfmsOrder.setFromLocationType("P");
+        sfmsOrder.setUpdateDateTime(LocalDateTime.now());
+        sfmsOrder.setOriginDateTime(LocalDateTime.now());
+        sfmsOrder.setUpdateEmpUid(order.getCustomer().getUid());
+        sfmsOrder.setOriginalEmpUid(order.getCustomer().getUid());
+        sfmsOrder.setIssuedBy(order.getIssuingEmployee().getLastName());
+        // Not setting responsibility center head
+        for (LineItem lineItem : order.getItems()) {
+            SfmsLineItem sfmsLineItem = new SfmsLineItem();
+            sfmsLineItem.setItemId(lineItem.getItem().getId());
+            sfmsLineItem.setQuantity(lineItem.getQuantity());
+            sfmsLineItem.setUnit(lineItem.getItem().getUnit());
+            sfmsOrder.addItem(sfmsLineItem);
+        }
+        orderDB.put(order.getId(), sfmsOrder);
     }
 }

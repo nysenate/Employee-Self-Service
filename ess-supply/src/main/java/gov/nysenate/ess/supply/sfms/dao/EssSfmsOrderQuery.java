@@ -10,7 +10,8 @@ public enum EssSfmsOrderQuery implements BasicSqlQuery {
             "WHERE CDSTATUS = 'A' AND CDLOCAT = :locCode AND CDLOCTYPE = :locType"
     ),
     GET_ORDERS(
-            "SELECT NUISSUE, NUXREFCO, DTISSUE, CDLOCATTO, CDLOCTYPETO, NAISSUEDBY, AMQTYISSUE \n" +
+            "SELECT NUISSUE, NUXREFCO, DTISSUE, DTTXNUPDATE, DTTXNORIGIN, CDLOCTYPEFRM, CDLOCATTO, CDLOCATFROM, " +
+            "CDLOCTYPETO, NAISSUEDBY, NATXNORGUSER, NATXNUPDUSER, AMQTYISSUE, AMQTYISSSTD, CDISSUNIT, CDRESPCTRHD\n" +
             "FROM ${masterSchema}.FD12EXPISSUE \n" +
             "WHERE CDSTATUS = 'A' AND CDRECTYPE = 'P' AND CDORGID = 'ALL' \n" +
             "AND CDLOCATFROM = 'LC100S' AND CDLOCTYPEFRM = 'P' \n" +
@@ -27,7 +28,16 @@ public enum EssSfmsOrderQuery implements BasicSqlQuery {
             "'ALL', :unit, (" + GET_RESPONSIBILITY_CENTER_HD.getSql() + ") \n" +
             "FROM ${masterSchema}.FL12STDUNIT WHERE CDSTATUS = 'A' AND CDSTDUNIT = :unit"
     ),
+    INSERT_ORDER_AUDIT(
+            ""
+    ),
     UPDATE_ORDER(
+            ""
+    ),
+    UPDATE_INVENTORY(
+            ""
+    ),
+    GET_NUISSUE(
             ""
     );
 

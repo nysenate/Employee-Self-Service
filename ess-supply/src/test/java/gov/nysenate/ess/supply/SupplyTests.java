@@ -34,7 +34,7 @@ public abstract class SupplyTests extends BaseTests {
     protected static final Range<LocalDate> THREE_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(3), LocalDate.now());
     protected static final Range<LocalDate> SIX_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(6), LocalDate.now());
 
-    private static final int CUSTOMER_EMP_ID = 1;
+    private static final int CUSTOMER_EMP_ID = 6221;
     private static final int ISSUING_EMP_ID = 11168;
 
     protected void resetInMemoryDaos() {

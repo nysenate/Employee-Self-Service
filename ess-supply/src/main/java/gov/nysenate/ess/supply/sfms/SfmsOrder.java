@@ -1,9 +1,6 @@
 package gov.nysenate.ess.supply.sfms;
 
-import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.order.Order;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,53 +10,71 @@ import java.util.Set;
  */
 public class SfmsOrder {
 
-    private int nuIssue;
-    private LocalDate issueDate;
-    private String locCode;
-    private String locType;
+    private final SfmsOrderId orderId;
+    private String fromLocationCode;
+    private String fromLocationType;
+    private LocalDateTime updateDateTime;
+    private LocalDateTime originDateTime;
+    private String updateEmpUid;
+    private String originalEmpUid;
     private String issuedBy;
-    private Set<LineItem> items = new HashSet<>();
+    private String responsibilityCenterHead;
+    private Set<SfmsLineItem> items = new HashSet<>();
 
-    public static SfmsOrder fromOrder(Order order) {
-        SfmsOrder sfmsOrder = new SfmsOrder();
-        sfmsOrder.setIssueDate(order.getCompletedDateTime().toLocalDate());
-        sfmsOrder.setLocCode(order.getLocation().getCode());
-        sfmsOrder.setLocType(String.valueOf(order.getLocation().getType().getCode()));
-        sfmsOrder.setIssuedBy(order.getIssuingEmployee().getLastName());
-        sfmsOrder.setItems(order.getItems());
-        return sfmsOrder;
+    public SfmsOrder(SfmsOrderId orderId) {
+        this.orderId = orderId;
     }
 
-    public int getNuIssue() {
-        return nuIssue;
+    public SfmsOrderId getOrderId() {
+        return orderId;
     }
 
-    public void setNuIssue(int nuIssue) {
-        this.nuIssue = nuIssue;
+    public String getFromLocationCode() {
+        return fromLocationCode;
     }
 
-    public LocalDate getIssueDate() {
-        return issueDate;
+    public void setFromLocationCode(String fromLocationCode) {
+        this.fromLocationCode = fromLocationCode;
     }
 
-    public void setIssueDate(LocalDate issueDate) {
-        this.issueDate = issueDate;
+    public String getFromLocationType() {
+        return fromLocationType;
     }
 
-    public String getLocCode() {
-        return locCode;
+    public void setFromLocationType(String fromLocationType) {
+        this.fromLocationType = fromLocationType;
     }
 
-    public void setLocCode(String locCode) {
-        this.locCode = locCode;
+    public LocalDateTime getUpdateDateTime() {
+        return updateDateTime;
     }
 
-    public String getLocType() {
-        return locType;
+    public void setUpdateDateTime(LocalDateTime updateDateTime) {
+        this.updateDateTime = updateDateTime;
     }
 
-    public void setLocType(String locType) {
-        this.locType = locType;
+    public LocalDateTime getOriginDateTime() {
+        return originDateTime;
+    }
+
+    public void setOriginDateTime(LocalDateTime originDateTime) {
+        this.originDateTime = originDateTime;
+    }
+
+    public String getUpdateEmpUid() {
+        return updateEmpUid;
+    }
+
+    public void setUpdateEmpUid(String updateEmpUid) {
+        this.updateEmpUid = updateEmpUid;
+    }
+
+    public String getOriginalEmpUid() {
+        return originalEmpUid;
+    }
+
+    public void setOriginalEmpUid(String originalEmpUid) {
+        this.originalEmpUid = originalEmpUid;
     }
 
     public String getIssuedBy() {
@@ -70,22 +85,26 @@ public class SfmsOrder {
         this.issuedBy = issuedBy;
     }
 
-    public Set<LineItem> getItems() {
+    public String getResponsibilityCenterHead() {
+        return responsibilityCenterHead;
+    }
+
+    public void setResponsibilityCenterHead(String responsibilityCenterHead) {
+        this.responsibilityCenterHead = responsibilityCenterHead;
+    }
+
+    public Set<SfmsLineItem> getItems() {
         return items;
     }
 
-    public void setItems(Set<LineItem> items) {
+    public void setItems(Set<SfmsLineItem> items) {
         this.items = items;
     }
 
-    public void addItem(LineItem item) {
+    public void addItem(SfmsLineItem item) {
         this.items.add(item);
     }
 
-    /**
-     * nuIssue, issueDate, locCode, and LocType define a unique order in the sfms table.
-     * @return
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,19 +112,37 @@ public class SfmsOrder {
 
         SfmsOrder sfmsOrder = (SfmsOrder) o;
 
-        if (nuIssue != sfmsOrder.nuIssue) return false;
-        if (issueDate != null ? !issueDate.equals(sfmsOrder.issueDate) : sfmsOrder.issueDate != null) return false;
-        if (locCode != null ? !locCode.equals(sfmsOrder.locCode) : sfmsOrder.locCode != null) return false;
-        return !(locType != null ? !locType.equals(sfmsOrder.locType) : sfmsOrder.locType != null);
-
+        if (orderId != null ? !orderId.equals(sfmsOrder.orderId) : sfmsOrder.orderId != null) return false;
+        if (fromLocationCode != null ? !fromLocationCode.equals(sfmsOrder.fromLocationCode) : sfmsOrder.fromLocationCode != null)
+            return false;
+        if (fromLocationType != null ? !fromLocationType.equals(sfmsOrder.fromLocationType) : sfmsOrder.fromLocationType != null)
+            return false;
+        if (updateDateTime != null ? !updateDateTime.equals(sfmsOrder.updateDateTime) : sfmsOrder.updateDateTime != null)
+            return false;
+        if (originDateTime != null ? !originDateTime.equals(sfmsOrder.originDateTime) : sfmsOrder.originDateTime != null)
+            return false;
+        if (updateEmpUid != null ? !updateEmpUid.equals(sfmsOrder.updateEmpUid) : sfmsOrder.updateEmpUid != null)
+            return false;
+        if (originalEmpUid != null ? !originalEmpUid.equals(sfmsOrder.originalEmpUid) : sfmsOrder.originalEmpUid != null)
+            return false;
+        if (issuedBy != null ? !issuedBy.equals(sfmsOrder.issuedBy) : sfmsOrder.issuedBy != null) return false;
+        if (responsibilityCenterHead != null ? !responsibilityCenterHead.equals(sfmsOrder.responsibilityCenterHead) : sfmsOrder.responsibilityCenterHead != null)
+            return false;
+        return !(items != null ? !items.equals(sfmsOrder.items) : sfmsOrder.items != null);
     }
 
     @Override
     public int hashCode() {
-        int result = nuIssue;
-        result = 31 * result + (issueDate != null ? issueDate.hashCode() : 0);
-        result = 31 * result + (locCode != null ? locCode.hashCode() : 0);
-        result = 31 * result + (locType != null ? locType.hashCode() : 0);
+        int result = orderId != null ? orderId.hashCode() : 0;
+        result = 31 * result + (fromLocationCode != null ? fromLocationCode.hashCode() : 0);
+        result = 31 * result + (fromLocationType != null ? fromLocationType.hashCode() : 0);
+        result = 31 * result + (updateDateTime != null ? updateDateTime.hashCode() : 0);
+        result = 31 * result + (originDateTime != null ? originDateTime.hashCode() : 0);
+        result = 31 * result + (updateEmpUid != null ? updateEmpUid.hashCode() : 0);
+        result = 31 * result + (originalEmpUid != null ? originalEmpUid.hashCode() : 0);
+        result = 31 * result + (issuedBy != null ? issuedBy.hashCode() : 0);
+        result = 31 * result + (responsibilityCenterHead != null ? responsibilityCenterHead.hashCode() : 0);
+        result = 31 * result + (items != null ? items.hashCode() : 0);
         return result;
     }
 }
