@@ -11,6 +11,9 @@ import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrderDao;
 import gov.nysenate.ess.supply.order.service.OrderService;
+import gov.nysenate.ess.supply.sfms.SfmsLineItem;
+import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import gov.nysenate.ess.supply.sfms.dao.InMemorySfmsOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,6 +33,7 @@ public abstract class SupplyTests extends BaseTests {
     @Autowired private InMemoryOrderDao orderDao;
     @Autowired private InMemorySfmsOrderDao sfmsOrderDao;
 
+    protected static final Range<LocalDate> ONE_DAY_RANGE = Range.closed(LocalDate.now().minusDays(1), LocalDate.now());
     protected static final Range<LocalDate> ONE_WEEK_RANGE = Range.closed(LocalDate.now().minusWeeks(1), LocalDate.now());
     protected static final Range<LocalDate> THREE_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(3), LocalDate.now());
     protected static final Range<LocalDate> SIX_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(6), LocalDate.now());
@@ -57,15 +61,45 @@ public abstract class SupplyTests extends BaseTests {
         return orderService.completeOrder(order.getId());
     }
 
-    protected Range<LocalDate> getDateRange() {
-        return Range.closed(LocalDate.MIN, LocalDate.now());
-    }
-
     private Set<LineItem> lineItems() {
         Set<LineItem> lineItems = new HashSet<>();
-        for (SupplyItem item : itemService.getSupplyItems(LimitOffset.TEN)) {
-            lineItems.add(new LineItem(item, 1));
-        }
+        lineItems.add(new LineItem(itemService.getItemById(1), 1));
+        lineItems.add(new LineItem(itemService.getItemById(4), 3));
+        lineItems.add(new LineItem(itemService.getItemById(6), 7));
         return lineItems;
+    }
+
+    protected SfmsOrder convertOrderToSfmsOrder(Order order) {
+        SfmsOrderId id = new SfmsOrderId(1, order.getCompletedDateTime().toLocalDate(),
+                                         order.getLocationCode(), order.getLocationType());
+        SfmsOrder sfmsOrder = new SfmsOrder(id);
+        sfmsOrder.setFromLocationCode("LC100S");
+        sfmsOrder.setFromLocationType("P");
+        sfmsOrder.setIssuedBy(order.getIssuingEmployee().getLastName().toUpperCase());
+        sfmsOrder.setResponsibilityCenterHead("STSBAC");
+
+        // Create sfms line items for the three items in our test order.
+        SfmsLineItem sfmsLineItem = new SfmsLineItem();
+        sfmsLineItem.setItemId(1);
+        sfmsLineItem.setQuantity(1);
+        sfmsLineItem.setUnit("24/PKG");
+        sfmsLineItem.setStandardQuantity(24);
+        sfmsOrder.addItem(sfmsLineItem);
+
+        sfmsLineItem = new SfmsLineItem();
+        sfmsLineItem.setItemId(4);
+        sfmsLineItem.setQuantity(3);
+        sfmsLineItem.setUnit("DOZEN");
+        sfmsLineItem.setStandardQuantity(12);
+        sfmsOrder.addItem(sfmsLineItem);
+
+        sfmsLineItem = new SfmsLineItem();
+        sfmsLineItem.setItemId(6);
+        sfmsLineItem.setQuantity(7);
+        sfmsLineItem.setUnit("100/PKG");
+        sfmsLineItem.setStandardQuantity(100);
+        sfmsOrder.addItem(sfmsLineItem);
+
+        return sfmsOrder;
     }
 }

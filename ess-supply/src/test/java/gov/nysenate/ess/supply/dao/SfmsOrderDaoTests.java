@@ -2,20 +2,28 @@ package gov.nysenate.ess.supply.dao;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.sfms.SfmsLineItem;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import gov.nysenate.ess.supply.sfms.dao.EssSfmsOrderDao;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Description;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+@Transactional
 @TransactionConfiguration(transactionManager = "remoteTxManager", defaultRollback = true)
 public class SfmsOrderDaoTests extends SupplyTests {
 
@@ -39,7 +47,16 @@ public class SfmsOrderDaoTests extends SupplyTests {
         }
     }
 
-    @Transactional
+    @Ignore
+    @Test
+    public void canGetSfmsOrderById() {
+        Order order = submitProcessAndCompleteOrder();
+        orderDao.saveOrder(order);
+        SfmsOrder expected = convertOrderToSfmsOrder(order);
+        SfmsOrder actual = orderDao.getOrderById(expected.getOrderId());
+        assertThat(actual, is(expected));
+    }
+
     @Test
     public void canGetSfmsOrdersByLocation() {
         int originalSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).size();
@@ -49,7 +66,6 @@ public class SfmsOrderDaoTests extends SupplyTests {
         assertThat(actualSize, is(originalSize + 1));
     }
 
-    @Transactional
     @Test
     public void canGetSfmsOrdersByIssuer() {
         int originalSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).size();
@@ -59,13 +75,12 @@ public class SfmsOrderDaoTests extends SupplyTests {
         assertThat(actualSize, is(originalSize + 1));
     }
 
-    @Transactional
     @Test
     public void canSaveSfmsOrder() {
-        List<SfmsOrder> originalOrders = orderDao.getOrders("all", "all", "all", ONE_WEEK_RANGE, LimitOffset.ALL);
+        List<SfmsOrder> originalOrders = orderDao.getOrders("all", "all", "all", ONE_DAY_RANGE, LimitOffset.ALL);
         Order order = submitProcessAndCompleteOrder();
         orderDao.saveOrder(order);
-        List<SfmsOrder> newOrders = orderDao.getOrders("all", "all", "all", ONE_WEEK_RANGE, LimitOffset.ALL);
+        List<SfmsOrder> newOrders = orderDao.getOrders("all", "all", "all", ONE_DAY_RANGE, LimitOffset.ALL);
         assertThat(newOrders.size(), is(originalOrders.size() + 1));
     }
 }

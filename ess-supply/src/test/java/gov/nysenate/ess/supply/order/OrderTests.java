@@ -83,9 +83,9 @@ public class OrderTests extends SupplyTests {
     @Test
     public void completingOrderUpdatesSfms() {
         Order order = submitAndProcessOrder();
-        assertThat(orderService.getSfmsOrders(getDateRange(), LimitOffset.ALL).size(), is(0));
+        assertThat(orderService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(0));
         orderService.completeOrder(order.getId());
-        assertThat(orderService.getSfmsOrders(getDateRange(), LimitOffset.ALL).size(), is(1));
+        assertThat(orderService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(1));
     }
 
     // TODO: May not keep this functionality.

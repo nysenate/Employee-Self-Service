@@ -20,14 +20,15 @@ import java.util.*;
 @Repository
 public class InMemorySfmsOrderDao implements SfmsOrderDao {
 
-    private Map<Integer, SfmsOrder> orderDB = new TreeMap<>();
+    /** Map of sfms order id's to sfms orders */
+    private Map<SfmsOrderId, SfmsOrder> orderDB;
 
     public InMemorySfmsOrderDao() {
         reset();
     }
 
     public void reset() {
-        orderDB = new TreeMap<>();
+        orderDB = new HashMap<>();
     }
 
     public int getNuIssue() {
@@ -59,6 +60,11 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
     }
 
     @Override
+    public SfmsOrder getOrderById(SfmsOrderId orderId) {
+        return orderDB.get(orderId);
+    }
+
+    @Override
     public void saveOrder(Order order) {
         SfmsOrderId id = new SfmsOrderId(1, order.getOrderDateTime().toLocalDate(), order.getLocation().getCode(),
                                          String.valueOf(order.getLocation().getType().getCode()));
@@ -78,6 +84,6 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
             sfmsLineItem.setUnit(lineItem.getItem().getUnit());
             sfmsOrder.addItem(sfmsLineItem);
         }
-        orderDB.put(order.getId(), sfmsOrder);
+        orderDB.put(sfmsOrder.getOrderId(), sfmsOrder);
     }
 }

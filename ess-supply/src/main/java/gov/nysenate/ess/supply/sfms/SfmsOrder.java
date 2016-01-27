@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.sfms;
 
+import gov.nysenate.ess.supply.order.Order;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -104,7 +106,7 @@ public class SfmsOrder {
     public void addItem(SfmsLineItem item) {
         this.items.add(item);
     }
-
+    /** Don't check origin/update date time or origin/update empId in equals method. */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -117,18 +119,11 @@ public class SfmsOrder {
             return false;
         if (fromLocationType != null ? !fromLocationType.equals(sfmsOrder.fromLocationType) : sfmsOrder.fromLocationType != null)
             return false;
-        if (updateDateTime != null ? !updateDateTime.equals(sfmsOrder.updateDateTime) : sfmsOrder.updateDateTime != null)
-            return false;
-        if (originDateTime != null ? !originDateTime.equals(sfmsOrder.originDateTime) : sfmsOrder.originDateTime != null)
-            return false;
-        if (updateEmpUid != null ? !updateEmpUid.equals(sfmsOrder.updateEmpUid) : sfmsOrder.updateEmpUid != null)
-            return false;
-        if (originalEmpUid != null ? !originalEmpUid.equals(sfmsOrder.originalEmpUid) : sfmsOrder.originalEmpUid != null)
-            return false;
         if (issuedBy != null ? !issuedBy.equals(sfmsOrder.issuedBy) : sfmsOrder.issuedBy != null) return false;
         if (responsibilityCenterHead != null ? !responsibilityCenterHead.equals(sfmsOrder.responsibilityCenterHead) : sfmsOrder.responsibilityCenterHead != null)
             return false;
         return !(items != null ? !items.equals(sfmsOrder.items) : sfmsOrder.items != null);
+
     }
 
     @Override
@@ -136,10 +131,6 @@ public class SfmsOrder {
         int result = orderId != null ? orderId.hashCode() : 0;
         result = 31 * result + (fromLocationCode != null ? fromLocationCode.hashCode() : 0);
         result = 31 * result + (fromLocationType != null ? fromLocationType.hashCode() : 0);
-        result = 31 * result + (updateDateTime != null ? updateDateTime.hashCode() : 0);
-        result = 31 * result + (originDateTime != null ? originDateTime.hashCode() : 0);
-        result = 31 * result + (updateEmpUid != null ? updateEmpUid.hashCode() : 0);
-        result = 31 * result + (originalEmpUid != null ? originalEmpUid.hashCode() : 0);
         result = 31 * result + (issuedBy != null ? issuedBy.hashCode() : 0);
         result = 31 * result + (responsibilityCenterHead != null ? responsibilityCenterHead.hashCode() : 0);
         result = 31 * result + (items != null ? items.hashCode() : 0);

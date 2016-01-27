@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +43,11 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
     }
 
     @Override
+    public SfmsOrder getOrderById(SfmsOrderId orderId) {
+        return null;
+    }
+
+    @Override
     public void saveOrder(Order order) {
         Map<String, Object> baseParams = new HashMap<>();
         baseParams.put("nuIssue", getNuIssue());
@@ -49,7 +55,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
         baseParams.put("locType", String.valueOf(order.getLocation().getType().getCode()));
         baseParams.put("locCode", order.getLocation().getCode());
         baseParams.put("issueEmpName", order.getIssuingEmployee().getLastName().toUpperCase());
-        baseParams.put("completingUserUid", order.getIssuingEmployee().getUid().toUpperCase());
+        baseParams.put("completingUserUid", order.getIssuingEmployee().getUid().toUpperCase()); // TODO: this will probably change.
 
         List<MapSqlParameterSource> batchParams = new ArrayList<>();
         for (LineItem lineItem: order.getItems()) {

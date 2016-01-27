@@ -91,6 +91,14 @@ public final class Order {
                 .items(items);
     }
 
+    public String getLocationCode() {
+        return this.location.getCode();
+    }
+
+    public String getLocationType() {
+        return String.valueOf(this.location.getType().getCode());
+    }
+
     public int getId() {
         return id;
     }

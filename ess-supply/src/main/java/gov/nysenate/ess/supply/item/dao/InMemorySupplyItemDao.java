@@ -29,7 +29,7 @@ public class InMemorySupplyItemDao implements SupplyItemDao {
         items.put(3, new SupplyItem(3, "PRE", "Red Ballpoint Pens", "Red ink, medium point", "DOZEN", "Pens", 1));
         items.put(4, new SupplyItem(4, "BL", "Large Binder Clip", "2\" binder clip", "DOZEN", "Clips", 3));
         items.put(5, new SupplyItem(5, "BS", "Small Binder Clip", "5/16\" binder clip", "DOZEN", "Clips", 3));
-        items.put(6, new SupplyItem(6, "P5", "Large Paper Clip", "Large, silver, paper clips", "100/Pack", "Clips", 10));
+        items.put(6, new SupplyItem(6, "P5", "Large Paper Clip", "Large, silver, paper clips", "100/PKG", "Clips", 10));
         items.put(7, new SupplyItem(7, "PI3x3", "Post-it Notes, Regular", "Regular size, 3x3 post-it notes", "DOZEN", "Post-it Notes", 1));
         items.put(7, new SupplyItem(7, "PI3x3", "Regular Post-it Notes", "Regular size, 3x3 post-it notes", "DOZEN", "Post-it Notes", 1));
         items.put(8, new SupplyItem(8, "PI3x5", "Large Post-it Notes", "Large size, 3x5 post-it notes", "DOZEN", "Post-it Notes", 1));

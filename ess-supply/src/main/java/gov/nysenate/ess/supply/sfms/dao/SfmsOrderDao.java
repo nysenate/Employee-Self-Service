@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
+import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,5 +28,8 @@ public interface SfmsOrderDao {
     List<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
                           Range<LocalDate> dateRange, LimitOffset limOff);
 
+    SfmsOrder getOrderById(SfmsOrderId orderId);
+
     void saveOrder(Order order);
+
 }
