@@ -33,7 +33,7 @@ public class OracleSupplyItemDaoTests extends SupplyTests {
     }
 
     /**
-     * NOTE: expected item with id 111 is randomly taken from dev database. May not exist in the future.
+     * NOTE: expected item with id 111 is randomly taken from database. May not exist in the future.
      */
     @Test
     public void canGetItemById() {

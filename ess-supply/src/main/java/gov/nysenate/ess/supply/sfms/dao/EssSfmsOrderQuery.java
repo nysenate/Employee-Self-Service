@@ -18,6 +18,14 @@ public enum EssSfmsOrderQuery implements BasicSqlQuery {
             "AND CDLOCATTO like :locCode AND CDLOCTYPETO like :locType AND NAISSUEDBY like :issueEmpName \n" +
             "AND DTISSUE BETWEEN :startDate AND :endDate"
     ),
+    GET_ORDER_BY_ID(
+            "SELECT NUISSUE, NUXREFCO, DTISSUE, DTTXNUPDATE, DTTXNORIGIN, CDLOCTYPEFRM, CDLOCATTO, CDLOCATFROM, " +
+            "CDLOCTYPETO, NAISSUEDBY, NATXNORGUSER, NATXNUPDUSER, AMQTYISSUE, AMQTYISSSTD, CDISSUNIT, CDRESPCTRHD\n" +
+            "FROM ${masterSchema}.FD12EXPISSUE \n" +
+            "WHERE CDSTATUS = 'A' AND CDRECTYPE = 'P' AND CDORGID = 'ALL' \n" +
+            "AND CDLOCATFROM = 'LC100S' AND CDLOCTYPEFRM = 'P' AND CDLOCATTO like :locCode \n" +
+            "AND CDLOCTYPETO like :locType AND NUISSUE = :nuIssue AND DTISSUE = :issueDate"
+    ),
     INSERT_ORDER(
             "INSERT INTO ${masterSchema}.FD12EXPISSUE \n" +
             "(NUISSUE, NUXREFCO, DTISSUE, DTTXNUPDATE, DTTXNORIGIN, CDLOCTYPEFRM, CDLOCTYPETO, CDRECTYPE, CDSTATUS, CDLOCATFROM, \n" +

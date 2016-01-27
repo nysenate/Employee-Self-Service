@@ -8,20 +8,17 @@ import gov.nysenate.ess.supply.sfms.SfmsLineItem;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
 import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import gov.nysenate.ess.supply.sfms.dao.EssSfmsOrderDao;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 
 @Transactional
 @TransactionConfiguration(transactionManager = "remoteTxManager", defaultRollback = true)
@@ -47,14 +44,12 @@ public class SfmsOrderDaoTests extends SupplyTests {
         }
     }
 
-    @Ignore
     @Test
     public void canGetSfmsOrderById() {
-        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        orderDao.saveOrder(order);
-        SfmsOrder expected = convertOrderToSfmsOrder(order);
-        SfmsOrder actual = orderDao.getOrderById(expected.getOrderId());
-        assertThat(actual, is(expected));
+        Order expected = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
+        orderDao.saveOrder(expected);
+        SfmsOrder actual = orderDao.getOrderById(extractSfmsOrderIdFromOrder(expected));
+        assertSfmsOrderEqualsOrder(actual, expected);
     }
 
     @Test
@@ -77,10 +72,47 @@ public class SfmsOrderDaoTests extends SupplyTests {
 
     @Test
     public void canSaveSfmsOrder() {
-        List<SfmsOrder> originalOrders = orderDao.getOrders("all", "all", "all", ONE_DAY_RANGE, LimitOffset.ALL);
-        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        orderDao.saveOrder(order);
-        List<SfmsOrder> newOrders = orderDao.getOrders("all", "all", "all", ONE_DAY_RANGE, LimitOffset.ALL);
-        assertThat(newOrders.size(), is(originalOrders.size() + 1));
+        Order expected = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
+        orderDao.saveOrder(expected);
+        SfmsOrder actual = orderDao.getOrderById(extractSfmsOrderIdFromOrder(expected));
+        assertSfmsOrderEqualsOrder(actual, expected);
+    }
+
+    private SfmsOrderId extractSfmsOrderIdFromOrder(Order order) {
+        // Until Order dao is set up, just use 1 for nuissue.
+        return new SfmsOrderId(1, order.getCompletedDateTime().toLocalDate(),
+                               order.getLocationCode(), order.getLocationType());
+    }
+
+    private void assertSfmsOrderEqualsOrder(SfmsOrder sfmsOrder, Order order) {
+        assertThat(sfmsOrder.getOrderId(), equalTo(extractSfmsOrderIdFromOrder(order)));
+        assertThat(sfmsOrder.getFromLocationCode(), is("LC100S"));
+        assertThat(sfmsOrder.getFromLocationType(), is("P"));
+        assertThat(sfmsOrder.getIssuedBy(), is(order.getIssuingEmployee().getLastName().toUpperCase()));
+        assertThat(sfmsOrder.getResponsibilityCenterHead(), is("STSBAC"));
+        assertSfmsLineItemsEqualOrderLineItems(sfmsOrder, order);
+    }
+
+    private void assertSfmsLineItemsEqualOrderLineItems(SfmsOrder sfmsOrder, Order order) {
+        for (SfmsLineItem sfmsLineItem: sfmsOrder.getItems()) {
+            LineItem orderLineItem = getLineItemWithId(order.getItems(), sfmsLineItem.getItemId());
+            if (orderLineItem == null) {
+                fail("Order does not have a LineItem with id " + sfmsLineItem.getItemId());
+            }
+            assertThat(sfmsLineItem.getItemId(), is(orderLineItem.getItem().getId()));
+            assertThat(sfmsLineItem.getQuantity(), is(orderLineItem.getQuantity()));
+            assertThat(sfmsLineItem.getUnit(), is(orderLineItem.getItem().getUnit()));
+            assertThat(sfmsLineItem.getStandardQuantity(),
+                       is(orderLineItem.getQuantity() * orderLineItem.getItem().getUnitStandardQuantity()));
+        }
+    }
+
+    private LineItem getLineItemWithId(Set<LineItem> lineItems, int id) {
+        for (LineItem lineItem: lineItems) {
+            if(lineItem.getItem().getId() == id) {
+                return lineItem;
+            }
+        }
+        return null;
     }
 }

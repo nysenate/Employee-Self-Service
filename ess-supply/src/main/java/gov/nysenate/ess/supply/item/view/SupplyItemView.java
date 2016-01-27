@@ -22,7 +22,7 @@ public final class SupplyItemView implements ViewObject {
         this.unit = item.getUnit();
         this.category = item.getCategory();
         this.suggestedMaxQty = item.getSuggestedMaxQty();
-        this.standardQuantity = item.getStandardQuantity();
+        this.standardQuantity = item.getUnitStandardQuantity();
     }
 
     public SupplyItem toSupplyItem() {

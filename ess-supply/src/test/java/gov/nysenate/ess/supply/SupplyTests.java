@@ -72,38 +72,4 @@ public abstract class SupplyTests extends BaseTests {
         lineItems.add(new LineItem(itemService.getItemById(6), 7));
         return lineItems;
     }
-
-    protected SfmsOrder convertOrderToSfmsOrder(Order order) {
-        SfmsOrderId id = new SfmsOrderId(1, order.getCompletedDateTime().toLocalDate(),
-                                         order.getLocationCode(), order.getLocationType());
-        SfmsOrder sfmsOrder = new SfmsOrder(id);
-        sfmsOrder.setFromLocationCode("LC100S");
-        sfmsOrder.setFromLocationType("P");
-        sfmsOrder.setIssuedBy(order.getIssuingEmployee().getLastName().toUpperCase());
-        sfmsOrder.setResponsibilityCenterHead("STSBAC");
-
-        // Create sfms line items for the three items in our test order.
-        SfmsLineItem sfmsLineItem = new SfmsLineItem();
-        sfmsLineItem.setItemId(1);
-        sfmsLineItem.setQuantity(1);
-        sfmsLineItem.setUnit("24/PKG");
-        sfmsLineItem.setStandardQuantity(24);
-        sfmsOrder.addItem(sfmsLineItem);
-
-        sfmsLineItem = new SfmsLineItem();
-        sfmsLineItem.setItemId(4);
-        sfmsLineItem.setQuantity(3);
-        sfmsLineItem.setUnit("DOZEN");
-        sfmsLineItem.setStandardQuantity(12);
-        sfmsOrder.addItem(sfmsLineItem);
-
-        sfmsLineItem = new SfmsLineItem();
-        sfmsLineItem.setItemId(6);
-        sfmsLineItem.setQuantity(7);
-        sfmsLineItem.setUnit("100/PKG");
-        sfmsLineItem.setStandardQuantity(100);
-        sfmsOrder.addItem(sfmsLineItem);
-
-        return sfmsOrder;
-    }
 }

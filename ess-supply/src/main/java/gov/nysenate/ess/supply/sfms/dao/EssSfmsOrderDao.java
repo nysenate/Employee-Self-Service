@@ -22,7 +22,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
 
     @Override
     public int getNuIssue() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -39,12 +39,20 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
         String sql = EssSfmsOrderQuery.GET_ORDERS.getSql(schemaMap(), limOff);
         SfmsOrderHandler handler = new SfmsOrderHandler();
         remoteNamedJdbc.query(sql, params, handler);
-        return handler.getSfmsOrderMap();
+        return handler.getSfmsOrders();
     }
 
     @Override
     public SfmsOrder getOrderById(SfmsOrderId orderId) {
-        return null;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("nuIssue", orderId.getNuIssue())
+                .addValue("locCode", orderId.getToLocationCode())
+                .addValue("locType", orderId.getToLocationType())
+                .addValue("issueDate", toDate(orderId.getIssueDate()));
+        String sql = EssSfmsOrderQuery.GET_ORDER_BY_ID.getSql(schemaMap());
+        SfmsOrderHandler handler = new SfmsOrderHandler();
+        remoteNamedJdbc.query(sql, params, handler);
+        return handler.getSfmsOrders().get(0);
     }
 
     @Override

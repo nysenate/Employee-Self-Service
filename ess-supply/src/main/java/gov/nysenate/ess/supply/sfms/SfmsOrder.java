@@ -106,34 +106,4 @@ public class SfmsOrder {
     public void addItem(SfmsLineItem item) {
         this.items.add(item);
     }
-    /** Don't check origin/update date time or origin/update empId in equals method. */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SfmsOrder sfmsOrder = (SfmsOrder) o;
-
-        if (orderId != null ? !orderId.equals(sfmsOrder.orderId) : sfmsOrder.orderId != null) return false;
-        if (fromLocationCode != null ? !fromLocationCode.equals(sfmsOrder.fromLocationCode) : sfmsOrder.fromLocationCode != null)
-            return false;
-        if (fromLocationType != null ? !fromLocationType.equals(sfmsOrder.fromLocationType) : sfmsOrder.fromLocationType != null)
-            return false;
-        if (issuedBy != null ? !issuedBy.equals(sfmsOrder.issuedBy) : sfmsOrder.issuedBy != null) return false;
-        if (responsibilityCenterHead != null ? !responsibilityCenterHead.equals(sfmsOrder.responsibilityCenterHead) : sfmsOrder.responsibilityCenterHead != null)
-            return false;
-        return !(items != null ? !items.equals(sfmsOrder.items) : sfmsOrder.items != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = orderId != null ? orderId.hashCode() : 0;
-        result = 31 * result + (fromLocationCode != null ? fromLocationCode.hashCode() : 0);
-        result = 31 * result + (fromLocationType != null ? fromLocationType.hashCode() : 0);
-        result = 31 * result + (issuedBy != null ? issuedBy.hashCode() : 0);
-        result = 31 * result + (responsibilityCenterHead != null ? responsibilityCenterHead.hashCode() : 0);
-        result = 31 * result + (items != null ? items.hashCode() : 0);
-        return result;
-    }
 }

@@ -18,8 +18,8 @@ public class SfmsOrderHandler extends BaseHandler {
 
     /**
      * Each order object in the result set is represented in multiple rows.
-     * Each row will contain information on a single item and duplicated order information.
-     * Need to use the duplicated order information to join all items belonging to that order.
+     * Each row will contain information on a single item and a composite key of order values.
+     * Need to use the composite key to join all items belonging to that order.
      */
     @Override
     public void processRow(ResultSet rs) throws SQLException {
@@ -29,6 +29,11 @@ public class SfmsOrderHandler extends BaseHandler {
         }
         addItemToOrder(rs, order);
     }
+
+    /**
+     * Extract order composite key and other values from the result set.
+     * The resulting SmfsOrder is unique per order.
+     */
     private SfmsOrder extractSfmsOrder(ResultSet rs) throws SQLException {
         SfmsOrderId sfmsOrderId = new SfmsOrderId(rs.getInt("NUISSUE"), getLocalDateFromRs(rs, "DTISSUE"),
                                                   rs.getString("CDLOCATTO"), rs.getString("CDLOCTYPETO"));
@@ -44,6 +49,10 @@ public class SfmsOrderHandler extends BaseHandler {
         return sfmsOrder;
     }
 
+    /**
+     * Extract an individual item from the result set.
+     * Each row in the result set contains info on a single item.
+     */
     private void addItemToOrder(ResultSet rs, SfmsOrder order) throws SQLException {
         SfmsLineItem item = new SfmsLineItem();
         item.setItemId(rs.getInt("NUXREFCO"));
@@ -53,7 +62,7 @@ public class SfmsOrderHandler extends BaseHandler {
         sfmsOrderMap.get(order.getOrderId()).addItem(item);
     }
 
-    public List<SfmsOrder> getSfmsOrderMap() {
+    public List<SfmsOrder> getSfmsOrders() {
         return new ArrayList<>(sfmsOrderMap.values());
     }
 }

@@ -10,10 +10,10 @@ public final class SupplyItem {
     private final String category;
     private final int suggestedMaxQty;
     /** Number of items per unit. eg. 12/PKG would equal 12 */
-    private final int standardQuantity;
+    private final int unitStandardQuantity;
 
     public SupplyItem(int id, String commodityCode, String name, String description, String unit,
-                      String category, int suggestedMaxQty, int standardQuantity) {
+                      String category, int suggestedMaxQty, int unitStandardQuantity) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.name = name;
@@ -21,7 +21,7 @@ public final class SupplyItem {
         this.unit = unit;
         this.category = category;
         this.suggestedMaxQty = suggestedMaxQty;
-        this.standardQuantity = standardQuantity;
+        this.unitStandardQuantity = unitStandardQuantity;
     }
 
     public int getId() {
@@ -52,8 +52,8 @@ public final class SupplyItem {
         return suggestedMaxQty;
     }
 
-    public int getStandardQuantity() {
-        return standardQuantity;
+    public int getUnitStandardQuantity() {
+        return unitStandardQuantity;
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class SupplyItem {
 
         if (id != that.id) return false;
         if (suggestedMaxQty != that.suggestedMaxQty) return false;
-        if (standardQuantity != that.standardQuantity) return false;
+        if (unitStandardQuantity != that.unitStandardQuantity) return false;
         if (commodityCode != null ? !commodityCode.equals(that.commodityCode) : that.commodityCode != null)
             return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -84,7 +84,7 @@ public final class SupplyItem {
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + suggestedMaxQty;
-        result = 31 * result + standardQuantity;
+        result = 31 * result + unitStandardQuantity;
         return result;
     }
 }
