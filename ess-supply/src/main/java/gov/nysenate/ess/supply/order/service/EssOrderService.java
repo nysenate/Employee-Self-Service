@@ -60,7 +60,7 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public synchronized Order submitOrder(int empId, Set<LineItem> items) {
+    public synchronized Order submitOrder(Set<LineItem> items, int empId) {
         Employee customer = employeeInfoService.getEmployee(empId);
         Location location = customer.getWorkLocation();
         Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING).build();

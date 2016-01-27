@@ -31,7 +31,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void newOrderInitializedCorrectly() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         assertTrue(order.getId() > 0);
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
         assertEquals(order.getStatus(), OrderStatus.PENDING);
@@ -39,7 +39,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canEditAnOrdersItems() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         Set<LineItem> newItems = incrementItemQuantities(order.getItems());
         orderService.saveOrder(order.setItems(newItems));
         assertNotEquals(order, orderService.getOrderById(order.getId()));
@@ -47,7 +47,7 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void orderProcessedCorrectly() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.processOrder(order.getId(), EMP_ID);
         assertEquals(order.getIssuingEmployee().getEmployeeId(), EMP_ID);
         assertDateLessThan5SecondsOld(order.getProcessedDateTime());
@@ -56,33 +56,33 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessAnAlreadyProcessingOrder() {
-        Order order = submitAndProcessOrder();
+        Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessACompletedOrder() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.rejectOrder(order.getId());
         orderService.processOrder(order.getId(), EMP_ID);
     }
 
     @Test
     public void orderCompletedCorrectly() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         assertDateLessThan5SecondsOld(order.getCompletedDateTime());
         assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
 
     @Test
     public void completingOrderUpdatesSfms() {
-        Order order = submitAndProcessOrder();
+        Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         assertThat(orderService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(0));
         orderService.completeOrder(order.getId());
         assertThat(orderService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(1));
@@ -92,7 +92,7 @@ public class OrderTests extends SupplyTests {
     @Ignore
     @Test
     public void canUndoACompletion() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         order = orderService.undoCompletion(order.getId());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
         assertEquals(order.getCompletedDateTime(), null);
@@ -101,26 +101,26 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAPendingOrder() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         orderService.completeOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAnAlreadyCompleteOrder() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.completeOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteRejectedOrder() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.rejectOrder(order.getId());
         orderService.completeOrder(order.getId());
     }
 
     @Test
     public void canRejectPendingOrder() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         assertEquals(order.getStatus(), OrderStatus.PENDING);
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
@@ -128,20 +128,20 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canRejectProcessingOrder() {
-        Order order = submitAndProcessOrder();
+        Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         order = orderService.rejectOrder(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectCompletedOrder() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.rejectOrder(order.getId());
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectRejectedOrder() {
-        Order order = submitOrder();
+        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.rejectOrder(order.getId());
         orderService.rejectOrder(order.getId());
     }

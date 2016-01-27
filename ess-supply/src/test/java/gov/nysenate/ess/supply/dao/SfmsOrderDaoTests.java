@@ -50,7 +50,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
     @Ignore
     @Test
     public void canGetSfmsOrderById() {
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderDao.saveOrder(order);
         SfmsOrder expected = convertOrderToSfmsOrder(order);
         SfmsOrder actual = orderDao.getOrderById(expected.getOrderId());
@@ -60,7 +60,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
     @Test
     public void canGetSfmsOrdersByLocation() {
         int originalSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).size();
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderDao.saveOrder(order);
         int actualSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).size();
         assertThat(actualSize, is(originalSize + 1));
@@ -69,7 +69,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
     @Test
     public void canGetSfmsOrdersByIssuer() {
         int originalSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).size();
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderDao.saveOrder(order);
         int actualSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).size();
         assertThat(actualSize, is(originalSize + 1));
@@ -78,7 +78,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
     @Test
     public void canSaveSfmsOrder() {
         List<SfmsOrder> originalOrders = orderDao.getOrders("all", "all", "all", ONE_DAY_RANGE, LimitOffset.ALL);
-        Order order = submitProcessAndCompleteOrder();
+        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderDao.saveOrder(order);
         List<SfmsOrder> newOrders = orderDao.getOrders("all", "all", "all", ONE_DAY_RANGE, LimitOffset.ALL);
         assertThat(newOrders.size(), is(originalOrders.size() + 1));

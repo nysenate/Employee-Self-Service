@@ -9,12 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class OracleSupplyItemDaoTests extends SupplyTests {
 
     @Autowired
     private OracleSupplyItemDao itemDao;
+
+    private static final int TEST_ITEM_ID = 111;
 
     @Test
     public void canGetItems() {
@@ -28,9 +32,16 @@ public class OracleSupplyItemDaoTests extends SupplyTests {
         assertTrue(items.size() == 25);
     }
 
+    /**
+     * NOTE: expected item with id 111 is randomly taken from dev database. May not exist in the future.
+     */
     @Test
     public void canGetItemById() {
-        SupplyItem actual = itemDao.getItemById(111);
-        assertTrue(actual.getId() == 111);
+        // TODO: item name and suggested max qty will have to be adjusted when those values get added to the database.
+        SupplyItem expected = new SupplyItem(111, "K1", "Item Name", "KO-REC-TYPE TAPE/1 LINE SIZE GR-23031",
+                                             "1", "KORECTYPE", 2, 1);
+        SupplyItem actual = itemDao.getItemById(TEST_ITEM_ID);
+        assertThat(actual, equalTo(expected));
     }
+
 }

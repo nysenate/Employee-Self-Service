@@ -2,10 +2,8 @@ package gov.nysenate.ess.supply;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.config.SupplyConfig;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItemDao;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,8 +37,15 @@ public abstract class SupplyTests extends BaseTests {
     protected static final Range<LocalDate> THREE_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(3), LocalDate.now());
     protected static final Range<LocalDate> SIX_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(6), LocalDate.now());
 
-    private static final int CUSTOMER_EMP_ID = 6221;
-    private static final int ISSUING_EMP_ID = 11168;
+    protected static final int CUSTOMER_EMP_ID = 6221;
+    protected static final int ISSUING_EMP_ID = 11168;
+
+    protected Set<LineItem> PENCILS_LGCLIPS_PAPERCLIPS;
+
+    @PostConstruct
+    private void setup() {
+        PENCILS_LGCLIPS_PAPERCLIPS = initPencilsLgClipsPaperClips();
+    }
 
     protected void resetInMemoryDaos() {
         itemDao.reset();
@@ -47,21 +53,19 @@ public abstract class SupplyTests extends BaseTests {
         sfmsOrderDao.reset();
     }
 
-    protected Order submitOrder() {
-        return orderService.submitOrder(CUSTOMER_EMP_ID, lineItems());
+    protected Order createPendingOrder(Set<LineItem> items, int customerEmpId) {
+        return orderService.submitOrder(items, customerEmpId);
     }
 
-    protected Order submitAndProcessOrder() {
-        Order order = submitOrder();
-        return orderService.processOrder(order.getId(), ISSUING_EMP_ID);
+    protected Order createProcessingOrder(Set<LineItem> items, int customerEmpId, int issuingEmpId) {
+        return orderService.processOrder(createPendingOrder(items, customerEmpId).getId(), issuingEmpId);
     }
 
-    protected Order submitProcessAndCompleteOrder() {
-        Order order = submitAndProcessOrder();
-        return orderService.completeOrder(order.getId());
+    protected Order createCompletedOrder(Set<LineItem> items, int customerEmpId, int issuingEmpId) {
+        return orderService.completeOrder(createProcessingOrder(items, customerEmpId, issuingEmpId).getId());
     }
 
-    private Set<LineItem> lineItems() {
+    protected Set<LineItem> initPencilsLgClipsPaperClips() {
         Set<LineItem> lineItems = new HashSet<>();
         lineItems.add(new LineItem(itemService.getItemById(1), 1));
         lineItems.add(new LineItem(itemService.getItemById(4), 3));

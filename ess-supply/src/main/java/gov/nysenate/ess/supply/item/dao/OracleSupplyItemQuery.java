@@ -6,14 +6,18 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum OracleSupplyItemQuery implements BasicSqlQuery {
 
     GET_ALL_SUPPLY_ITEMS(
-            "SELECT com.NUXREFCO, xref.CDCOMMODITY, com.CDCATEGORY, com.CDISSUNIT, com.DECOMMODITYF\n" +
-            "FROM ${masterSchema}.FM12COMMODTY com INNER JOIN ${masterSchema}.FM12COMXREF xref ON com.NUXREFCO = xref.NUXREFCO\n" +
-            "WHERE com.CDSTATUS = 'A' AND com.CDSTOCKITEM = 'Y'"
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit \n" +
+            "From ${masterSchema}.FM12COMMODTY com \n" +
+            "Inner Join ${masterSchema}.FM12COMXREF xref On com.Nuxrefco = xref.Nuxrefco \n" +
+            "Inner Join ${masterSchema}.FL12STDUNIT unit On com.CdIssUnit = unit.CdStdUnit \n" +
+            "Where com.CdStatus= 'A' And com.CdStockItem= 'Y'"
     ),
     GET_SUPPLY_ITEM_BY_ID(
-            "SELECT com.NUXREFCO, xref.CDCOMMODITY, com.CDCATEGORY, com.CDISSUNIT, com.DECOMMODITYF\n" +
-            "FROM ${masterSchema}.FM12COMMODTY com INNER JOIN ${masterSchema}.FM12COMXREF xref ON com.NUXREFCO = xref.NUXREFCO\n" +
-            "WHERE com.CDSTATUS = 'A' AND com.CDSTOCKITEM = 'Y' AND com.NUXREFCO = :id"
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit\n" +
+            "From ${masterSchema}.FM12COMMODTY com \n" +
+            "Inner Join ${masterSchema}.FM12COMXREF xref On com.Nuxrefco = xref.Nuxrefco \n" +
+            "Inner Join ${masterSchema}.FL12STDUNIT unit On com.CdIssUnit = unit.CdStdUnit \n" +
+            "Where com.CdStatus = 'A' AND com.CdstockItem = 'Y' AND com.Nuxrefco = :id"
     );
 
     private String sql;

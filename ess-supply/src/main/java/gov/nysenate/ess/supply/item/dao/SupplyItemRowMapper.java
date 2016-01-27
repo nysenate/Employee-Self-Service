@@ -11,13 +11,14 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
     @Override
     public SupplyItem mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new SupplyItem(
-                rs.getInt("NUXREFCO"),
-                rs.getString("CDCOMMODITY"),
+                rs.getInt("Nuxrefco"),
+                rs.getString("CdCommodity"),
                 "Item Name", // TODO: Item name not in databse yet.
-                rs.getString("DECOMMODITYF"),
-                rs.getString("CDISSUNIT"),
-                rs.getString("CDCATEGORY"),
-                2 // TODO: is suggested quantity in database?
+                rs.getString("DeCommodityf"),
+                rs.getString("CdIssUnit"),
+                rs.getString("CdCategory"),
+                2, // TODO: is suggested quantity in database?
+                rs.getInt("AmStdUnit")
         );
     }
 

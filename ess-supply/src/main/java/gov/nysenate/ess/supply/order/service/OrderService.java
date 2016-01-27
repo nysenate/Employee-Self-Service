@@ -44,7 +44,7 @@ public interface OrderService {
     List<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName,
                                   Range<LocalDate> dateRange, LimitOffset limOff);
 
-    Order submitOrder(int empId, Set<LineItem> items);
+    Order submitOrder(Set<LineItem> items, int empId);
 
     void saveOrder(Order order);
 

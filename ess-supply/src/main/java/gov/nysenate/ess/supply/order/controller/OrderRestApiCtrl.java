@@ -79,7 +79,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         for (LineItemView lineItemView: newOrder.getItems()) {
             lineItems.add(lineItemView.toLineItem());
         }
-        Order order = orderService.submitOrder(customerId, lineItems);
+        Order order = orderService.submitOrder(lineItems, customerId);
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
