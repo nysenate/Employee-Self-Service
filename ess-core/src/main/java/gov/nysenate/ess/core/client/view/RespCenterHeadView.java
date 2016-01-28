@@ -27,6 +27,16 @@ public class RespCenterHeadView implements ViewObject
         }
     }
 
+    public ResponsibilityHead toResponsibilityHead() {
+        ResponsibilityHead head = new ResponsibilityHead();
+        head.setActive(active);
+        head.setCode(code);
+        head.setShortName(shortName);
+        head.setName(name);
+        head.setAffiliateCode(affiliateCode);
+        return head;
+    }
+
     @Override
     public String getViewType() {
         return "responsibility-center-head";
