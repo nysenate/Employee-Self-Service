@@ -10,7 +10,7 @@ public class LocationView implements ViewObject {
     protected String locationType;
     protected char locationTypeCode;
     protected AddressView address;
-    protected RespCenterHeadView respCenterHeadView;
+    protected RespCenterHeadView respCenterHead;
 
     public LocationView() {}
 
@@ -19,7 +19,7 @@ public class LocationView implements ViewObject {
         this.locationType = loc.getType().getName();
         this.locationTypeCode = loc.getType().getCode();
         this.address = new AddressView(loc.getAddress());
-        this.respCenterHeadView = new RespCenterHeadView(loc.getResponsibilityHead());
+        this.respCenterHead = new RespCenterHeadView(loc.getResponsibilityHead());
     }
 
     public Location toLocation() {
@@ -27,7 +27,7 @@ public class LocationView implements ViewObject {
         location.setCode(code);
         location.setType(LocationType.valueOfCode(locationTypeCode));
         location.setAddress(address.toAddress());
-        location.setResponsibilityHead(respCenterHeadView.toResponsibilityHead());
+        location.setResponsibilityHead(respCenterHead.toResponsibilityHead());
         return location;
     }
 
@@ -45,6 +45,10 @@ public class LocationView implements ViewObject {
 
     public AddressView getAddress() {
         return address;
+    }
+
+    public RespCenterHeadView getRespCenterHead() {
+        return respCenterHead;
     }
 
     @Override
