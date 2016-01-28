@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.dao.unit;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.dao.personnel.mapper.RespHeadRowMapper;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationType;
@@ -12,8 +13,11 @@ public class LocationRowMapper extends BaseRowMapper<Location>
 {
     private String pfx;
 
-    public LocationRowMapper(String pfx) {
-        this.pfx = pfx;
+    private RespHeadRowMapper respHeadRowMapper;
+
+    public LocationRowMapper(String locPfx, String rctrhdPfx) {
+        this.pfx = locPfx;
+        this.respHeadRowMapper = new RespHeadRowMapper(rctrhdPfx);
     }
 
     @Override
@@ -29,6 +33,7 @@ public class LocationRowMapper extends BaseRowMapper<Location>
             addr.setState(rs.getString(pfx + "ADSTATE"));
             addr.setZip5(rs.getString(pfx + "ADZIPCODE"));
             loc.setAddress(addr);
+            loc.setResponsibilityHead(respHeadRowMapper.mapRow(rs, rowNum));
             return loc;
         }
         return null;

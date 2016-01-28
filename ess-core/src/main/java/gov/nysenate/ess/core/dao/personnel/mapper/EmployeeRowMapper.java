@@ -28,7 +28,7 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee>
         this.pfx = pfx;
         this.addressRowMapper = new AddressRowMapper(pfx);
         this.respCenterRowMapper = new RespCenterRowMapper(rctrPfx, rctrhdPfx, agcyPfx);
-        this.locationRowMapper = new LocationRowMapper(locPfx);
+        this.locationRowMapper = new LocationRowMapper(locPfx, rctrhdPfx);
     }
 
     @Override
