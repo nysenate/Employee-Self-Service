@@ -15,7 +15,8 @@ public enum ContentCache
     PAY_PERIOD,
     TRANSACTION,
     SUPERVISOR_EMP_GROUP,
-    ACTIVE_TIME_RECORDS
+    ACTIVE_TIME_RECORDS,
+    LOCATION
     ;
 
     private static final ImmutableSet<ContentCache> allContentCaches = ImmutableSet.copyOf(ContentCache.values());
