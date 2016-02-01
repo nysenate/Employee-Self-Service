@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
+import gov.nysenate.ess.supply.order.service.OrderQueryService;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Before;
@@ -21,8 +22,9 @@ public class OrderTests extends SupplyTests {
 
     private static int EMP_ID = 2;
 
-    @Autowired
-    private OrderService orderService;
+    @Autowired private OrderService orderService;
+
+    @Autowired private OrderQueryService orderQueryService;
 
     @Before
     public void setUp() {
@@ -83,9 +85,9 @@ public class OrderTests extends SupplyTests {
     @Test
     public void completingOrderUpdatesSfms() {
         Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        assertThat(orderService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(0));
+        assertThat(orderQueryService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(0));
         orderService.completeOrder(order.getId());
-        assertThat(orderService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(1));
+        assertThat(orderQueryService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(1));
     }
 
     // TODO: May not keep this functionality.

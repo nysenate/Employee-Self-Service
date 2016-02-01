@@ -10,6 +10,7 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
+import gov.nysenate.ess.supply.order.service.OrderQueryService;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import gov.nysenate.ess.supply.order.view.NewOrderView;
 import gov.nysenate.ess.supply.order.view.OrderView;
@@ -29,8 +30,9 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderRestApiCtrl.class);
 
-    @Autowired
-    private OrderService orderService;
+    @Autowired private OrderService orderService;
+
+    @Autowired private OrderQueryService orderQueryService;
 
     /**
      * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date range.
@@ -59,7 +61,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         String locCodeTerm = (locCode != null && locCode.length() > 0) ? locCode.toUpperCase() : "all";
         String locTypeTerm = (locType != null && locType.length() > 0) ? locType.toUpperCase() : "all";
         String issuerTerm = (issuerEmpId != null && issuerEmpId.length() > 0) ? issuerEmpId : "all";
-        return ListViewResponse.of(orderService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff)
+        return ListViewResponse.of(orderQueryService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff)
                                                .stream().map(OrderView::new).collect(Collectors.toList()));
     }
 
@@ -68,7 +70,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/{id:\\d}")
     public BaseResponse getOrderById(@PathVariable int id) {
-        Order order = orderService.getOrderById(id);
+        Order order = orderQueryService.getOrderById(id);
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
