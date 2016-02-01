@@ -66,7 +66,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
         baseParams.put("completingUserUid", order.getIssuingEmployee().getUid().toUpperCase()); // TODO: this will probably change.
 
         List<MapSqlParameterSource> batchParams = new ArrayList<>();
-        for (LineItem lineItem: order.getItems()) {
+        for (LineItem lineItem: order.getLineItems()) {
             MapSqlParameterSource params = new MapSqlParameterSource(baseParams)
                     .addValue("itemId", lineItem.getItem().getId())
                     .addValue("quantity", lineItem.getQuantity())

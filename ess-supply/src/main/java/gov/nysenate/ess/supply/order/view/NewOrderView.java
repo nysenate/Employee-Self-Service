@@ -6,7 +6,7 @@ import gov.nysenate.ess.supply.item.view.LineItemView;
 public class NewOrderView implements ViewObject {
 
     protected int customerId;
-    protected LineItemView[] items;
+    protected LineItemView[] lineItems;
 
     public NewOrderView() {
     }
@@ -19,12 +19,12 @@ public class NewOrderView implements ViewObject {
         this.customerId = customerId;
     }
 
-    public LineItemView[] getItems() {
-        return items;
+    public LineItemView[] getLineItems() {
+        return lineItems;
     }
 
-    public void setItems(LineItemView[] items) {
-        this.items = items;
+    public void setLineItems(LineItemView[] lineItems) {
+        this.lineItems = lineItems;
     }
 
     @Override

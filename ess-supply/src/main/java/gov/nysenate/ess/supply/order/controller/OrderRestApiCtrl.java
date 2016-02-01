@@ -76,7 +76,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     public BaseResponse submitOrder(@RequestBody NewOrderView newOrder) {
         int customerId = newOrder.getCustomerId();
         Set<LineItem> lineItems = new HashSet<>();
-        for (LineItemView lineItemView: newOrder.getItems()) {
+        for (LineItemView lineItemView: newOrder.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
         }
         Order order = orderService.submitOrder(lineItems, customerId);
@@ -103,9 +103,12 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = "application/json")
-    public BaseResponse updateOrderItems(@RequestBody OrderView orderView) {
-        Order order = orderView.toOrder();
-        orderService.saveOrder(order);
+    public BaseResponse updateOrderItems(@RequestBody int orderId, @RequestBody LineItemView[] lineItemViews) {
+        Set<LineItem> lineItems = new HashSet<>();
+        for (LineItemView lineItemView : lineItemViews) {
+            lineItems.add(lineItemView.toLineItem());
+        }
+        Order order = orderService.updateOrderLineItems(orderId, lineItems);
         return new ViewObjectResponse<>(new OrderView(order));
     }
 

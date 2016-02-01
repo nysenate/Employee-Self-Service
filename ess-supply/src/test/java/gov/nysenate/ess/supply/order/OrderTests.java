@@ -38,11 +38,11 @@ public class OrderTests extends SupplyTests {
     }
 
     @Test
-    public void canEditAnOrdersItems() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
-        Set<LineItem> newItems = incrementItemQuantities(order.getItems());
-        orderService.saveOrder(order.setItems(newItems));
-        assertNotEquals(order, orderService.getOrderById(order.getId()));
+    public void canUpdateOrderLineItems() {
+        Order originalOrder = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Set<LineItem> newItems = incrementItemQuantities(originalOrder.getLineItems());
+        Order updatedOrder = orderService.updateOrderLineItems(originalOrder.getId(), newItems);
+        assertNotEquals(originalOrder, updatedOrder);
     }
 
     @Test

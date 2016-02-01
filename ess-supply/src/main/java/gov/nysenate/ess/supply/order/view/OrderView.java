@@ -3,7 +3,6 @@ package gov.nysenate.ess.supply.order.view;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
@@ -37,14 +36,14 @@ public class OrderView implements ViewObject {
         this.processedDateTime = order.getProcessedDateTime();
         this.completedDateTime = order.getCompletedDateTime();
         this.status = order.getStatus().toString();
-        this.items = order.getItems().stream().map(LineItemView::new).collect(Collectors.toList()).toArray(new LineItemView[order.getItems().size()]);
+        this.items = order.getLineItems().stream().map(LineItemView::new).collect(Collectors.toList()).toArray(new LineItemView[order.getLineItems().size()]);
     }
 
     public Order toOrder() {
         Order.Builder builder = new Order.Builder(id, customer.toEmployee(), orderDateTime, location.toLocation(), OrderStatus.valueOf(status))
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
-                .items(Arrays.asList(items).stream().map(LineItemView::toLineItem).collect(Collectors.toSet()));
+                .lineItems(Arrays.asList(items).stream().map(LineItemView::toLineItem).collect(Collectors.toSet()));
 
         // Cant construct issuing employee if there is not one.
         if (issuingEmployee.getEmployeeId() != 0) {

@@ -46,8 +46,6 @@ public interface OrderService {
 
     Order submitOrder(Set<LineItem> items, int empId);
 
-    void saveOrder(Order order);
-
     Order processOrder(int orderId, int issuingEmpId);
 
     Order completeOrder(int orderId);
@@ -55,4 +53,10 @@ public interface OrderService {
     Order undoCompletion(int id);
 
     Order rejectOrder(int orderId);
+
+    /**
+     * Replaces an order's line items with newLineItems and saves the changes.
+     * @return The updated order.
+     */
+    Order updateOrderLineItems(int id, Set<LineItem> newLineItems);
 }

@@ -95,7 +95,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
 
     private void assertSfmsLineItemsEqualOrderLineItems(SfmsOrder sfmsOrder, Order order) {
         for (SfmsLineItem sfmsLineItem: sfmsOrder.getItems()) {
-            LineItem orderLineItem = getLineItemWithId(order.getItems(), sfmsLineItem.getItemId());
+            LineItem orderLineItem = getLineItemWithId(order.getLineItems(), sfmsLineItem.getItemId());
             if (orderLineItem == null) {
                 fail("Order does not have a LineItem with id " + sfmsLineItem.getItemId());
             }

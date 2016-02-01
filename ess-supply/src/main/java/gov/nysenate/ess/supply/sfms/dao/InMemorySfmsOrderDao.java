@@ -77,7 +77,7 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
         sfmsOrder.setOriginalEmpUid(order.getCustomer().getUid());
         sfmsOrder.setIssuedBy(order.getIssuingEmployee().getLastName());
         // Not setting responsibility center head
-        for (LineItem lineItem : order.getItems()) {
+        for (LineItem lineItem : order.getLineItems()) {
             SfmsLineItem sfmsLineItem = new SfmsLineItem();
             sfmsLineItem.setItemId(lineItem.getItem().getId());
             sfmsLineItem.setQuantity(lineItem.getQuantity());

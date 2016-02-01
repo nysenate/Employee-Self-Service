@@ -60,19 +60,13 @@ public class EssOrderService implements OrderService {
     }
 
     @Override
-    public synchronized Order submitOrder(Set<LineItem> items, int empId) {
+    public synchronized Order submitOrder(Set<LineItem> lineItems, int empId) {
         Employee customer = employeeInfoService.getEmployee(empId);
         Location location = customer.getWorkLocation();
-        Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING).build();
-        order = order.setItems(items);
-        orderDao.saveOrder(order);
+        Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING)
+                .lineItems(lineItems).build();
+        saveOrder(order);
         return order;
-    }
-
-
-    @Override
-    public void saveOrder(Order order) {
-        orderDao.saveOrder(order);
     }
 
     @Override
@@ -86,10 +80,9 @@ public class EssOrderService implements OrderService {
         order = order.setIssuingEmployee(issuingEmployee);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setProcessedDateTime(LocalDateTime.now());
-        orderDao.saveOrder(order);
+        saveOrder(order);
         return order;
     }
-
 
     @Override
     public Order completeOrder(int orderId) {
@@ -101,7 +94,7 @@ public class EssOrderService implements OrderService {
         order = order.setStatus(OrderStatus.COMPLETED);
         order = order.setCompletedDateTime(LocalDateTime.now());
         // TODO: both these saves should be in same transaction.
-        orderDao.saveOrder(order);
+        saveOrder(order);
         sfmsDao.saveOrder(order);
         return order;
     }
@@ -114,7 +107,7 @@ public class EssOrderService implements OrderService {
 //        sfmsDao.undoCompletion(order);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setCompletedDateTime(null);
-        orderDao.saveOrder(order);
+        saveOrder(order);
         return order;
     }
 
@@ -126,12 +119,26 @@ public class EssOrderService implements OrderService {
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
         }
         order = order.setStatus(OrderStatus.REJECTED);
-        orderDao.saveOrder(order);
+        saveOrder(order);
         return order;
+    }
+
+    @Override
+    public Order updateOrderLineItems(int id, Set<LineItem> newLineItems) {
+        Order original = orderDao.getOrderById(id);
+        Order updated = original.setLineItems(newLineItems);
+        saveOrder(updated);
+        return updated;
+    }
+
+    /**
+     * Persist the order to the database.
+     */
+    private void saveOrder(Order order) {
+        orderDao.saveOrder(order);
     }
 
     private boolean statusIsPendingOrProcessing(Order order) {
         return order.getStatus() == OrderStatus.PENDING || order.getStatus() == OrderStatus.PROCESSING;
     }
-
 }

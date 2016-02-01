@@ -46,4 +46,27 @@ public class Location
     public void setResponsibilityHead(ResponsibilityHead responsibilityHead) {
         this.responsibilityHead = responsibilityHead;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Location location = (Location) o;
+
+        if (code != null ? !code.equals(location.code) : location.code != null) return false;
+        if (type != location.type) return false;
+        if (address != null ? !address.equals(location.address) : location.address != null) return false;
+        return !(responsibilityHead != null ? !responsibilityHead.equals(location.responsibilityHead) : location.responsibilityHead != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = code != null ? code.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (responsibilityHead != null ? responsibilityHead.hashCode() : 0);
+        return result;
+    }
 }

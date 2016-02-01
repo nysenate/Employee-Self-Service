@@ -19,4 +19,23 @@ public final class LineItem {
     public int getQuantity() {
         return quantity;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LineItem lineItem = (LineItem) o;
+
+        if (quantity != lineItem.quantity) return false;
+        return !(item != null ? !item.equals(lineItem.item) : lineItem.item != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = item != null ? item.hashCode() : 0;
+        result = 31 * result + quantity;
+        return result;
+    }
 }

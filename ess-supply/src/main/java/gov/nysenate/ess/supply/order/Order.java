@@ -17,7 +17,7 @@ public final class Order {
     private final LocalDateTime processedDateTime;
     private final LocalDateTime completedDateTime;
     private final OrderStatus status;
-    private final Set<LineItem> items;
+    private final Set<LineItem> lineItems;
 
     public static class Builder {
         private int id;
@@ -28,7 +28,7 @@ public final class Order {
         private LocalDateTime processedDateTime;
         private LocalDateTime completedDateTime;
         private OrderStatus status;
-        private Set<LineItem> items;
+        private Set<LineItem> lineItems;
 
         public Builder(int id, Employee customer, LocalDateTime orderDateTime, Location location, OrderStatus status) {
             this.id = id;
@@ -39,7 +39,7 @@ public final class Order {
             this.issuingEmployee = null;
             this.processedDateTime = null;
             this.completedDateTime = null;
-            this.items = null;
+            this.lineItems = null;
         }
 
         public Builder issuingEmployee(Employee issuingEmployee) {
@@ -60,8 +60,8 @@ public final class Order {
             this.status = status;
             return this;
         }
-        public Builder items(Set<LineItem> items) {
-            this.items = items;
+        public Builder lineItems(Set<LineItem> lineItems) {
+            this.lineItems = lineItems;
             return this;
         }
 
@@ -80,7 +80,7 @@ public final class Order {
         this.processedDateTime = builder.processedDateTime;
         this.completedDateTime = builder.completedDateTime;
         this.status = builder.status;
-        this.items = builder.items;
+        this.lineItems = builder.lineItems;
     }
 
     private Builder copy() {
@@ -88,7 +88,7 @@ public final class Order {
                 .issuingEmployee(issuingEmployee)
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
-                .items(items);
+                .lineItems(lineItems);
     }
 
     public String getLocationCode() {
@@ -147,11 +147,62 @@ public final class Order {
         return copy().status(status).build();
     }
 
-    public Set<LineItem> getItems() {
-        return items;
+    public Set<LineItem> getLineItems() {
+        return lineItems;
     }
 
-    public Order setItems(Set<LineItem> items) {
-        return copy().items(items).build();
+    public Order setLineItems(Set<LineItem> lineItems) {
+        return copy().lineItems(lineItems).build();
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+               "id=" + id +
+               ", customer=" + customer +
+               ", orderDateTime=" + orderDateTime +
+               ", location=" + location +
+               ", issuingEmployee=" + issuingEmployee +
+               ", processedDateTime=" + processedDateTime +
+               ", completedDateTime=" + completedDateTime +
+               ", status=" + status +
+               ", lineItems=" + lineItems +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Order order = (Order) o;
+
+        if (id != order.id) return false;
+        if (!customer.equals(order.customer)) return false;
+        if (!orderDateTime.equals(order.orderDateTime)) return false;
+        if (!location.equals(order.location)) return false;
+        if (issuingEmployee != null ? !issuingEmployee.equals(order.issuingEmployee) : order.issuingEmployee != null)
+            return false;
+        if (processedDateTime != null ? !processedDateTime.equals(order.processedDateTime) : order.processedDateTime != null)
+            return false;
+        if (completedDateTime != null ? !completedDateTime.equals(order.completedDateTime) : order.completedDateTime != null)
+            return false;
+        if (status != order.status) return false;
+        return !(lineItems != null ? !lineItems.equals(order.lineItems) : order.lineItems != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + customer.hashCode();
+        result = 31 * result + orderDateTime.hashCode();
+        result = 31 * result + location.hashCode();
+        result = 31 * result + (issuingEmployee != null ? issuingEmployee.hashCode() : 0);
+        result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
+        result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
+        result = 31 * result + status.hashCode();
+        result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
+        return result;
     }
 }
