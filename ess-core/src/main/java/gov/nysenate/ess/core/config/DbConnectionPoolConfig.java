@@ -62,7 +62,7 @@ public class DbConnectionPoolConfig
         cpds.setPreferredTestQuery("SELECT 1 FROM DUAL");
 
         /** Set max connection retry attempts */
-        cpds.setAcquireRetryAttempts(5);
+        cpds.setAcquireRetryAttempts(2);
         return cpds;
     }
 
