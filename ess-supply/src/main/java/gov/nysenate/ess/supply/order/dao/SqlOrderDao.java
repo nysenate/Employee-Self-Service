@@ -2,10 +2,14 @@ package gov.nysenate.ess.supply.order.dao;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -20,6 +24,10 @@ import java.util.List;
 @Repository
 public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
+    @Autowired EmployeeInfoService employeeInfoService;
+    @Autowired LocationService locationService;
+    @Autowired SupplyItemService itemService;
+
     @Override
     public Order insertOrder(Order order, LocalDateTime modifiedDateTime) {
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -27,7 +35,7 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
                 .addValue("customerId", order.getCustomer().getEmployeeId())
                 .addValue("locCode", order.getLocationCode())
                 .addValue("locType", order.getLocationType())
-                .addValue("orderDateTime", toDate(modifiedDateTime))
+                .addValue("orderDateTime", toDate(order.getOrderDateTime()))
                 .addValue("modifiedDateTime", toDate(modifiedDateTime))
                 .addValue("modifiedEmpId", order.getCustomer().getEmployeeId());
         String sql = SqlOrderDaoQuery.INSERT_ORDER.getSql(schemaMap());
@@ -70,7 +78,11 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
     @Override
     public Order getOrderById(int orderId) {
-        return null;
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("orderId", orderId);
+        String sql = SqlOrderDaoQuery.GET_ORDER_BY_ID.getSql(schemaMap());
+        SqlOrderHandler handler = new SqlOrderHandler(employeeInfoService, locationService, itemService);
+        localNamedJdbc.query(sql, params, handler);
+        return handler.getOrders().get(0);
     }
 
     @Override

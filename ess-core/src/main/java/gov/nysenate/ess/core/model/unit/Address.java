@@ -138,4 +138,31 @@ public class Address
             this.setZip4((zipParts.size() > 1) ? zipParts.get(1).trim() : "");
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Address address = (Address) o;
+
+        if (addr1 != null ? !addr1.equals(address.addr1) : address.addr1 != null) return false;
+        if (addr2 != null ? !addr2.equals(address.addr2) : address.addr2 != null) return false;
+        if (city != null ? !city.equals(address.city) : address.city != null) return false;
+        if (state != null ? !state.equals(address.state) : address.state != null) return false;
+        if (zip5 != null ? !zip5.equals(address.zip5) : address.zip5 != null) return false;
+        return !(zip4 != null ? !zip4.equals(address.zip4) : address.zip4 != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = addr1 != null ? addr1.hashCode() : 0;
+        result = 31 * result + (addr2 != null ? addr2.hashCode() : 0);
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
+        result = 31 * result + (zip5 != null ? zip5.hashCode() : 0);
+        result = 31 * result + (zip4 != null ? zip4.hashCode() : 0);
+        return result;
+    }
 }

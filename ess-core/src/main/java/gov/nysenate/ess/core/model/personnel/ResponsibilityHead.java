@@ -54,4 +54,40 @@ public class ResponsibilityHead
     public void setAffiliateCode(String affiliateCode) {
         this.affiliateCode = affiliateCode;
     }
+
+    @Override
+    public String toString() {
+        return "ResponsibilityHead{" +
+               "active=" + active +
+               ", code='" + code + '\'' +
+               ", shortName='" + shortName + '\'' +
+               ", name='" + name + '\'' +
+               ", affiliateCode='" + affiliateCode + '\'' +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResponsibilityHead that = (ResponsibilityHead) o;
+
+        if (active != that.active) return false;
+        if (code != null ? !code.equals(that.code) : that.code != null) return false;
+        if (shortName != null ? !shortName.equals(that.shortName) : that.shortName != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return !(affiliateCode != null ? !affiliateCode.equals(that.affiliateCode) : that.affiliateCode != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (active ? 1 : 0);
+        result = 31 * result + (code != null ? code.hashCode() : 0);
+        result = 31 * result + (shortName != null ? shortName.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (affiliateCode != null ? affiliateCode.hashCode() : 0);
+        return result;
+    }
 }

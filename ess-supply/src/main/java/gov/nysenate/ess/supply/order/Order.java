@@ -4,7 +4,9 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 
+import javax.sound.sampled.Line;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 public final class Order {
@@ -39,7 +41,7 @@ public final class Order {
             this.issuingEmployee = null;
             this.processedDateTime = null;
             this.completedDateTime = null;
-            this.lineItems = null;
+            this.lineItems = new HashSet<>();
         }
 
         public Builder id(int id) {
@@ -72,6 +74,11 @@ public final class Order {
             return this;
         }
 
+        public Builder addLineItem(LineItem lineItem) {
+            this.lineItems.add(lineItem);
+            return this;
+        }
+
         public Order build() {
             return new Order(this);
         }
@@ -92,10 +99,17 @@ public final class Order {
 
     private Builder copy() {
         return new Builder(customer, orderDateTime, location, status)
+                .id(id)
                 .issuingEmployee(issuingEmployee)
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
                 .lineItems(lineItems);
+    }
+
+    /** Function Methods **/
+
+    public Order addLineItem(LineItem lineItem) {
+        return copy().addLineItem(lineItem).build();
     }
 
     public String getLocationCode() {
@@ -105,6 +119,8 @@ public final class Order {
     public String getLocationType() {
         return String.valueOf(this.location.getType().getCode());
     }
+
+    /** Basic get/set methods **/
 
     public int getId() {
         return id;

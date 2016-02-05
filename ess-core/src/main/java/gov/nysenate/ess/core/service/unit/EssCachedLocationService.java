@@ -39,7 +39,7 @@ public class EssCachedLocationService implements LocationService {
         }
 
         public Location getLocation(String code, LocationType type) {
-            return locationTreeMap.get(code + "-" + String.valueOf(type.getName()));
+            return locationTreeMap.get(code + "-" + String.valueOf(type.getCode()));
         }
 
         public List<Location> getLocations() {
@@ -73,11 +73,16 @@ public class EssCachedLocationService implements LocationService {
 
     private LocationCacheTree getLocationCacheTree() {
         Element element = getCachedLocationMap();
-        if (element == null) {
+        if (cacheIsEmpty(element)) {
             cacheLocations();
             element = getCachedLocationMap();
         }
         return (LocationCacheTree) element.getObjectValue();
+    }
+
+    private boolean cacheIsEmpty(Element element) {
+        LocationCacheTree locationCacheTree = (LocationCacheTree) element.getObjectValue();
+        return locationCacheTree.getLocations().size() == 0;
     }
 
     private Element getCachedLocationMap() {

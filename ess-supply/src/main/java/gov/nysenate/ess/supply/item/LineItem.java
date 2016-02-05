@@ -7,8 +7,8 @@ public final class LineItem {
     private final SupplyItem item;
     private final int quantity;
 
-    public LineItem(SupplyItem itemId, int quantity) {
-        this.item = itemId;
+    public LineItem(SupplyItem item, int quantity) {
+        this.item = item;
         this.quantity = quantity;
     }
 

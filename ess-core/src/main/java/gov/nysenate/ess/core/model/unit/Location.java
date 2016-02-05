@@ -48,6 +48,16 @@ public class Location
     }
 
     @Override
+    public String toString() {
+        return "Location{" +
+               "code='" + code + '\'' +
+               ", type=" + type +
+               ", address=" + address +
+               ", responsibilityHead=" + responsibilityHead +
+               '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
