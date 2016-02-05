@@ -40,7 +40,8 @@ public class OrderView implements ViewObject {
     }
 
     public Order toOrder() {
-        Order.Builder builder = new Order.Builder(id, customer.toEmployee(), orderDateTime, location.toLocation(), OrderStatus.valueOf(status))
+        Order.Builder builder = new Order.Builder(customer.toEmployee(), orderDateTime, location.toLocation(), OrderStatus.valueOf(status))
+                .id(id)
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
                 .lineItems(Arrays.asList(items).stream().map(LineItemView::toLineItem).collect(Collectors.toSet()));

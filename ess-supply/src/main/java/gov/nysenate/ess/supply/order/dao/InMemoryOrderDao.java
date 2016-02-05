@@ -4,14 +4,20 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Primary
+@Profile("test")
 @Repository
 public class InMemoryOrderDao implements OrderDao {
 
@@ -25,9 +31,20 @@ public class InMemoryOrderDao implements OrderDao {
         orderDB = new TreeMap<>();
     }
 
-    @Override
-    public int getUniqueId() {
+    private int getUniqueId() {
         return orderDB.size() + 1;
+    }
+
+    @Override
+    public Order insertOrder(Order order, LocalDateTime modifiedDateTime) {
+        order = order.setId(getUniqueId());
+        saveOrder(order);
+        return order;
+    }
+
+    @Override
+    public void insertLineItems(Order order, LocalDateTime modifiedDateTime) {
+
     }
 
     @Override

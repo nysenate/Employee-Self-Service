@@ -28,13 +28,11 @@ public class EssOrderService implements OrderService {
     private EmployeeInfoService employeeInfoService;
 
     @Override
-    public synchronized Order submitOrder(Set<LineItem> lineItems, int empId) {
-        Employee customer = employeeInfoService.getEmployee(empId);
+    public Order submitOrder(Set<LineItem> lineItems, int customerId) {
+        Employee customer = employeeInfoService.getEmployee(customerId);
         Location location = customer.getWorkLocation();
-        Order order = new Order.Builder(orderDao.getUniqueId(), customer, LocalDateTime.now(), location, OrderStatus.PENDING)
-                .lineItems(lineItems).build();
-        saveOrder(order);
-        return order;
+        Order order = new Order.Builder(customer, LocalDateTime.now(), location, OrderStatus.PENDING).lineItems(lineItems).build();
+        return orderDao.insertOrder(order, LocalDateTime.now());
     }
 
     @Override

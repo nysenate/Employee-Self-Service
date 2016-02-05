@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.dao;
+package gov.nysenate.ess.supply.order;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;

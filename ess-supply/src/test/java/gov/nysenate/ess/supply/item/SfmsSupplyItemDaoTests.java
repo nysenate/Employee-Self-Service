@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.dao;
+package gov.nysenate.ess.supply.item;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
-public class OracleSupplyItemDaoTests extends SupplyTests {
+public class SfmsSupplyItemDaoTests extends SupplyTests {
 
     @Autowired
     private OracleSupplyItemDao itemDao;

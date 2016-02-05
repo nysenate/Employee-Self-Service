@@ -11,12 +11,7 @@ import java.util.List;
 @Service
 public class EssSupplyItemService implements SupplyItemService {
 
-    private SupplyItemDao supplyItemDao;
-
-    @Autowired
-    public EssSupplyItemService(SupplyItemDao supplyItemDao) {
-        this.supplyItemDao = supplyItemDao;
-    }
+    @Autowired private SupplyItemDao supplyItemDao;
 
     @Override
     public List<SupplyItem> getSupplyItems(LimitOffset limOff) {

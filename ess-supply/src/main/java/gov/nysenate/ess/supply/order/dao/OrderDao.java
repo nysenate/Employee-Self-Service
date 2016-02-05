@@ -4,16 +4,21 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 public interface OrderDao {
 
-    int getUniqueId();
+    Order insertOrder(Order order, LocalDateTime modifiedDateTime);
+
+    void insertLineItems(Order order, LocalDateTime modifiedDateTime);
 
     void saveOrder(Order order);
 
@@ -33,6 +38,4 @@ public interface OrderDao {
     Order getOrderById(int orderId);
 
     void undoCompletion(Order order);
-
-
 }

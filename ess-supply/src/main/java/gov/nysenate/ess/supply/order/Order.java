@@ -30,8 +30,8 @@ public final class Order {
         private OrderStatus status;
         private Set<LineItem> lineItems;
 
-        public Builder(int id, Employee customer, LocalDateTime orderDateTime, Location location, OrderStatus status) {
-            this.id = id;
+        public Builder(Employee customer, LocalDateTime orderDateTime, Location location, OrderStatus status) {
+            this.id = 0;
             this.customer = customer;
             this.orderDateTime = orderDateTime;
             this.location = location;
@@ -40,6 +40,16 @@ public final class Order {
             this.processedDateTime = null;
             this.completedDateTime = null;
             this.lineItems = null;
+        }
+
+        public Builder id(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder status(OrderStatus status) {
+            this.status = status;
+            return this;
         }
 
         public Builder issuingEmployee(Employee issuingEmployee) {
@@ -56,10 +66,7 @@ public final class Order {
             this.completedDateTime = completedDateTime;
             return this;
         }
-        public Builder status(OrderStatus status) {
-            this.status = status;
-            return this;
-        }
+
         public Builder lineItems(Set<LineItem> lineItems) {
             this.lineItems = lineItems;
             return this;
@@ -84,7 +91,7 @@ public final class Order {
     }
 
     private Builder copy() {
-        return new Builder(id, customer, orderDateTime, location, status)
+        return new Builder(customer, orderDateTime, location, status)
                 .issuingEmployee(issuingEmployee)
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
@@ -101,6 +108,10 @@ public final class Order {
 
     public int getId() {
         return id;
+    }
+
+    public Order setId(int id) {
+        return copy().id(id).build();
     }
 
     public Employee getCustomer() {
