@@ -45,10 +45,12 @@ public class SqlOrderHandler extends BaseHandler {
 
     private Order getOrderFromResultSet(ResultSet rs) throws SQLException {
         Order.Builder builder = new Order.Builder(employeeInfoService.getEmployee(rs.getInt("customer_id")),
-                                 getLocalDateTimeFromRs(rs, "order_date_time"),
-                                 locationService.getLocation(rs.getString("location_code"), LocationType.valueOfCode(
-                                         (rs.getString("location_type").charAt(0)))),
-                                 OrderStatus.valueOf(rs.getString("status")));
+                                                  getLocalDateTimeFromRs(rs, "order_date_time"),
+                                                  locationService.getLocation(rs.getString("location_code"), LocationType.valueOfCode(
+                                                          (rs.getString("location_type").charAt(0)))),
+                                                  OrderStatus.valueOf(rs.getString("status")),
+                                                  rs.getInt("modified_emp_id"),
+                                                  getLocalDateTimeFromRs(rs, "modified_date_time"));
         builder.id(rs.getInt("order_id"));
         if (rs.getInt("issue_emp_id") != 0) {
             builder.issuingEmployee(employeeInfoService.getEmployee(rs.getInt("issue_emp_id")));

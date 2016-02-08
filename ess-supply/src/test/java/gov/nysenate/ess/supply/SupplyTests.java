@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ public abstract class SupplyTests extends BaseTests {
 
     protected static final int CUSTOMER_EMP_ID = 6221;
     protected static final int ISSUING_EMP_ID = 11168;
+    protected static final int MODIFIED_EMP_ID = 10008;
 
     protected Set<LineItem> PENCILS_LGCLIPS_PAPERCLIPS;
 
@@ -54,15 +56,15 @@ public abstract class SupplyTests extends BaseTests {
     }
 
     protected Order createPendingOrder(Set<LineItem> items, int customerEmpId) {
-        return orderService.submitOrder(items, customerEmpId);
+        return orderService.submitOrder(items, customerEmpId, MODIFIED_EMP_ID);
     }
 
     protected Order createProcessingOrder(Set<LineItem> items, int customerEmpId, int issuingEmpId) {
-        return orderService.processOrder(createPendingOrder(items, customerEmpId).getId(), issuingEmpId);
+        return orderService.processOrder(createPendingOrder(items, customerEmpId).getId(), issuingEmpId, MODIFIED_EMP_ID);
     }
 
     protected Order createCompletedOrder(Set<LineItem> items, int customerEmpId, int issuingEmpId) {
-        return orderService.completeOrder(createProcessingOrder(items, customerEmpId, issuingEmpId).getId());
+        return orderService.completeOrder(createProcessingOrder(items, customerEmpId, issuingEmpId).getId(), MODIFIED_EMP_ID);
     }
 
     protected Set<LineItem> initPencilsLgClipsPaperClips() {

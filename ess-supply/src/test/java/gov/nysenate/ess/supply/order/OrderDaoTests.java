@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -21,14 +19,14 @@ public class OrderDaoTests extends SupplyTests {
 
     @Test
     public void canGetOrderById() {
-        Order expected = orderDao.insertOrder(createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID), LocalDateTime.now());
+        Order expected = orderDao.insertOrder(createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
         Order actual = orderDao.getOrderById(expected.getId());
         assertThat(actual, equalTo(expected));
     }
 
     @Test
     public void canInsertNewOrder() {
-        Order expected = orderDao.insertOrder(createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID), LocalDateTime.now());
+        Order expected = orderDao.insertOrder(createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
         Order actual = orderDao.getOrderById(expected.getId());
         assertThat(actual, equalTo(expected));
     }

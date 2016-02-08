@@ -22,6 +22,8 @@ public class OrderView implements ViewObject {
     protected LocalDateTime completedDateTime;
     protected String status;
     protected LineItemView[] items;
+    protected int modifiedEmpId;
+    protected LocalDateTime modifiedDateTime;
 
     public OrderView() {
 
@@ -37,10 +39,13 @@ public class OrderView implements ViewObject {
         this.completedDateTime = order.getCompletedDateTime().get();
         this.status = order.getStatus().toString();
         this.items = order.getLineItems().stream().map(LineItemView::new).collect(Collectors.toList()).toArray(new LineItemView[order.getLineItems().size()]);
+        this.modifiedEmpId = order.getModifiedEmpId();
+        this.modifiedDateTime = order.getModifiedDateTime();
     }
 
     public Order toOrder() {
-        Order.Builder builder = new Order.Builder(customer.toEmployee(), orderDateTime, location.toLocation(), OrderStatus.valueOf(status))
+        Order.Builder builder = new Order.Builder(customer.toEmployee(), orderDateTime, location.toLocation(),
+                                                  OrderStatus.valueOf(status), modifiedEmpId, modifiedDateTime)
                 .id(id)
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
@@ -125,8 +130,24 @@ public class OrderView implements ViewObject {
         this.items = items;
     }
 
+    public int getModifiedEmpId() {
+        return modifiedEmpId;
+    }
+
+    public void setModifiedEmpId(int modifiedEmpId) {
+        this.modifiedEmpId = modifiedEmpId;
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
     @Override
     public String getViewType() {
-        return null;
+        return "supply order";
     }
 }

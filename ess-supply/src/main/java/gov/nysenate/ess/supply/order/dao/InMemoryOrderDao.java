@@ -36,15 +36,10 @@ public class InMemoryOrderDao implements OrderDao {
     }
 
     @Override
-    public Order insertOrder(Order order, LocalDateTime modifiedDateTime) {
+    public Order insertOrder(Order order) {
         order = order.setId(getUniqueId());
         saveOrder(order);
         return order;
-    }
-
-    @Override
-    public void insertLineItems(Order order, LocalDateTime modifiedDateTime) {
-
     }
 
     @Override

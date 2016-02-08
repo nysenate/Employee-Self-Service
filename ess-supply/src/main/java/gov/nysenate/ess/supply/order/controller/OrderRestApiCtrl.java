@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
@@ -81,26 +82,27 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         for (LineItemView lineItemView: newOrder.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
         }
-        Order order = orderService.submitOrder(lineItems, customerId);
+        Order order = orderService.submitOrder(lineItems, customerId, getSubjectEmployeeId()); // FIXME: need to rethink this NewOrderView.
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
     @RequestMapping(value = "/process", method = RequestMethod.POST, consumes = "application/json")
     public BaseResponse processOrder(@RequestBody OrderView orderView) {
-        Order order = orderService.processOrder(orderView.getId(), orderView.getIssuingEmployee().getEmployeeId());
+        Order order = orderService.processOrder(orderView.getId(), orderView.getIssuingEmployee().getEmployeeId(),
+                                                getSubjectEmployeeId());
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
     @RequestMapping(value = "/complete", method = RequestMethod.POST, consumes = "application/json")
     public BaseResponse completeOrder(@RequestBody OrderView orderView) {
-        Order order = orderService.completeOrder(orderView.getId());
+        Order order = orderService.completeOrder(orderView.getId(), getSubjectEmployeeId());
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
     // TODO: save employee who rejected order
     @RequestMapping(value = "/reject", method = RequestMethod.POST, consumes = "application/json")
     public BaseResponse rejectOrder(@RequestBody OrderView orderView) {
-        Order order = orderService.rejectOrder(orderView.getId());
+        Order order = orderService.rejectOrder(orderView.getId(), getSubjectEmployeeId());
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
@@ -110,15 +112,20 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         for (LineItemView lineItemView : lineItemViews) {
             lineItems.add(lineItemView.toLineItem());
         }
-        Order order = orderService.updateOrderLineItems(orderId, lineItems);
+        Order order = orderService.updateOrderLineItems(orderId, lineItems, getSubjectEmployeeId());
         return new ViewObjectResponse<>(new OrderView(order));
     }
 
     @RequestMapping(value = "/complete/undo", method = RequestMethod.POST, consumes = "application/json")
     public BaseResponse undoCompletion(@RequestBody OrderView orderView) {
         Order order = orderView.toOrder();
-        orderService.undoCompletion(order.getId());
+        orderService.undoCompletion(order.getId(), getSubjectEmployeeId());
         return new ViewObjectResponse<>(new OrderView(order));
+    }
+
+    private int getSubjectEmployeeId() {
+        SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
+        return person.getEmployeeId();
     }
 
     private EnumSet<OrderStatus> parseStatuses(String[] statuses) {

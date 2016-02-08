@@ -16,7 +16,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -29,33 +28,32 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     @Autowired SupplyItemService itemService;
 
     @Override
-    public Order insertOrder(Order order, LocalDateTime modifiedDateTime) {
+    public Order insertOrder(Order order) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("status", order.getStatus().toString())
                 .addValue("customerId", order.getCustomer().getEmployeeId())
                 .addValue("locCode", order.getLocationCode())
                 .addValue("locType", order.getLocationType())
                 .addValue("orderDateTime", toDate(order.getOrderDateTime()))
-                .addValue("modifiedDateTime", toDate(modifiedDateTime))
-                .addValue("modifiedEmpId", order.getCustomer().getEmployeeId());
+                .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
+                .addValue("modifiedEmpId", order.getModifiedEmpId());
         String sql = SqlOrderDaoQuery.INSERT_ORDER.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
         order = order.setId((Integer) keyHolder.getKeys().get("order_id"));
-        insertLineItems(order, modifiedDateTime);
+        insertLineItems(order);
         return order;
     }
 
-    @Override
-    public void insertLineItems(Order order, LocalDateTime modifiedDateTime) {
+    public void insertLineItems(Order order) {
         List<MapSqlParameterSource> batchParams = new ArrayList<>();
         for (LineItem lineItem: order.getLineItems()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("orderId", order.getId())
                     .addValue("itemId", lineItem.getItem().getId())
                     .addValue("quantity", lineItem.getQuantity())
-                    .addValue("modifiedDateTime", toDate(modifiedDateTime))
-                    .addValue("modifiedEmpId", order.getCustomer().getEmployeeId());
+                    .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
+                    .addValue("modifiedEmpId", order.getModifiedEmpId());
             batchParams.add(params);
         }
         String sql = SqlOrderDaoQuery.INSERT_LINE_ITEMS.getSql(schemaMap());

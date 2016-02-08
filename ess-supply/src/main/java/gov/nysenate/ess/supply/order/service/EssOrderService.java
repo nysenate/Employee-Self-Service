@@ -28,15 +28,16 @@ public class EssOrderService implements OrderService {
     private EmployeeInfoService employeeInfoService;
 
     @Override
-    public Order submitOrder(Set<LineItem> lineItems, int customerId) {
+    public Order submitOrder(Set<LineItem> lineItems, int customerId, int modifiedEmpId) {
         Employee customer = employeeInfoService.getEmployee(customerId);
         Location location = customer.getWorkLocation();
-        Order order = new Order.Builder(customer, LocalDateTime.now(), location, OrderStatus.PENDING).lineItems(lineItems).build();
-        return orderDao.insertOrder(order, LocalDateTime.now());
+        Order order = new Order.Builder(customer, LocalDateTime.now(), location, OrderStatus.PENDING,
+                                        modifiedEmpId, LocalDateTime.now()).lineItems(lineItems).build();
+        return orderDao.insertOrder(order);
     }
 
     @Override
-    public Order processOrder(int orderId, int issuingEmpId) {
+    public Order processOrder(int orderId, int issuingEmpId, int modifiedEmpId) {
         Employee issuingEmployee = employeeInfoService.getEmployee(issuingEmpId);
         Order order = orderQueryService.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PENDING) {
@@ -46,12 +47,12 @@ public class EssOrderService implements OrderService {
         order = order.setIssuingEmployee(issuingEmployee);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setProcessedDateTime(LocalDateTime.now());
-        saveOrder(order);
+        saveOrder(order, modifiedEmpId);
         return order;
     }
 
     @Override
-    public Order completeOrder(int orderId) {
+    public Order completeOrder(int orderId, int modifiedEmpId) {
         Order order = orderQueryService.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PROCESSING) {
             throw new WrongOrderStatusException("Can only complete orders with status of " + OrderStatus.PROCESSING +
@@ -60,47 +61,47 @@ public class EssOrderService implements OrderService {
         order = order.setStatus(OrderStatus.COMPLETED);
         order = order.setCompletedDateTime(LocalDateTime.now());
         // TODO: both these saves should be in same transaction.
-        saveOrder(order);
+        saveOrder(order, modifiedEmpId);
         sfmsDao.saveOrder(order);
         return order;
     }
 
-    // TODO: are we keeping this functionality?
+    // TODO: are we keeping this functionality? Update SFMS?
     @Override
-    public Order undoCompletion(int id) {
-        Order order = orderQueryService.getOrderById(id);
-        orderDao.undoCompletion(order);
-//        sfmsDao.undoCompletion(order);
+    public Order undoCompletion(int orderId, int modifiedEmpId) {
+        Order order = orderQueryService.getOrderById(orderId);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setCompletedDateTime(null);
-        saveOrder(order);
+        saveOrder(order, modifiedEmpId);
         return order;
     }
 
     @Override
-    public Order rejectOrder(int orderId) {
+    public Order rejectOrder(int orderId, int modifiedEmpId) {
         Order order = orderQueryService.getOrderById(orderId);
         if (!statusIsPendingOrProcessing(order)) {
             throw new WrongOrderStatusException("Can only reject orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
         }
         order = order.setStatus(OrderStatus.REJECTED);
-        saveOrder(order);
+        saveOrder(order, modifiedEmpId);
         return order;
     }
 
     @Override
-    public Order updateOrderLineItems(int id, Set<LineItem> newLineItems) {
-        Order original = orderQueryService.getOrderById(id);
+    public Order updateOrderLineItems(int orderId, Set<LineItem> newLineItems, int modifiedEmpId) {
+        Order original = orderQueryService.getOrderById(orderId);
         Order updated = original.setLineItems(newLineItems);
-        saveOrder(updated);
+        saveOrder(updated, modifiedEmpId);
         return updated;
     }
 
     /**
      * Persist the order to the database.
      */
-    private void saveOrder(Order order) {
+    private void saveOrder(Order order, int modifiedEmpId) {
+        order = order.setModifiedEmpId(modifiedEmpId);
+        order = order.setModifiedDateTime(LocalDateTime.now());
         orderDao.saveOrder(order);
     }
 

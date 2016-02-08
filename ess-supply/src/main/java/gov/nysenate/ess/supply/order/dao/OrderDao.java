@@ -16,9 +16,7 @@ import java.util.Set;
 
 public interface OrderDao {
 
-    Order insertOrder(Order order, LocalDateTime modifiedDateTime);
-
-    void insertLineItems(Order order, LocalDateTime modifiedDateTime);
+    Order insertOrder(Order order);
 
     void saveOrder(Order order);
 

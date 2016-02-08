@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 
-import javax.sound.sampled.Line;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
@@ -21,6 +20,9 @@ public final class Order {
     private final LocalDateTime completedDateTime;
     private final OrderStatus status;
     private final Set<LineItem> lineItems;
+    /** Audit fields */
+    private final int modifiedEmpId;
+    private final LocalDateTime modifiedDateTime;
 
     public static class Builder {
         private int id;
@@ -32,8 +34,11 @@ public final class Order {
         private LocalDateTime completedDateTime;
         private OrderStatus status;
         private Set<LineItem> lineItems;
+        private int modifiedEmpId;
+        private LocalDateTime modifiedDateTime;
 
-        public Builder(Employee customer, LocalDateTime orderDateTime, Location location, OrderStatus status) {
+        public Builder(Employee customer, LocalDateTime orderDateTime, Location location, OrderStatus status,
+                       int modifiedEmpId, LocalDateTime modifiedDateTime) {
             this.id = 0;
             this.customer = customer;
             this.orderDateTime = orderDateTime;
@@ -43,6 +48,8 @@ public final class Order {
             this.processedDateTime = null;
             this.completedDateTime = null;
             this.lineItems = new HashSet<>();
+            this.modifiedEmpId = modifiedEmpId;
+            this.modifiedDateTime = modifiedDateTime;
         }
 
         public Builder id(int id) {
@@ -80,6 +87,16 @@ public final class Order {
             return this;
         }
 
+        public Builder setModifiedEmpId(int modifiedEmpId) {
+            this.modifiedEmpId = modifiedEmpId;
+            return this;
+        }
+
+        public Builder setModifiedDateTime(LocalDateTime modifiedDateTime) {
+            this.modifiedDateTime = modifiedDateTime;
+            return this;
+        }
+
         public Order build() {
             return new Order(this);
         }
@@ -96,10 +113,12 @@ public final class Order {
         this.completedDateTime = builder.completedDateTime;
         this.status = builder.status;
         this.lineItems = builder.lineItems;
+        this.modifiedEmpId = builder.modifiedEmpId;
+        this.modifiedDateTime = builder.modifiedDateTime;
     }
 
     private Builder copy() {
-        return new Builder(customer, orderDateTime, location, status)
+        return new Builder(customer, orderDateTime, location, status, modifiedEmpId, modifiedDateTime)
                 .id(id)
                 .issuingEmployee(issuingEmployee)
                 .processedDateTime(processedDateTime)
@@ -121,7 +140,7 @@ public final class Order {
         return String.valueOf(this.location.getType().getCode());
     }
 
-    /** Basic get/set methods **/
+    /** Basic get/set methods. Nullable fields return an Optional. **/
 
     public int getId() {
         return id;
@@ -183,6 +202,22 @@ public final class Order {
         return copy().lineItems(lineItems).build();
     }
 
+    public int getModifiedEmpId() {
+        return modifiedEmpId;
+    }
+
+    public Order setModifiedEmpId(int modifiedEmpId) {
+        return copy().setModifiedEmpId(modifiedEmpId).build();
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public Order setModifiedDateTime(LocalDateTime dateTime) {
+        return copy().setModifiedDateTime(dateTime).build();
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -195,6 +230,8 @@ public final class Order {
                ", completedDateTime=" + completedDateTime +
                ", status=" + status +
                ", lineItems=" + lineItems +
+               ", modifiedEmpId=" + modifiedEmpId +
+               ", modifiedDateTime=" + modifiedDateTime +
                '}';
     }
 
@@ -206,9 +243,11 @@ public final class Order {
         Order order = (Order) o;
 
         if (id != order.id) return false;
-        if (!customer.equals(order.customer)) return false;
-        if (!orderDateTime.equals(order.orderDateTime)) return false;
-        if (!location.equals(order.location)) return false;
+        if (modifiedEmpId != order.modifiedEmpId) return false;
+        if (customer != null ? !customer.equals(order.customer) : order.customer != null) return false;
+        if (orderDateTime != null ? !orderDateTime.equals(order.orderDateTime) : order.orderDateTime != null)
+            return false;
+        if (location != null ? !location.equals(order.location) : order.location != null) return false;
         if (issuingEmployee != null ? !issuingEmployee.equals(order.issuingEmployee) : order.issuingEmployee != null)
             return false;
         if (processedDateTime != null ? !processedDateTime.equals(order.processedDateTime) : order.processedDateTime != null)
@@ -216,21 +255,24 @@ public final class Order {
         if (completedDateTime != null ? !completedDateTime.equals(order.completedDateTime) : order.completedDateTime != null)
             return false;
         if (status != order.status) return false;
-        return !(lineItems != null ? !lineItems.equals(order.lineItems) : order.lineItems != null);
+        if (lineItems != null ? !lineItems.equals(order.lineItems) : order.lineItems != null) return false;
+        return !(modifiedDateTime != null ? !modifiedDateTime.equals(order.modifiedDateTime) : order.modifiedDateTime != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + customer.hashCode();
-        result = 31 * result + orderDateTime.hashCode();
-        result = 31 * result + location.hashCode();
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + (orderDateTime != null ? orderDateTime.hashCode() : 0);
+        result = 31 * result + (location != null ? location.hashCode() : 0);
         result = 31 * result + (issuingEmployee != null ? issuingEmployee.hashCode() : 0);
         result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
         result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
-        result = 31 * result + status.hashCode();
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
+        result = 31 * result + modifiedEmpId;
+        result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
         return result;
     }
 }

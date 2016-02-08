@@ -17,8 +17,8 @@ public enum SqlOrderDaoQuery implements BasicSqlQuery {
     ),
     GET_ORDER_BY_ID(
             "Select o.order_id, o.status, o.customer_id, o.location_code, o.location_type, \n" +
-            "o.issue_emp_id, o.order_date_time, o.process_date_time, o.complete_date_time, \n" +
-            "i.item_id, i.quantity \n" +
+            "o.issue_emp_id, o.approve_emp_id, o.order_date_time, o.process_date_time, o.complete_date_time, \n" +
+            "o.modified_date_time, o.modified_emp_id, i.item_id, i.quantity \n" +
             "From supply.order o Left Outer Join supply.line_item i On o.order_id = i.order_id \n" +
             "Where o.order_id = :orderId"
     );
