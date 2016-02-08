@@ -80,7 +80,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
 
     private SfmsOrderId extractSfmsOrderIdFromOrder(Order order) {
         // Until Order dao is set up, just use 1 for nuissue.
-        return new SfmsOrderId(1, order.getCompletedDateTime().toLocalDate(),
+        return new SfmsOrderId(1, order.getCompletedDateTime().get().toLocalDate(),
                                order.getLocationCode(), order.getLocationType());
     }
 
@@ -88,7 +88,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
         assertThat(sfmsOrder.getOrderId(), equalTo(extractSfmsOrderIdFromOrder(order)));
         assertThat(sfmsOrder.getFromLocationCode(), is("LC100S"));
         assertThat(sfmsOrder.getFromLocationType(), is("P"));
-        assertThat(sfmsOrder.getIssuedBy(), is(order.getIssuingEmployee().getLastName().toUpperCase()));
+        assertThat(sfmsOrder.getIssuedBy(), is(order.getIssuingEmployee().get().getLastName().toUpperCase()));
         assertThat(sfmsOrder.getResponsibilityCenterHead(), is("STSBAC"));
         assertSfmsLineItemsEqualOrderLineItems(sfmsOrder, order);
     }

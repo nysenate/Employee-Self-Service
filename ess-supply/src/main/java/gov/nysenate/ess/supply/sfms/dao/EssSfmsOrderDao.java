@@ -59,11 +59,11 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
     public void saveOrder(Order order) {
         Map<String, Object> baseParams = new HashMap<>();
         baseParams.put("nuIssue", getNuIssue());
-        baseParams.put("issueDate", toDate(order.getCompletedDateTime().toLocalDate()));
+        baseParams.put("issueDate", toDate(order.getCompletedDateTime().get().toLocalDate()));
         baseParams.put("locType", String.valueOf(order.getLocation().getType().getCode()));
         baseParams.put("locCode", order.getLocation().getCode());
-        baseParams.put("issueEmpName", order.getIssuingEmployee().getLastName().toUpperCase());
-        baseParams.put("completingUserUid", order.getIssuingEmployee().getUid().toUpperCase()); // TODO: this will probably change.
+        baseParams.put("issueEmpName", order.getIssuingEmployee().get().getLastName().toUpperCase());
+        baseParams.put("completingUserUid", order.getIssuingEmployee().get().getUid().toUpperCase()); // TODO: this will probably change.
 
         List<MapSqlParameterSource> batchParams = new ArrayList<>();
         for (LineItem lineItem: order.getLineItems()) {

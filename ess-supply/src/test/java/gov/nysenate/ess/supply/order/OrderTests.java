@@ -51,8 +51,8 @@ public class OrderTests extends SupplyTests {
     public void orderProcessedCorrectly() {
         Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.processOrder(order.getId(), EMP_ID);
-        assertEquals(order.getIssuingEmployee().getEmployeeId(), EMP_ID);
-        assertDateLessThan5SecondsOld(order.getProcessedDateTime());
+        assertEquals(order.getIssuingEmployee().get().getEmployeeId(), EMP_ID);
+        assertDateLessThan5SecondsOld(order.getProcessedDateTime().get());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
     }
 
@@ -78,7 +78,7 @@ public class OrderTests extends SupplyTests {
     @Test
     public void orderCompletedCorrectly() {
         Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        assertDateLessThan5SecondsOld(order.getCompletedDateTime());
+        assertDateLessThan5SecondsOld(order.getCompletedDateTime().get());
         assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
 
@@ -97,7 +97,7 @@ public class OrderTests extends SupplyTests {
         Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         order = orderService.undoCompletion(order.getId());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
-        assertEquals(order.getCompletedDateTime(), null);
+        assertEquals(order.getCompletedDateTime().isPresent(), false);
         // TODO: should also check sfms for order.
     }
 

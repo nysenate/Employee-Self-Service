@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.sfms.dao;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
@@ -75,7 +76,7 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
         sfmsOrder.setOriginDateTime(LocalDateTime.now());
         sfmsOrder.setUpdateEmpUid(order.getCustomer().getUid());
         sfmsOrder.setOriginalEmpUid(order.getCustomer().getUid());
-        sfmsOrder.setIssuedBy(order.getIssuingEmployee().getLastName());
+        sfmsOrder.setIssuedBy(order.getIssuingEmployee().map(Employee::getLastName).orElse(""));
         // Not setting responsibility center head
         for (LineItem lineItem : order.getLineItems()) {
             SfmsLineItem sfmsLineItem = new SfmsLineItem();

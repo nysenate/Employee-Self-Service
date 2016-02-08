@@ -79,7 +79,7 @@ public class InMemoryOrderDao implements OrderDao {
     private boolean matchesIssuer(String issuerEmpId, Order order) {
         // TODO: only search by issuer if status != pending/rejected
         // TODO: should verify issuerEmpId can be converted to int.
-        return issuerEmpId.equals("all") || order.getIssuingEmployee().getEmployeeId() == Integer.valueOf(issuerEmpId);
+        return issuerEmpId.equals("all") || order.getIssuingEmployee().map(Employee::getEmployeeId).orElse(null) == Integer.valueOf(issuerEmpId);
     }
 
     @Override

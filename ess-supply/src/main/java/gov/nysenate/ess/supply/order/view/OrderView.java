@@ -32,9 +32,9 @@ public class OrderView implements ViewObject {
         this.customer = new EmployeeView(order.getCustomer());
         this.orderDateTime = order.getOrderDateTime();
         this.location = new LocationView(order.getLocation());
-        this.issuingEmployee = new EmployeeView(order.getIssuingEmployee());
-        this.processedDateTime = order.getProcessedDateTime();
-        this.completedDateTime = order.getCompletedDateTime();
+        this.issuingEmployee = new EmployeeView(order.getIssuingEmployee().get());
+        this.processedDateTime = order.getProcessedDateTime().get();
+        this.completedDateTime = order.getCompletedDateTime().get();
         this.status = order.getStatus().toString();
         this.items = order.getLineItems().stream().map(LineItemView::new).collect(Collectors.toList()).toArray(new LineItemView[order.getLineItems().size()]);
     }

@@ -7,6 +7,7 @@ import gov.nysenate.ess.supply.item.LineItem;
 import javax.sound.sampled.Line;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public final class Order {
@@ -142,24 +143,24 @@ public final class Order {
         return location;
     }
 
-    public Employee getIssuingEmployee() {
-        return issuingEmployee;
+    public Optional<Employee> getIssuingEmployee() {
+        return Optional.ofNullable(issuingEmployee);
     }
 
     public Order setIssuingEmployee(Employee employee) {
         return copy().issuingEmployee(employee).build();
     }
 
-    public LocalDateTime getProcessedDateTime() {
-        return processedDateTime;
+    public Optional<LocalDateTime> getProcessedDateTime() {
+        return Optional.ofNullable(processedDateTime);
     }
 
     public Order setProcessedDateTime(LocalDateTime dateTime) {
         return copy().processedDateTime(dateTime).build();
     }
 
-    public LocalDateTime getCompletedDateTime() {
-        return completedDateTime;
+    public Optional<LocalDateTime> getCompletedDateTime() {
+        return Optional.ofNullable(completedDateTime);
     }
 
     public Order setCompletedDateTime(LocalDateTime dateTime) {
