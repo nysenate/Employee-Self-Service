@@ -58,7 +58,7 @@ public class InMemoryOrderDao implements OrderDao {
      */
     @Override
     public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
-                                    Range<LocalDate> dateRange, LimitOffset limOff) {
+                                    Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         List<Order> filteredOrders = new ArrayList<>();
         List<Order> allOrders = orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
         for (Order order : allOrders) {

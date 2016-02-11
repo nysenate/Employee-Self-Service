@@ -8,6 +8,7 @@ import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -22,14 +23,10 @@ public interface OrderSearchService {
     Order getOrderById(int orderId);
 
     /**
-     * Get orders by statuses, date range and limit offset.
+     * Get orders by statuses, date time range and limit offset.
      * @see #getOrders(String, String, String, EnumSet, Range, LimitOffset)
-     * @param statuses
-     * @param dateRange
-     * @param limOff
-     * @return
      */
-    PaginatedList<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff);
+    PaginatedList<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
 
     /**
      * Get orders, can filter by parameters.
@@ -41,7 +38,7 @@ public interface OrderSearchService {
      * @return
      */
     PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
-                          Range<LocalDate> dateRange, LimitOffset limOff);
+                          Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
 
     /**
      * Get orders from the SFMS database by date range and limit offset.
@@ -50,7 +47,7 @@ public interface OrderSearchService {
      * @param limOff
      * @return
      */
-    PaginatedList<SfmsOrder> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff);
+    PaginatedList<SfmsOrder> getSfmsOrders(Range<LocalDateTime> dateRange, LimitOffset limOff);
 
     /**
      * Get orders from the SFMS Oracle databse.
@@ -58,9 +55,9 @@ public interface OrderSearchService {
      * @param locCode Location Code
      * @param locType Location Type
      * @param issueEmpName Issuing employee name
-     * @param dateRange Date Range
+     * @param dateTimeRange Date time range
      * @param limOff Limit Offset
      */
     PaginatedList<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName,
-                                  Range<LocalDate> dateRange, LimitOffset limOff);
+                                  Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
 }

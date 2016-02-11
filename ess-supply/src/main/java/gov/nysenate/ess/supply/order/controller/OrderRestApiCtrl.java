@@ -3,7 +3,6 @@ package gov.nysenate.ess.supply.order.controller;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.DateRangeListViewResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,14 +38,14 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private OrderSearchService orderSearchService;
 
     /**
-     * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date range.
+     * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date time range.
      * Request Parameters: locCode - Location code.
      *                     locType - Location type.
      *                     issuerEmpId - Issuing Employee's id.
      *                     status - OrderStatus's that should be returned.
      *                              Valid types are: PENDING, PROCESSING, COMPLETED, REJECTED.
-     *                     from - Start of date range inclusive.
-     *                     to - End of date range inclusive.
+     *                     from - Start of date time range.
+     *                     to - End of date time range.
      *
      * Defaults to any locCode, any locType, any issuerEmpId, YTD range, all order statuses.
      * Dates refer to Order.orderDateTime. TODO: need to filter by other dates?
@@ -60,16 +60,13 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
                                   WebRequest webRequest) {
         LimitOffset limOff = getLimitOffset(webRequest, 25);
         EnumSet<OrderStatus> statusEnumSet = parseStatuses(status);
-        Range<LocalDate> dateRange = parseDateRange(from, to);
+        Range<LocalDateTime> dateTimeRange = parseDateTimeRange(from, to);
         String locCodeTerm = (locCode != null && locCode.length() > 0) ? locCode.toUpperCase() : "all";
         String locTypeTerm = (locType != null && locType.length() > 0) ? locType.toUpperCase() : "all";
         String issuerTerm = (issuerEmpId != null && issuerEmpId.length() > 0) ? issuerEmpId : "all";
-        PaginatedList<Order> orders = orderSearchService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff);
-        return null;
-//        return DateRangeListViewResponse.of(orders.getResults().stream().map(OrderView::new).collect(Collectors.toList())
-//                                           , dateRange, orders.getTotal(), orders.getLimOff());
-//        return ListViewResponse.of(orderSearchService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff)
-//                                               .stream().map(OrderView::new).collect(Collectors.toList()));
+        PaginatedList<Order> orders = orderSearchService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateTimeRange, limOff);
+        return DateRangeListViewResponse.of(orders.getResults().stream().map(OrderView::new).collect(Collectors.toList()),
+                                            dateTimeRange, orders.getTotal(), orders.getLimOff());
     }
 
     /**
@@ -145,9 +142,15 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         }
     }
 
-    private Range<LocalDate> parseDateRange(String from, String to) {
-        LocalDate toDate = to == null ? LocalDate.now() : parseISODate(to, "to");
-        LocalDate fromDate = from == null ? LocalDate.of(toDate.getYear(), 1, 1) : parseISODate(from, "from");
-        return getClosedRange(fromDate, toDate, "from", "to");
+    /**
+     * Parse a date time range from ISO formatted strings.
+     * By default, use a YTD range.
+     */
+    private Range<LocalDateTime> parseDateTimeRange(String from, String to) {
+        LocalDateTime toDateTime = to == null ? LocalDateTime.now() : parseISODateTime(to, "to");
+        LocalDateTime fromDateTime = from == null
+                ? toDateTime.withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0)
+                : parseISODateTime(from, "from");
+        return getClosedRange(fromDateTime, toDateTime, "from", "to");
     }
 }

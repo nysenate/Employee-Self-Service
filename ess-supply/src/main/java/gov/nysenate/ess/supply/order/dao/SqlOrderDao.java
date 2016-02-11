@@ -17,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -71,7 +72,8 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     }
 
     @Override
-    public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
+                                          Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         return null;
     }
 

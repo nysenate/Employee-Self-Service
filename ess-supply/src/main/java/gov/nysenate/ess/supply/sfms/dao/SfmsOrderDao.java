@@ -8,6 +8,7 @@ import gov.nysenate.ess.supply.sfms.SfmsOrder;
 import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SfmsOrderDao {
@@ -27,7 +28,7 @@ public interface SfmsOrderDao {
      * @param issueEmpName Usually the last name of the issuing employee.
      */
     PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
-                          Range<LocalDate> dateRange, LimitOffset limOff);
+                          Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
 
     SfmsOrder getOrderById(SfmsOrderId orderId);
 

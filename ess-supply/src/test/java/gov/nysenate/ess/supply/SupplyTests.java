@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,10 +30,10 @@ public abstract class SupplyTests extends BaseTests {
     @Autowired private InMemoryOrderDao orderDao;
     @Autowired private InMemorySfmsOrderDao sfmsOrderDao;
 
-    protected static final Range<LocalDate> ONE_DAY_RANGE = Range.closed(LocalDate.now().minusDays(1), LocalDate.now());
-    protected static final Range<LocalDate> ONE_WEEK_RANGE = Range.closed(LocalDate.now().minusWeeks(1), LocalDate.now());
-    protected static final Range<LocalDate> THREE_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(3), LocalDate.now());
-    protected static final Range<LocalDate> SIX_MONTH_RANGE = Range.closed(LocalDate.now().minusMonths(6), LocalDate.now());
+    protected static final Range<LocalDateTime> ONE_DAY_RANGE = Range.closed(LocalDateTime.now().minusDays(1), LocalDateTime.now());
+    protected static final Range<LocalDateTime> ONE_WEEK_RANGE = Range.closed(LocalDateTime.now().minusWeeks(1), LocalDateTime.now());
+    protected static final Range<LocalDateTime> THREE_MONTH_RANGE = Range.closed(LocalDateTime.now().minusMonths(3), LocalDateTime.now());
+    protected static final Range<LocalDateTime> SIX_MONTH_RANGE = Range.closed(LocalDateTime.now().minusMonths(6), LocalDateTime.now());
 
     protected static final int CUSTOMER_EMP_ID = 6221;
     protected static final int ISSUING_EMP_ID = 11168;

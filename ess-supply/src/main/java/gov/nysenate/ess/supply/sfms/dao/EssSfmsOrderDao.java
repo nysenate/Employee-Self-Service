@@ -1,7 +1,6 @@
 package gov.nysenate.ess.supply.sfms.dao;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -13,7 +12,7 @@ import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +27,8 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
     }
 
     @Override
-    public PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
+                                              Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         locCode = formatForOracle(locCode);
         locType = formatForOracle(locType);
         issueEmpName = formatForOracle(issueEmpName);
@@ -36,8 +36,8 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
                 .addValue("locCode", locCode)
                 .addValue("locType", locType)
                 .addValue("issueEmpName", issueEmpName)
-                .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
-                .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)));
+                .addValue("startDate", toDate(DateUtils.startOfDateTimeRange(dateTimeRange)))
+                .addValue("endDate", toDate(DateUtils.endOfDateTimeRange(dateTimeRange)));
         String sql = EssSfmsOrderQuery.GET_ORDERS.getSql(schemaMap(), limOff);
         PaginatedSfmsOrderHandler handler = new PaginatedSfmsOrderHandler(limOff);
         remoteNamedJdbc.query(sql, params, handler);

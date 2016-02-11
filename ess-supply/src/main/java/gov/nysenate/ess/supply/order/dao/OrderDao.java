@@ -27,12 +27,12 @@ public interface OrderDao {
      * @param locType If 'all', search by all location types.
      * @param issuerEmpId If 'all', search by all issuer id's.
      * @param statuses
-     * @param dateRange
+     * @param dateTimeRange
      * @param limOff
      * @return
      */
     PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
-                             Range<LocalDate> dateRange, LimitOffset limOff);
+                             Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
 
     Order getOrderById(int orderId);
 

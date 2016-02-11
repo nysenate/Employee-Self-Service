@@ -42,7 +42,8 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
     }
 
     @Override
-    public PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
+                                              Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         List<SfmsOrder> filteredOrders = new ArrayList<>();
         for (SfmsOrder order : orderDB.values()) {
             if (matchesLocCode(locCode, order) && matchesLocType(locType, order) && matchesIssuer(issueEmpName, order)) {
