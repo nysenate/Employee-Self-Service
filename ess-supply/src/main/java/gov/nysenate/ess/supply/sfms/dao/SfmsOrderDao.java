@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.sfms.dao;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
 import gov.nysenate.ess.supply.sfms.SfmsOrderId;
@@ -25,7 +26,7 @@ public interface SfmsOrderDao {
      * locCode, locType, issuerEmpId should be set to "all" if you do not want to filter by those parameters.
      * @param issueEmpName Usually the last name of the issuing employee.
      */
-    List<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
+    PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName,
                           Range<LocalDate> dateRange, LimitOffset limOff);
 
     SfmsOrder getOrderById(SfmsOrderId orderId);

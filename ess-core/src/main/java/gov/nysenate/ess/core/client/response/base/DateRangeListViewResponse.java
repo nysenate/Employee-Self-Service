@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

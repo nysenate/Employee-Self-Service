@@ -1,9 +1,11 @@
 package gov.nysenate.ess.supply.sfms.dao;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
@@ -26,7 +28,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
     }
 
     @Override
-    public List<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
         locCode = formatForOracle(locCode);
         locType = formatForOracle(locType);
         issueEmpName = formatForOracle(issueEmpName);
@@ -37,7 +39,7 @@ public class EssSfmsOrderDao extends SqlBaseDao implements SfmsOrderDao {
                 .addValue("startDate", toDate(DateUtils.startOfDateRange(dateRange)))
                 .addValue("endDate", toDate(DateUtils.endOfDateRange(dateRange)));
         String sql = EssSfmsOrderQuery.GET_ORDERS.getSql(schemaMap(), limOff);
-        SfmsOrderHandler handler = new SfmsOrderHandler();
+        PaginatedSfmsOrderHandler handler = new PaginatedSfmsOrderHandler(limOff);
         remoteNamedJdbc.query(sql, params, handler);
         return handler.getSfmsOrders();
     }

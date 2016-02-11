@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.order.service;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.sfms.SfmsOrder;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Interface responsible for querying and filtering Order's from various data stores.
  */
-public interface OrderQueryService {
+public interface OrderSearchService {
 
     /**
      * Get an order by its id.
@@ -28,7 +29,7 @@ public interface OrderQueryService {
      * @param limOff
      * @return
      */
-    List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff);
+    PaginatedList<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff);
 
     /**
      * Get orders, can filter by parameters.
@@ -39,7 +40,7 @@ public interface OrderQueryService {
      * @param issuerEmpId Issuing Employee Id
      * @return
      */
-    List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
+    PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                           Range<LocalDate> dateRange, LimitOffset limOff);
 
     /**
@@ -49,7 +50,7 @@ public interface OrderQueryService {
      * @param limOff
      * @return
      */
-    List<SfmsOrder> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff);
+    PaginatedList<SfmsOrder> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff);
 
     /**
      * Get orders from the SFMS Oracle databse.
@@ -60,6 +61,6 @@ public interface OrderQueryService {
      * @param dateRange Date Range
      * @param limOff Limit Offset
      */
-    List<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName,
+    PaginatedList<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName,
                                   Range<LocalDate> dateRange, LimitOffset limOff);
 }

@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.order.service;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
@@ -15,7 +16,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 @Service
-public class EssOrderQueryService implements OrderQueryService {
+public class SqlOrderSearchService implements OrderSearchService {
 
     @Autowired private OrderDao orderDao;
 
@@ -27,23 +28,23 @@ public class EssOrderQueryService implements OrderQueryService {
     }
 
     @Override
-    public List<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<Order> getOrders(EnumSet<OrderStatus> statuses, Range<LocalDate> dateRange, LimitOffset limOff) {
         return getOrders("all", "all", "all", statuses, dateRange, limOff);
     }
 
     @Override
-    public List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
+    public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                  Range<LocalDate> dateRange, LimitOffset limOff) {
         return orderDao.getOrders(locCode, locType, issuerEmpId, statuses, dateRange, limOff);
     }
 
     @Override
-    public List<SfmsOrder> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<SfmsOrder> getSfmsOrders(Range<LocalDate> dateRange, LimitOffset limOff) {
         return getSfmsOrders("all", "all", "all", dateRange, limOff);
     }
 
     @Override
-    public List<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
         return sfmsDao.getOrders(locCode, locType, issueEmpName, dateRange, limOff);
     }
 }

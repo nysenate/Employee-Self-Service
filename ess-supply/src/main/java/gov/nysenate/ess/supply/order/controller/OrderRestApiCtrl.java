@@ -2,16 +2,18 @@ package gov.nysenate.ess.supply.order.controller;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.DateRangeListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
-import gov.nysenate.ess.supply.order.service.OrderQueryService;
+import gov.nysenate.ess.supply.order.service.OrderSearchService;
 import gov.nysenate.ess.supply.order.service.OrderService;
 import gov.nysenate.ess.supply.order.view.NewOrderView;
 import gov.nysenate.ess.supply.order.view.OrderView;
@@ -33,7 +35,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
 
     @Autowired private OrderService orderService;
 
-    @Autowired private OrderQueryService orderQueryService;
+    @Autowired private OrderSearchService orderSearchService;
 
     /**
      * Get orders with the ability to filter by location code, location type, issuing employee id, order status, and date range.
@@ -42,8 +44,8 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
      *                     issuerEmpId - Issuing Employee's id.
      *                     status - OrderStatus's that should be returned.
      *                              Valid types are: PENDING, PROCESSING, COMPLETED, REJECTED.
-     *                     from - Start of date range.
-     *                     to - End of date range
+     *                     from - Start of date range inclusive.
+     *                     to - End of date range inclusive.
      *
      * Defaults to any locCode, any locType, any issuerEmpId, YTD range, all order statuses.
      * Dates refer to Order.orderDateTime. TODO: need to filter by other dates?
@@ -62,8 +64,12 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         String locCodeTerm = (locCode != null && locCode.length() > 0) ? locCode.toUpperCase() : "all";
         String locTypeTerm = (locType != null && locType.length() > 0) ? locType.toUpperCase() : "all";
         String issuerTerm = (issuerEmpId != null && issuerEmpId.length() > 0) ? issuerEmpId : "all";
-        return ListViewResponse.of(orderQueryService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff)
-                                               .stream().map(OrderView::new).collect(Collectors.toList()));
+        PaginatedList<Order> orders = orderSearchService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff);
+        return null;
+//        return DateRangeListViewResponse.of(orders.getResults().stream().map(OrderView::new).collect(Collectors.toList())
+//                                           , dateRange, orders.getTotal(), orders.getLimOff());
+//        return ListViewResponse.of(orderSearchService.getOrders(locCodeTerm, locTypeTerm, issuerTerm, statusEnumSet, dateRange, limOff)
+//                                               .stream().map(OrderView::new).collect(Collectors.toList()));
     }
 
     /**
@@ -71,7 +77,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/{id:\\d}")
     public BaseResponse getOrderById(@PathVariable int id) {
-        Order order = orderQueryService.getOrderById(id);
+        Order order = orderSearchService.getOrderById(id);
         return new ViewObjectResponse<>(new OrderView(order));
     }
 

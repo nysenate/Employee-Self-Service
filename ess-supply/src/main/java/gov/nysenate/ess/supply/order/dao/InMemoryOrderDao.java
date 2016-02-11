@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
@@ -16,6 +17,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Order Dao implementation for testing.
+ * Pagination functionality is not implemented.
+ * Should test pagination directly through real dao implementations.
+ */
 @Primary
 @Profile("test")
 @Repository
@@ -51,7 +57,7 @@ public class InMemoryOrderDao implements OrderDao {
      * Not fully functional
      */
     @Override
-    public List<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
+    public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                     Range<LocalDate> dateRange, LimitOffset limOff) {
         List<Order> filteredOrders = new ArrayList<>();
         List<Order> allOrders = orderDB.values().stream().filter(order -> statuses.contains(order.getStatus())).collect(Collectors.toList());
@@ -60,7 +66,7 @@ public class InMemoryOrderDao implements OrderDao {
                 filteredOrders.add(order);
             }
         }
-        return filteredOrders;
+        return new PaginatedList<>(filteredOrders.size(), limOff, filteredOrders);
     }
 
     private boolean matchesLocCode(String locCode, Order order) {

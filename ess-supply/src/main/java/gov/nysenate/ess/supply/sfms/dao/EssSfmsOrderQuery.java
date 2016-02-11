@@ -9,14 +9,22 @@ public enum EssSfmsOrderQuery implements BasicSqlQuery {
             "SELECT CDRESPCTRHD FROM ${masterSchema}.SL16LOCATION\n" +
             "WHERE CDSTATUS = 'A' AND CDLOCAT = :locCode AND CDLOCTYPE = :locType"
     ),
-    GET_ORDERS(
-            "SELECT NUISSUE, NUXREFCO, DTISSUE, DTTXNUPDATE, DTTXNORIGIN, CDLOCTYPEFRM, CDLOCATTO, CDLOCATFROM, " +
-            "CDLOCTYPETO, NAISSUEDBY, NATXNORGUSER, NATXNUPDUSER, AMQTYISSUE, AMQTYISSSTD, CDISSUNIT, CDRESPCTRHD\n" +
-            "FROM ${masterSchema}.FD12EXPISSUE \n" +
+    SEARCH_WHERE_CLAUSE(
             "WHERE CDSTATUS = 'A' AND CDRECTYPE = 'P' AND CDORGID = 'ALL' \n" +
             "AND CDLOCATFROM = 'LC100S' AND CDLOCTYPEFRM = 'P' \n" +
             "AND CDLOCATTO like :locCode AND CDLOCTYPETO like :locType AND NAISSUEDBY like :issueEmpName \n" +
-            "AND DTISSUE BETWEEN :startDate AND :endDate"
+            "AND DTISSUE BETWEEN :startDate AND :endDate \n"
+    ),
+    TOTAL_ORDERS_SUB_QUERY(
+            "Select count(count(*))  from ess_master.fd12expissue\n" + SEARCH_WHERE_CLAUSE.getSql() +
+            "Group by nuissue, dtissue, cdloctypefrm, cdlocatto, cdlocatfrom, cdloctypeto"
+    ),
+    GET_ORDERS(
+            "SELECT NUISSUE, NUXREFCO, DTISSUE, DTTXNUPDATE, DTTXNORIGIN, CDLOCTYPEFRM, CDLOCATTO, CDLOCATFROM, " +
+            "CDLOCTYPETO, NAISSUEDBY, NATXNORGUSER, NATXNUPDUSER, AMQTYISSUE, AMQTYISSSTD, CDISSUNIT, CDRESPCTRHD, \n" +
+            "(" + TOTAL_ORDERS_SUB_QUERY.getSql() + ") as total_rows \n" +
+            "FROM ${masterSchema}.FD12EXPISSUE \n" + SEARCH_WHERE_CLAUSE.getSql()
+
     ),
     GET_ORDER_BY_ID(
             "SELECT NUISSUE, NUXREFCO, DTISSUE, DTTXNUPDATE, DTTXNORIGIN, CDLOCTYPEFRM, CDLOCATTO, CDLOCATFROM, " +

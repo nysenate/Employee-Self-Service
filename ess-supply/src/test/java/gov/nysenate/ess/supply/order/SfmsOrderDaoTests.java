@@ -32,7 +32,7 @@ public class SfmsOrderDaoTests extends SupplyTests {
 
     @Test
     public void canGetSfmsOrders() {
-        List<SfmsOrder> actualOrders = orderDao.getOrders("all", "all", "all", SIX_MONTH_RANGE, LimitOffset.TEN);
+        List<SfmsOrder> actualOrders = orderDao.getOrders("all", "all", "all", SIX_MONTH_RANGE, LimitOffset.TEN).getResults();
         assertThat(actualOrders.size(), greaterThan(0));
         assertOnlySupplyOrdersRetrieved(actualOrders);
     }
@@ -54,19 +54,19 @@ public class SfmsOrderDaoTests extends SupplyTests {
 
     @Test
     public void canGetSfmsOrdersByLocation() {
-        int originalSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).size();
+        int originalSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).getResults().size();
         Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderDao.saveOrder(order);
-        int actualSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).size();
+        int actualSize = orderDao.getOrders("A42FB", "W", "all", ONE_WEEK_RANGE, LimitOffset.ALL).getResults().size();
         assertThat(actualSize, is(originalSize + 1));
     }
 
     @Test
     public void canGetSfmsOrdersByIssuer() {
-        int originalSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).size();
+        int originalSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).getResults().size();
         Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderDao.saveOrder(order);
-        int actualSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).size();
+        int actualSize = orderDao.getOrders("all", "all", "CASEIRAS", ONE_WEEK_RANGE, LimitOffset.ALL).getResults().size();
         assertThat(actualSize, is(originalSize + 1));
     }
 

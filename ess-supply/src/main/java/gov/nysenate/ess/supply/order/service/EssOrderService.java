@@ -22,7 +22,7 @@ public class EssOrderService implements OrderService {
 
     @Autowired private SfmsOrderDao sfmsDao;
 
-    @Autowired private OrderQueryService orderQueryService;
+    @Autowired private OrderSearchService orderSearchService;
 
     @Autowired
     private EmployeeInfoService employeeInfoService;
@@ -39,7 +39,7 @@ public class EssOrderService implements OrderService {
     @Override
     public Order processOrder(int orderId, int issuingEmpId, int modifiedEmpId) {
         Employee issuingEmployee = employeeInfoService.getEmployee(issuingEmpId);
-        Order order = orderQueryService.getOrderById(orderId);
+        Order order = orderSearchService.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new WrongOrderStatusException("Can only process orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to process order with status of " + order.getStatus().toString());
@@ -53,7 +53,7 @@ public class EssOrderService implements OrderService {
 
     @Override
     public Order completeOrder(int orderId, int modifiedEmpId) {
-        Order order = orderQueryService.getOrderById(orderId);
+        Order order = orderSearchService.getOrderById(orderId);
         if (order.getStatus() != OrderStatus.PROCESSING) {
             throw new WrongOrderStatusException("Can only complete orders with status of " + OrderStatus.PROCESSING +
                                                 ". Tried to complete order with status of " + order.getStatus().toString());
@@ -69,7 +69,7 @@ public class EssOrderService implements OrderService {
     // TODO: are we keeping this functionality? Update SFMS?
     @Override
     public Order undoCompletion(int orderId, int modifiedEmpId) {
-        Order order = orderQueryService.getOrderById(orderId);
+        Order order = orderSearchService.getOrderById(orderId);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setCompletedDateTime(null);
         saveOrder(order, modifiedEmpId);
@@ -78,7 +78,7 @@ public class EssOrderService implements OrderService {
 
     @Override
     public Order rejectOrder(int orderId, int modifiedEmpId) {
-        Order order = orderQueryService.getOrderById(orderId);
+        Order order = orderSearchService.getOrderById(orderId);
         if (!statusIsPendingOrProcessing(order)) {
             throw new WrongOrderStatusException("Can only reject orders with status of " + OrderStatus.PENDING +
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
@@ -90,7 +90,7 @@ public class EssOrderService implements OrderService {
 
     @Override
     public Order updateOrderLineItems(int orderId, Set<LineItem> newLineItems, int modifiedEmpId) {
-        Order original = orderQueryService.getOrderById(orderId);
+        Order original = orderSearchService.getOrderById(orderId);
         Order updated = original.setLineItems(newLineItems);
         saveOrder(updated, modifiedEmpId);
         return updated;

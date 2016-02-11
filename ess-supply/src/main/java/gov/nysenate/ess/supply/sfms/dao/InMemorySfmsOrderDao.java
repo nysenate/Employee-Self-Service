@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.sfms.dao;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.sfms.SfmsLineItem;
@@ -16,6 +17,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * SfmsOrderDao implementation to be used as a mock in tests.
+ * Does not implement Pagination functionality.
+ */
 @Primary
 @Profile("test")
 @Repository
@@ -37,14 +42,14 @@ public class InMemorySfmsOrderDao implements SfmsOrderDao {
     }
 
     @Override
-    public List<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
+    public PaginatedList<SfmsOrder> getOrders(String locCode, String locType, String issueEmpName, Range<LocalDate> dateRange, LimitOffset limOff) {
         List<SfmsOrder> filteredOrders = new ArrayList<>();
         for (SfmsOrder order : orderDB.values()) {
             if (matchesLocCode(locCode, order) && matchesLocType(locType, order) && matchesIssuer(issueEmpName, order)) {
                 filteredOrders.add(order);
             }
         }
-        return filteredOrders;
+        return new PaginatedList<>(filteredOrders.size(), limOff, filteredOrders);
     }
 
     private boolean matchesLocCode(String locCode, SfmsOrder order) {

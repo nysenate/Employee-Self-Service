@@ -4,9 +4,8 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
-import gov.nysenate.ess.supply.order.service.OrderQueryService;
+import gov.nysenate.ess.supply.order.service.OrderSearchService;
 import gov.nysenate.ess.supply.order.service.OrderService;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class OrderTests extends SupplyTests {
 
     @Autowired private OrderService orderService;
 
-    @Autowired private OrderQueryService orderQueryService;
+    @Autowired private OrderSearchService searchService;
 
     @Before
     public void setUp() {
@@ -38,7 +37,7 @@ public class OrderTests extends SupplyTests {
     @Test
     public void newOrderInitializedCorrectly() {
         Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
-        order = orderQueryService.getOrderById(order.getId());
+        order = searchService.getOrderById(order.getId());
         assertTrue(order.getId() > 0);
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
         assertEquals(order.getStatus(), OrderStatus.PENDING);
@@ -49,7 +48,7 @@ public class OrderTests extends SupplyTests {
         Order originalOrder = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         Set<LineItem> newItems = incrementItemQuantities(originalOrder.getLineItems());
         orderService.updateOrderLineItems(originalOrder.getId(), newItems, MODIFIED_EMP_ID);
-        Order updatedOrder = orderQueryService.getOrderById(originalOrder.getId());
+        Order updatedOrder = searchService.getOrderById(originalOrder.getId());
         assertNotEquals(originalOrder, updatedOrder);
         assertThat(updatedOrder.getLineItems(), is(equalTo(newItems)));
     }
@@ -58,7 +57,7 @@ public class OrderTests extends SupplyTests {
     public void orderProcessedCorrectly() {
         Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         orderService.processOrder(order.getId(), EMP_ID, MODIFIED_EMP_ID);
-        order = orderQueryService.getOrderById(order.getId());
+        order = searchService.getOrderById(order.getId());
         assertEquals(order.getIssuingEmployee().get().getEmployeeId(), EMP_ID);
         assertDateLessThan5SecondsOld(order.getProcessedDateTime().get());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
@@ -87,7 +86,7 @@ public class OrderTests extends SupplyTests {
     public void orderCompletedCorrectly() {
         Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
-        order = orderQueryService.getOrderById(order.getId());
+        order = searchService.getOrderById(order.getId());
         assertDateLessThan5SecondsOld(order.getCompletedDateTime().get());
         assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
@@ -95,9 +94,9 @@ public class OrderTests extends SupplyTests {
     @Test
     public void completingOrderUpdatesSfms() {
         Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        assertThat(orderQueryService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(0));
+        assertThat(searchService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).getResults().size(), is(0));
         orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
-        assertThat(orderQueryService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(1));
+        assertThat(searchService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).getResults().size(), is(1));
         // TODO: this can be improved if/when getSfmsOrderById is implemented.
     }
 
@@ -106,7 +105,7 @@ public class OrderTests extends SupplyTests {
         Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
         orderService.undoCompletion(order.getId(), MODIFIED_EMP_ID);
-        order = orderQueryService.getOrderById(order.getId());
+        order = searchService.getOrderById(order.getId());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
         assertEquals(order.getCompletedDateTime().isPresent(), false);
     }
@@ -134,7 +133,7 @@ public class OrderTests extends SupplyTests {
     public void canRejectPendingOrder() {
         Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
-        order = orderQueryService.getOrderById(order.getId());
+        order = searchService.getOrderById(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
@@ -142,7 +141,7 @@ public class OrderTests extends SupplyTests {
     public void canRejectProcessingOrder() {
         Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
         orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
-        order = orderQueryService.getOrderById(order.getId());
+        order = searchService.getOrderById(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
