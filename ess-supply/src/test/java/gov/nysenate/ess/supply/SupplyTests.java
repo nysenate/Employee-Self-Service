@@ -9,9 +9,6 @@ import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrderDao;
 import gov.nysenate.ess.supply.order.service.OrderService;
-import gov.nysenate.ess.supply.sfms.SfmsLineItem;
-import gov.nysenate.ess.supply.sfms.SfmsOrder;
-import gov.nysenate.ess.supply.sfms.SfmsOrderId;
 import gov.nysenate.ess.supply.sfms.dao.InMemorySfmsOrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,12 +51,12 @@ public abstract class SupplyTests extends BaseTests {
         sfmsOrderDao.reset();
     }
 
-    protected Order createPendingOrder(Set<LineItem> items, int customerEmpId) {
+    protected Order submitNewOrder(Set<LineItem> items, int customerEmpId) {
         return orderService.submitOrder(items, customerEmpId, MODIFIED_EMP_ID);
     }
 
     protected Order createProcessingOrder(Set<LineItem> items, int customerEmpId, int issuingEmpId) {
-        return orderService.processOrder(createPendingOrder(items, customerEmpId).getId(), issuingEmpId, MODIFIED_EMP_ID);
+        return orderService.processOrder(submitNewOrder(items, customerEmpId).getId(), issuingEmpId, MODIFIED_EMP_ID);
     }
 
     protected Order createCompletedOrder(Set<LineItem> items, int customerEmpId, int issuingEmpId) {

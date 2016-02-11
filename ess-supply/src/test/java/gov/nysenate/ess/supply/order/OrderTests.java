@@ -16,8 +16,12 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
+/**
+ * Tests for the Order and OrderQuery services.
+ */
 public class OrderTests extends SupplyTests {
 
     private static int EMP_ID = 2;
@@ -33,7 +37,8 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void newOrderInitializedCorrectly() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        order = orderQueryService.getOrderById(order.getId());
         assertTrue(order.getId() > 0);
         assertDateLessThan5SecondsOld(order.getOrderDateTime());
         assertEquals(order.getStatus(), OrderStatus.PENDING);
@@ -41,16 +46,19 @@ public class OrderTests extends SupplyTests {
 
     @Test
     public void canUpdateOrderLineItems() {
-        Order originalOrder = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Order originalOrder = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         Set<LineItem> newItems = incrementItemQuantities(originalOrder.getLineItems());
-        Order updatedOrder = orderService.updateOrderLineItems(originalOrder.getId(), newItems, MODIFIED_EMP_ID);
+        orderService.updateOrderLineItems(originalOrder.getId(), newItems, MODIFIED_EMP_ID);
+        Order updatedOrder = orderQueryService.getOrderById(originalOrder.getId());
         assertNotEquals(originalOrder, updatedOrder);
+        assertThat(updatedOrder.getLineItems(), is(equalTo(newItems)));
     }
 
     @Test
     public void orderProcessedCorrectly() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
-        order = orderService.processOrder(order.getId(), EMP_ID, MODIFIED_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        orderService.processOrder(order.getId(), EMP_ID, MODIFIED_EMP_ID);
+        order = orderQueryService.getOrderById(order.getId());
         assertEquals(order.getIssuingEmployee().get().getEmployeeId(), EMP_ID);
         assertDateLessThan5SecondsOld(order.getProcessedDateTime().get());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
@@ -70,14 +78,16 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void cantProcessRejectedOrder() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
         orderService.processOrder(order.getId(), EMP_ID, MODIFIED_EMP_ID);
     }
 
     @Test
     public void orderCompletedCorrectly() {
-        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
+        Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
+        orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
+        order = orderQueryService.getOrderById(order.getId());
         assertDateLessThan5SecondsOld(order.getCompletedDateTime().get());
         assertEquals(order.getStatus(), OrderStatus.COMPLETED);
     }
@@ -88,22 +98,22 @@ public class OrderTests extends SupplyTests {
         assertThat(orderQueryService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(0));
         orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
         assertThat(orderQueryService.getSfmsOrders(ONE_WEEK_RANGE, LimitOffset.ALL).size(), is(1));
+        // TODO: this can be improved if/when getSfmsOrderById is implemented.
     }
 
-    // TODO: May not keep this functionality.
-    @Ignore
     @Test
     public void canUndoACompletion() {
-        Order order = createCompletedOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        order = orderService.undoCompletion(order.getId(), MODIFIED_EMP_ID);
+        Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
+        orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
+        orderService.undoCompletion(order.getId(), MODIFIED_EMP_ID);
+        order = orderQueryService.getOrderById(order.getId());
         assertEquals(order.getStatus(), OrderStatus.PROCESSING);
         assertEquals(order.getCompletedDateTime().isPresent(), false);
-        // TODO: should also check sfms for order.
     }
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteAPendingOrder() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
     }
 
@@ -115,23 +125,24 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void cannotCompleteRejectedOrder() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
         orderService.completeOrder(order.getId(), MODIFIED_EMP_ID);
     }
 
     @Test
     public void canRejectPendingOrder() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
-        assertEquals(order.getStatus(), OrderStatus.PENDING);
-        order = orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
+        order = orderQueryService.getOrderById(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
     @Test
     public void canRejectProcessingOrder() {
         Order order = createProcessingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID, ISSUING_EMP_ID);
-        order = orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
+        orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
+        order = orderQueryService.getOrderById(order.getId());
         assertEquals(order.getStatus(), OrderStatus.REJECTED);
     }
 
@@ -143,7 +154,7 @@ public class OrderTests extends SupplyTests {
 
     @Test(expected = WrongOrderStatusException.class)
     public void canNotRejectRejectedOrder() {
-        Order order = createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
+        Order order = submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID);
         order = orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
         orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
     }

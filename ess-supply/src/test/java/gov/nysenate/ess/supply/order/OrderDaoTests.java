@@ -19,14 +19,14 @@ public class OrderDaoTests extends SupplyTests {
 
     @Test
     public void canGetOrderById() {
-        Order expected = orderDao.insertOrder(createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
+        Order expected = orderDao.insertOrder(submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
         Order actual = orderDao.getOrderById(expected.getId());
         assertThat(actual, equalTo(expected));
     }
 
     @Test
     public void canInsertNewOrder() {
-        Order expected = orderDao.insertOrder(createPendingOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
+        Order expected = orderDao.insertOrder(submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
         Order actual = orderDao.getOrderById(expected.getId());
         assertThat(actual, equalTo(expected));
     }
