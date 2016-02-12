@@ -30,4 +30,15 @@ public class OrderDaoTests extends SupplyTests {
         Order actual = orderDao.getOrderById(expected.getId());
         assertThat(actual, equalTo(expected));
     }
+
+    // TODO: should we be able to delete line items from an order?? Add tests.
+    @Test
+    public void canUpdateOrder() {
+        Order original = orderDao.insertOrder(submitNewOrder(PENCILS_LGCLIPS_PAPERCLIPS, CUSTOMER_EMP_ID));
+        Order expected = original.setStatus(OrderStatus.PROCESSING);
+        expected = expected.setLineItems(incrementItemQuantities(expected.getLineItems()));
+        orderDao.saveOrder(expected);
+        Order actual = orderDao.getOrderById(expected.getId());
+        assertThat(actual, is(equalTo(expected)));
+    }
 }

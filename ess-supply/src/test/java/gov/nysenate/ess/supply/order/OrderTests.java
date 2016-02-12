@@ -158,14 +158,6 @@ public class OrderTests extends SupplyTests {
         orderService.rejectOrder(order.getId(), MODIFIED_EMP_ID);
     }
 
-    private Set<LineItem> incrementItemQuantities(Set<LineItem> originalItems) {
-        Set<LineItem> newItems = new HashSet<>();
-        for (LineItem lineItem : originalItems) {
-            newItems.add(new LineItem(lineItem.getItem(), lineItem.getQuantity() + 1));
-        }
-        return newItems;
-    }
-
     private void assertDateLessThan5SecondsOld(LocalDateTime orderDateTime) {
         assertTrue(orderDateTime.toInstant(ZoneOffset.UTC).isAfter(LocalDateTime.now().minusSeconds(5).toInstant(ZoneOffset.UTC)));
     }

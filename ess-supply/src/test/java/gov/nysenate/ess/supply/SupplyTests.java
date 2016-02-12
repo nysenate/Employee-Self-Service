@@ -40,10 +40,12 @@ public abstract class SupplyTests extends BaseTests {
     protected static final int MODIFIED_EMP_ID = 10008;
 
     protected Set<LineItem> PENCILS_LGCLIPS_PAPERCLIPS;
+    protected Set<LineItem> ONE_BLUE_PEN;
 
     @PostConstruct
     private void setup() {
         PENCILS_LGCLIPS_PAPERCLIPS = initPencilsLgClipsPaperClips();
+        ONE_BLUE_PEN = initBluePen();
     }
 
     protected void resetInMemoryDaos() {
@@ -70,5 +72,19 @@ public abstract class SupplyTests extends BaseTests {
         lineItems.add(new LineItem(itemService.getItemById(4), 3));
         lineItems.add(new LineItem(itemService.getItemById(6), 7));
         return lineItems;
+    }
+
+    private Set<LineItem> initBluePen() {
+        Set<LineItem> lineItems = new HashSet<>();
+        lineItems.add(new LineItem(itemService.getItemById(2), 1));
+        return lineItems;
+    }
+
+    protected Set<LineItem> incrementItemQuantities(Set<LineItem> originalItems) {
+        Set<LineItem> newItems = new HashSet<>();
+        for (LineItem lineItem : originalItems) {
+            newItems.add(new LineItem(lineItem.getItem(), lineItem.getQuantity() + 1));
+        }
+        return newItems;
     }
 }

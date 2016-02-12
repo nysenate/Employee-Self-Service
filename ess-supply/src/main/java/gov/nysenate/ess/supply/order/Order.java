@@ -21,6 +21,7 @@ public final class Order {
     private final OrderStatus status;
     private final Set<LineItem> lineItems;
     /** Audit fields */
+    private final int approvedEmpId;
     private final int modifiedEmpId;
     private final LocalDateTime modifiedDateTime;
 
@@ -34,6 +35,7 @@ public final class Order {
         private LocalDateTime completedDateTime;
         private OrderStatus status;
         private Set<LineItem> lineItems;
+        private int approvedEmpId;
         private int modifiedEmpId;
         private LocalDateTime modifiedDateTime;
 
@@ -87,6 +89,11 @@ public final class Order {
             return this;
         }
 
+        public Builder approvedEmpId(int approvedEmpId) {
+            this.approvedEmpId = approvedEmpId;
+            return this;
+        }
+
         public Builder setModifiedEmpId(int modifiedEmpId) {
             this.modifiedEmpId = modifiedEmpId;
             return this;
@@ -113,6 +120,7 @@ public final class Order {
         this.completedDateTime = builder.completedDateTime;
         this.status = builder.status;
         this.lineItems = builder.lineItems;
+        this.approvedEmpId = builder.approvedEmpId;
         this.modifiedEmpId = builder.modifiedEmpId;
         this.modifiedDateTime = builder.modifiedDateTime;
     }
@@ -123,7 +131,8 @@ public final class Order {
                 .issuingEmployee(issuingEmployee)
                 .processedDateTime(processedDateTime)
                 .completedDateTime(completedDateTime)
-                .lineItems(lineItems);
+                .lineItems(lineItems)
+                .approvedEmpId(approvedEmpId);
     }
 
     /** Function Methods **/
@@ -200,6 +209,14 @@ public final class Order {
 
     public Order setLineItems(Set<LineItem> lineItems) {
         return copy().lineItems(lineItems).build();
+    }
+
+    public int getApprovedEmpId() {
+        return approvedEmpId;
+    }
+
+    public Order setApprovedEmpId(int approvedEmpId) {
+        return copy().approvedEmpId(approvedEmpId).build();
     }
 
     public int getModifiedEmpId() {

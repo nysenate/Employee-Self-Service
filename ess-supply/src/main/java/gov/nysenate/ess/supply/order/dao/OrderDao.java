@@ -17,6 +17,11 @@ import java.util.Set;
 
 public interface OrderDao {
 
+    /**
+     * Inserts an order into the local database and sets the order's id.
+     * @param order An order to be inserted. Should not have an id value.
+     * @return A copy of the passed in order, its id field is now set.
+     */
     Order insertOrder(Order order);
 
     void saveOrder(Order order);

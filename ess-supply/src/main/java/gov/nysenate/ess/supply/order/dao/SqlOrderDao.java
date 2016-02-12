@@ -16,7 +16,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,30 +24,44 @@ import java.util.List;
 @Repository
 public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
-    @Autowired EmployeeInfoService employeeInfoService;
-    @Autowired LocationService locationService;
-    @Autowired SupplyItemService itemService;
+    @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private LocationService locationService;
+    @Autowired private SupplyItemService itemService;
 
     @Override
     public Order insertOrder(Order order) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("status", order.getStatus().toString())
-                .addValue("customerId", order.getCustomer().getEmployeeId())
-                .addValue("locCode", order.getLocationCode())
-                .addValue("locType", order.getLocationType())
-                .addValue("orderDateTime", toDate(order.getOrderDateTime()))
-                .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
-                .addValue("modifiedEmpId", order.getModifiedEmpId());
+        MapSqlParameterSource params = getOrderParams(order);
         String sql = SqlOrderDaoQuery.INSERT_ORDER.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
         order = order.setId((Integer) keyHolder.getKeys().get("order_id"));
-        insertLineItems(order);
+        saveLineItems(order);
         return order;
     }
 
-    public void insertLineItems(Order order) {
-        List<MapSqlParameterSource> batchParams = new ArrayList<>();
+    private MapSqlParameterSource getOrderParams(Order order) {
+        return new MapSqlParameterSource()
+                .addValue("orderId", order.getId())
+                .addValue("status", order.getStatus().toString())
+                .addValue("customerId", order.getCustomer().getEmployeeId())
+                .addValue("locCode", order.getLocationCode())
+                .addValue("locType", order.getLocationType())
+                .addValue("issueEmpId", order.getIssuingEmployee().isPresent() ? order.getIssuingEmployee().get().getEmployeeId() : null)
+                .addValue("approveEmpId", order.getApprovedEmpId() == 0 ? null : order.getApprovedEmpId()) // don't insert default value of 0
+                .addValue("orderDateTime", toDate(order.getOrderDateTime()))
+                .addValue("processDateTime", toDate(order.getProcessedDateTime().orElse(null)))
+                .addValue("completeDateTime", toDate(order.getCompletedDateTime().orElse(null)))
+                .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
+                .addValue("modifiedEmpId", order.getModifiedEmpId());
+    }
+
+    /**
+     * Saves an order's line items.
+     * Will insert new line items and update existing line items.
+     */
+    private void saveLineItems(Order order) {
+        String updateSql = SqlOrderDaoQuery.UPDATE_LINE_ITEMS.getSql(schemaMap());
+        String insertSql = SqlOrderDaoQuery.INSERT_LINE_ITEMS.getSql(schemaMap());
         for (LineItem lineItem: order.getLineItems()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("orderId", order.getId())
@@ -56,19 +69,18 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
                     .addValue("quantity", lineItem.getQuantity())
                     .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
                     .addValue("modifiedEmpId", order.getModifiedEmpId());
-            batchParams.add(params);
+            if (localNamedJdbc.update(updateSql, params) == 0) {
+                localNamedJdbc.update(insertSql, params);
+            }
         }
-        String sql = SqlOrderDaoQuery.INSERT_LINE_ITEMS.getSql(schemaMap());
-        localNamedJdbc.batchUpdate(sql, toArray(batchParams));
-    }
-
-    private MapSqlParameterSource[] toArray(List<MapSqlParameterSource> batchParams) {
-        return batchParams.toArray(new MapSqlParameterSource[batchParams.size()]);
     }
 
     @Override
     public void saveOrder(Order order) {
-
+        MapSqlParameterSource params = getOrderParams(order);
+        String sql = SqlOrderDaoQuery.UPDATE_ORDER.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+        saveLineItems(order);
     }
 
     @Override
