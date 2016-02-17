@@ -47,6 +47,9 @@ master.schema =
 # The schema containing read-write tables for timesheets
 ts.schema =
 
+# Supply's schema
+supply.schema =
+
 # --- Mail Configuration ------------------------------------------------------
 
 # Connection information for sending emails

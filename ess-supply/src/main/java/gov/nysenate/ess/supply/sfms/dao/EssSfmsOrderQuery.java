@@ -16,7 +16,7 @@ public enum EssSfmsOrderQuery implements BasicSqlQuery {
             "AND DTISSUE BETWEEN :startDate AND :endDate \n"
     ),
     TOTAL_ORDERS_SUB_QUERY(
-            "Select count(count(*))  from ess_master.fd12expissue\n" + SEARCH_WHERE_CLAUSE.getSql() +
+            "Select count(count(*))  from ${masterSchema}.fd12expissue\n" + SEARCH_WHERE_CLAUSE.getSql() +
             "Group by nuissue, dtissue, cdloctypefrm, cdlocatto, cdlocatfrom, cdloctypeto"
     ),
     GET_ORDERS(
