@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
@@ -86,7 +87,17 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     @Override
     public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                           Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
-        return null;
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("locCode", formatSearchString(locCode))
+                .addValue("locType", formatSearchString(locType))
+                .addValue("issueEmpId", formatSearchString(issuerEmpId))
+                .addValue("statuses", extractEnumSetParams(statuses))
+                .addValue("startDate", toDate(DateUtils.startOfDateTimeRange(dateTimeRange)))
+                .addValue("endDate", toDate(DateUtils.endOfDateTimeRange(dateTimeRange)));
+        String sql = SqlOrderDaoQuery.SEARCH_ORDERS.getSql(schemaMap(), limOff);
+        SqlPaginatedOrderHandler handler = new SqlPaginatedOrderHandler(employeeInfoService, locationService, itemService, limOff);
+        localNamedJdbc.query(sql, params, handler);
+        return handler.getOrders();
     }
 
     @Override
@@ -102,4 +113,25 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     public void undoCompletion(Order order) {
 
     }
+
+    private String formatSearchString(String param) {
+        return param != null && param.equals("all") ? "%" : param;
+    }
+
+    private Object extractEnumSetParams(EnumSet<OrderStatus> statuses) {
+        boolean first = true;
+        String params = "";
+        for(OrderStatus status: statuses) {
+            if (first) {
+                params += status.toString();
+                first = false;
+            }
+            else {
+                params += ", " + status.toString();
+            }
+        }
+        return params;
+//        return "PENDING";
+    }
+
 }
