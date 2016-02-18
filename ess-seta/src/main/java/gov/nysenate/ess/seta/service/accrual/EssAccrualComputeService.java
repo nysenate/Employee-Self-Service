@@ -115,7 +115,9 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 Map.Entry<PayPeriod, PeriodAccSummary> periodAccRecord = periodAccruals.lowerEntry(lastPeriod);
                 Optional<PeriodAccSummary> optPeriodAccRecord = Optional.ofNullable(periodAccRecord).map(Map.Entry::getValue);
 
-                AccrualState accrualState = computeInitialAccState(empTrans, optPeriodAccRecord, annualAcc.get(lastPeriod.getYear()));
+                AccrualState accrualState = computeInitialAccState(empTrans, optPeriodAccRecord,
+                    // Obtain the latest annual accrual record before/on the last pay period year requested
+                    annualAcc.floorEntry(lastPeriod.getYear()).getValue());
 
                 // Generate a list of all the pay periods between the period immediately following the DTPERLSPOST and
                 // before the pay period we are trying to compute available accruals for. We will call these the accrual
@@ -150,6 +152,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     private AccrualState computeInitialAccState(TransactionHistory transHistory, Optional<PeriodAccSummary> periodAccSum,
                                                 AnnualAccSummary annualAcc) {
         AccrualState accrualState = new AccrualState(annualAcc);
+        LocalDate endDate = accrualState.getEndDate();
         Range<LocalDate> initialRange = Range.atMost(accrualState.getEndDate());
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record

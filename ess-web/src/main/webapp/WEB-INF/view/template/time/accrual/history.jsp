@@ -77,7 +77,7 @@
     </toggle-panel>
 
 
-    <div class="content-container" ng-show="state.searching === false && state.accSummaries[state.selectedYear]">
+    <div class="content-container" ng-show="state.searching === false && state.accSummaries[state.selectedYear].length > 0">
         <h1 class="teal">Accrual History</h1>
         <p class="content-info">
             Summary of historical accrual records.

@@ -25,15 +25,17 @@ public class AccrualUsage
     }
 
     public AccrualUsage(AccrualUsage lhs) {
-        this.empId = lhs.empId;
-        this.workHours = lhs.workHours;
-        this.travelHoursUsed = lhs.travelHoursUsed;
-        this.vacHoursUsed = lhs.vacHoursUsed;
-        this.perHoursUsed = lhs.perHoursUsed;
-        this.empHoursUsed = lhs.empHoursUsed;
-        this.famHoursUsed = lhs.famHoursUsed;
-        this.holHoursUsed = lhs.holHoursUsed;
-        this.miscHoursUsed = lhs.miscHoursUsed;
+        if (lhs != null) {
+            this.empId = lhs.empId;
+            this.workHours = lhs.workHours;
+            this.travelHoursUsed = lhs.travelHoursUsed;
+            this.vacHoursUsed = lhs.vacHoursUsed;
+            this.perHoursUsed = lhs.perHoursUsed;
+            this.empHoursUsed = lhs.empHoursUsed;
+            this.famHoursUsed = lhs.famHoursUsed;
+            this.holHoursUsed = lhs.holHoursUsed;
+            this.miscHoursUsed = lhs.miscHoursUsed;
+        }
     }
 
     public AccrualUsage(int empId, Collection<AccrualUsage> usages) {
