@@ -7,7 +7,6 @@
     <h3 class="main-topic">Personnel</h3>
     <ul class="sub-topic-list">
         <li class="sub-topic"><a href="${ctxPath}/myinfo/personnel/summary">Current Info</a></li>
-        <li class="sub-topic"><a href="${ctxPath}/myinfo/personnel/transactions">Employee Updates</a></li>
     </ul>
     <h3 class="main-topic">Payroll</h3>
     <ul class="sub-topic-list">

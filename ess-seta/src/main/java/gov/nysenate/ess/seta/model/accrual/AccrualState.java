@@ -29,8 +29,10 @@ public class AccrualState extends AccrualSummary
 
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
-        this.endDate = annualAccSummary.getEndDate();
-        this.payPeriodCount = annualAccSummary.getPayPeriodsBanked();
+        if (annualAccSummary != null) {
+            this.endDate = annualAccSummary.getEndDate();
+            this.payPeriodCount = annualAccSummary.getPayPeriodsBanked();
+        }
     }
 
     /** --- Methods --- */
@@ -102,19 +104,27 @@ public class AccrualState extends AccrualSummary
 
     /**
      * At the start of a new year the following operations must take place on the recorded accruals:
-     * - Year to date accrual usages and hours worked are set back to 0.
-     * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      * - Excess vacation and sick hours are banked, ensuring they are capped to their maximum values.
      * - Year to date Vacation and sick accruals are reset.
      * - Year to date expected hours are reset.
+     * - Year to date accrual usages and hours worked are set back to 0.
+     * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
     public void applyYearRollover() {
-        resetCurrentYearUsage();
-        this.setVacHoursBanked(this.getVacHoursBanked().add(this.getVacHoursAccrued()).min(AccrualRate.VACATION.getMaxHoursBanked()));
+        this.setVacHoursBanked(
+            this.getVacHoursBanked()
+                    .add(this.getVacHoursAccrued())
+                    .subtract(this.getVacHoursUsed())
+                    .min(AccrualRate.VACATION.getMaxHoursBanked()));
         this.setVacHoursAccrued(BigDecimal.ZERO);
-        this.setEmpHoursBanked(this.getEmpHoursBanked().add(this.getEmpHoursAccrued()).min(AccrualRate.SICK.getMaxHoursBanked()));
+        this.setEmpHoursBanked(
+                this.getEmpHoursBanked()
+                        .add(this.getEmpHoursAccrued())
+                        .subtract(this.getEmpHoursUsed())
+                        .min(AccrualRate.SICK.getMaxHoursBanked()));
         this.setEmpHoursAccrued(BigDecimal.ZERO);
         this.setYtdHoursExpected(BigDecimal.ZERO);
+        resetCurrentYearUsage();
     }
 
     /**

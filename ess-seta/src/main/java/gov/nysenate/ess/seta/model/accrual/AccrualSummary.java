@@ -41,12 +41,14 @@ public class AccrualSummary extends AccrualUsage
 
     public AccrualSummary(AccrualSummary s) {
         super(s);
-        this.setEmpHoursAccrued(s.getEmpHoursAccrued());
-        this.setEmpHoursBanked(s.getEmpHoursBanked());
-        this.setPerHoursAccrued(s.getPerHoursAccrued());
-        this.setVacHoursAccrued(s.getVacHoursAccrued());
-        this.setVacHoursBanked(s.getVacHoursBanked());
-        this.setEmpHoursUsed(s.getEmpHoursUsed());
+        if (s != null) {
+            this.setEmpHoursAccrued(s.getEmpHoursAccrued());
+            this.setEmpHoursBanked(s.getEmpHoursBanked());
+            this.setPerHoursAccrued(s.getPerHoursAccrued());
+            this.setVacHoursAccrued(s.getVacHoursAccrued());
+            this.setVacHoursBanked(s.getVacHoursBanked());
+            this.setEmpHoursUsed(s.getEmpHoursUsed());
+        }
     }
 
     /** --- Basic Getters/Setters --- */

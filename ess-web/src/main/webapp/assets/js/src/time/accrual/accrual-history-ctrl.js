@@ -38,8 +38,8 @@ essTime.controller('AccrualHistoryCtrl',
                     $scope.state.accSummaries[year] = resp.result.filter(function(acc) {
                         return !acc.computed;
                     }).reverse();
-                    // Gather projected acc records if year is current or future.
-                    if (year >= $scope.state.today.year()) {
+                    // Gather projected acc records if year is 1 yr ago, current, or future.
+                    if (year >= $scope.state.today.year() - 1) {
                         $scope.state.projections[year] = resp.result.filter(function(acc) {
                             return acc.computed && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
                         }).reverse();
