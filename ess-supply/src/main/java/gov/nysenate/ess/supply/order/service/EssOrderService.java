@@ -60,9 +60,8 @@ public class EssOrderService implements OrderService {
         }
         order = order.setStatus(OrderStatus.COMPLETED);
         order = order.setCompletedDateTime(LocalDateTime.now());
-        // TODO: both these saves should be in same transaction.
         saveOrder(order, modifiedEmpId);
-        sfmsDao.saveOrder(order);
+//        sfmsDao.saveOrder(order); // FIXME: sfms will be updated in separate process.
         return order;
     }
 
