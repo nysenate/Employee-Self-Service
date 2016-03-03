@@ -11,6 +11,9 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
+import gov.nysenate.ess.supply.order.dao.handler.SqlLineItemHandler;
+import gov.nysenate.ess.supply.order.dao.handler.SqlOrderHandler;
+import gov.nysenate.ess.supply.order.dao.handler.SqlPaginatedOrderHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,9 +21,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class SqlOrderDao extends SqlBaseDao implements OrderDao {
@@ -85,6 +87,15 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     }
 
     @Override
+    public Order getOrderById(int orderId) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("orderId", orderId);
+        String sql = SqlOrderDaoQuery.GET_ORDER_BY_ID.getSql(schemaMap());
+        SqlOrderHandler handler = new SqlOrderHandler(employeeInfoService, locationService, itemService);
+        localNamedJdbc.query(sql, params, handler);
+        return handler.getOrders().get(0);
+    }
+
+    @Override
     public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                           Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         MapSqlParameterSource params = new MapSqlParameterSource()
@@ -95,18 +106,35 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
                 .addValue("startDate", toDate(DateUtils.startOfDateTimeRange(dateTimeRange)))
                 .addValue("endDate", toDate(DateUtils.endOfDateTimeRange(dateTimeRange)));
         String sql = SqlOrderDaoQuery.SEARCH_ORDERS.getSql(schemaMap(), limOff);
-        SqlPaginatedOrderHandler handler = new SqlPaginatedOrderHandler(employeeInfoService, locationService, itemService, limOff);
+        SqlPaginatedOrderHandler handler = new SqlPaginatedOrderHandler(employeeInfoService, locationService, limOff);
         localNamedJdbc.query(sql, params, handler);
-        return handler.getOrders();
+        return populateOrderLineItems(handler.getOrders());
     }
 
-    @Override
-    public Order getOrderById(int orderId) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("orderId", orderId);
-        String sql = SqlOrderDaoQuery.GET_ORDER_BY_ID.getSql(schemaMap());
-        SqlOrderHandler handler = new SqlOrderHandler(employeeInfoService, locationService, itemService);
+    /**
+     * Perform additional queries to the the line items for each order.
+     * Cannot get full order in one query since the one-to-many relationship between order and line items
+     * returns incomplete results when querying with a limit offset.
+     * @param paginatedOrders A PaginatedList of orders which are missing line item information.
+     * @return A PaginatedList of orders fully populated with line item information.
+     */
+    private PaginatedList<Order> populateOrderLineItems(PaginatedList<Order> paginatedOrders) {
+        List<Order> emptyOrders = paginatedOrders.getResults();
+        List<Order> fullOrders = emptyOrders.stream().map(order -> order.setLineItems(getOrderItems(order)))
+                                                     .collect(Collectors.toList());
+        return new PaginatedList<>(paginatedOrders.getTotal(), paginatedOrders.getLimOff(), fullOrders);
+    }
+
+    /**
+     * Get the set of line items belonging to an order.
+     */
+    private Set<LineItem> getOrderItems(Order order) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("orderId", order.getId());
+        String sql = SqlOrderDaoQuery.GET_ORDER_ITEMS.getSql(schemaMap());
+        SqlLineItemHandler handler = new SqlLineItemHandler(itemService);
         localNamedJdbc.query(sql, params, handler);
-        return handler.getOrders().get(0);
+        return new HashSet<>(handler.getLineItems());
     }
 
     @Override
@@ -114,6 +142,10 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
     }
 
+    /**
+     * If param is 'all' convert to '%' for sql queries.
+     * Otherwise return the param unaltered.
+     */
     private String formatSearchString(String param) {
         return param != null && param.equals("all") ? "%" : param;
     }
@@ -131,7 +163,6 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
             }
         }
         return params;
-//        return "PENDING";
     }
 
 }

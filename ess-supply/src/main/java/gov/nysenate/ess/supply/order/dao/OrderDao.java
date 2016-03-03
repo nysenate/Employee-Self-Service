@@ -26,6 +26,8 @@ public interface OrderDao {
 
     void saveOrder(Order order);
 
+    Order getOrderById(int orderId);
+
     /**
      * Get orders by location code, location type, issuer, statuses, and date range.
      * @param locCode If 'all', search by all location codes.
@@ -38,8 +40,6 @@ public interface OrderDao {
      */
     PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                              Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
-
-    Order getOrderById(int orderId);
 
     void undoCompletion(Order order);
 }

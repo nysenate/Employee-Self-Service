@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.order.dao;
+package gov.nysenate.ess.supply.order.dao.handler;
 
 import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.model.unit.LocationType;
@@ -6,33 +6,31 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
-import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderStatus;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+/**
+ * Map entries from the order table to order objects.
+ * Does not add line items to the orders.
+ */
 public class SqlPaginatedOrderHandler extends BaseHandler {
 
     private final EmployeeInfoService employeeInfoService;
     private final LocationService locationService;
-    private final SupplyItemService itemService;
     private final LimitOffset limitOffset;
     private int totalCount = 0;
     /** Stores orders while entire result set is processed. */
-    private Map<Integer, Order> orderMap = new HashMap<>();
+    private List<Order> orders = new ArrayList<>();
 
     public SqlPaginatedOrderHandler(EmployeeInfoService employeeInfoService, LocationService locationService,
-                           SupplyItemService itemService, LimitOffset limitOffset) {
+                           LimitOffset limitOffset) {
         this.employeeInfoService = employeeInfoService;
         this.locationService = locationService;
-        this.itemService = itemService;
         this.limitOffset = limitOffset;
     }
 
@@ -41,19 +39,11 @@ public class SqlPaginatedOrderHandler extends BaseHandler {
         if (totalCount == 0) {
             totalCount = rs.getInt("total_rows");
         }
-        int orderId = rs.getInt("order_id");
-        Order order = orderMap.containsKey(orderId) ? orderMap.get(orderId) : getOrderFromResultSet(rs);
-        LineItem lineItem = getLineItemFromResultSet(rs);
-        order = order.addLineItem(lineItem);
-        orderMap.put(order.getId(), order); // Must put back in map since Order is immutable.
+        Order order = createOrderFromResultSet(rs);
+        orders.add(order);
     }
 
-    private LineItem getLineItemFromResultSet(ResultSet rs) throws SQLException {
-        SupplyItem item = itemService.getItemById(rs.getInt("item_id"));
-        return new LineItem(item, rs.getInt("quantity"));
-    }
-
-    private Order getOrderFromResultSet(ResultSet rs) throws SQLException {
+    private Order createOrderFromResultSet(ResultSet rs) throws SQLException {
         Order.Builder builder = new Order.Builder(employeeInfoService.getEmployee(rs.getInt("customer_id")),
                                                   getLocalDateTimeFromRs(rs, "order_date_time"),
                                                   locationService.getLocation(rs.getString("location_code"), LocationType.valueOfCode(
@@ -71,6 +61,6 @@ public class SqlPaginatedOrderHandler extends BaseHandler {
     }
 
     public PaginatedList<Order> getOrders() {
-        return new PaginatedList<>(totalCount, limitOffset, new ArrayList<>(orderMap.values()));
+        return new PaginatedList<>(totalCount, limitOffset, orders);
     }
 }

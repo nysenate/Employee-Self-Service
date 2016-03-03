@@ -36,7 +36,7 @@ public enum SqlOrderDaoQuery implements BasicSqlQuery {
     ),
     SEARCH_WHERE_CLAUSE(
             "Where o.location_code Like :locCode And o.location_type Like :locType \n" +
-            "And Coalesce(o.issue_emp_id::text, '') Like :issueEmpId And o.status::text In (:statuses) \n" +
+            "And Coalesce(o.issue_emp_id::text, '') Like :issueEmpId \n" +
             "And o.order_date_time Between :startDate And :endDate "
     ),
     TOTAL_ORDERS_SUBQUERY(
@@ -45,9 +45,14 @@ public enum SqlOrderDaoQuery implements BasicSqlQuery {
     SEARCH_ORDERS(
             "Select o.order_id, o.status, o.customer_id, o.location_code, o.location_type, \n" +
             "o.issue_emp_id, o.approve_emp_id, o.order_date_time, o.process_date_time, o.complete_date_time, \n" +
-            "o.modified_date_time, o.modified_emp_id, i.item_id, i.quantity, " + TOTAL_ORDERS_SUBQUERY.getSql() + " \n" +
-            "From ${supplySchema}.order o Left Outer Join ${supplySchema}.line_item i On o.order_id = i.order_id \n" +
+            "o.modified_date_time, o.modified_emp_id, " + TOTAL_ORDERS_SUBQUERY.getSql() + " \n" +
+            "From ${supplySchema}.order o \n" +
             SEARCH_WHERE_CLAUSE.getSql()
+    ),
+    GET_ORDER_ITEMS(
+            "Select item_id, quantity \n" +
+            "From ${supplySchema}.line_item \n" +
+            "Where order_id = :orderId"
     );
 
     SqlOrderDaoQuery(String sql) {

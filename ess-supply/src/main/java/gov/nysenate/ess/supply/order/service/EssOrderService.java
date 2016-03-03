@@ -47,7 +47,7 @@ public class EssOrderService implements OrderService {
         order = order.setIssuingEmployee(issuingEmployee);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setProcessedDateTime(LocalDateTime.now());
-        saveOrder(order, modifiedEmpId);
+        order = saveOrder(order, modifiedEmpId);
         return order;
     }
 
@@ -60,7 +60,7 @@ public class EssOrderService implements OrderService {
         }
         order = order.setStatus(OrderStatus.COMPLETED);
         order = order.setCompletedDateTime(LocalDateTime.now());
-        saveOrder(order, modifiedEmpId);
+        order = saveOrder(order, modifiedEmpId);
 //        sfmsDao.saveOrder(order); // FIXME: sfms will be updated in separate process.
         return order;
     }
@@ -71,7 +71,7 @@ public class EssOrderService implements OrderService {
         Order order = orderSearchService.getOrderById(orderId);
         order = order.setStatus(OrderStatus.PROCESSING);
         order = order.setCompletedDateTime(null);
-        saveOrder(order, modifiedEmpId);
+        order = saveOrder(order, modifiedEmpId);
         return order;
     }
 
@@ -83,7 +83,7 @@ public class EssOrderService implements OrderService {
                                                 ". Tried to reject order with status of " + order.getStatus().toString());
         }
         order = order.setStatus(OrderStatus.REJECTED);
-        saveOrder(order, modifiedEmpId);
+        order = saveOrder(order, modifiedEmpId);
         return order;
     }
 
@@ -91,17 +91,18 @@ public class EssOrderService implements OrderService {
     public Order updateOrderLineItems(int orderId, Set<LineItem> newLineItems, int modifiedEmpId) {
         Order original = orderSearchService.getOrderById(orderId);
         Order updated = original.setLineItems(newLineItems);
-        saveOrder(updated, modifiedEmpId);
+        updated = saveOrder(updated, modifiedEmpId);
         return updated;
     }
 
     /**
      * Persist the order to the database.
      */
-    private void saveOrder(Order order, int modifiedEmpId) {
+    private Order saveOrder(Order order, int modifiedEmpId) {
         order = order.setModifiedEmpId(modifiedEmpId);
         order = order.setModifiedDateTime(LocalDateTime.now());
         orderDao.saveOrder(order);
+        return order;
     }
 
     private boolean statusIsPendingOrProcessing(Order order) {

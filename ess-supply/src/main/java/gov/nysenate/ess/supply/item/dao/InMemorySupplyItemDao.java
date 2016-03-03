@@ -14,6 +14,9 @@ import java.util.Map;
 @Primary
 @Profile("test")
 @Repository
+/**
+ * Used for testing across SFMS boundries.
+ */
 public class InMemorySupplyItemDao implements SupplyItemDao {
 
     private Map<Integer, SupplyItem> items;

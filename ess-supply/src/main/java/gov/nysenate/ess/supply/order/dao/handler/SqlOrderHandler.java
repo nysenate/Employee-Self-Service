@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.order.dao;
+package gov.nysenate.ess.supply.order.dao.handler;
 
 import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.model.unit.LocationType;
