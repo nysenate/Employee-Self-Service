@@ -142,27 +142,12 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
     }
 
-    /**
-     * If param is 'all' convert to '%' for sql queries.
-     * Otherwise return the param unaltered.
-     */
     private String formatSearchString(String param) {
         return param != null && param.equals("all") ? "%" : param;
     }
 
-    private Object extractEnumSetParams(EnumSet<OrderStatus> statuses) {
-        boolean first = true;
-        String params = "";
-        for(OrderStatus status: statuses) {
-            if (first) {
-                params += status.toString();
-                first = false;
-            }
-            else {
-                params += ", " + status.toString();
-            }
-        }
-        return params;
+    private Set<String> extractEnumSetParams(EnumSet<OrderStatus> statuses) {
+        return statuses.stream().map(Enum::name).collect(Collectors.toSet());
     }
 
 }

@@ -36,7 +36,7 @@ public enum SqlOrderDaoQuery implements BasicSqlQuery {
     ),
     SEARCH_WHERE_CLAUSE(
             "Where o.location_code Like :locCode And o.location_type Like :locType \n" +
-            "And Coalesce(o.issue_emp_id::text, '') Like :issueEmpId \n" +
+            "And Coalesce(o.issue_emp_id::text, '') Like :issueEmpId And o.status::text In (:statuses)\n" +
             "And o.order_date_time Between :startDate And :endDate "
     ),
     TOTAL_ORDERS_SUBQUERY(

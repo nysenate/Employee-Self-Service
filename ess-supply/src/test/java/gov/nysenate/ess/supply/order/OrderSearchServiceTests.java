@@ -53,7 +53,6 @@ public class OrderSearchServiceTests extends SupplyTests {
         assertThat(results.getResults().get(0), equalTo(expected));
     }
 
-    @Ignore
     @Test
     public void canGetOrdersByStatus() {
         Order order = orderService.submitOrder(TestUtils.PENCILS_AND_PENS, TestUtils.CUSTOMER_EMP_ID, TestUtils.MODIFIED_EMP_ID);
@@ -64,6 +63,18 @@ public class OrderSearchServiceTests extends SupplyTests {
         processingOrders = searchService.getOrders(EnumSet.of(OrderStatus.PROCESSING), ONE_WEEK_RANGE, LimitOffset.ALL);
         assertThat(processingOrders.getTotal(), is(1));
         assertThat(processingOrders.getResults().get(0), equalTo(expected));
+    }
+
+    @Test
+    public void canGetOrdersByMultipleStatuses() {
+        Order pending = orderService.submitOrder(TestUtils.PENCILS_AND_PENS, TestUtils.CUSTOMER_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        pending = orderService.processOrder(pending.getId(), TestUtils.ISSUING_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        Order completed = orderService.submitOrder(TestUtils.PENCILS_AND_PENS, TestUtils.CUSTOMER_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        completed = orderService.processOrder(completed.getId(), TestUtils.ISSUING_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        completed = orderService.completeOrder(completed.getId(), TestUtils.MODIFIED_EMP_ID);
+
+        PaginatedList<Order> actual = searchService.getOrders(EnumSet.of(OrderStatus.PROCESSING, OrderStatus.COMPLETED), ONE_WEEK_RANGE, LimitOffset.ALL);
+        assertThat(actual.getTotal(), is (2));
     }
 
     @Test
@@ -89,7 +100,12 @@ public class OrderSearchServiceTests extends SupplyTests {
         assertThat(orders.getResults().get(0), equalTo(firstOrder));
     }
 
-//    @Test
-//    public void paginatedListResultContainsCorrectInfo() {
-//    }
+    @Test
+    public void paginatedListResultContainsCorrectInfo() {
+        Order order = orderService.submitOrder(TestUtils.PENCILS_AND_PENS, TestUtils.CUSTOMER_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        PaginatedList<Order> orders = searchService.getOrders(EnumSet.of(OrderStatus.PENDING), ONE_WEEK_RANGE, LimitOffset.ALL);
+        assertThat(orders.getTotal(), is(1));
+        assertThat(orders.getLimOff(), is(LimitOffset.ALL));
+        assertThat(orders.getResults().get(0), equalTo(order));
+    }
 }
