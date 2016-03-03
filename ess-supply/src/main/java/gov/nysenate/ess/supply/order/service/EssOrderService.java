@@ -61,11 +61,9 @@ public class EssOrderService implements OrderService {
         order = order.setStatus(OrderStatus.COMPLETED);
         order = order.setCompletedDateTime(LocalDateTime.now());
         order = saveOrder(order, modifiedEmpId);
-//        sfmsDao.saveOrder(order); // FIXME: sfms will be updated in separate process.
         return order;
     }
 
-    // TODO: are we keeping this functionality? Update SFMS?
     @Override
     public Order undoCompletion(int orderId, int modifiedEmpId) {
         Order order = orderSearchService.getOrderById(orderId);

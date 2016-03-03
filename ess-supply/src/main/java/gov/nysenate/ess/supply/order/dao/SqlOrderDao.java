@@ -33,29 +33,13 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
     @Override
     public Order insertOrder(Order order) {
-        MapSqlParameterSource params = getOrderParams(order);
+        MapSqlParameterSource params = orderParams(order);
         String sql = SqlOrderDaoQuery.INSERT_ORDER.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
         order = order.setId((Integer) keyHolder.getKeys().get("order_id"));
         saveLineItems(order);
         return order;
-    }
-
-    private MapSqlParameterSource getOrderParams(Order order) {
-        return new MapSqlParameterSource()
-                .addValue("orderId", order.getId())
-                .addValue("status", order.getStatus().toString())
-                .addValue("customerId", order.getCustomer().getEmployeeId())
-                .addValue("locCode", order.getLocationCode())
-                .addValue("locType", order.getLocationType())
-                .addValue("issueEmpId", order.getIssuingEmployee().isPresent() ? order.getIssuingEmployee().get().getEmployeeId() : null)
-                .addValue("approveEmpId", order.getApprovedEmpId() == 0 ? null : order.getApprovedEmpId()) // don't insert default value of 0
-                .addValue("orderDateTime", toDate(order.getOrderDateTime()))
-                .addValue("processDateTime", toDate(order.getProcessedDateTime().orElse(null)))
-                .addValue("completeDateTime", toDate(order.getCompletedDateTime().orElse(null)))
-                .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
-                .addValue("modifiedEmpId", order.getModifiedEmpId());
     }
 
     /**
@@ -80,7 +64,7 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
     @Override
     public void saveOrder(Order order) {
-        MapSqlParameterSource params = getOrderParams(order);
+        MapSqlParameterSource params = orderParams(order);
         String sql = SqlOrderDaoQuery.UPDATE_ORDER.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
         saveLineItems(order);
@@ -98,17 +82,11 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     @Override
     public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                                           Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("locCode", formatSearchString(locCode))
-                .addValue("locType", formatSearchString(locType))
-                .addValue("issueEmpId", formatSearchString(issuerEmpId))
-                .addValue("statuses", extractEnumSetParams(statuses))
-                .addValue("startDate", toDate(DateUtils.startOfDateTimeRange(dateTimeRange)))
-                .addValue("endDate", toDate(DateUtils.endOfDateTimeRange(dateTimeRange)));
+        MapSqlParameterSource params = searchOrderParams(locCode, locType, issuerEmpId, statuses, dateTimeRange);
         String sql = SqlOrderDaoQuery.SEARCH_ORDERS.getSql(schemaMap(), limOff);
         SqlPaginatedOrderHandler handler = new SqlPaginatedOrderHandler(employeeInfoService, locationService, limOff);
         localNamedJdbc.query(sql, params, handler);
-        return populateOrderLineItems(handler.getOrders());
+        return populateLineItems(handler.getOrders());
     }
 
     /**
@@ -118,7 +96,7 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
      * @param paginatedOrders A PaginatedList of orders which are missing line item information.
      * @return A PaginatedList of orders fully populated with line item information.
      */
-    private PaginatedList<Order> populateOrderLineItems(PaginatedList<Order> paginatedOrders) {
+    private PaginatedList<Order> populateLineItems(PaginatedList<Order> paginatedOrders) {
         List<Order> emptyOrders = paginatedOrders.getResults();
         List<Order> fullOrders = emptyOrders.stream().map(order -> order.setLineItems(getOrderItems(order)))
                                                      .collect(Collectors.toList());
@@ -137,11 +115,6 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
         return new HashSet<>(handler.getLineItems());
     }
 
-    @Override
-    public void undoCompletion(Order order) {
-
-    }
-
     private String formatSearchString(String param) {
         return param != null && param.equals("all") ? "%" : param;
     }
@@ -150,4 +123,29 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
         return statuses.stream().map(Enum::name).collect(Collectors.toSet());
     }
 
+    private MapSqlParameterSource orderParams(Order order) {
+        return new MapSqlParameterSource()
+                .addValue("orderId", order.getId())
+                .addValue("status", order.getStatus().toString())
+                .addValue("customerId", order.getCustomer().getEmployeeId())
+                .addValue("locCode", order.getLocationCode())
+                .addValue("locType", order.getLocationType())
+                .addValue("issueEmpId", order.getIssuingEmployee().isPresent() ? order.getIssuingEmployee().get().getEmployeeId() : null)
+                .addValue("approveEmpId", order.getApprovedEmpId() == 0 ? null : order.getApprovedEmpId()) // don't insert default value of 0
+                .addValue("orderDateTime", toDate(order.getOrderDateTime()))
+                .addValue("processDateTime", toDate(order.getProcessedDateTime().orElse(null)))
+                .addValue("completeDateTime", toDate(order.getCompletedDateTime().orElse(null)))
+                .addValue("modifiedDateTime", toDate(order.getModifiedDateTime()))
+                .addValue("modifiedEmpId", order.getModifiedEmpId());
+    }
+
+    private MapSqlParameterSource searchOrderParams(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses, Range<LocalDateTime> dateTimeRange) {
+        return new MapSqlParameterSource()
+                .addValue("locCode", formatSearchString(locCode))
+                .addValue("locType", formatSearchString(locType))
+                .addValue("issueEmpId", formatSearchString(issuerEmpId))
+                .addValue("statuses", extractEnumSetParams(statuses))
+                .addValue("startDate", toDate(DateUtils.startOfDateTimeRange(dateTimeRange)))
+                .addValue("endDate", toDate(DateUtils.endOfDateTimeRange(dateTimeRange)));
+    }
 }

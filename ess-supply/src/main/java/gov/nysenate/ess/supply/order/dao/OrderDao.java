@@ -40,6 +40,4 @@ public interface OrderDao {
      */
     PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
                              Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
-
-    void undoCompletion(Order order);
 }

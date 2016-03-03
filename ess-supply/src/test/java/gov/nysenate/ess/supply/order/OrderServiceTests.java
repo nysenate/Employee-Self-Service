@@ -6,15 +6,12 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.exception.WrongOrderStatusException;
 import gov.nysenate.ess.supply.order.service.OrderSearchService;
 import gov.nysenate.ess.supply.order.service.OrderService;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
@@ -44,7 +41,6 @@ public class OrderServiceTests extends SupplyTests {
         assertThat(order.getModifiedEmpId(), is(TestUtils.MODIFIED_EMP_ID));
     }
 
-    // TODO: should items be deletable from an order?
     @Test
     public void canUpdateOrderLineItems() {
         Set<LineItem> newLineItems = incrementItemQuantities(order.getLineItems());
