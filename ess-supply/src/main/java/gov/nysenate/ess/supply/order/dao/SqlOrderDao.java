@@ -89,6 +89,13 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
         return populateLineItems(handler.getOrders());
     }
 
+    @Override
+    public Set<Order> getOrderHistory(int orderId) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("orderId", orderId);
+        String sql = SqlOrderDaoQuery.GET_ORDER_HISTORY.getSql(schemaMap());
+        return null;
+    }
+
     /**
      * Perform additional queries to the the line items for each order.
      * Cannot get full order in one query since the one-to-many relationship between order and line items

@@ -53,6 +53,10 @@ public enum SqlOrderDaoQuery implements BasicSqlQuery {
             "Select item_id, quantity \n" +
             "From ${supplySchema}.line_item \n" +
             "Where order_id = :orderId"
+    ),
+    GET_ORDER_HISTORY(
+            "Select order_id, item_id, modfied_emp_id, modified_date_time, table_name, action, hstore_to_array(data) \n" +
+            "From order_audit Where order_id = :orderId"
     );
 
     SqlOrderDaoQuery(String sql) {

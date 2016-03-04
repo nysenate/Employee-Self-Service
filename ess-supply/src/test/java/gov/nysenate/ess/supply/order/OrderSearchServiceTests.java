@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -107,5 +108,14 @@ public class OrderSearchServiceTests extends SupplyTests {
         assertThat(orders.getTotal(), is(1));
         assertThat(orders.getLimOff(), is(LimitOffset.ALL));
         assertThat(orders.getResults().get(0), equalTo(order));
+    }
+
+    @Test
+    public void getHistoryReturnsAllStatesOfOrder() {
+        Order pending = orderService.submitOrder(TestUtils.PENCILS_AND_PENS, TestUtils.CUSTOMER_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        Order processed = orderService.processOrder(pending.getId(), TestUtils.ISSUING_EMP_ID, TestUtils.MODIFIED_EMP_ID);
+        Set<Order> history = searchService.getOrderHistory(processed.getId());
+        assertThat(history.size(), is(2));
+        assertThat(history, contains(pending, processed));
     }
 }

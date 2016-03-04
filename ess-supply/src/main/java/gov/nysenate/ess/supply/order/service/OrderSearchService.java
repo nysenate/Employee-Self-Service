@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface responsible for querying and filtering Order's from various data stores.
@@ -60,4 +61,6 @@ public interface OrderSearchService {
      */
     PaginatedList<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName,
                                   Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
+
+    Set<Order> getOrderHistory(int order_id);
 }

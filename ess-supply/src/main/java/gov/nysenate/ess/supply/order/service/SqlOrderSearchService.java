@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.Set;
 
 @Service
 public class SqlOrderSearchService implements OrderSearchService {
@@ -46,5 +47,10 @@ public class SqlOrderSearchService implements OrderSearchService {
     public PaginatedList<SfmsOrder> getSfmsOrders(String locCode, String locType, String issueEmpName,
                                                   Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         return sfmsDao.getOrders(locCode, locType, issueEmpName, dateTimeRange, limOff);
+    }
+
+    @Override
+    public Set<Order> getOrderHistory(int order_id) {
+        return null;
     }
 }
