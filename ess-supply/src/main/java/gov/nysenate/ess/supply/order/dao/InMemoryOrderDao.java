@@ -22,10 +22,10 @@ public class InMemoryOrderDao implements OrderDao {
     }
 
     @Override
-    public Order insertOrder(OrderVersion version, LocalDateTime modifyDateTime) {
+    public int insertOrder(OrderVersion version, LocalDateTime modifyDateTime) {
         Order order = Order.newOrder(orders.size() + 1, version, modifyDateTime);
         orders.put(order.getId(), order);
-        return order;
+        return order.getId();
     }
 
     @Override

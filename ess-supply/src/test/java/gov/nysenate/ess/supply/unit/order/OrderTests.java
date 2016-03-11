@@ -27,6 +27,7 @@ public class OrderTests {
     private static Location DESTINATION;
     private static LocalDateTime ORDER_SUBMITTED_DATE_TIME;
     private static LocalDateTime ORDER_MODIFIED_DATE_TIME;
+    private static int ORDER_ID;
 
     private Order order;
     private OrderVersion firstVersion;
@@ -56,31 +57,30 @@ public class OrderTests {
         /** Submit first order version */
         firstVersion = new OrderVersion.Builder().withId(1).withCustomer(CUSTOMER).withDestination(DESTINATION)
                 .withLineItems(new HashSet<>()).withModifiedBy(CUSTOMER).withStatus(OrderStatus.APPROVED).build();
-        order = orderService.submitOrder(firstVersion);
+        ORDER_ID = orderService.submitOrder(firstVersion);
+        order = orderService.getOrder(ORDER_ID);
     }
 
     @Test
-    public void canSubmitNewVersion() {
-        assertEquals("Order is saved", order, orderService.getOrder(order.getId()));
-        assertEquals("Order contains submitted version", firstVersion, orderService.getOrder(order.getId()).getVersions().get(ORDER_SUBMITTED_DATE_TIME));
+    public void canSubmitNewOrder() {
+        assertNotNull("Order is saved", orderService.getOrder(ORDER_ID));
+        assertEquals("Order contains submitted version", firstVersion, order.getVersions().get(ORDER_SUBMITTED_DATE_TIME));
     }
 
     @Test
     public void canRejectOrder() {
         String note = "Reject note.";
         orderService.rejectOrder(order, note, MODIFIED_BY);
-
-        assertEquals("Note is saved.", note, orderService.getOrder(order.getId()).getNote().get());
-        assertEquals("Note is saved.", note, orderService.getOrder(order.getId()).getNote().get());
-        assertEquals("Status set to rejected.", OrderStatus.REJECTED, orderService.getOrder(order.getId()).getStatus());
-        assertEquals("Modified employee updated", MODIFIED_BY, order.getModifiedBy());
+        assertEquals("Note is saved.", note, orderService.getOrder(ORDER_ID).getNote().get());
+        assertEquals("Status set to rejected.", OrderStatus.REJECTED, orderService.getOrder(ORDER_ID).getStatus());
+        assertEquals("Modified employee updated", MODIFIED_BY, orderService.getOrder(ORDER_ID).getModifiedBy());
     }
 
     @Ignore
     @Test
     public void oldVersionsAreSavedWhenOrderUpdated() {
-        orderService.rejectOrder(order, null, null);
+//        orderService.rejectOrder(order, null, null);
 //        OrderVersion updatedVersion = firstVersion.setId(2).setStatus(OrderStatus.REJECTED)
-        assertEquals("First version saved in history.", firstVersion, order.getVersions().get(ORDER_SUBMITTED_DATE_TIME));
+//        assertEquals("First version saved in history.", firstVersion, order.getVersions().get(ORDER_SUBMITTED_DATE_TIME));
     }
 }

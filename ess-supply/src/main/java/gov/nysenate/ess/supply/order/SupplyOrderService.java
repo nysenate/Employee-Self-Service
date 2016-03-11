@@ -21,13 +21,14 @@ public class SupplyOrderService implements OrderService {
     }
 
     @Override
-    public Order submitOrder(OrderVersion orderVersion) {
+    public int submitOrder(OrderVersion orderVersion) {
         return orderDao.insertOrder(orderVersion, dateTimeFactory.now());
     }
 
     @Override
     public void rejectOrder(Order order, String note, Employee modifiedBy) {
-        order.rejectOrder(note, modifiedBy, LocalDateTime.now());
+        Order updated = order.rejectOrder(note, modifiedBy, LocalDateTime.now());
+        orderDao.saveOrder(updated);
     }
 
     @Override

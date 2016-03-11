@@ -13,7 +13,7 @@ import java.util.Set;
 
 public interface OrderDao {
 
-    Order insertOrder(OrderVersion version, LocalDateTime modifyDateTime);
+    int insertOrder(OrderVersion version, LocalDateTime modifyDateTime);
 
     void saveOrder(Order order);
 
