@@ -1,12 +1,13 @@
 package gov.nysenate.ess.supply.order;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 @Service
 public class SupplyOrderService implements OrderService {
@@ -27,7 +28,13 @@ public class SupplyOrderService implements OrderService {
 
     @Override
     public void rejectOrder(Order order, String note, Employee modifiedBy) {
-        Order updated = order.rejectOrder(note, modifiedBy, LocalDateTime.now());
+        Order updated = order.rejectOrder(note, modifiedBy, dateTimeFactory.now());
+        orderDao.saveOrder(updated);
+    }
+
+    @Override
+    public void updateLineItems(Order order, Set<LineItem> lineItems, String note, Employee modifiedBy) {
+        Order updated = order.updateLineItems(lineItems, note, modifiedBy, dateTimeFactory.now());
         orderDao.saveOrder(updated);
     }
 

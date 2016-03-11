@@ -1,7 +1,5 @@
 package gov.nysenate.ess.supply.util.date;
 
-import gov.nysenate.ess.supply.util.date.DateTimeFactory;
-
 import java.time.LocalDateTime;
 
 /**
@@ -9,10 +7,14 @@ import java.time.LocalDateTime;
  */
 public class DummyDateTime implements DateTimeFactory {
 
-    public LocalDateTime dateTime;
+    private LocalDateTime dateTime;
 
     @Override
     public LocalDateTime now() {
         return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 }

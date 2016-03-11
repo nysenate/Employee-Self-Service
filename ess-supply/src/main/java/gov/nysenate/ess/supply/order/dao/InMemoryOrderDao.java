@@ -25,7 +25,7 @@ public class InMemoryOrderDao implements OrderDao {
     @Override
     public int insertOrder(OrderVersion version, LocalDateTime modifyDateTime) {
         OrderHistory orderHistory = OrderHistory.of(modifyDateTime, version);
-        Order order = Order.newOrder(orders.size() + 1, orderHistory);
+        Order order = Order.of(orders.size() + 1, orderHistory);
         orders.put(order.getId(), order);
         return order.getId();
     }
