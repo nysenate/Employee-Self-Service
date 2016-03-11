@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.OrderHistory;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.OrderVersion;
 
@@ -23,7 +24,8 @@ public class InMemoryOrderDao implements OrderDao {
 
     @Override
     public int insertOrder(OrderVersion version, LocalDateTime modifyDateTime) {
-        Order order = Order.newOrder(orders.size() + 1, version, modifyDateTime);
+        OrderHistory orderHistory = OrderHistory.of(modifyDateTime, version);
+        Order order = Order.newOrder(orders.size() + 1, orderHistory);
         orders.put(order.getId(), order);
         return order.getId();
     }

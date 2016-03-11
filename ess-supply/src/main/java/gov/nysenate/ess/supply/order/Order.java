@@ -1,8 +1,6 @@
 package gov.nysenate.ess.supply.order;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Ordering;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
@@ -10,28 +8,21 @@ import gov.nysenate.ess.supply.item.LineItem;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class Order {
 
     private final int id;
-    private final ImmutableSortedMap<LocalDateTime, OrderVersion> orderVersionMap;
+    private final OrderHistory orderHistory;
 
-    private Order(int id, ImmutableSortedMap<LocalDateTime, OrderVersion> orderVersionMap) {
+    private Order(int id, OrderHistory orderHistory) {
         this.id = id;
-        this.orderVersionMap = orderVersionMap;
+        this.orderHistory = orderHistory;
     }
 
     /** Static constructors */
 
-    public static Order newOrder(int id, OrderVersion version, LocalDateTime createdDateTime) {
-        ImmutableSortedMap<LocalDateTime, OrderVersion> orderVersionMap = ImmutableSortedMap.of(createdDateTime, version);
-        return new Order(id, orderVersionMap);
-    }
-
-    public static Order of(int id, ImmutableSortedMap<LocalDateTime, OrderVersion> orderVersionMap) {
-        return new Order(id, orderVersionMap);
+    public static Order newOrder(int id, OrderHistory orderHistory) {
+        return new Order(id, orderHistory);
     }
 
     /** Functional Methods */
@@ -42,12 +33,7 @@ public class Order {
                 .setStatus(OrderStatus.REJECTED)
                 .setNote(note)
                 .setModifiedBy(modifiedEmp);
-
-//        ImmutableSortedMap versions = ImmutableSortedMap.naturalOrder().putAll(orderVersionMap).put(modifiedDateTime, rejected).build();
-        ImmutableSortedMap versions = new ImmutableSortedMap.Builder<LocalDateTime, OrderVersion>(Ordering.natural())
-                .putAll(orderVersionMap).put(modifiedDateTime, rejected).build();
-        return new Order(this.id, versions);
-//        orderVersionMap.put(modifiedDateTime, rejected);
+        return new Order(this.id, orderHistory.addVersion(modifiedDateTime, rejected));
     }
 
     public void updateLineItems(Set<LineItem> lineItems, String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
@@ -59,13 +45,13 @@ public class Order {
 //        orderVersionMap.put(modifiedDateTime, updated);
     }
 
-    public SortedMap<LocalDateTime, OrderVersion> getVersions() {
-        return new TreeMap<>(orderVersionMap);
+    public OrderHistory getHistory() {
+        return orderHistory;
     }
 
-    public LocalDateTime getOrderedDateTime() {
-        return orderVersionMap.firstKey();
-    }
+//    public LocalDateTime getOrderedDateTime() {
+//        return orderVersionMap.firstKey();
+//    }
 
     /** Get id returns the order id, not the current version id like other getters. */
     public int getId() {
@@ -101,11 +87,11 @@ public class Order {
     /** Internal methods */
 
     private OrderVersion current() {
-        return orderVersionMap.get(orderVersionMap.lastKey());
+        return orderHistory.current();
     }
 
     private int getNewVersionId() {
-        return this.orderVersionMap.size() + 1;
+        return orderHistory.size() + 1;
     }
 
 }
