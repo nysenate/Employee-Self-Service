@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
-public class SfmsSupplyItemDaoTests extends SupplyTests {
+public class SupplyItemDaoTests extends SupplyTests {
 
     @Autowired
     private OracleSupplyItemDao itemDao;

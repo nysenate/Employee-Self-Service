@@ -81,7 +81,6 @@ public final class SupplyItem {
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
         return !(category != null ? !category.equals(that.category) : that.category != null);
-
     }
 
     @Override
