@@ -50,7 +50,7 @@ public class Order {
     }
 
     public LocalDateTime getOrderedDateTime() {
-        return orderVersionMap.firstKey();
+        return orderHistory.getOrderedDateTime();
     }
 
     /** Get id returns the order id, not the current version id like other getters. */

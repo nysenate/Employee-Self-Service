@@ -43,39 +43,7 @@ public class SupplyOrderService implements OrderService {
         return orderDao.getOrderById(orderId);
     }
 
-//    public Order submitOrder(int customerId, String locCode, String locType, Map<Integer, Integer> lineItemMap,
-//                             LocalDateTime modifyDateTime) {
-//        Employee customer = employeeInfoService.getEmployee(customerId);
-//        Location location = locationService.getLocation(locCode, LocationType.valueOfCode(locType.charAt(0)));
-//        Set<LineItem> lineItems = createLineItems(lineItemMap);
-//        OrderVersion version = new OrderVersion.Builder().withId(1).withCustomer(customer).withDestination(location)
-//                                                         .withStatus(OrderStatus.APPROVED).withLineItems(lineItems).withModifiedBy(customer).build();
-//        Order order = orderDao.insertOrder(version, modifyDateTime);
-//        return order;
-//    }
-//
-//    public Order rejectOrder(int orderId, int modifiedEmpId, LocalDateTime modifiedDateTime) {
-//        return rejectOrder(orderId, null, modifiedEmpId, modifiedDateTime);
-//    }
-//
-//    public Order rejectOrder(int orderId, String note, int modifiedEmpId, LocalDateTime modifiedDateTime) {
-//        Order order = getOrderById(orderId);
-//        Employee modifiedEmp = employeeInfoService.getEmployee(modifiedEmpId);
-//        order.rejectOrder(note, modifiedEmp, modifiedDateTime);
-//        orderDao.saveOrder(order);
-//        return order;
-//    }
-//
-//    public Order updateLineItems(int orderId, Map<Integer, Integer> lineItems, String note, int modifiedEmpId, LocalDateTime modifiedDateTime) {
-//        Order order = getOrderById(orderId);
-//        Employee modifiedEmp = employeeInfoService.getEmployee(modifiedEmpId);
-//        order.updateLineItems(createLineItems(lineItems), note, modifiedEmp, modifiedDateTime);
-//        orderDao.saveOrder(order);
-//        return order;
-//    }
-
     public Order getOrderById(int orderId) {
         return null;
     }
-
 }

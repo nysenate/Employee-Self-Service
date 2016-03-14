@@ -17,7 +17,9 @@ public final class OrderHistory {
         this.orderVersionMap = orderVersionMap;
     }
 
-    /** Static constructors */
+    /**
+     * Static constructors
+     */
 
     public static OrderHistory of(LocalDateTime modifyDateTime, OrderVersion version) {
         return new OrderHistory(ImmutableSortedMap.of(modifyDateTime, version));
@@ -31,26 +33,29 @@ public final class OrderHistory {
         return new OrderHistory(orderVersionMap);
     }
 
-    /** Methods */
+    /**
+     * Functional Methods
+     */
 
-    public OrderVersion get(LocalDateTime orderSubmittedDateTime) {
-        return orderVersionMap.get(orderSubmittedDateTime);
+    public LocalDateTime getOrderedDateTime() {
+        return orderVersionMap.firstKey();
+    }
+
+    public OrderVersion get(LocalDateTime modifiedDateTime) {
+        return orderVersionMap.get(modifiedDateTime);
     }
 
     protected OrderVersion current() {
         return orderVersionMap.get(orderVersionMap.lastKey());
     }
 
-    protected OrderHistory addVersion(LocalDateTime modifiedDateTime, OrderVersion rejected) {
+    protected OrderHistory addVersion(LocalDateTime modifiedDateTime, OrderVersion version) {
         ImmutableSortedMap versions = new ImmutableSortedMap.Builder<LocalDateTime, OrderVersion>(Ordering.natural())
-                .putAll(orderVersionMap).put(modifiedDateTime, rejected).build();
+                .putAll(orderVersionMap).put(modifiedDateTime, version).build();
         return OrderHistory.of(versions);
     }
 
     protected int size() {
         return orderVersionMap.size();
     }
-
-
-
 }
