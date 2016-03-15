@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.item;
+package gov.nysenate.ess.supply.integration.item;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
