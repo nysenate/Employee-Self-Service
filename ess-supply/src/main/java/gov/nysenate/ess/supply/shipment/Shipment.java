@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.supply.order.Order;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
 public class Shipment {
@@ -85,11 +84,11 @@ public class Shipment {
     }
 
     public Optional<LocalDateTime> getApprovedDateTime() {
-        return shipmentHistory.getCompletedDateTime();
+        return shipmentHistory.getApprovedDateTime();
     }
 
     public Optional<LocalDateTime> getCanceledDateTime() {
-        return shipmentHistory.getCompletedDateTime();
+        return shipmentHistory.getCanceledDateTime();
     }
 
     /** Getters, get values from this Shipment object. */
