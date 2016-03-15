@@ -1,16 +1,23 @@
 package gov.nysenate.ess.supply.shipment;
 
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.supply.order.Order;
+
 public interface ShipmentService {
 
-    // init shipment
+    int initializeShipment(Order order, ShipmentVersion version);
 
-    // process shipment
+    void processShipment(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp);
 
-    // complete shipment
+    void completeShipment(Shipment shipment, Employee modifiedByEmp);
 
-    // submit to sfms
+    void undoCompletion(Shipment shipment, Employee modifiedByEmp);
 
-    // cancel shipment
+    void submitToSfms(Shipment shipment, Employee modifiedByEmp);
 
-    // update issuing emp
+    void cancelShipment(Shipment shipment, Employee modifiedByEmp);
+
+    void updateIssuingEmployee(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp);
+
+    Shipment getShipmentById(int shipmentId);
 }
