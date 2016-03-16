@@ -58,4 +58,24 @@ public final class OrderHistory {
     protected int size() {
         return orderVersionMap.size();
     }
+
+    @Override
+    public String toString() {
+        return "OrderHistory{" +
+               "orderVersionMap=" + orderVersionMap +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderHistory that = (OrderHistory) o;
+        return !(orderVersionMap != null ? !orderVersionMap.equals(that.orderVersionMap) : that.orderVersionMap != null);
+    }
+
+    @Override
+    public int hashCode() {
+        return orderVersionMap != null ? orderVersionMap.hashCode() : 0;
+    }
 }

@@ -5,20 +5,24 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlOrderQuery implements BasicSqlQuery {
 
+    INSERT_ORDER_VERSION(
+            "INSERT INTO ${supplySchema}.order_version(customer_id, destination, status, note, modified_by) \n" +
+            "VALUES (:customerId, :destination, :status::${supplySchema}.order_status, :note, :modifiedById)"
+    ),
     INSERT_LINE_ITEM(
-            "INSERT INTO ${supplySchema}.line_item(order_id, version_id, item_id, quantity) \n" +
-            "VALUES(:orderId, :versionId, :itemId, :quantity)"
+            "INSERT INTO ${supplySchema}.line_item(version_id, item_id, quantity) \n" +
+            "VALUES (:versionId, :itemId, :quantity)"
     ),
     INSERT_ORDER(
-            "INSERT INTO ${supplySchema}.order(version_id, customer_id, destination, order_status, \n" +
-            "modified_date_time, modified_by_id, note) \n" +
-            "VALUES(:versionId, :customerId, :destination, :orderStatus::${supplySchema}.order_status, \n" +
-            ":modifiedDateTime, :modifiedById, :note)"
+            "INSERT INTO ${supplySchema}.order(active_version) VALUES (:activeVersion)"
     ),
-    GET_ORDER_BY_ID(
-            "SELECT order_id, version_id, customer_id, destination, order_status, \n" +
-            "note, modified_date_time, modified_by_id \n" +
-            "FROM ${supplySchema}.order \n" +
+    INSERT_ORDER_HISTORY(
+            "INSERT INTO ${supplySchema}.order_history(order_id, version_id, created_date_time) \n" +
+            "VALUES (:orderId, :versionId, :createdDateTime)"
+    ),
+    GET_ORDER_HISTORY(
+            "SELECT version_id, created_date_time \n" +
+            "FROM ${supplySchema}.order_history \n" +
             "WHERE order_id = :orderId"
     );
 

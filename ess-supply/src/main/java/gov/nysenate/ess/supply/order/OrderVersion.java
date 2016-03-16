@@ -110,8 +110,7 @@ public final class OrderVersion {
     @Override
     public String toString() {
         return "OrderVersion{" +
-               "id=" + id +
-               ", customer=" + customer +
+               "customer=" + customer +
                ", destination=" + destination +
                ", status=" + status +
                ", lineItems=" + lineItems +
@@ -120,6 +119,12 @@ public final class OrderVersion {
                '}';
     }
 
+    /**
+     * Does not use id in equality. Therefore two distinct order versions from a business perspective
+     * can be equal according to this method. If you don't want that, check equality on {@link Order} or {@link OrderHistory}.
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -127,7 +132,6 @@ public final class OrderVersion {
 
         OrderVersion that = (OrderVersion) o;
 
-        if (id != that.id) return false;
         if (customer != null ? !customer.equals(that.customer) : that.customer != null) return false;
         if (destination != null ? !destination.equals(that.destination) : that.destination != null) return false;
         if (status != that.status) return false;
@@ -138,8 +142,7 @@ public final class OrderVersion {
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        int result = customer != null ? customer.hashCode() : 0;
         result = 31 * result + (destination != null ? destination.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);

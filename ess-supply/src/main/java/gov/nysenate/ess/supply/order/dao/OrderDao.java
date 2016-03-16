@@ -13,6 +13,16 @@ import java.util.Set;
 
 public interface OrderDao {
 
+    /**
+     * Inserts a new {@link Order} into the data storage. Setting the given {@link OrderVersion}
+     * as its only version.
+     *
+     * Creates a unique id for the <code>Order</code> and <code>OrderVersion</code>.
+     *
+     * @param version The OrderVersion to be saved into a new Order.
+     * @param modifyDateTime The date time this version was made.
+     * @return The unique id of the created Order.
+     */
     int insertOrder(OrderVersion version, LocalDateTime modifyDateTime);
 
     void saveOrder(Order order);

@@ -29,7 +29,6 @@ public class Order {
 
     public Order rejectOrder(String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
         OrderVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setStatus(OrderStatus.REJECTED)
                 .setNote(note)
                 .setModifiedBy(modifiedEmp);
@@ -38,7 +37,6 @@ public class Order {
 
     public Order updateLineItems(Set<LineItem> lineItems, String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
         OrderVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setLineItems(lineItems)
                 .setNote(note)
                 .setModifiedBy(modifiedEmp);
@@ -89,9 +87,4 @@ public class Order {
     private OrderVersion current() {
         return orderHistory.current();
     }
-
-    private int getNewVersionId() {
-        return orderHistory.size() + 1;
-    }
-
 }

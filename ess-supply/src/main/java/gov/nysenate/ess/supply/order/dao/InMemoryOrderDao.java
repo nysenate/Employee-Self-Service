@@ -17,13 +17,20 @@ import java.util.Set;
 public class InMemoryOrderDao implements OrderDao {
 
     private Map<Integer, Order> orders;
+    private int versionId = 1;
 
     public InMemoryOrderDao() {
         this.orders = new HashMap<>();
     }
 
+    public int getNextVersionId() {
+        return versionId;
+    }
+
     @Override
     public int insertOrder(OrderVersion version, LocalDateTime modifyDateTime) {
+        version = version.setId(versionId);
+        versionId++;
         OrderHistory orderHistory = OrderHistory.of(modifyDateTime, version);
         Order order = Order.of(orders.size() + 1, orderHistory);
         orders.put(order.getId(), order);
