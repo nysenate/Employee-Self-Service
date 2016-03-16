@@ -10,6 +10,9 @@ import java.util.List;
  */
 public interface LocationService {
 
+    /** Get location by the string made up of location code + '-' + location type. */
+    Location getLocation(String locationId);
+
     Location getLocation(String locCode, LocationType locType);
 
     List<Location> getLocations();

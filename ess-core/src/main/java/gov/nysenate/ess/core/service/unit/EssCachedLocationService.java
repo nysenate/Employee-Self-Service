@@ -38,6 +38,10 @@ public class EssCachedLocationService implements LocationService {
             locations.forEach(loc -> locationTreeMap.put(getLocationKey(loc), loc));
         }
 
+        public Location getLocation(String locationId) {
+            return locationTreeMap.get(locationId);
+        }
+
         public Location getLocation(String code, LocationType type) {
             return locationTreeMap.get(code + "-" + String.valueOf(type.getCode()));
         }
@@ -59,6 +63,11 @@ public class EssCachedLocationService implements LocationService {
         if (this.cacheManageService.isWarmOnStartup()) {
             cacheLocations();
         }
+    }
+
+    @Override
+    public Location getLocation(String locationId) {
+        return getLocationCacheTree().getLocation(locationId);
     }
 
     @Override

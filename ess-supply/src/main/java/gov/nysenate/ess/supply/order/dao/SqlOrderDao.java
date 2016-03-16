@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.order.Order;
+import gov.nysenate.ess.supply.order.OrderHistory;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.OrderVersion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,8 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
     @Override
     public Order getOrderById(int orderId) {
         MapSqlParameterSource params = new MapSqlParameterSource("orderId", orderId);
-        String sql = SqlOrderQuery.GET_ORDER_HISTORY.getSql(schemaMap());
-        OrderHistoryRowMapper handler = new OrderHistoryRowMapper(this);
-//        localNamedJdbc.query(sql, params, );
-
-        return null;
+        OrderHistory history = orderHistoryDao.getOrderHistory(orderId);
+        return Order.of(orderId, history);
     }
 
     @Override

@@ -7,11 +7,6 @@ public enum SqlOrderQuery implements BasicSqlQuery {
 
     INSERT_ORDER(
             "INSERT INTO ${supplySchema}.order(active_version) VALUES (:activeVersion)"
-    ),
-    GET_ORDER_HISTORY(
-            "SELECT version_id, created_date_time \n" +
-            "FROM ${supplySchema}.order_history \n" +
-            "WHERE order_id = :orderId"
     );
 
     SqlOrderQuery(String sql) {

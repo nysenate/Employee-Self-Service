@@ -2,7 +2,8 @@ package gov.nysenate.ess.supply.integration.order;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.core.model.unit.LocationType;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
@@ -25,11 +26,13 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 @Transactional
-@TransactionConfiguration(transactionManager = "remoteTxManager", defaultRollback = true)
+@TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
 public class OrderDaoTests extends SupplyTests {
 
     @Autowired private OrderDao orderDao;
     @Autowired private SupplyItemDao itemDao;
+    @Autowired private EmployeeInfoService employeeService;
+    @Autowired private LocationService locationService;
 
     private Order order;
     private OrderVersion firstVersion;
@@ -37,11 +40,9 @@ public class OrderDaoTests extends SupplyTests {
 
     @Before
     public void setup() {
-        Employee customer = new Employee();
-        customer.setEmployeeId(1);
-        Location destination = new Location();
-        destination.setCode("A42FB");
-        destination.setType(LocationType.valueOfCode('W'));
+        // TODO: mock these SFMS boundries.
+        Employee customer = employeeService.getEmployee(6221);
+        Location destination = locationService.getLocation("A42FB-W");
         Set<LineItem> lineItems = new HashSet<>();
         lineItems.add(new LineItem(itemDao.getItemById(1), 3));
         lineItems.add(new LineItem(itemDao.getItemById(2), 3));
@@ -64,7 +65,6 @@ public class OrderDaoTests extends SupplyTests {
         assertTrue(orderId > 0);
     }
 
-    @Ignore
     @Test
     public void canGetOrderById() {
         int orderId = orderDao.insertOrder(firstVersion, insertedDateTime);

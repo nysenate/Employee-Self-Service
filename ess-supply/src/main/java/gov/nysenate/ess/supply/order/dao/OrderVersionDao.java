@@ -5,4 +5,6 @@ import gov.nysenate.ess.supply.order.OrderVersion;
 public interface OrderVersionDao {
 
     int insertOrderVersion(OrderVersion version);
+
+    OrderVersion getOrderVersion(int versionId);
 }
