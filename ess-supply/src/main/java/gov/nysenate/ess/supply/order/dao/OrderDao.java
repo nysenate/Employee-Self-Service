@@ -29,8 +29,6 @@ public interface OrderDao {
 
     Order getOrderById(int orderId);
 
-    PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses,
-                                   Range<LocalDateTime> dateTimeRange, LimitOffset limOff);
-
-    Set<Order> getOrderHistory(int orderId);
+    PaginatedList<Order> getOrders(String location, String customerId, EnumSet<OrderStatus> statuses,
+                                   Range<LocalDateTime> updatedDateTimeRange, LimitOffset limOff);
 }

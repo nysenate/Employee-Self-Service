@@ -1,9 +1,12 @@
 package gov.nysenate.ess.supply.integration.order;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
@@ -13,13 +16,13 @@ import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.OrderVersion;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +40,8 @@ public class OrderDaoTests extends SupplyTests {
     private Order order;
     private OrderVersion firstVersion;
     private LocalDateTime insertedDateTime;
+
+    private static final Range<LocalDateTime> LAST_YEAR = Range.closed(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusMinutes(5));
 
     @Before
     public void setup() {
@@ -70,5 +75,12 @@ public class OrderDaoTests extends SupplyTests {
         int orderId = orderDao.insertOrder(firstVersion, insertedDateTime);
         Order actualOrder = orderDao.getOrderById(orderId);
         assertEquals(order.getHistory(), actualOrder.getHistory());
+    }
+
+    @Test
+    public void canGetOrdersByLocation() {
+        int orderId = orderDao.insertOrder(firstVersion, insertedDateTime);
+        PaginatedList<Order> results = orderDao.getOrders("A42FB-W", "all", EnumSet.allOf(OrderStatus.class), LAST_YEAR, LimitOffset.ALL);
+        assertEquals(order, results.getResults().get(results.getResults().size() - 1)); // ensure we get most recent if values already in database.
     }
 }

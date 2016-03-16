@@ -48,12 +48,8 @@ public class InMemoryOrderDao implements OrderDao {
     }
 
     @Override
-    public PaginatedList<Order> getOrders(String locCode, String locType, String issuerEmpId, EnumSet<OrderStatus> statuses, Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
+    public PaginatedList<Order> getOrders(String location, String issuerEmpId, EnumSet<OrderStatus> statuses, Range<LocalDateTime> dateTimeRange, LimitOffset limOff) {
         return null;
     }
 
-    @Override
-    public Set<Order> getOrderHistory(int orderId) {
-        return null;
-    }
 }
