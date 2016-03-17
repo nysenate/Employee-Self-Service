@@ -13,9 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Repository
 public class SqlShipmentHistoryDao extends SqlBaseDao implements ShipmentHistoryDao {
@@ -32,10 +32,24 @@ public class SqlShipmentHistoryDao extends SqlBaseDao implements ShipmentHistory
         localNamedJdbc.update(sql, params);
     }
 
+    @Override
+    public ShipmentHistory getHistoryByShipmentId(int shipmentId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("shipmentId", shipmentId);
+        String sql = SqlShipmentHistoryQuery.GET_HISTORY_BY_SHIP_ID.getSql(schemaMap());
+        ShipmentHistoryHandler handler = new ShipmentHistoryHandler(versionDao);
+        localNamedJdbc.query(sql, params, handler);
+        return handler.getHistory();
+    }
+
     private enum SqlShipmentHistoryQuery implements BasicSqlQuery {
         INSERT_HISTORY(
                 "INSERT INTO ${supplySchema}.shipment_history(shipment_id, version_id, created_date_time) \n" +
                 "VALUES (:shipmentId, :versionId, :createdDateTime)"
+        ),
+        GET_HISTORY_BY_SHIP_ID(
+                "SELECT version_id, created_date_time \n" +
+                "FROM ${supplySchema}.shipment_history \n" +
+                "WHERE shipment_id = :shipmentId"
         );
 
         SqlShipmentHistoryQuery(String sql) {
@@ -62,6 +76,7 @@ public class SqlShipmentHistoryDao extends SqlBaseDao implements ShipmentHistory
 
         public ShipmentHistoryHandler(SqlShipmentVersionDao versionDao) {
             this.versionDao = versionDao;
+            versionMap = new TreeMap<>();
         }
 
         @Override

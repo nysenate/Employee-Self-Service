@@ -6,5 +6,5 @@ public interface ShipmentVersionDao {
 
     int insertVersion(ShipmentVersion version);
 
-    ShipmentVersion getVersionById(int version_id);
+    ShipmentVersion getVersionById(int versionId);
 }

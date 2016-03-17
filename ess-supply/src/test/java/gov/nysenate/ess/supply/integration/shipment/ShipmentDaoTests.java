@@ -12,6 +12,8 @@ import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderHistory;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.OrderVersion;
+import gov.nysenate.ess.supply.shipment.Shipment;
+import gov.nysenate.ess.supply.shipment.ShipmentHistory;
 import gov.nysenate.ess.supply.shipment.ShipmentStatus;
 import gov.nysenate.ess.supply.shipment.ShipmentVersion;
 import gov.nysenate.ess.supply.shipment.dao.ShipmentDao;
@@ -37,9 +39,13 @@ public class ShipmentDaoTests extends SupplyTests {
     @Autowired private SupplyItemDao itemDao;
 
     private Order order;
+    private LocalDateTime insertedDateTime;
+    private ShipmentVersion version;
+    private ShipmentHistory history;
 
     @Before
     public void setup() {
+        /** Create Order */
         Employee customer = employeeService.getEmployee(6221);
         Location destination = locationService.getLocation("A42FB-W");
         Set<LineItem> lineItems = new HashSet<>();
@@ -54,16 +60,37 @@ public class ShipmentDaoTests extends SupplyTests {
                 .withModifiedBy(customer)
                 .build();
 
-        order = Order.of(20, OrderHistory.of(LocalDateTime.now(), firstVersion));
+        order = Order.of(1, OrderHistory.of(LocalDateTime.now(), firstVersion));
+
+        /** Shipment setup */
+        Employee modifiedBy = employeeService.getEmployee(6221);
+        insertedDateTime = LocalDateTime.now();
+        version = new ShipmentVersion.Builder().withStatus(ShipmentStatus.PENDING)
+                .withModifiedBy(modifiedBy).build();
+        history = ShipmentHistory.of(insertedDateTime, version);
     }
 
     @Test
     public void canInsertShipment() {
-        Employee modifiedBy = employeeService.getEmployee(6221);
-        LocalDateTime modifiedDateTime = LocalDateTime.now();
-        ShipmentVersion version = new ShipmentVersion.Builder().withStatus(ShipmentStatus.PENDING)
-                .withModifiedBy(modifiedBy).build();
-        int shipmentId = shipmentDao.insert(order, version, modifiedDateTime);
+        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
         assertTrue(shipmentId > 0);
+    }
+
+    @Test
+    public void canGetShipmentById() {
+        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
+        Shipment shipment = shipmentDao.getById(shipmentId);
+        assertEquals(history, shipment.getHistory());
+    }
+
+    @Test
+    public void canSaveShipment() {
+        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
+        Shipment shipment = shipmentDao.getById(shipmentId);
+        Employee issuingEmp = employeeService.getEmployee(10012);
+        LocalDateTime modifiedDateTime = insertedDateTime.plusHours(1);
+        shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
+        shipmentDao.save(shipment);
+        assertEquals(shipment, shipmentDao.getById(shipment.getId()));
     }
 }

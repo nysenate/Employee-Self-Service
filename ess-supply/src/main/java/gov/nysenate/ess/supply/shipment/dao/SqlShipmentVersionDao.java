@@ -20,7 +20,7 @@ import java.sql.SQLException;
 @Repository
 public class SqlShipmentVersionDao extends SqlBaseDao implements ShipmentVersionDao {
 
-    @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private EmployeeInfoService employeeService;
 
     @Override
     public int insertVersion(ShipmentVersion version) {
@@ -35,8 +35,10 @@ public class SqlShipmentVersionDao extends SqlBaseDao implements ShipmentVersion
     }
 
     @Override
-    public ShipmentVersion getVersionById(int version_id) {
-        return null;
+    public ShipmentVersion getVersionById(int versionId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("versionId", versionId);
+        String sql = SqlShipmentVersionQuery.GET_VERSION_BY_ID.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new ShipmentVersionMapper(employeeService));
     }
 
     private enum SqlShipmentVersionQuery implements BasicSqlQuery {
@@ -44,6 +46,11 @@ public class SqlShipmentVersionDao extends SqlBaseDao implements ShipmentVersion
         INSERT_SHIPMENT_VERSION(
                 "INSERT INTO ${supplySchema}.shipment_version(issuing_emp_id, status, created_emp_id) \n" +
                 "VALUES (:issuingEmpId, :status::${supplySchema}.shipment_status, :createdEmpId)"
+        ),
+        GET_VERSION_BY_ID(
+                "SELECT version_id, issuing_emp_id, status, created_emp_id \n" +
+                "FROM ${supplySchema}.shipment_version \n" +
+                "WHERE version_id = :versionId"
         );
 
         SqlShipmentVersionQuery(String sql) {
@@ -75,7 +82,11 @@ public class SqlShipmentVersionDao extends SqlBaseDao implements ShipmentVersion
         public ShipmentVersion mapRow(ResultSet rs, int i) throws SQLException {
             int id = rs.getInt("version_id");
             ShipmentStatus status  = ShipmentStatus.valueOf(rs.getString("status"));
-            Employee issueEmp = employeeInfoService.getEmployee(rs.getInt("issuing_emp_id"));
+            int issueEmpId = rs.getInt("issuing_emp_id");
+            Employee issueEmp = null;
+            if (issueEmpId != 0) {
+                issueEmp = employeeInfoService.getEmployee(rs.getInt("issuing_emp_id"));
+            }
             Employee modifiedEmp = employeeInfoService.getEmployee(rs.getInt("created_emp_id"));
             return new ShipmentVersion.Builder().withId(id).withIssuingEmployee(issueEmp)
                     .withModifiedBy(modifiedEmp).withStatus(status).build();
