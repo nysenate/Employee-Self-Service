@@ -2,6 +2,8 @@ package gov.nysenate.ess.supply.shipment;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 
+import java.util.Optional;
+
 public final class ShipmentVersion {
 
     private final int id;
@@ -48,8 +50,8 @@ public final class ShipmentVersion {
         return status;
     }
 
-    public Employee getIssuingEmployee() {
-        return issuingEmployee;
+    public Optional<Employee> getIssuingEmployee() {
+        return Optional.ofNullable(issuingEmployee);
     }
 
     public Employee getModifiedBy() {
@@ -59,8 +61,7 @@ public final class ShipmentVersion {
     @Override
     public String toString() {
         return "ShipmentVersion{" +
-               "id=" + id +
-               ", status=" + status +
+               "status=" + status +
                ", issuingEmployee=" + issuingEmployee +
                ", modifiedBy=" + modifiedBy +
                '}';
@@ -70,10 +71,7 @@ public final class ShipmentVersion {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ShipmentVersion that = (ShipmentVersion) o;
-
-        if (id != that.id) return false;
         if (status != that.status) return false;
         if (issuingEmployee != null ? !issuingEmployee.equals(that.issuingEmployee) : that.issuingEmployee != null)
             return false;
@@ -82,8 +80,7 @@ public final class ShipmentVersion {
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        int result = status != null ? status.hashCode() : 0;
         result = 31 * result + (issuingEmployee != null ? issuingEmployee.hashCode() : 0);
         result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
         return result;

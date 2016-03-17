@@ -107,7 +107,7 @@ public class Shipment {
         return current().getStatus();
     }
 
-    public Employee getIssuingEmployee() {
+    public Optional<Employee> getIssuingEmployee() {
         return current().getIssuingEmployee();
     }
 
@@ -128,8 +128,7 @@ public class Shipment {
     @Override
     public String toString() {
         return "Shipment{" +
-               "id=" + id +
-               ", order=" + order +
+               "order=" + order +
                ", shipmentHistory=" + shipmentHistory +
                '}';
     }
@@ -139,15 +138,13 @@ public class Shipment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Shipment shipment = (Shipment) o;
-        if (id != shipment.id) return false;
         if (order != null ? !order.equals(shipment.order) : shipment.order != null) return false;
         return !(shipmentHistory != null ? !shipmentHistory.equals(shipment.shipmentHistory) : shipment.shipmentHistory != null);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (order != null ? order.hashCode() : 0);
+        int result = order != null ? order.hashCode() : 0;
         result = 31 * result + (shipmentHistory != null ? shipmentHistory.hashCode() : 0);
         return result;
     }

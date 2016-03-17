@@ -45,7 +45,7 @@ public class ShipmentTests {
     @Test
     public void canProcessShipment() {
         Shipment processed = pendingShipment.process(issuingEmployee, procesedByEmp, processDateTime);
-        assertEquals(issuingEmployee, processed.getIssuingEmployee());
+        assertEquals(issuingEmployee, processed.getIssuingEmployee().get());
         assertEquals(procesedByEmp, processed.getModifiedBy());
         assertEquals(ShipmentStatus.PROCESSING, processed.getStatus());
         assertEquals(processDateTime, processed.getProcessedDateTime().get());
@@ -107,7 +107,7 @@ public class ShipmentTests {
         Shipment processed = pendingShipment.process(issuingEmployee, procesedByEmp, processDateTime);
 
         Shipment shipment = processed.updateIssuingEmployee(updatedIssuer, modifiedBy, updatedDateTime);
-        assertEquals(updatedIssuer, shipment.getIssuingEmployee());
+        assertEquals(updatedIssuer, shipment.getIssuingEmployee().get());
     }
 
     @Test
