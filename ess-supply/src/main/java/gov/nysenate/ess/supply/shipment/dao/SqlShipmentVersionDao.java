@@ -25,7 +25,7 @@ public class SqlShipmentVersionDao extends SqlBaseDao implements ShipmentVersion
     @Override
     public int insertVersion(ShipmentVersion version) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("issuingEmpId", version.getIssuingEmployee().isPresent() ? version.getIssuingEmployee().get() : null)
+                .addValue("issuingEmpId", version.getIssuingEmployee().isPresent() ? version.getIssuingEmployee().get().getEmployeeId() : null)
                 .addValue("status", version.getStatus().toString())
                 .addValue("createdEmpId", version.getModifiedBy().getEmployeeId());
         String sql = SqlShipmentVersionQuery.INSERT_SHIPMENT_VERSION.getSql(schemaMap());

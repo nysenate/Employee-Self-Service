@@ -1,9 +1,12 @@
 package gov.nysenate.ess.supply.integration.shipment;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
@@ -24,6 +27,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,6 +46,8 @@ public class ShipmentDaoTests extends SupplyTests {
     private LocalDateTime insertedDateTime;
     private ShipmentVersion version;
     private ShipmentHistory history;
+
+    private static final Range<LocalDateTime> LAST_YEAR = Range.closed(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusMinutes(5));
 
     @Before
     public void setup() {
@@ -92,5 +98,19 @@ public class ShipmentDaoTests extends SupplyTests {
         shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
         shipmentDao.save(shipment);
         assertEquals(shipment, shipmentDao.getById(shipment.getId()));
+        assertEquals(ShipmentStatus.PROCESSING, shipmentDao.getById(shipment.getId()).getStatus());
+    }
+
+    @Test
+    public void canGetShipmentsByStatus() {
+        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
+        Shipment shipment = shipmentDao.getById(shipmentId);
+        Employee issuingEmp = employeeService.getEmployee(10012);
+        LocalDateTime modifiedDateTime = insertedDateTime.plusHours(1);
+        shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
+        shipmentDao.save(shipment);
+
+        PaginatedList<Shipment> shipmentList = shipmentDao.getShipments("all", EnumSet.of(ShipmentStatus.PROCESSING), LAST_YEAR, LimitOffset.ALL);
+        assertEquals(shipment, shipmentList.getResults().get(shipmentList.getResults().size() - 1));
     }
 }

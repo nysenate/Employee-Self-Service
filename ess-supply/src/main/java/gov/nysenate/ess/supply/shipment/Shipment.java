@@ -28,7 +28,6 @@ public class Shipment {
 
     public Shipment process(Employee issuingEmployee, Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setStatus(ShipmentStatus.PROCESSING)
                 .setIssuingEmployee(issuingEmployee)
                 .setModifiedBy(modifiedBy);
@@ -37,7 +36,6 @@ public class Shipment {
 
     public Shipment complete(Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setStatus(ShipmentStatus.COMPLETED)
                 .setModifiedBy(modifiedBy);
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
@@ -45,7 +43,6 @@ public class Shipment {
 
     public Shipment undoCompletion(Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setStatus(ShipmentStatus.PROCESSING)
                 .setModifiedBy(modifiedBy);
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
@@ -53,7 +50,6 @@ public class Shipment {
 
     public Shipment submitToSfms(Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setStatus(ShipmentStatus.APPROVED)
                 .setModifiedBy(modifiedBy);
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
@@ -61,7 +57,6 @@ public class Shipment {
 
     public Shipment cancel(Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setStatus(ShipmentStatus.CANCELED)
                 .setModifiedBy(modifiedBy);
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
@@ -69,7 +64,6 @@ public class Shipment {
 
     public Shipment updateIssuingEmployee(Employee issuingEmployee, Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
-                .setId(getNewVersionId())
                 .setIssuingEmployee(issuingEmployee)
                 .setModifiedBy(modifiedBy);
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
@@ -115,11 +109,15 @@ public class Shipment {
         return current().getModifiedBy();
     }
 
-    /** Internal Methods */
+    public LocalDateTime getModifiedDateTime() {
+        return shipmentHistory.getModifiedDateTime();
+    }
 
-    private ShipmentVersion current() {
+    public ShipmentVersion current() {
         return shipmentHistory.current();
     }
+
+    /** Internal Methods */
 
     private int getNewVersionId() {
         return shipmentHistory.size() + 1;
@@ -128,8 +126,7 @@ public class Shipment {
     @Override
     public String toString() {
         return "Shipment{" +
-               "order=" + order +
-               ", shipmentHistory=" + shipmentHistory +
+               "shipmentHistory=" + shipmentHistory +
                '}';
     }
 
@@ -137,15 +134,15 @@ public class Shipment {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Shipment shipment = (Shipment) o;
-        if (order != null ? !order.equals(shipment.order) : shipment.order != null) return false;
+
         return !(shipmentHistory != null ? !shipmentHistory.equals(shipment.shipmentHistory) : shipment.shipmentHistory != null);
+
     }
 
     @Override
     public int hashCode() {
-        int result = order != null ? order.hashCode() : 0;
-        result = 31 * result + (shipmentHistory != null ? shipmentHistory.hashCode() : 0);
-        return result;
+        return shipmentHistory != null ? shipmentHistory.hashCode() : 0;
     }
 }

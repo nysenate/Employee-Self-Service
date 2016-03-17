@@ -1,11 +1,16 @@
 package gov.nysenate.ess.supply.shipment.dao;
 
+import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.shipment.Shipment;
 import gov.nysenate.ess.supply.shipment.ShipmentHistory;
+import gov.nysenate.ess.supply.shipment.ShipmentStatus;
 import gov.nysenate.ess.supply.shipment.ShipmentVersion;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,5 +38,10 @@ public class InMemoryShipmentDao implements ShipmentDao {
     @Override
     public Shipment getById(int shipmentId) {
         return shipments.get(shipmentId);
+    }
+
+    @Override
+    public PaginatedList<Shipment> getShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses, Range<LocalDateTime> updatedRange, LimitOffset limoff) {
+        return null;
     }
 }
