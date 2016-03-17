@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.order;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Ordering;
 
@@ -45,8 +47,12 @@ public final class OrderHistory {
         return orderVersionMap.get(modifiedDateTime);
     }
 
-    protected OrderVersion current() {
+    public OrderVersion current() {
         return orderVersionMap.get(orderVersionMap.lastKey());
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return orderVersionMap.lastKey();
     }
 
     protected OrderHistory addVersion(LocalDateTime modifiedDateTime, OrderVersion version) {

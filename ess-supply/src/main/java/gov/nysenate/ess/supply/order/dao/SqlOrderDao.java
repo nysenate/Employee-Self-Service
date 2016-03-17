@@ -20,10 +20,10 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: add transactions to these functions.
 @Repository
 public class SqlOrderDao extends SqlBaseDao implements OrderDao {
 
@@ -48,9 +48,25 @@ public class SqlOrderDao extends SqlBaseDao implements OrderDao {
         return (Integer) keyHolder.getKeys().get("order_id");
     }
 
+    // TODO: optimistic locking
     @Override
-    public void saveOrder(Order order) {
+    public synchronized void saveOrder(Order order) {
+        // TODO: improve this.
+        if (order.current().getId() == 0) {
+            int versionId = orderVersionDao.insertOrderVersion(order.current());
+            lineItemDao.insertVersionLineItems(order.current(), versionId);
+            orderHistoryDao.insertOrderHistory(order.getId(), versionId, order.getModifiedDateTime());
+            updateOrder(order.getId(), versionId);
+        }
+    }
 
+    /** Updates the order table active version to the newly inserted version. */
+    private void updateOrder(int orderId, int activeVersionId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("orderId", orderId)
+                .addValue("activeVersion", activeVersionId);
+        String sql = SqlOrderQuery.UPDATE_ORDER.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
     }
 
     @Override

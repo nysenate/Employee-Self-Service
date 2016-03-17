@@ -17,7 +17,7 @@ public final class ShipmentVersion {
     }
 
     private Builder copy() {
-        return new Builder(id, status, issuingEmployee, modifiedBy);
+        return new Builder(status, issuingEmployee, modifiedBy);
     }
 
     /** Basic setters. Return new instances. */
@@ -105,6 +105,10 @@ public final class ShipmentVersion {
             this.status = status;
             this.issuingEmployee = issuingEmployee;
             this.modifiedBy = modifiedBy;
+        }
+
+        public Builder(ShipmentStatus status, Employee issuingEmployee, Employee modifiedBy) {
+            this(0, status, issuingEmployee, modifiedBy);
         }
 
         public Builder withId(int id) {

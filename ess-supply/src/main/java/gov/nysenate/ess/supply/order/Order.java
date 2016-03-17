@@ -51,6 +51,14 @@ public class Order {
         return orderHistory.getOrderedDateTime();
     }
 
+    public LocalDateTime getModifiedDateTime() {
+        return orderHistory.getModifiedDateTime();
+    }
+
+    public OrderVersion current() {
+        return orderHistory.current();
+    }
+
     /** Get id returns the order id, not the current version id like other getters. */
     public int getId() {
         return this.id;
@@ -83,10 +91,6 @@ public class Order {
     }
 
     /** Internal methods */
-
-    private OrderVersion current() {
-        return orderHistory.current();
-    }
 
     @Override
     public String toString() {

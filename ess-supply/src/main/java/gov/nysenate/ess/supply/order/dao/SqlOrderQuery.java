@@ -8,6 +8,11 @@ public enum SqlOrderQuery implements BasicSqlQuery {
     INSERT_ORDER(
             "INSERT INTO ${supplySchema}.order(active_version) VALUES (:activeVersion)"
     ),
+    UPDATE_ORDER(
+            "UPDATE ${supplySchema}.order \n" +
+            "SET active_version = :activeVersion \n" +
+            "WHERE order_id = :orderId"
+    ),
     ORDER_SEARCH_BODY(
             "FROM ${supplySchema}.order as o \n" +
             "INNER JOIN ${supplySchema}.order_history as h \n" +

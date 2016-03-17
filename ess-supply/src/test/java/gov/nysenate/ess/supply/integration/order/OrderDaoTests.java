@@ -83,4 +83,16 @@ public class OrderDaoTests extends SupplyTests {
         PaginatedList<Order> results = orderDao.getOrders("A42FB-W", "all", EnumSet.allOf(OrderStatus.class), LAST_YEAR, LimitOffset.ALL);
         assertEquals(order, results.getResults().get(results.getResults().size() - 1)); // ensure we get most recent if values already in database.
     }
+
+    @Test
+    public void canSaveOrder() {
+        LocalDateTime updatedDateTime = insertedDateTime.plusHours(2);
+        Employee updatedBy = employeeService.getEmployee(10012);
+        int orderId = orderDao.insertOrder(firstVersion, insertedDateTime);
+        Order order = orderDao.getOrderById(orderId);
+        Order updated = order.rejectOrder("Rejecting this Order", updatedBy, updatedDateTime);
+        orderDao.saveOrder(updated);
+        Order actual = orderDao.getOrderById(updated.getId());
+        assertEquals(updated, actual);
+    }
 }

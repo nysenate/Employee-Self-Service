@@ -103,6 +103,8 @@ public class OrderTests {
         assertNotNull("Uses DateTimeFactory when setting modified date time.", order.getHistory().get(MODIFIED_DATE_TIME));
     }
 
+    // Adding new version - new version should have id = 0
+
     // TODO: can only adjust line item quantities, cannot add or remove line items.
 
     @Test

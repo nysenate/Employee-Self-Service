@@ -30,9 +30,10 @@ public final class OrderVersion {
         this.note = builder.note;
     }
 
+    /** Return a copy of this order versions fields in a builder.
+     * Id is not copied. */
     private Builder copy() {
         return new Builder()
-                .withId(id)
                 .withCustomer(customer)
                 .withDestination(destination)
                 .withStatus(status)
