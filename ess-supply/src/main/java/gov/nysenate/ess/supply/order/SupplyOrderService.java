@@ -1,12 +1,17 @@
 package gov.nysenate.ess.supply.order;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.Set;
 
 @Service
@@ -43,7 +48,8 @@ public class SupplyOrderService implements OrderService {
         return orderDao.getOrderById(orderId);
     }
 
-    public Order getOrderById(int orderId) {
-        return null;
+    @Override
+    public PaginatedList<Order> getOrders(String location, String customerId, EnumSet<OrderStatus> statuses, Range<LocalDateTime> updatedDateTimeRange, LimitOffset limOff) {
+        return orderDao.getOrders(location, customerId, statuses, updatedDateTimeRange, limOff);
     }
 }

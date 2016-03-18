@@ -55,6 +55,10 @@ public final class OrderHistory {
         return orderVersionMap.lastKey();
     }
 
+    public ImmutableSortedMap<LocalDateTime, OrderVersion> getHistory() {
+        return orderVersionMap;
+    }
+
     protected OrderHistory addVersion(LocalDateTime modifiedDateTime, OrderVersion version) {
         ImmutableSortedMap versions = new ImmutableSortedMap.Builder<LocalDateTime, OrderVersion>(Ordering.natural())
                 .putAll(orderVersionMap).put(modifiedDateTime, version).build();

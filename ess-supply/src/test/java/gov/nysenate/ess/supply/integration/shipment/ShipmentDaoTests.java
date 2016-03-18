@@ -33,8 +33,8 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-//@Transactional
-//@TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
+@Transactional
+@TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
 public class ShipmentDaoTests extends SupplyTests {
 
     @Autowired private ShipmentDao shipmentDao;

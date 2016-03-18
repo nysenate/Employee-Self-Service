@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supplyItems")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/products")
 public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplyItemRestApiCtrl.class);
