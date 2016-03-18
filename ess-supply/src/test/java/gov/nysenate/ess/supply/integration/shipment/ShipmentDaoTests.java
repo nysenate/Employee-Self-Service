@@ -33,8 +33,8 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-@Transactional
-@TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
+//@Transactional
+//@TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
 public class ShipmentDaoTests extends SupplyTests {
 
     @Autowired private ShipmentDao shipmentDao;
@@ -70,7 +70,7 @@ public class ShipmentDaoTests extends SupplyTests {
 
         /** Shipment setup */
         Employee modifiedBy = employeeService.getEmployee(6221);
-        insertedDateTime = LocalDateTime.now();
+        insertedDateTime = LocalDateTime.now().minusHours(5);
         version = new ShipmentVersion.Builder().withStatus(ShipmentStatus.PENDING)
                 .withModifiedBy(modifiedBy).build();
         history = ShipmentHistory.of(insertedDateTime, version);
