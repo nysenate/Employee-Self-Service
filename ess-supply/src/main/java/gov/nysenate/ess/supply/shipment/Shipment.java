@@ -91,6 +91,10 @@ public class Shipment {
         return this.id;
     }
 
+    public Order getOrder() {
+        return this.order;
+    }
+
     public ShipmentHistory getHistory() {
         return shipmentHistory;
     }

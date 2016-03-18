@@ -20,6 +20,6 @@ public interface ShipmentDao {
 
     Shipment getById(int shipmentId);
 
-    PaginatedList<Shipment> getShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses,
-                                         Range<LocalDateTime> dateRange, LimitOffset limoff);
+    PaginatedList<Shipment> searchShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses,
+                                            Range<LocalDateTime> dateRange, LimitOffset limoff);
 }

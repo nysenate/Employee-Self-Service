@@ -70,7 +70,6 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         PaginatedList<Order> results = orderService.getOrders(location, customerId, statuses, dateRange, limoff);
         List<OrderView> orderViews = results.getResults().stream().map(OrderView::new).collect(Collectors.toList());
         return ListViewResponse.of(orderViews, "orders", results.getTotal(), results.getLimOff());
-
     }
 
     private EnumSet<OrderStatus> getEnumSetFromStringArray(String[] status) {

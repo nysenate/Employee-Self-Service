@@ -69,6 +69,10 @@ public class ShipmentHistory {
         return shipmentVersionMap.get(modifiedDateTime);
     }
 
+    public ImmutableSortedMap<LocalDateTime, ShipmentVersion> getHistory() {
+        return shipmentVersionMap;
+    }
+
     protected ShipmentVersion current() {
         return shipmentVersionMap.get(shipmentVersionMap.lastKey());
     }

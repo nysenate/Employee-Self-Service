@@ -41,7 +41,7 @@ public class InMemoryShipmentDao implements ShipmentDao {
     }
 
     @Override
-    public PaginatedList<Shipment> getShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses, Range<LocalDateTime> updatedRange, LimitOffset limoff) {
+    public PaginatedList<Shipment> searchShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses, Range<LocalDateTime> updatedRange, LimitOffset limoff) {
         return null;
     }
 }

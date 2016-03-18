@@ -10,7 +10,6 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
-import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderHistory;
 import gov.nysenate.ess.supply.order.OrderStatus;
@@ -110,7 +109,7 @@ public class ShipmentDaoTests extends SupplyTests {
         shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
         shipmentDao.save(shipment);
 
-        PaginatedList<Shipment> shipmentList = shipmentDao.getShipments("all", EnumSet.of(ShipmentStatus.PROCESSING), LAST_YEAR, LimitOffset.ALL);
+        PaginatedList<Shipment> shipmentList = shipmentDao.searchShipments("all", EnumSet.of(ShipmentStatus.PROCESSING), LAST_YEAR, LimitOffset.ALL);
         assertEquals(shipment, shipmentList.getResults().get(shipmentList.getResults().size() - 1));
     }
 }

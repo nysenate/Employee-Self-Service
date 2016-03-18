@@ -74,8 +74,8 @@ public class SqlShipmentDao extends SqlBaseDao implements ShipmentDao {
     }
 
     @Override
-    public PaginatedList<Shipment> getShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses,
-                                                Range<LocalDateTime> dateRange, LimitOffset limoff) {
+    public PaginatedList<Shipment> searchShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses,
+                                                   Range<LocalDateTime> dateRange, LimitOffset limoff) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("issueEmpId", formatSearchString(issuingEmpId))
                 .addValue("statuses", extractEnumSetParams(statuses))
