@@ -42,11 +42,11 @@ function supplyLocationHistoryCtrl($scope, appProps, empInfoApi, ordersApi) {
     $scope.init();
 
     function sortOrdersByDescendingDate(orders) {
-        orders.sort(function(a,b) {
+        shipments.sort(function(a, b) {
             var aDate = moment(a.orderDateTime);
             var bDate = moment(b.orderDateTime);
             return bDate.format('X') - aDate.format('X');
         });
-        return orders;
+        return shipments;
     }
 }

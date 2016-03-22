@@ -14,7 +14,7 @@
 
     <%-- History --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-history-ctrl.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-location-history-ctrl.js"></script>
+    <%--<script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-location-history-ctrl.js"></script>--%>
 
     <%-- Manage --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/supply-manage-ctrl.js"></script>
