@@ -1,30 +1,32 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-['$scope', 'SupplyInventoryService', 'SupplyOrdersApi', 'LocationService', supplyReconciliationController]);
+['$scope', 'SupplyInventoryService', 'SupplyShipmentsApi', 'LocationService', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, inventoryService, supplyOrdersApi, locationService) {
+function supplyReconciliationController($scope, inventoryService, shipmentsApi, locationService) {
 
     $scope.selectedItem = null;
     $scope.reconcilableItems = [];
-    /** Maps item id's to ReconciliableItem objects. */
+    /** Map of unique item id's to array of all shipments containing that item objects. */
     $scope.reconcilableItemMap= {};
 
     function initItems() {
+        // Get shipments completed today
         var params = {
             status: "COMPLETED",
-            from: moment().format('YYYY-MM-DD'),
-            to: moment().format('YYYY-MM-DD')
+            from: moment().startOf('day').format('YYYY-MM-DDTHH:ss:mm'),
+            to: moment().format()
         };
-        supplyOrdersApi.get(params, function(response) {
-            var orders = response.result;
-            angular.forEach(orders, function(order) {
-                angular.forEach(order.items, function(item) {
-                    if ($scope.reconcilableItemMap.hasOwnProperty(item.itemId)) {
-                        $scope.reconcilableItemMap[item.itemId].push(order);
+        shipmentsApi.get(params, function(response) {
+            var shipments = response.result;
+            console.log(shipments);
+            angular.forEach(shipments, function(shipment) {
+                angular.forEach(shipment.order.activeVersion.lineItems, function(lineItem) {
+                    if ($scope.reconcilableItemMap.hasOwnProperty(lineItem.item.id)) {
+                        $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
                     }
                     else {
-                        $scope.reconcilableItemMap[item.itemId] = [];
-                        $scope.reconcilableItemMap[item.itemId].push(order);
-                        $scope.reconcilableItems.push(inventoryService.getItemById(item.itemId));
+                        $scope.reconcilableItemMap[lineItem.item.id] = [];
+                        $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
+                        $scope.reconcilableItems.push(lineItem.item);
                     }
                 })
             });
@@ -47,20 +49,21 @@ function supplyReconciliationController($scope, inventoryService, supplyOrdersAp
         return $scope.selectedItem == item;
     };
 
-    $scope.getOrdersForItem = function(item) {
+    $scope.getShipmentsWithItem = function(item) {
         return $scope.reconcilableItemMap[item.id];
     };
 
-    $scope.getOrderedQuantity = function(order, item) {
-        for(var i = 0; i < order.items.length; i++) {
-            if (order.items[i].itemId === item.id) {
-                return order.items[i].quantity;
+    $scope.getOrderedQuantity = function(shipment, item) {
+        var lineItems = shipment.order.activeVersion.lineItems;
+        for(var i = 0; i < lineItems.length; i++) {
+            if (lineItems[i].item.id === item.id) {
+                return lineItems[i].quantity;
             }
         }
     };
 
-    $scope.viewOrder = function(order){
-        locationService.go("/supply/requisition/view", false, "order=" + order.id);
+    $scope.viewShipment = function(shipment){
+        locationService.go("/supply/requisition/view", false, "order=" + shipment.order.id);
     };
 
     $scope.init = function() {

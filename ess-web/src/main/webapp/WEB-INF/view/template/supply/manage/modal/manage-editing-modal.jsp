@@ -23,7 +23,7 @@
       <h4 class="content-info">Location: {{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</h4>
       <h4 class="content-info">Ordered: {{shipment.order.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
-        <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{order.id}}&print=true">
+        <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{shipment.order.id}}&print=true">
           Print
         </a>
         <a target="#" ng-click="close()" style="padding-left: 30px">

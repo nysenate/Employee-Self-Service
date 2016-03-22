@@ -60,18 +60,18 @@
           </div>
           <%--Detail rows--%>
           <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'"
-               ng-repeat="order in getOrdersForItem(item)" ng-click="viewOrder(order)">
+               ng-repeat="shipment in getShipmentsWithItem(item)" ng-click="viewShipment(shipment)">
             <div class="col-3-12">
-              {{order.location.code + '-' + order.location.locationTypeCode}}
+              {{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}
             </div>
             <div class="col-3-12">
-              {{getOrderedQuantity(order, item)}}
+              {{getOrderedQuantity(shipment, item)}}
             </div>
             <div class="col-3-12">
-              {{order.issuingEmployee.lastName}}
+              {{shipment.activeVersion.issuer.lastName}}
             </div>
             <div class="col-3-12">
-              {{order.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+              {{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
             </div>
           </div>
         </div>
