@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.order.dao.OrderDao;
+import gov.nysenate.ess.supply.shipment.ShipmentService;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,18 +18,24 @@ import java.util.Set;
 @Service
 public class SupplyOrderService implements OrderService {
 
-    private OrderDao orderDao;
-    private DateTimeFactory dateTimeFactory;
+    @Autowired private OrderDao orderDao;
+    @Autowired private DateTimeFactory dateTimeFactory;
+    @Autowired private ShipmentService shipmentService;
 
-    @Autowired
-    public SupplyOrderService(OrderDao orderDao, DateTimeFactory dateTimeFactory) {
+    public SupplyOrderService() {
+    }
+
+    public SupplyOrderService(OrderDao orderDao, DateTimeFactory dateTimeFactory, ShipmentService shipmentService) {
         this.orderDao = orderDao;
         this.dateTimeFactory = dateTimeFactory;
+        this.shipmentService = shipmentService;
     }
 
     @Override
     public int submitOrder(OrderVersion orderVersion) {
-        return orderDao.insertOrder(orderVersion, dateTimeFactory.now());
+        int  orderId = orderDao.insertOrder(orderVersion, dateTimeFactory.now());
+        shipmentService.initializeShipment(orderDao.getOrderById(orderId));
+        return orderId;
     }
 
     @Override

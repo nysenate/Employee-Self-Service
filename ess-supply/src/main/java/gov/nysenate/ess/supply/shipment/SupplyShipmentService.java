@@ -16,17 +16,21 @@ import java.util.EnumSet;
 @Service
 public class SupplyShipmentService implements ShipmentService {
 
-    private ShipmentDao shipmentDao;
-    private DateTimeFactory dateTimeFactory;
+    @Autowired private ShipmentDao shipmentDao;
+    @Autowired private DateTimeFactory dateTimeFactory;
 
-    @Autowired
+    public SupplyShipmentService() {
+    }
+
     public SupplyShipmentService(ShipmentDao shipmentDao, DateTimeFactory dateTimeFactory) {
         this.shipmentDao = shipmentDao;
         this.dateTimeFactory = dateTimeFactory;
     }
 
     @Override
-    public int initializeShipment(Order order, ShipmentVersion version) {
+    public int initializeShipment(Order order) {
+        ShipmentVersion version = new ShipmentVersion.Builder()
+                .withStatus(ShipmentStatus.PENDING).withModifiedBy(order.getCustomer()).build();
         return shipmentDao.insert(order, version, dateTimeFactory.now());
     }
 

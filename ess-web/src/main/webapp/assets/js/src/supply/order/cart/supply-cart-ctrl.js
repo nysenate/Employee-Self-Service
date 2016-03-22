@@ -4,6 +4,7 @@ essSupply = angular.module('essSupply').controller('SupplyCartController', [
 function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService, modals) {
 
     $scope.myCartItems = function() {
+        console.log(supplyCart.getItems());
         return supplyCart.getItems();
     };
 
@@ -20,12 +21,12 @@ function supplyCartController($scope, supplyCart, supplyInventoryService, supply
     };
 
     $scope.submitOrder = function() {
-        var lineItems = [];
-        angular.forEach(supplyCart.getItems(), function(cartItem) {
-            lineItems.push({itemId: cartItem.item.id, quantity: cartItem.quantity});
-        });
+        // var lineItems = [];
+        // angular.forEach(supplyCart.getItems(), function(cartItem) {
+        //     lineItems.push({itemId: cartItem.item.id, quantity: cartItem.quantity});
+        // });
 
-        var params = {customerId: appProps.user.employeeId, items: lineItems};
+        var params = {customerId: appProps.user.employeeId, lineItems: supplyCart.getItems()}; // TODO: add location object to params
         supplySubmitOrderApi.save(params, function(response) {
             supplyCart.reset();
             modals.open('supply-cart-checkout-modal');

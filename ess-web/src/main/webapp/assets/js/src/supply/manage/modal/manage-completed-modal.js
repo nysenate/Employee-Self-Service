@@ -8,10 +8,10 @@ essSupply.directive('manageCompletedModal', ['appProps', 'modals', 'LocationServ
     };
 
     function link($scope, $elem, $attrs) {
-        $scope.order = modals.params();
+        $scope.shipment = modals.params();
 
-        $scope.undo = function(order) {
-            undoCompletionApi.save(order);
+        $scope.undo = function(shipment) {
+            undoCompletionApi.save({id: shipment.id});
             $scope.close();
             reload();
         };

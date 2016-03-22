@@ -33,7 +33,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("")
     public BaseResponse getSupplyItems(WebRequest webRequest) {
-        LimitOffset limOff = getLimitOffset(webRequest, 16);
+        LimitOffset limOff = getLimitOffset(webRequest, 1000);
         List<SupplyItem> items = supplyItemService.getSupplyItems(limOff);
         List<SupplyItemView> itemViews = items.stream().map(SupplyItemView::new).collect(Collectors.toList());
         return ListViewResponse.of(itemViews);

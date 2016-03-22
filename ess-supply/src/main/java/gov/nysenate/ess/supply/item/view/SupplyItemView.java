@@ -3,16 +3,19 @@ package gov.nysenate.ess.supply.item.view;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.SupplyItem;
 
-public final class SupplyItemView implements ViewObject {
+public class SupplyItemView implements ViewObject {
 
-    protected final int id;
-    protected final String commodityCode;
-    protected final String name;
-    protected final String description;
-    protected final String unit;
-    protected final String category;
-    protected final int suggestedMaxQty;
-    protected final int standardQuantity;
+    protected int id;
+    protected String commodityCode;
+    protected String name;
+    protected String description;
+    protected String unit;
+    protected String category;
+    protected int suggestedMaxQty;
+    protected int standardQuantity;
+
+    public SupplyItemView() {
+    }
 
     public SupplyItemView(SupplyItem item) {
         this.id = item.getId();

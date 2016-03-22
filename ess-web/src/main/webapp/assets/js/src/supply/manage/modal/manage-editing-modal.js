@@ -1,8 +1,8 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessOrderApi', 'SupplyCompleteOrderApi',
+essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessShipmentApi', 'SupplyCompleteShipmentApi',
     'SupplySaveOrderApi', 'SupplyRejectOrderApi', 'LocationService',
-    function (appProps, modals, processOrderApi, completeOrderApi, saveOrderApi, rejectOrderApi, locationService) {
+    function (appProps, modals, processShipmentApi, completeShipmentApi, saveOrderApi, rejectOrderApi, locationService) {
         return {
             templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
             link: link
@@ -14,54 +14,58 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessO
             $scope.assignedTo = "Caseiras";
             $scope.supplyEmployees = ["Caseiras", "Smith", "Johnson", "Maloy", "Richard"];
 
-            /** Original order */
-            $scope.order = modals.params();
-            /** Order containing any user edits */
-            $scope.dirtyOrder = angular.copy($scope.order);
-            /** Status of order, either 'PENDING' or 'PROCESSING'*/
+            /** Original shipment */
+            $scope.shipment = null;
+            /** Shipment containing any user edits */
+            $scope.dirtyShipment = null;
+            /** Status of shipment, either 'PENDING' or 'PROCESSING'*/
             $scope.status = null;
             $scope.dirty = false;
 
             $scope.init = function() {
-                $scope.status = modals.params().status;
-                // Consistently sort items.
-                $scope.dirtyOrder.items.sort(function(a, b) {return a.itemId - b.itemId});
+                $scope.shipment = modals.params();
+                $scope.dirtyShipment = angular.copy($scope.shipment);
+                $scope.status = $scope.shipment.activeVersion.status;
+                // Consistently sort items. TODO why?
+                // $scope.dirtyShipment.items.sort(function(a, b) {return a.itemId - b.itemId});
             };
 
             $scope.init();
 
-            /** Save any changes, then process order */
+            /** Save any changes, then process shipment */
             $scope.processOrder = function() {
-                $scope.dirtyOrder.issuingEmployee.employeeId = appProps.user.employeeId;
-                processOrderApi.save($scope.dirtyOrder);
+                // $scope.dirtyShipment.activeVersion.issuingEmployee.employeeId = appProps.user.employeeId;
+                // TODO why is scope.dirtyShipment needed in api call below!!!!! &&&&&&&&&&&&&&&&&&&&&&&& TOMORROW!!!!
+                processShipmentApi.save({id: $scope.shipment.id}, appProps.user.employeeId);
                 $scope.close();
                 reload();
             };
 
-            /** Save any changes, then complete order */
+            /** Save any changes, then complete shipment */
             $scope.completeOrder = function() {
-                completeOrderApi.save($scope.dirtyOrder);
+                completeShipmentApi.save({id: $scope.shipment.id});
                 $scope.close();
                 reload();
             };
 
-            /** Save the changes made to dirtyOrder */
+            /** Save the changes made to dirtyShipment */
             $scope.saveOrder = function() {
-                saveOrderApi.save($scope.dirtyOrder);
-                $scope.close();
-                reload();
+                // TODO: check if issuer and/or line items updated. make appropriate api calls.
+                // saveOrderApi.save($scope.dirtyShipment);
+                // $scope.close();
+                // reload();
             };
 
-            $scope.rejectOrder = function(order) {
-                rejectOrderApi.save(order);
+            $scope.rejectOrder = function(shipment) {
+                rejectOrderApi.save(shipment);
                 $scope.close();
                 reload();
             };
 
             //$scope.removeLineItem = function(lineItem) {
-            //    angular.forEach($scope.dirtyOrder.items, function (dirtyItem) {
+            //    angular.forEach($scope.dirtyShipment.items, function (dirtyItem) {
             //        if (lineItem.itemId === dirtyItem.itemId) {
-            //            $scope.dirtyOrder.items.splice($scope.dirtyOrder.items.indexOf(lineItem), 1);
+            //            $scope.dirtyShipment.items.splice($scope.dirtyShipment.items.indexOf(lineItem), 1);
             //            $scope.setDirty();
             //        }
             //    });
@@ -69,7 +73,7 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessO
 
             // TODO: cant save this until we get full EmployeeView objects from server.
             $scope.setIssuedBy = function() {
-                // set $scope.dirtyOrder.issuingEmployee = $scope.assignedTo
+                // set $scope.dirtyShipment.issuingEmployee = $scope.assignedTo
                 $scope.setDirty();
             };
 

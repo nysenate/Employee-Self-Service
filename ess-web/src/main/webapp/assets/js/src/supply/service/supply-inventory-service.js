@@ -1,14 +1,14 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyInventoryService', ['SupplyItemApi', function(supplyItemApi) {
+essSupply.service('SupplyInventoryService', ['SupplyProductsApi', function(supplyProductsApi) {
 
     // Canonical source of available items.
     var items = [];
 
     var promise = false;
-    supplyItemApi.get(function(response) {
+    supplyProductsApi.get(function(response) {
         items = response.result;
-        console.log("inventory service items : " + items);
+        console.log("inventory service items got items");
         promise = true;
     });
 

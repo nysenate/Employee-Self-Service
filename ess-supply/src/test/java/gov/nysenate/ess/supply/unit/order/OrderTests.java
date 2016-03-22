@@ -8,6 +8,7 @@ import gov.nysenate.ess.supply.item.dao.InMemorySupplyItemDao;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.order.*;
 import gov.nysenate.ess.supply.order.dao.InMemoryOrderDao;
+import gov.nysenate.ess.supply.shipment.SupplyShipmentService;
 import gov.nysenate.ess.supply.util.date.DummyDateTime;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -61,7 +62,7 @@ public class OrderTests {
         /** Initialize dependencies */
         dummyDateTime = new DummyDateTime();
         orderDao = new InMemoryOrderDao();
-        orderService = new SupplyOrderService(orderDao, dummyDateTime);
+        orderService = new SupplyOrderService(orderDao, dummyDateTime, null); // TODO fix this
 
         /** Submit first order version */
         dummyDateTime.setDateTime(SUBMITTED_DATE_TIME);

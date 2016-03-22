@@ -1,12 +1,12 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
-    'SupplyOrdersApi', 'modals', supplyManageController]);
+    'SupplyShipmentsApi', 'modals', supplyManageController]);
 
-function supplyManageController($scope, supplyInventoryService, supplyOrdersApi, modals) {
+function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, modals) {
 
     $scope.selected = null;
-    $scope.pendingOrders = null;
-    $scope.processingOrders = null;
-    $scope.completedOrders = null;
+    $scope.pendingShipments = null;
+    $scope.processingShipments = null;
+    $scope.completedShipments = null;
 
     $scope.init = function() {
         getPendingOrders();
@@ -21,11 +21,11 @@ function supplyManageController($scope, supplyInventoryService, supplyOrdersApi,
     function getPendingOrders() {
         var params = {
             status: "PENDING",
-            from: moment.unix(1).format('YYYY-MM-DD'),
-            to: moment().format('YYYY-MM-DD')
+            from: moment.unix(1).format('YYYY-MM-DDTHH:ss:mm'),
+            to: moment().format('YYYY-MM-DDTHH:ss:mm')
         };
-        supplyOrdersApi.get(params, function(response) {
-            $scope.pendingOrders = response.result;
+        supplyShipmentsApi.get(params, function(response) {
+            $scope.pendingShipments = response.result;
         }, function(response) {
             // TODO error
         })
@@ -34,11 +34,11 @@ function supplyManageController($scope, supplyInventoryService, supplyOrdersApi,
     function getProcessingOrders() {
         var params = {
             status: "PROCESSING",
-            from: moment.unix(1).format('YYYY-MM-DD'),
-            to: moment().format('YYYY-MM-DD')
+            from: moment.unix(1).format('YYYY-MM-DDTHH:ss:mm'),
+            to: moment().format('YYYY-MM-DDTHH:ss:mm')
         };
-        supplyOrdersApi.get(params, function(response) {
-            $scope.processingOrders = response.result;
+        supplyShipmentsApi.get(params, function(response) {
+            $scope.processingShipments = response.result;
         }, function(response) {
 
         })
@@ -47,11 +47,11 @@ function supplyManageController($scope, supplyInventoryService, supplyOrdersApi,
     function getCompletedOrders() {
         var params = {
             status: "COMPLETED",
-            from: moment().format('YYYY-MM-DD'),
-            to: moment().format('YYYY-MM-DD')
+            from: moment.unix(1).format('YYYY-MM-DDTHH:ss:mm'),
+            to: moment().format('YYYY-MM-DDTHH:ss:mm')
         };
-        supplyOrdersApi.get(params, function(response) {
-            $scope.completedOrders = response.result;
+        supplyShipmentsApi.get(params, function(response) {
+            $scope.completedShipments = response.result;
         }, function(response) {
 
         })
@@ -59,10 +59,10 @@ function supplyManageController($scope, supplyInventoryService, supplyOrdersApi,
 
     /** --- Util methods --- */
 
-    /* Return the number of distinct items in an order */
-    $scope.getOrderQuantity = function(supplyOrder) {
+    /* Return the number of distinct items in an shipments order */
+    $scope.getOrderQuantity = function(shipment) {
         var size = 0;
-        angular.forEach(supplyOrder.items, function(item) {
+        angular.forEach(shipment.order.activeVersion.lineItems, function(item) {
             size++;
         });
         return size;
@@ -80,7 +80,7 @@ function supplyManageController($scope, supplyInventoryService, supplyOrdersApi,
 
     /** --- Highlighting --- */
 
-    $scope.highlightOrder = function(order) {
+    $scope.highlightShipment = function(order) {
         var highlight = false;
         angular.forEach(order.items, function(lineItem) {
             var item = supplyInventoryService.getItemById(lineItem.itemId);
@@ -98,11 +98,13 @@ function supplyManageController($scope, supplyInventoryService, supplyOrdersApi,
 
     /** --- Modals --- */
 
-    $scope.showEditingDetails = function(order) {
-        modals.open('manage-editing-modal', order);
+    $scope.showEditingDetails = function(shipment) {
+        console.log(shipment);
+        modals.open('manage-editing-modal', shipment);
     };
 
-    $scope.showCompletedDetails = function(order) {
-        modals.open('manage-completed-modal', order);
+    $scope.showCompletedDetails = function(shipment) {
+        console.log(shipment);
+        modals.open('manage-completed-modal', shipment);
     };
 }

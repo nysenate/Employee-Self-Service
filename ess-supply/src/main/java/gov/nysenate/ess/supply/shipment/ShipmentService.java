@@ -11,7 +11,7 @@ import java.util.EnumSet;
 
 public interface ShipmentService {
 
-    int initializeShipment(Order order, ShipmentVersion version);
+    int initializeShipment(Order order);
 
     void processShipment(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp);
 

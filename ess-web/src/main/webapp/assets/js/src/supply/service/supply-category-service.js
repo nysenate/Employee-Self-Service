@@ -1,7 +1,7 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemApi',
-    function($rootScope, supplyItemApi) {
+essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyProductsApi',
+    function($rootScope, supplyProductsApi) {
 
     function Category(name) {
         this.name = name;
@@ -24,7 +24,7 @@ essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemApi',
         return !cats.length > 0;
     }
 
-    var promise = supplyItemApi.get(function(response) {
+    var promise = supplyProductsApi.get(function(response) {
         initCategories(response.result);
     });
 

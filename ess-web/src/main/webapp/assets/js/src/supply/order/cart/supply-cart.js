@@ -1,6 +1,7 @@
 var essSupply = angular.module('essSupply');
 
 essSupply.service('SupplyCart', [function() {
+    // TODO rename cartItem to lineitem
     function CartItem(item, quantity) {
         this.item = item;
         this.quantity = quantity;

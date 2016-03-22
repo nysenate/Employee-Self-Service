@@ -2,11 +2,11 @@ package gov.nysenate.ess.supply.order.controller;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.*;
-import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -18,6 +18,7 @@ import gov.nysenate.ess.supply.order.OrderService;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.OrderVersion;
 import gov.nysenate.ess.supply.order.view.OrderView;
+import gov.nysenate.ess.supply.order.view.SubmitOrderView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Order> results = orderService.getOrders(location, customerId, statuses, dateRange, limoff);
         List<OrderView> orderViews = results.getResults().stream().map(OrderView::new).collect(Collectors.toList());
-        return ListViewResponse.of(orderViews, "orders", results.getTotal(), results.getLimOff());
+        return ListViewResponse.of(orderViews, results.getTotal(), results.getLimOff());
     }
 
     private EnumSet<OrderStatus> getEnumSetFromStringArray(String[] status) {
@@ -81,18 +82,19 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void submitOrder(@RequestBody EmployeeView customer,
-                            @RequestBody LocationView destination,
-                            @RequestBody LineItemView[] lineItemViews) {
+    public void submitOrder(@RequestBody SubmitOrderView submitOrderView) {
         // TODO: verify these views contain valid data by calling services
         // TODO: extract OrderVersion creation code into factory
+        // TODO: submitOrderView should contain the destination Location.
         Set<LineItem> lineItems = new HashSet<>();
-        for (LineItemView lineItemView : lineItemViews) {
+        for (LineItemView lineItemView : submitOrderView.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
         }
-        OrderVersion version = new OrderVersion.Builder().withCustomer(customer.toEmployee())
-                .withDestination(destination.toLocation()).withLineItems(lineItems)
-                .withStatus(OrderStatus.APPROVED).withModifiedBy(customer.toEmployee()).build();
+        Employee customer = employeeService.getEmployee(submitOrderView.getCustomerId());
+        Location loc = customer.getWorkLocation();
+        OrderVersion version = new OrderVersion.Builder().withCustomer(customer)
+                                                         .withDestination(loc).withLineItems(lineItems)
+                                                         .withStatus(OrderStatus.APPROVED).withModifiedBy(customer).build();
         orderService.submitOrder(version);
     }
 

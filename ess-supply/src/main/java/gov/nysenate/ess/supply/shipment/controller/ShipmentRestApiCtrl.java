@@ -16,6 +16,7 @@ import gov.nysenate.ess.supply.shipment.ShipmentStatus;
 import gov.nysenate.ess.supply.shipment.view.ShipmentView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -32,8 +33,8 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(ShipmentRestApiCtrl.class);
 
-    private ShipmentService shipmentService;
-    private EmployeeInfoService employeeService;
+    @Autowired private ShipmentService shipmentService;
+    @Autowired private EmployeeInfoService employeeService;
 
     @RequestMapping("/{id}")
     public BaseResponse getShipmentById(@PathVariable int id) {
@@ -55,7 +56,7 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Shipment> results = shipmentService.searchShipments(issuerId, statuses, dateRange, limoff);
         List<ShipmentView> shipmentViews = results.getResults().stream().map(ShipmentView::new).collect(Collectors.toList());
-        return ListViewResponse.of(shipmentViews, "shipments", results.getTotal(), results.getLimOff());
+        return ListViewResponse.of(shipmentViews, results.getTotal(), results.getLimOff());
     }
 
     private EnumSet<ShipmentStatus> getEnumSetFromStringArray(String[] status) {
@@ -66,36 +67,36 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         return EnumSet.copyOf(statusList);
     }
 
-    @RequestMapping("{id}/process")
-    public void processShipment(@PathVariable int id, @RequestParam int issuerId) {
+    @RequestMapping(value = "/{id}/process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void processShipment(@PathVariable int id, @RequestBody int issuerId) {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee issuer = employeeService.getEmployee(issuerId);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         shipmentService.processShipment(shipment, issuer, modifiedBy);
     }
 
-    @RequestMapping("{id}/complete")
+    @RequestMapping(value = "{id}/complete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void completeShipment(@PathVariable int id) {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         shipmentService.completeShipment(shipment, modifiedBy);
     }
 
-    @RequestMapping("{id}/undo_completion")
+    @RequestMapping(value = "{id}/undo_completion", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void undoCompletioni(@PathVariable int id) {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         shipmentService.undoCompletion(shipment, modifiedBy);
     }
 
-    @RequestMapping("{id}/submit")
+    @RequestMapping(value = "{id}/submit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void submitToSfms(@PathVariable int id) {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         shipmentService.submitToSfms(shipment, modifiedBy);
     }
 
-    @RequestMapping("{id}/cancel")
+    @RequestMapping(value = "{id}/cancel", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void cancelShipment(@PathVariable int id) {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());

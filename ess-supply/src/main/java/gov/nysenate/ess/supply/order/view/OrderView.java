@@ -16,6 +16,7 @@ public class OrderView implements ViewObject {
     protected int id;
     protected OrderVersionView activeVersion;
     protected MapView<LocalDateTime, OrderVersionView> history;
+    protected LocalDateTime orderedDateTime;
 
     public OrderView() {}
 
@@ -25,6 +26,7 @@ public class OrderView implements ViewObject {
         Map<LocalDateTime, OrderVersionView> historyMap = new TreeMap<>();
         order.getHistory().getHistory().forEach((d, v) -> historyMap.put(d, new OrderVersionView(v)));
         this.history = MapView.of(historyMap);
+        this.orderedDateTime = order.getOrderedDateTime();
     }
 
     public Order toOrder() {
@@ -41,6 +43,29 @@ public class OrderView implements ViewObject {
         this.id = id;
     }
 
+    public OrderVersionView getActiveVersion() {
+        return activeVersion;
+    }
+
+    public void setActiveVersion(OrderVersionView activeVersion) {
+        this.activeVersion = activeVersion;
+    }
+
+    public MapView<LocalDateTime, OrderVersionView> getHistory() {
+        return history;
+    }
+
+    public void setHistory(MapView<LocalDateTime, OrderVersionView> history) {
+        this.history = history;
+    }
+
+    public LocalDateTime getOrderedDateTime() {
+        return orderedDateTime;
+    }
+
+    public void setOrderedDateTime(LocalDateTime orderedDateTime) {
+        this.orderedDateTime = orderedDateTime;
+    }
 
     @Override
     public String getViewType() {

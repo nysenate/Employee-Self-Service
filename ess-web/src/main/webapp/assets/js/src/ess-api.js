@@ -99,10 +99,10 @@ essApi.factory('EmpCheckHistoryApi',  ['$resource', 'appProps', function($resour
     return $resource(appProps.apiPath + '/paychecks.json')
 }]);
 
-/** --- Supply Item API --- */
+/** --- Supply Products API --- */
 
-essApi.factory('SupplyItemApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supplyItems.json')
+essApi.factory('SupplyProductsApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/products.json')
 }]);
 
 /** --- Supply Order API --- */
@@ -116,19 +116,7 @@ essApi.factory('SupplyOrderByIdApi', ['$resource', 'appProps', function($resourc
 }]);
 
 essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/submit')
-}]);
-
-essApi.factory('SupplyProcessOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/process')
-}]);
-
-essApi.factory('SupplyCompleteOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/complete')
-}]);
-
-essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/complete/undo')
+    return $resource(appProps.apiPath + '/supply/orders')
 }]);
 
 essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resource, appProps) {
@@ -137,4 +125,22 @@ essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resou
 
 essApi.factory('SupplySaveOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders/save')
+}]);
+
+/** --- Supply Shipments API --- */
+
+essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments.json')
+}]);
+
+essApi.factory('SupplyProcessShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/process', {id: '@id'})
+}]);
+
+essApi.factory('SupplyCompleteShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/complete', {id: '@id'})
+}]);
+
+essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/undo_completion', {id: '@id'})
 }]);
