@@ -75,15 +75,7 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/supply/order/order', {
-        templateUrl: ctxPath + '/template/supply/order/order',
-        resolve: {
-            'MyInventoryServiceData': function(SupplyInventoryService) {
-                return SupplyInventoryService.promise;
-            },
-            'MyCategoryServiceData': function(SupplyCategoryService) {
-                return SupplyCategoryService.promise;
-            }
-        }
+        templateUrl: ctxPath + '/template/supply/order/order'
     });
 
     $routeProvider.when(ctxPath + '/supply/order/cart/cart', {

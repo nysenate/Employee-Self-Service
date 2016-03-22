@@ -1,15 +1,16 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'SupplyInventoryService', 'SupplyCategoryService',
+    ['$scope', 'SupplyProductsApi', 'SupplyCategoryService',
         'SupplyCart', supplyOrderController]);
 
-function supplyOrderController($scope, supplyInventoryService, supplyCategoryService, supplyCart) {
+function supplyOrderController($scope, productsApi, supplyCategoryService, supplyCart) {
 
     $scope.items = null;
     $scope.quantity = 1;
 
     $scope.init = function() {
-        $scope.items = supplyInventoryService.getCopyOfItems();
-        console.log("init order");
+        productsApi.get(function(response) {
+            $scope.items = response.result;
+        });
     };
 
     // Called by ng-hide in the view. Returns true if a item does not belong to the selected categories.
@@ -31,7 +32,11 @@ function supplyOrderController($scope, supplyInventoryService, supplyCategorySer
     };
 
     $scope.orderQuantityRange = function(item) {
-        return supplyInventoryService.orderQuantityRange(item);
+        var range = [];
+        for (var i = 1; i <= item.suggestedMaxQty * 2; i++) {
+            range.push(i);
+        }
+        return range;
     };
 
     $scope.init();
