@@ -22,11 +22,13 @@
   </section>
   <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
-    <ul class="sub-topic-list">
-      <li ng-repeat="cat in categories">
-        <input type="checkbox" ng-model="cat.selected">
-        <label>{{cat.name}}</label>
-      </li>
-    </ul>
+    <div style="height: 400px; overflow-y: auto">
+      <ul class="sub-topic-list">
+        <li ng-repeat="cat in categories">
+          <input type="checkbox" ng-model="cat.selected">
+          <label>{{cat.name}}</label>
+        </li>
+      </ul>
+    </div>
   </section>
 </div>
