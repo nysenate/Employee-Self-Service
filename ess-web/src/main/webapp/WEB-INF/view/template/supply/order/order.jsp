@@ -9,8 +9,12 @@
   </div>
 
   <div class="content-container">
+    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination" boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
-      <div class="col-3-12 text-align-center" ng-repeat="item in items track by $index" ng-hide="hideItem(item)">
+      <div class="col-3-12 text-align-center"
+           dir-paginate="item in items | itemsPerPage: 16"
+           pagination-id="item-pagination"
+           ng-hide="hideItem(item)">
         <img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">
         <div>
           <h3 class="dark-gray bold">{{item.name}}</h3>
@@ -29,5 +33,6 @@
         </div>
       </div>
     </div>
+    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"  boundary-links="true" max-size="10"></dir-pagination-controls>
   </div>
 </div>

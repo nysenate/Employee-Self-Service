@@ -228,3 +228,35 @@ label.custom-select {
 .width-100 {
   width: 100%;
 }
+
+/** --- Pagination --- */
+ul.pagination {
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #f1f1f1;
+  li {
+    display: inline;
+    list-style-type: none;
+    margin-right: 8px;
+    text-align: center;
+    &.active {
+      a {
+        font-weight: 600;
+        color: @blue-purple;
+      }
+    }
+    &:hover {
+      background: #eee;
+      a {
+        color: @blue;
+      }
+    }
+    a {
+      font-size: 1.1em;
+      text-decoration: none;
+      color: #999;
+      padding: 3px 7px;
+      vertical-align: initial;
+    }
+  }
+}
