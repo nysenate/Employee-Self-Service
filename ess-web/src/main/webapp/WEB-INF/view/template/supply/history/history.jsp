@@ -4,11 +4,7 @@
       <h2>Requisition History</h2>
     </div>
 
-    <div class="content-info" ng-show="shipments.length == 0">
-      <h2 class="dark-gray">No History</h2>
-    </div>
-
-    <div ng-show="shipments.length > 0">
+    <div>
       <p class="content-info dark-blue-purple bold" style="margin-bottom: 0px;">Show Requisitions ordered during the following date range.</p>
       <div class="grid text-align-center">
         <div class="col-6-12 padding-10">
@@ -21,13 +17,19 @@
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">From:</label>
-          <input ng-model="filter.date.from" type="date" max="filter.date.max" min="filter.date.min"/>
+          <input ng-model="filter.date.from" ng-change="reloadShipments()" type="datetime-local"/>
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">To:</label>
-          <input ng-model="filter.date.to" type="date" max="filter.date.max" min="filter.date.min"/>
+          <input ng-model="filter.date.to" ng-change="reloadShipments()" type="datetime-local"/>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="content-container" ng-show="shipments.length == 0">
+    <div class="content-info">
+      <h2 class="dark-gray">No History</h2>
     </div>
   </div>
 

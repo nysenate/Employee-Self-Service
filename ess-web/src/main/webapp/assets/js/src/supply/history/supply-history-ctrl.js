@@ -6,9 +6,9 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     $scope.filter = {
         date: {
             from: moment().subtract(1, 'month').toDate(),
-            to: new Date(), // TODO why not moment()
-            min: new Date(2016, 1, 1),
-            max: moment().format('YYYY-MM-DD') //TODO: max and min not working
+            to: new Date(), // need to use dates for datetime input in jsp
+            min: new Date(2016, 1, 1, 0, 0, 0),
+            max: moment().format() //TODO: max and min not working
         },
         location: {                                         // LocationView object
             locations: null,
@@ -53,6 +53,14 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
         })
     }
 
+    $scope.reloadShipments = function() {
+        getCompletedOrders();
+    };
+
+    $scope.$watch(function() {
+        console.log($scope.filter.date.to);
+    });
+
     // TODO: can't create filters by looping over shipments. Will NOT work once pagination in use.
     // TODO: will need to add location & issuer API with status and date range filters.
     $scope.initFilters = function() {
@@ -70,17 +78,19 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
 
     /** --- Filter --- */
 
-    $scope.isInFilter = function(order) {
-        if ($scope.selectedLocation === "All") {
-            return true;
-        }
-        else {
-            if (order.location.code + '-' + order.location.locationTypeCode === $scope.selectedLocation) {
-                return true;
-            }
-        }
-        return false;
+    $scope.isInFilter = function(shipment) {
+        var inLocFilter = isInLocationFilter(shipment);
+        var inIssuerFilter = isInIssuerFilter(shipment);
+        return inLocFilter && inIssuerFilter;
     };
+
+    function isInLocationFilter(shipment) {
+        return $scope.selectedLocation === "All" || shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode === $scope.selectedLocation;
+    }
+    
+    function isInIssuerFilter(shipment) {
+        return $scope.selectedIssuer === 'All' || shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName === $scope.selectedIssuer;
+    }
 
     /** --- Util methods --- */
     
