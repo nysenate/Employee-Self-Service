@@ -21,8 +21,8 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getPendingOrders() {
         var params = {
             status: "PENDING",
-            from: moment.unix(1).format('YYYY-MM-DDTHH:ss:mm'),
-            to: moment().format('YYYY-MM-DDTHH:ss:mm')
+            from: moment.unix(1).format(),
+            to: moment().format()
         };
         supplyShipmentsApi.get(params, function(response) {
             $scope.pendingShipments = response.result;
@@ -34,8 +34,8 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getProcessingOrders() {
         var params = {
             status: "PROCESSING",
-            from: moment.unix(1).format('YYYY-MM-DDTHH:ss:mm'),
-            to: moment().format('YYYY-MM-DDTHH:ss:mm')
+            from: moment.unix(1).format(),
+            to: moment().format()
         };
         supplyShipmentsApi.get(params, function(response) {
             $scope.processingShipments = response.result;
@@ -47,8 +47,8 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getCompletedOrders() {
         var params = {
             status: "COMPLETED",
-            from: moment.unix(1).format('YYYY-MM-DDTHH:ss:mm'),
-            to: moment().format('YYYY-MM-DDTHH:ss:mm')
+            from: moment.unix(1).format(),
+            to: moment().format()
         };
         supplyShipmentsApi.get(params, function(response) {
             $scope.completedShipments = response.result;

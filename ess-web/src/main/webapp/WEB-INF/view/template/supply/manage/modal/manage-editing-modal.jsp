@@ -31,15 +31,15 @@
         </a>
       </div>
 
-      <div class="text-align-center" ng-show="status === 'PROCESSING'" style="padding-bottom: 20px;">
-        <label>Assign to: </label>
-        <select ng-model="assignedTo" ng-change="setIssuedBy()" ng-options="emp for emp in supplyEmployees"></select>
-      </div>
+      <%--<div class="text-align-center" ng-show="status === 'PROCESSING'" style="padding-bottom: 20px;">--%>
+        <%--<label>Assign to: </label>--%>
+        <%--<select ng-model="assignedTo" ng-change="setIssuedBy()" ng-options="emp for emp in supplyEmployees"></select>--%>
+      <%--</div>--%>
 
       <input ng-show="status === 'PENDING'" ng-click="processOrder()" class="submit-button col-4-12" type="button" value="Process">
       <input ng-show="status === 'PROCESSING'" ng-click="completeOrder()" class="submit-button col-4-12" type="button" value="Complete">
       <input ng-click="saveOrder(order)" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
-      <input ng-click="rejectOrder(order)" class="reject-button col-4-12" type="button" value="Reject">
+      <input ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
     </div>
   </div>
 </div>

@@ -13,6 +13,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
+import gov.nysenate.ess.supply.item.view.UpdateLineItemView;
 import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderService;
 import gov.nysenate.ess.supply.order.OrderStatus;
@@ -98,7 +99,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         orderService.submitOrder(version);
     }
 
-    @RequestMapping(value = "reject/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{id}/reject", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void rejectOrder(@PathVariable int id, @RequestBody(required = false) String note) {
         Order order = orderService.getOrder(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
@@ -106,15 +107,14 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "{id}/line_items/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateLineItems(@PathVariable int id, @RequestBody LineItemView[] updatedLineItems,
-                                @RequestBody(required = false) String note) {
+    public void updateLineItems(@PathVariable int id, @RequestBody UpdateLineItemView updateLineItemView) {
         Set<LineItem> lineItems = new HashSet<>();
-        for (LineItemView view: updatedLineItems) {
+        for (LineItemView view: updateLineItemView.getLineItems()) {
             lineItems.add(view.toLineItem());
         }
         Order order = orderService.getOrder(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        orderService.updateLineItems(order, lineItems, note, modifiedBy);
+        orderService.updateLineItems(order, lineItems, updateLineItemView.getNote(), modifiedBy);
     }
 
     private int getSubjectEmployeeId() {

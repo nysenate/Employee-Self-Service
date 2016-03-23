@@ -108,19 +108,23 @@ essApi.factory('SupplyProductsApi', ['$resource', 'appProps', function($resource
 /** --- Supply Order API --- */
 
 essApi.factory('SupplyOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments.json')
+    return $resource(appProps.apiPath + '/supply/orders.json')
+}]);
+
+essApi.factory('SupplyOrderByIdApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/:id.json', {id: '@id'})
 }]);
 
 essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments')
+    return $resource(appProps.apiPath + '/supply/orders')
 }]);
 
 essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/reject')
+    return $resource(appProps.apiPath + '/supply/orders/:id/reject', {id: '@id'})
 }]);
 
-essApi.factory('SupplySaveOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/save')
+essApi.factory('SupplyUpdateLineItemsApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/:id/line_items/update', {id: '@id'})
 }]);
 
 /** --- Supply Shipments API --- */
@@ -141,6 +145,6 @@ essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($re
     return $resource(appProps.apiPath + '/supply/shipments/:id/undo_completion', {id: '@id'})
 }]);
 
-essApi.factory('SupplyOrderByIdApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/:id.json', {id: '@id'})
+essApi.factory('SupplyCancelShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/cancel', {id: '@id'})
 }]);

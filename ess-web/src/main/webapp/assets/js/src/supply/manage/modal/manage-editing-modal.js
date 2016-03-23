@@ -1,8 +1,8 @@
 var essSupply = angular.module('essSupply');
 
 essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessShipmentApi', 'SupplyCompleteShipmentApi',
-    'SupplySaveOrderApi', 'SupplyRejectOrderApi', 'LocationService',
-    function (appProps, modals, processShipmentApi, completeShipmentApi, saveOrderApi, rejectOrderApi, locationService) {
+    'SupplyRejectOrderApi', 'SupplyCancelShipmentApi', 'SupplyUpdateLineItemsApi', 'LocationService',
+    function (appProps, modals, processShipmentApi, completeShipmentApi, rejectOrderApi, cancelShipmentApi, updateLineItemsApi, locationService) {
         return {
             templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
             link: link
@@ -34,8 +34,6 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
 
             /** Save any changes, then process shipment */
             $scope.processOrder = function() {
-                // $scope.dirtyShipment.activeVersion.issuingEmployee.employeeId = appProps.user.employeeId;
-                // TODO why is scope.dirtyShipment needed in api call below!!!!! &&&&&&&&&&&&&&&&&&&&&&&& TOMORROW!!!!
                 processShipmentApi.save({id: $scope.shipment.id}, appProps.user.employeeId);
                 $scope.close();
                 reload();
@@ -50,14 +48,18 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
 
             /** Save the changes made to dirtyShipment */
             $scope.saveOrder = function() {
-                // TODO: check if issuer and/or line items updated. make appropriate api calls.
-                // saveOrderApi.save($scope.dirtyShipment);
-                // $scope.close();
-                // reload();
+                var itemsUpdated = _.isEqual($scope.shipment.order.activeVersion.lineItems, $scope.dirtyShipment.order.activeVersion.lineItems);
+                if(!itemsUpdated) {
+                    updateLineItemsApi.save({id: $scope.shipment.order.id}, {lineItems: $scope.dirtyShipment.order.activeVersion.lineItems});
+                    $scope.close();
+                    reload();
+                }
             };
 
-            $scope.rejectOrder = function(shipment) {
-                rejectOrderApi.save(shipment);
+            $scope.rejectOrder = function() {
+                rejectOrderApi.save({id: $scope.shipment.order.id});
+                // Also cancel the shipment since the order has been rejected.
+                cancelShipmentApi.save({id: $scope.shipment.id});
                 $scope.close();
                 reload();
             };
