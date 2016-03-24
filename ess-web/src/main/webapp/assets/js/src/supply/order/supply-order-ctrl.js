@@ -28,7 +28,7 @@ function supplyOrderController($scope, productsApi, supplyCategoryService, suppl
     };
 
     $scope.isInCart = function(item) {
-        return supplyCart.getItemById(item.id) !== false
+        return supplyCart.itemInCart(item.id)
     };
 
     $scope.orderQuantityRange = function(item) {

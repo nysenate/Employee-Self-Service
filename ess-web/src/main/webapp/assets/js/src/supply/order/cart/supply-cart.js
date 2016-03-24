@@ -1,53 +1,62 @@
 var essSupply = angular.module('essSupply');
 
 essSupply.service('SupplyCart', [function() {
-    // TODO rename cartItem to lineitem
-    function CartItem(item, quantity) {
+    
+    function LineItem(item, quantity) {
         this.item = item;
         this.quantity = quantity;
     }
 
-    /** Array of CartItem's */
-    var items = [];
+    /** Array of LineItem's in the cart. */
+    var lineItems = [];
 
     return {
         addToCart: function(item, quantity) {
-            var cartItem = this.getItemById(item.id);
-            if (!cartItem) {
-                items.push(new CartItem(item, quantity));
+            if (!this.itemInCart(item.id)) {
+                lineItems.push(new LineItem(item, quantity));
             }
             else {
-                cartItem.quantity += quantity;
+                var lineItem = this.getItemById(item.id);
+                lineItem.quantity += quantity;
             }
         },
+        
         getItems: function() {
-            return items;
+            return lineItems;
         },
+        
+        itemInCart: function(itemId) {
+            var results = $.grep(lineItems, function(cartItem) {return cartItem.item.id === id});
+            return results.length > 0;
+        },
+        
+        /** Get an item in the cart by its id. returns null if no match is found. */
         getItemById: function(id) {
-            var item = false;
-            var search = $.grep(items, function(cartItem) {return cartItem.item.id === id});
+            var search = $.grep(lineItems, function(cartItem) {return cartItem.item.id === id});
             if (search.length > 0) {
-                item = search[0];
+                return search[0];
             }
-            return item;
+            return null;
         },
+        
         getTotalItems: function() {
             var size = 0;
-            angular.forEach(items, function(item) {
+            angular.forEach(lineItems, function(item) {
                 size += item.quantity;
             });
             return size;
         },
+        
         removeFromCart: function(item) {
-            $.grep(items, function(cartItem, index) {
-                if (cartItem && cartItem.item.id === item.id) {
-                    items.splice(index, 1);
+            $.grep(lineItems, function(lineItem, index) {
+                if (lineItem && lineItem.item.id === item.id) {
+                    lineItems.splice(index, 1);
                 }
             });
         },
+        
         reset: function() {
-            items = [];
+            lineItems = [];
         }
-
     }
 }]);

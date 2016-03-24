@@ -4,7 +4,6 @@ essSupply = angular.module('essSupply').controller('SupplyCartController', [
 function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService, modals) {
 
     $scope.myCartItems = function() {
-        console.log(supplyCart.getItems());
         return supplyCart.getItems();
     };
 

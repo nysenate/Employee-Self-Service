@@ -10,11 +10,12 @@ function supplyNavigationController($scope, appProps, SupplyCategoryService) {
         $scope.categories = SupplyCategoryService.getCategories();
     };
 
+    /** Only display the categories sidebar if on requisition order page. */
     $scope.$on('$locationChangeStart', function(event, newUrl) {
-        $scope.displayCategoryNavigation = onRequisitionOrderPage(newUrl);
+        $scope.displayCategoryNavigation = isRequisitionOrderPage(newUrl);
     });
 
-    function onRequisitionOrderPage(url) {
+    function isRequisitionOrderPage(url) {
         return url.indexOf(appProps.ctxPath + "/supply/order/order") > -1;
     }
 
