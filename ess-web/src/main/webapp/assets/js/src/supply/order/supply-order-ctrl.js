@@ -1,9 +1,15 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'SupplyItemsApi', 'SupplyCategoryService',
-        'SupplyCart', supplyOrderController]);
+        'SupplyCart', 'PaginationModel', supplyOrderController]);
 
-function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCart) {
+function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCart, paginationModel) {
 
+    $scope.itemSearch = {
+        matches: [],
+        paginate: angular.extend({}, paginationModel),
+        response: {},
+        error: false
+    };
     $scope.items = null;
     $scope.quantity = 1;
 
@@ -11,6 +17,21 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCa
         itemsApi.get(function(response) {
             $scope.items = response.result;
         });
+    };
+    
+    $scope.getItems = function(resetPagination) {
+        if(resetPagination) {
+            $scope.itemSearch.paginate.reset();
+        }
+        var params = {
+            limit: $scope.itemSearch.paginate.getLimit(),
+            offset: $scope.itemSearch.paginate.getOffset()
+        };
+        $scope.itemSearch.response = itemsApi.get(params, function(response) {
+            // $scope.itemSearch.
+        }, function(errorResponse) {
+            
+        })
     };
 
     // Called by ng-hide in the view. Returns true if a item does not belong to the selected categories.
