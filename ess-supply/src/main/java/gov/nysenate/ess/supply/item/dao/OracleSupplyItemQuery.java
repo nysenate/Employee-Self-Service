@@ -4,13 +4,18 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum OracleSupplyItemQuery implements BasicSqlQuery {
-
-    GET_ALL_SUPPLY_ITEMS(
-            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit \n" +
+    GET_ALL_ITEMS_BODY(
             "From ${masterSchema}.FM12COMMODTY com \n" +
             "Inner Join ${masterSchema}.FM12COMXREF xref On com.Nuxrefco = xref.Nuxrefco \n" +
             "Inner Join ${masterSchema}.FL12STDUNIT unit On com.CdIssUnit = unit.CdStdUnit \n" +
             "Where com.CdStatus= 'A' And com.CdStockItem= 'Y'"
+    ),
+    ALL_ITEMS_TOTAL_ROWS(
+            "SELECT COUNT(*) " + GET_ALL_ITEMS_BODY.getSql()
+    ),
+    GET_ALL_SUPPLY_ITEMS(
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit, \n" +
+            "(" + ALL_ITEMS_TOTAL_ROWS.getSql() + ") as total_rows " + GET_ALL_ITEMS_BODY.getSql()
     ),
     GET_SUPPLY_ITEM_BY_ID(
             "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit\n" +

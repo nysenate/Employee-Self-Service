@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/products")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/items")
 public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplyItemRestApiCtrl.class);
@@ -34,8 +35,8 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping("")
     public BaseResponse getSupplyItems(WebRequest webRequest) {
         LimitOffset limOff = getLimitOffset(webRequest, 1000);
-        List<SupplyItem> items = supplyItemService.getSupplyItems(limOff);
-        List<SupplyItemView> itemViews = items.stream().map(SupplyItemView::new).collect(Collectors.toList());
-        return ListViewResponse.of(itemViews);
+        PaginatedList<SupplyItem> paginatedItems = supplyItemService.getSupplyItems(limOff);
+        List<SupplyItemView> itemViews = paginatedItems.getResults().stream().map(SupplyItemView::new).collect(Collectors.toList());
+        return ListViewResponse.of(itemViews, paginatedItems.getTotal(), paginatedItems.getLimOff());
     }
 }

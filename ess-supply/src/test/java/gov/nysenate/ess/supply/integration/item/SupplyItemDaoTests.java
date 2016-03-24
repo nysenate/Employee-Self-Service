@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.integration.item;
 
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.OracleSupplyItemDao;
@@ -22,14 +23,15 @@ public class SupplyItemDaoTests extends SupplyTests {
 
     @Test
     public void canGetItems() {
-        List<SupplyItem> items = itemDao.getSupplyItems(LimitOffset.ALL);
-        assertTrue(items.size() > 0);
+        PaginatedList<SupplyItem> items = itemDao.getSupplyItems(LimitOffset.ALL);
+        assertTrue(items.getTotal() > 0);
+        assertTrue(items.getResults().size() > 0);
     }
 
     @Test
     public void canLimitResults() {
-        List<SupplyItem> items = itemDao.getSupplyItems(LimitOffset.TWENTY_FIVE);
-        assertTrue(items.size() == 25);
+        PaginatedList<SupplyItem> paginatedItems = itemDao.getSupplyItems(LimitOffset.TWENTY_FIVE);
+        assertTrue(paginatedItems.getResults().size() == 25);
     }
 
     /**

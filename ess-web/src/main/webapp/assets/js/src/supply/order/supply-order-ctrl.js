@@ -1,14 +1,14 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'SupplyProductsApi', 'SupplyCategoryService',
+    ['$scope', 'SupplyItemsApi', 'SupplyCategoryService',
         'SupplyCart', supplyOrderController]);
 
-function supplyOrderController($scope, productsApi, supplyCategoryService, supplyCart) {
+function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCart) {
 
     $scope.items = null;
     $scope.quantity = 1;
 
     $scope.init = function() {
-        productsApi.get(function(response) {
+        itemsApi.get(function(response) {
             $scope.items = response.result;
         });
     };

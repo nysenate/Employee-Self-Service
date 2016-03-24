@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.item.dao;
 
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Primary
@@ -40,8 +40,8 @@ public class InMemorySupplyItemDao implements SupplyItemDao {
     }
 
     @Override
-    public List<SupplyItem> getSupplyItems(LimitOffset limOff) {
-        return new ArrayList<>(items.values());
+    public PaginatedList<SupplyItem> getSupplyItems(LimitOffset limOff) {
+        return new PaginatedList<SupplyItem>(items.size(), limOff, (ArrayList)items.values());
     }
 
     @Override

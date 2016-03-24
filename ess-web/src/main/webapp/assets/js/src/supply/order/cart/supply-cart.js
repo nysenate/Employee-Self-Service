@@ -26,13 +26,13 @@ essSupply.service('SupplyCart', [function() {
         },
         
         itemInCart: function(itemId) {
-            var results = $.grep(lineItems, function(cartItem) {return cartItem.item.id === id});
+            var results = $.grep(lineItems, function(cartItem) {return cartItem.item.id === itemId});
             return results.length > 0;
         },
         
         /** Get an item in the cart by its id. returns null if no match is found. */
-        getItemById: function(id) {
-            var search = $.grep(lineItems, function(cartItem) {return cartItem.item.id === id});
+        getItemById: function(itemId) {
+            var search = $.grep(lineItems, function(cartItem) {return cartItem.item.id === itemId});
             if (search.length > 0) {
                 return search[0];
             }
