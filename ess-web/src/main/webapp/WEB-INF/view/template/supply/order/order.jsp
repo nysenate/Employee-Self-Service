@@ -8,11 +8,15 @@
     </a>
   </div>
 
-  <div class="content-container">
-    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination" boundary-links="true" max-size="10"></dir-pagination-controls>
+  <div loader-indicator ng-show="!itemSearch.response.$resolved"></div>
+
+  <div class="content-container" ng-show="itemSearch.response.$resolved">
+    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination" boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
       <div class="col-3-12 text-align-center"
-           dir-paginate="item in items | itemsPerPage: 16"
+           dir-paginate="item in itemSearch.matches | itemsPerPage: itemSearch.paginate.itemsPerPage"
+           current-page="itemSearch.paginate.currPage"
+           total-items="itemSearch.paginate.totalItems"
            pagination-id="item-pagination"
            ng-hide="hideItem(item)">
         <img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">
@@ -33,6 +37,6 @@
         </div>
       </div>
     </div>
-    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"  boundary-links="true" max-size="10"></dir-pagination-controls>
+    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"  boundary-links="true" max-size="10"></dir-pagination-controls>
   </div>
 </div>

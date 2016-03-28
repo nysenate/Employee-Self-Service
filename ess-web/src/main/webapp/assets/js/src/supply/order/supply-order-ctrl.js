@@ -1,8 +1,8 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'SupplyItemsApi', 'SupplyCategoryService',
+    ['$scope', 'SupplyItemsApi', 'SupplyCategoryService', 'LocationService',
         'SupplyCart', 'PaginationModel', supplyOrderController]);
 
-function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCart, paginationModel) {
+function supplyOrderController($scope, itemsApi, supplyCategoryService, locationService, supplyCart, paginationModel) {
 
     $scope.itemSearch = {
         matches: [],
@@ -10,13 +10,14 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCa
         response: {},
         error: false
     };
-    $scope.items = null;
+    
     $scope.quantity = 1;
 
     $scope.init = function() {
-        itemsApi.get(function(response) {
-            $scope.items = response.result;
-        });
+        $scope.itemSearch.paginate.currPage = locationService.getSearchParam("page") || 1;
+        locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, true);
+        $scope.itemSearch.paginate.itemsPerPage = 16;
+        $scope.getItems();
     };
     
     $scope.getItems = function(resetPagination) {
@@ -28,10 +29,18 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, supplyCa
             offset: $scope.itemSearch.paginate.getOffset()
         };
         $scope.itemSearch.response = itemsApi.get(params, function(response) {
-            // $scope.itemSearch.
+            $scope.itemSearch.matches = response.result;
+            $scope.itemSearch.paginate.setTotalItems(response.total);
+            $scope.itemSearch.error = false;
         }, function(errorResponse) {
-            
+            $scope.itemSearch.matches = [];
+            $scope.itemSearch.error = true;
         })
+    };
+    
+    $scope.onPageChange = function() {
+        locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, false);
+        $scope.getItems(false);
     };
 
     // Called by ng-hide in the view. Returns true if a item does not belong to the selected categories.

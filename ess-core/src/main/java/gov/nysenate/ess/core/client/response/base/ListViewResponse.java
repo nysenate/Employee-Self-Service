@@ -41,7 +41,7 @@ public class ListViewResponse<ViewType> extends PaginationResponse
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(List<ViewType> items, int total, LimitOffset limOff) {
-        return of(items, null, items.size(), limOff);
+        return of(items, null, total, limOff);
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(

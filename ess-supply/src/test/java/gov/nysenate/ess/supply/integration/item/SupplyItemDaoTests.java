@@ -32,6 +32,7 @@ public class SupplyItemDaoTests extends SupplyTests {
     public void canLimitResults() {
         PaginatedList<SupplyItem> paginatedItems = itemDao.getSupplyItems(LimitOffset.TWENTY_FIVE);
         assertTrue(paginatedItems.getResults().size() == 25);
+        assertTrue(paginatedItems.getTotal() > 25);
     }
 
     /**
