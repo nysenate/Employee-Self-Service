@@ -6,9 +6,14 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public class OracleSupplyItemDao extends SqlBaseDao implements SupplyItemDao {
@@ -19,6 +24,21 @@ public class OracleSupplyItemDao extends SqlBaseDao implements SupplyItemDao {
         PaginatedRowHandler<SupplyItem> handler = new PaginatedRowHandler<>(limOff, "total_rows", new SupplyItemRowMapper());
         remoteNamedJdbc.query(sql, handler);
         return handler.getList();
+    }
+
+    @Override
+    public PaginatedList<SupplyItem> getSupplyItemsByCategories(List<Category> categories, LimitOffset limOff) {
+        MapSqlParameterSource params = new MapSqlParameterSource("categories", createCategoryStringSet(categories));
+        String sql = OracleSupplyItemQuery.GET_ITEMS_BY_CATEGORIES.getSql(schemaMap(), new OrderBy("CDCOMMODITY", SortOrder.ASC), limOff);
+        PaginatedRowHandler<SupplyItem> handler = new PaginatedRowHandler<>(limOff, "total_rows", new SupplyItemRowMapper());
+        remoteNamedJdbc.query(sql, params, handler);
+        return handler.getList();
+    }
+
+    private Set<String> createCategoryStringSet(List<Category> categories) {
+        Set<String> catStringSet = new HashSet<>();
+        categories.forEach(cat -> catStringSet.add(cat.getName()));
+        return catStringSet;
     }
 
     @Override

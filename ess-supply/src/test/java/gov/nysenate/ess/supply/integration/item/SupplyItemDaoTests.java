@@ -9,6 +9,7 @@ import gov.nysenate.ess.supply.item.dao.OracleSupplyItemDao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -48,8 +49,12 @@ public class SupplyItemDaoTests extends SupplyTests {
         assertThat(actual, equalTo(expected));
     }
 
-//    @Test
-//    public void canGetItemsByCategory() {
-//        PaginatedList<SupplyItem> items = itemDao.getSupplyItems("BATTERIES", LimitOffset.ALL);
-//    }
+    @Test
+    public void canGetItemsByCategory() {
+        List<Category> categories = new ArrayList<>();
+        categories.add(new Category("BATTERIES"));
+        categories.add(new Category("CLIPS"));
+        PaginatedList<SupplyItem> items = itemDao.getSupplyItemsByCategories(categories, LimitOffset.ALL);
+        items.getResults().forEach(item -> assertTrue(categories.contains(item.getCategory())));
+    }
 }
