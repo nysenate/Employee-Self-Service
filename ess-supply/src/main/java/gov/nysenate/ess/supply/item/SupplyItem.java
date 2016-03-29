@@ -7,13 +7,13 @@ public final class SupplyItem {
     private final String name;
     private final String description;
     private final String unit;
-    private final String category;
+    private final Category category;
     private final int suggestedMaxQty;
     /** Number of items per unit. eg. 12/PKG would equal 12 */
     private final int unitStandardQuantity;
 
     public SupplyItem(int id, String commodityCode, String name, String description, String unit,
-                      String category, int suggestedMaxQty, int unitStandardQuantity) {
+                      Category category, int suggestedMaxQty, int unitStandardQuantity) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.name = name;
@@ -44,7 +44,7 @@ public final class SupplyItem {
         return unit;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
@@ -59,9 +59,14 @@ public final class SupplyItem {
     @Override
     public String toString() {
         return "SupplyItem{" +
-               "name='" + name + '\'' +
-               ", id=" + id +
+               "id=" + id +
                ", commodityCode='" + commodityCode + '\'' +
+               ", name='" + name + '\'' +
+               ", description='" + description + '\'' +
+               ", unit='" + unit + '\'' +
+               ", category=" + category +
+               ", suggestedMaxQty=" + suggestedMaxQty +
+               ", unitStandardQuantity=" + unitStandardQuantity +
                '}';
     }
 
@@ -80,7 +85,7 @@ public final class SupplyItem {
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
-        return !(category != null ? !category.equals(that.category) : that.category != null);
+        return category != null ? category.equals(that.category) : that.category == null;
     }
 
     @Override

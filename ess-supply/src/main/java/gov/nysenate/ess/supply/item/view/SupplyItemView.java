@@ -10,7 +10,7 @@ public class SupplyItemView implements ViewObject {
     protected String name;
     protected String description;
     protected String unit;
-    protected String category;
+    protected CategoryView category;
     protected int suggestedMaxQty;
     protected int standardQuantity;
 
@@ -23,13 +23,13 @@ public class SupplyItemView implements ViewObject {
         this.name = item.getName();
         this.description = item.getDescription();
         this.unit = item.getUnit();
-        this.category = item.getCategory();
+        this.category = new CategoryView(item.getCategory());
         this.suggestedMaxQty = item.getSuggestedMaxQty();
         this.standardQuantity = item.getUnitStandardQuantity();
     }
 
     public SupplyItem toSupplyItem() {
-        return new SupplyItem(id, commodityCode, name, description, unit, category, suggestedMaxQty, standardQuantity);
+        return new SupplyItem(id, commodityCode, name, description, unit, category.toCategory(), suggestedMaxQty, standardQuantity);
     }
 
     public int getId() {
@@ -52,7 +52,7 @@ public class SupplyItemView implements ViewObject {
         return unit;
     }
 
-    public String getCategory() {
+    public CategoryView getCategory() {
         return category;
     }
 

@@ -50,7 +50,7 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, location
         if (names.length === 0) {
             return false;
         }
-        return names.indexOf(item.category) === -1;
+        return names.indexOf(item.category.name) === -1;
     };
 
     $scope.addToCart = function(item, qty) {

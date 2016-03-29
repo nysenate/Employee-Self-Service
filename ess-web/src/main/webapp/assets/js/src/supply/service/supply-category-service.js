@@ -12,8 +12,8 @@ essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemsApi',
 
     function initCategories(items) {
         angular.forEach(items, function(item) {
-            if (isDistinctCategory(item.category)) {
-                categories.push(new Category(item.category));
+            if (isDistinctCategory(item.category.name)) {
+                categories.push(new Category(item.category.name));
             }
         });
     }
