@@ -7,6 +7,7 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, location
     $scope.itemSearch = {
         matches: [],
         paginate: angular.extend({}, paginationModel),
+        categories: [],
         response: {},
         error: false
     };
@@ -25,6 +26,7 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, location
             $scope.itemSearch.paginate.reset();
         }
         var params = {
+            category: $scope.itemSearch.categories,
             limit: $scope.itemSearch.paginate.getLimit(),
             offset: $scope.itemSearch.paginate.getOffset()
         };

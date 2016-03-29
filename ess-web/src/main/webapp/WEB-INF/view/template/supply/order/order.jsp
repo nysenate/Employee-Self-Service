@@ -19,7 +19,8 @@
            total-items="itemSearch.paginate.totalItems"
            pagination-id="item-pagination"
            ng-hide="hideItem(item)">
-        <img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">
+        <%--<img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">--%>
+        <img ng-src="${ctxPath}/assets/img/supply/1.jpg" class="supply-item-image">
         <div>
           <h3 class="dark-gray bold">{{item.name}}</h3>
           <p class="dark-gray" style="height: 50px;">{{item.description}}</p>

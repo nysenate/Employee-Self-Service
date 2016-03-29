@@ -20,12 +20,12 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/history/history">Requisition History</a></li>
     </ul>
   </section>
-  <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="displayCategoryNavigation">
+  <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="shouldDisplayCategoryFilter">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
     <div style="height: 400px; overflow-y: auto">
       <ul class="sub-topic-list">
         <li ng-repeat="cat in categories">
-          <input type="checkbox" ng-model="cat.selected">
+          <input type="checkbox" ng-model="cat.selected" ng-change="onCategorySelected()">
           <label>{{cat.name}}</label>
         </li>
       </ul>
