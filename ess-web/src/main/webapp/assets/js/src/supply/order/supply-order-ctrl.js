@@ -1,8 +1,8 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'SupplyItemsApi', 'SupplyCategoryService', 'LocationService',
+    ['$scope', 'appProps', 'SupplyItemsApi', 'SupplyCategoryService', 'LocationService',
         'SupplyCart', 'PaginationModel', supplyOrderController]);
 
-function supplyOrderController($scope, itemsApi, supplyCategoryService, locationService, supplyCart, paginationModel) {
+function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService, locationService, supplyCart, paginationModel) {
 
     $scope.itemSearch = {
         matches: [],
@@ -15,6 +15,7 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, location
     $scope.quantity = 1;
 
     $scope.init = function() {
+        $scope.itemSearch.categories = locationService.getSearchParam("category") || [];
         $scope.itemSearch.paginate.currPage = locationService.getSearchParam("page") || 1;
         locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, true);
         $scope.itemSearch.paginate.itemsPerPage = 16;
@@ -24,6 +25,7 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, location
     $scope.getItems = function(resetPagination) {
         if(resetPagination) {
             $scope.itemSearch.paginate.reset();
+            setPageUrlParams();
         }
         var params = {
             category: $scope.itemSearch.categories,
@@ -41,19 +43,27 @@ function supplyOrderController($scope, itemsApi, supplyCategoryService, location
     };
     
     $scope.onPageChange = function() {
-        locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, false);
+        setPageUrlParams();
         $scope.getItems(false);
     };
+    
+    function setPageUrlParams() {
+        locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, false);
+    }
 
-    // Called by ng-hide in the view. Returns true if a item does not belong to the selected categories.
-    $scope.hideItem = function(item) {
-        var names = supplyCategoryService.getSelectedCategoryNames();
-        // If no filters selected, show all items.
-        if (names.length === 0) {
-            return false;
+    /**
+     * Detect url category param changes due to category side bar selections or back/forward browser navigation.
+     * Need to reset the item matches when category search criteria changes.
+     */
+    $scope.$on('$locationChangeStart', function(event, newUrl) {
+        if (newUrl.indexOf(appProps.ctxPath + "/supply/order/order") > -1) { // If still on order page.
+            var urlCategories = locationService.getSearchParam("category") || [];
+            if (!_.isEqual(urlCategories, $scope.itemSearch.categories)) { // If the category param changed.
+                $scope.itemSearch.categories = urlCategories;
+                $scope.getItems(true);
+            }
         }
-        return names.indexOf(item.category.name) === -1;
-    };
+    });
 
     $scope.addToCart = function(item, qty) {
         supplyCart.addToCart(item, qty);

@@ -17,14 +17,12 @@
            dir-paginate="item in itemSearch.matches | itemsPerPage: itemSearch.paginate.itemsPerPage"
            current-page="itemSearch.paginate.currPage"
            total-items="itemSearch.paginate.totalItems"
-           pagination-id="item-pagination"
-           ng-hide="hideItem(item)">
+           pagination-id="item-pagination">
         <%--<img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">--%>
         <img ng-src="${ctxPath}/assets/img/supply/1.jpg" class="supply-item-image">
         <div>
-          <h3 class="dark-gray bold">{{item.name}}</h3>
-          <p class="dark-gray" style="height: 50px;">{{item.description}}</p>
-          <p class="dark-gray bold">{{item.unit}}</p>
+          <p class="dark-gray bold" style="height: 40px;">{{item.description}}</p>
+          <p class="dark-gray">{{item.unit}}</p>
         </div>
         <div style="">
           <label class="custom-select">
