@@ -12,7 +12,7 @@
 
   <div class="grid grid-padding">
     <div class="col-8-12">
-      <div class="content-container">
+      <div class="content-container" style="overflow-y: auto; max-height: 300px;">
         <table class="ess-table supply-listing-table">
           <thead>
           <tr>

@@ -34,34 +34,43 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
 
             /** Save any changes, then process shipment */
             $scope.processOrder = function() {
-                processShipmentApi.save({id: $scope.shipment.id}, appProps.user.employeeId);
-                $scope.close();
-                reload();
+                processShipmentApi.save(
+                    {id: $scope.shipment.id},
+                    appProps.user.employeeId,
+                    success,
+                    error
+                );
             };
 
             /** Save any changes, then complete shipment */
             $scope.completeOrder = function() {
-                completeShipmentApi.save({id: $scope.shipment.id});
-                $scope.close();
-                reload();
+                completeShipmentApi.save(
+                    {id: $scope.shipment.id},
+                    null,
+                    success,
+                    error);
             };
 
             /** Save the changes made to dirtyShipment */
             $scope.saveOrder = function() {
                 var itemsUpdated = _.isEqual($scope.shipment.order.activeVersion.lineItems, $scope.dirtyShipment.order.activeVersion.lineItems);
                 if(!itemsUpdated) {
-                    updateLineItemsApi.save({id: $scope.shipment.order.id}, {lineItems: $scope.dirtyShipment.order.activeVersion.lineItems});
-                    $scope.close();
-                    reload();
+                    updateLineItemsApi.save(
+                        {id: $scope.shipment.order.id},
+                        {lineItems: $scope.dirtyShipment.order.activeVersion.lineItems},
+                        success,
+                        error)
                 }
             };
 
             $scope.rejectOrder = function() {
                 rejectOrderApi.save({id: $scope.shipment.order.id});
                 // Also cancel the shipment since the order has been rejected.
-                cancelShipmentApi.save({id: $scope.shipment.id});
-                $scope.close();
-                reload();
+                cancelShipmentApi.save(
+                    {id: $scope.shipment.id},
+                    null,
+                    success,
+                    error);
             };
 
             //$scope.removeLineItem = function(lineItem) {
@@ -89,6 +98,17 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
 
             function reload() {
                 locationService.go("/supply/manage/manage", true);
+            }
+            
+            var success = function success(value, responseHeaders) {
+                $scope.close();
+                reload();
+            };
+            
+            var error = function error(httpResponse) {
+                $scope.close();
+                console.log("An error occurred: " + httpResponse);
+                // TODO
             }
         }
     }]);

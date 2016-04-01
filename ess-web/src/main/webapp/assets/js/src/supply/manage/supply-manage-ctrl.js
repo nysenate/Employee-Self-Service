@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
-    'SupplyShipmentsApi', 'modals', supplyManageController]);
+    'SupplyShipmentsApi', 'modals', '$interval', supplyManageController]);
 
-function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, modals) {
+function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, modals, $interval) {
 
     $scope.selected = null;
     $scope.pendingShipments = null;
@@ -15,6 +15,9 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     };
 
     $scope.init();
+
+    // Refresh data every minute.
+    $interval(function() {$scope.init()}, 60000);
 
     /** --- Api Calls --- */
 

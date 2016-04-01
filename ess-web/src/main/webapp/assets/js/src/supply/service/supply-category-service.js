@@ -16,6 +16,14 @@ essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemsApi',
                 categories.push(new Category(item.category.name));
             }
         });
+
+        // Alphabetize the categories.
+        categories.sort(function(a, b){
+            if(a.name < b.name) {return -1;}
+            if(a.name > b.name) {return 1;}
+            return 0;
+        })
+        
     }
 
     /** Returns true if a category is not yet in the category array, false otherwise. */
