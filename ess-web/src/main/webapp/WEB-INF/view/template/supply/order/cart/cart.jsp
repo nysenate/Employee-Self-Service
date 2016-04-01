@@ -25,14 +25,13 @@
       </div>
       <div class="col-6-12">
         <div class="content">
-          <h2 class="dark-gray bold">{{cartItem.item.name}}</h2>
-          <p class="dark-gray">{{cartItem.item.description}}</p>
+          <h3 class="dark-gray">{{cartItem.item.description}}</h3>
           <a ng-click="removeFromCart(cartItem.item)" href="#">delete</a>
         </div>
       </div>
       <div class="col-2-12">
         <div class="content">
-          <p class="dark-gray bold cart-unit-size">{{cartItem.item.unitSize}}/Pack</p>
+          <p class="dark-gray bold cart-unit-size">{{cartItem.item.standardQuantity}}/Pack</p>
           <label class="custom-select">Qty:
             <select requisition-quantity-selector item="cartItem.item" warn-qty="cartItem.item.suggestedMaxQty + 1"
                     ng-model="cartItem.quantity" ng-options="qty for qty in orderQuantityRange(cartItem.item)"></select>

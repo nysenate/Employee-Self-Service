@@ -18,11 +18,10 @@
            current-page="itemSearch.paginate.currPage"
            total-items="itemSearch.paginate.totalItems"
            pagination-id="item-pagination">
-        <%--<img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">--%>
-        <img ng-src="${ctxPath}/assets/img/supply/1.jpg" class="supply-item-image">
+        <img ng-src="${ctxPath}/assets/img/supply/{{item.id}}.jpg" class="supply-item-image">
         <div>
           <p class="dark-gray bold" style="height: 40px;">{{item.description}}</p>
-          <p class="dark-gray">{{item.unit}}</p>
+          <p class="dark-gray">{{item.standardQuantity}}/Pack</p>
         </div>
         <div style="">
           <label class="custom-select">

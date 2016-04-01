@@ -47,7 +47,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getCompletedOrders() {
         var params = {
             status: "COMPLETED",
-            from: moment.unix(1).format(),
+            from: moment().startOf('day').format(),
             to: moment().format()
         };
         supplyShipmentsApi.get(params, function(response) {

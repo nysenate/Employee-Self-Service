@@ -7,6 +7,8 @@ public class CategoryView implements ViewObject {
 
     protected String name;
 
+    public CategoryView() {}
+
     public CategoryView(Category category) {
         this.name = category.getName();
     }

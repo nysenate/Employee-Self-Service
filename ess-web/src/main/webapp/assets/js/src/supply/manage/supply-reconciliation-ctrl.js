@@ -12,7 +12,7 @@ function supplyReconciliationController($scope, inventoryService, shipmentsApi, 
         // Get shipments completed today
         var params = {
             status: "COMPLETED",
-            from: moment().startOf('day').format('YYYY-MM-DDTHH:ss:mm'),
+            from: moment().startOf('day').format(),
             to: moment().format()
         };
         shipmentsApi.get(params, function(response) {

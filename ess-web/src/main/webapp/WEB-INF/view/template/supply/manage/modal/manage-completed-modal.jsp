@@ -17,14 +17,14 @@
           <thead>
           <tr>
             <th>Commodity Code</th>
-            <th>Item Name</th>
+            <th>Item</th>
             <th>Quantity</th>
           </tr>
           </thead>
           <tbody>
           <tr ng-class="{warn: highlightLineItem(lineItem)}" ng-repeat="lineItem in shipment.order.activeVersion.lineItems">
             <td>{{getItemCommodityCode(lineItem.item.id)}}</td>
-            <td>{{getItemName(lineItem.item.id)}}</td>
+            <td>{{lineItem.item.description}}</td>
             <td>{{lineItem.quantity}}</td>
           </tr>
           </tbody>

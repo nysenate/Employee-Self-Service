@@ -21,7 +21,7 @@
           Commodity Code
         </div>
         <div class="col-4-12">
-          Item Name
+          Item
         </div>
         <div class="col-4-12">
           Quantity On Hand
@@ -34,7 +34,7 @@
             {{item.commodityCode}}
           </div>
           <div class="col-4-12">
-            {{item.name}}
+            {{item.description}}
           </div>
           <div class="col-4-12">
             &nbsp;

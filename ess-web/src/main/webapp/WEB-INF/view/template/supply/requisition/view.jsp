@@ -40,14 +40,14 @@
         <thead>
         <tr>
           <th>Commodity Code</th>
-          <th>Item Name</th>
+          <th>Item</th>
           <th>Quantity</th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="lineItem in order.activeVersion.lineItems">
           <td>{{lineItem.item.commodityCode}}</td>
-          <td>{{lineItem.item.name}}</td>
+          <td>{{lineItem.item.description}}</td>
           <td>{{lineItem.quantity}}</td>
         </tr>
         </tbody>
