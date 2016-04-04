@@ -7,7 +7,8 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
 
     /** Get Item by id */
     GET_SUPPLY_ITEM_BY_ID(
-            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit\n" +
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, \n" +
+            "unit.AmStdUnit, com.numaxunitmon \n" +
             "From ${masterSchema}.FM12COMMODTY com \n" +
             "Inner Join ${masterSchema}.FM12COMXREF xref On com.Nuxrefco = xref.Nuxrefco \n" +
             "Inner Join ${masterSchema}.FL12STDUNIT unit On com.CdIssUnit = unit.CdStdUnit \n" +
@@ -25,7 +26,8 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
             "SELECT COUNT(*) " + GET_ALL_ITEMS_BODY.getSql()
     ),
     GET_ALL_SUPPLY_ITEMS(
-            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit, \n" +
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, \n" +
+            "unit.AmStdUnit, com.numaxunitmon, \n" +
             "(" + ALL_ITEMS_TOTAL_ROWS.getSql() + ") as total_rows " + GET_ALL_ITEMS_BODY.getSql()
     ),
 
@@ -40,7 +42,8 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
             "SELECT COUNT(*) " + GET_ITEMS_BY_CATEGORY_BODY.getSql()
     ),
     GET_ITEMS_BY_CATEGORIES(
-            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, unit.AmStdUnit, \n" +
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, \n" +
+            "unit.AmStdUnit, com.numaxunitmon, \n" +
             "(" + ITEMS_BY_CATEGORY_TOTAL_ROWS.getSql() + ") as total_rows " + GET_ITEMS_BY_CATEGORY_BODY.getSql()
     );
 

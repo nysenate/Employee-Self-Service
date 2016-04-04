@@ -11,16 +11,20 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
 
     @Override
     public SupplyItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+        int maxOrderQty = rs.getInt("numaxunitmon");
         return new SupplyItem(
                 rs.getInt("Nuxrefco"),
                 rs.getString("CdCommodity"),
-                "Item Name", // TODO: Item name not in databse yet.
                 rs.getString("DeCommodityf"),
                 rs.getString("CdIssUnit"),
                 new Category(rs.getString("CdCategory")),
-                2, // TODO: is suggested quantity in database?
+                isMaxOrderQtyValid(maxOrderQty)? maxOrderQty : 2, // TODO: Use max monthly order quantity if available, default to 2.
                 rs.getInt("AmStdUnit")
         );
     }
 
+    // Lots of invalid data in database.
+    private boolean isMaxOrderQtyValid(int maxOrderQty) {
+        return maxOrderQty != 0 && maxOrderQty < 100;
+    }
 }

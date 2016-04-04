@@ -43,8 +43,8 @@ public class SupplyItemDaoTests extends SupplyTests {
     @Test
     public void canGetItemById() {
         // TODO: item name and suggested max qty will have to be adjusted when those values get added to the database.
-        SupplyItem expected = new SupplyItem(111, "K1", "Item Name", "KO-REC-TYPE TAPE/1 LINE SIZE GR-23031",
-                                             "1", new Category("KORECTYPE"), 2, 1);
+        SupplyItem expected = new SupplyItem(111, "K1", "KO-REC-TYPE TAPE/1 LINE SIZE GR-23031",
+                                             "1", new Category("KORECTYPE"), 1, 1);
         SupplyItem actual = itemDao.getItemById(TEST_ITEM_ID);
         assertThat(actual, equalTo(expected));
     }
