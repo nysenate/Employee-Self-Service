@@ -25,7 +25,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         var params = {
             status: "PENDING",
             from: moment.unix(1).format(),
-            to: moment().format()
+            to: moment().add(1, 'day').format() // Use time in the future, current time may be slightly behind server time.
         };
         supplyShipmentsApi.get(params, function(response) {
             $scope.pendingShipments = response.result;
@@ -38,7 +38,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         var params = {
             status: "PROCESSING",
             from: moment.unix(1).format(),
-            to: moment().format()
+            to: moment().add(1, 'day').format()
         };
         supplyShipmentsApi.get(params, function(response) {
             $scope.processingShipments = response.result;
@@ -51,7 +51,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         var params = {
             status: "COMPLETED",
             from: moment().startOf('day').format(),
-            to: moment().format()
+            to: moment().add(1, 'day').format()
         };
         supplyShipmentsApi.get(params, function(response) {
             $scope.completedShipments = response.result;
