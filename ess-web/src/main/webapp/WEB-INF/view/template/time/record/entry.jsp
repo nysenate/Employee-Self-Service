@@ -319,8 +319,8 @@
                        ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
               </td>
               <td class="entry-comment-col">
-                <input type="text" maxlength="150" ng-change="setDirty()" class="entry-comment"
-                       ng-model="entry.empComment" name="entryComment" tabindex="{{entry.workHours ? 1 : 2}}"/>
+                <textarea text-auto-height text="entry.empComment" maxlength="150" ng-change="setDirty()" class="entry-comment"
+                       ng-model="entry.empComment" name="entryComment" tabindex="{{entry.workHours ? 1 : 2}}"></textarea>
               </td>
             </tr>
             <tr class="time-totals-row">
