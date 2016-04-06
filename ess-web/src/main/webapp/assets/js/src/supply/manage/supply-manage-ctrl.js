@@ -17,8 +17,10 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     $scope.init();
 
     // Refresh data every minute.
-    // $interval(function() {$scope.init()}, 60000);
-
+    var intervalPromise = $interval(function() {$scope.init()}, 60000);
+    // Stop refreshing when we leave this page.
+    $scope.$on('$destroy', function () {$interval.cancel(intervalPromise)});
+    
     /** --- Api Calls --- */
 
     function getPendingOrders() {
