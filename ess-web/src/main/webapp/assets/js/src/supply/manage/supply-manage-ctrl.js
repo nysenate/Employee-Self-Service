@@ -17,7 +17,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     $scope.init();
 
     // Refresh data every minute.
-    $interval(function() {$scope.init()}, 60000);
+    // $interval(function() {$scope.init()}, 60000);
 
     /** --- Api Calls --- */
 
