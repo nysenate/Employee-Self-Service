@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.service.auth.LdapAuthService;
 import gov.nysenate.ess.seta.service.personnel.SupervisorInfoService;
+import gov.nysenate.ess.supply.security.SupplyAuthorization;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -34,6 +35,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
 
     @Autowired private LdapAuthService essLdapAuthService;
     @Autowired private SupervisorInfoService supervisorInfoService;
+    @Autowired private SupplyAuthorization supplyAuthorization;
 
     /**
      * {@inheritDoc}
@@ -92,6 +94,10 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         SenatePerson user = (SenatePerson) principals.getPrimaryPrincipal();
         if (supervisorInfoService.isSupervisorDuring(user.getEmployeeId())) {
             authInfo.addRole("supervisor");
+        }
+        /** Add supply permissions */
+        for (String permission: supplyAuthorization.getPermissions(user)) {
+            authInfo.addStringPermission(permission);
         }
         return authInfo;
     }
