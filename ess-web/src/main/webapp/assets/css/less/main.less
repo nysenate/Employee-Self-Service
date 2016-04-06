@@ -737,9 +737,20 @@ table.time-record-entry-table {
           width: 75%;
         }
 
-        & > input.entry-comment {
-          text-align: left;
+        & > textarea.entry-comment {
+          height: 2em;
+          width: 100%;
           padding-left: 5px;
+          border: none;
+          background: transparent;
+          text-align: left;
+          resize: none;
+          overflow: hidden;
+          word-wrap: break-word;
+          transition: 0.05s;
+          -moz-transition: 0.05s;
+          -webkit-transition: 0.05s;
+          -o-transition: 0.05s;
         }
 
         &.today {

@@ -9,8 +9,6 @@ essApp.directive('textAutoHeight', ['$timeout', function ($timeout) {
                 var minHeight = $elem[0].offsetHeight,
                     paddingLeft = $elem.css('paddingLeft'),
                     paddingRight = $elem.css('paddingRight');
-                console.log('h', minHeight, 'w', $elem[0].offsetWidth, 'l', paddingLeft, 'w', paddingRight);
-                console.log($elem);
                 var $shadow = angular.element('<div></div>').css({
                     position: 'absolute',
                     top: -10000,
