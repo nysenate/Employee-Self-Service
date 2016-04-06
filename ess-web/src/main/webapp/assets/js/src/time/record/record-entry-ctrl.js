@@ -94,6 +94,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         }, function (response) {
             if ($scope.state.empId in response.result.items) {
                 $scope.state.records = response.result.items[$scope.state.empId];
+                console.log($scope.state.records);
                 angular.forEach($scope.state.records, function(record, index) {
                     // Compute the due from dates for each record
                     var endDateMoment = moment(record.endDate);
@@ -490,7 +491,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             for (var iRecord in $scope.state.records) {
                 var record = $scope.state.records[iRecord];
                 if (record.beginDate === recordParam) {
-                    $scope.state.iSelectedRecord = iRecord;
+                    $scope.state.iSelectedRecord = parseInt(iRecord);
                     break;
                 }
             }
