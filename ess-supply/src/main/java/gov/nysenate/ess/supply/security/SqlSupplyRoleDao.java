@@ -1,6 +1,5 @@
 package gov.nysenate.ess.supply.security;
 
-import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
@@ -12,26 +11,28 @@ import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.supply.security.role.SupplyEmployee;
 import gov.nysenate.ess.supply.security.role.SupplyManager;
 import gov.nysenate.ess.supply.security.role.SupplyRole;
+import gov.nysenate.ess.supply.security.role.SupplyUser;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.shiro.web.filter.mgt.DefaultFilter.roles;
-
 @Service
 public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(SqlSupplyRoleDao.class);
 
     @Autowired private EmployeeInfoService employeeService;
     @Autowired private LocationService locationService;
 
     @Override
     public List<SupplyRole> getSupplyRoles(SenatePerson person) {
-        MapSqlParameterSource params = new MapSqlParameterSource("uid", person.getUid());
+        MapSqlParameterSource params = new MapSqlParameterSource("uid", StringUtils.upperCase(person.getUid()));
         String sql = SqlSupplyRoleQuery.GET_ROLE_BY_UID.getSql(schemaMap());
         List<Integer> secLevels = remoteNamedJdbc.query(sql, params, (rs, i) -> {
             return rs.getInt("cdseclevel");
@@ -39,16 +40,22 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
         return mapSecLevelsToRoles(person, secLevels);
     }
 
+    /** Maps sec levels from the SFMS database to {@link SupplyRole}'s. */
     private List<SupplyRole> mapSecLevelsToRoles(SenatePerson person, List<Integer> secLevels) {
         String locationId = getEmployeesLocationId(person);
         List<SupplyRole> roles = new ArrayList<>();
+
+        /** Everyone gets supply user permissions. */
+        roles.add(new SupplyUser(person.getEmployeeId(), locationId));
+
         for (Integer secLevel: secLevels) {
             switch(secLevel) {
                 case 0:
-                    roles.add(new SupplyEmployee(person.getEmployeeId(), locationId));
+                    roles.add(new SupplyEmployee());
                     break;
                 case 1:
-                    roles.add(new SupplyManager(person.getEmployeeId(), locationId));
+                    roles.add(new SupplyEmployee());
+                    roles.add(new SupplyManager());
                     break;
             }
         }

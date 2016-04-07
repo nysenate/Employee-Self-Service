@@ -6,14 +6,6 @@ import java.util.List;
 
 public class SupplyEmployee implements SupplyRole {
 
-    private int empId;
-    private String location;
-
-    public SupplyEmployee(int empId, String location) {
-        this.empId = empId;
-        this.location = location;
-    }
-
     @Override
     public Collection<String> getPermissions() {
         List<String> permissions = new ArrayList<>();
