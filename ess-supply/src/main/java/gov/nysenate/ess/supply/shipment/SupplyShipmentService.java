@@ -53,8 +53,8 @@ public class SupplyShipmentService implements ShipmentService {
     }
 
     @Override
-    public void submitToSfms(Shipment shipment, Employee modifiedByEmp) {
-        Shipment submitted = shipment.submitToSfms(modifiedByEmp, dateTimeFactory.now());
+    public void approveShipment(Shipment shipment, Employee modifiedByEmp) {
+        Shipment submitted = shipment.approve(modifiedByEmp, dateTimeFactory.now());
         shipmentDao.save(submitted);
     }
 

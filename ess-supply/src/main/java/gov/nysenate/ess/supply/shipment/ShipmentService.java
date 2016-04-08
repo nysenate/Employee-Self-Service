@@ -19,7 +19,14 @@ public interface ShipmentService {
 
     void undoCompletion(Shipment shipment, Employee modifiedByEmp);
 
-    void submitToSfms(Shipment shipment, Employee modifiedByEmp);
+    /**
+     * When a shipment is approved it is no longer editable and its
+     * information is saved into the SFMS database.
+     * Approvals occur as the last step in supply's workflow.
+     * @param shipment
+     * @param modifiedByEmp
+     */
+    void approveShipment(Shipment shipment, Employee modifiedByEmp);
 
     void cancelShipment(Shipment shipment, Employee modifiedByEmp);
 

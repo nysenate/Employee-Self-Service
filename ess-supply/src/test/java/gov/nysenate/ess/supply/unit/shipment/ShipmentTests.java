@@ -73,7 +73,7 @@ public class ShipmentTests {
         Shipment processed = pendingShipment.process(issuingEmployee, procesedByEmp, processDateTime);
         Shipment completed = processed.complete(completedByEmp, completedDateTime);
 
-        Shipment submitted = completed.submitToSfms(submittedEmp, submittedDateTime);
+        Shipment submitted = completed.approve(submittedEmp, submittedDateTime);
 
         assertEquals(submittedEmp, submitted.getModifiedBy());
         assertEquals(submittedDateTime, submitted.getApprovedDateTime().get());

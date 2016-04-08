@@ -14,6 +14,7 @@ import gov.nysenate.ess.supply.shipment.Shipment;
 import gov.nysenate.ess.supply.shipment.ShipmentService;
 import gov.nysenate.ess.supply.shipment.ShipmentStatus;
 import gov.nysenate.ess.supply.shipment.view.ShipmentView;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,11 +90,14 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         shipmentService.undoCompletion(shipment, modifiedBy);
     }
 
-    @RequestMapping(value = "{id}/submit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{id}/approve", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void submitToSfms(@PathVariable int id) {
+        if(!getSubject().isPermitted("supply:shipment:approve")) {
+            throw new UnauthorizedException();
+        }
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.submitToSfms(shipment, modifiedBy);
+        shipmentService.approveShipment(shipment, modifiedBy);
     }
 
     @RequestMapping(value = "{id}/cancel", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)

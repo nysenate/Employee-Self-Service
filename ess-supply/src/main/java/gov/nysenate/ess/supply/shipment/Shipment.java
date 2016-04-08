@@ -48,7 +48,7 @@ public class Shipment {
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
     }
 
-    public Shipment submitToSfms(Employee modifiedBy, LocalDateTime modifiedDateTime) {
+    public Shipment approve(Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
                 .setStatus(ShipmentStatus.APPROVED)
                 .setModifiedBy(modifiedBy);
