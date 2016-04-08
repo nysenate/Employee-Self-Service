@@ -1,5 +1,8 @@
 package gov.nysenate.ess.supply.security.role;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -14,12 +17,12 @@ public class SupplyUser implements SupplyRole {
     }
 
     @Override
-    public Collection<String> getPermissions() {
+    public ImmutableCollection<String> getPermissions() {
         Collection<String> permissions = new ArrayList<>();
         // Can view their own orders
         permissions.add("supply:order:view:" + String.valueOf(empId));
         // Can view orders for their location
         permissions.add("supply:order:view:" + location);
-        return permissions;
+        return ImmutableList.copyOf(permissions);
     }
 }

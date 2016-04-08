@@ -1,8 +1,8 @@
 package gov.nysenate.ess.supply.security.role;
 
-import java.util.Collection;
+import com.google.common.collect.ImmutableCollection;
 
 public interface SupplyRole {
 
-    Collection<String> getPermissions();
+    ImmutableCollection<String> getPermissions();
 }

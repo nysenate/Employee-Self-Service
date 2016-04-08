@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.security;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
@@ -31,7 +33,7 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
     @Autowired private LocationService locationService;
 
     @Override
-    public List<SupplyRole> getSupplyRoles(SenatePerson person) {
+    public ImmutableCollection<SupplyRole> getSupplyRoles(SenatePerson person) {
         MapSqlParameterSource params = new MapSqlParameterSource("uid", StringUtils.upperCase(person.getUid()));
         String sql = SqlSupplyRoleQuery.GET_ROLE_BY_UID.getSql(schemaMap());
         List<Integer> secLevels = remoteNamedJdbc.query(sql, params, (rs, i) -> {
@@ -41,7 +43,7 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
     }
 
     /** Maps sec levels from the SFMS database to {@link SupplyRole}'s. */
-    private List<SupplyRole> mapSecLevelsToRoles(SenatePerson person, List<Integer> secLevels) {
+    private ImmutableCollection<SupplyRole> mapSecLevelsToRoles(SenatePerson person, List<Integer> secLevels) {
         String locationId = getEmployeesLocationId(person);
         List<SupplyRole> roles = new ArrayList<>();
 
@@ -59,7 +61,7 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
                     break;
             }
         }
-        return roles;
+        return ImmutableList.copyOf(roles);
     }
 
     private String getEmployeesLocationId(SenatePerson person) {

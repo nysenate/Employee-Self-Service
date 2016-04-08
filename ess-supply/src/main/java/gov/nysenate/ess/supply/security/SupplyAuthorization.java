@@ -1,7 +1,8 @@
 package gov.nysenate.ess.supply.security;
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
-import gov.nysenate.ess.supply.security.role.SupplyRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +14,12 @@ public class SupplyAuthorization {
 
     @Autowired private SupplyRoleDao supplyRoleDao;
 
-    public List<String> getPermissions(SenatePerson person) {
+    /**
+     * @return All supply permissions for the given person.
+     */
+    public ImmutableCollection<String> getPermissions(SenatePerson person) {
         List<String> permissions = new ArrayList<>();
-        List<SupplyRole> roles = supplyRoleDao.getSupplyRoles(person);
-        for(SupplyRole role: roles) {
-            permissions.addAll(role.getPermissions());
-        }
-        return permissions;
+        supplyRoleDao.getSupplyRoles(person).forEach(r -> permissions.addAll(r.getPermissions()));
+        return ImmutableList.copyOf(permissions);
     }
 }

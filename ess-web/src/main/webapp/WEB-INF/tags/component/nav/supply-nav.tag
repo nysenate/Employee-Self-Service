@@ -12,13 +12,14 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/order/cart/cart">Cart</a></li>
       <%--<li class="sub-topic"><a href="${ctxPath}/supply/history/location-history">Location History</a></li>--%>
     </ul>
-    <%--TODO: if management.--%>
+    <shiro:hasPermission name="supply:shipment:manage">
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/manage">Manage Requisitions</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/history/history">Requisition History</a></li>
     </ul>
+    </shiro:hasPermission>
   </section>
   <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="shouldDisplayCategoryFilter">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
