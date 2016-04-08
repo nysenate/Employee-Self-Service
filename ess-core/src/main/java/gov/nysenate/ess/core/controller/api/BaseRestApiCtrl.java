@@ -3,25 +3,15 @@ package gov.nysenate.ess.core.controller.api;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
-import gov.nysenate.ess.core.client.view.base.ParameterView;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
-import gov.nysenate.ess.core.client.response.error.ErrorCode;
-import gov.nysenate.ess.core.client.response.error.ErrorResponse;
-import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.util.LimitOffset;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.PostConstruct;
@@ -218,29 +208,5 @@ public class BaseRestApiCtrl
             offset = NumberUtils.toInt(webRequest.getParameter("offset"), 0);
         }
         return new LimitOffset(limit, offset);
-    }
-
-    /** --- Generic Exception Handlers --- */
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    protected ErrorResponse handleUnknownError(Exception ex) {
-        logger.error("Caught unhandled servlet exception:\n{}", ExceptionUtils.getStackTrace(ex));
-        return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
-    }
-
-    @ExceptionHandler(InvalidRequestParamEx.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    protected ErrorResponse handleInvalidRequestParameterException(InvalidRequestParamEx ex) {
-        logger.debug(ExceptionUtils.getStackTrace(ex));
-        return new ViewObjectErrorResponse(ErrorCode.INVALID_ARGUMENTS, new InvalidParameterView(ex));
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    protected ErrorResponse handleMissingParameterException(MissingServletRequestParameterException ex) {
-        logger.debug(ExceptionUtils.getStackTrace(ex));
-        return new ViewObjectErrorResponse(ErrorCode.MISSING_PARAMETERS,
-                new ParameterView(ex.getParameterName(), ex.getParameterType()));
     }
 }
