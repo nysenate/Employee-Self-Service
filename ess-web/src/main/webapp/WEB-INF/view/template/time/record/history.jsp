@@ -11,7 +11,7 @@
     </p>
   </div>
 
-  <div loader-indicator ng-show="state.searching === true"></div>
+  <div loader-indicator class="loader" ng-show="state.searching === true"></div>
 
   <div class="content-container" ng-show="records.employee.length > 0">
     <h1>Active Attendance Records</h1>

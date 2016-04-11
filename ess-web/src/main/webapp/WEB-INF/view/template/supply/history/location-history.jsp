@@ -3,7 +3,7 @@
     <h2>Location History</h2>
   </div>
 
-  <div loader-indicator ng-show="state.searching === true"></div>
+  <div loader-indicator class="loader" ng-show="state.searching === true"></div>
 
   <div class="content-container" ng-show="state.searching === false">
     <h4 class="content-info dark-blue-purple" style="margin-bottom: 0;">Recent requisitions for {{empLocation.code + '-' + empLocation.locationTypeCode}}</h4>

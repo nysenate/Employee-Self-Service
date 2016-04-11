@@ -5,7 +5,7 @@
     <h2>Review Time Records</h2>
   </div>
   <div ng-show="state.loading">
-    <div loader-indicator></div>
+    <div loader-indicator class="loader"></div>
   </div>
   <div ng-if="!state.loading">
     <div class="content-container content-controls">

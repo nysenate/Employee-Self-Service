@@ -12,7 +12,7 @@
         </p>
     </div>
 
-    <div loader-indicator ng-show="state.searching === true"></div>
+    <div loader-indicator class="loader" ng-show="state.searching === true"></div>
 
     <ess-notification ng-show="state.searching === false && state.error !== null" level="warn"
                       title="{{state.error.title}}" message="{{state.error.message}}">

@@ -11,7 +11,7 @@
     </p>
   </div>
 
-  <div loader-indicator ng-show="checkHistory.searching === true"></div>
+  <div loader-indicator class="loader" ng-show="checkHistory.searching === true"></div>
 
   <div class="content-container" ng-show="paychecks.length > 0">
     <h1>{{checkHistory.year}} Paycheck Records</h1>

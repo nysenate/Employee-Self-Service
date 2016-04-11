@@ -10,7 +10,7 @@
     <div class="content-container">
       <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
     </div>
-    <div loader-indicator ></div>
+    <div loader-indicator class="sm-loader"></div>
   </div>
 
   <%-- Pending Done loading --%>
@@ -47,7 +47,7 @@
     <div class="content-container">
       <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
     </div>
-    <div loader-indicator ></div>
+    <div loader-indicator class="sm-loader"></div>
   </div>
 
   <%--Processing Done Loading--%>
@@ -87,7 +87,7 @@
     <div class="content-container">
       <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
     </div>
-    <div loader-indicator ></div>
+    <div loader-indicator class="sm-loader"></div>
   </div>
 
   <%--Done Loading Completed--%>

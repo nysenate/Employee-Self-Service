@@ -8,7 +8,7 @@
                       message="You do not have any supervisors that you can delegate your employee's record approvals to. Please contact Senate Personnel for more information.">
     </ess-notification>
 
-    <div loader-indicator ng-show="state.fetched === false"></div>
+    <div loader-indicator class="loader" ng-show="state.fetched === false"></div>
 
     <div class="content-container content-controls">
         <div ng-show="state.fetched === true && state.grantees.length > 0">
@@ -59,7 +59,7 @@
                     </tbody>
                 </table>
                 <hr/>
-                <div loader-indicator ng-show="state.saving === true"></div>
+                <div loader-indicator class="loader" ng-show="state.saving === true"></div>
                 <div ess-notification ng-show="state.saved === true && !state.modified"
                      level="info" title="Grants have been updated."></div>
                 <div class="content-info" style="text-align: center;">

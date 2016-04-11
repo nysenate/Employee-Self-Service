@@ -55,7 +55,7 @@
     </div>
   </div>
 
-  <div loader-indicator ng-show="state.pageState === pageStates.FETCHING"></div>
+  <div loader-indicator class="loader" ng-show="state.pageState === pageStates.FETCHING"></div>
 
   <% /** Display an error message if there are notes for a disapproved time record. */ %>
   <div ess-notification level="error" title="Time record requires correction"
@@ -366,7 +366,7 @@
         <h3 class="content-info" style="margin-bottom:0;">
           Saving time record...
         </h3>
-        <loader-indicator></loader-indicator>
+        <div loader-indicator class="loader"></div>
       </div>
       <div ng-show="state.pageState === pageStates.SAVED">
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been saved.</h3>
@@ -406,7 +406,7 @@
         <h3 class="content-info" style="margin-bottom:0;">
           Saving and submitting time record...
         </h3>
-        <loader-indicator></loader-indicator>
+        <div loader-indicator class="loader"></div>
       </div>
       <div ng-show="state.pageState === pageStates.SUBMITTED" class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been submitted.</h3>

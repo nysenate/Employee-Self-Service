@@ -8,7 +8,7 @@
     </a>
   </div>
 
-  <div loader-indicator ng-show="!itemSearch.response.$resolved"></div>
+  <div loader-indicator class="loader" ng-show="!itemSearch.response.$resolved"></div>
 
   <div class="content-container" ng-show="itemSearch.response.$resolved">
     <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination" boundary-links="true" max-size="10"></dir-pagination-controls>
