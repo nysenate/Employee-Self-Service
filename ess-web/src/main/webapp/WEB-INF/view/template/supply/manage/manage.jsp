@@ -4,14 +4,24 @@
   </div>
 
   <%--   Pending Orders   --%>
-  <div class="content-container">
+
+  <%--Pending request loading animation. loader-indicator styling is bad inside a content-container this gets around that.--%>
+  <div ng-show="!pendingSearch.response.$resolved">
+    <div class="content-container">
+      <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
+    </div>
+    <div loader-indicator ></div>
+  </div>
+
+  <%-- Pending Done loading --%>
+  <div class="content-container" ng-show="pendingSearch.response.$resolved">
     <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
 
-    <div class="content-info" ng-show="pendingShipments.length == 0">
+    <div class="content-info" ng-show="pendingSearch.matches.length === 0 && pendingSearch.error === false">
         <h2 class="dark-gray">No Pending Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="pendingShipments.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="pendingSearch.matches.length > 0">
       <thead>
       <tr>
         <th>Location</th>
@@ -21,7 +31,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in pendingShipments" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingDetails(shipment)">
+      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingDetails(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -32,14 +42,23 @@
   </div>
 
   <%--   Processing Orders   --%>
-  <div class="content-container">
+  <%--Loading indicator--%>
+  <div ng-show="!processingSearch.response.$resolved">
+    <div class="content-container">
+      <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
+    </div>
+    <div loader-indicator ></div>
+  </div>
+
+  <%--Processing Done Loading--%>
+  <div class="content-container" ng-show="processingSearch.response.$resolved">
     <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
 
-    <div class="content-info" ng-show="processingShipments.length == 0">
+    <div class="content-info" ng-show="processingSearch.matches.length == 0 && processingSearch.error === false">
       <h2 class="dark-gray">No Processing Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="processingShipments.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="processingSearch.matches.length > 0">
       <thead>
       <tr>
         <th>Location</th>
@@ -50,7 +69,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in processingShipments" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingDetails(shipment)">
+      <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingDetails(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -62,14 +81,24 @@
   </div>
 
   <%--   Completed Orders   --%>
-  <div class="content-container">
+
+  <%--Loading indicator--%>
+  <div ng-show="!completedSearch.response.$resolved">
+    <div class="content-container">
+      <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
+    </div>
+    <div loader-indicator ></div>
+  </div>
+
+  <%--Done Loading Completed--%>
+  <div class="content-container" ng-show="completedSearch.response.$resolved">
     <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
 
-    <div class="content-info" ng-show="completedShipments.length == 0">
+    <div class="content-info" ng-show="completedSearch.matches.length === 0 && completedSearch.error === false">
       <h2 class="dark-gray">No Completed Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="completedShipments.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="completedSearch.matches.length > 0">
       <thead>
       <tr>
         <th>Location</th>
@@ -81,7 +110,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in completedShipments" ng-click="showCompletedDetails(shipment)">
+      <tr ng-repeat="shipment in completedSearch.matches" ng-click="showCompletedDetails(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>

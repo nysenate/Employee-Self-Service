@@ -3,15 +3,36 @@ essSupply = angular.module('essSupply').controller('SupplyManageController', ['$
 
 function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, modals, $interval) {
 
+    $scope.pendingSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
+    
+    $scope.processingSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
+    
+    $scope.completedSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
+    
+    $scope.approvedSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
+    
     $scope.selected = null;
-    $scope.pendingShipments = null;
-    $scope.processingShipments = null;
-    $scope.completedShipments = null;
 
     $scope.init = function() {
-        getPendingOrders();
-        getProcessingOrders();
-        getCompletedOrders();
+        getPendingShipments();
+        getProcessingShipments();
+        getCompletedShipments();
     };
 
     $scope.init();
@@ -21,44 +42,50 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     // Stop refreshing when we leave this page.
     $scope.$on('$destroy', function () {$interval.cancel(intervalPromise)});
     
-    /** --- Api Calls --- */
+    /** 
+     * --- Api Calls ---
+     */
 
-    function getPendingOrders() {
+    /** Get all pending shipments */
+    function getPendingShipments() {
         var params = {
             status: "PENDING",
-            from: moment.unix(1).format(),
-            to: moment().add(1, 'day').format() // Use time in the future, current time may be slightly behind server time.
+            from: moment.unix(1).format()
         };
-        supplyShipmentsApi.get(params, function(response) {
-            $scope.pendingShipments = response.result;
-        }, function(response) {
-            // TODO error
+        $scope.pendingSearch.response = supplyShipmentsApi.get(params, function(response) {
+            $scope.pendingSearch.matches = response.result;
+            $scope.pendingSearch.error = false;
+        }, function(errorResponse) {
+            $scope.pendingSearch.matches = [];
+            $scope.pendingSearch.error = true;
         })
     }
 
-    function getProcessingOrders() {
+    function getProcessingShipments() {
         var params = {
             status: "PROCESSING",
-            from: moment.unix(1).format(),
-            to: moment().add(1, 'day').format()
+            from: moment.unix(1).format()
         };
-        supplyShipmentsApi.get(params, function(response) {
-            $scope.processingShipments = response.result;
-        }, function(response) {
-
+        $scope.processingSearch.response = supplyShipmentsApi.get(params, function(response) {
+            $scope.processingSearch.matches = response.result;
+            $scope.processingSearch.error = false;
+        }, function(errorResponse) {
+            $scope.processingSearch.matches = [];
+            $scope.processingSearch.error = true;
         })
     }
 
-    function getCompletedOrders() {
+    function getCompletedShipments() {
         var params = {
             status: "COMPLETED",
-            from: moment().startOf('day').format(),
-            to: moment().add(1, 'day').format()
+            from: moment().startOf('day').format()
         };
-        supplyShipmentsApi.get(params, function(response) {
-            $scope.completedShipments = response.result;
-        }, function(response) {
-
+        $scope.completedSearch.response = supplyShipmentsApi.get(params, function(response) {
+            $scope.completedSearch.matches = response.result;
+            $scope.completedSearch.error = false;
+        }, function(errorResponse) {
+            $scope.completedSearch.matches = [];
+            $scope.completedSearch.error = true;
         })
     }
 
