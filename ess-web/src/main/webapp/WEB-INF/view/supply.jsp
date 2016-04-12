@@ -22,7 +22,7 @@
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/supply-reconciliation-ctrl.js"></script>
 
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-editing-modal.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-completed-modal.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-immutable-modal.js"></script>
     <%-- Order --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-requisition-directives.js"></script>

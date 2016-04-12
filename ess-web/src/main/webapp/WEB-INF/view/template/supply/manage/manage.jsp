@@ -31,7 +31,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingDetails(shipment)">
+      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -69,7 +69,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingDetails(shipment)">
+      <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -110,7 +110,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in completedSearch.matches" ng-click="showEditingDetails(shipment)">
+      <tr ng-repeat="shipment in completedSearch.matches" ng-click="showEditingModal(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -147,18 +147,43 @@
         <th>Employee</th>
         <th>Item Count</th>
         <th>Order Date</th>
-        <th>Completed Date</th>
+        <th>Approved Date</th>
         <th>Issuing Employee</th>
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in approvedSearch.matches" ng-click="showEditingDetails(shipment)">
+      <tr ng-repeat="shipment in approvedSearch.matches" ng-click="showImmutableModal(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
         <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
-        <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{shipment.activeVersion.issuer.lastName}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <%--  Canceled Shipments   --%>
+
+  <div class="content-container" ng-show="canceledSearch.response.$resolved && canceledSearch.matches.length > 0">
+    <h1 style="background: #8D9892; color: white;">Rejected Requisition Requests</h1>
+
+    <table class="ess-table supply-listing-table">
+      <thead>
+      <tr>
+        <th>Location</th>
+        <th>Employee</th>
+        <th>Item Count</th>
+        <th>Order Date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="shipment in canceledSearch.matches" ng-click="showImmutableModal(shipment)">
+        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
+        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{getOrderQuantity(shipment)}}</td>
+        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
       </tr>
       </tbody>
     </table>
@@ -167,7 +192,7 @@
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
     <div manage-editing-modal ng-if="isOpen('manage-editing-modal')"></div>
-    <div manage-completed-modal ng-if="isOpen('manage-completed-modal')"></div>
+    <div manage-immutable-modal ng-if="isOpen('manage-immutable-modal')"></div>
   </div>
 
 </div>

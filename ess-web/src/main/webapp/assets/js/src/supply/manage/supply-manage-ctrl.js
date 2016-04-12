@@ -26,6 +26,12 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         response: {},
         error: false
     };
+
+    $scope.canceledSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
     
     $scope.selected = null;
 
@@ -34,6 +40,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         getProcessingShipments();
         getCompletedShipments();
         getApprovedShipments();
+        getCanceledShipments();
     };
 
     $scope.init();
@@ -79,7 +86,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getCompletedShipments() {
         var params = {
             status: "COMPLETED",
-            from: moment().startOf('day').format()
+            from: moment.unix(1).format()
         };
         $scope.completedSearch.response = supplyShipmentsApi.get(params, function(response) {
             $scope.completedSearch.matches = response.result;
@@ -93,7 +100,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getApprovedShipments() {
         var params = {
             status: "APPROVED",
-            from: moment.unix(1).format()
+            from: moment().startOf('day').format()
         };
         $scope.approvedSearch.response = supplyShipmentsApi.get(params, function(response) {
             $scope.approvedSearch.matches = response.result;
@@ -101,6 +108,21 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         }, function(errorResponse) {
             $scope.approvedSearch.matches = [];
             $scope.approvedSearch.error = true;
+        })
+    }
+
+    /** Get shipments that have been canceled today. A shipment is canceled when its order is rejected. */
+    function getCanceledShipments() {
+        var params = {
+            status: "CANCELED",
+            from: moment().startOf('day').format()
+        };
+        $scope.canceledSearch.response = supplyShipmentsApi.get(params, function(response) {
+            $scope.canceledSearch.matches = response.result;
+            $scope.canceledSearch.error = false;
+        }, function(errorResponse) {
+            $scope.canceledSearch.matches = [];
+            $scope.canceledSearch.error = true;
         })
     }
 
@@ -127,11 +149,10 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
 
     /** --- Highlighting --- */
 
-    $scope.highlightShipment = function(order) {
+    $scope.highlightShipment = function(shipment) {
         var highlight = false;
-        angular.forEach(order.items, function(lineItem) {
-            var item = supplyInventoryService.getItemById(lineItem.itemId);
-            if (lineItem.quantity > item.suggestedMaxQty) {
+        angular.forEach(shipment.order.activeVersion.lineItems, function(lineItem) {
+            if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
                 highlight = true;
             }
         });
@@ -139,19 +160,18 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     };
 
     $scope.highlightLineItem = function(lineItem) {
-        var item = supplyInventoryService.getItemById(lineItem.itemId);
-        return lineItem.quantity > item.suggestedMaxQty
+        return lineItem.quantity > lineItem.item.suggestedMaxQty
     };
 
     /** --- Modals --- */
 
-    $scope.showEditingDetails = function(shipment) {
+    $scope.showEditingModal = function(shipment) {
         console.log(shipment);
         modals.open('manage-editing-modal', shipment);
     };
 
-    $scope.showCompletedDetails = function(shipment) {
+    $scope.showImmutableModal = function(shipment) {
         console.log(shipment);
-        modals.open('manage-completed-modal', shipment);
+        modals.open('manage-immutable-modal', shipment);
     };
 }

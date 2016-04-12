@@ -8,7 +8,7 @@
       {{shipment.order.activeVersion.customer.initial}} {{shipment.order.activeVersion.customer.lastName}}</h3>
   </div>
 
-  <%--Order content--%>
+  <%--Immutable Order content--%>
 
   <div class="grid grid-padding">
     <div class="col-8-12">
@@ -38,7 +38,7 @@
       <h4 class="content-info">Location: {{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</h4>
       <h4 class="content-info">Ordered: {{shipment.order.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <h4 class="content-info">Issued By: {{shipment.activeVersion.issuer.lastName}}</h4>
-      <h4 class="content-info">Completed: {{shipment.completedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
+      <h4 class="content-info">Approved: {{shipment.approvedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
 
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
         <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{shipment.order.id}}&print=true">
@@ -49,9 +49,10 @@
         </a>
       </div>
 
-      <div class="text-align-center">
-        <input ng-click="undo(shipment)" class="reject-button" type="button" value="Undo">
+      <div class="text-align-center" ng-show="shipment.activeVersion.status === 'CANCELED'">
+        <input ng-click="acceptOrder(shipment)" class="submit-button" type="button" value="Accept">
       </div>
+
     </div>
   </div>
 </div>
