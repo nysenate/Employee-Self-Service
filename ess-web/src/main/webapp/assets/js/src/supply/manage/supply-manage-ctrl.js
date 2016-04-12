@@ -33,6 +33,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         getPendingShipments();
         getProcessingShipments();
         getCompletedShipments();
+        getApprovedShipments();
     };
 
     $scope.init();
@@ -86,6 +87,20 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         }, function(errorResponse) {
             $scope.completedSearch.matches = [];
             $scope.completedSearch.error = true;
+        })
+    }
+
+    function getApprovedShipments() {
+        var params = {
+            status: "APPROVED",
+            from: moment.unix(1).format()
+        };
+        $scope.approvedSearch.response = supplyShipmentsApi.get(params, function(response) {
+            $scope.approvedSearch.matches = response.result;
+            $scope.approvedSearch.error = false;
+        }, function(errorResponse) {
+            $scope.approvedSearch.matches = [];
+            $scope.approvedSearch.error = true;
         })
     }
 

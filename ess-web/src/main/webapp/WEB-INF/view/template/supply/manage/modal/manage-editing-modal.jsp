@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
 <%--Title--%>
 
@@ -31,15 +32,22 @@
         </a>
       </div>
 
+      <%--Assign issuer--%>
+
       <%--<div class="text-align-center" ng-show="status === 'PROCESSING'" style="padding-bottom: 20px;">--%>
         <%--<label>Assign to: </label>--%>
         <%--<select ng-model="assignedTo" ng-change="setIssuedBy()" ng-options="emp for emp in supplyEmployees"></select>--%>
       <%--</div>--%>
 
+      <%--Actions--%>
+
       <input ng-show="status === 'PENDING'" ng-click="processOrder()" class="submit-button col-4-12" type="button" value="Process">
       <input ng-show="status === 'PROCESSING'" ng-click="completeOrder()" class="submit-button col-4-12" type="button" value="Complete">
+      <shiro:hasPermission name="supply:shipment:approve">
+        <input ng-show="status === 'COMPLETED'" ng-click="approveShipment()" class="submit-button col-4-12" type="button" value="Approve">
+      </shiro:hasPermission>
       <input ng-click="saveOrder(order)" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
-      <input ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
+      <input ng-show="status === 'PENDING' || status === 'PROCESSING'" ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
     </div>
   </div>
 </div>

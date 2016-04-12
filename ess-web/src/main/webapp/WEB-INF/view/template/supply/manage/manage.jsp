@@ -110,7 +110,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in completedSearch.matches" ng-click="showCompletedDetails(shipment)">
+      <tr ng-repeat="shipment in completedSearch.matches" ng-click="showEditingDetails(shipment)">
         <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
         <td>{{shipment.order.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>

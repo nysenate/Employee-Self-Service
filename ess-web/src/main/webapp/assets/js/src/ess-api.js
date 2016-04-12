@@ -141,6 +141,10 @@ essApi.factory('SupplyCompleteShipmentApi', ['$resource', 'appProps', function($
     return $resource(appProps.apiPath + '/supply/shipments/:id/complete', {id: '@id'})
 }]);
 
+essApi.factory('SupplyApproveShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/approve', {id: '@id'})
+}]);
+
 essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/shipments/:id/undo_completion', {id: '@id'})
 }]);
