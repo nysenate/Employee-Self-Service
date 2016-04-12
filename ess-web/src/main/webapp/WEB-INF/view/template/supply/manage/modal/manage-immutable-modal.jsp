@@ -50,7 +50,7 @@
       </div>
 
       <div class="text-align-center" ng-show="shipment.activeVersion.status === 'CANCELED'">
-        <input ng-click="acceptOrder(shipment)" class="submit-button" type="button" value="Accept">
+        <input ng-click="acceptShipment(shipment)" class="submit-button" type="button" value="Accept">
       </div>
 
     </div>

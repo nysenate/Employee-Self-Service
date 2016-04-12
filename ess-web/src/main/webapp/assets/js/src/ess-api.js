@@ -152,3 +152,7 @@ essApi.factory('SupplyApproveShipmentApi', ['$resource', 'appProps', function($r
 essApi.factory('SupplyCancelShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/shipments/:id/cancel', {id: '@id'})
 }]);
+
+essApi.factory('SupplyAcceptShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/accept', {id: '@id'})
+}]);

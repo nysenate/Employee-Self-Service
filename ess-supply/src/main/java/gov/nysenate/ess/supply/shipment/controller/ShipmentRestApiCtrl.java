@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.supply.order.OrderService;
 import gov.nysenate.ess.supply.shipment.Shipment;
 import gov.nysenate.ess.supply.shipment.ShipmentService;
 import gov.nysenate.ess.supply.shipment.ShipmentStatus;
@@ -35,6 +36,7 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(ShipmentRestApiCtrl.class);
 
     @Autowired private ShipmentService shipmentService;
+    @Autowired private OrderService orderService;
     @Autowired private EmployeeInfoService employeeService;
 
     @RequestMapping("/{id}")
@@ -83,12 +85,12 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         shipmentService.completeShipment(shipment, modifiedBy);
     }
 
-    @RequestMapping(value = "{id}/undo_completion", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void undoCompletioni(@PathVariable int id) {
-        Shipment shipment = shipmentService.getShipmentById(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.undoCompletion(shipment, modifiedBy);
-    }
+//    @RequestMapping(value = "{id}/undo_completion", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public void undoCompletioni(@PathVariable int id) {
+//        Shipment shipment = shipmentService.getShipmentById(id);
+//        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
+//        shipmentService.undoCompletion(shipment, modifiedBy);
+//    }
 
     @RequestMapping(value = "{id}/approve", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void submitToSfms(@PathVariable int id) {
@@ -105,6 +107,21 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         shipmentService.cancelShipment(shipment, modifiedBy);
+    }
+
+    /**
+     * Accept a canceled shipment.
+     * This resets the shipments order status to APPROVED and
+     * resets the shipment status to what it was before being rejected.
+     * @param id
+     */
+    @RequestMapping(value = "{id}/accept", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void acceptShipment(@PathVariable int id) {
+        Shipment shipment = shipmentService.getShipmentById(id);
+        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
+        shipmentService.acceptShipment(shipment, modifiedBy);
+        // TODO split into order ctrl?
+        orderService.approveOrder(shipment.getOrder(), modifiedBy);
     }
 
     @RequestMapping(value = "{id}/issuer/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)

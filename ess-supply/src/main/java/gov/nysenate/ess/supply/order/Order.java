@@ -35,6 +35,13 @@ public class Order {
         return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
     }
 
+    public Order approveOrder(Employee modifiedEmp, LocalDateTime modifiedDateTime) {
+        OrderVersion newVersion = current()
+                .setStatus(OrderStatus.APPROVED)
+                .setModifiedBy(modifiedEmp);
+        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
+    }
+
     public Order updateLineItems(Set<LineItem> lineItems, String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
         OrderVersion newVersion = current()
                 .setLineItems(lineItems)

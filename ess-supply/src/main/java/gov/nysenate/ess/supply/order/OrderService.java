@@ -16,6 +16,8 @@ public interface OrderService {
 
     void rejectOrder(Order order, String note, Employee modifiedBy);
 
+    void approveOrder(Order order, Employee modifiedBy);
+
     void updateLineItems(Order order, Set<LineItem> lineItems, String note, Employee modifiedBy);
 
     Order getOrder(int orderId);

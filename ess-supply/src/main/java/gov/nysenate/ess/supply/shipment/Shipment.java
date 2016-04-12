@@ -62,6 +62,21 @@ public class Shipment {
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
     }
 
+    public Shipment accept(Employee modifiedBy, LocalDateTime modifiedDateTime) {
+        // TODO uggly fix this
+        ShipmentStatus previousStatus = null;
+        for(int i = 0; i < getHistory().getHistory().size() - 1; i++) {
+           ShipmentVersion nextVersion = (ShipmentVersion) getHistory().getHistory().values().toArray()[i + 1];
+            if(nextVersion.getStatus() == ShipmentStatus.CANCELED) {
+                previousStatus = ((ShipmentVersion) getHistory().getHistory().values().toArray()[i]).getStatus();
+            }
+        }
+        ShipmentVersion newVersion = current()
+                .setStatus(previousStatus)
+                .setModifiedBy(modifiedBy);
+        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
+    }
+
     public Shipment updateIssuingEmployee(Employee issuingEmployee, Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
                 .setIssuingEmployee(issuingEmployee)

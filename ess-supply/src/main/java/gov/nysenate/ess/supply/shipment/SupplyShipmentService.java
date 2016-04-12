@@ -65,6 +65,12 @@ public class SupplyShipmentService implements ShipmentService {
     }
 
     @Override
+    public void acceptShipment(Shipment shipment, Employee modifiedByEmp) {
+        Shipment accepted = shipment.accept(modifiedByEmp, dateTimeFactory.now());
+        shipmentDao.save(accepted);
+    }
+
+    @Override
     public void updateIssuingEmployee(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp) {
         Shipment updated = shipment.updateIssuingEmployee(issuingEmp, modifiedByEmp, dateTimeFactory.now());
         shipmentDao.save(updated);

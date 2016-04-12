@@ -45,6 +45,12 @@ public class SupplyOrderService implements OrderService {
     }
 
     @Override
+    public void approveOrder(Order order, Employee modifiedBy) {
+        Order updated = order.approveOrder(modifiedBy, dateTimeFactory.now());
+        orderDao.saveOrder(updated);
+    }
+
+    @Override
     public void updateLineItems(Order order, Set<LineItem> lineItems, String note, Employee modifiedBy) {
         Order updated = order.updateLineItems(lineItems, note, modifiedBy, dateTimeFactory.now());
         orderDao.saveOrder(updated);

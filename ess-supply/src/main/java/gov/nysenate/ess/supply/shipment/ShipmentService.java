@@ -30,6 +30,14 @@ public interface ShipmentService {
 
     void cancelShipment(Shipment shipment, Employee modifiedByEmp);
 
+    /**
+     * Accepting a shipment returns its status from CANCELED to its previous value.
+     * It also sets the shipments order status to APPROVED from REJECTED.
+     * @param shipment
+     * @param modifiedByEmp
+     */
+    void acceptShipment(Shipment shipment, Employee modifiedByEmp);
+
     void updateIssuingEmployee(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp);
 
     Shipment getShipmentById(int shipmentId);
