@@ -3,22 +3,30 @@ essSupply = angular.module('essSupply').controller('SupplyReconciliationControll
 
 function supplyReconciliationController($scope, inventoryService, shipmentsApi, locationService) {
 
+    /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
-    $scope.reconcilableItems = [];
+    
+    $scope.reconcilableSearch = {
+        matches: [],
+        items: [],
+        response: {},
+        error: false
+    };
+    
     /** Map of unique item id's to array of all shipments containing that item objects. */
     $scope.reconcilableItemMap= {};
 
     function initItems() {
         // Get shipments completed today
         var params = {
-            status: "COMPLETED",
+            status: "APPROVED",
             from: moment().startOf('day').format(),
             to: moment().format()
         };
-        shipmentsApi.get(params, function(response) {
-            var shipments = response.result;
-            console.log(shipments);
-            angular.forEach(shipments, function(shipment) {
+        $scope.reconcilableSearch.response = shipmentsApi.get(params, function(response) {
+            $scope.reconcilableSearch.matches = response.result;
+            $scope.reconcilableSearch.error = false;
+            angular.forEach($scope.reconcilableSearch.matches, function(shipment) {
                 angular.forEach(shipment.order.activeVersion.lineItems, function(lineItem) {
                     if ($scope.reconcilableItemMap.hasOwnProperty(lineItem.item.id)) {
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
@@ -26,15 +34,21 @@ function supplyReconciliationController($scope, inventoryService, shipmentsApi, 
                     else {
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                        $scope.reconcilableItems.push(lineItem.item);
+                        $scope.reconcilableSearch.items.push(lineItem.item);
                     }
                 })
             });
         }, function(response) {
-
+            $scope.reconcilableSearch.matches = [];
+            $scope.reconcilableSearch.items = [];
+            $scope.reconcilableSearch.error = true;
         });
     }
 
+    /**
+     * Selecting an item will display a table containing information for all shipments that contain that item.
+     * Clicking on an already selected item will hide the table.
+     */
     $scope.setSelected = function(item) {
         // Clicking an expanded item should collapse it.
         if($scope.selectedItem == item) {

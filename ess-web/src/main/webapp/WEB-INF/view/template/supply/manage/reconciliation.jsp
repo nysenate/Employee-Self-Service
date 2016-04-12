@@ -3,40 +3,42 @@
     <h2>Reconciliation</h2>
   </div>
 
-  <div class="content-container" ng-show="reconcilableItems.length == 0">
+  <div loader-indicator class="loader" ng-show="!reconcilableSearch.response.$resolved"></div>
+
+  <div class="content-container" ng-show="reconcilableSearch.response.$resolved && reconcilableSearch.items.length == 0">
     <div class="content-info">
       <h2 class="dark-gray">Reconciliation Not Required</h2>
     </div>
   </div>
 
-  <div class="content-container" ng-show="reconcilableItems.length > 0">
+  <div class="content-container" ng-show="reconcilableSearch.response.$resolved && reconcilableSearch.items.length > 0">
     <p class="content-info">
-      All items shipped today.
+      Items shipped today.
     </p>
 
     <%--Header--%>
     <div class="">
       <div class="grid expandable-div-header">
-        <div class="col-4-12">
+        <div class="col-3-12">
           Commodity Code
         </div>
-        <div class="col-4-12">
+        <div class="col-6-12">
           Item
         </div>
-        <div class="col-4-12">
+        <div class="col-3-12">
           Quantity On Hand
         </div>
       </div>
       <%--Item rows--%>
-      <div ng-repeat="item in reconcilableItems">
+      <div ng-repeat="item in reconcilableSearch.items">
         <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'" ng-click="setSelected(item)">
-          <div class="col-4-12">
+          <div class="col-3-12">
             {{item.commodityCode}}
           </div>
-          <div class="col-4-12">
+          <div class="col-6-12" style="overflow: hidden;">
             {{item.description}}
           </div>
-          <div class="col-4-12">
+          <div class="col-3-12">
             &nbsp;
           </div>
         </div>
