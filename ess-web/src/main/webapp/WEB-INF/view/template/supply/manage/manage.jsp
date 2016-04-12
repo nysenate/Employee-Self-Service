@@ -122,6 +122,48 @@
     </table>
   </div>
 
+  <%--  Approved Orders   --%>
+
+  <%--Loading indicator--%>
+  <div ng-show="!approvedSearch.response.$resolved">
+    <div class="content-container">
+      <h1 style="background: #6270BD; color: white;">Approved Requisition Requests</h1>
+    </div>
+    <div loader-indicator class="sm-loader"></div>
+  </div>
+
+  <%--Done Loading Approved--%>
+  <div class="content-container" ng-show="approvedSearch.response.$resolved">
+    <h1 style="background: #6270BD; color: white;">Approved Requisition Requests</h1>
+
+    <div class="content-info" ng-show="approvedSearch.matches.length === 0 && approvedSearch.error === false">
+      <h2 class="dark-gray">No Approved Requests.</h2>
+    </div>
+
+    <table class="ess-table supply-listing-table" ng-show="approvedSearch.matches.length > 0">
+      <thead>
+      <tr>
+        <th>Location</th>
+        <th>Employee</th>
+        <th>Item Count</th>
+        <th>Order Date</th>
+        <th>Completed Date</th>
+        <th>Issuing Employee</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="shipment in approvedSearch.matches" ng-click="showEditingDetails(shipment)">
+        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
+        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{getOrderQuantity(shipment)}}</td>
+        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.activeVersion.issuer.lastName}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
     <div manage-editing-modal ng-if="isOpen('manage-editing-modal')"></div>

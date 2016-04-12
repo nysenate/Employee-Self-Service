@@ -3,6 +3,7 @@
 <%@ taglib prefix="ess-component" tagdir="/WEB-INF/tags/component" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 <%@ taglib prefix="ess-layout" tagdir="/WEB-INF/tags/layout" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
 <ess-layout:head>
   <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
