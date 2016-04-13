@@ -31,13 +31,14 @@ public class OrderVersionView implements ViewObject {
         this.lineItems = new HashSet<>();
         version.getLineItems().forEach(i -> this.lineItems.add(new LineItemView(i)));
         this.modifiedBy = new EmployeeView(version.getModifiedBy());
-        this.note = version.getNote().orElse(null);
+        this.note = version.getNote().orElse("");
     }
 
     public OrderVersion toOrderVersion() {
         return new OrderVersion.Builder().withId(id).withCustomer(customer.toEmployee())
-                .withDestination(destination.toLocation()).withStatus(OrderStatus.valueOf(status))
-                .withLineItems(getLineItemSet()).withModifiedBy(modifiedBy.toEmployee()).withNote(note).build();
+                                         .withDestination(destination.toLocation()).withStatus(OrderStatus.valueOf(status))
+                                         .withLineItems(getLineItemSet()).withModifiedBy(modifiedBy.toEmployee())
+                                         .withNote(note == null ? "" : note).build();
     }
 
     private Set<LineItem> getLineItemSet() {

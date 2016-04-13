@@ -10,7 +10,6 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
         };
 
         function link($scope, $elem, $attrs) {
-
             // TODO: temporary until implemented in server. supplyEmployees should be array of EmployeeView objects.
             $scope.assignedTo = "Caseiras";
             $scope.supplyEmployees = ["Caseiras", "Smith", "Johnson", "Maloy", "Richard"];
@@ -82,15 +81,27 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                     error);
             };
 
-
             // TODO: cant save this until we get full EmployeeView objects from server.
             $scope.setIssuedBy = function() {
                 // set $scope.dirtyShipment.issuingEmployee = $scope.assignedTo
                 $scope.setDirty();
             };
+            
+            // $scope.noteUpdated = function() {
+            //     var noteChanged = _.isEqual($scope.shipment.order.activeVersion.note, $scope.dirtyShipment.order.activeVersion.note);
+            // };
 
-            $scope.setDirty = function() {
-                $scope.dirty = true;
+            /**
+             * When the user updates data, check the original and dirty shipment to see if there are changes.
+             * Set $scope.dirty to true if there are changes, otherwise false.
+             * 
+             * Angular adds a hashkey key to objects for tracking changes. 
+             * So most traditional ways of doing deep euality checks will not work.
+             * We use angular.toJson here because it automatically strips out the hashkey value.
+             */
+            $scope.onUpdate = function(lineItem) {
+                $scope.dirty = angular.toJson($scope.shipment) !== angular.toJson($scope.dirtyShipment);
+                console.log($scope.dirty);
             };
 
             $scope.close = function() {

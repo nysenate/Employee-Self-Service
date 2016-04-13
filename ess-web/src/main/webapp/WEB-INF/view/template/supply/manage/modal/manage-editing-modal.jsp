@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
 <%--Title--%>
 
@@ -14,6 +15,11 @@
     <div class="col-8-12">
       <div class="content-container" style="overflow-y: auto; max-height: 300px;">
         <div editable-order-listing></div>
+      </div>
+      <div class="padding-top-10">
+        <label class="padding-10" style="vertical-align: middle;">note:</label>
+        <textarea style="vertical-align: middle;" ng-model="dirtyShipment.order.activeVersion.note"
+                  ng-change="onUpdate()" rows="3", cols="65"></textarea>
       </div>
     </div>
 

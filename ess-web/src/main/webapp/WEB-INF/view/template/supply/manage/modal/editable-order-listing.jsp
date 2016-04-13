@@ -10,7 +10,7 @@
   <tr ng-class="{warn: highlightLineItem(lineItem)}" ng-repeat="lineItem in dirtyShipment.order.activeVersion.lineItems">
     <td>{{getItemCommodityCode(lineItem.item.id)}}</td>
     <td>{{lineItem.item.description}}</td>
-    <td><input type="number" ng-change="setDirty()" ng-model="lineItem.quantity" style="width:30%"></td>
+    <td><input type="number" ng-change="onUpdate()" ng-model="lineItem.quantity" style="width:30%"></td>
   </tr>
   </tbody>
 </table>
