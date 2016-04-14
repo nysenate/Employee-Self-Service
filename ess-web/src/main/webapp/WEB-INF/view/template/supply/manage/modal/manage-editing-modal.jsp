@@ -18,7 +18,7 @@
       </div>
       <div class="padding-top-10">
         <label class="padding-10" style="vertical-align: middle;">note:</label>
-        <textarea style="vertical-align: middle;" ng-model="dirtyShipment.order.activeVersion.note"
+        <textarea style="vertical-align: middle;" ng-model="note"
                   ng-change="onUpdate()" rows="3", cols="65"></textarea>
       </div>
     </div>
@@ -39,20 +39,21 @@
 
       <%--Assign issuer--%>
 
-      <%--<div class="text-align-center" ng-show="status === 'PROCESSING'" style="padding-bottom: 20px;">--%>
+      <%--<div class="text-align-center" ng-show="shipment.activeVersion.status === 'PROCESSING'" style="padding-bottom: 20px;">--%>
         <%--<label>Assign to: </label>--%>
         <%--<select ng-model="assignedTo" ng-change="setIssuedBy()" ng-options="emp for emp in supplyEmployees"></select>--%>
       <%--</div>--%>
 
       <%--Actions--%>
 
-      <input ng-show="status === 'PENDING'" ng-click="processOrder()" class="submit-button col-4-12" type="button" value="Process">
-      <input ng-show="status === 'PROCESSING'" ng-click="completeOrder()" class="submit-button col-4-12" type="button" value="Complete">
+      <input ng-show="shipment.activeVersion.status === 'PENDING'" ng-click="processOrder()" class="submit-button col-4-12" type="button" value="Process">
+      <input ng-show="shipment.activeVersion.status === 'PROCESSING'" ng-click="completeOrder()" class="submit-button col-4-12" type="button" value="Complete">
       <shiro:hasPermission name="supply:shipment:approve">
-        <input ng-show="status === 'COMPLETED'" ng-click="approveShipment()" class="submit-button col-4-12" type="button" value="Approve">
+        <input ng-show="shipment.activeVersion.status === 'COMPLETED'" ng-click="approveShipment()" class="submit-button col-4-12" type="button" value="Approve">
       </shiro:hasPermission>
       <input ng-click="saveOrder(order)" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
-      <input ng-show="status === 'PENDING' || status === 'PROCESSING'" ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
+      <input ng-show="shipment.activeVersion.status === 'PENDING' || shipment.activeVersion.status === 'PROCESSING'"
+             ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
     </div>
   </div>
 </div>

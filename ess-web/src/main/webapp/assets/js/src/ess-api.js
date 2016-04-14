@@ -127,6 +127,10 @@ essApi.factory('SupplyUpdateLineItemsApi', ['$resource', 'appProps', function($r
     return $resource(appProps.apiPath + '/supply/orders/:id/line_items/update', {id: '@id'})
 }]);
 
+essApi.factory('SupplyAddNoteApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/:id/note', {id: '@id'})
+}]);
+
 /** --- Supply Shipments API --- */
 
 essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
