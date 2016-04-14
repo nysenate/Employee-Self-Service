@@ -50,6 +50,13 @@ public class Order {
         return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
     }
 
+    public Order addNote(String note, Employee modifiedBy, LocalDateTime modifiedDateTime) {
+        OrderVersion newVersion = current()
+                .setNote(note)
+                .setModifiedBy(modifiedBy);
+        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
+    }
+
     public OrderHistory getHistory() {
         return orderHistory;
     }

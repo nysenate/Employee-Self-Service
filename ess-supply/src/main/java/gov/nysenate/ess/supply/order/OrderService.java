@@ -20,6 +20,8 @@ public interface OrderService {
 
     void updateLineItems(Order order, Set<LineItem> lineItems, String note, Employee modifiedBy);
 
+    void addNote(Order order, String note, Employee modifiedBy);
+
     Order getOrder(int orderId);
 
     PaginatedList<Order> getOrders(String location, String customerId, EnumSet<OrderStatus> statuses,

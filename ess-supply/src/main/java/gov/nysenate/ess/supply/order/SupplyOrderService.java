@@ -57,6 +57,12 @@ public class SupplyOrderService implements OrderService {
     }
 
     @Override
+    public void addNote(Order order, String note, Employee modifiedBy) {
+        Order updated = order.addNote(note, modifiedBy, dateTimeFactory.now());
+        orderDao.saveOrder(updated);
+    }
+
+    @Override
     public Order getOrder(int orderId) {
         return orderDao.getOrderById(orderId);
     }
@@ -65,4 +71,5 @@ public class SupplyOrderService implements OrderService {
     public PaginatedList<Order> getOrders(String location, String customerId, EnumSet<OrderStatus> statuses, Range<LocalDateTime> updatedDateTimeRange, LimitOffset limOff) {
         return orderDao.getOrders(location, customerId, statuses, updatedDateTimeRange, limOff);
     }
+
 }

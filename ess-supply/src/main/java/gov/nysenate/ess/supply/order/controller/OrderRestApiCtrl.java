@@ -117,6 +117,13 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         orderService.updateLineItems(order, lineItems, updateLineItemView.getNote(), modifiedBy);
     }
 
+    @RequestMapping(value = "{id}/note", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addNote(@PathVariable int id, @RequestBody String note) {
+        Order order = orderService.getOrder(id);
+        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
+        orderService.addNote(order, note, modifiedBy);
+    }
+
     private int getSubjectEmployeeId() {
         SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
         return person.getEmployeeId();
