@@ -29,8 +29,6 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
             $scope.init = function() {
                 $scope.shipment = modals.params();
                 $scope.dirtyShipment = angular.copy($scope.shipment);
-                // Consistently sort items.
-                // $scope.dirtyShipment.items.sort(function(a, b) {return a.itemId - b.itemId});
             };
 
             $scope.init();

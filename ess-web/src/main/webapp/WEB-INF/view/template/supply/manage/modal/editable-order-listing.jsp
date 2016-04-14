@@ -7,10 +7,11 @@
   </tr>
   </thead>
   <tbody>
-  <tr ng-class="{warn: highlightLineItem(lineItem)}" ng-repeat="lineItem in dirtyShipment.order.activeVersion.lineItems">
+  <tr ng-class="{warn: highlightLineItem(lineItem)}"
+      ng-repeat="lineItem in dirtyShipment.order.activeVersion.lineItems | orderBy: 'item.description'">
     <td>{{getItemCommodityCode(lineItem.item.id)}}</td>
     <td>{{lineItem.item.description}}</td>
-    <td><input type="number" ng-change="onUpdate()" ng-model="lineItem.quantity" style="width:30%"></td>
+    <td><input type="number" ng-change="onUpdate()" ng-model="lineItem.quantity" min="0" max="100" step="1" style="width: 40px;"></td>
   </tr>
   </tbody>
 </table>

@@ -15,10 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public class SqlLineItemDao extends SqlBaseDao implements LineItemDao {
@@ -79,14 +76,25 @@ public class SqlLineItemDao extends SqlBaseDao implements LineItemDao {
         }
     }
 
+    /**
+     * Return a set of line items sorted alphabetically by their descriptions.
+     * Cant sort in original select statement since description information is
+     * not contained in local database.
+     */
     private class LineItemHandler extends BaseHandler {
 
         private SupplyItemService itemService;
         private Set<LineItem> lineItems;
+        private Comparator alphabeticalItemDesc = new Comparator<LineItem>() {
+            @Override
+            public int compare(LineItem o1, LineItem o2) {
+                return o1.getItem().getDescription().compareTo(o2.getItem().getDescription());
+            }
+        };
 
         public LineItemHandler(SupplyItemService itemService) {
             this.itemService = itemService;
-            lineItems = new HashSet<>();
+            lineItems = new TreeSet<>(alphabeticalItemDesc);
         }
 
         @Override
