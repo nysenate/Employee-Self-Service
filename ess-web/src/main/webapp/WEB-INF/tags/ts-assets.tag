@@ -35,6 +35,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/badge-directive.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/ai-filter.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/text-auto-height-directive.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/common/round-filter.js"></script>
 
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">

@@ -243,47 +243,25 @@
         <div class="allowance-container">
           <div class="allowance-component">
             <div class="captioned-hour-square">
-              <div style="background:rgb(92, 116, 116);color:white" class="hours-caption">
+              <div style="" class="hours-caption">
                 {{state.allowances[state.selectedYear].year}} Allowance
               </div>
-              <div class="hours-display" style="font-size:1em">
+              <div class="hours-display">
                 <div class="ytd-hours">
-                  <div class="hours-caption">Total</div>
-                  {{state.allowances[state.selectedYear].yearlyAllowance | currency}}
-                </div>
-                <div class="ytd-hours">
-                  <div class="hours-caption">Used</div>
-                  {{state.allowances[state.selectedYear].moneyUsed | currency}}
-                </div>
-                <div class="ytd-hours" style="border-right:none;">
-                  <div class="hours-caption">Remaining</div>
-                  {{state.allowances[state.selectedYear].yearlyAllowance - state.allowances[state.selectedYear].moneyUsed | currency}}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="allowance-component">
-            <div class="captioned-hour-square">
-              <div style="background:rgb(92, 116, 116);color:white" class="hours-caption">
-                Record Usage
-              </div>
-              <div class="hours-display" style="font-size:1em">
-                <div class="ytd-hours" style="flex-grow: 1.5">
-                  <div class="hours-caption">Used</div>
-                  {{state.records[state.iSelectedRecord].moneyUsed | currency}}
-                </div>
-                <div class="ytd-hours" ng-if="state.salaryRecs.length > 1" style="flex-grow: 0.4">
-                  <div class="hours-caption">Salary Dates</div>
-                  <select ng-model="state.iSelSalRec" style="margin-right: 3px"
-                          ng-options="state.salaryRecs.indexOf(salRec) as getSalRecDateRange(salRec) for salRec in state.salaryRecs"></select>
+                  <div class="hours-caption">Total Allowed Hours</div>
+                  {{ state.allowances[state.selectedYear].totalHours | number }}
                 </div>
                 <div class="ytd-hours">
-                  <div class="hours-caption">Hourly Rate</div>
-                  {{state.salaryRecs[state.iSelSalRec].salaryRate | currency}}/hr.
+                  <div class="hours-caption">Prior Hours</div>
+                  {{state.allowances[state.selectedYear].hoursUsed | number}}
                 </div>
-                <div class="ytd-hours" style="border-right:none; flex-grow: 0.6">
-                  <div class="hours-caption">Hrs. Used/Avail.</div>
-                  {{state.totals.tempWorkHours}} / <span ng-bind-html="getAvailableHours() | number | hoursDiffHighlighter"></span>
+                <div class="ytd-hours">
+                  <div class="hours-caption">Current Record Hours</div>
+                  {{state.totals.tempWorkHours | number}}
+                </div>
+                <div class="ytd-hours">
+                  <div class="hours-caption">Available Hours</div>
+                  <span ng-bind-html="getAvailableHours() | number | hoursDiffHighlighter"></span>
                 </div>
               </div>
             </div>

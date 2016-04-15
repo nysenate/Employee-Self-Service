@@ -14,6 +14,7 @@ public class EmployeeSupInfo
     protected int supId;
     protected String empLastName;
     // The requested supervisor date range when this instance was created
+    // TODO rename these fields
     protected LocalDate startDate;
     protected LocalDate endDate;
     // The date range when this person was under the specified supervisor

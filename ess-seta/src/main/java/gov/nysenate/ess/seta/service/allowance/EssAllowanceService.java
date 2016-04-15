@@ -1,19 +1,15 @@
 package gov.nysenate.ess.seta.service.allowance;
 
-import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
-import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
+import com.google.common.collect.*;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
-import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.seta.model.allowances.AllowanceUsage;
 import gov.nysenate.ess.seta.model.allowances.HourlyWorkPayment;
+import gov.nysenate.ess.seta.model.attendance.TimeEntry;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.seta.service.attendance.TimeRecordService;
@@ -42,11 +38,15 @@ public class EssAllowanceService implements AllowanceService {
     public AllowanceUsage getAllowanceUsage(int empId, int year) {
         TransactionHistory transHistory = transService.getTransHistory(empId);
         AllowanceUsage allowanceUsage = new AllowanceUsage(empId, year);
-
+        // Set Salary Recs
+        Range<LocalDate> yearRange = DateUtils.yearDateRange(allowanceUsage.getYear());
+        allowanceUsage.addSalaryRecs(transHistory.getEffectiveSalaryRecs(yearRange).values());
+        // Set yearly allowance
         allowanceUsage.setYearlyAllowance(getYearlyAllowance(year, transHistory));
 
-        Set<PayPeriod> unpaidPeriods = getBaseAllowanceUsage(allowanceUsage, transHistory);
-        getRecordAllowanceUsage(allowanceUsage, unpaidPeriods, transHistory);
+        // Set Allowance usage, getting dates not covered by hourly work payments
+        RangeSet<LocalDate> unpaidDates = getBaseAllowanceUsage(allowanceUsage, transHistory);
+        getRecordAllowanceUsage(allowanceUsage, unpaidDates);
         return allowanceUsage;
     }
 
@@ -65,40 +65,54 @@ public class EssAllowanceService implements AllowanceService {
      *  Calculate the number of hours and amount of money paid out for the given year, adding it to the allowance usage
      *  Returns a set of pay periods in the year for which the employee has not received pay
      */
-    private Set<PayPeriod> getBaseAllowanceUsage(AllowanceUsage allowanceUsage, TransactionHistory transHistory) {
+    private RangeSet<LocalDate> getBaseAllowanceUsage(AllowanceUsage allowanceUsage, TransactionHistory transHistory) {
         int year = allowanceUsage.getYear();
         List<HourlyWorkPayment> payments = getHourlyPayments(year, transHistory);
-        Range<LocalDate> yearDateRange = Range.closed(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
-        Set<PayPeriod> unpaidPeriods = new HashSet<>(periodService.getPayPeriods(PayPeriodType.AF, yearDateRange, SortOrder.NONE));
+        // Initialize unpaid dates as entire year, paid dates will be removed as we iterate through payments
+        RangeSet<LocalDate> unpaidDates = TreeRangeSet.create();
+        unpaidDates.add(DateUtils.yearDateRange(year));
+
+        BigDecimal hoursPaid = BigDecimal.ZERO;
+        BigDecimal moneyPaid = BigDecimal.ZERO;
 
         // Add up hourly work payments to get the total hours/money paid for the year
-        allowanceUsage.setBaseMoneyUsed(
-                payments.stream()
-                        .filter(payment -> payment.getMoneyPaidForYear(year).compareTo(BigDecimal.ZERO) > 0)
-                        .peek(payment -> unpaidPeriods.removeAll(
-                                periodService.getPayPeriods(PayPeriodType.AF, payment.getWorkingRange(), SortOrder.NONE) ))
-                        .map(payment -> payment.getMoneyPaidForYear(year))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-        );
-        return unpaidPeriods;
+        for (HourlyWorkPayment payment : payments) {
+            unpaidDates.remove(payment.getWorkingRange());
+            hoursPaid = hoursPaid.add(payment.getHoursPaid());
+            moneyPaid = moneyPaid.add(payment.getMoneyPaidForYear(year));
+        }
+        allowanceUsage.setBaseHoursUsed(hoursPaid);
+        allowanceUsage.setBaseMoneyUsed(moneyPaid);
+        return unpaidDates;
     }
 
     /**
      * Calculate the number of hours and amount of money used as recorded on timesheets for the given unpaid pay periods
      * These hours / moneys are added to the allowance usage as record hours / money
      */
-    private void getRecordAllowanceUsage(AllowanceUsage allowanceUsage, Set<PayPeriod> unpaidPeriods,
-                                         TransactionHistory transHistory) {
-        getSalaryRecs(allowanceUsage, transHistory);
-        List<TimeRecord> timeRecords =
-                tRecS.getTimeRecords(Collections.singleton(allowanceUsage.getEmpId()), unpaidPeriods,
-                        Sets.difference(TimeRecordStatus.getAll(), TimeRecordStatus.unlockedForEmployee()));
+    private void getRecordAllowanceUsage(AllowanceUsage allowanceUsage, RangeSet<LocalDate> unpaidDates) {
+        // Get time record statuses for records not editable by employees
+        Set<TimeRecordStatus> submittedStatuses =
+                Sets.difference(TimeRecordStatus.getAll(), TimeRecordStatus.unlockedForEmployee());
+        Set<Integer> employeeIdSet = Collections.singleton(allowanceUsage.getEmpId());
 
-        allowanceUsage.setRecordMoneyUsed(
-                // Add up hours and calculated payment for submitted time records that have not been paid out yet
-                timeRecords.stream()
-                        .map(allowanceUsage::getRecordCost)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add));
+        Collection<TimeEntry> unpaidTimeEntries = unpaidDates.asRanges().stream()
+                .map(unpaidDateRange -> tRecS.getTimeRecords(employeeIdSet, unpaidDateRange, submittedStatuses))
+                .flatMap(Collection::stream)
+                .map(TimeRecord::getTimeEntries)
+                .flatMap(Collection::stream)
+                .filter(timeEntry -> unpaidDates.contains(timeEntry.getDate()))
+                .collect(Collectors.toList());
+
+        BigDecimal recordHours = BigDecimal.ZERO;
+        BigDecimal recordMoney = BigDecimal.ZERO;
+        // Add up hours and calculated payment for submitted time records that have not been paid out yet
+        for (TimeEntry entry : unpaidTimeEntries) {
+            recordHours = recordHours.add(entry.getWorkHours().orElse(BigDecimal.ZERO));
+            recordMoney = recordMoney.add(allowanceUsage.getEntryCost(entry));
+        }
+        allowanceUsage.setRecordHoursUsed(recordHours);
+        allowanceUsage.setRecordMoneyUsed(recordMoney);
     }
 
     /**
@@ -148,15 +162,5 @@ public class EssAllowanceService implements AllowanceService {
                         yearRange.contains(payment.getEndDate()))
                 .sorted((hwpA, hwpB) -> hwpA.getEffectDate().compareTo(hwpB.getEffectDate()))
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Get salary recs for an allowance usage year
-     */
-    private static void getSalaryRecs(AllowanceUsage allowanceUsage, TransactionHistory transHistory) {
-        Range<LocalDate> yearRange = Range.closedOpen(
-                LocalDate.ofYearDay(allowanceUsage.getYear(), 1), LocalDate.ofYearDay(allowanceUsage.getYear() + 1, 1));
-
-        allowanceUsage.addSalaryRecs(transHistory.getEffectiveSalaryRecs(yearRange).values());
     }
 }

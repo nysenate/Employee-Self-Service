@@ -16,9 +16,14 @@ public class AllowanceUsageView implements ViewObject
     protected int empId;
     protected int year;
     protected BigDecimal yearlyAllowance;
-    protected BigDecimal baseMoneyUsed;
+
     protected BigDecimal recordMoneyUsed;
+    protected BigDecimal baseMoneyUsed;
     protected BigDecimal moneyUsed;
+
+    protected BigDecimal baseHoursUsed;
+    protected BigDecimal recordHoursUsed;
+    protected BigDecimal hoursUsed;
 
     protected ListView<SalaryRecView> salaryRecs;
 
@@ -29,6 +34,9 @@ public class AllowanceUsageView implements ViewObject
         this.baseMoneyUsed = allowanceUsage.getBaseMoneyUsed();
         this.recordMoneyUsed = allowanceUsage.getRecordMoneyUsed();
         this.moneyUsed = allowanceUsage.getMoneyUsed();
+        this.baseHoursUsed = allowanceUsage.getBaseHoursUsed();
+        this.recordHoursUsed = allowanceUsage.getRecordHoursUsed();
+        this.hoursUsed = allowanceUsage.getHoursUsed();
         this.salaryRecs = ListView.of(allowanceUsage.getSalaryRecs().stream()
                 .map(SalaryRecView::new)
                 .collect(Collectors.toList()));
@@ -72,5 +80,20 @@ public class AllowanceUsageView implements ViewObject
     @XmlElement
     public ListView<SalaryRecView> getSalaryRecs() {
         return salaryRecs;
+    }
+
+    @XmlElement
+    public BigDecimal getBaseHoursUsed() {
+        return baseHoursUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getRecordHoursUsed() {
+        return recordHoursUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getHoursUsed() {
+        return hoursUsed;
     }
 }

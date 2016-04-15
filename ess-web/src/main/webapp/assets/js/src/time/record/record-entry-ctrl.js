@@ -291,18 +291,12 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
      * @returns {number}
      */
     $scope.getAvailableHours = function() {
-        var record = $scope.getSelectedRecord();
         var allowance = $scope.state.allowances[$scope.state.selectedYear];
-        var salaryRec = $scope.state.salaryRecs[$scope.state.iSelSalRec];
+        var tempWorkHours = $scope.state.totals.tempWorkHours;
 
-        if (!record || !allowance || !salaryRec) {
-            return 0;
+        if (allowance && !isNaN(tempWorkHours)) {
+            return allowance.remainingHours - tempWorkHours;
         }
-
-        var availableMoney = allowance.yearlyAllowance - allowance.moneyUsed - record.moneyUsed;
-        var availableHours = availableMoney / salaryRec.salaryRate;
-        // Adjust hours into a multiple of 0.25
-        return Math.round((availableHours - Math.abs(availableHours) % 0.25) * 4) / 4;
     };
 
     /**
@@ -358,7 +352,6 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         // sanitizeEntries(record);
         recordUtils.calculateDailyTotals(record);
         $scope.state.totals = recordUtils.getRecordTotals(record);
-        calculateAllowanceUsage();
     }
 
     /**
@@ -409,51 +402,30 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         if (!$scope.state.tempEntries) return;
         var allowance = $scope.state.allowances[$scope.state.selectedYear];
         var record = $scope.getSelectedRecord();
+        var highestRate = 0;
         angular.forEach(allowance.salaryRecs, function (salaryRec) {
             // Select only temporary salaries that are effective during the record date range
             if (salaryRec.payType === 'TE' &&
                     !moment(salaryRec.effectDate).isAfter(record.endDate) &&
                     !moment(record.beginDate).isAfter(salaryRec.endDate)) {
                 salaryRecs.push(salaryRec);
+                if (salaryRec.salaryRate > highestRate) {
+                    highestRate = salaryRec.salaryRate;
+                    $scope.state.iSelSalRec = allowance.salaryRecs.indexOf(salaryRec);
+                }
             }
         });
+
+        allowance.remainingAllowance = allowance.yearlyAllowance - allowance.moneyUsed;
+        console.log('remaining allowance: ', allowance.remainingAllowance);
+        allowance.remainingHours = allowance.remainingAllowance / highestRate;
+        console.log('remaining hours: ', allowance.remainingAllowance, '/', highestRate, allowance.remainingHours);
+        allowance.remainingHours = $filter('round')(allowance.remainingHours, 0.25, -1);
+        console.log('remaining hours: ', allowance.remainingHours);
+        allowance.totalHours = allowance.hoursUsed + allowance.remainingHours;
+        console.log('changed hours', allowance, highestRate);
     }
 
-    /**
-     * Computes the payout cost of the selected time record
-     */
-    function calculateAllowanceUsage() {
-        if ($scope.state.records.length > 0 && $scope.state.tempEntries) {
-            var record = $scope.getSelectedRecord();
-            record.moneyUsed = 0;
-            for (var i in record.timeEntries) {
-                var entry = record.timeEntries[i];
-                if (isTemporaryEmployee(entry) && entry.workHours) {
-                    record.moneyUsed += entry.workHours * getSalaryAtDate(entry.date);
-                }
-            }
-        }
-    }
-
-    /**
-     * Gets the employee's hourly salary at the given date
-     * @param date
-     * @returns {Number}
-     */
-    function getSalaryAtDate(date) {
-        var momentDate = moment(date);
-        if (momentDate.isValid() && $scope.state.allowances.hasOwnProperty(momentDate.year())) {
-            var year = momentDate.year();
-            var allowance = $scope.state.allowances[year];
-            for (var i in allowance.salaryRecs) {
-                var salaryRec = allowance.salaryRecs[i];
-                if (!momentDate.isAfter(salaryRec.endDate) && !momentDate.isBefore(salaryRec.effectDate)) {
-                    return salaryRec.salaryRate;
-                }
-            }
-        }
-        return "no salary for date...";
-    }
 
     /**
      * Recursively ensures that all boolean fields are false within the given object.

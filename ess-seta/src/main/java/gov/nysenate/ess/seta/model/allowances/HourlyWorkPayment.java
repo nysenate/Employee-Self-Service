@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.model.allowances;
 
 import com.google.common.collect.Range;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,7 +13,9 @@ import java.util.Optional;
  */
 public class HourlyWorkPayment {
 
+    /** Indicates the start of the work period that this payment is compensating for */
     private LocalDate effectDate;
+    /** The last day of the work period that this payment is compensating for */
     private LocalDate endDate;
     private LocalDateTime auditDate;
 
@@ -50,12 +53,6 @@ public class HourlyWorkPayment {
             return prevYearMoneyPaid;
         }
         return BigDecimal.ZERO;
-    }
-
-    //FIXME
-    public BigDecimal getHoursWorkedForYear(int year) {
-        return BigDecimal.ZERO;
-//        return getMoneyPaidForYear(year).divide(hourlySalary);
     }
 
     /** Return the range of work dates that this payment is compensating for */

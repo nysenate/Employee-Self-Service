@@ -3,6 +3,7 @@ package gov.nysenate.ess.seta.model.allowances;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
+import gov.nysenate.ess.seta.model.attendance.TimeEntry;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
 import gov.nysenate.ess.core.model.payroll.SalaryRec;
 import gov.nysenate.ess.core.model.payroll.PayType;
@@ -17,13 +18,19 @@ public class AllowanceUsage {
     protected int year;
 
     /** The amount of money allowed for the year */
-    protected BigDecimal yearlyAllowance;
+    protected BigDecimal yearlyAllowance = BigDecimal.ZERO;
 
     /** The amount of money that has been paid out this year (according to  transactions) */
-    protected BigDecimal baseMoneyUsed;
+    protected BigDecimal baseMoneyUsed = BigDecimal.ZERO;
 
     /** The amount of money used as recorded in submitted time records for periods not covered in transaction history */
-    protected BigDecimal recordMoneyUsed;
+    protected BigDecimal recordMoneyUsed = BigDecimal.ZERO;
+
+    /** The number of hours that have been paid out this year */
+    protected BigDecimal baseHoursUsed = BigDecimal.ZERO;
+
+    /** The number of hours that have been recorded in submitted time entries for periods not covered in transaction history */
+    protected BigDecimal recordHoursUsed = BigDecimal.ZERO;
 
     /** The employees salary recs over the year */
     protected RangeMap<LocalDate, SalaryRec> salaryRecMap = TreeRangeMap.create();
@@ -39,6 +46,10 @@ public class AllowanceUsage {
         return baseMoneyUsed.add(recordMoneyUsed);
     }
 
+    public BigDecimal getHoursUsed() {
+        return baseHoursUsed.add(recordHoursUsed);
+    }
+
     public void addSalaryRecs(Collection<SalaryRec> salaryRecs) {
         salaryRecs.forEach(rec -> salaryRecMap.put(rec.getEffectiveRange(), rec));
     }
@@ -51,12 +62,29 @@ public class AllowanceUsage {
         return ImmutableList.copyOf(salaryRecMap.asMapOfRanges().values());
     }
 
+    /**
+     * Calculate the cost of a time record using the salary recs
+     * @param record TimeRecord
+     * @return BigDecimal - record cost
+     */
     public BigDecimal getRecordCost(TimeRecord record) {
         return record.getTimeEntries().stream()
-                .filter(entry -> entry.getPayType() == PayType.TE)
-                .map(entry -> entry.getWorkHours().orElse(BigDecimal.ZERO)
-                        .multiply(getSalaryRec(entry.getDate()).getSalaryRate()))
+                .map(this::getEntryCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Get the cost of a single time entry given the salary recs in this AllowanceUsage
+     * @param entry TimeEntry
+     * @return BigDecimal - entry cost
+     */
+    public BigDecimal getEntryCost(TimeEntry entry) {
+        SalaryRec salaryForDay = salaryRecMap.get(entry.getDate());
+        if (PayType.TE != entry.getPayType() || salaryForDay == null) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal workHours = entry.getWorkHours().orElse(BigDecimal.ZERO);
+        return workHours.multiply(salaryForDay.getSalaryRate());
     }
 
     /** --- Getters / Setters --- */
@@ -99,5 +127,21 @@ public class AllowanceUsage {
 
     public void setRecordMoneyUsed(BigDecimal recordMoneyUsed) {
         this.recordMoneyUsed = recordMoneyUsed;
+    }
+
+    public BigDecimal getBaseHoursUsed() {
+        return baseHoursUsed;
+    }
+
+    public void setBaseHoursUsed(BigDecimal baseHoursUsed) {
+        this.baseHoursUsed = baseHoursUsed;
+    }
+
+    public BigDecimal getRecordHoursUsed() {
+        return recordHoursUsed;
+    }
+
+    public void setRecordHoursUsed(BigDecimal recordHoursUsed) {
+        this.recordHoursUsed = recordHoursUsed;
     }
 }
