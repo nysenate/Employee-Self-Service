@@ -9,8 +9,11 @@ import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.*;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import net.sf.ehcache.Cache;
@@ -39,6 +42,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
     @Autowired protected Environment env;
     @Autowired protected EmployeeDao employeeDao;
     @Autowired protected EmpTransactionService transService;
+    @Autowired private LocationService locationService;
     @Autowired protected EventBus eventBus;
     @Autowired protected EhCacheManageService cacheManageService;
 
@@ -79,7 +83,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
             employee.setPayType(PayType.valueOf(transHistory.latestValueOf("CDPAYTYPE", effectiveDate, true).orElse(null)));
         } catch (NullPointerException | IllegalArgumentException ignored) {}
         setRespCenterAtDate(employee, transHistory, effectiveDate);
-        getWorkLocAtDate(employee, transHistory, effectiveDate);
+        employee.setWorkLocation(getWorkLocAtDate(employee, transHistory, effectiveDate));
         return employee;
     }
 
@@ -206,11 +210,17 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
         rHead.setCode(transHistory.latestValueOf("CDRESPCTRHD", effectiveDate, false).orElse(rHead.getCode()));
     }
 
-    private static void getWorkLocAtDate(Employee emp, TransactionHistory transHistory, LocalDate effectiveDate) {
-        if (emp.getWorkLocation() == null) {
-            emp.setWorkLocation(new Location());
+    /**
+     * Get an employees work location at a particular date.
+     * Return the location or null if they were not assigned a location.
+     */
+    private Location getWorkLocAtDate(Employee emp, TransactionHistory transHistory, LocalDate effectiveDate) {
+        boolean hasWorkLocation = transHistory.latestValueOf("CDLOCAT", effectiveDate, true).isPresent();
+        if (!hasWorkLocation) {
+            return null;
         }
-        Location loc = emp.getWorkLocation();
-        loc.setCode(transHistory.latestValueOf("CDLOCAT", effectiveDate, true).orElse(loc.getCode()));
+        String locCode = transHistory.latestValueOf("CDLOCAT", effectiveDate, true).get();
+        // All employee assigned locations have a work location type.
+        return locationService.getLocation(new LocationId(locCode, LocationType.WORK));
     }
 }

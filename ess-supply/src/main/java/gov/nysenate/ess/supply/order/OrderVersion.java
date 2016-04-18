@@ -49,11 +49,11 @@ public final class OrderVersion {
     }
 
     public String getDestinationLocCode() {
-        return this.destination.getCode();
+        return this.destination.getLocId().getCode();
     }
 
     public String getDestinationLocType() {
-        return String.valueOf(this.destination.getType().getCode());
+        return String.valueOf(this.destination.getLocId().getType().getCode());
     }
 
     /** Basic Setters. Return new instances. */

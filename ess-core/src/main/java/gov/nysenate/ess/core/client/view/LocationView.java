@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 
 public class LocationView implements ViewObject {
@@ -15,20 +16,16 @@ public class LocationView implements ViewObject {
     public LocationView() {}
 
     public LocationView(Location loc) {
-        this.code = loc.getCode();
-        this.locationType = loc.getType().getName();
-        this.locationTypeCode = loc.getType().getCode();
+        this.code = loc.getLocId().getCode();
+        this.locationType = loc.getLocId().getType().getName();
+        this.locationTypeCode = loc.getLocId().getType().getCode();
         this.address = new AddressView(loc.getAddress());
         this.respCenterHead = new RespCenterHeadView(loc.getResponsibilityHead());
     }
 
     public Location toLocation() {
-        Location location = new Location();
-        location.setCode(code);
-        location.setType(LocationType.valueOfCode(locationTypeCode));
-        location.setAddress(address.toAddress());
-        location.setResponsibilityHead(respCenterHead.toResponsibilityHead());
-        return location;
+        LocationId locId = new LocationId(this.code, this.locationTypeCode);
+        return new Location(locId, address.toAddress(), respCenterHead.toResponsibilityHead());
     }
 
     public String getCode() {

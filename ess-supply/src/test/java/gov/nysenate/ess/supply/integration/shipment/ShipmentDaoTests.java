@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.integration.shipment;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -52,7 +53,7 @@ public class ShipmentDaoTests extends SupplyTests {
     public void setup() {
         /** Create Order */
         Employee customer = employeeService.getEmployee(6221);
-        Location destination = locationService.getLocation("A42FB-W");
+        Location destination = locationService.getLocation(new LocationId("A42FB", 'W'));
         Set<LineItem> lineItems = new HashSet<>();
         lineItems.add(new LineItem(itemDao.getItemById(1), 3));
         lineItems.add(new LineItem(itemDao.getItemById(2), 3));

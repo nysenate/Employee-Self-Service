@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,7 @@ public class LocationApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "", params = {"locCode", "locType"})
     public BaseResponse getLocationByCodeAndType(@RequestParam String locCode, @RequestParam char locType) {
-        return new ViewObjectResponse<>(new LocationView(locationDao.getLocationByCodeAndType(
-                locCode, LocationType.valueOfCode(locType))));
+        return new ViewObjectResponse<>(new LocationView(locationDao.getLocationById(
+                new LocationId(locCode, locType))));
     }
 }

@@ -2,8 +2,11 @@ package gov.nysenate.ess.core.dao.unit;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.personnel.mapper.RespHeadRowMapper;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 
 import java.sql.ResultSet;
@@ -22,20 +25,15 @@ public class LocationRowMapper extends BaseRowMapper<Location>
 
     @Override
     public Location mapRow(ResultSet rs, int rowNum) throws SQLException {
-        if (rs.getString(pfx + "CDLOCAT") != null) {
-            Location loc = new Location();
-            Address addr = new Address();
-            loc.setCode(rs.getString(pfx + "CDLOCAT"));
-            loc.setType(LocationType.valueOfCode(rs.getString(pfx + "CDLOCTYPE").charAt(0)));
-            addr.setAddr1(rs.getString(pfx + "FFADSTREET1"));
-            addr.setAddr2(rs.getString(pfx + "FFADSTREET2"));
-            addr.setCity(rs.getString(pfx + "FFADCITY"));
-            addr.setState(rs.getString(pfx + "ADSTATE"));
-            addr.setZip5(rs.getString(pfx + "ADZIPCODE"));
-            loc.setAddress(addr);
-            loc.setResponsibilityHead(respHeadRowMapper.mapRow(rs, rowNum));
-            return loc;
-        }
-        return null;
+        LocationId locId = new LocationId(rs.getString(pfx + "CDLOCAT"),
+                                          LocationType.valueOfCode(rs.getString(pfx + "CDLOCTYPE").charAt(0)));
+        Address addr = new Address();
+        addr.setAddr1(rs.getString(pfx + "FFADSTREET1"));
+        addr.setAddr2(rs.getString(pfx + "FFADSTREET2"));
+        addr.setCity(rs.getString(pfx + "FFADCITY"));
+        addr.setState(rs.getString(pfx + "ADSTATE"));
+        addr.setZip5(rs.getString(pfx + "ADZIPCODE"));
+        ResponsibilityHead rspHead = respHeadRowMapper.mapRow(rs, rowNum);
+        return new Location(locId, addr, rspHead);
     }
 }

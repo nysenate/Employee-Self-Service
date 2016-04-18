@@ -53,7 +53,7 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
             };
 
             /**
-             * Save the changes made to dirtyShipment.
+             * Persist changes made to dirtyShipment.
              * Call different API depending on what has been updated.
              */
             $scope.saveOrder = function() {

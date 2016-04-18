@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.annotation.ProperTest;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -71,9 +72,9 @@ public class EmployeeTests
         emp1.setTitle("Mr");
         emp1.setUid("sample");
         emp1.setUpdateDateTime(LocalDateTime.now());
-        emp1.setWorkLocation(new Location());
+        emp1.setWorkLocation(new Location(new LocationId("A42FB", 'W'), new Address(), new ResponsibilityHead()));
         emp1.setWorkPhone("987987987");
-        
+
         Employee emp2 = new Employee(emp1);
         assertEquals(emp2.isActive(), emp1.isActive());
         assertEquals(emp2.getDateOfBirth(), emp1.getDateOfBirth());

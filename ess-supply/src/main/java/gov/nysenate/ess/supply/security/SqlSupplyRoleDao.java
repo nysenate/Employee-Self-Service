@@ -7,7 +7,6 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.supply.security.role.SupplyEmployee;
@@ -44,11 +43,11 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
 
     /** Maps sec levels from the SFMS database to {@link SupplyRole}'s. */
     private ImmutableCollection<SupplyRole> mapSecLevelsToRoles(SenatePerson person, List<Integer> secLevels) {
-        String locationId = getEmployeesLocationId(person);
+        Employee emp = employeeService.getEmployee(person.getEmployeeId());
         List<SupplyRole> roles = new ArrayList<>();
 
         /** Everyone gets supply user permissions. */
-        roles.add(new SupplyUser(person.getEmployeeId(), locationId));
+        roles.add(new SupplyUser(emp, emp.getWorkLocation()));
 
         for (Integer secLevel: secLevels) {
             switch(secLevel) {
@@ -62,12 +61,6 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
             }
         }
         return ImmutableList.copyOf(roles);
-    }
-
-    private String getEmployeesLocationId(SenatePerson person) {
-        Employee employee = employeeService.getEmployee(person.getEmployeeId());
-        Location location = locationService.getLocation(employee.getWorkLocation().getCode(), employee.getWorkLocation().getType());
-        return location.getCode() + "-" + location.getType().getCode();
     }
 
     private enum SqlSupplyRoleQuery implements BasicSqlQuery {

@@ -6,54 +6,38 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
  * Typically used to represent a Senate employee's place of work or some other location
  * that serves a business purpose.
  */
-public class Location
+public final class Location
 {
-    protected String code;
-    protected LocationType type;
-    protected Address address;
-    protected ResponsibilityHead responsibilityHead;
+    private final LocationId locId;
+    private Address address;
+    private ResponsibilityHead responsibilityHead;
 
-    public Location() {}
-
-    public String getCode() {
-        return code;
+    public Location(LocationId locId) {
+        this.locId = locId;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public Location(LocationId locId, Address address, ResponsibilityHead responsibilityHead) {
+        this.locId = locId;
+        this.address = address;
+        this.responsibilityHead = responsibilityHead;
     }
 
-    public LocationType getType() {
-        return type;
-    }
-
-    public void setType(LocationType type) {
-        this.type = type;
+    public LocationId getLocId() {
+        return locId;
     }
 
     public Address getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
     public ResponsibilityHead getResponsibilityHead() {
         return responsibilityHead;
-    }
-
-    public void setResponsibilityHead(ResponsibilityHead responsibilityHead) {
-        this.responsibilityHead = responsibilityHead;
     }
 
     @Override
     public String toString() {
         return "Location{" +
-               "code='" + code + '\'' +
-               ", type=" + type +
-               ", address=" + address +
-               ", responsibilityHead=" + responsibilityHead +
+               "locId=" + locId +
                '}';
     }
 
@@ -61,22 +45,13 @@ public class Location
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Location location = (Location) o;
-
-        if (code != null ? !code.equals(location.code) : location.code != null) return false;
-        if (type != location.type) return false;
-        if (address != null ? !address.equals(location.address) : location.address != null) return false;
-        return !(responsibilityHead != null ? !responsibilityHead.equals(location.responsibilityHead) : location.responsibilityHead != null);
+        return locId != null ? locId.equals(location.locId) : location.locId == null;
 
     }
 
     @Override
     public int hashCode() {
-        int result = code != null ? code.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (address != null ? address.hashCode() : 0);
-        result = 31 * result + (responsibilityHead != null ? responsibilityHead.hashCode() : 0);
-        return result;
+        return locId != null ? locId.hashCode() : 0;
     }
 }

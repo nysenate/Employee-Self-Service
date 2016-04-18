@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.core.model.unit.LocationType;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 
 @Service
 public class EssCachedLocationService implements LocationService {
@@ -28,31 +28,24 @@ public class EssCachedLocationService implements LocationService {
     @Autowired private LocationDao locationDao;
     @Autowired private EventBus eventBus;
     @Autowired private EhCacheManageService cacheManageService;
-    private Cache locationCache;
+    private volatile Cache locationCache;
 
     private static final class LocationCacheTree {
 
-        private TreeMap<String, Location> locationTreeMap = new TreeMap<>();
+        private HashMap<LocationId, Location> locationTreeMap = new HashMap<>();
 
         public LocationCacheTree(List<Location> locations) {
-            locations.forEach(loc -> locationTreeMap.put(getLocationKey(loc), loc));
+            for (Location loc: locations) {
+                locationTreeMap.put(loc.getLocId(), loc);
+            }
         }
 
-        public Location getLocation(String locationId) {
-            return locationTreeMap.get(locationId);
-        }
-
-        public Location getLocation(String code, LocationType type) {
-            return locationTreeMap.get(code + "-" + String.valueOf(type.getCode()));
+        public Location getLocation(LocationId locId) {
+            return locationTreeMap.get(locId);
         }
 
         public List<Location> getLocations() {
             return new ArrayList<>(locationTreeMap.values());
-        }
-
-        /** Return the unique key for a location. Made up of location code and type. */
-        private String getLocationKey(Location loc) {
-            return loc.getCode() + "-" + String.valueOf(loc.getType().getCode());
         }
     }
 
@@ -66,13 +59,8 @@ public class EssCachedLocationService implements LocationService {
     }
 
     @Override
-    public Location getLocation(String locationId) {
-        return getLocationCacheTree().getLocation(locationId);
-    }
-
-    @Override
-    public Location getLocation(String locCode, LocationType locType) {
-        return getLocationCacheTree().getLocation(locCode, locType);
+    public Location getLocation(LocationId locId) {
+        return getLocationCacheTree().getLocation(locId);
     }
 
     @Override

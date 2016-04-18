@@ -1,7 +1,10 @@
 package gov.nysenate.ess.supply.unit.order;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
+import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.dao.InMemorySupplyItemDao;
@@ -45,9 +48,7 @@ public class OrderTests {
         CUSTOMER.setEmployeeId(1);
         MODIFIED_BY = new Employee();
         MODIFIED_BY.setEmployeeId(2);
-        DESTINATION = new Location();
-        DESTINATION.setCode("A42FB");
-        DESTINATION.setType(LocationType.valueOfCode('W'));
+        DESTINATION = new Location(new LocationId("A42FB", 'W'), new Address(), new ResponsibilityHead());
         itemDao = new InMemorySupplyItemDao();
         ORIGINAL_LINE_ITEMS = new HashSet<>();
         ORIGINAL_LINE_ITEMS.add(new LineItem(itemDao.getItemById(1), 3));

@@ -104,14 +104,4 @@ public abstract class SqlBaseDao
     public static char getStatusCode(Boolean status) {
         return (status != null && status.equals(true)) ? 'A' : 'I';
     }
-
-    /**
-     * Convert a location into a unique identifier consisting of
-     * the location type + '-' + location code.
-     * @param destination
-     * @return
-     */
-    protected String generateLocationId(Location destination) {
-        return destination.getCode() + "-" + destination.getType().getCode();
-    }
 }

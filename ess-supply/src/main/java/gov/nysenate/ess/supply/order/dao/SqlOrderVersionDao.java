@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.supply.item.LineItem;
@@ -32,7 +33,7 @@ public class SqlOrderVersionDao extends SqlBaseDao implements OrderVersionDao {
     public int insertOrderVersion(OrderVersion version) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("customerId", version.getCustomer().getEmployeeId())
-                .addValue("destination", generateLocationId(version.getDestination()))
+                .addValue("destination", version.getDestination().toString())
                 .addValue("status", version.getStatus().toString())
                 .addValue("note", version.getNote().orElse(null))
                 .addValue("modifiedById", version.getModifiedBy().getEmployeeId());
@@ -95,7 +96,7 @@ public class SqlOrderVersionDao extends SqlBaseDao implements OrderVersionDao {
         public OrderVersion mapRow(ResultSet rs, int rowNum) throws SQLException {
             int id = rs.getInt("version_id");
             Employee customer = employeeInfoService.getEmployee(rs.getInt("customer_id"));
-            Location destination = locationService.getLocation(rs.getString("destination"));
+            Location destination = locationService.getLocation(LocationId.ofString(rs.getString("destination")));
             OrderStatus status = OrderStatus.valueOf(rs.getString("status"));
             String note = rs.getString("note");
             Employee modifiedBy = employeeInfoService.getEmployee(rs.getInt("modified_by"));
