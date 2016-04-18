@@ -71,10 +71,11 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
                 $scope.getAccrualForSelectedRecord(),
                 $scope.getAllowanceForSelRecord()
             ]).then(function() {
-                console.log('allowances/accruals got, calling update functions');
+                console.log('allowances/accruals retrieved, calling update functions');
                 getSelectedSalaryRecs();
                 onRecordChange();
                 setRecordSearchParams();
+                $scope.checkRecordForErrors();
             });
         }
     });
@@ -94,7 +95,6 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         }, function (response) {
             if ($scope.state.empId in response.result.items) {
                 $scope.state.records = response.result.items[$scope.state.empId];
-                console.log($scope.state.records);
                 angular.forEach($scope.state.records, function(record, index) {
                     // Compute the due from dates for each record
                     var endDateMoment = moment(record.endDate);
@@ -224,7 +224,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             return allowanceApi.get(params, function(response) {
                 for (var i in response.result) {
                     var allowance = response.result[i];
-                    console.log('got allowance', allowance.empId, allowance.year);
+                    console.log('retrieved allowance', allowance.empId, allowance.year);
                     $scope.state.allowances[allowance.year] = allowance;
                 }
             }, function(resp) {
@@ -417,13 +417,9 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         });
 
         allowance.remainingAllowance = allowance.yearlyAllowance - allowance.moneyUsed;
-        console.log('remaining allowance: ', allowance.remainingAllowance);
         allowance.remainingHours = allowance.remainingAllowance / highestRate;
-        console.log('remaining hours: ', allowance.remainingAllowance, '/', highestRate, allowance.remainingHours);
         allowance.remainingHours = $filter('round')(allowance.remainingHours, 0.25, -1);
-        console.log('remaining hours: ', allowance.remainingHours);
         allowance.totalHours = allowance.hoursUsed + allowance.remainingHours;
-        console.log('changed hours', allowance, highestRate);
     }
 
 
@@ -499,7 +495,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         }
     };
 
-    /** Checks all input in a salaried employees time entry record for errors. */
+    /** Checks all input in a salaried employees time entry for errors. */
     function checkSalariedEntryForErrors(entry) {
         if (typeof entry.workHours === 'undefined') {
             $scope.errorTypes.raSa.workHoursInvalidRange = true;
@@ -576,24 +572,19 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             notEnoughWorkHours: false,
             fifteenMinIncrements: false
         },
-        reset: function() {
-            this.raSa.errors = false;
-            this.raSa.workHoursInvalidRange = false;
-            this.raSa.vacationHoursInvalidRange = false;
-            this.raSa.personalHoursInvalidRange = false;
-            this.raSa.empSickHoursInvalidRange = false;
-            this.raSa.famSickHoursInvalidRange = false;
-            this.raSa.miscHoursInvalidRange = false;
-            this.raSa.totalHoursInvalidRange = false;
-            this.raSa.notEnoughVacationTime = false;
-            this.raSa.notEnoughPersonalTime = false;
-            this.raSa.notEnoughSickTime = false;
-            this.raSa.noMiscTypeGiven = false;
-            this.raSa.halfHourIncrements = false;
-            this.te.errors = false;
-            this.te.workHoursInvalidRange = false;
-            this.te.notEnoughWorkHours = false;
-            this.te.fifteenMinIncrements = false;
+        // Recursively set all boolean error properties to false
+        reset: function(object) {
+            if (object === undefined) {
+                object = this;
+            }
+            var caller = this;
+            angular.forEach(object, function (value, key) {
+                if (typeof value === 'boolean') {
+                    object[key] = false;
+                } else if (typeof value === 'object') {
+                    caller.reset(value);
+                }
+            });
         }
     };
 

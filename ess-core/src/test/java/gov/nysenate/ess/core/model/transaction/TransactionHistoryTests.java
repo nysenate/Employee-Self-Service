@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.model.transaction;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.annotation.ProperTest;
+import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.util.RangeUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 @Category(ProperTest.class)
+@WorkInProgress(author = "sam", since = "11/17/2015", desc = "not nearly done")
 public class TransactionHistoryTests {
 
     private static final Iterator<Integer> empIdAssigner = RangeUtils.getCounter();
