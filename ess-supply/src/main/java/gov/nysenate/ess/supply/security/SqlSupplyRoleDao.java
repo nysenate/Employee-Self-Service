@@ -21,7 +21,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
 
 @Service
 public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
@@ -63,14 +65,29 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
         return ImmutableList.copyOf(roles);
     }
 
+    @Override
+    public ImmutableCollection<String> getUidsWithSupplyPermissions() {
+        String sql = SqlSupplyRoleQuery.GET_ALL_UID.getSql(schemaMap());
+        Collection<String> uids = remoteNamedJdbc.query(sql, (rs, i) -> rs.getString("NAUSER"));
+        return ImmutableList.copyOf(uids);
+    }
+
     private enum SqlSupplyRoleQuery implements BasicSqlQuery {
 
-        GET_ROLE_BY_UID("SELECT cdseclevel \n" +
-                        "FROM ${masterSchema}.im86modmenu \n" +
-                        "WHERE defrmint = 'FSSUPREQ12' \n" +
-                        "AND numodule = 'F01200' \n" +
-                        "AND cdstatus = 'A' \n" +
-                        "AND nauser = :uid");
+        GET_ROLE_BY_UID(
+                "SELECT cdseclevel \n" +
+                "FROM ${masterSchema}.im86modmenu \n" +
+                "WHERE defrmint = 'FSSUPREQ12' \n" +
+                "AND numodule = 'F01200' \n" +
+                "AND cdstatus = 'A' \n" +
+                "AND nauser = :uid"
+        ),
+        GET_ALL_UID(
+                "SELECT nauser FROM ${masterSchema}.im86modmenu \n" +
+                "WHERE defrmint = 'FSSUPREQ12' \n" +
+                "AND numodule = 'F01200' \n" +
+                "AND cdstatus = 'A' \n"
+        );
 
         private String sql;
 
