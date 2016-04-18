@@ -36,6 +36,16 @@ public class DateUtils
     }
 
     /**
+     * Return a range of dates corresponding to all of the days in the given year
+     *  range is in the form [Jan 1 {year}, Jan 1 {year + 1})
+     * @param year int
+     * @return Range<LocalDate> - all of the days in the given year
+     */
+    public static Range<LocalDate> yearDateRange(int year) {
+        return Range.closedOpen(LocalDate.ofYearDay(year, 1), LocalDate.ofYearDay(year + 1, 1));
+    }
+
+    /**
      * Given the LocalDate range, extract the lower bound LocalDate. If the lower bound is not set,
      * a really early date will be returned. If the bound is open, a single day will be added to the
      * LocalDate. If its closed, the date will remain as is.

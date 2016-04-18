@@ -17,15 +17,15 @@ public class RangeUtils
      * The value with the highest key will be assigned a range of [highest key, end key] with end key being provided as an arg
      * @param map SortedMap<K, V>
      * @param endKey K - Set as the closed right bound for the range of the highest key
-     * @param <K> K
-     * @param <V> V
+     * @param <Key> K
+     * @param <Value> V
      * @return RangeMap<K, V>
      */
-    public static <K extends Comparable<? super K>, V> RangeMap<K, V> toRangeMap(SortedMap<K, V> map, K endKey) {
-        RangeMap<K, V> rangeMap = TreeRangeMap.create();
+    public static <Key extends Comparable<? super Key>, Value> RangeMap<Key, Value> toRangeMap(SortedMap<Key, Value> map, Key endKey) {
+        RangeMap<Key, Value> rangeMap = TreeRangeMap.create();
 
-        Entry<K, V> lastEntry = null;
-        for (Entry<K, V> entry : map.entrySet()) {
+        Entry<Key, Value> lastEntry = null;
+        for (Entry<Key, Value> entry : map.entrySet()) {
             if (lastEntry != null) {
                 rangeMap.put(Range.closedOpen(lastEntry.getKey(), entry.getKey()), lastEntry.getValue());
             }
