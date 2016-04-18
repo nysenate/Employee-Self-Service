@@ -1,6 +1,8 @@
 package gov.nysenate.ess.core.model.personnel;
 
 import gov.nysenate.ess.core.model.unit.Address;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -100,7 +102,11 @@ public class Person
     }
 
     public String getFullName() {
-        return fullName;
+        String fullName = this.getFirstName() + " " +
+                ((StringUtils.isNotBlank(this.getInitial())) ? (this.getInitial() + " ") : "") +
+                this.getLastName() + " " +
+                ((StringUtils.isNotBlank(this.getSuffix())) ? this.getSuffix() : "");
+        return WordUtils.capitalizeFully(fullName.toLowerCase()).trim().replaceAll("\\s+", " ");
     }
 
     public void setFullName(String fullName) {

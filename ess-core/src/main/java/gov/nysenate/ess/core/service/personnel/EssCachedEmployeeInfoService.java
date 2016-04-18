@@ -121,7 +121,6 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
      */
     private void cacheEmployee(Employee employee) {
         int empId = employee.getEmployeeId();
-        fixFullNameFormat(employee);
         empCache.acquireWriteLockOnKey(empId);
         empCache.put(new Element(empId, employee));
         empCache.releaseWriteLockOnKey(empId);
@@ -163,17 +162,6 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
             activeEmployees.forEach(this::cacheEmployee);
             logger.debug("Finished refreshing employee cache: {} employees cached", activeEmployees.size());
         }
-    }
-
-    /** --- Formatting Methods --- */
-
-    private void fixFullNameFormat(Employee employee) {
-        String fullName =
-            employee.getFirstName() + " " +
-            ((StringUtils.isNotBlank(employee.getInitial())) ? (employee.getInitial() + " ") : "") +
-            employee.getLastName() + " " +
-            ((StringUtils.isNotBlank(employee.getSuffix())) ? employee.getSuffix() : "");
-        employee.setFullName(WordUtils.capitalizeFully(fullName.toLowerCase()).trim().replaceAll("\\s+", " "));
     }
 
     /** --- Internal Methods --- */
