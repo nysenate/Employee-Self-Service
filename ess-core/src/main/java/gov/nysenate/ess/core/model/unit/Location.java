@@ -36,9 +36,7 @@ public final class Location
 
     @Override
     public String toString() {
-        return "Location{" +
-               "locId=" + locId +
-               '}';
+        return this.locId.toString();
     }
 
     @Override
