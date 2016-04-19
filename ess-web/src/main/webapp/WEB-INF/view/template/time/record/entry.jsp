@@ -234,12 +234,6 @@
       <!-- Temporary Entry Form -->
       <div class="te-entry" ng-if="state.tempEntries">
         <h1 class="time-entry-table-title" ng-if="state.annualEntries">Temporary Pay Entries</h1>
-        <div ess-notification level="warn" title="Record with multiple salaries" ng-show="state.salaryRecs.length > 1" class="margin-10">
-          <p>
-            There were one or more changes in salary during the time covered by this record.<br>
-            Select a date range from the "Salary Dates" field to see the salary rate and hours available for selected dates.
-          </p>
-        </div>
         <div class="allowance-container">
           <div class="allowance-component">
             <div class="captioned-hour-square">
