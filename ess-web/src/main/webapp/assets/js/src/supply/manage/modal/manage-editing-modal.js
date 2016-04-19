@@ -1,32 +1,25 @@
 var essSupply = angular.module('essSupply');
 
 essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessShipmentApi', 'SupplyCompleteShipmentApi',
-    'SupplyRejectOrderApi', 'SupplyCancelShipmentApi', 'SupplyUpdateLineItemsApi', 'SupplyApproveShipmentApi', 
-    'SupplyAddNoteApi', 'LocationService',
+    'SupplyRejectOrderApi', 'SupplyCancelShipmentApi', 'SupplyUpdateLineItemsApi', 'SupplyApproveShipmentApi',
+    'SupplyAddNoteApi', 'SupplyIssuerApi', 'LocationService',
     function (appProps, modals, processShipmentApi, completeShipmentApi,
               rejectOrderApi, cancelShipmentApi, updateLineItemsApi, approveShipmentApi,
-              addNoteApi, locationService) {
+              addNoteApi, issuerApi, locationService) {
         return {
             templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
             link: link
         };
 
         function link($scope, $elem, $attrs) {
-            // TODO: temporary until implemented in server. supplyEmployees should be array of EmployeeView objects.
-            $scope.assignedTo = "Caseiras";
-            $scope.supplyEmployees = ["Caseiras", "Smith", "Johnson", "Maloy", "Richard"];
-
             /** Original shipment */
             $scope.shipment = null;
             /** A copy of the shipment to be displayed and edited as the user wishes. */
             $scope.dirtyShipment = null;
-            /** Models the displayed note field which allows comments on the order or any edits supply staff makes.
-             * Don't display the shipment.order.activeVersion.note because that note is related to old changes.*/
             $scope.note = "";
-            /** dirty == true if any data has been edited. */
             $scope.dirty = false;
-            
-            $scope.init = function() {
+
+            $scope.init = function () {
                 $scope.shipment = modals.params();
                 $scope.dirtyShipment = angular.copy($scope.shipment);
             };
@@ -34,17 +27,20 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
             $scope.init();
 
             /** Save any changes, then process shipment */
-            $scope.processOrder = function() {
+            $scope.processOrder = function () {
+                var issuerId = $scope.dirtyShipment.activeVersion.issuer === null
+                    ? appProps.user.employeeId : $scope.dirtyShipment.activeVersion.issuer.employeeId;
+
                 processShipmentApi.save(
                     {id: $scope.shipment.id},
-                    appProps.user.employeeId, // TODO set this to selected issuer
+                    issuerId,
                     success,
                     error
                 );
             };
 
             /** Save any changes, then complete shipment */
-            $scope.completeOrder = function() {
+            $scope.completeOrder = function () {
                 completeShipmentApi.save(
                     {id: $scope.shipment.id},
                     null,
@@ -52,17 +48,20 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                     error);
             };
 
-            /**
-             * Persist changes made to dirtyShipment.
-             * Call different API depending on what has been updated.
-             */
-            $scope.saveOrder = function() {
+            $scope.saveOrder = function () {
+                saveOrderUpdates();
+                saveShipmentUpdates();
+            };
+            
+            function saveOrderUpdates() {
                 var areItemsUpdated = angular.toJson($scope.shipment.order.activeVersion.lineItems) !== angular.toJson($scope.dirtyShipment.order.activeVersion.lineItems);
-                if(areItemsUpdated) {
+                if (areItemsUpdated) {
                     updateLineItemsApi.save(
                         {id: $scope.shipment.order.id},
-                        {lineItems: $scope.dirtyShipment.order.activeVersion.lineItems,
-                            note: $scope.note === "" ? null : $scope.note},
+                        {
+                            lineItems: $scope.dirtyShipment.order.activeVersion.lineItems,
+                            note: $scope.note === "" ? null : $scope.note
+                        },
                         success,
                         error)
                 }
@@ -76,9 +75,20 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                             error)
                     }
                 }
-            };
+            }
+            
+            function saveShipmentUpdates() {
+                var isIssuerUpdated = angular.toJson($scope.shipment.activeVersion.issuer) !== angular.toJson($scope.dirtyShipment.activeVersion.issuer);
+                if (isIssuerUpdated) {
+                    issuerApi.save(
+                        {id: $scope.shipment.id},
+                        $scope.dirtyShipment.activeVersion.issuer.employeeId,
+                        success,
+                        error)
+                }
+            }
 
-            $scope.rejectOrder = function() {
+            $scope.rejectOrder = function () {
                 rejectOrderApi.save({id: $scope.shipment.order.id});
                 // Also cancel the shipment since the order has been rejected.
                 cancelShipmentApi.save(
@@ -88,7 +98,7 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                     error);
             };
 
-            $scope.approveShipment = function() {
+            $scope.approveShipment = function () {
                 approveShipmentApi.save(
                     {id: $scope.shipment.id},
                     null,
@@ -96,30 +106,19 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                     error);
             };
 
-            // TODO: cant save this until we get full EmployeeView objects from server.
-            $scope.setIssuedBy = function() {
-                // set $scope.dirtyShipment.issuingEmployee = $scope.assignedTo
-                $scope.setDirty();
-            };
-
-            // $scope.noteUpdated = function() {
-            //     var noteChanged = _.isEqual($scope.shipment.order.activeVersion.note, $scope.dirtyShipment.order.activeVersion.note);
-            // };
-
             /**
              * When the user updates data, check the original and dirty shipment to see if there are changes.
              * Set $scope.dirty to true if there are changes, otherwise false.
              *
              * Angular adds a hashkey key to objects for tracking changes.
-             * So most traditional ways of doing deep euality checks will not work.
+             * So most traditional ways of doing deep equality checks will not work.
              * We use angular.toJson here because it automatically strips out the hashkey value.
              */
-            $scope.onUpdate = function() {
+            $scope.onUpdate = function () {
                 $scope.dirty = angular.toJson($scope.shipment) !== angular.toJson($scope.dirtyShipment) || $scope.note !== "";
-                console.log($scope.dirty);
             };
 
-            $scope.close = function() {
+            $scope.close = function () {
                 modals.resolve();
             };
 
@@ -134,7 +133,7 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
 
             var error = function error(httpResponse) {
                 $scope.close();
-                console.log("An error occurred: " + httpResponse);
+                console.log("An error occurred: " + JSON.stringify(httpResponse));
                 // TODO
             }
         }

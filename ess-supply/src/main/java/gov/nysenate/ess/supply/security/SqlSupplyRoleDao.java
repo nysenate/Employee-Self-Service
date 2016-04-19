@@ -43,7 +43,7 @@ public class SqlSupplyRoleDao extends SqlBaseDao implements SupplyRoleDao {
         return mapSecLevelsToRoles(person, secLevels);
     }
 
-    /** Maps sec levels from the SFMS database to {@link SupplyRole}'s. */
+    /** Maps sec levels from the SFMS database to {@link SupplyRole}s. */
     private ImmutableCollection<SupplyRole> mapSecLevelsToRoles(SenatePerson person, List<Integer> secLevels) {
         Employee emp = employeeService.getEmployee(person.getEmployeeId());
         List<SupplyRole> roles = new ArrayList<>();

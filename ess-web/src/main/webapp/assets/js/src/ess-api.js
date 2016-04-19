@@ -105,6 +105,12 @@ essApi.factory('SupplyItemsApi', ['$resource', 'appProps', function($resource, a
     return $resource(appProps.apiPath + '/supply/items.json')
 }]);
 
+/** --- Supply Employee API --- */
+
+essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/employees.json')
+}]);
+
 /** --- Supply Order API --- */
 
 essApi.factory('SupplyOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
@@ -159,4 +165,8 @@ essApi.factory('SupplyCancelShipmentApi', ['$resource', 'appProps', function($re
 
 essApi.factory('SupplyAcceptShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/shipments/:id/accept', {id: '@id'})
+}]);
+
+essApi.factory('SupplyIssuerApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/issuer', {id: '@id'})
 }]);

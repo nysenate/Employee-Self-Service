@@ -39,10 +39,13 @@
 
       <%--Assign issuer--%>
 
-      <%--<div class="text-align-center" ng-show="shipment.activeVersion.status === 'PROCESSING'" style="padding-bottom: 20px;">--%>
-        <%--<label>Assign to: </label>--%>
-        <%--<select ng-model="assignedTo" ng-change="setIssuedBy()" ng-options="emp for emp in supplyEmployees"></select>--%>
-      <%--</div>--%>
+      <div class="text-align-center" style="padding-bottom: 20px;">
+        <label>Assign to: </label>
+        <select ng-model="dirtyShipment.activeVersion.issuer"
+                ng-options="emp.fullName for emp in supplyEmployees track by emp.employeeId"
+                ng-change="onUpdate()">
+        </select>
+      </div>
 
       <%--Actions--%>
 

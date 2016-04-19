@@ -124,7 +124,7 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         orderService.approveOrder(shipment.getOrder(), modifiedBy);
     }
 
-    @RequestMapping(value = "{id}/issuer/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{id}/issuer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void updateIssuer(@PathVariable int id, @RequestBody int issuerId) {
         Shipment shipment = shipmentService.getShipmentById(id);
         Employee issuer = employeeService.getEmployee(issuerId);
