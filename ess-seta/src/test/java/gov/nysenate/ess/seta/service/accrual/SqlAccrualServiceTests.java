@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.seta.SetaTests;
+import gov.nysenate.ess.seta.client.view.AccrualsView;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,8 @@ public class SqlAccrualServiceTests extends SetaTests
 
     @Test
     public void testGetAccruals() throws Exception {
-        PayPeriod period = payPeriodDao.getPayPeriod(PayPeriodType.AF, LocalDate.of(2014, 9, 1));
-        logger.info("{}", OutputUtils.toJson(accService.getAccruals(10976, period)));
+        PayPeriod period = payPeriodDao.getPayPeriod(PayPeriodType.AF, LocalDate.of(2015, 9, 24));
+        logger.info("{}", OutputUtils.toJson(
+                new AccrualsView(accService.getAccruals(9560, period))));
     }
 }

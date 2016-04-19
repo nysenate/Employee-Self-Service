@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 /**
@@ -94,7 +95,10 @@ public class AccrualState extends AccrualSummary
         if (ytdHoursExpected == null) {
             throw new IllegalStateException("YtdHoursExpected needs to be initialized before incrementing it.");
         }
-        this.setYtdHoursExpected(this.getYtdHoursExpected().add(hoursExpectedInPeriod));
+        BigDecimal totalYtdHours = this.getYtdHoursExpected().add(hoursExpectedInPeriod);
+        BigDecimal four = new BigDecimal(4);
+        BigDecimal roundedYtdHours = totalYtdHours.multiply(four).setScale(0, RoundingMode.HALF_UP).divide(four);
+        this.setYtdHoursExpected(roundedYtdHours);
     }
 
     private BigDecimal getHoursExpectedInPeriod(int numWeekDaysInPeriod) {
