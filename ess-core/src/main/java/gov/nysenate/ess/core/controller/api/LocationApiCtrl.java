@@ -30,4 +30,12 @@ public class LocationApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new LocationView(locationDao.getLocationById(
                 new LocationId(locCode, locType))));
     }
+
+    @RequestMapping(value = "/search")
+    public BaseResponse searchLocations(@RequestParam String term) {
+        return ListViewResponse.of(locationDao.searchLocations(term)
+                                              .stream()
+                                              .map(LocationView::new)
+                                              .collect(Collectors.toList()));
+    }
 }

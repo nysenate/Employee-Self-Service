@@ -99,6 +99,12 @@ essApi.factory('EmpCheckHistoryApi',  ['$resource', 'appProps', function($resour
     return $resource(appProps.apiPath + '/paychecks.json')
 }]);
 
+/** --- Location API --- */
+
+essApi.factory('LocationApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/locations.json')
+}]);
+
 /** --- Supply Products API --- */
 
 essApi.factory('SupplyItemsApi', ['$resource', 'appProps', function($resource, appProps) {

@@ -27,6 +27,10 @@ public enum SqlLocationQuery implements BasicSqlQuery {
             "From ${masterSchema}.SL16LOCATION loc \n" +
             "Left Join ${masterSchema}.SL16RSPCTRHD rctrhd On loc.CDRESPCTRHD = rctrhd.CDRESPCTRHD \n" +
             "Where loc.CdStatus = 'A' And rctrhd.CdStatus = 'A' and loc.CDLOCAT = :locCode And loc.CDLOCTYPE = :locType"
+    ),
+    SEARCH_LOCATIONS(
+            GET_LOCATIONS.getSql() + " \n" +
+            "AND loc.cdlocat like :term"
     );
 
     private String sql;
