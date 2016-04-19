@@ -254,7 +254,7 @@
                   {{state.totals.tempWorkHours | number}}
                 </div>
                 <div class="ytd-hours">
-                  <div class="hours-caption">Available Hours</div>
+                  <div class="hours-caption">Estimated Available Hours</div>
                   <span ng-bind-html="getAvailableHours() | number | hoursDiffHighlighter"></span>
                 </div>
               </div>
