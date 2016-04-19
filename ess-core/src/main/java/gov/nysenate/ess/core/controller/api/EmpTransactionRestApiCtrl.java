@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.view.EmpTransItemView;
 import gov.nysenate.ess.core.client.view.EmpTransRecordView;
 import gov.nysenate.ess.core.client.view.base.MapView;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -101,7 +102,7 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
             List<String> codeStrList = Splitter.on(",")
                 .omitEmptyStrings()
                 .trimResults()
-                .splitToList(codes);
+                .splitToList(codes.toUpperCase());
 
             Set<TransactionCode> codeSet = new HashSet<>();
             for (String code : codeStrList) {
@@ -109,7 +110,8 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
                     codeSet.add(TransactionCode.valueOf(code));
                 }
                 catch (IllegalArgumentException ex) {
-                    throw new IllegalArgumentException(code + " is not a valid transaction code.");
+                    throw new InvalidRequestParamEx(codes, "codes", "String",
+                            "comma separated transaction codes: " + code + " is not a valid transaction code.");
                 }
             }
             return codeSet;
