@@ -36,8 +36,6 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     /** Used in edit modals to assign an issuer. */
     $scope.supplyEmployees = [];
 
-    $scope.selected = null;
-
     $scope.init = function () {
         updateShipments();
         getSupplyEmployees();

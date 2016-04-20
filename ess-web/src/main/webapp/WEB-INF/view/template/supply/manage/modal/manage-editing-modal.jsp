@@ -26,7 +26,15 @@
     <%--Right Margin--%>
 
     <div class="col-4-12">
-      <h4 class="content-info">Location: {{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</h4>
+
+
+      <h4 class="content-info">Location:
+        <input type="text"
+               ng-model="dirtyLocationCode"
+               ui-autocomplete="locationOption"
+               ng-change="onUpdateAutocomplete()"
+               style="width: 100px">
+      </h4>
       <h4 class="content-info">Ordered: {{shipment.order.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
         <a target="_blank" href="${ctxPath}/supply/requisition/view?order={{shipment.order.id}}&print=true">
