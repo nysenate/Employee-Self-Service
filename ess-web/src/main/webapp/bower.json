@@ -20,7 +20,8 @@
     "odometer": "0.4.6",
     "floatThead": "~1.2.12",
     "angular-float-thead": "~0.0.1",
-    "angular-utils-pagination": "0.9.3"
+    "angular-utils-pagination": "0.9.3",
+    "ui-autocomplete": "~0.6.1"
   },
   "devDependencies": {
     "json2": "*"
