@@ -64,8 +64,8 @@ essTime.controller('EmpRecordHistoryCtrl', ['$scope', 'appProps',  'ActiveYearsT
         };
 
         function setAdditionalEmpData(emp) {
-            emp.supStartMoment = moment(emp.supStartDate);
-            emp.supEndMoment = (emp.supEndDate) ? moment(emp.supEndDate) : moment();
+            emp.supStartMoment = moment(emp.supStartDate || '1970-01-01');
+            emp.supEndMoment = moment(emp.supEndDate || undefined);
             emp.dropDownLabel = emp.empLastName + ' (' + emp.supStartMoment.format('MMM YYYY') + ' - ' +
                 emp.supEndMoment.format('MMM YYYY') + ')';
         }
@@ -73,7 +73,13 @@ essTime.controller('EmpRecordHistoryCtrl', ['$scope', 'appProps',  'ActiveYearsT
         $scope.getTimeRecordsForEmp = function(emp) {
             ActiveYearsTimeRecordsApi.get({empId: emp.empId}, function(resp) {
                 if (resp.success) {
-                    $scope.state.recordYears = resp.years.reverse();
+                    var supStartYear = emp.supStartMoment.year();
+                    var supEndYear = emp.supEndMoment.year();
+                    console.log(supStartYear, supEndYear);
+                    $scope.state.recordYears = resp.years
+                        // Only use years that overlap with supervisor dates
+                        .filter(function(year) { return year >= supStartYear && year <= supEndYear; })
+                        .reverse();
                     $scope.state.selectedRecYear = $scope.state.recordYears[0];
                     if (resp.years.length > 0) {
                         $scope.getTimeRecordForEmpByYear(emp, $scope.state.selectedRecYear);
@@ -88,13 +94,21 @@ essTime.controller('EmpRecordHistoryCtrl', ['$scope', 'appProps',  'ActiveYearsT
         $scope.getTimeRecordForEmpByYear = function(emp, year) {
             var startMoment = moment([year, 0, 1]);
             var endMoment = ($scope.state.todayMoment.year() == year) ? moment() : moment([year, 11, 31]);
+            // Do not fetch records if this year does not overlap with supervisor dates
+            if (startMoment.isAfter(emp.supEndMoment) || endMoment.isBefore(emp.supStartMoment)) {
+                $scope.state.records = [];
+                return;
+            }
+            // Restrict range based on effective supervisor dates
+            startMoment = moment.max(startMoment, emp.supStartMoment);
+            endMoment = moment.min(endMoment, emp.supEndMoment);
             $scope.state.searching = true;
             TimeRecordsApi.get({empId: emp.empId,
                                 from: startMoment.format('YYYY-MM-DD'),
                                 to: endMoment.format('YYYY-MM-DD')},
                 function(resp) {
                     if (resp.success) {
-                        $scope.state.records = resp.result.items[emp.empId].reverse();
+                        $scope.state.records = (resp.result.items[emp.empId] || []).reverse();
                         for(var i in $scope.state.records) {
                             var record = $scope.state.records[i];
                             recordUtils.calculateDailyTotals(record);
