@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.order;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
@@ -21,6 +22,8 @@ public interface OrderService {
     void updateLineItems(Order order, Set<LineItem> lineItems, String note, Employee modifiedBy);
 
     void addNote(Order order, String note, Employee modifiedBy);
+
+    void updateDestination(Order order, Location destination, Employee modifiedBy);
 
     Order getOrder(int orderId);
 

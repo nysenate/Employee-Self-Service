@@ -57,6 +57,13 @@ public class Order {
         return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
     }
 
+    public Order updateDestination(Location destination, Employee modifiedBy, LocalDateTime modifiedDateTime) {
+        OrderVersion newVersion = current()
+                .setDestination(destination)
+                .setModifiedBy(modifiedBy);
+        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
+    }
+
     public OrderHistory getHistory() {
         return orderHistory;
     }
