@@ -49,8 +49,10 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
     function getEmployeeActiveRecords() {
         $scope.state.loading = true;
         setDefaultValues();
+        var from = moment().subtract(1, 'year').format('YYYY-MM-DD');
+        var to = moment().format('YYYY-MM-DD');
         var empId = appProps.user.employeeId;
-        supRecordsApi.get({supId: empId}, function onSuccess(resp) {
+        supRecordsApi.get({supId: empId, from: from, to: to}, function onSuccess(resp) {
             if (resp.success) {
                 initializeRecords(resp.result.items);
                 updateRecordsPendingBadge();

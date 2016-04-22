@@ -111,6 +111,16 @@ function (appProps, modals, locationService) {
             return Object.keys(approved).length === 0 && Object.keys(disapproved).length === 0;
         };
 
+        /**
+         * Bind function to move record cursor when arrow keys are pressed
+         */
+        var $doc = angular.element(document);
+        $doc.on('keydown', onKeydown);
+        $scope.$on('$destroy', function () {
+            $doc.off('keydown', onKeydown);
+        });
+
+
         /** --- Internal Methods --- */
 
         /**
@@ -125,6 +135,41 @@ function (appProps, modals, locationService) {
                     return;
                 }
             }
+        }
+
+        /**
+         * Selects the next record.  For a smarter approach see selectNextPendingRecord()
+         */
+        function selectNextRecord() {
+            var nextIndex = $scope.iSelectedRecord + 1;
+            if (nextIndex < $scope.records.length) {
+                $scope.iSelectedRecord = nextIndex;
+            }
+        }
+
+        /**
+         * Selects the previous record.  For a smarter approach see selectNextPendingRecord()
+         */
+        function selectPreviousRecord() {
+            var previousIndex = $scope.iSelectedRecord - 1;
+            if (previousIndex >= 0) {
+                $scope.iSelectedRecord = previousIndex;
+            }
+        }
+
+        /**
+         * Detect arrow keypress and move selected record cursor accordingly
+         * @param e
+         */
+        function onKeydown(e) {
+            if ([38, 39].indexOf(e.keyCode) >= 0) {
+                selectPreviousRecord();
+            } else if ([40, 41].indexOf(e.keyCode) >= 0) {
+                selectNextRecord();
+            } else {
+                return;
+            }
+            $scope.$digest();
         }
     }
 }]);
