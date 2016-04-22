@@ -6,10 +6,13 @@ var essApp = angular.module('ess')
 function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsApi,
                          recordsApi, accrualPeriodApi, allowanceApi, recordUtils, locationService, modals) {
 
+    var allowedMiscLeaves = angular.copy(appProps.miscLeaves);
+    delete allowedMiscLeaves['OTHER_LVS_MANDATED'];
+
     function getInitialState() {
         return {
             empId: appProps.user.employeeId,  // Employee Id
-            miscLeaves: appProps.miscLeaves,  // Listing of misc leave types
+            miscLeaves: allowedMiscLeaves,  // Listing of misc leave types
             accrual: null,                    // Accrual info for selected record
             allowances: {},                   // A map that stores yearly temp employee allowances
             selectedYear: 0,                  // The year of the selected record (makes it easy to get the selected record's allowance)

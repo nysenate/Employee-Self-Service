@@ -75,7 +75,6 @@ essTime.controller('EmpRecordHistoryCtrl', ['$scope', 'appProps',  'ActiveYearsT
                 if (resp.success) {
                     var supStartYear = emp.supStartMoment.year();
                     var supEndYear = emp.supEndMoment.year();
-                    console.log(supStartYear, supEndYear);
                     $scope.state.recordYears = resp.years
                         // Only use years that overlap with supervisor dates
                         .filter(function(year) { return year >= supStartYear && year <= supEndYear; })
