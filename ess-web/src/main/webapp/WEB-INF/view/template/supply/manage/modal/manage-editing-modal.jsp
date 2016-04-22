@@ -18,21 +18,19 @@
       </div>
       <div class="padding-top-10">
         <label class="padding-10" style="vertical-align: middle;">note:</label>
-        <textarea style="vertical-align: middle;" ng-model="note"
-                  ng-change="onNoteUpdated()" rows="3", cols="65"></textarea>
+        <textarea style="vertical-align: middle;" ng-model="displayOrderVersion.note"
+                  ng-change="onUpdate()" rows="3", cols="65"></textarea>
       </div>
     </div>
 
     <%--Right Margin--%>
 
     <div class="col-4-12">
-
-
       <h4 class="content-info">Location:
         <input type="text"
                ng-model="dirtyLocationCode"
                ui-autocomplete="locationOption"
-               ng-change="onAutocompleteUpdated()"
+               ng-change="onLocationUpdated()"
                style="width: 100px">
       </h4>
       <h4 class="content-info">Ordered: {{shipment.order.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
@@ -49,7 +47,7 @@
 
       <div class="text-align-center" style="padding-bottom: 20px;">
         <label>Assign to: </label>
-        <select ng-model="dirtyShipment.activeVersion.issuer"
+        <select ng-model="displayShipmentVersion.issuer"
                 ng-options="emp.fullName for emp in supplyEmployees track by emp.employeeId"
                 ng-change="onUpdate()">
         </select>
@@ -62,7 +60,7 @@
       <shiro:hasPermission name="supply:shipment:approve">
         <input ng-show="shipment.activeVersion.status === 'COMPLETED'" ng-click="approveShipment()" class="submit-button col-4-12" type="button" value="Approve">
       </shiro:hasPermission>
-      <input ng-click="saveOrder(order)" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
+      <input ng-click="saveChanges()" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
       <input ng-show="shipment.activeVersion.status === 'PENDING' || shipment.activeVersion.status === 'PROCESSING'"
              ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
     </div>

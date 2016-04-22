@@ -90,5 +90,6 @@ public class SupplyShipmentService implements ShipmentService {
     @Override
     public void addVersionToShipment(ShipmentVersion newVersion, Shipment shipment) {
         Shipment updated = shipment.addVersion(newVersion, dateTimeFactory.now());
+        shipmentDao.save(updated);
     }
 }
