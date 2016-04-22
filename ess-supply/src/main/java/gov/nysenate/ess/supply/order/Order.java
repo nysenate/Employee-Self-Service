@@ -31,40 +31,10 @@ public class Order {
         return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, version));
     }
 
-    public Order rejectOrder(String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
-        OrderVersion newVersion = current()
-                .setStatus(OrderStatus.REJECTED)
-                .setNote(note)
-                .setModifiedBy(modifiedEmp);
-        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
     public Order approveOrder(Employee modifiedEmp, LocalDateTime modifiedDateTime) {
         OrderVersion newVersion = current()
                 .setStatus(OrderStatus.APPROVED)
                 .setModifiedBy(modifiedEmp);
-        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Order updateLineItems(Set<LineItem> lineItems, String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
-        OrderVersion newVersion = current()
-                .setLineItems(lineItems)
-                .setNote(note)
-                .setModifiedBy(modifiedEmp);
-        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Order addNote(String note, Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        OrderVersion newVersion = current()
-                .setNote(note)
-                .setModifiedBy(modifiedBy);
-        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Order updateDestination(Location destination, Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        OrderVersion newVersion = current()
-                .setDestination(destination)
-                .setModifiedBy(modifiedBy);
         return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, newVersion));
     }
 

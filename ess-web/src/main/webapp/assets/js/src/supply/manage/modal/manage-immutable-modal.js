@@ -1,7 +1,7 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.directive('manageImmutableModal', ['appProps', 'modals', 'LocationService', 'SupplyAcceptShipmentApi',
-    function (appProps, modals, locationService, acceptShipmentApi) {
+essSupply.directive('manageImmutableModal', ['appProps', 'modals', 'LocationService', 'SupplyAcceptShipmentsApi',
+    function (appProps, modals, locationService, acceptShipmentsApi) {
     return {
         templateUrl: appProps.ctxPath + '/template/supply/manage/modal/immutable-modal',
         link: link
@@ -11,13 +11,13 @@ essSupply.directive('manageImmutableModal', ['appProps', 'modals', 'LocationServ
         $scope.shipment = modals.params();
         
         $scope.acceptShipment = function() {
-            acceptShipmentApi.save({id: $scope.shipment.id}, null,
+            acceptShipmentsApi.save({id: $scope.shipment.id}, null,
             function(value, responseHeaders) {
                 $scope.close();
                 reload();
             },
-            function(httpResponse) { // error handler
-                console.log("An error occurred: " + httpResponse);
+            function(errorResponse) {
+                console.log("An error occurred: " + errorResponse);
             })
         };
 

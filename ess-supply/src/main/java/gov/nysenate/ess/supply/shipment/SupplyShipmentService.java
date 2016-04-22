@@ -35,48 +35,6 @@ public class SupplyShipmentService implements ShipmentService {
     }
 
     @Override
-    public void processShipment(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp) {
-        Shipment processed = shipment.process(issuingEmp, modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(processed);
-    }
-
-    @Override
-    public void completeShipment(Shipment shipment, Employee modifiedByEmp) {
-        Shipment completed = shipment.complete(modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(completed);
-    }
-
-    @Override
-    public void undoCompletion(Shipment shipment, Employee modifiedByEmp) {
-        Shipment undone = shipment.undoCompletion(modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(undone);
-    }
-
-    @Override
-    public void approveShipment(Shipment shipment, Employee modifiedByEmp) {
-        Shipment submitted = shipment.approve(modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(submitted);
-    }
-
-    @Override
-    public void cancelShipment(Shipment shipment, Employee modifiedByEmp) {
-        Shipment canceled = shipment.cancel(modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(canceled);
-    }
-
-    @Override
-    public void acceptShipment(Shipment shipment, Employee modifiedByEmp) {
-        Shipment accepted = shipment.accept(modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(accepted);
-    }
-
-    @Override
-    public void updateIssuingEmployee(Shipment shipment, Employee issuingEmp, Employee modifiedByEmp) {
-        Shipment updated = shipment.updateIssuingEmployee(issuingEmp, modifiedByEmp, dateTimeFactory.now());
-        shipmentDao.save(updated);
-    }
-
-    @Override
     public Shipment getShipmentById(int shipmentId) {
         return shipmentDao.getById(shipmentId);
     }
@@ -91,5 +49,11 @@ public class SupplyShipmentService implements ShipmentService {
     public void addVersionToShipment(ShipmentVersion newVersion, Shipment shipment) {
         Shipment updated = shipment.addVersion(newVersion, dateTimeFactory.now());
         shipmentDao.save(updated);
+    }
+
+    @Override
+    public void acceptShipment(Shipment shipment, Employee modifiedByEmp) {
+        Shipment accepted = shipment.accept(modifiedByEmp, dateTimeFactory.now());
+        shipmentDao.save(accepted);
     }
 }

@@ -89,28 +89,28 @@ public class ShipmentDaoTests extends SupplyTests {
         assertEquals(history, shipment.getHistory());
     }
 
-    @Test
-    public void canSaveShipment() {
-        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
-        Shipment shipment = shipmentDao.getById(shipmentId);
-        Employee issuingEmp = employeeService.getEmployee(10012);
-        LocalDateTime modifiedDateTime = insertedDateTime.plusHours(1);
-        shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
-        shipmentDao.save(shipment);
-        assertEquals(shipment, shipmentDao.getById(shipment.getId()));
-        assertEquals(ShipmentStatus.PROCESSING, shipmentDao.getById(shipment.getId()).getStatus());
-    }
-
-    @Test
-    public void canGetShipmentsByStatus() {
-        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
-        Shipment shipment = shipmentDao.getById(shipmentId);
-        Employee issuingEmp = employeeService.getEmployee(10012);
-        LocalDateTime modifiedDateTime = insertedDateTime.plusHours(1);
-        shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
-        shipmentDao.save(shipment);
-
-        PaginatedList<Shipment> shipmentList = shipmentDao.searchShipments("all", EnumSet.of(ShipmentStatus.PROCESSING), LAST_YEAR, LimitOffset.ALL);
-        assertEquals(shipment, shipmentList.getResults().get(shipmentList.getResults().size() - 1));
-    }
+//    @Test
+//    public void canSaveShipment() {
+//        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
+//        Shipment shipment = shipmentDao.getById(shipmentId);
+//        Employee issuingEmp = employeeService.getEmployee(10012);
+//        LocalDateTime modifiedDateTime = insertedDateTime.plusHours(1);
+//        shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
+//        shipmentDao.save(shipment);
+//        assertEquals(shipment, shipmentDao.getById(shipment.getId()));
+//        assertEquals(ShipmentStatus.PROCESSING, shipmentDao.getById(shipment.getId()).getStatus());
+//    }
+//
+//    @Test
+//    public void canGetShipmentsByStatus() {
+//        int shipmentId = shipmentDao.insert(order, version, insertedDateTime);
+//        Shipment shipment = shipmentDao.getById(shipmentId);
+//        Employee issuingEmp = employeeService.getEmployee(10012);
+//        LocalDateTime modifiedDateTime = insertedDateTime.plusHours(1);
+//        shipment = shipment.process(issuingEmp, issuingEmp, modifiedDateTime);
+//        shipmentDao.save(shipment);
+//
+//        PaginatedList<Shipment> shipmentList = shipmentDao.searchShipments("all", EnumSet.of(ShipmentStatus.PROCESSING), LAST_YEAR, LimitOffset.ALL);
+//        assertEquals(shipment, shipmentList.getResults().get(shipmentList.getResults().size() - 1));
+//    }
 }

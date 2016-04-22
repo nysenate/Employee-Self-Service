@@ -51,6 +51,23 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         this.locationService = locationService;
     }
 
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void submitOrder(@RequestBody SubmitOrderView submitOrderView) {
+        // TODO: verify these views contain valid data by calling services
+        // TODO: extract OrderVersion creation code into factory
+        // TODO: submitOrderView should contain the destination Location.
+        Set<LineItem> lineItems = new HashSet<>();
+        for (LineItemView lineItemView : submitOrderView.getLineItems()) {
+            lineItems.add(lineItemView.toLineItem());
+        }
+        Employee customer = employeeService.getEmployee(submitOrderView.getCustomerId());
+        Location loc = customer.getWorkLocation();
+        OrderVersion version = new OrderVersion.Builder().withCustomer(customer)
+                                                         .withDestination(loc).withLineItems(lineItems)
+                                                         .withStatus(OrderStatus.APPROVED).withModifiedBy(customer).build();
+        orderService.submitOrder(version);
+    }
+
     @RequestMapping("/{id}")
     public BaseResponse getOrderById(@PathVariable int id) {
         Order order = orderService.getOrder(id);
@@ -85,23 +102,6 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         return EnumSet.copyOf(statusList);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void submitOrder(@RequestBody SubmitOrderView submitOrderView) {
-        // TODO: verify these views contain valid data by calling services
-        // TODO: extract OrderVersion creation code into factory
-        // TODO: submitOrderView should contain the destination Location.
-        Set<LineItem> lineItems = new HashSet<>();
-        for (LineItemView lineItemView : submitOrderView.getLineItems()) {
-            lineItems.add(lineItemView.toLineItem());
-        }
-        Employee customer = employeeService.getEmployee(submitOrderView.getCustomerId());
-        Location loc = customer.getWorkLocation();
-        OrderVersion version = new OrderVersion.Builder().withCustomer(customer)
-                                                         .withDestination(loc).withLineItems(lineItems)
-                                                         .withStatus(OrderStatus.APPROVED).withModifiedBy(customer).build();
-        orderService.submitOrder(version);
-    }
-
     @RequestMapping(value = "{id}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void updateOrder(@PathVariable int id, @RequestBody OrderVersionView newVersionView) {
         Order order = orderService.getOrder(id);
@@ -109,38 +109,6 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         OrderVersion newVersion = newVersionView.toOrderVersion();
         newVersion = newVersion.setId(0);
         orderService.updateOrder(order, newVersion);
-    }
-
-    @RequestMapping(value = "{id}/reject", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void rejectOrder(@PathVariable int id, @RequestBody(required = false) String note) {
-        Order order = orderService.getOrder(id);
-        orderService.rejectOrder(order, note, getModifiedBy());
-    }
-
-    @RequestMapping(value = "{id}/line_items/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateLineItems(@PathVariable int id, @RequestBody UpdateLineItemView updateLineItemView) {
-        Set<LineItem> lineItems = new HashSet<>();
-        for (LineItemView view: updateLineItemView.getLineItems()) {
-            lineItems.add(view.toLineItem());
-        }
-        Order order = orderService.getOrder(id);
-        orderService.updateLineItems(order, lineItems, updateLineItemView.getNote(), getModifiedBy());
-    }
-
-    @RequestMapping(value = "{id}/note", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addNote(@PathVariable int id, @RequestBody String note) {
-        Order order = orderService.getOrder(id);
-        orderService.addNote(order, note, getModifiedBy());
-    }
-
-    @RequestMapping(value = "{id}/destination", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateDestination(@PathVariable int id, @RequestBody String locId) {
-        Location destination = locationService.getLocation(LocationId.ofString(locId));
-        if (destination == null) {
-            throw new InvalidRequestParamEx(locId, "locId", "String", "Valid location id");
-        }
-        Order order = orderService.getOrder(id);
-        orderService.updateDestination(order, destination, getModifiedBy());
     }
 
     private EmployeeView getSubjectEmployeeView() {

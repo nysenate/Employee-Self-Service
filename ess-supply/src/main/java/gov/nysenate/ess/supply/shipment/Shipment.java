@@ -30,42 +30,6 @@ public class Shipment {
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
     }
 
-    public Shipment process(Employee issuingEmployee, Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        ShipmentVersion newVersion = current()
-                .setStatus(ShipmentStatus.PROCESSING)
-                .setIssuingEmployee(issuingEmployee)
-                .setModifiedBy(modifiedBy);
-        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Shipment complete(Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        ShipmentVersion newVersion = current()
-                .setStatus(ShipmentStatus.COMPLETED)
-                .setModifiedBy(modifiedBy);
-        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Shipment undoCompletion(Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        ShipmentVersion newVersion = current()
-                .setStatus(ShipmentStatus.PROCESSING)
-                .setModifiedBy(modifiedBy);
-        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Shipment approve(Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        ShipmentVersion newVersion = current()
-                .setStatus(ShipmentStatus.APPROVED)
-                .setModifiedBy(modifiedBy);
-        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Shipment cancel(Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        ShipmentVersion newVersion = current()
-                .setStatus(ShipmentStatus.CANCELED)
-                .setModifiedBy(modifiedBy);
-        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
     public Shipment accept(Employee modifiedBy, LocalDateTime modifiedDateTime) {
         // TODO uggly fix this
         ShipmentStatus previousStatus = null;
@@ -77,13 +41,6 @@ public class Shipment {
         }
         ShipmentVersion newVersion = current()
                 .setStatus(previousStatus)
-                .setModifiedBy(modifiedBy);
-        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
-    }
-
-    public Shipment updateIssuingEmployee(Employee issuingEmployee, Employee modifiedBy, LocalDateTime modifiedDateTime) {
-        ShipmentVersion newVersion = current()
-                .setIssuingEmployee(issuingEmployee)
                 .setModifiedBy(modifiedBy);
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
     }

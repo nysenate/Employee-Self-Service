@@ -40,36 +40,6 @@ public class SupplyOrderService implements OrderService {
     }
 
     @Override
-    public void rejectOrder(Order order, String note, Employee modifiedBy) {
-        Order updated = order.rejectOrder(note, modifiedBy, dateTimeFactory.now());
-        orderDao.saveOrder(updated);
-    }
-
-    @Override
-    public void approveOrder(Order order, Employee modifiedBy) {
-        Order updated = order.approveOrder(modifiedBy, dateTimeFactory.now());
-        orderDao.saveOrder(updated);
-    }
-
-    @Override
-    public void updateLineItems(Order order, Set<LineItem> lineItems, String note, Employee modifiedBy) {
-        Order updated = order.updateLineItems(lineItems, note, modifiedBy, dateTimeFactory.now());
-        orderDao.saveOrder(updated);
-    }
-
-    @Override
-    public void addNote(Order order, String note, Employee modifiedBy) {
-        Order updated = order.addNote(note, modifiedBy, dateTimeFactory.now());
-        orderDao.saveOrder(updated);
-    }
-
-    @Override
-    public void updateDestination(Order order, Location destination, Employee modifiedBy) {
-        Order updated = order.updateDestination(destination, modifiedBy, dateTimeFactory.now());
-        orderDao.saveOrder(updated);
-    }
-
-    @Override
     public Order getOrder(int orderId) {
         return orderDao.getOrderById(orderId);
     }
@@ -85,4 +55,9 @@ public class SupplyOrderService implements OrderService {
         orderDao.saveOrder(updated);
     }
 
+    @Override
+    public void approveOrder(Order order, Employee modifiedBy) {
+        Order updated = order.approveOrder(modifiedBy, dateTimeFactory.now());
+        orderDao.saveOrder(updated);
+    }
 }

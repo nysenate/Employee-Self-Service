@@ -82,49 +82,10 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         shipmentService.addVersionToShipment(newVersion, shipment);
     }
 
-    @RequestMapping(value = "/{id}/process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void processShipment(@PathVariable int id, @RequestBody int issuerId) {
-        Shipment shipment = shipmentService.getShipmentById(id);
-        Employee issuer = employeeService.getEmployee(issuerId);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.processShipment(shipment, issuer, modifiedBy);
-    }
-
-    @RequestMapping(value = "{id}/complete", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void completeShipment(@PathVariable int id) {
-        Shipment shipment = shipmentService.getShipmentById(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.completeShipment(shipment, modifiedBy);
-    }
-
-//    @RequestMapping(value = "{id}/undo_completion", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public void undoCompletioni(@PathVariable int id) {
-//        Shipment shipment = shipmentService.getShipmentById(id);
-//        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-//        shipmentService.undoCompletion(shipment, modifiedBy);
-//    }
-
-    @RequestMapping(value = "{id}/approve", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void submitToSfms(@PathVariable int id) {
-        if(!getSubject().isPermitted("supply:shipment:approve")) {
-            throw new UnauthorizedException();
-        }
-        Shipment shipment = shipmentService.getShipmentById(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.approveShipment(shipment, modifiedBy);
-    }
-
-    @RequestMapping(value = "{id}/cancel", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void cancelShipment(@PathVariable int id) {
-        Shipment shipment = shipmentService.getShipmentById(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.cancelShipment(shipment, modifiedBy);
-    }
-
     /**
      * Accept a canceled shipment.
      * This resets the shipments order status to APPROVED and
-     * resets the shipment status to what it was before being rejected.
+     * resets the shipment status to its last status before being CANCELED
      * @param id
      */
     @RequestMapping(value = "{id}/accept", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -134,14 +95,6 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         shipmentService.acceptShipment(shipment, modifiedBy);
         // TODO split into order ctrl?
         orderService.approveOrder(shipment.getOrder(), modifiedBy);
-    }
-
-    @RequestMapping(value = "{id}/issuer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void updateIssuer(@PathVariable int id, @RequestBody int issuerId) {
-        Shipment shipment = shipmentService.getShipmentById(id);
-        Employee issuer = employeeService.getEmployee(issuerId);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        shipmentService.updateIssuingEmployee(shipment, issuer, modifiedBy);
     }
 
     private EmployeeView getSubjectEmployeeView() {
