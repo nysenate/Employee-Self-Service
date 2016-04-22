@@ -19,7 +19,7 @@
       <div class="padding-top-10">
         <label class="padding-10" style="vertical-align: middle;">note:</label>
         <textarea style="vertical-align: middle;" ng-model="note"
-                  ng-change="onUpdate()" rows="3", cols="65"></textarea>
+                  ng-change="onNoteUpdated()" rows="3", cols="65"></textarea>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
         <input type="text"
                ng-model="dirtyLocationCode"
                ui-autocomplete="locationOption"
-               ng-change="onUpdateAutocomplete()"
+               ng-change="onAutocompleteUpdated()"
                style="width: 100px">
       </h4>
       <h4 class="content-info">Ordered: {{shipment.order.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>

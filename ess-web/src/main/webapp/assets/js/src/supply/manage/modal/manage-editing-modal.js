@@ -2,10 +2,10 @@ var essSupply = angular.module('essSupply');
 
 essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessShipmentApi', 'SupplyCompleteShipmentApi',
     'SupplyRejectOrderApi', 'SupplyCancelShipmentApi', 'SupplyUpdateLineItemsApi', 'SupplyApproveShipmentApi',
-    'SupplyAddNoteApi', 'SupplyIssuerApi', 'LocationApi', 'LocationService',
+    'SupplyAddNoteApi', 'SupplyIssuerApi', 'SupplyUpdateShipmentsApi', 'SupplyUpdateOrderApi', 'LocationApi', 'LocationService',
     function (appProps, modals, processShipmentApi, completeShipmentApi,
               rejectOrderApi, cancelShipmentApi, updateLineItemsApi, approveShipmentApi,
-              addNoteApi, issuerApi, locationApi, locationService) {
+              addNoteApi, issuerApi, updateShipmentsApi, updateOrderApi, locationApi, locationService) {
         return {
             templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
             controller: ['$scope', function($scope) {
@@ -51,6 +51,18 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
 
                 $scope.init();
                 
+                function saveShipmentVersion(version) {
+                    updateShipmentsApi.save(
+                        {id: $scope.shipment.id},
+                        version, success, error);
+                }
+                
+                function saveOrderVersion(version) {
+                    updateOrderApi.save(
+                        {id: $scope.shipment.order.id},
+                        version, success, error);
+                }
+                
                 /** Save any changes, then process shipment */
                 $scope.processOrder = function () {
                     var issuerId = $scope.dirtyShipment.activeVersion.issuer === null
@@ -74,8 +86,11 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                 };
 
                 $scope.saveOrder = function () {
-                    saveOrderUpdates();
-                    saveShipmentUpdates();
+                    console.log(JSON.stringify($scope.dirtyShipment.order.activeVersion));
+                    saveOrderVersion($scope.dirtyShipment.order.activeVersion);
+                    saveShipmentVersion($scope.dirtyShipment.activeVersion);
+                    // saveOrderUpdates();
+                    // saveShipmentUpdates();
                 };
 
                 // TODO: clean this up into single api
@@ -167,13 +182,18 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                     // TODO
                 };
 
+                $scope.onNoteUpdated = function() {
+                    // $scope.shipment.order.activeVersion.note
+                    // $scope.onUPdate();
+                };
+
                 /** --- Location Autocomplete --- */
 
                 /**
                  * If a valid location is selected in autocomplete, set that location in dirty shipment.
                  * Otherwise reset the dirty shipment location to the original.
                  */
-                $scope.onUpdateAutocomplete = function() {
+                $scope.onAutocompleteUpdated = function() {
                     var loc = $scope.locationSearch.map.get($scope.dirtyLocationCode);
                     if(loc) {
                         $scope.dirtyShipment.order.activeVersion.destination = loc;
@@ -189,7 +209,6 @@ essSupply.directive('manageEditingModal', ['appProps', 'modals', 'SupplyProcessS
                         html: true,
                         focusOpen: false,
                         onlySelectValid: true,
-                        // source: ["A42", "A43", "A11", "A12", "A4446"]
                         source: function (request, response) {
                             var data = $scope.locationSearch.codes;
                             data = $scope.locationOption.methods.filter(data, request.term);

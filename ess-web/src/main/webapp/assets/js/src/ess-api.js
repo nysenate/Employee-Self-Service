@@ -127,6 +127,10 @@ essApi.factory('SupplyOrderByIdApi', ['$resource', 'appProps', function($resourc
     return $resource(appProps.apiPath + '/supply/orders/:id.json', {id: '@id'})
 }]);
 
+essApi.factory('SupplyUpdateOrderApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/orders/:id/update.json', {id: '@id'})
+}]);
+
 essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/orders')
 }]);
@@ -147,6 +151,10 @@ essApi.factory('SupplyAddNoteApi', ['$resource', 'appProps', function($resource,
 
 essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/shipments.json')
+}]);
+
+essApi.factory('SupplyUpdateShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id/update.json', {id: '@id'})
 }]);
 
 essApi.factory('SupplyProcessShipmentApi', ['$resource', 'appProps', function($resource, appProps) {

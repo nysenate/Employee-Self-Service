@@ -67,7 +67,6 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     function getSupplyEmployees() {
         supplyEmployeesApi.get(function (response) {
             $scope.supplyEmployees = response.result;
-            console.log($scope.supplyEmployees);
         }, function (errorResponse) {
         })
     }

@@ -78,6 +78,7 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         Shipment shipment = shipmentService.getShipmentById(id);
         newVersionView.setModifiedBy(getSubjectEmployeeView());
         ShipmentVersion newVersion = newVersionView.toShipmentVersion();
+        newVersion = newVersion.setId(0);
         shipmentService.addVersionToShipment(newVersion, shipment);
     }
 

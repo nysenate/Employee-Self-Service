@@ -107,6 +107,7 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         Order order = orderService.getOrder(id);
         newVersionView.setModifiedBy(getSubjectEmployeeView());
         OrderVersion newVersion = newVersionView.toOrderVersion();
+        newVersion = newVersion.setId(0);
         orderService.updateOrder(order, newVersion);
     }
 
