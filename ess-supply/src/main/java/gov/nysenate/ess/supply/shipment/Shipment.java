@@ -26,6 +26,10 @@ public class Shipment {
 
     /** Functional methods */
 
+    public Shipment addVersion(ShipmentVersion newVersion, LocalDateTime modifiedDateTime) {
+        return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
+    }
+
     public Shipment process(Employee issuingEmployee, Employee modifiedBy, LocalDateTime modifiedDateTime) {
         ShipmentVersion newVersion = current()
                 .setStatus(ShipmentStatus.PROCESSING)

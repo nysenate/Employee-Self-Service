@@ -86,4 +86,9 @@ public class SupplyShipmentService implements ShipmentService {
                                                    Range<LocalDateTime> dateRange, LimitOffset limoff) {
         return shipmentDao.searchShipments(issuingEmpId, statuses, dateRange, limoff);
     }
+
+    @Override
+    public void addVersionToShipment(ShipmentVersion newVersion, Shipment shipment) {
+        Shipment updated = shipment.addVersion(newVersion, dateTimeFactory.now());
+    }
 }

@@ -44,4 +44,6 @@ public interface ShipmentService {
 
     PaginatedList<Shipment> searchShipments(String issuingEmpId, EnumSet<ShipmentStatus> statuses,
                                             Range<LocalDateTime> dateRange, LimitOffset limoff);
+
+    void addVersionToShipment(ShipmentVersion newVersion, Shipment shipment);
 }

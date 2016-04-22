@@ -27,6 +27,10 @@ public class Order {
 
     /** Functional Methods */
 
+    public Order addVersion(OrderVersion version, LocalDateTime modifiedDateTime) {
+        return Order.of(this.id, orderHistory.addVersion(modifiedDateTime, version));
+    }
+
     public Order rejectOrder(String note, Employee modifiedEmp, LocalDateTime modifiedDateTime) {
         OrderVersion newVersion = current()
                 .setStatus(OrderStatus.REJECTED)

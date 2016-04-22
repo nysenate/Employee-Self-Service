@@ -29,4 +29,6 @@ public interface OrderService {
 
     PaginatedList<Order> getOrders(String location, String customerId, EnumSet<OrderStatus> statuses,
                                    Range<LocalDateTime> updatedDateTimeRange, LimitOffset limOff);
+
+    void updateOrder(Order order, OrderVersion version);
 }

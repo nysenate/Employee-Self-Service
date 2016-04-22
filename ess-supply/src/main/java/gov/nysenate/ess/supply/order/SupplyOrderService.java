@@ -79,4 +79,10 @@ public class SupplyOrderService implements OrderService {
         return orderDao.getOrders(location, customerId, statuses, updatedDateTimeRange, limOff);
     }
 
+    @Override
+    public void updateOrder(Order order, OrderVersion version) {
+        Order updated = order.addVersion(version, dateTimeFactory.now());
+        orderDao.saveOrder(updated);
+    }
+
 }

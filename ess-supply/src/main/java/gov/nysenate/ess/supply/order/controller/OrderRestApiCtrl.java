@@ -2,7 +2,7 @@ package gov.nysenate.ess.supply.order.controller;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.*;
-import gov.nysenate.ess.core.client.view.LocationView;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
@@ -20,6 +20,7 @@ import gov.nysenate.ess.supply.order.Order;
 import gov.nysenate.ess.supply.order.OrderService;
 import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.order.OrderVersion;
+import gov.nysenate.ess.supply.order.view.OrderVersionView;
 import gov.nysenate.ess.supply.order.view.OrderView;
 import gov.nysenate.ess.supply.order.view.SubmitOrderView;
 import org.slf4j.Logger;
@@ -101,11 +102,18 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         orderService.submitOrder(version);
     }
 
+    @RequestMapping(value = "{id}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void updateOrder(@PathVariable int id, @RequestBody OrderVersionView newVersionView) {
+        Order order = orderService.getOrder(id);
+        newVersionView.setModifiedBy(getSubjectEmployeeView());
+        OrderVersion newVersion = newVersionView.toOrderVersion();
+        orderService.updateOrder(order, newVersion);
+    }
+
     @RequestMapping(value = "{id}/reject", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void rejectOrder(@PathVariable int id, @RequestBody(required = false) String note) {
         Order order = orderService.getOrder(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        orderService.rejectOrder(order, note, modifiedBy);
+        orderService.rejectOrder(order, note, getModifiedBy());
     }
 
     @RequestMapping(value = "{id}/line_items/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -115,15 +123,13 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
             lineItems.add(view.toLineItem());
         }
         Order order = orderService.getOrder(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        orderService.updateLineItems(order, lineItems, updateLineItemView.getNote(), modifiedBy);
+        orderService.updateLineItems(order, lineItems, updateLineItemView.getNote(), getModifiedBy());
     }
 
     @RequestMapping(value = "{id}/note", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void addNote(@PathVariable int id, @RequestBody String note) {
         Order order = orderService.getOrder(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        orderService.addNote(order, note, modifiedBy);
+        orderService.addNote(order, note, getModifiedBy());
     }
 
     @RequestMapping(value = "{id}/destination", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -133,8 +139,15 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
             throw new InvalidRequestParamEx(locId, "locId", "String", "Valid location id");
         }
         Order order = orderService.getOrder(id);
-        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
-        orderService.updateDestination(order, destination, modifiedBy);
+        orderService.updateDestination(order, destination, getModifiedBy());
+    }
+
+    private EmployeeView getSubjectEmployeeView() {
+        return new EmployeeView(getModifiedBy());
+    }
+
+    private Employee getModifiedBy() {
+        return employeeService.getEmployee(getSubjectEmployeeId());
     }
 
     private int getSubjectEmployeeId() {

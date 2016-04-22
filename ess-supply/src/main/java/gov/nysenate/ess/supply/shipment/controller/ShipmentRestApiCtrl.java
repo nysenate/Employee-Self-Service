@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -14,6 +15,8 @@ import gov.nysenate.ess.supply.order.OrderService;
 import gov.nysenate.ess.supply.shipment.Shipment;
 import gov.nysenate.ess.supply.shipment.ShipmentService;
 import gov.nysenate.ess.supply.shipment.ShipmentStatus;
+import gov.nysenate.ess.supply.shipment.ShipmentVersion;
+import gov.nysenate.ess.supply.shipment.view.ShipmentVersionView;
 import gov.nysenate.ess.supply.shipment.view.ShipmentView;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
@@ -68,6 +71,14 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
             statusList.add(ShipmentStatus.valueOf(s));
         }
         return EnumSet.copyOf(statusList);
+    }
+
+    @RequestMapping(value = "/{id}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void updateShipment(@PathVariable int id, @RequestBody ShipmentVersionView newVersionView) {
+        Shipment shipment = shipmentService.getShipmentById(id);
+        newVersionView.setModifiedBy(getSubjectEmployeeView());
+        ShipmentVersion newVersion = newVersionView.toShipmentVersion();
+        shipmentService.addVersionToShipment(newVersion, shipment);
     }
 
     @RequestMapping(value = "/{id}/process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -130,6 +141,14 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         Employee issuer = employeeService.getEmployee(issuerId);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         shipmentService.updateIssuingEmployee(shipment, issuer, modifiedBy);
+    }
+
+    private EmployeeView getSubjectEmployeeView() {
+        return new EmployeeView(getModifiedBy());
+    }
+
+    private Employee getModifiedBy() {
+        return employeeService.getEmployee(getSubjectEmployeeId());
     }
 
     private int getSubjectEmployeeId() {
