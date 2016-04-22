@@ -135,18 +135,6 @@ essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resou
     return $resource(appProps.apiPath + '/supply/orders')
 }]);
 
-essApi.factory('SupplyRejectOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/:id/reject', {id: '@id'})
-}]);
-
-essApi.factory('SupplyUpdateLineItemsApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/:id/line_items/update', {id: '@id'})
-}]);
-
-essApi.factory('SupplyAddNoteApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/:id/note', {id: '@id'})
-}]);
-
 /** --- Supply Shipments API --- */
 
 essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
@@ -155,32 +143,4 @@ essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resourc
 
 essApi.factory('SupplyUpdateShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/shipments/:id/update.json', {id: '@id'})
-}]);
-
-essApi.factory('SupplyProcessShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/process', {id: '@id'})
-}]);
-
-essApi.factory('SupplyCompleteShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/complete', {id: '@id'})
-}]);
-
-essApi.factory('SupplyApproveShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/approve', {id: '@id'})
-}]);
-
-// essApi.factory('SupplyUndoCompletionApi', ['$resource', 'appProps', function($resource, appProps) {
-//     return $resource(appProps.apiPath + '/supply/shipments/:id/undo_completion', {id: '@id'})
-// }]);
-
-essApi.factory('SupplyCancelShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/cancel', {id: '@id'})
-}]);
-
-essApi.factory('SupplyAcceptShipmentApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/accept', {id: '@id'})
-}]);
-
-essApi.factory('SupplyIssuerApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/issuer', {id: '@id'})
 }]);
