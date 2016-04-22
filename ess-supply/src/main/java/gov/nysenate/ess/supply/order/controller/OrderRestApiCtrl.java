@@ -5,8 +5,10 @@ import gov.nysenate.ess.core.client.response.base.*;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -122,6 +124,17 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
         Order order = orderService.getOrder(id);
         Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
         orderService.addNote(order, note, modifiedBy);
+    }
+
+    @RequestMapping(value = "{id}/destination", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void updateDestination(@PathVariable int id, @RequestBody String locId) {
+        Location destination = locationService.getLocation(LocationId.ofString(locId));
+        if (destination == null) {
+            throw new InvalidRequestParamEx(locId, "locId", "String", "Valid location id");
+        }
+        Order order = orderService.getOrder(id);
+        Employee modifiedBy = employeeService.getEmployee(getSubjectEmployeeId());
+        orderService.updateDestination(order, destination, modifiedBy);
     }
 
     private int getSubjectEmployeeId() {

@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.order;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
@@ -59,6 +60,12 @@ public class SupplyOrderService implements OrderService {
     @Override
     public void addNote(Order order, String note, Employee modifiedBy) {
         Order updated = order.addNote(note, modifiedBy, dateTimeFactory.now());
+        orderDao.saveOrder(updated);
+    }
+
+    @Override
+    public void updateDestination(Order order, Location destination, Employee modifiedBy) {
+        Order updated = order.updateDestination(destination, modifiedBy, dateTimeFactory.now());
         orderDao.saveOrder(updated);
     }
 

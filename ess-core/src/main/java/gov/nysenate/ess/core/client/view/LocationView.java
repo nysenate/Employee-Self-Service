@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.unit.LocationType;
 
 public class LocationView implements ViewObject {
 
+    protected String locId;
     protected String code;
     protected String locationType;
     protected char locationTypeCode;
@@ -16,6 +17,7 @@ public class LocationView implements ViewObject {
     public LocationView() {}
 
     public LocationView(Location loc) {
+        this.locId = loc.toString();
         this.code = loc.getLocId().getCode();
         this.locationType = loc.getLocId().getType().getName();
         this.locationTypeCode = loc.getLocId().getType().getCode();
@@ -26,6 +28,10 @@ public class LocationView implements ViewObject {
     public Location toLocation() {
         LocationId locId = new LocationId(this.code, this.locationTypeCode);
         return new Location(locId, address.toAddress(), respCenterHead.toResponsibilityHead());
+    }
+
+    public String getLocId() {
+        return locId;
     }
 
     public String getCode() {

@@ -78,6 +78,10 @@ public final class OrderVersion {
         return copy().withNote(note).build();
     }
 
+    public OrderVersion setDestination(Location dest) {
+        return copy().withDestination(dest).build();
+    }
+
     /** Basic Getters */
 
     public int getId() {
