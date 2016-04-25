@@ -17,7 +17,7 @@
     </p>
 
     <%--Header--%>
-    <div class="">
+    <div class="large-print-font-size">
       <div class="grid expandable-div-header">
         <div class="col-3-12">
           Commodity Code

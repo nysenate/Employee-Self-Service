@@ -3,7 +3,7 @@
     <h2>Requisition Order</h2>
   </div>
 
-  <div class="content-container">
+  <div class="content-container large-print-font-size">
     <div class="content-info">
       <div class="grid padding-10">
         <div class="col-6-12">
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <div class="content-container">
+  <div class="content-container large-print-font-size">
     <div class="padding-10">
       <table class="ess-table supply-listing-table">
         <thead>

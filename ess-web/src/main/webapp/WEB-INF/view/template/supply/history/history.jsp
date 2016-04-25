@@ -5,7 +5,7 @@
     </div>
 
     <div>
-      <p class="content-info dark-blue-purple bold" style="margin-bottom: 0px;">Show Requisitions ordered during the following date range.</p>
+      <p class="content-info dark-blue-purple bold large-print-font-size" style="margin-bottom: 0px;">Show Requisitions ordered during the following date range.</p>
       <div class="grid text-align-center">
         <div class="col-6-12 padding-10">
           <label class="bold">Location:</label>
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div class="content-container" ng-show="shipments.length > 0">
+  <div class="content-container large-print-font-size" ng-show="shipments.length > 0">
     <div class="padding-10">
       <table class="ess-table supply-listing-table">
         <thead>
