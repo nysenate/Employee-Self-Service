@@ -279,13 +279,22 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     };
 
     /**
+     * Return true if the selected record is valid, i.e. it exists, and all entries are valid
+     * @returns {boolean}
+     */
+    $scope.recordValid = function () {
+        var record = $scope.getSelectedRecord();
+        return !(record == null || $scope.selRecordHasErrors());
+    };
+
+    /**
      * Returns true if the record is submittable, i.e. it exists, passes all validations, and has ended or will end
      * today.
      * @returns {boolean}
      */
     $scope.recordSubmittable = function () {
-        var record = $scope.state.records[$scope.state.iSelectedRecord];
-        return record && !moment(record.endDate).isAfter(moment(), 'day');
+        var record = $scope.getSelectedRecord();
+        return $scope.recordValid() && !moment(record.endDate).isAfter(moment(), 'day');
     };
 
     /**
@@ -589,6 +598,14 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
                 }
             });
         }
+    };
+
+    /**
+     * Return true if errors have been detected on the active time record
+     * @returns {boolean}
+     */
+    $scope.selRecordHasErrors = function () {
+        return $scope.errorTypes.raSa.errors || $scope.errorTypes.te.errors;
     };
 
     $scope.areWorkHoursValid = function(entry) {

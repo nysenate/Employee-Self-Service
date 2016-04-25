@@ -158,7 +158,7 @@
               <th>Total</th>
             </tr>
           </thead>
-          <tbody record-validator="checkRecordForErrors()">
+          <tbody record-validator validate="checkRecordForErrors()" record="state.records[state.iSelectedRecord]">
           <tr class="time-record-row highlight-first"
               ng-repeat="(i,entry) in regRecords = (state.records[state.iSelectedRecord].timeEntries | filter:{payType: '!TE'})"
               ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}"
@@ -312,7 +312,7 @@
         </div>
         <div class="float-right">
           <input ng-click="saveRecord(false)" class="submit-button" type="button" value="Save Record"
-                 ng-disabled="!state.records[state.iSelectedRecord].dirty"/>
+                 ng-disabled="!state.records[state.iSelectedRecord].dirty || !recordValid()"/>
           <input ng-click="saveRecord(true)" class="submit-button" type="button" value="Submit Record"
                  ng-disabled="!recordSubmittable()"/>
         </div>

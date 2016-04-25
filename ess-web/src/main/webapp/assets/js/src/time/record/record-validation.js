@@ -3,7 +3,7 @@ var binding = 0;
 
 /** Validate the record entry when changing rows.
  * attrs: method for validating record. */
-essTime.directive('recordValidator', ['$timeout', '$rootScope', 'activeRow', function($timeout, $rootScope, activeRow) {
+essTime.directive('recordValidator', ['$timeout', '$rootScope', function($timeout, $rootScope) {
     return {
         restrict: 'A',
         scope: {
@@ -15,23 +15,16 @@ essTime.directive('recordValidator', ['$timeout', '$rootScope', 'activeRow', fun
             $scope.$watch('record.timeRecordId', function() {
                 $timeout(function () { // timeout makes this directive execute after table has been generated.
                     $elem.children().each(function (index) {
-                        var bid = ++binding;
-                        angular.element($elem.children()[index])
-                            .on('focusin', function (event) {
-                                if (newRowInFocus(index)) {
-                                    $rootScope.$broadcast('validateRecordEntries');
-                                    $scope.validate();
-                                }
-                                activeRow.setActiveRow(index);
-                                $scope.$parent.$digest()
-                            });
+                        var element = angular.element($elem.children()[index]);
+                        function callback (event) {
+                            $rootScope.$emit('validateRecordEntries');
+                            $scope.validate();
+                            $rootScope.$digest()
+                        }
+                        element.on('focusout', callback);
                     });
                 });
             });
-
-            function newRowInFocus(index) {
-                return activeRow.getActiveRow() !== null && index !== activeRow.getActiveRow()
-            }
         }
     }
 }]);
@@ -44,31 +37,21 @@ essTime.directive('entryValidator', ['$timeout', '$rootScope', function($timeout
             validate: '&'
         },
         link: function ($scope, $element, $attrs) {
-            $rootScope.$on('validateRecordEntries', function (event, args) {
-                $timeout(function(){ // Run on next digest. Needed since its called from within a digest when save/submit btn clicked.
+            function validateEntry(event, args) {
+                $timeout(function () { // Run on next digest. Needed since its called from within a digest when save/submit btn clicked.
                     if (!$scope.validate($scope.entry)){
                         $element.addClass('invalid');
                     }
                     else {
                         $element.removeClass('invalid');
                     }
-                    $scope.$parent.$digest();
+                    $rootScope.$digest();
                 }, 0, false);
-
+            }
+            var deregisterValidateEntry = $rootScope.$on('validateRecordEntries', validateEntry);
+            $scope.$on('$destroy', function () {
+                deregisterValidateEntry();
             });
-        }
-    }
-}]);
-
-/** Keep track of the active time entry row so we can find out when it changes. */
-essTime.service('activeRow', [function() {
-    var activeRow = null;
-    return {
-        getActiveRow: function() {
-            return activeRow;
-        },
-        setActiveRow: function(row) {
-            activeRow = row;
         }
     }
 }]);
