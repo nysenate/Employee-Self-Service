@@ -183,12 +183,10 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     /** --- Modals --- */
 
     $scope.showEditingModal = function (shipment) {
-        console.log(shipment);
         modals.open('manage-editing-modal', shipment);
     };
 
     $scope.showImmutableModal = function (shipment) {
-        console.log(shipment);
         modals.open('manage-immutable-modal', shipment);
     };
 }
