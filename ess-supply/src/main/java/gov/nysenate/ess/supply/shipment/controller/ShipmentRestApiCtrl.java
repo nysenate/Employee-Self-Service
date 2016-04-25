@@ -18,7 +18,6 @@ import gov.nysenate.ess.supply.shipment.ShipmentStatus;
 import gov.nysenate.ess.supply.shipment.ShipmentVersion;
 import gov.nysenate.ess.supply.shipment.view.ShipmentVersionView;
 import gov.nysenate.ess.supply.shipment.view.ShipmentView;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,10 +75,16 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{id}/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void updateShipment(@PathVariable int id, @RequestBody ShipmentVersionView newVersionView) {
         Shipment shipment = shipmentService.getShipmentById(id);
-        newVersionView.setModifiedBy(getSubjectEmployeeView());
+        newVersionView.setIssuer(getIssuer(newVersionView));
+        newVersionView.setModifiedBy(loggedInEmployee());
         ShipmentVersion newVersion = newVersionView.toShipmentVersion();
         newVersion = newVersion.setId(0);
         shipmentService.addVersionToShipment(newVersion, shipment);
+    }
+
+    private EmployeeView getIssuer(ShipmentVersionView newVersionView) {
+        EmployeeView issuer = newVersionView.getIssuer();
+        return issuer == null ? loggedInEmployee() : issuer;
     }
 
     /**
@@ -97,7 +102,7 @@ public class ShipmentRestApiCtrl extends BaseRestApiCtrl {
         orderService.approveOrder(shipment.getOrder(), modifiedBy);
     }
 
-    private EmployeeView getSubjectEmployeeView() {
+    private EmployeeView loggedInEmployee() {
         return new EmployeeView(getModifiedBy());
     }
 
