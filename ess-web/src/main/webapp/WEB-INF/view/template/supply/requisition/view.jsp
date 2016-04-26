@@ -54,4 +54,8 @@
       </table>
     </div>
   </div>
+
+  <div class="print-only large-print-font-size" style="margin-top: 60px; padding: 20px;">
+    Received By: ________________________________
+  </div>
 </div>
