@@ -40,33 +40,18 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
     @RequestMapping("")
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String beforeDate) {
         LocalDate beforeLocalDate = parseISODate(beforeDate, "pay period");
-        try {
-            PayPeriod payPeriod = payPeriodDao.getPayPeriod(PayPeriodType.AF, beforeLocalDate.minusDays(1));
-            PeriodAccSummary periodAccSummary = accrualService.getAccruals(empId, payPeriod);
-            return new ViewObjectResponse<>(new AccrualsView(periodAccSummary));
-        }
-        catch (PayPeriodException e) {
-            logger.error("Failed to find pay period before {}", beforeLocalDate, e);
-        }
-        catch (AccrualException e) {
-            logger.error("Failed to obtain accruals for employee {}", empId, e);
-        }
-        return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
+        PayPeriod payPeriod = payPeriodDao.getPayPeriod(PayPeriodType.AF, beforeLocalDate.minusDays(1));
+        PeriodAccSummary periodAccSummary = accrualService.getAccruals(empId, payPeriod);
+        return new ViewObjectResponse<>(new AccrualsView(periodAccSummary));
     }
 
     @RequestMapping("/history")
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String fromDate, @RequestParam String toDate) {
         LocalDate fromLocalDate = parseISODate(fromDate, "from date");
         LocalDate toLocalDate = parseISODate(toDate, "to date");
-        try {
-            List<PayPeriod> periods =
-                payPeriodDao.getPayPeriods(PayPeriodType.AF, Range.closed(fromLocalDate, toLocalDate), SortOrder.ASC);
-            TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualService.getAccruals(empId, periods);
-            return ListViewResponse.of(accruals.values().stream().map(AccrualsView::new).collect(Collectors.toList()));
-        }
-        catch (AccrualException e) {
-            logger.error("Failed to obtain accruals for employee {}", empId, e);
-        }
-        return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
+        List<PayPeriod> periods =
+            payPeriodDao.getPayPeriods(PayPeriodType.AF, Range.closed(fromLocalDate, toLocalDate), SortOrder.ASC);
+        TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualService.getAccruals(empId, periods);
+        return ListViewResponse.of(accruals.values().stream().map(AccrualsView::new).collect(Collectors.toList()));
     }
 }

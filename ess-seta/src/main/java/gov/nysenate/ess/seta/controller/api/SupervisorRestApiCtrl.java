@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.controller.api;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -8,6 +9,7 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.seta.client.view.*;
 import gov.nysenate.ess.seta.model.personnel.SupervisorChain;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
+import gov.nysenate.ess.seta.model.personnel.SupervisorMissingEmpsEx;
 import gov.nysenate.ess.seta.model.personnel.SupervisorOverride;
 import gov.nysenate.ess.seta.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
@@ -19,6 +21,7 @@ import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -45,58 +48,38 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
                                                @RequestParam(required = false) String toDate) {
         LocalDate fromLocalDate = (fromDate != null) ? parseISODate(fromDate, "from date") : DateUtils.LONG_AGO;
         LocalDate toLocalDate = (toDate != null) ? parseISODate(toDate, "to date") : DateUtils.THE_FUTURE;
-        try {
-            return new ViewObjectResponse<>(
-                new SupervisorEmpGroupView(
-                    supInfoService.getSupervisorEmpGroup(supId, Range.closed(fromLocalDate, toLocalDate))));
-        }
-        catch (SupervisorException e) {
-            return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
-        }
+        return new ViewObjectResponse<>(
+            new SupervisorEmpGroupView(
+                supInfoService.getSupervisorEmpGroup(supId, Range.closed(fromLocalDate, toLocalDate))));
     }
 
     @RequestMapping(value = "/chain")
     public BaseResponse getSupervisorChain(@RequestParam Integer empId,
                                            @RequestParam(required = false) String date) {
         LocalDate localDate = (date != null) ? parseISODate(date, "date") : LocalDate.now();
-        try {
-            SupervisorChain supervisorChain = supInfoService.getSupervisorChain(empId, localDate, 3);
-            Map<Integer, Employee> empMap = supervisorChain.getChain().stream()
-                    .map(empInfoService::getEmployee)
-                    .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
-            return new ViewObjectResponse<>(
-                new SupervisorChainView(supervisorChain, empMap)
-            );
-        }
-        catch (SupervisorException e) {
-            return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
-        }
+        SupervisorChain supervisorChain = supInfoService.getSupervisorChain(empId, localDate, 3);
+        Map<Integer, Employee> empMap = supervisorChain.getChain().stream()
+                .map(empInfoService::getEmployee)
+                .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
+        return new ViewObjectResponse<>(
+            new SupervisorChainView(supervisorChain, empMap)
+        );
     }
 
     @RequestMapping(value = "/overrides")
     public BaseResponse getSupervisorOverrides(@RequestParam Integer supId) {
-        try {
-            List<SupervisorOverride> overrides = supInfoService.getSupervisorOverrides(supId);
-            return ListViewResponse.of(overrides.stream()
-                    .map(ovr -> new SupervisorOverrideView(ovr, empInfoService.getEmployee(ovr.getGranterSupervisorId())))
-                    .collect(toList()), "overrides");
-        }
-        catch (SupervisorException e) {
-            return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
-        }
+        List<SupervisorOverride> overrides = supInfoService.getSupervisorOverrides(supId);
+        return ListViewResponse.of(overrides.stream()
+                .map(ovr -> new SupervisorOverrideView(ovr, empInfoService.getEmployee(ovr.getGranterSupervisorId())))
+                .collect(toList()), "overrides");
     }
 
     @RequestMapping(value = "/grants", method = RequestMethod.GET)
     public BaseResponse getSupervisorGrants(@RequestParam Integer supId) {
-        try {
-            List<SupervisorOverride> overrides = supInfoService.getSupervisorGrants(supId);
-            return ListViewResponse.of(overrides.stream()
-                    .map(ovr -> new SupervisorGrantView(ovr, empInfoService.getEmployee(ovr.getGranteeSupervisorId())))
-                    .collect(toList()), "grants");
-        }
-        catch (SupervisorException e) {
-            return new ErrorResponse(ErrorCode.APPLICATION_ERROR);
-        }
+        List<SupervisorOverride> overrides = supInfoService.getSupervisorGrants(supId);
+        return ListViewResponse.of(overrides.stream()
+                .map(ovr -> new SupervisorGrantView(ovr, empInfoService.getEmployee(ovr.getGranteeSupervisorId())))
+                .collect(toList()), "grants");
     }
 
     @RequestMapping(value = "/grants", method = RequestMethod.POST, consumes = "application/json")
@@ -111,13 +94,15 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
             override.setStartDate(Optional.ofNullable(grantView.getStartDate()));
             override.setEndDate(Optional.ofNullable(grantView.getEndDate()));
             override.setActive(grantView.isActive());
-            try {
-                supInfoService.updateSupervisorOverride(override);
-            }
-            catch (SupervisorException e) {
-                return new ErrorResponse(ErrorCode.APPLICATION_ERROR, e.getMessage());
-            }
+            supInfoService.updateSupervisorOverride(override);
         }
         return new SimpleResponse(true, "Grants have been updated", "update supervisor grant");
+    }
+
+    @ExceptionHandler(SupervisorMissingEmpsEx.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleMissingEmpsEx(SupervisorMissingEmpsEx ex) {
+        return new ErrorResponse(ErrorCode.EMPLOYEE_NOT_SUPERVISOR, "The employee requested is not a supervisor");
     }
 }

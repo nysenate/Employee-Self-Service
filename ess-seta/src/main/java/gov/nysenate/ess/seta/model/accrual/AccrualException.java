@@ -1,8 +1,6 @@
 package gov.nysenate.ess.seta.model.accrual;
 
-import gov.nysenate.ess.seta.model.accrual.AccrualExceptionType;
-
-public class AccrualException extends Exception
+public class AccrualException extends RuntimeException
 {
     protected int empId;
     protected AccrualExceptionType errorType;
