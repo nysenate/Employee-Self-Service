@@ -273,8 +273,11 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     /**
      * This method is called every time a field is modified on the currently selected record.
      */
-    $scope.setDirty = function() {
+    $scope.setDirty = function(entry) {
         $scope.state.records[$scope.state.iSelectedRecord].dirty = true;
+        if (entry) {
+            entry.dirty = true;
+        }
         onRecordChange();
     };
 
@@ -352,6 +355,25 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     $scope.getRecordRangeDisplay = function (record) {
         return moment(record.beginDate).format('l') + ' - ' + moment(record.endDate).format('l');
     };
+
+    /**
+     * Functions that determine the tab index for accrual hours
+     */
+    $scope.accrualTabIndex = {
+        vacation: getAccrualTabIndexFn('vacationHours', 2),
+        personal: getAccrualTabIndexFn('personalHours', 2),
+        sickEmp: getAccrualTabIndexFn('sickEmpHours', 2),
+        sickFam: getAccrualTabIndexFn('sickFamHours', 2),
+        misc: getAccrualTabIndexFn('miscHours', 2)
+    };
+
+    function getAccrualTabIndexFn (propName, defaultIndex) {
+        return function (entry) {
+            if (entry[propName] != null && $scope.getSelectedRecord().dirty) return 1;
+            if (entry.total < 7 && !$scope.isWeekend(entry.date)) return 1;
+            return defaultIndex;
+        }
+    }
 
     /** --- Internal Methods --- */
 

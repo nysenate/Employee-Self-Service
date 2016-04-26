@@ -165,48 +165,48 @@
               ng-init="numRecs = regRecords.length">
             <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
             <td entry-validator validate="areWorkHoursValid(entry)">
-              <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
-                     ng-model="entry.workHours" tabindex="1" name="numWorkHours"/>
+                     ng-model="entry.workHours" tabindex="{{entry.total < 7 || getSelectedRecord().dirty ? 1 : 2}}" name="numWorkHours"/>
             </td>
             <td>
               <input type="number" readonly time-record-input class="hours-input"
                      step=".5" min="0" max="7" ng-model="entry.holidayHours" name="numHolidayHours"/>
             </td>
             <td entry-validator validate="areVacationHoursValid(entry)">
-              <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      ng-model="entry.vacationHours" name="numVacationHours"
-                     tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.vacationHours == null) ? 2 : 1}}"/>
+                     tabindex="{{accrualTabIndex.vacation(entry)}}"/>
             </td>
             <td entry-validator validate="arePersonalHoursValid(entry)">
-              <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
-                     tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.personalHours == null) ? 3 : 1}}"
+                     tabindex="{{accrualTabIndex.personal(entry)}}"
                      ng-model="entry.personalHours" name="numPersonalHours"/>
             </td>
             <td entry-validator validate="areEmpSickHoursValid(entry)">
-              <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
-                     tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.sickEmpHours == null) ? 4 : 1}}"
+                     tabindex="{{accrualTabIndex.sickEmp(entry)}}"
                      ng-model="entry.sickEmpHours" name="numSickEmpHours"/>
             </td>
             <td entry-validator validate="areFamSickHoursValid(entry)">
-              <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
-                     tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.sickFamHours == null) ? 5 : 1}}"
+                     tabindex="{{accrualTabIndex.sickFam(entry)}}"
                      ng-model="entry.sickFamHours" name="numSickFamHours"/>
             </td>
             <td entry-validator validate="areMiscHoursValid(entry)">
-              <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
-                     tabindex="{{(entry.workHours == null || entry.total >= 7 && entry.miscHours == null) ? 6 : 1}}"
+                     tabindex="{{accrualTabIndex.misc(entry)}}"
                      ng-model="entry.miscHours" name="numMiscHours"/>
             </td>
             <td entry-validator validate="isMiscTypeValid(entry)">
               <select style="font-size:.9em;" name="miscHourType"
-                      ng-model="entry.miscType" ng-change="setDirty()"
-                      tabindex="{{!entry.miscHours ? 7 : 1}}"
+                      ng-model="entry.miscType" ng-change="setDirty(entry)"
+                      tabindex="{{!entry.miscHours ? 2 : 1}}"
                       ng-options="type as label for (type, label) in state.miscLeaves">
                 <option value="">No Misc Hours</option>
               </select>
@@ -286,12 +286,12 @@
                 ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}">
               <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
               <td entry-validator validate="areWorkHoursValid(entry)">
-                <input type="number" ng-change="setDirty()" time-record-input class="hours-input"
+                <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                        placeholder="--" step="0.25" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
                        ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
               </td>
               <td class="entry-comment-col">
-                <textarea text-auto-height text="entry.empComment" maxlength="150" ng-change="setDirty()" class="entry-comment"
+                <textarea text-auto-height text="entry.empComment" maxlength="150" ng-change="setDirty(entry)" class="entry-comment"
                        ng-model="entry.empComment" name="entryComment" tabindex="{{entry.workHours ? 1 : 2}}"></textarea>
               </td>
             </tr>
@@ -312,9 +312,10 @@
         </div>
         <div class="float-right">
           <input ng-click="saveRecord(false)" class="submit-button" type="button" value="Save Record"
-                 ng-disabled="!state.records[state.iSelectedRecord].dirty || !recordValid()"/>
+                 ng-disabled="!state.records[state.iSelectedRecord].dirty || !recordValid()"
+                 tabindex="2"/>
           <input ng-click="saveRecord(true)" class="submit-button" type="button" value="Submit Record"
-                 ng-disabled="!recordSubmittable()"/>
+                 ng-disabled="!recordSubmittable()" tabindex="2"/>
         </div>
         <div class="clearfix"></div>
       </div>
