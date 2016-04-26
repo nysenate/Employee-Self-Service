@@ -53,6 +53,17 @@
         </select>
       </div>
 
+      <%--Rejection Confirmation template TODO: generalize this so it can be used elsewhere--%>
+      <script type="text/ng-template" id="confirm">
+        <div class="margin-10">
+          <h4 class="content-info">Are you sure?</h4>
+          <div class="">
+            <input ng-click="closeModal()" class="neutral-button" type="button" value="Cancel">
+            <input ng-click="rejectOrder()" class="reject-button" type="button" value="Reject">
+          </div>
+        </div>
+      </script>
+
       <%--Actions--%>
 
       <input ng-show="shipment.activeVersion.status === 'PENDING'" ng-click="processOrder()" class="submit-button col-4-12" type="button" value="Process">
@@ -61,8 +72,9 @@
         <input ng-show="shipment.activeVersion.status === 'COMPLETED'" ng-click="approveShipment()" class="submit-button col-4-12" type="button" value="Approve">
       </shiro:hasPermission>
       <input ng-click="saveChanges()" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
-      <input ng-show="shipment.activeVersion.status === 'PENDING' || shipment.activeVersion.status === 'PROCESSING'"
-             ng-click="rejectOrder()" class="reject-button col-4-12" type="button" value="Reject">
+      <input ns-popover ns-popover-template="confirm" ns-popover-timeout="0.5"
+             ng-show="shipment.activeVersion.status === 'PENDING' || shipment.activeVersion.status === 'PROCESSING'"
+             class="reject-button col-4-12" type="button" value="Reject">
     </div>
   </div>
 </div>
