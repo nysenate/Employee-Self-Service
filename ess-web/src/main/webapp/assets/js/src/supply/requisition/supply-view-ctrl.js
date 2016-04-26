@@ -1,13 +1,16 @@
-essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyOrderByIdApi',
+essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyShipmentByIdApi',
     'SupplyInventoryService', 'LocationService', '$window', '$timeout', supplyViewController]);
 
-function supplyViewController($scope, orderByIdApi, inventoryService, locationService, $window, $timeout) {
+function supplyViewController($scope, shipmentApi, inventoryService, locationService, $window, $timeout) {
 
+    $scope.order = {};
+    
     $scope.init = function() {
-        var id = locationService.getSearchParam('order');
+        var id = locationService.getSearchParam('shipment');
 
-        orderByIdApi.get({id: id}, function(response) {
-            $scope.order = response.result;
+        shipmentApi.get({id: id}, function(response) {
+            $scope.shipment = response.result;
+            $scope.order = $scope.shipment.order;
             console.log($scope.order);
             var print = locationService.getSearchParam('print');
             if (print === 'true') {
@@ -15,7 +18,7 @@ function supplyViewController($scope, orderByIdApi, inventoryService, locationSe
                     $window.print();
                 })
             }
-        }, function(response) {
+        }, function(errorResponse) {
             // TODO: handle api error
         });
     };

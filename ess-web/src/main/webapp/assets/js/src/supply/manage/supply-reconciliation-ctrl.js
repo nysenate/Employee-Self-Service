@@ -77,7 +77,7 @@ function supplyReconciliationController($scope, inventoryService, shipmentsApi, 
     };
 
     $scope.viewShipment = function(shipment){
-        locationService.go("/supply/requisition/view", false, "order=" + shipment.order.id);
+        locationService.go("/supply/requisition/view", false, "shipment=" + shipment.id);
     };
 
     $scope.init = function() {

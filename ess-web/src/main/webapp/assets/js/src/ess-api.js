@@ -141,6 +141,10 @@ essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resourc
     return $resource(appProps.apiPath + '/supply/shipments.json')
 }]);
 
+essApi.factory('SupplyShipmentByIdApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/shipments/:id.json', {id: '@id'})
+}]);
+
 essApi.factory('SupplyUpdateShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/shipments/:id/update.json', {id: '@id'})
 }]);

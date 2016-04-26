@@ -22,9 +22,9 @@
         <%--</div>--%>
       </div>
       <div class="grid padding-10">
-        <%--<div class="col-6-12" ng-show="order.issuingEmployee.lastName">--%>
-          <%--<b>Issued By:</b> {{order.issuingEmployee.lastName}}--%>
-        <%--</div>--%>
+        <div class="col-6-12">
+          <b>Issued By:</b> {{shipment.activeVersion.issuer.lastName}}
+        </div>
         <div class="col-6-12 no-print">
           <a class="" href="javascript:if(window.print)window.print()">
             Print Page
