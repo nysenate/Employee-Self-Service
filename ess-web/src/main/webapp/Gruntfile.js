@@ -62,7 +62,8 @@ module.exports = function(grunt) {
                          '<%= bowerRoot %>/floatThead/dist/jquery.floatThead.min.js',
                          '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js', 
                          '<%= bowerRoot %>/underscore/underscore-min.js',
-                         '<%= bowerRoot %>/ui-autocomplete/autocomplete.js'
+                         '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
+                         '<%= bowerRoot %>/nsPopover/src/nsPopover.js'
                          //'<%= bowerRoot %>/highcharts.com/highcharts.src.js'
                         ],
                     '<%= jsDest %>/timesheets-vendor-ie.min.js':
