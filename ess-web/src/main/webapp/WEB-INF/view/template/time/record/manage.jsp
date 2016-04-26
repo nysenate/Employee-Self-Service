@@ -31,7 +31,7 @@
       <div style="padding:.5em;text-align:right;">
         <input type="button" class="submit-button" value="Approve Selected" ng-disabled="hasSelections('SUBMITTED') == false"
                ng-click="approveSelections('SUBMITTED')"/>
-        <input type="button" class="neutral-button" value="Review Selected"
+        <input type="button" class="time-neutral-button" value="Review Selected"
                ng-click="review('SUBMITTED', true)" ng-disabled="hasSelections('SUBMITTED') == false"/>
       </div>
     </section>
@@ -46,7 +46,7 @@
       <div class="emp-manage-actions-container" style="float:right;">
         <input type="button" class="submit-button" value="View Selected" ng-disabled="hasSelections('NOT_SUBMITTED') == false"
                ng-click="review('NOT_SUBMITTED', false)"/>
-        <input type="button" class="neutral-button" value="Email Selected"
+        <input type="button" class="time-neutral-button" value="Email Selected"
                ng-click="alert('Not implemented yet.')" ng-disabled="hasSelections('NOT_SUBMITTED') == false"/>
       </div>
       <ul class="horizontal" style="padding:0;margin:10px;float:left">
@@ -58,7 +58,7 @@
       <div class="emp-manage-actions-container">
         <input type="button" class="submit-button" value="View Selected" ng-disabled="hasSelections('NOT_SUBMITTED') == false"
                ng-click="review('NOT_SUBMITTED', false)"/>
-        <input type="button" class="neutral-button" value="Email Selected"
+        <input type="button" class="time-neutral-button" value="Email Selected"
                ng-click="alert('Not implemented yet.')" ng-disabled="hasSelections('NOT_SUBMITTED') == false"/>
       </div>
     </toggle-panel>

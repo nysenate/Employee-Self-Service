@@ -44,7 +44,7 @@
         <div ng-switch="getApprovalStatus(records[iSelectedRecord])" class="record-approval-buttons">
           <input type="button" value="Undo Approval" class="reject-button"
                  ng-switch-when="approved" ng-click="cancelRecord()"/>
-          <input type="button" value="Undo Disapproval" class="neutral-button"
+          <input type="button" value="Undo Disapproval" class="time-neutral-button"
                  ng-switch-when="disapproved" ng-click="cancelRecord()"/>
           <input type="button" value="Approve Record" class="submit-button"
                  ng-switch-default ng-click="approveRecord()"/>
@@ -55,7 +55,7 @@
         <div>
           <input type="button" class="submit-button" value="Submit Changes"
                  ng-click="submitChanges()" ng-disabled="submissionEmpty()"/>
-          <input type="button" class="neutral-button" value="Cancel" ng-click="close()"/>
+          <input type="button" class="time-neutral-button" value="Cancel" ng-click="close()"/>
         </div>
       </div>
     </div>

@@ -63,7 +63,7 @@
                 <div ess-notification ng-show="state.saved === true && !state.modified"
                      level="info" title="Grants have been updated."></div>
                 <div class="content-info" style="text-align: center;">
-                    <input type="button" class="neutral-button" ng-disabled="state.modified === false" value="Discard Changes" ng-click="reset()"/>
+                    <input type="button" class="time-neutral-button" ng-disabled="state.modified === false" value="Discard Changes" ng-click="reset()"/>
                     <input type="button" class="submit-button" ng-disabled="state.modified === false"
                            ng-click="saveGrants()" value="Update Grant Privileges"/>
                 </div>
