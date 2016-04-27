@@ -23,7 +23,7 @@
         <input type="text"
                ng-model="addItemFeature.newItemCommodityCode"
                ui-autocomplete="addItemAutocompleteOptions"
-               style="width: 100px">
+               style="width: 100px; height: 20px;">
         </label>
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
       </div>

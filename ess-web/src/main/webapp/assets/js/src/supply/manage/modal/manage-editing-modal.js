@@ -186,6 +186,7 @@ var essSupply = angular.module('essSupply')
                     html: true,
                     focusOpen: false,
                     onlySelectValid: true,
+                    outHeight: 300,
                     source: function (request, response) {
                         var data = $scope.locationSearch.codes;
                         data = $scope.locationAutocompleteOptions.methods.filter(data, request.term);
@@ -218,6 +219,7 @@ var essSupply = angular.module('essSupply')
                     html: true,
                     focusOpen: false,
                     onlySelectValid: true,
+                    outHeight: 50,
                     source: function (request, response) {
                         var data = $scope.addItemFeature.commodityCodes;
                         data = $scope.addItemAutocompleteOptions.methods.filter(data, request.term);
