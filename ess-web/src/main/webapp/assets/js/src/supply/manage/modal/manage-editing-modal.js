@@ -3,7 +3,8 @@ var essSupply = angular.module('essSupply')
         return {
             templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
             scope: {
-                'supplyEmployees': '='
+                'supplyEmployees': '=',
+                'supplyItems': '='
             },
             controller: 'ManageEditingModal',
             controllerAs: 'ctrl'
@@ -26,6 +27,13 @@ var essSupply = angular.module('essSupply')
                 codes: [],
                 map: new Map() // Map of location code to location object. Used to link autocomplete values to full objects.
             };
+            $scope.addItemFeature = {
+                newItemCommodityCode: "",
+                items: [],
+                commodityCodes: [],
+                commodityCodesToItem: new Map()
+            };
+
 
             $scope.init = function () {
                 $scope.shipment = modals.params();
@@ -34,6 +42,7 @@ var essSupply = angular.module('essSupply')
                 $scope.displayShipmentVersion = angular.copy($scope.shipment.activeVersion);
                 $scope.dirtyLocationCode = $scope.displayOrderVersion.destination.code;
                 initializeLocations();
+                initializeAddItemFeature();
             };
 
             function initializeLocations() {
@@ -44,6 +53,7 @@ var essSupply = angular.module('essSupply')
                         sortCodes();
                     }, function (errorResponse) {
                         $scope.locationSearch.matches = [];
+                        console.log(errorResponse);
                     });
 
                 function initializeCodesAndMap() {
@@ -62,6 +72,14 @@ var essSupply = angular.module('essSupply')
                         return 0;
                     })
                 }
+            }
+
+            function initializeAddItemFeature() {
+                $scope.addItemFeature.items = $scope.supplyItems;
+                angular.forEach($scope.addItemFeature.items, function (item) {
+                    $scope.addItemFeature.commodityCodes.push(item.commodityCode);
+                    $scope.addItemFeature.commodityCodesToItem.set(item.commodityCode, item);
+                })
             }
 
             $scope.init();
@@ -182,5 +200,37 @@ var essSupply = angular.module('essSupply')
                 },
                 methods: {}
             };
+            
+            /** --- Add Item --- **/
 
+            $scope.addItem = function () {
+                var newItem = $scope.addItemFeature.commodityCodesToItem.get($scope.addItemFeature.newItemCommodityCode);
+                if (!newItem) {
+                    // Trying to add invalid item, don't do anything.
+                    return;
+                }
+                $scope.displayOrderVersion.lineItems.push({item: newItem, quantity: 1});
+                $scope.onUpdate();
+            };
+            
+            $scope.addItemAutocompleteOptions = {
+                options: {
+                    html: true,
+                    focusOpen: false,
+                    onlySelectValid: true,
+                    source: function (request, response) {
+                        var data = $scope.addItemFeature.commodityCodes;
+                        data = $scope.addItemAutocompleteOptions.methods.filter(data, request.term);
+                        if (!data.length) {
+                            data.push({
+                                label: 'Not Found',
+                                value: ''
+                            })
+                        }
+                        response(data);
+                    }
+                },
+                methods: {}
+            };
+            
         }]);

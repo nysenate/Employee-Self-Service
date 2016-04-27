@@ -1,7 +1,8 @@
 essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
-    'SupplyShipmentsApi', 'SupplyEmployeesApi', 'modals', '$interval', supplyManageController]);
+    'SupplyShipmentsApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyManageController]);
 
-function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, supplyEmployeesApi, modals, $interval) {
+function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, supplyEmployeesApi,
+                                itemsApi, modals, $interval) {
 
     $scope.pendingSearch = {
         matches: [],
@@ -32,6 +33,13 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         response: {},
         error: false
     };
+    
+    /** Items are sent to modals to allow adding of items to an order. */
+    $scope.itemSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
 
     /** Used in edit modals to assign an issuer. */
     $scope.supplyEmployees = [];
@@ -39,6 +47,7 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
     $scope.init = function () {
         updateShipments();
         getSupplyEmployees();
+        getSupplyItems();
     };
 
     $scope.init();
@@ -68,6 +77,17 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
         supplyEmployeesApi.get(function (response) {
             $scope.supplyEmployees = response.result;
         }, function (errorResponse) {
+        })
+    }
+    
+    function getSupplyItems() {
+        $scope.itemSearch.response = itemsApi.get(function (response) {
+            $scope.itemSearch.matches = response.result;
+            $scope.itemSearch.error = false;
+        }, function (errorResponse) {
+            $scope.itemSearch.error = true;
+            $scope.itemSearch.matches = [];
+            console.log(errorResponse);
         })
     }
 

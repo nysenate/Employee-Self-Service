@@ -191,7 +191,7 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <div manage-editing-modal supply-employees='supplyEmployees' ng-if="isOpen('manage-editing-modal')"></div>
+    <div manage-editing-modal supply-employees='supplyEmployees' supply-items='itemSearch.matches' ng-if="isOpen('manage-editing-modal')"></div>
     <div manage-immutable-modal ng-if="isOpen('manage-immutable-modal')"></div>
   </div>
 

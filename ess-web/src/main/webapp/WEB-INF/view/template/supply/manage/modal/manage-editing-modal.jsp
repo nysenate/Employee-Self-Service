@@ -13,9 +13,21 @@
 
   <div class="grid grid-padding">
     <div class="col-8-12">
-      <div class="content-container" style="overflow-y: auto; max-height: 300px;">
+      <div style="overflow-y: auto; max-height: 300px;">
         <div editable-order-listing></div>
       </div>
+
+      <%--Add item--%>
+      <div class="padding-10">
+        <label> Add Commodity Code:
+        <input type="text"
+               ng-model="addItemFeature.newItemCommodityCode"
+               ui-autocomplete="addItemAutocompleteOptions"
+               style="width: 100px">
+        </label>
+        <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
+      </div>
+
       <div class="padding-top-10">
         <label class="padding-10" style="vertical-align: middle;">note:</label>
         <textarea style="vertical-align: middle;" ng-model="displayOrderVersion.note"
