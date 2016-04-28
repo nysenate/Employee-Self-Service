@@ -7,7 +7,14 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
     function($scope, appProps, locationService, badgeService, SupervisorTimeRecordCountsApi) {
 
         $scope.initializePendingRecordsBadge = function() {
-            SupervisorTimeRecordCountsApi.get({supId: appProps.user.employeeId, status: 'SUBMITTED'}, function(resp) {
+            var isoDateFmt = 'YYYY-MM-DD';
+            var params = {
+                supId: appProps.user.employeeId,
+                status: 'SUBMITTED',
+                from: moment().subtract(1, 'year').format(isoDateFmt),
+                to: moment().format(isoDateFmt)
+            };
+            SupervisorTimeRecordCountsApi.get(params, function(resp) {
                 badgeService.setBadgeValue('pendingRecordCount', resp.result.count);
             });
         };
