@@ -19,7 +19,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
 
         /**  Fetch the ids of the supervisor's direct employees. */
         "    SELECT DISTINCT 'PRIMARY' AS EMP_GROUP, NUXREFEM, NULL AS OVR_NUXREFSV\n" +
-        "    FROM ${masterSchema}.PM21PERAUDIT WHERE NUXREFSV = :supId \n" +
+        "    FROM ${masterSchema}.PM21PERAUDIT WHERE NUXREFSV = :supId AND CDSTATUS = 'A' \n" +
 
         /**  Combine that with the ids of the employees that are accessible through the sup overrides.
          *   The EMP_GROUP column will either be 'SUP_OVR' or 'EMP_OVR' to indicate the type of override. */
@@ -32,11 +32,12 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "    per.NUXREFEM, ovr.NUXREFSVSUB\n" +
         "    FROM ${tsSchema}.PM23SUPOVRRD ovr\n" +
         "    LEFT JOIN ${masterSchema}.PM21PERAUDIT per ON \n" +
+        "      per.CDSTATUS = 'A' AND\n" +
         "      CASE WHEN ovr.NUXREFSVSUB IS NOT NULL AND per.NUXREFSV = ovr.NUXREFSVSUB THEN 1\n" +
         "           WHEN ovr.NUXREFEMSUB IS NOT NULL AND per.NUXREFEM = ovr.NUXREFEMSUB THEN 1\n" +
         "           ELSE 0\n" +
         "      END = 1\n" +
-        "    WHERE ovr.NUXREFEM = :supId\n" +
+        "    WHERE ovr.CDSTATUS = 'A' AND ovr.NUXREFEM = :supId\n" +
         "    AND :endDate BETWEEN NVL(ovr.DTSTART, :endDate) AND NVL(ovr.DTEND, :endDate)\n" +
         "    AND per.NUXREFEM IS NOT NULL\n" +
         "  ) empList\n" +
