@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <div ng-controller="GrantPrivilegesCtrl">
     <div class="time-attendance-hero">
-        <h2>Grant Supervisor Privileges</h2>
+        <h2>Grant Supervisor Access</h2>
     </div>
     <ess-notification ng-show="state.fetched === true && state.grantees.length == 0" level="warn"
                       title="No supervisor grants available."
@@ -65,7 +65,7 @@
                 <div class="content-info" style="text-align: center;">
                     <input type="button" class="time-neutral-button" ng-disabled="state.modified === false" value="Discard Changes" ng-click="reset()"/>
                     <input type="button" class="submit-button" ng-disabled="state.modified === false"
-                           ng-click="saveGrants()" value="Update Grant Privileges"/>
+                           ng-click="saveGrants()" value="Change Supervisor Access"/>
                 </div>
             </div>
         </div>
