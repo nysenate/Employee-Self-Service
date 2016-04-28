@@ -4,6 +4,8 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public final class ShipmentVersion {
 
     private final int id;
@@ -12,32 +14,12 @@ public final class ShipmentVersion {
     private final Employee modifiedBy;
 
     private ShipmentVersion(Builder builder) {
+        checkNotNull(builder.status, "ShipmentVersion requires a non null status.");
+        checkNotNull(builder.modifiedBy, "ShipmentVersion requires a non modified by employee.");
         this.id = builder.id;
         this.status = builder.status;
         this.issuingEmployee = builder.issuingEmployee;
         this.modifiedBy = builder.modifiedBy;
-    }
-
-    private Builder copy() {
-        return new Builder(status, issuingEmployee, modifiedBy);
-    }
-
-    /** Basic setters. Return new instances. */
-
-    public ShipmentVersion setId(int id) {
-        return copy().withId(id).build();
-    }
-
-    public ShipmentVersion setStatus(ShipmentStatus status) {
-        return copy().withStatus(status).build();
-    }
-
-    public ShipmentVersion setIssuingEmployee(Employee issuingEmployee) {
-        return copy().withIssuingEmployee(issuingEmployee).build();
-    }
-
-    public ShipmentVersion setModifiedBy(Employee modifiedBy) {
-        return copy().withModifiedBy(modifiedBy).build();
     }
 
     /** Getters */
@@ -102,10 +84,6 @@ public final class ShipmentVersion {
             this.status = status;
             this.issuingEmployee = issuingEmployee;
             this.modifiedBy = modifiedBy;
-        }
-
-        public Builder(ShipmentStatus status, Employee issuingEmployee, Employee modifiedBy) {
-            this(0, status, issuingEmployee, modifiedBy);
         }
 
         public Builder withId(int id) {

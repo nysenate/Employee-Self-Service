@@ -11,6 +11,7 @@ public class Shipment {
     private final int id;
     private final Order order;
     private final ShipmentHistory shipmentHistory;
+    private LocalDateTime modifiedDateTime;
 
     private Shipment(int id, Order order, ShipmentHistory shipmentHistory) {
         this.id = id;
@@ -39,9 +40,10 @@ public class Shipment {
                 previousStatus = ((ShipmentVersion) getHistory().getHistory().values().toArray()[i]).getStatus();
             }
         }
-        ShipmentVersion newVersion = current()
-                .setStatus(previousStatus)
-                .setModifiedBy(modifiedBy);
+        ShipmentVersion newVersion = new ShipmentVersion.Builder().withIssuingEmployee(current().getModifiedBy())
+                                                                  .withStatus(previousStatus)
+                                                                  .withModifiedBy(modifiedBy)
+                                                                  .build();
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
     }
 
@@ -75,6 +77,14 @@ public class Shipment {
         return shipmentHistory;
     }
 
+    public LocalDateTime getModifiedDateTime() {
+        return this.modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
     /** Getters, get values from current/most recent entry in shipment history. */
 
     public ShipmentStatus getStatus() {
@@ -87,10 +97,6 @@ public class Shipment {
 
     public Employee getModifiedBy() {
         return current().getModifiedBy();
-    }
-
-    public LocalDateTime getModifiedDateTime() {
-        return shipmentHistory.getModifiedDateTime();
     }
 
     public ShipmentVersion current() {

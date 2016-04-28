@@ -52,10 +52,6 @@ public class ShipmentHistory {
         return getDateTimeOfStatus(ShipmentStatus.CANCELED);
     }
 
-    public LocalDateTime getModifiedDateTime() {
-        return shipmentVersionMap.lastKey();
-    }
-
     private Optional<LocalDateTime> getDateTimeOfStatus(ShipmentStatus status) {
         for (Map.Entry<LocalDateTime, ShipmentVersion> version: shipmentVersionMap.entrySet()) {
             if (version.getValue().getStatus() == status) {
