@@ -178,9 +178,14 @@ essApp.directive('recordReviewRejectModal', ['modals', 'appProps', function(moda
     return {
         templateUrl: appProps.ctxPath + '/template/time/record/record-reject-modal',
         link: function($scope, $elem, $attrs) {
+            $scope.noRemarks = false;
             $scope.cancel = modals.reject;
-            $scope.resolve = function() {
-                modals.resolve($scope.remarks)
+            $scope.submit = function() {
+                if (typeof $scope.remarks === "string" && $scope.remarks.trim()) {
+                    modals.resolve($scope.remarks)
+                } else {
+                    $scope.noRemarks = true;
+                }
             };
         }
     };
