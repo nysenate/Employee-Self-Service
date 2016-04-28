@@ -38,7 +38,7 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
 
     function getCompletedOrders() {
         var params = {
-            status: "COMPLETED",
+            status: "APPROVED",
             from: moment($scope.filter.date.from).format(),
             to: moment($scope.filter.date.to).format()
         };
