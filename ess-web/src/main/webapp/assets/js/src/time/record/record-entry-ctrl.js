@@ -39,11 +39,12 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         SAVING: 3,
         SAVED: 4,
         SAVE_FAILURE: 5,
-        SUBMIT_ACK: 6,
-        SUBMITTING: 7,
-        SUBMITTED: 8,
-        SUBMIT_FAILURE: 9,
-        VALIDATE_FAILURE: 10
+        SUBMIT_WARNING: 6,
+        SUBMIT_ACK: 7,
+        SUBMITTING: 8,
+        SUBMITTED: 9,
+        SUBMIT_FAILURE: 10,
+        VALIDATE_FAILURE: 11
     };
 
     // Create a new state from the values in the default state.
@@ -138,7 +139,8 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         }
         // Open the modal to indicate save/submit
         else if (submit) {
-            $scope.state.pageState = $scope.pageStates.SUBMIT_ACK;
+            $scope.state.pageState = $scope.expectedHoursEntered()
+                    ?  $scope.pageStates.SUBMIT_ACK : $scope.pageStates.SUBMIT_WARNING;
             modals.open('submit-indicator', {'record': record});
         }
         else {
@@ -374,6 +376,18 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             return defaultIndex;
         }
     }
+
+    /**
+     * Checks if the hour total of the annual entries for the selected record
+     * is greater than or equal to the biweekly expected hours for the selected pay period
+     * @returns {boolean}
+     */
+    $scope.expectedHoursEntered = function() {
+        if (!$scope.state.annualEntries) {
+            return true;
+        }
+        return $scope.state.accrual.biWeekHrsExpected <= $scope.state.totals.raSaTotal;
+    };
 
     /** --- Internal Methods --- */
 

@@ -20,6 +20,7 @@ public class AccrualsView implements ViewObject
     protected BigDecimal vacationAccruedYtd;
     protected BigDecimal serviceYtd;
     protected BigDecimal serviceYtdExpected;
+    protected BigDecimal biWeekHrsExpected;
 
     protected BigDecimal sickBanked;
     protected BigDecimal vacationBanked;
@@ -48,6 +49,7 @@ public class AccrualsView implements ViewObject
             this.vacationAccruedYtd = pac.getVacHoursAccrued();
             this.serviceYtd = pac.getTotalHoursYtd();
             this.serviceYtdExpected = pac.getExpectedTotalHours();
+            this.biWeekHrsExpected = pac.getExpectedBiweekHours();
             this.sickBanked = pac.getEmpHoursBanked();
             this.vacationBanked = pac.getVacHoursBanked();
             this.empSickUsed = pac.getEmpHoursUsed();
@@ -115,6 +117,11 @@ public class AccrualsView implements ViewObject
     @XmlElement
     public BigDecimal getServiceYtdExpected() {
         return serviceYtdExpected;
+    }
+
+    @XmlElement
+    public BigDecimal getBiWeekHrsExpected() {
+        return biWeekHrsExpected;
     }
 
     @XmlElement

@@ -350,6 +350,33 @@
     </div>
     <% /** Modals for record submission. */ %>
     <div ng-if="isOpen('submit-indicator')">
+      <div ng-if="state.pageState === pageStates.SUBMIT_WARNING"
+           ng-init="serviceDifference = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
+              expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
+        <h3 class="content-info" style="margin-bottom:0;">
+          Hours entered are less than pay period requirement
+        </h3>
+        <div style="padding: 20px; text-align: left;">
+          <p ng-show="serviceDifference >= expectedDifference">
+            Warning: You are attempting to use {{serviceDifference}}
+            excess hours to fulfill pay period hour requirement.
+          </p>
+          <div ng-show="serviceDifference < expectedDifference">
+            <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
+            <div style="display: flex; justify-content: space-around">
+                <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
+                <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
+                <span class="bold">Year To Date {{ serviceDifference < 0 ? "Deficit" : "Excess" }}: {{serviceDifference}} hrs.</span>
+            </div>
+          </div>
+          <hr/>
+          <div style="text-align: center;">
+            <input ng-click="state.pageState = pageStates.SUBMIT_ACK" class="submit-button" style="margin-right: 20px;"
+                   type="button" value="Proceed"/>
+            <input ng-click="closeModal()" class="reject-button" type="button" value="Cancel"/>
+          </div>
+        </div>
+      </div>
       <div ng-show="state.pageState === pageStates.SUBMIT_ACK">
         <h3 class="content-info" style="margin-bottom:0;">
           Before submitting, you must acknowledge the following:
