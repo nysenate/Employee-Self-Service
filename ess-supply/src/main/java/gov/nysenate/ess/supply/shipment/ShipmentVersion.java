@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ShipmentVersion {
@@ -14,12 +15,14 @@ public final class ShipmentVersion {
     private final Employee modifiedBy;
 
     private ShipmentVersion(Builder builder) {
-        checkNotNull(builder.status, "ShipmentVersion requires a non null status.");
-        checkNotNull(builder.modifiedBy, "ShipmentVersion requires a non modified by employee.");
+        if (builder.status.getRank() > 1) {
+            checkArgument(builder.issuingEmployee != null, "ShipmentVersion issuer cannot be null once processing.");
+        }
+        checkArgument(builder.id >= 0, "ShipmentVersion requires an Id >= 0, %s used.", builder.id);
         this.id = builder.id;
-        this.status = builder.status;
+        this.status = checkNotNull(builder.status, "ShipmentVersion requires a non null status.");
         this.issuingEmployee = builder.issuingEmployee;
-        this.modifiedBy = builder.modifiedBy;
+        this.modifiedBy = checkNotNull(builder.modifiedBy, "ShipmentVersion requires a non modified by employee.");
     }
 
     /** Getters */

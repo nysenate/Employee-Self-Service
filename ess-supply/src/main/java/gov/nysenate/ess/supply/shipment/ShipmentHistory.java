@@ -36,6 +36,14 @@ public class ShipmentHistory {
      * Functional Methods
      */
 
+    public LocalDateTime getCreatedDateTime() {
+        return shipmentVersionMap.firstKey();
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return shipmentVersionMap.lastKey();
+    }
+
     public Optional<LocalDateTime> getProcessedDateTime() {
         return getDateTimeOfStatus(ShipmentStatus.PROCESSING);
     }

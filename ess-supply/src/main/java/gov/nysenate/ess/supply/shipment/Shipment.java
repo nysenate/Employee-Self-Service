@@ -11,7 +11,6 @@ public class Shipment {
     private final int id;
     private final Order order;
     private final ShipmentHistory shipmentHistory;
-    private LocalDateTime modifiedDateTime;
 
     private Shipment(int id, Order order, ShipmentHistory shipmentHistory) {
         this.id = id;
@@ -19,15 +18,14 @@ public class Shipment {
         this.shipmentHistory = shipmentHistory;
     }
 
-    /** Static constructors */
-
     public static Shipment of(int id, Order order, ShipmentHistory shipmentHistory) {
         return new Shipment(id, order, shipmentHistory);
     }
 
-    /** Functional methods */
-
     public Shipment addVersion(ShipmentVersion newVersion, LocalDateTime modifiedDateTime) {
+        if (newVersion.getStatus().getRank() > current().getStatus().getRank() + 1) {
+            throw new IllegalArgumentException();
+        }
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
     }
 
@@ -45,6 +43,14 @@ public class Shipment {
                                                                   .withModifiedBy(modifiedBy)
                                                                   .build();
         return Shipment.of(this.id, this.order, shipmentHistory.addVersion(modifiedDateTime, newVersion));
+    }
+
+    public LocalDateTime getCreatedDateTime() {
+        return getHistory().getCreatedDateTime();
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return getHistory().getModifiedDateTime();
     }
 
     public Optional<LocalDateTime> getProcessedDateTime() {
@@ -75,14 +81,6 @@ public class Shipment {
 
     public ShipmentHistory getHistory() {
         return shipmentHistory;
-    }
-
-    public LocalDateTime getModifiedDateTime() {
-        return this.modifiedDateTime;
-    }
-
-    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
     }
 
     /** Getters, get values from current/most recent entry in shipment history. */
