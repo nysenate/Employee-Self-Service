@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import static oracle.net.aso.C01.m;
-import static oracle.net.aso.C01.o;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -32,20 +30,29 @@ import static org.junit.Assert.assertTrue;
 
 public class ShipmentTests extends SupplyUnitTests {
 
-    protected static Location stubLocation;
-    protected static Employee stubEmployee;
-    protected static Order stubOrder;
+    private static Location stubLocation;
+    private static Employee stubEmployee;
+    private static Employee issuingEmployee;
+    private static Employee modifiedByEmployee;
+    private static Order stubOrder;
 
-    protected Shipment shipment;
-    protected ShipmentVersion pendingVersion;
-    protected LocalDateTime pendingDateTime;
+    private Shipment shipment;
+    private ShipmentVersion pendingVersion;
+    private LocalDateTime pendingDateTime;
 
     @BeforeClass
     public static void setupClass() {
         stubLocation = new Location(new LocationId("A42FB", 'W'));
-        stubEmployee = new Employee();
-        stubEmployee.setEmployeeId(1);
+        stubEmployee = createEmployeeWithId(1);
+        issuingEmployee = createEmployeeWithId(2);
+        modifiedByEmployee = createEmployeeWithId(3);
         stubOrder = createStubOrder();
+    }
+
+    private static Employee createEmployeeWithId(int id) {
+        Employee emp = new Employee();
+        emp.setEmployeeId(id);
+        return emp;
     }
 
     private static Order createStubOrder() {
@@ -88,36 +95,63 @@ public class ShipmentTests extends SupplyUnitTests {
         assertThat(shipment.getModifiedBy(), is(pendingVersion.getModifiedBy()));
     }
 
-
-    private ShipmentVersion createUniqueVersionWithStatus(ShipmentStatus status) {
-        Employee issuer = new Employee();
-        issuer.setEmployeeId(22);
-        Employee modifiedBy = new Employee();
-        modifiedBy.setEmployeeId(52);
-        return new ShipmentVersion.Builder().withIssuingEmployee(issuer).withModifiedBy(modifiedBy)
-                                            .withStatus(status).build();
-    }
-
     public class GivenProcessingVersion {
-        protected ShipmentVersion processingVersion;
-        protected LocalDateTime processingDateTime;
+        private ShipmentVersion processingVersion;
+        private LocalDateTime processingDateTime;
 
         @Before
         public void addProcessingVersion() {
-            processingVersion = new ShipmentVersion.Builder().withIssuingEmployee(stubEmployee).withModifiedBy(stubEmployee)
+            processingVersion = new ShipmentVersion.Builder().withIssuingEmployee(issuingEmployee).withModifiedBy(modifiedByEmployee)
                                                              .withStatus(ShipmentStatus.PROCESSING).build();
             processingDateTime = pendingDateTime.plusMinutes(5);
             shipment = shipment.addVersion(processingVersion, processingDateTime);
         }
 
         @Test
-        public void newlyAddedVersionIsCurrentVersion() {
-            //TODO:
-//            ShipmentVersion processing = createUniqueVersionWithStatus(ShipmentStatus.PROCESSING);
-//            shipment = shipment.addVersion(processing, LocalDateTime.now());
-//            assertThat(shipment.getStatus(), is(processing.getStatus()));
-//            assertThat(shipment.getIssuingEmployee(), is(processing.getIssuingEmployee()));
-//            assertThat(shipment.getModifiedBy(), is(processing.getModifiedBy()));
+        public void canGetProcessingDateTime() {
+            assertThat(shipment.getProcessedDateTime().get(), is(processingDateTime));
+        }
+
+        @Test
+        public void createdDateTimeIsUnchanged() {
+            assertThat(shipment.getCreatedDateTime(), is(pendingDateTime));
+        }
+
+        @Test
+        public void modifiedDateTimeIsUpdated() {
+            assertThat(shipment.getModifiedDateTime(), is(processingDateTime));
+        }
+
+        @Test
+        public void currentVersionIsProcessingVersion() {
+            assertThat(shipment.current(), is(processingVersion));
+        }
+
+        @Test
+        public void shipmentHasTwoVersions() {
+            assertThat(shipment.getHistory().getHistory().size(), is(2));
+        }
+
+        @Test
+        public void gettersReturnProcessingVersionInfo() {
+            assertThat(shipment.getStatus(), is(processingVersion.getStatus()));
+            assertThat(shipment.getIssuingEmployee(), is(processingVersion.getIssuingEmployee()));
+            assertThat(shipment.getModifiedBy(), is(processingVersion.getModifiedBy()));
+        }
+
+        @Test(expected = IllegalArgumentException.class)
+        public void cantAddApprovedVersion() {
+            ShipmentVersion approved = new ShipmentVersion.Builder().withIssuingEmployee(stubEmployee).withModifiedBy(stubEmployee)
+                                                                    .withStatus(ShipmentStatus.APPROVED).build();
+            LocalDateTime approvedDateTime = processingDateTime.plusMinutes(5);
+            shipment.addVersion(approved, approvedDateTime);
+        }
+
+        @Test(expected = IllegalArgumentException.class)
+        public void cantAddPendingVersion() {
+            ShipmentVersion pending = new ShipmentVersion.Builder().withModifiedBy(stubEmployee).withStatus(ShipmentStatus.PENDING).build();
+            LocalDateTime pendingDateTime = processingDateTime.plusMinutes(5);
+            shipment.addVersion(pending, pendingDateTime);
         }
 
         public class GivenCompletedVersion {
@@ -133,11 +167,11 @@ public class ShipmentTests extends SupplyUnitTests {
             }
 
             @Test
-            public void canGetDateTimes() {
-                assertThat(shipment.getCreatedDateTime(), is(pendingDateTime));
-                assertThat(shipment.getProcessedDateTime().get(), is(processingDateTime));
+            public void canGetCompletedDateTime() {
                 assertThat(shipment.getCompletedDateTime().get(), is(completedDateTime));
             }
+
+//            public class GivenShipmentIsCanceled
 
 //        @Test
 //        public void givenCanceledShipmentIsAccepted_returnsToPreviousStatus() {
