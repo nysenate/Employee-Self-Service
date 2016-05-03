@@ -201,18 +201,28 @@ var essSupply = angular.module('essSupply')
                 },
                 methods: {}
             };
-            
+
             /** --- Add Item --- **/
 
             $scope.addItem = function () {
                 var newItem = $scope.addItemFeature.commodityCodesToItem.get($scope.addItemFeature.newItemCommodityCode);
-                if (!newItem) {
+                if (!newItem || newItemIsDuplicate(newItem)) {
                     // Trying to add invalid item, don't do anything.
                     return;
                 }
                 $scope.displayOrderVersion.lineItems.push({item: newItem, quantity: 1});
                 $scope.onUpdate();
             };
+
+            function newItemIsDuplicate(newItem) {
+                var duplicateItem = false;
+                angular.forEach($scope.shipment.order.activeVersion.lineItems, function (lineItem) {
+                    if (newItem.id === lineItem.item.id) {
+                        duplicateItem = true;
+                    }
+                });
+                return duplicateItem;
+            }
             
             $scope.addItemAutocompleteOptions = {
                 options: {
