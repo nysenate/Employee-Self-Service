@@ -29,9 +29,9 @@
       </div>
 
       <div class="padding-top-10">
-        <label class="padding-10" style="vertical-align: middle;">note:</label>
-        <textarea style="vertical-align: middle;" ng-model="displayOrderVersion.note"
-                  ng-change="onUpdate()" rows="3", cols="65"></textarea>
+        <label class="col-1-12">note:</label>
+        <textarea class="col-11-12" ng-model="displayOrderVersion.note"
+                  ng-change="onUpdate()"></textarea>
       </div>
     </div>
 
