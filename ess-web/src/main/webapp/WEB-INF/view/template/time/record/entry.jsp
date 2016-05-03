@@ -207,7 +207,7 @@
               <select style="font-size:.9em;" name="miscHourType"
                       ng-model="entry.miscType" ng-change="setDirty(entry)"
                       tabindex="{{!entry.miscHours ? 2 : 1}}"
-                      ng-options="type as label for (type, label) in state.miscLeaves">
+                      ng-options="miscLeave.type as miscLeave.shortName for miscLeave in state.miscLeaves | filter:getMiscLeavePredicate(entry.date)">
                 <option value="">No Misc Hours</option>
               </select>
             </td>

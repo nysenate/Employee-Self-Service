@@ -1,18 +1,18 @@
 var essApp = angular.module('ess')
         .controller('RecordEntryController', ['$scope', '$filter', '$q', '$timeout', 'appProps',
-                                              'ActiveTimeRecordsApi', 'TimeRecordsApi', 'AccrualPeriodApi', 'AllowanceApi',
-                                              'RecordUtils', 'LocationService', 'modals', recordEntryCtrl]);
+                                              'ActiveTimeRecordsApi', 'TimeRecordsApi', 'AccrualPeriodApi',
+                                              'AllowanceApi', 'MiscLeaveGrantApi',
+                                              'RecordUtils', 'LocationService', 'modals',
+                                              recordEntryCtrl]);
 
-function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsApi,
-                         recordsApi, accrualPeriodApi, allowanceApi, recordUtils, locationService, modals) {
-
-    var allowedMiscLeaves = angular.copy(appProps.miscLeaves);
-    delete allowedMiscLeaves['OTHER_LVS_MANDATED'];
+function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsApi, recordsApi, accrualPeriodApi,
+                         allowanceApi, miscLeaveGrantApi, recordUtils, locationService, modals) {
 
     function getInitialState() {
         return {
             empId: appProps.user.employeeId,  // Employee Id
-            miscLeaves: allowedMiscLeaves,  // Listing of misc leave types
+            miscLeaves: appProps.miscLeaves,  // Listing of misc leave types
+            miscLeaveGrants: null,            // List of records that grant use of a misc leave type
             accrual: null,                    // Accrual info for selected record
             allowances: {},                   // A map that stores yearly temp employee allowances
             selectedYear: 0,                  // The year of the selected record (makes it easy to get the selected record's allowance)
@@ -63,6 +63,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         console.log('Time record initialization');
         $scope.initializeState();
         $scope.getRecords();
+        $scope.getMiscLeaveTypeGrants();
     };
 
     /** --- Watches --- */
@@ -241,6 +242,16 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         return $q(function (resolve) {resolve()});
     };
 
+    $scope.getMiscLeaveTypeGrants = function () {
+        var params = {empId: $scope.state.empId};
+        miscLeaveGrantApi.get(params, function (response) {
+            $scope.state.miscLeaveGrants = response.result;
+        }, function(response) {
+            modals.open('500', {details: response});
+            console.log(response);
+        });
+    };
+
     /** --- Display Methods --- */
 
     /**
@@ -387,6 +398,27 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             return true;
         }
         return $scope.state.accrual.biWeekHrsExpected <= $scope.state.totals.raSaTotal;
+    };
+
+    /**
+     * Return a misc leave predicate function that will determine if a misc leave can be used on the given date
+     * @param date
+     * @returns {Function}
+     */
+    $scope.getMiscLeavePredicate = function(date) {
+        var dateMoment = moment(date);
+        return function(miscLeave) {
+            // Return true if the misc leave is not restricted
+            if (miscLeave.restricted === false) return true;
+            for (var iGrant in $scope.state.miscLeaveGrants) {
+                var grant = $scope.state.miscLeaveGrants[iGrant];
+                // Return true if the date falls within the grant date range and is of the same leave type
+                if (dateMoment.isBefore(grant.beginDate, 'day')) continue;
+                if (dateMoment.isAfter(grant.endDate, 'day')) continue;
+                if (miscLeave.type === grant.miscLeaveType) return true;
+            }
+            return false;
+        }
     };
 
     /** --- Internal Methods --- */

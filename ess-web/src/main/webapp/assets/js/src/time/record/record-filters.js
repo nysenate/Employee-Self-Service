@@ -24,9 +24,13 @@ essTime.filter('timeRecordStatus', ['$sce', function($sce) {
 
 // Returns a display label for the given misc leave id
 essTime.filter('miscLeave', ['appProps', function (appProps) {
+    var miscLeaveMap = {};
+    angular.forEach(appProps.miscLeaves, function (miscLeave) {
+        miscLeaveMap[miscLeave.type] = miscLeave;
+    });
     return function (miscLeave, defaultLabel) {
-        if (appProps.miscLeaves.hasOwnProperty(miscLeave)) {
-            return appProps.miscLeaves[miscLeave];
+        if (miscLeaveMap.hasOwnProperty(miscLeave)) {
+            return miscLeaveMap[miscLeave].shortName;
         }
         if (!miscLeave) {
             return defaultLabel ? defaultLabel : '--';

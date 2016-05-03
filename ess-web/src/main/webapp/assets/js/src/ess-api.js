@@ -93,6 +93,12 @@ essApi.factory('AllowanceApi', ['$resource', 'appProps', function ($resource, ap
     return $resource(appProps.apiPath + '/allowances');
 }]);
 
+/** --- Misc Leave Type Grant API --- */
+
+essApi.factory('MiscLeaveGrantApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/miscleave/grants')
+}]);
+
 /** --- Paycheck History API --- */
 
 essApi.factory('EmpCheckHistoryApi',  ['$resource', 'appProps', function($resource, appProps) {
