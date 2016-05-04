@@ -607,7 +607,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         if ($scope.state.totals.sickEmpHours + $scope.state.totals.sickFamHours > $scope.state.accrual.sickAvailable) {
             $scope.errorTypes.raSa.notEnoughSickTime = true;
         }
-        if (typeof entry.miscHours !== 'undefined' && entry.miscHours !== null && entry.miscType === null) {
+        if (entry.miscHours > 0 && !entry.miscType) {
             $scope.errorTypes.raSa.noMiscTypeGiven = true;
         }
         if (!allEntryValuesInHalfHourIncrements(entry)) {
@@ -762,10 +762,10 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     };
 
     $scope.isMiscTypeValid = function(entry) {
-        if (typeof entry.miscHours === 'undefined' || entry.miscHours === null) {
+        if (isNaN(entry.miscHours) || entry.miscHours === null || entry.miscHours === 0) {
             return true;
         }
-        return entry.miscHours > 0 && entry.miscType !== null;
+        return entry.miscType !== null;
     };
 
     function allEntryValuesInHalfHourIncrements(entry) {

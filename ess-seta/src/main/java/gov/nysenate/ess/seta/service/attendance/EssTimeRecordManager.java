@@ -40,7 +40,8 @@ public class EssTimeRecordManager implements TimeRecordManager
 {
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordManager.class);
 
-    private static final ImmutableSet recordAlteringTransCodes = ImmutableSet.of(TransactionCode.SUP, TransactionCode.TYP, TransactionCode.EMP, TransactionCode.RSH);
+    private static final ImmutableSet recordAlteringTransCodes =
+            ImmutableSet.of(TransactionCode.SUP, TransactionCode.TYP, TransactionCode.EMP, TransactionCode.RSH);
 
     /** --- Daos --- */
     @Autowired protected EmployeeDao employeeDao;
