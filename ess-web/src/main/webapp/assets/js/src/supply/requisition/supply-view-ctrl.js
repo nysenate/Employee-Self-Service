@@ -1,11 +1,10 @@
 essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyShipmentByIdApi',
-    'LocationService', '$window', '$timeout', supplyViewController]);
+    'LocationService', '$window', '$timeout', 'RequisitionHistory', supplyViewController]);
 
-function supplyViewController($scope, shipmentApi, locationService, $window, $timeout) {
+function supplyViewController($scope, shipmentApi, locationService, $window, $timeout, RequisitionHistory) {
 
     $scope.shipmentResource = {};
-    $scope.shipment = {};
-    $scope.versions = [];
+    $scope.requisitionHistory = {};
 
     $scope.init = function () {
         var id = locationService.getSearchParam('shipment');
@@ -13,13 +12,12 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
         $scope.shipmentResource.$promise
             .then(extractShipment)
             .then(printIfRequested)
-            .then(assembleVersions)
+            .then(generateHistory)
             .catch(shipmentResourceErrorHandler);
     };
 
     var extractShipment = function (response) {
         $scope.shipment = response.result;
-        console.log($scope.shipmentResource);
     };
 
     var printIfRequested = function () {
@@ -31,47 +29,10 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
         }
     };
 
-    var assembleVersions = function () {
-        var orderVersions = $scope.shipment.order.history.items;
-        var shipmentVersions = $scope.shipment.history.items;
-        $scope.versions = combineVersions(orderVersions, shipmentVersions);
-        console.log($scope.versions);
+    var generateHistory = function () {
+        $scope.requisitionHistory = new RequisitionHistory($scope.shipment);
+        console.log($scope.requisitionHistory);
     };
-
-    // Create version object.. add append/join version functions to it?
-    function combineVersions(orderVersions, shipmentVersions) {
-        var versions = angular.copy(orderVersions);
-        joinShipmentVersions(shipmentVersions, versions);
-        return versions;
-    }
-
-    function joinShipmentVersions(shipmentVersions, versions) {
-        for (var key in shipmentVersions) {
-            if (shipmentVersions.hasOwnProperty(key)) {
-                var matchedKey = findVersionKeyMatching(versions, key);
-                if (matchedKey) {
-                    versions[matchedKey].shipmentStatus = shipmentVersions[key].status;
-                    versions[matchedKey].issuer = shipmentVersions[key].issuer;
-                }
-                else {
-                    versions[key] = {
-                        shipmentStatus: shipmentVersions[key].status,
-                        issuer: shipmentVersions[key].issuer
-                    };
-                }
-            }
-        }
-    }
-
-    function findVersionKeyMatching(versions, shipmentKey) {
-        for (var verDate in versions) {
-            if (versions.hasOwnProperty(verDate)) {
-                if (Math.abs(new Date(verDate) - new Date(shipmentKey)) < 1000) {
-                    return verDate;
-                }
-            }
-        }
-    }
 
     var shipmentResourceErrorHandler = function (response) {
         console.log("Error");
