@@ -34,6 +34,10 @@
     <%-- Requisition --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/supply-view-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/requisition/requisition-history.js"></script>
+
+    <%-- Utilities --%>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/util/supply-utils-service.js"></script>
+
   </jsp:body>
 </ess-layout:head>
 

@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyShipmentByIdApi',
-    'LocationService', '$window', '$timeout', 'RequisitionHistory', supplyViewController]);
+    'LocationService', '$window', '$timeout', 'RequisitionHistory', 'SupplyUtils', supplyViewController]);
 
-function supplyViewController($scope, shipmentApi, locationService, $window, $timeout, RequisitionHistory) {
+function supplyViewController($scope, shipmentApi, locationService, $window, $timeout, RequisitionHistory, supplyUtils) {
 
     $scope.shipmentResource = {};
     $scope.requisitionHistory = {};
@@ -36,10 +36,7 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
     };
 
     var selectCurrentVersion = function () {
-        console.log($scope.requisitionHistory);
         $scope.selectedVersion = $scope.requisitionHistory.current();
-        console.log("Setting current version");
-        console.log($scope.selectedVersion);
     };
 
     var shipmentResourceErrorHandler = function (response) {
@@ -47,10 +44,11 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
         // TODO;
     };
 
-    $scope.versionSelected = function () {
-        console.log("selected");
-        console.log($scope.selectedVersion);
-    };
-
     $scope.init();
+
+    $scope.sortSelectedVersionLineItems = function () {
+        if ($scope.selectedVersion && $scope.selectedVersion.order) {
+            return supplyUtils.alphabatizeLineItems($scope.selectedVersion.order.lineItems);
+        }
+    };
 }

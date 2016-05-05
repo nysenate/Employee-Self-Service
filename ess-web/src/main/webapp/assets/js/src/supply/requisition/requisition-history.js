@@ -1,7 +1,8 @@
 essSupply = angular.module('essSupply').factory('RequisitionHistory', [function () {
 
-    function Version(modifiedDateTime) {
+    function Version(modifiedDateTime, modifiedBy) {
         this.modifiedDateTime = modifiedDateTime;
+        this.modifiedBy = modifiedBy;
         this.shipment = undefined;
         this.order = undefined;
         this.name = undefined;
@@ -30,7 +31,7 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
         var shipmentDates = getDates(shipment.history.items);
 
         // add the first version
-        var firstVersion = new Version(orderDates[0]);
+        var firstVersion = new Version(orderDates[0], shipment.order.history.items[orderDates[0]].modifiedBy);
         firstVersion.order = shipment.order.history.items[orderDates[0]];
         firstVersion.shipment = shipment.history.items[shipmentDates[0]];
         this.versions.push(firstVersion);
@@ -42,21 +43,21 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
 
         // Add all Order Versions
         for (var i = 0; i < orderDates.length; i++) {
-            var version = new Version(orderDates[i]);
+            var version = new Version(orderDates[i], shipment.order.history.items[orderDates[i]].modifiedBy);
             version.order = shipment.order.history.items[orderDates[i]];
             addVersion(this.versions, version);
         }
 
         // Add shipment version info
         for (var j = 0; j < shipmentDates.length; j++) {
-            var ver = new Version(shipmentDates[j]);
+            var ver = new Version(shipmentDates[j], shipment.history.items[shipmentDates[j]].modifiedBy);
             ver.shipment = shipment.history.items[shipmentDates[j]];
             addVersion(this.versions, ver);
         }
 
         sortByModifiedTimeAsc(this.versions);
         setVersionNames(this.versions);
-        this.versions.reverse();
+        this.versions.reverse(); // Order from current to original
     }
 
     function getDates(version) {
@@ -106,6 +107,9 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
     }
 
     RequisitionHistory.prototype.current = function () {
+        if (this.versions.length === 1) {
+            return this.versions[0];
+        }
         for (var i = 0; i < this.versions.length; i++) {
             if (this.versions[i].name == 'Current') {
                 return this.versions[i];
