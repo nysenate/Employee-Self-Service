@@ -4,6 +4,7 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
         this.modifiedDateTime = modifiedDateTime;
         this.shipment = undefined;
         this.order = undefined;
+        this.name = undefined;
     }
 
     Version.prototype.add = function (ver) {
@@ -54,6 +55,8 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
         }
 
         sortByModifiedTimeAsc(this.versions);
+        setVersionNames(this.versions);
+        this.versions.reverse();
     }
 
     function getDates(version) {
@@ -81,12 +84,34 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
             matchingVersion.add(newVersion);
         }
     }
-   
+
     function sortByModifiedTimeAsc(versions) {
         versions.sort(function (a, b) {
             return a.modifiedDateTime.localeCompare(b.modifiedDateTime);
         })
     }
+
+    function setVersionNames(versions) {
+        for (var i = 0; i < versions.length; i++) {
+            if (i === 0) {
+                versions[i].name = 'Original';
+            }
+            else if (i === versions.length - 1) {
+                versions[i].name = 'Current';
+            }
+            else {
+                versions[i].name = i + 1;
+            }
+        }
+    }
+
+    RequisitionHistory.prototype.current = function () {
+        for (var i = 0; i < this.versions.length; i++) {
+            if (this.versions[i].name == 'Current') {
+                return this.versions[i];
+            }
+        }
+    };
 
     return RequisitionHistory;
 }]);

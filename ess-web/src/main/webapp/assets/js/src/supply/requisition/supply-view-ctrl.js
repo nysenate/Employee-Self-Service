@@ -5,6 +5,7 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
 
     $scope.shipmentResource = {};
     $scope.requisitionHistory = {};
+    $scope.selectedVersion = {};
 
     $scope.init = function () {
         var id = locationService.getSearchParam('shipment');
@@ -13,6 +14,7 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
             .then(extractShipment)
             .then(printIfRequested)
             .then(generateHistory)
+            .then(selectCurrentVersion)
             .catch(shipmentResourceErrorHandler);
     };
 
@@ -31,12 +33,23 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
 
     var generateHistory = function () {
         $scope.requisitionHistory = new RequisitionHistory($scope.shipment);
+    };
+
+    var selectCurrentVersion = function () {
         console.log($scope.requisitionHistory);
+        $scope.selectedVersion = $scope.requisitionHistory.current();
+        console.log("Setting current version");
+        console.log($scope.selectedVersion);
     };
 
     var shipmentResourceErrorHandler = function (response) {
         console.log("Error");
         // TODO;
+    };
+
+    $scope.versionSelected = function () {
+        console.log("selected");
+        console.log($scope.selectedVersion);
     };
 
     $scope.init();

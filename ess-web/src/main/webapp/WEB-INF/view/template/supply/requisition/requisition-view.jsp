@@ -5,6 +5,16 @@
 
   <div class="content-container large-print-font-size">
     <div class="content-info">
+      <label>Select Version:</label>
+      <select ng-model="selectedVersion"
+              ng-options="version.name for version in requisitionHistory.versions track by version.name"
+              ng-change="versionSelected()">
+      </select>
+    </div>
+  </div>
+
+  <div class="content-container large-print-font-size">
+    <div class="content-info">
       <div class="grid padding-10">
         <div class="col-6-12">
           <b>Location Code:</b> {{order.activeVersion.destination.code + '-' + order.activeVersion.destination.locationTypeCode}}
