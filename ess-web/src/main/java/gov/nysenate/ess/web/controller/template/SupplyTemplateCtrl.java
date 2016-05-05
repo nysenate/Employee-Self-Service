@@ -72,9 +72,9 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
 
     /** --- Requisition --- */
 
-    @RequestMapping(value="/requisition/view")
+    @RequestMapping(value="/requisition/requisition-view")
     public String viewOrder() {
-        return SUPPLY_TMPL_BASE_URL + "/requisition/view";
+        return SUPPLY_TMPL_BASE_URL + "/requisition/requisition-view";
     }
 
 }

@@ -22,7 +22,6 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
      */
     var VERSION_DATE_TIME_DELTA = 250;
 
-    
     function RequisitionHistory(shipment) {
         this.versions = [];
 
@@ -53,8 +52,10 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
             ver.shipment = shipment.history.items[shipmentDates[j]];
             addVersion(this.versions, ver);
         }
+
+        sortByModifiedTimeAsc(this.versions);
     }
-    
+
     function getDates(version) {
         var dates = [];
         for (var key in version) {
@@ -79,6 +80,12 @@ essSupply = angular.module('essSupply').factory('RequisitionHistory', [function 
         else {
             matchingVersion.add(newVersion);
         }
+    }
+   
+    function sortByModifiedTimeAsc(versions) {
+        versions.sort(function (a, b) {
+            return a.modifiedDateTime.localeCompare(b.modifiedDateTime);
+        })
     }
 
     return RequisitionHistory;

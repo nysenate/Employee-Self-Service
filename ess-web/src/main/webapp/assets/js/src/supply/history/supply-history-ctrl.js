@@ -104,6 +104,6 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     };
 
     $scope.viewOrder = function(shipment) {
-        locationService.go("/supply/requisition/view", false, "shipment=" + shipment.id);
+        locationService.go("/supply/requisition/requisition-view", false, "shipment=" + shipment.id);
     };
 }

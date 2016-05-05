@@ -108,8 +108,8 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/history/location-history'
     });
 
-    $routeProvider.when(ctxPath + '/supply/requisition/view', {
-        templateUrl: ctxPath + '/template/supply/requisition/view'
+    $routeProvider.when(ctxPath + '/supply/requisition/requisition-view', {
+        templateUrl: ctxPath + '/template/supply/requisition/requisition-view'
     });
 
     /** Help */
