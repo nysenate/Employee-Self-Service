@@ -1,4 +1,4 @@
-<%@tag description="Left navigation menu for Time & Attendance screens" pageEncoding="UTF-8"%>
+<%@tag description="Left navigation menu for Supply screens" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
