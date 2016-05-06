@@ -27,7 +27,7 @@
       <ul class="sub-topic-list">
         <li>
           <a ng-click="clearSelections()">
-            Clear All Selections
+            Clear All
           </a>
         </li>
         <li ng-repeat="cat in categories">
