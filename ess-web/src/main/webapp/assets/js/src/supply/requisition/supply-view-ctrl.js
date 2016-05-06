@@ -48,7 +48,7 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
 
     $scope.sortSelectedVersionLineItems = function () {
         if ($scope.selectedVersion && $scope.selectedVersion.order) {
-            return supplyUtils.alphabatizeLineItems($scope.selectedVersion.order.lineItems);
+            return supplyUtils.alphabetizeLineItems($scope.selectedVersion.order.lineItems);
         }
     };
 }
