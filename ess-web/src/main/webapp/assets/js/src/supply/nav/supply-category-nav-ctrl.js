@@ -10,6 +10,8 @@ function supplyNavigationController($scope, appProps, locationService, SupplyCat
         $scope.categories = SupplyCategoryService.getCategories();
     };
 
+    $scope.init();
+
     /** Only display the categories sidebar if on requisition order page.
      * Update selected categories when back/forward navigation is used. */
     $scope.$on('$locationChangeStart', function(event, newUrl) {
@@ -46,5 +48,10 @@ function supplyNavigationController($scope, appProps, locationService, SupplyCat
         locationService.setSearchParam("category", selectedCategoryNames, true, false);
     };
     
-    $scope.init();
+    $scope.clearSelections = function () {
+        angular.forEach($scope.categories, function (cat) {
+            cat.selected = false;
+        });
+        $scope.onCategorySelected();
+    };
 }

@@ -25,6 +25,11 @@
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
     <div style="height: 350px; overflow-y: auto">
       <ul class="sub-topic-list">
+        <li>
+          <a ng-click="clearSelections()">
+            Clear All Selections
+          </a>
+        </li>
         <li ng-repeat="cat in categories">
           <input type="checkbox" ng-model="cat.selected" ng-change="onCategorySelected()">
           <label>{{cat.name}}</label>

@@ -84,20 +84,10 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     $routeProvider.when(ctxPath + '/supply/manage/manage', {
         templateUrl: ctxPath + '/template/supply/manage/manage',
-        resolve: {
-            'MyInventoryServiceData': function (SupplyInventoryService) {
-                return SupplyInventoryService.promise;
-            }
-        }
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/reconciliation', {
         templateUrl: ctxPath + '/template/supply/manage/reconciliation',
-        resolve: {
-            'MyInventoryServiceData': function (SupplyInventoryService) {
-                return SupplyInventoryService.promise;
-            }
-        }
     });
 
     $routeProvider.when(ctxPath + '/supply/history/history', {

@@ -1,7 +1,6 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemsApi',
-    function($rootScope, supplyItemsApi) {
+essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemsApi', function($rootScope, supplyItemsApi) {
 
     function Category(name) {
         this.name = name;
@@ -10,36 +9,35 @@ essSupply.service('SupplyCategoryService', ['$rootScope', 'SupplyItemsApi',
 
     var categories = [];
 
-    function initCategories(items) {
-        angular.forEach(items, function(item) {
-            if (isDistinctCategory(item.category.name)) {
-                categories.push(new Category(item.category.name));
-            }
-        });
-
-        // Alphabetize the categories.
-        categories.sort(function(a, b){
-            if(a.name < b.name) {return -1;}
-            if(a.name > b.name) {return 1;}
-            return 0;
-        })
-        
-    }
-
     /** Returns true if a category is not yet in the category array, false otherwise. */
     function isDistinctCategory(name) {
         var cats = $.grep(categories, function(cat){ return cat.name === name; });
         return !cats.length > 0;
     }
+    
+    var initCategories = function () {
+        supplyItemsApi.get(function (response) {
+            var items = response.result;
+            angular.forEach(items, function(item) {
+                if (isDistinctCategory(item.category.name)) {
+                    categories.push(new Category(item.category.name));
+                }
+            });
 
-    var promise = supplyItemsApi.get(function(response) {
-        initCategories(response.result);
-    });
+            // Alphabetize the categories.
+            categories.sort(function(a, b){
+                if(a.name < b.name) {return -1;}
+                if(a.name > b.name) {return 1;}
+                return 0;
+            });
+        });
+    };
 
     return {
-        promise: promise,
-
         getCategories: function() {
+            if (categories.length === 0) {
+                initCategories();
+            }
             return categories;
         },
         getSelectedCategoryNames: function() {

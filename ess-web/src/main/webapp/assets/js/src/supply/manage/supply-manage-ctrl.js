@@ -1,7 +1,7 @@
-essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope', 'SupplyInventoryService',
+essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope',
     'SupplyShipmentsApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyManageController]);
 
-function supplyManageController($scope, supplyInventoryService, supplyShipmentsApi, supplyEmployeesApi,
+function supplyManageController($scope, supplyShipmentsApi, supplyEmployeesApi,
                                 itemsApi, modals, $interval) {
 
     $scope.pendingSearch = {
@@ -172,16 +172,6 @@ function supplyManageController($scope, supplyInventoryService, supplyShipmentsA
             size++;
         });
         return size;
-    };
-
-    $scope.getItemCommodityCode = function (itemId) {
-        var item = supplyInventoryService.getItemById(itemId);
-        return item.commodityCode;
-    };
-
-    $scope.getItemName = function (itemId) {
-        var item = supplyInventoryService.getItemById(itemId);
-        return item.name;
     };
 
     /** --- Highlighting --- */
