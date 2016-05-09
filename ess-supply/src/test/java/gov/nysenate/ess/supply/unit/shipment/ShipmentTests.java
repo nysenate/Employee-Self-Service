@@ -56,7 +56,7 @@ public class ShipmentTests extends SupplyUnitTests {
     }
 
     private static Order createStubOrder() {
-        SupplyItem stubItem = new SupplyItem(1, "", "", "", new Category(""), 1, 1);
+        SupplyItem stubItem = new SupplyItem(1, "", "", "", new Category(""), 1, 1, 1);
         Set<LineItem> stubLineItems = new HashSet<>();
         stubLineItems.add(new LineItem(stubItem, 1));
         OrderVersion orderVersion = new OrderVersion.Builder().withId(1).withCustomer(stubEmployee).withDestination(stubLocation)

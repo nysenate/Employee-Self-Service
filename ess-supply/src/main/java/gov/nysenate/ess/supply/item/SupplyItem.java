@@ -7,18 +7,20 @@ public final class SupplyItem {
     private final String description;
     private final String unit;
     private final Category category;
-    private final int suggestedMaxQty;
+    private final int maxQtyPerOrder;
+    private final int maxQtyPerMonth;
     /** Number of items per unit. eg. 12/PKG would equal 12 */
     private final int unitStandardQuantity;
 
     public SupplyItem(int id, String commodityCode, String description, String unit,
-                      Category category, int suggestedMaxQty, int unitStandardQuantity) {
+                      Category category, int maxQtyPerOrder, int maxQtyPerMonth, int unitStandardQuantity) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.description = description;
         this.unit = unit;
         this.category = category;
-        this.suggestedMaxQty = suggestedMaxQty;
+        this.maxQtyPerOrder = maxQtyPerOrder;
+        this.maxQtyPerMonth = maxQtyPerMonth;
         this.unitStandardQuantity = unitStandardQuantity;
     }
 
@@ -42,8 +44,12 @@ public final class SupplyItem {
         return category;
     }
 
-    public int getSuggestedMaxQty() {
-        return suggestedMaxQty;
+    public int getMaxQtyPerOrder() {
+        return maxQtyPerOrder;
+    }
+
+    public int getMaxQtyPerMonth() {
+        return maxQtyPerMonth;
     }
 
     public int getUnitStandardQuantity() {
@@ -58,7 +64,8 @@ public final class SupplyItem {
                ", description='" + description + '\'' +
                ", unit='" + unit + '\'' +
                ", category=" + category +
-               ", suggestedMaxQty=" + suggestedMaxQty +
+               ", maxQtyPerOrder=" + maxQtyPerOrder +
+               ", maxQtyPerMonth=" + maxQtyPerMonth +
                ", unitStandardQuantity=" + unitStandardQuantity +
                '}';
     }
@@ -71,13 +78,15 @@ public final class SupplyItem {
         SupplyItem that = (SupplyItem) o;
 
         if (id != that.id) return false;
-        if (suggestedMaxQty != that.suggestedMaxQty) return false;
+        if (maxQtyPerOrder != that.maxQtyPerOrder) return false;
+        if (maxQtyPerMonth != that.maxQtyPerMonth) return false;
         if (unitStandardQuantity != that.unitStandardQuantity) return false;
         if (commodityCode != null ? !commodityCode.equals(that.commodityCode) : that.commodityCode != null)
             return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
         return category != null ? category.equals(that.category) : that.category == null;
+
     }
 
     @Override
@@ -87,7 +96,8 @@ public final class SupplyItem {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + suggestedMaxQty;
+        result = 31 * result + maxQtyPerOrder;
+        result = 31 * result + maxQtyPerMonth;
         result = 31 * result + unitStandardQuantity;
         return result;
     }

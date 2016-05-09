@@ -18,6 +18,7 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
                 rs.getString("DeCommodityf"),
                 rs.getString("CdIssUnit"),
                 new Category(rs.getString("CdCategory")),
+                rs.getInt("numaxunitord"),
                 isMaxOrderQtyValid(maxOrderQty)? maxOrderQty : 2, // TODO: Use max monthly order quantity if available, default to 2.
                 rs.getInt("AmStdUnit")
         );

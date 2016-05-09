@@ -10,6 +10,7 @@ public class SupplyItemView implements ViewObject {
     protected String description;
     protected String unit;
     protected CategoryView category;
+    protected int maxQtyPerOrder;
     protected int suggestedMaxQty;
     protected int standardQuantity;
 
@@ -22,12 +23,13 @@ public class SupplyItemView implements ViewObject {
         this.description = item.getDescription();
         this.unit = item.getUnit();
         this.category = new CategoryView(item.getCategory());
-        this.suggestedMaxQty = item.getSuggestedMaxQty();
+        this.maxQtyPerOrder = item.getMaxQtyPerOrder();
+        this.suggestedMaxQty = item.getMaxQtyPerMonth();
         this.standardQuantity = item.getUnitStandardQuantity();
     }
 
     public SupplyItem toSupplyItem() {
-        return new SupplyItem(id, commodityCode, description, unit, category.toCategory(), suggestedMaxQty, standardQuantity);
+        return new SupplyItem(id, commodityCode, description, unit, category.toCategory(), maxQtyPerOrder, suggestedMaxQty, standardQuantity);
     }
 
     public int getId() {
@@ -48,6 +50,10 @@ public class SupplyItemView implements ViewObject {
 
     public CategoryView getCategory() {
         return category;
+    }
+
+    public int getMaxQtyPerOrder() {
+        return maxQtyPerOrder;
     }
 
     public int getSuggestedMaxQty() {

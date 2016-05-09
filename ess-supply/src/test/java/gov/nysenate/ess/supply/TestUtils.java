@@ -21,8 +21,8 @@ public class TestUtils {
 
     private static Set<LineItem> initPencilsAndPens() {
         Set<LineItem> pencilsAndPens = new HashSet<>();
-        pencilsAndPens.add(new LineItem(new SupplyItem(1, "P2", "Number 2 Yellow Pencils", "24/PKG", new Category("Pencils"), 1, 24), 1));
-        pencilsAndPens.add(new LineItem(new SupplyItem(2, "PBL", "Blue ink, bold point", "DOZEN", new Category("Pens"), 1, 12), 2));
+        pencilsAndPens.add(new LineItem(new SupplyItem(1, "P2", "Number 2 Yellow Pencils", "24/PKG", new Category("Pencils"), 1, 1, 24), 1));
+        pencilsAndPens.add(new LineItem(new SupplyItem(2, "PBL", "Blue ink, bold point", "DOZEN", new Category("Pens"), 1, 1, 12), 2));
         return pencilsAndPens;
     }
 }
