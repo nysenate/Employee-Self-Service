@@ -78,6 +78,9 @@ public class EssCachedLocationService implements LocationService {
     }
 
     private boolean cacheIsEmpty(Element element) {
+        if (element == null) {
+            return true;
+        }
         LocationCacheTree locationCacheTree = (LocationCacheTree) element.getObjectValue();
         return locationCacheTree.getLocations().size() == 0;
     }
