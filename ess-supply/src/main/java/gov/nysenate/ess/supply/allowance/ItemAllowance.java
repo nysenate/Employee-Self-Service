@@ -49,4 +49,15 @@ public class ItemAllowance {
     public void setQtyOrderedMonthToDate(int qtyOrderedMonthToDate) {
         this.qtyOrderedMonthToDate = qtyOrderedMonthToDate;
     }
+
+    @Override
+    public String toString() {
+        return "ItemAllowance{" +
+               "supplyItem=" + supplyItem +
+               ", visibility=" + visibility +
+               ", maxQtyPerOrder=" + maxQtyPerOrder +
+               ", maxQtyPerMonth=" + maxQtyPerMonth +
+               ", qtyOrderedMonthToDate=" + qtyOrderedMonthToDate +
+               '}';
+    }
 }
