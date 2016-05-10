@@ -9,19 +9,19 @@ import java.math.BigDecimal;
 public class AccrualSummary extends AccrualUsage
 {
     /** The number of vacation hours accrued within a certain time frame. */
-    protected BigDecimal vacHoursAccrued;
+    protected BigDecimal vacHoursAccrued = BigDecimal.ZERO;
 
     /** The number of vacation hours that have rolled over from prior years. */
-    protected BigDecimal vacHoursBanked;
+    protected BigDecimal vacHoursBanked = BigDecimal.ZERO;
 
     /** The number of personal hours accrued within a certain time frame. */
-    protected BigDecimal perHoursAccrued;
+    protected BigDecimal perHoursAccrued = BigDecimal.ZERO;
 
     /** The number of sick employee hours accrued within a certain time frame. */
-    protected BigDecimal empHoursAccrued;
+    protected BigDecimal empHoursAccrued = BigDecimal.ZERO;
 
     /** The number of sick employee hours that have rolled over from prior years. */
-    protected BigDecimal empHoursBanked;
+    protected BigDecimal empHoursBanked = BigDecimal.ZERO;
 
     /** --- Constructors --- */
 

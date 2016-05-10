@@ -2,6 +2,7 @@ package gov.nysenate.ess.seta.service.accrual;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.dao.accrual.AccrualDao;
@@ -117,7 +118,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
                 AccrualState accrualState = computeInitialAccState(empTrans, optPeriodAccRecord,
                     // Obtain the latest annual accrual record before/on the last pay period year requested
-                    annualAcc.floorEntry(lastPeriod.getYear()).getValue());
+                    annualAcc.floorEntry(lastPeriod.getYear()).getValue(), fromDate);
 
                 // Generate a list of all the pay periods between the period immediately following the DTPERLSPOST and
                 // before the pay period we are trying to compute available accruals for. We will call these the accrual
@@ -147,12 +148,18 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
      * @param transHistory TransactionHistory
      * @param periodAccSum Optional<PeriodAccSummary>
      * @param annualAcc AnnualAccSummary
+     * @param fromDate
      * @return AccrualState
      */
     private AccrualState computeInitialAccState(TransactionHistory transHistory, Optional<PeriodAccSummary> periodAccSum,
-                                                AnnualAccSummary annualAcc) {
+                                                AnnualAccSummary annualAcc, LocalDate fromDate) {
         AccrualState accrualState = new AccrualState(annualAcc);
-        LocalDate endDate = accrualState.getEndDate();
+        // Use the from date if there is no end date
+        // (this means that there have been no accruals posted yet for the employee)
+        if (accrualState.getEndDate() == null) {
+            accrualState.setEndDate(fromDate);
+        }
+
         Range<LocalDate> initialRange = Range.atMost(accrualState.getEndDate());
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
@@ -206,8 +213,12 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                         timeRecords.remove(0);
                     }
                 }
+                // Check to see if the employee had the CDACCRUE flag set as active for any day during the pay period
+                // If not, then accruals will not be incremented for this period
+                TreeMap<LocalDate, Boolean> accrualStatuses = transHistory.getEffectiveAccrualStatus(gapPeriodRange);
+                boolean accrualsActive = accrualStatuses.values().stream().anyMatch(Boolean::booleanValue);
                 // As long as this is a valid accrual period, increment the accruals.
-                if (!gapPeriod.isEndOfYearSplit()) {
+                if (accrualsActive && !gapPeriod.isEndOfYearSplit()) {
                     accrualState.incrementPayPeriodCount();
                     accrualState.computeRates();
                     accrualState.incrementAccrualsEarned();
