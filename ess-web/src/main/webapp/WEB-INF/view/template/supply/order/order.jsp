@@ -3,14 +3,20 @@
 <div ng-controller="SupplyOrderController">
   <div class="supply-order-hero inline-block width-100">
     <h2 class="requisition-title">Supply Requisition Form</h2>
-    <a href="${ctxPath}/supply/order/cart/cart">
+    <a href="${ctxPath}/supply/order/cart">
       <cart-summary class="cart-widget"></cart-summary>
     </a>
   </div>
 
   <div loader-indicator class="loader" ng-show="!itemSearch.response.$resolved"></div>
 
-  <div class="content-container" ng-show="itemSearch.response.$resolved">
+  <%--Location Selection--%>
+  <div ng-show="!isLocationSelected">
+    Please select a location:
+  </div>
+
+  <%--Ordering--%>
+  <div class="content-container" ng-show="itemSearch.response.$resolved && isLocationSelected">
     <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination" boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
       <div class="col-3-12 text-align-center"

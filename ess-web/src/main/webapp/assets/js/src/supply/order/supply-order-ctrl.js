@@ -12,6 +12,8 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         error: false
     };
     
+    $scope.isLocationSelected = true;
+    
     $scope.quantity = 1;
 
     $scope.init = function() {
@@ -56,7 +58,7 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
      * Need to reset the item matches when category search criteria changes.
      */
     $scope.$on('$locationChangeStart', function(event, newUrl) {
-        if (newUrl.indexOf(appProps.ctxPath + "/supply/order/order") > -1) { // If still on order page.
+        if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
             var urlCategories = locationService.getSearchParam("category") || [];
             if (!_.isEqual(urlCategories, $scope.itemSearch.categories)) { // If the category param changed.
                 $scope.itemSearch.categories = urlCategories;

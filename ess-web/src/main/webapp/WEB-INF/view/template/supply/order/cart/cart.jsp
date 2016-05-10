@@ -4,7 +4,7 @@
 <div ng-controller="SupplyCartController">
   <div class="supply-order-hero inline-block width-100">
     <h2 class="requisition-title">Shopping Cart</h2>
-    <a href="${ctxPath}/supply/order/cart/cart">
+    <a href="${ctxPath}/supply/order/cart">
       <cart-summary class="cart-widget"></cart-summary>
     </a>
   </div>

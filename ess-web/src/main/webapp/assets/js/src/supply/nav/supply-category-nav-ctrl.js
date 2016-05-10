@@ -22,7 +22,7 @@ function supplyNavigationController($scope, appProps, locationService, SupplyCat
     });
 
     function isRequisitionOrderPage(url) {
-        return url.indexOf(appProps.ctxPath + "/supply/order/order") > -1;
+        return url.indexOf(appProps.ctxPath + "/supply/order") > -1;
     }
 
     /**

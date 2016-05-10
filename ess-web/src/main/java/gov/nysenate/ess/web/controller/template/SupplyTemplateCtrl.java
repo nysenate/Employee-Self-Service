@@ -53,14 +53,14 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
 
     /** --- Order --- */
 
-    @RequestMapping(value="/order/order")
+    @RequestMapping(value="/order")
     public String supplyOrder() {
         return SUPPLY_TMPL_BASE_URL + "/order/order";
     }
 
     /** --- Cart --- */
 
-    @RequestMapping(value="/order/cart/cart")
+    @RequestMapping(value="/order/cart")
     public String cart() {
         return SUPPLY_TMPL_BASE_URL + "/order/cart/cart";
     }

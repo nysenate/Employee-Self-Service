@@ -71,15 +71,15 @@ essApp.config(function($routeProvider, $locationProvider) {
     /** Supply */
 
     $routeProvider.when(ctxPath + '/supply', {
-        redirectTo: ctxPath + '/supply/order/order'
+        redirectTo: ctxPath + '/supply/order'
     });
 
-    $routeProvider.when(ctxPath + '/supply/order/order', {
-        templateUrl: ctxPath + '/template/supply/order/order'
+    $routeProvider.when(ctxPath + '/supply/order', {
+        templateUrl: ctxPath + '/template/supply/order'
     });
 
-    $routeProvider.when(ctxPath + '/supply/order/cart/cart', {
-        templateUrl: ctxPath + '/template/supply/order/cart/cart'
+    $routeProvider.when(ctxPath + '/supply/order/cart', {
+        templateUrl: ctxPath + '/template/supply/order/cart'
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/manage', {
