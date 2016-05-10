@@ -18,6 +18,12 @@ public final class LocationId {
         this.type = LocationType.valueOfCode(locType);
     }
 
+    public LocationId(String locationId) {
+        String[] parts = locationId.split("-");
+        this.code = parts[0];
+        this.type = LocationType.valueOfCode(parts[1].charAt(0));
+    }
+
     /** Creates a location Id from its toString() output. */
     public static LocationId ofString(String locString) {
         String[] parts = locString.split("\\-");

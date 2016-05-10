@@ -1,7 +1,13 @@
 package gov.nysenate.ess.supply.allowance;
 
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.SupplyItem;
 
+/**
+ * Contains a {@link SupplyItem} and item meta data specific to a {@link Location}.
+ * An item's visibility, order quantities, and quantity ordered month-to-date
+ * is location specific and stored in this object.
+ */
 public class ItemAllowance {
 
     private SupplyItem supplyItem;
