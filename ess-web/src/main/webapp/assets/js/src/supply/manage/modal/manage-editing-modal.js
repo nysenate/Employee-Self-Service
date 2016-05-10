@@ -12,8 +12,8 @@ var essSupply = angular.module('essSupply')
     }])
 
     .controller('ManageEditingModal', ['$scope', 'appProps', 'modals', 'SupplyUpdateShipmentsApi',
-        'SupplyUpdateOrderApi', 'LocationApi', 'LocationService',
-        function ($scope, appProps, modals, updateShipmentsApi, updateOrderApi, locationApi, locationService) {
+        'SupplyUpdateOrderApi', 'SupplyLocationAutocompleteService', 'LocationService',
+        function ($scope, appProps, modals, updateShipmentsApi, updateOrderApi, locationAutocompleteService, locationService) {
             /** Original shipment */
             $scope.shipment = {};
             $scope.displayOrderVersion = {};
@@ -22,8 +22,6 @@ var essSupply = angular.module('essSupply')
             /** Initializes the location autocomplete field. */
             $scope.dirtyLocationCode = "";
             $scope.locationSearch = {
-                matches: [],
-                response: {},
                 codes: [],
                 map: new Map() // Map of location code to location object. Used to link autocomplete values to full objects.
             };
@@ -41,38 +39,13 @@ var essSupply = angular.module('essSupply')
                 $scope.displayOrderVersion = angular.copy($scope.shipment.order.activeVersion);
                 $scope.displayShipmentVersion = angular.copy($scope.shipment.activeVersion);
                 $scope.dirtyLocationCode = $scope.displayOrderVersion.destination.code;
-                initializeLocations();
+
+                $scope.locationSearch.codes = locationAutocompleteService.getCodes();
+                $scope.locationSearch.map = locationAutocompleteService.getCodeToLocationMap();
+                $scope.locationAutocompleteOptions = locationAutocompleteService.getLocationAutocompleteOptions();
+
                 initializeAddItemFeature();
             };
-
-            function initializeLocations() {
-                $scope.locationSearch.response = locationApi.get(
-                    function (response) {
-                        $scope.locationSearch.matches = response.result;
-                        initializeCodesAndMap();
-                        sortCodes();
-                    }, function (errorResponse) {
-                        $scope.locationSearch.matches = [];
-                        console.log(errorResponse);
-                    });
-
-                function initializeCodesAndMap() {
-                    angular.forEach($scope.locationSearch.matches, function (loc) {
-                        if (loc.locationTypeCode === 'W') {
-                            $scope.locationSearch.codes.push(loc.code);
-                            $scope.locationSearch.map.set(loc.code, loc);
-                        }
-                    });
-                }
-
-                function sortCodes() {
-                    $scope.locationSearch.codes.sort(function (a, b) {
-                        if (a < b) return -1;
-                        if (a > b) return 1;
-                        return 0;
-                    })
-                }
-            }
 
             function initializeAddItemFeature() {
                 $scope.addItemFeature.items = $scope.supplyItems;
@@ -181,27 +154,6 @@ var essSupply = angular.module('essSupply')
                 $scope.onUpdate();
             };
 
-            $scope.locationAutocompleteOptions = {
-                options: {
-                    html: true,
-                    focusOpen: false,
-                    onlySelectValid: true,
-                    outHeight: 300,
-                    source: function (request, response) {
-                        var data = $scope.locationSearch.codes;
-                        data = $scope.locationAutocompleteOptions.methods.filter(data, request.term);
-                        if (!data.length) {
-                            data.push({
-                                label: 'Not Found',
-                                value: ''
-                            })
-                        }
-                        response(data);
-                    }
-                },
-                methods: {}
-            };
-
             /** --- Add Item --- **/
 
             $scope.addItem = function () {
@@ -223,7 +175,7 @@ var essSupply = angular.module('essSupply')
                 });
                 return duplicateItem;
             }
-            
+
             $scope.addItemAutocompleteOptions = {
                 options: {
                     html: true,
@@ -244,5 +196,5 @@ var essSupply = angular.module('essSupply')
                 },
                 methods: {}
             };
-            
+
         }]);

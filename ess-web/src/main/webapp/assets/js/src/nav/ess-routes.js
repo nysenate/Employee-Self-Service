@@ -84,6 +84,11 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     $routeProvider.when(ctxPath + '/supply/manage/manage', {
         templateUrl: ctxPath + '/template/supply/manage/manage',
+        resolve: {
+            locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
+                return locAutoService.queryLocations();
+            }]
+        }
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/reconciliation', {
