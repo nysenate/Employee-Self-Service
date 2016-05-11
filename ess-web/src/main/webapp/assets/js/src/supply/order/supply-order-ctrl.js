@@ -1,8 +1,9 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'SupplyItemsApi', 'SupplyCategoryService', 'LocationService',
-        'SupplyCart', 'PaginationModel', supplyOrderController]);
+        'SupplyCart', 'PaginationModel', 'SupplyLocationAutocompleteService', 'EmpInfoApi', supplyOrderController]);
 
-function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService, locationService, supplyCart, paginationModel) {
+function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService, locationService, supplyCart,
+                               paginationModel, locationAutocompleteService, employeeApi) {
 
     $scope.itemSearch = {
         matches: [],
@@ -12,19 +13,35 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         error: false
     };
     
-    $scope.isLocationSelected = true;
+    $scope.destination = {};
+    $scope.destinationCode = "";
+    $scope.isLocationSelected = false;
     
     $scope.quantity = 1;
 
+
     $scope.init = function() {
+        initLocationToEmpWorkLocation();
+        manageUrlParams();
+        $scope.itemSearch.paginate.itemsPerPage = 16;
+        getItems();
+    };
+
+    function initLocationToEmpWorkLocation() {
+        employeeApi.get({empId: appProps.user.employeeId, detail: true}, function (response) {
+            $scope.destination = response.employee.empWorkLocation;
+            $scope.destinationCode = response.employee.empWorkLocation.code;
+        });
+    }
+
+    function manageUrlParams() {
         $scope.itemSearch.categories = locationService.getSearchParam("category") || [];
         $scope.itemSearch.paginate.currPage = locationService.getSearchParam("page") || 1;
+        // Set page param if not in url.
         locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, true);
-        $scope.itemSearch.paginate.itemsPerPage = 16;
-        $scope.getItems();
-    };
-    
-    $scope.getItems = function(resetPagination) {
+    }
+
+    function getItems(resetPagination) {
         if(resetPagination) {
             $scope.itemSearch.paginate.reset();
             setPageUrlParams();
@@ -46,7 +63,7 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
     
     $scope.onPageChange = function() {
         setPageUrlParams();
-        $scope.getItems(false);
+        getItems(false);
     };
     
     function setPageUrlParams() {
@@ -62,7 +79,7 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
             var urlCategories = locationService.getSearchParam("category") || [];
             if (!_.isEqual(urlCategories, $scope.itemSearch.categories)) { // If the category param changed.
                 $scope.itemSearch.categories = urlCategories;
-                $scope.getItems(true);
+                getItems(true);
             }
         }
     });
@@ -83,5 +100,16 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         return range;
     };
 
+    /**
+     * --- Location selection ---
+     */
+    
+    $scope.confirmDestination = function () {
+    };
+    
+    $scope.getLocationAutocompleteOptions = function () {
+        return locationAutocompleteService.getLocationAutocompleteOptions();
+    };
+    
     $scope.init();
 }

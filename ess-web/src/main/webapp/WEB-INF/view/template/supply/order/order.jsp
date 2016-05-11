@@ -12,12 +12,23 @@
 
   <%--Location Selection--%>
   <div ng-show="!isLocationSelected">
-    Please select a location:
+    <div class="content-container">
+      <div class="content-info">
+        <h4 style="display: inline-block;">Please select a destination: </h4>
+        <input style="width: 80px;"
+            type="text"
+               ng-model="destinationCode"
+               ui-autocomplete="getLocationAutocompleteOptions()">
+        <input type="button" value="Confirm" class="submit-button"
+               ng-click="confirmDestination()">
+      </div>
+    </div>
   </div>
 
   <%--Ordering--%>
-  <div class="content-container" ng-show="itemSearch.response.$resolved && isLocationSelected">
-    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination" boundary-links="true" max-size="10"></dir-pagination-controls>
+  <div class="content-container" ng-show="itemSearch.response.$resolved && isLocationSelected" ng-cloak>
+    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
+                             boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
       <div class="col-3-12 text-align-center"
            dir-paginate="item in itemSearch.matches | itemsPerPage: itemSearch.paginate.itemsPerPage"
@@ -34,13 +45,15 @@
             <select requisition-quantity-selector item="item" warn-qty="item.suggestedMaxQty + 1"
                     ng-model="quantity" ng-options="qty for qty in orderQuantityRange(item)"></select>
           </label>
-          <input class="submit-button add-to-cart-btn" ng-click="addToCart(item, quantity)" type="button" value="Add to Cart">
+          <input class="submit-button add-to-cart-btn" ng-click="addToCart(item, quantity)" type="button"
+                 value="Add to Cart">
         </div>
         <div ng-class="{'visibility-hidden': !isInCart(item)}" class="green padding-top-5 bold">
           &#x2713; Added to cart.
         </div>
       </div>
     </div>
-    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"  boundary-links="true" max-size="10"></dir-pagination-controls>
+    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
+                             boundary-links="true" max-size="10"></dir-pagination-controls>
   </div>
 </div>

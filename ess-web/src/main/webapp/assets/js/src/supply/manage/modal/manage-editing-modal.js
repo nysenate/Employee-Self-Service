@@ -22,7 +22,6 @@ var essSupply = angular.module('essSupply')
             /** Initializes the location autocomplete field. */
             $scope.dirtyLocationCode = "";
             $scope.locationSearch = {
-                codes: [],
                 map: new Map() // Map of location code to location object. Used to link autocomplete values to full objects.
             };
             $scope.addItemFeature = {
@@ -40,7 +39,6 @@ var essSupply = angular.module('essSupply')
                 $scope.displayShipmentVersion = angular.copy($scope.shipment.activeVersion);
                 $scope.dirtyLocationCode = $scope.displayOrderVersion.destination.code;
 
-                $scope.locationSearch.codes = locationAutocompleteService.getCodes();
                 $scope.locationSearch.map = locationAutocompleteService.getCodeToLocationMap();
                 $scope.locationAutocompleteOptions = locationAutocompleteService.getLocationAutocompleteOptions();
 
