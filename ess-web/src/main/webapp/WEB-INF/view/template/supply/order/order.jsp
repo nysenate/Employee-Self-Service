@@ -8,25 +8,35 @@
     </a>
   </div>
 
-  <div loader-indicator class="loader" ng-show="!itemSearch.response.$resolved"></div>
+  <div loader-indicator class="loader" ng-show="state === states.SHOPPING && !itemSearch.response.$resolved"></div>
 
   <%--Location Selection--%>
-  <div ng-show="!isLocationSelected">
+  <div ng-show="state === states.SELECTING_DESTINATION">
     <div class="content-container">
       <div class="content-info">
-        <h4 style="display: inline-block;">Please select a destination: </h4>
-        <input style="width: 80px;"
-            type="text"
-               ng-model="destinationCode"
-               ui-autocomplete="getLocationAutocompleteOptions()">
-        <input type="button" value="Confirm" class="submit-button"
-               ng-click="confirmDestination()">
+        <form name="selectDestinationForm" novalidate>
+          <h4 style="display: inline-block;">Please select a destination: </h4>
+          <input name="destination"
+                 type="text"
+                 ng-model="destinationCode"
+                 ui-autocomplete="getLocationAutocompleteOptions()"
+                 destination-validator
+                 ng-model-options="{debounce: 300}"
+                 style="width: 80px;"/>
+          <input type="button" value="Confirm" class="submit-button"
+                 ng-disabled="selectDestinationForm.destination.$error.destination"
+                 ng-click="setDestination()">
+          <div ng-show="selectDestinationForm.destination.$error.destination"
+               class="warning-text">
+            Invalid location
+          </div>
+        </form>
       </div>
     </div>
   </div>
 
   <%--Ordering--%>
-  <div class="content-container" ng-show="itemSearch.response.$resolved && isLocationSelected" ng-cloak>
+  <div class="content-container" ng-show="itemSearch.response.$resolved && state == states.SHOPPING">
     <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">

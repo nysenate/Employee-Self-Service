@@ -5,6 +5,12 @@ var essSupply = angular.module('essSupply').controller('SupplyOrderController',
 function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService, locationService, supplyCart,
                                paginationModel, locationAutocompleteService, employeeApi) {
 
+    $scope.state = {};
+    $scope.states = {
+        SELECTING_DESTINATION: 5,
+        SHOPPING: 10
+    };
+
     $scope.itemSearch = {
         matches: [],
         paginate: angular.extend({}, paginationModel),
@@ -12,18 +18,19 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         response: {},
         error: false
     };
-    
+
     $scope.destination = {};
     $scope.destinationCode = "";
-    $scope.isLocationSelected = false;
-    
+
     $scope.quantity = 1;
 
+    /** --- Initialization --- */
 
-    $scope.init = function() {
+    $scope.init = function () {
+        $scope.state = $scope.states.SELECTING_DESTINATION;
+        $scope.itemSearch.paginate.itemsPerPage = 16;
         initLocationToEmpWorkLocation();
         manageUrlParams();
-        $scope.itemSearch.paginate.itemsPerPage = 16;
         getItems();
     };
 
@@ -42,7 +49,7 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
     }
 
     function getItems(resetPagination) {
-        if(resetPagination) {
+        if (resetPagination) {
             $scope.itemSearch.paginate.reset();
             setPageUrlParams();
         }
@@ -51,21 +58,23 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
             limit: $scope.itemSearch.paginate.getLimit(),
             offset: $scope.itemSearch.paginate.getOffset()
         };
-        $scope.itemSearch.response = itemsApi.get(params, function(response) {
+        $scope.itemSearch.response = itemsApi.get(params, function (response) {
             $scope.itemSearch.matches = response.result;
             $scope.itemSearch.paginate.setTotalItems(response.total);
             $scope.itemSearch.error = false;
-        }, function(errorResponse) {
+        }, function (errorResponse) {
             $scope.itemSearch.matches = [];
             $scope.itemSearch.error = true;
         })
-    };
-    
-    $scope.onPageChange = function() {
+    }
+
+    /** --- Navigation --- */
+
+    $scope.onPageChange = function () {
         setPageUrlParams();
         getItems(false);
     };
-    
+
     function setPageUrlParams() {
         locationService.setSearchParam("page", $scope.itemSearch.paginate.currPage, true, false);
     }
@@ -74,7 +83,7 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
      * Detect url category param changes due to category side bar selections or back/forward browser navigation.
      * Need to reset the item matches when category search criteria changes.
      */
-    $scope.$on('$locationChangeStart', function(event, newUrl) {
+    $scope.$on('$locationChangeStart', function (event, newUrl) {
         if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
             var urlCategories = locationService.getSearchParam("category") || [];
             if (!_.isEqual(urlCategories, $scope.itemSearch.categories)) { // If the category param changed.
@@ -84,15 +93,17 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         }
     });
 
-    $scope.addToCart = function(item, qty) {
+    /** --- Shopping --- */
+
+    $scope.addToCart = function (item, qty) {
         supplyCart.addToCart(item, qty);
     };
 
-    $scope.isInCart = function(item) {
+    $scope.isInCart = function (item) {
         return supplyCart.itemInCart(item.id)
     };
 
-    $scope.orderQuantityRange = function(item) {
+    $scope.orderQuantityRange = function (item) {
         var range = [];
         for (var i = 1; i <= item.suggestedMaxQty * 2; i++) {
             range.push(i);
@@ -100,16 +111,32 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         return range;
     };
 
-    /**
-     * --- Location selection ---
-     */
-    
-    $scope.confirmDestination = function () {
+    /** --- Location selection --- */
+
+    $scope.setDestination = function () {
+        if (locationAutocompleteService.isValidCode($scope.destinationCode)) {
+            $scope.destination = locationAutocompleteService.getLocationFromCode($scope.destinationCode);
+            $scope.state = $scope.states.SHOPPING;
+        }
     };
-    
+
     $scope.getLocationAutocompleteOptions = function () {
         return locationAutocompleteService.getLocationAutocompleteOptions();
     };
-    
+
     $scope.init();
 }
+
+/**
+ * Directive for validating destination selection.
+ */
+essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService', function (locationAutocompleteService) {
+    return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$validators.destination = function (modelValue, viewValue) {
+                return locationAutocompleteService.isValidCode(modelValue) || modelValue.length === 0;
+            }
+        }
+    }
+}]);

@@ -48,6 +48,14 @@ function locationAutocompleteService(locationApi) {
             return codeToLocMap;
         },
 
+        isValidCode: function (code) {
+            return codeToLocMap.has(code);
+        },
+
+        getLocationFromCode: function (code) {
+            return codeToLocMap.get(code);
+        },
+
         getLocationAutocompleteOptions: function (height) {
             var autocompleteOptions = {
                 options: {
