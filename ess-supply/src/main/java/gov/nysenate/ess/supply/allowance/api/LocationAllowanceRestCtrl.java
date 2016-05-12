@@ -4,8 +4,8 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.allowance.service.LocationProfileService;
-import gov.nysenate.ess.supply.allowance.view.LocationProfileView;
+import gov.nysenate.ess.supply.allowance.service.LocationAllowanceService;
+import gov.nysenate.ess.supply.allowance.view.LocationAllowanceView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,12 @@ public class LocationAllowanceRestCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(LocationAllowanceRestCtrl.class);
 
-    @Autowired private LocationProfileService locationProfileService;
+    @Autowired private LocationAllowanceService locationAllowanceService;
 
     @RequestMapping("/{locId}")
     public BaseResponse getLocationAllowance(@PathVariable String locId) {
         LocationId locationId = new LocationId(locId);
-        LocationProfileView locationProfileView = new LocationProfileView(locationProfileService.getLocationProfile(locationId));
-        return new ViewObjectResponse<>(locationProfileView);
+        LocationAllowanceView locationAllowanceView = new LocationAllowanceView(locationAllowanceService.getLocationAllowance(locationId));
+        return new ViewObjectResponse<>(locationAllowanceView);
     }
 }

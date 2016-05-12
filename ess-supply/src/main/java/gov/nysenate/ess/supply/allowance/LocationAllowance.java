@@ -11,12 +11,12 @@ import java.util.Set;
  * It contains the allowable per order and per month order quantities for each item.
  * It also contains the quantity of an item ordered month to date for the location.
  */
-public class LocationProfile {
+public class LocationAllowance {
 
     private Location location;
     private Set<ItemAllowance> itemAllowances;
 
-    public LocationProfile(Location location, Set<ItemAllowance> itemAllowances) {
+    public LocationAllowance(Location location, Set<ItemAllowance> itemAllowances) {
         this.location = location;
         this.itemAllowances = itemAllowances;
     }
