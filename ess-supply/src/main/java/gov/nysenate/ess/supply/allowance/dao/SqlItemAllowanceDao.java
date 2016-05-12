@@ -36,7 +36,7 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
         ItemAllowance allowance = new ItemAllowance();
         allowance.setSupplyItem(item);
         allowance.setVisibility(ItemVisibility.VISIBLE);
-        allowance.setMaxQtyPerMonth(item.getMaxQtyPerMonth());
+        allowance.setPerMonthAllowance(item.getMaxQtyPerMonth());
         allowance.setQtyOrderedMonthToDate(queryQtyOrderedMonthToDate(item, locationId));
         return allowance;
     }

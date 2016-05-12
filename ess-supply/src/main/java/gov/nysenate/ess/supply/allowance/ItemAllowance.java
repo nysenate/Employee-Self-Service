@@ -12,9 +12,18 @@ public class ItemAllowance {
 
     private SupplyItem supplyItem;
     private ItemVisibility visibility;
-    private int maxQtyPerOrder;
-    private int maxQtyPerMonth;
+    private int perOrderAllowance;
+    private int perMonthAllowance;
     private int qtyOrderedMonthToDate;
+
+    /**
+     * @return The remaining quantity allowed to be ordered this month.
+     * Always returns zero if monthly allowance has been exceeded.
+     */
+    public int getRemainingMonthlyAllowance() {
+        int remaining = perMonthAllowance - qtyOrderedMonthToDate;
+        return remaining < 0 ? 0 : remaining;
+    }
 
     public SupplyItem getSupplyItem() {
         return supplyItem;
@@ -32,20 +41,20 @@ public class ItemAllowance {
         this.visibility = visibility;
     }
 
-    public int getMaxQtyPerOrder() {
-        return maxQtyPerOrder;
+    public int getPerOrderAllowance() {
+        return perOrderAllowance;
     }
 
-    public void setMaxQtyPerOrder(int maxQtyPerOrder) {
-        this.maxQtyPerOrder = maxQtyPerOrder;
+    public void setPerOrderAllowance(int perOrderAllowance) {
+        this.perOrderAllowance = perOrderAllowance;
     }
 
-    public int getMaxQtyPerMonth() {
-        return maxQtyPerMonth;
+    public int getPerMonthAllowance() {
+        return perMonthAllowance;
     }
 
-    public void setMaxQtyPerMonth(int maxQtyPerMonth) {
-        this.maxQtyPerMonth = maxQtyPerMonth;
+    public void setPerMonthAllowance(int perMonthAllowance) {
+        this.perMonthAllowance = perMonthAllowance;
     }
 
     public int getQtyOrderedMonthToDate() {
@@ -54,16 +63,5 @@ public class ItemAllowance {
 
     public void setQtyOrderedMonthToDate(int qtyOrderedMonthToDate) {
         this.qtyOrderedMonthToDate = qtyOrderedMonthToDate;
-    }
-
-    @Override
-    public String toString() {
-        return "ItemAllowance{" +
-               "supplyItem=" + supplyItem +
-               ", visibility=" + visibility +
-               ", maxQtyPerOrder=" + maxQtyPerOrder +
-               ", maxQtyPerMonth=" + maxQtyPerMonth +
-               ", qtyOrderedMonthToDate=" + qtyOrderedMonthToDate +
-               '}';
     }
 }

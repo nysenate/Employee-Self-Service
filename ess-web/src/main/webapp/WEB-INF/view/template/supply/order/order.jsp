@@ -8,7 +8,7 @@
     </a>
   </div>
 
-  <div loader-indicator class="loader" ng-show="state === states.SHOPPING && !itemSearch.response.$resolved"></div>
+  <div loader-indicator class="loader" ng-show="state === states.SHOPPING && !inventory.response.$resolved"></div>
 
   <%--Location Selection--%>
   <div ng-show="state === states.SELECTING_DESTINATION">
@@ -36,24 +36,24 @@
   </div>
 
   <%--Ordering--%>
-  <div class="content-container" ng-show="itemSearch.response.$resolved && state == states.SHOPPING">
+  <div class="content-container" ng-show="inventory.response.$resolved && state == states.SHOPPING">
     <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
       <div class="col-3-12 text-align-center"
-           dir-paginate="item in itemSearch.matches | itemsPerPage: itemSearch.paginate.itemsPerPage"
-           current-page="itemSearch.paginate.currPage"
-           total-items="itemSearch.paginate.totalItems"
+           dir-paginate="allowance in displayAllowances | itemsPerPage: inventory.paginate.itemsPerPage"
+           current-page="inventory.paginate.currPage"
            pagination-id="item-pagination">
         <img ng-src="${ctxPath}/assets/img/supply/no_photo_available.png" class="supply-item-image">
         <div>
-          <p class="dark-gray bold" style="height: 40px;">{{item.description}}</p>
-          <p class="dark-gray">{{item.standardQuantity}}/Pack</p>
+          <p class="dark-gray bold" style="height: 40px;">{{allowance.item.description}}</p>
+          <p class="dark-gray">{{allowance.item.standardQuantity}}/Pack</p>
         </div>
         <div style="">
           <label class="custom-select">
-            <select requisition-quantity-selector item="item" warn-qty="item.suggestedMaxQty + 1"
-                    ng-model="quantity" ng-options="qty for qty in orderQuantityRange(item)"></select>
+            <select ng-model="allowance.selectedQuantity"
+                    ng-options="qty for qty in oneToPerOrderAllowanceRange(allowance)">
+            </select>
           </label>
           <input class="submit-button add-to-cart-btn" ng-click="addToCart(item, quantity)" type="button"
                  value="Add to Cart">
