@@ -76,6 +76,7 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     $routeProvider.when(ctxPath + '/supply/order', {
         templateUrl: ctxPath + '/template/supply/order',
+        reloadOnSearch: false,
         resolve: {
             locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
                 return locAutoService.queryLocations();

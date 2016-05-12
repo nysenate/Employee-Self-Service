@@ -18,7 +18,7 @@
           <h4 style="display: inline-block;">Please select a destination: </h4>
           <input name="destination"
                  type="text"
-                 ng-model="destinationCode"
+                 ng-model="destination.code"
                  ui-autocomplete="getLocationAutocompleteOptions()"
                  destination-validator
                  ng-model-options="{debounce: 300}"
@@ -63,7 +63,7 @@
         </div>
       </div>
     </div>
-    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
+    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
   </div>
 </div>

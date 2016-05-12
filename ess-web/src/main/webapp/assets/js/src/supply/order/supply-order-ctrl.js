@@ -19,8 +19,10 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
         error: false
     };
 
-    $scope.destination = {};
-    $scope.destinationCode = "";
+    $scope.destination = {
+        code: "",       // The code entered by the user.
+        location: {}    // The location object associated with the code.
+    };
 
     $scope.quantity = 1;
 
@@ -36,8 +38,8 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
 
     function initLocationToEmpWorkLocation() {
         employeeApi.get({empId: appProps.user.employeeId, detail: true}, function (response) {
-            $scope.destination = response.employee.empWorkLocation;
-            $scope.destinationCode = response.employee.empWorkLocation.code;
+            $scope.destination.location = response.employee.empWorkLocation;
+            $scope.destination.code = response.employee.empWorkLocation.code;
         });
     }
 
@@ -114,8 +116,8 @@ function supplyOrderController($scope, appProps, itemsApi, supplyCategoryService
     /** --- Location selection --- */
 
     $scope.setDestination = function () {
-        if (locationAutocompleteService.isValidCode($scope.destinationCode)) {
-            $scope.destination = locationAutocompleteService.getLocationFromCode($scope.destinationCode);
+        if (locationAutocompleteService.isValidCode($scope.destination.code)) {
+            $scope.destination.location = locationAutocompleteService.getLocationFromCode($scope.destination.code);
             $scope.state = $scope.states.SHOPPING;
         }
     };
