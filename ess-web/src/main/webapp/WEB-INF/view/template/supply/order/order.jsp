@@ -55,10 +55,10 @@
                     ng-options="qty for qty in oneToPerOrderAllowanceRange(allowance)">
             </select>
           </label>
-          <input class="submit-button add-to-cart-btn" ng-click="addToCart(item, quantity)" type="button"
-                 value="Add to Cart">
+          <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance.item, allowance)"
+                 type="button" value="Add to Cart">
         </div>
-        <div ng-class="{'visibility-hidden': !isInCart(item)}" class="green padding-top-5 bold">
+        <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
           &#x2713; Added to cart.
         </div>
       </div>

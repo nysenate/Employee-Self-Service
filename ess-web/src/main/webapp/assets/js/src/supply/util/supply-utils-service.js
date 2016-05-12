@@ -8,6 +8,15 @@ essSupply.service('SupplyUtils', [function () {
                 return 0;
             });
             return lineItems;
+        },
+        
+        alphabetizeAllowances: function (allowances) {
+            allowances.sort(function (a, b) {
+                if (a.item.description < b.item.description) return -1;
+                if (a.item.description > b.item.description) return 1;
+                return 0;
+            });
+            return allowances;
         }
     }
 }]);

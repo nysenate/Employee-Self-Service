@@ -1,9 +1,9 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'LocationService', 'SupplyCart', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'EmpInfoApi', 'SupplyLocationAllowanceApi', supplyOrderController]);
+        'EmpInfoApi', 'SupplyLocationAllowanceApi', 'SupplyUtils', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               employeeApi, locationAllowanceApi) {
+                               employeeApi, locationAllowanceApi, supplyUtils) {
     $scope.state = {};
     $scope.states = {
         SELECTING_DESTINATION: 5,
@@ -65,7 +65,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
      */
     function getLocationAllowance() {
         $scope.inventory.response = locationAllowanceApi.get({id: $scope.destination.location.locId}, function (response) {
-            $scope.inventory.allowances = response.result.itemAllowances;
+            $scope.inventory.allowances = supplyUtils.alphabetizeAllowances(response.result.itemAllowances);
         });
         return $scope.inventory.response.$promise;
     }
@@ -125,12 +125,12 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         }
     }
 
-    $scope.addToCart = function (item, qty) {
-        supplyCart.addToCart(item, qty);
+    $scope.addToCart = function (item, allowance) {
+        supplyCart.addToCart(item, allowance, allowance.selectedQuantity);
     };
 
     $scope.isInCart = function (item) {
-        // return supplyCart.itemInCart(item.id)
+        return supplyCart.itemInCart(item.id)
     };
 
     /**
