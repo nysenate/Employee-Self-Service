@@ -57,6 +57,13 @@
 
   <div loader-indicator class="loader" ng-show="state.pageState === pageStates.FETCHING"></div>
 
+  <% /** Display a warning for previously unsubmitted records */ %>
+  <div ess-notification level="warn" title="Earlier Unsubmitted Records"
+       class="margin-top-20 margin-bottom-20" ng-show="errorTypes.record.prevUnsubmittedRecord">
+    There are earlier annual salary records that have not yet been submitted.<br>
+    This record cannot be submitted until all previous annual salary records are submitted.
+  </div>
+
   <% /** Display an error message if there are notes for a disapproved time record. */ %>
   <div ess-notification level="error" title="Time record requires correction"
        message="{{state.records[state.iSelectedRecord].initialRemarks}}" class="margin-top-20"

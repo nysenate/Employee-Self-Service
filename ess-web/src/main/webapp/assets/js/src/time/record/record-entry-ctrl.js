@@ -132,8 +132,8 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         var record = $scope.state.records[$scope.state.iSelectedRecord];
         console.log(submit ? 'submitting' : 'saving', 'record', record);
         $scope.checkRecordForErrors();
-        var errors = $scope.errorTypes.raSa.errors || $scope.errorTypes.te.errors;
-        if (errors) {
+        var entryErrors = $scope.errorTypes.raSa.errors || $scope.errorTypes.te.errors;
+        if (entryErrors || submit && $scope.errorTypes.record.errors) {
             $scope.$broadcast('validateRecordEntries');
             $scope.state.pageState = $scope.pageStates.VALIDATE_FAILURE;
             modals.open('validate-indicator', {'record': record});
@@ -300,7 +300,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
      */
     $scope.recordValid = function () {
         var record = $scope.getSelectedRecord();
-        return !(record == null || $scope.selRecordHasErrors());
+        return !(record == null || $scope.selRecordHasEntryErrors());
     };
 
     /**
@@ -310,7 +310,9 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
      */
     $scope.recordSubmittable = function () {
         var record = $scope.getSelectedRecord();
-        return $scope.recordValid() && !moment(record.endDate).isAfter(moment(), 'day');
+        return $scope.recordValid() &&
+               !$scope.errorTypes.record.errors &&
+               !moment(record.endDate).isAfter(moment(), 'day');
     };
 
     /**
@@ -561,6 +563,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         var record = $scope.state.records[$scope.state.iSelectedRecord];
         if (record && record.timeEntries) {
             $scope.errorTypes.reset();
+            checkForPrevUnsubmitted(record);
             angular.forEach(record.timeEntries, function (entry) {
                 if (isSalariedEmployee(entry)) {
                     checkSalariedEntryForErrors(entry);
@@ -572,8 +575,28 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             // These will be true if any errors of their type exist. raSa for salaried, te for temporary.
             $scope.errorTypes.raSa.errors = !allFalse($scope.errorTypes.raSa);
             $scope.errorTypes.te.errors = !allFalse($scope.errorTypes.te);
+            $scope.errorTypes.record.errors = !allFalse($scope.errorTypes.record);
         }
     };
+
+    /**
+     * Check for any unsubmitted salaried records before the given record
+     * @param record
+     */
+    function checkForPrevUnsubmitted(record) {
+        for (var iRecord in $scope.state.records) {
+            var otherRecord = $scope.state.records[iRecord];
+            if (moment(otherRecord.beginDate).isBefore(record.beginDate)) {
+                for (var iEntry in otherRecord.timeEntries) {
+                    if (isSalariedEmployee(otherRecord.timeEntries[iEntry])) {
+                        console.log('glerpus');
+                        $scope.errorTypes.record.prevUnsubmittedRecord = true;
+                        return;
+                    }
+                }
+            }
+        }
+    }
 
     /** Checks all input in a salaried employees time entry for errors. */
     function checkSalariedEntryForErrors(entry) {
@@ -652,6 +675,11 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             notEnoughWorkHours: false,
             fifteenMinIncrements: false
         },
+        // Record scope errors that do not depend on time entries
+        record: {
+            errors: false,
+            prevUnsubmittedRecord: false
+        },
         // Recursively set all boolean error properties to false
         reset: function(object) {
             if (object === undefined) {
@@ -669,10 +697,10 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     };
 
     /**
-     * Return true if errors have been detected on the active time record
+     * Return true if entry based errors have been detected on the active time record
      * @returns {boolean}
      */
-    $scope.selRecordHasErrors = function () {
+    $scope.selRecordHasEntryErrors = function () {
         return $scope.errorTypes.raSa.errors || $scope.errorTypes.te.errors;
     };
 

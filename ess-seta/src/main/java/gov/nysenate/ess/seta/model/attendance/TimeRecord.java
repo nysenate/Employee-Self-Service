@@ -209,6 +209,15 @@ public class TimeRecord implements Comparable<TimeRecord>
                 timeEntryMap.values().stream().allMatch(TimeEntry::isEmpty);
     }
 
+    /**
+     * Extract the time record scope from the time record status
+     */
+    public TimeRecordScope getScope() {
+        return Optional.ofNullable(recordStatus)
+                .map(TimeRecordStatus::getScope)
+                .orElse(null);
+    }
+
     /** --- Basic Getters/Setters --- */
 
     public BigInteger getTimeRecordId() {
