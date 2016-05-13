@@ -31,8 +31,9 @@ public class TimeRecordView extends SimpleTimeRecordView
     }
 
     @JsonIgnore
+    @Override
     public TimeRecord toTimeRecord() {
-        TimeRecord record = new TimeRecord();
+        TimeRecord record = super.toTimeRecord();
         record.addTimeEntries(timeEntries.stream()
             .map(TimeEntryView::toTimeEntry)
             .collect(Collectors.toList()));
