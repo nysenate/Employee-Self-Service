@@ -162,6 +162,7 @@ table.ess-table tbody tr.active {
 }
 .ess-notification {
   padding: .3em;
+  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -443,10 +444,11 @@ table.ess-table tbody tr.active {
   max-width: 80vw;
   overflow-x: auto;
 }
-/** --- 500 Modal --- */
+/** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
+  z-index: 9001;
 }
 #internal-error-modal h1 {
   margin-top: 0;
@@ -1752,10 +1754,11 @@ button.ui-button::-moz-focus-inner {
   max-width: 80vw;
   overflow-x: auto;
 }
-/** --- 500 Modal --- */
+/** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
+  z-index: 9001;
 }
 #internal-error-modal h1 {
   margin-top: 0;
@@ -1813,6 +1816,7 @@ button.ui-button::-moz-focus-inner {
 }
 .ess-notification {
   padding: .3em;
+  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -2298,6 +2302,7 @@ table.ess-table tbody tr.active {
 }
 .ess-notification {
   padding: .3em;
+  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -2579,10 +2584,11 @@ table.ess-table tbody tr.active {
   max-width: 80vw;
   overflow-x: auto;
 }
-/** --- 500 Modal --- */
+/** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
+  z-index: 9001;
 }
 #internal-error-modal h1 {
   margin-top: 0;
@@ -3378,6 +3384,7 @@ table.ess-table tbody tr.active {
 }
 .ess-notification {
   padding: .3em;
+  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -3659,10 +3666,11 @@ table.ess-table tbody tr.active {
   max-width: 80vw;
   overflow-x: auto;
 }
-/** --- 500 Modal --- */
+/** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
+  z-index: 9001;
 }
 #internal-error-modal h1 {
   margin-top: 0;
@@ -4226,7 +4234,7 @@ input[type="number"]:focus {
 input[type="button"].submit-button {
   padding: 5px 10px;
   background: #799933;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #5b7326;
   border-bottom-style: solid;
@@ -4248,7 +4256,7 @@ input[type="button"].submit-button:hover {
 input[type="button"].reject-button {
   padding: 5px 10px;
   background: #e64727;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #c33417;
   border-bottom-style: solid;
@@ -4270,7 +4278,7 @@ input[type="button"].reject-button:hover {
 input[type="button"].neutral-button {
   padding: 5px 10px;
   background: #808080;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #676767;
   border-bottom-style: solid;
@@ -4292,7 +4300,7 @@ input[type="button"].neutral-button:hover {
 input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #006b80;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #00404d;
   border-bottom-style: solid;
@@ -4440,6 +4448,9 @@ a:hover {
 .margin-top-20 {
   margin-top: 20px !important;
 }
+.margin-bottom-20 {
+  margin-bottom: 20px !important;
+}
 .padding-10 {
   padding: 10px;
 }
@@ -4514,7 +4525,7 @@ table.simple-table tbody tr td {
 .hero-404 h4,
 .hero-404 p,
 .hero-404 span {
-  color: #ffffff;
+  color: white;
 }
 /** --- Home Page --- */
 .ess-top-header {
@@ -4864,7 +4875,7 @@ table.simple-table tbody tr td {
 .time-attendance-hero h4,
 .time-attendance-hero p,
 .time-attendance-hero span {
-  color: #ffffff;
+  color: white;
 }
 table.time-record-entry-table thead {
   background: white;
@@ -5528,7 +5539,7 @@ record-review-modal,
 .my-info-hero h4,
 .my-info-hero p,
 .my-info-hero span {
-  color: #ffffff;
+  color: white;
 }
 /** --- Paycheck History Page --- */
 #paycheck-history-table tbody tr {
@@ -5725,7 +5736,7 @@ input[type="number"]:focus {
 input[type="button"].submit-button {
   padding: 5px 10px;
   background: #799933;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #5b7326;
   border-bottom-style: solid;
@@ -5747,7 +5758,7 @@ input[type="button"].submit-button:hover {
 input[type="button"].reject-button {
   padding: 5px 10px;
   background: #e64727;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #c33417;
   border-bottom-style: solid;
@@ -5769,7 +5780,7 @@ input[type="button"].reject-button:hover {
 input[type="button"].neutral-button {
   padding: 5px 10px;
   background: #808080;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #676767;
   border-bottom-style: solid;
@@ -5791,7 +5802,7 @@ input[type="button"].neutral-button:hover {
 input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #006b80;
-  color: #ffffff;
+  color: white;
   font-weight: 600;
   border: 2px none #00404d;
   border-bottom-style: solid;
@@ -5939,6 +5950,9 @@ a:hover {
 .margin-top-20 {
   margin-top: 20px !important;
 }
+.margin-bottom-20 {
+  margin-bottom: 20px !important;
+}
 .padding-10 {
   padding: 10px;
 }
@@ -6013,7 +6027,7 @@ table.simple-table tbody tr td {
 .hero-404 h4,
 .hero-404 p,
 .hero-404 span {
-  color: #ffffff;
+  color: white;
 }
 /** --- Home Page --- */
 .ess-top-header {
@@ -6363,7 +6377,7 @@ table.simple-table tbody tr td {
 .time-attendance-hero h4,
 .time-attendance-hero p,
 .time-attendance-hero span {
-  color: #ffffff;
+  color: white;
 }
 table.time-record-entry-table thead {
   background: white;
@@ -7027,7 +7041,7 @@ record-review-modal,
 .my-info-hero h4,
 .my-info-hero p,
 .my-info-hero span {
-  color: #ffffff;
+  color: white;
 }
 /** --- Paycheck History Page --- */
 #paycheck-history-table tbody tr {
@@ -7250,6 +7264,7 @@ table.ess-table tbody tr.active {
 }
 .ess-notification {
   padding: .3em;
+  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -7531,10 +7546,11 @@ table.ess-table tbody tr.active {
   max-width: 80vw;
   overflow-x: auto;
 }
-/** --- 500 Modal --- */
+/** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
+  z-index: 9001;
 }
 #internal-error-modal h1 {
   margin-top: 0;
@@ -8062,7 +8078,7 @@ button.ui-button::-moz-focus-inner {
 .supply-order-hero h4,
 .supply-order-hero p,
 .supply-order-hero span {
-  color: #ffffff;
+  color: white;
 }
 .dark-blue-purple {
   color: #374282;
