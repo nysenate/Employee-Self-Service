@@ -1,39 +1,39 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCart', [function () {
+essSupply.service('SupplyCart', ['SupplyLocationAllowanceService', function (allowanceService) {
 
-    function LineItem(item, allowance, quantity) {
+    function LineItem(item, quantity) {
         this.item = item;
-        this.allowance = allowance;
         this.quantity = quantity;
     }
 
     /** Array of LineItem's in the cart. */
     var lineItems = [];
 
+    /** Add a new item to the cart, returns the quantity of the item added. */
+    function addNewItemToCart(item, quantity) {
+        lineItems.push(new LineItem(item, quantity));
+        return quantity;
+    }
+
+    /** Add more of an item that is already in the cart. We need to verify this quantity is allowed. */
+    function addQuantityToCartItem(lineItem, quantity) {
+        var itemAllowance = allowanceService.getAllowanceByItemId(lineItem.item.id);
+        var totalQuantity = lineItem.quantity + quantity;
+        if (totalQuantity > itemAllowance.perOrderAllowance) {
+            // Trying to order over the per order max. Set to max allowed but not higher.
+            var maxAllowed = itemAllowance.perOrderAllowance - lineItem.quantity;
+            lineItem.quantity = itemAllowance.perOrderAllowance;
+            return maxAllowed;
+        }
+        lineItem.quantity += quantity;
+        return quantity;
+    }
+
     return {
-        // Add an item to the cart, return the quantity added.
-        addToCart: function (item, allowance, quantity) {
-            var quantityAdded = 0;
-            if (!this.itemInCart(item.id)) {
-                lineItems.push(new LineItem(item, allowance, quantity));
-                quantityAdded = quantity;
-            }
-            else {
-                // Item is already in the cart
-                var lineItem = this.getItemById(item.id);
-                var newQuantity = lineItem.quantity + allowance.selectedQuantity;
-                if (newQuantity <= allowance.perOrderAllowance) {
-                    lineItem.quantity += allowance.selectedQuantity;
-                    quantityAdded = quantity;
-                }
-                else {
-                    // Trying to order over the per order max. Set to max allowed but not higher.
-                    quantityAdded = allowance.perOrderAllowance - lineItem.quantity;
-                    lineItem.quantity = allowance.perOrderAllowance;
-                }
-            }
-            return quantityAdded;
+        /** Add an item to the cart, return the quantity added. */
+        addToCart: function (item, quantity) {
+            return this.itemInCart(item.id) ? addQuantityToCartItem(this.getItemById(item.id), quantity) : addNewItemToCart(item, quantity);
         },
 
         getItems: function () {

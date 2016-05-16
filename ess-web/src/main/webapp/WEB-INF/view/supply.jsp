@@ -25,6 +25,7 @@
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-immutable-modal.js"></script>
     <%-- Order --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js"></script>
 
     <%-- Cart --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart.js"></script>

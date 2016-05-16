@@ -41,8 +41,8 @@
                              boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
       <div class="col-3-12 text-align-center"
-           dir-paginate="allowance in displayAllowances | itemsPerPage: inventory.paginate.itemsPerPage"
-           current-page="inventory.paginate.currPage"
+           dir-paginate="allowance in displayAllowances | itemsPerPage: paginate.itemsPerPage"
+           current-page="paginate.currPage"
            pagination-id="item-pagination">
         <img ng-src="${ctxPath}/assets/img/supply/no_photo_available.png" class="supply-item-image">
         <div>
@@ -52,10 +52,10 @@
         <div style="">
           <label class="custom-select">
             <select ng-model="allowance.selectedQuantity"
-                    ng-options="qty for qty in oneToPerOrderAllowanceRange(allowance)">
+                    ng-options="qty for qty in getAllowedQuantities(allowance)">
             </select>
           </label>
-          <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance.item, allowance)"
+          <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"
                  type="button" value="Add to Cart">
         </div>
         <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
