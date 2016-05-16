@@ -34,10 +34,12 @@ function locationAutocompleteService(locationApi) {
 
     return {
         queryLocations: function () {
-            return locationApi.get().$promise
-                .then(setLocations)
-                .then(setCodes)
-                .then(setCodesToLocationMap);
+            if (locations.length === 0) {
+                return locationApi.get().$promise
+                    .then(setLocations)
+                    .then(setCodes)
+                    .then(setCodesToLocationMap);
+            }
         },
 
         getCodes: function () {

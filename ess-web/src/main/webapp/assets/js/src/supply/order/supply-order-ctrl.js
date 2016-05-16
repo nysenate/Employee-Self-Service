@@ -1,11 +1,12 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'LocationService', 'SupplyCart', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'EmpInfoApi', 'SupplyLocationAllowanceApi', 'SupplyUtils', supplyOrderController]);
+        'SupplyLocationAllowanceApi', 'SupplyUtils', 'OrderDestinationService', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               employeeApi, locationAllowanceApi, supplyUtils) {
+                               locationAllowanceApi, supplyUtils, destinationService) {
     $scope.state = {};
     $scope.states = {
+        LOADING: 0,
         SELECTING_DESTINATION: 5,
         SHOPPING: 10
     };
@@ -24,31 +25,18 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         categories: []
     };
 
-    $scope.destination = {
-        code: "",       // The code entered by the user.
-        location: {}    // The location object associated with the code.
-    };
+    $scope.destinationCode = "";
 
     $scope.quantity = 1;
 
     /** --- Initialization --- */
 
     $scope.init = function () {
-        $scope.inventory.paginate.itemsPerPage = 16;
         initializeState();
-        initializeDestination();
         manageUrlParams();
+        $scope.inventory.paginate.itemsPerPage = 16;
+        $scope.destinationCode = destinationService.getDefaultCode();
     };
-
-    /**
-     * Initializes the destination to the logged in users work location.
-     */
-    function initializeDestination() {
-        employeeApi.get({empId: appProps.user.employeeId, detail: true}, function (response) {
-            $scope.destination.location = response.employee.empWorkLocation;
-            $scope.destination.code = response.employee.empWorkLocation.code;
-        });
-    }
 
     /**
      * Synchronizes the categories and currPage objects with the values in the url.
@@ -64,7 +52,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
      * Get the item allowance for the selected destination.
      */
     function getLocationAllowance() {
-        $scope.inventory.response = locationAllowanceApi.get({id: $scope.destination.location.locId}, function (response) {
+        $scope.inventory.response = locationAllowanceApi.get({id: destinationService.getDestinationLocationId()}, function (response) {
             $scope.inventory.allowances = supplyUtils.alphabetizeAllowances(response.result.itemAllowances);
         });
         return $scope.inventory.response.$promise;
@@ -74,11 +62,20 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     function initializeState() {
         $scope.state = $scope.states.SELECTING_DESTINATION;
+        if (destinationService.isDesinationConfirmed()) {
+            transitionToShoppingState();
+        }
     }
 
     function transitionToShoppingState() {
+        $scope.state = $scope.states.LOADING;
+        getLocationAllowance()
+            .then(filterAllowances)
+            .then(setToShoppingState);
+    }
+
+    function setToShoppingState() {
         $scope.state = $scope.states.SHOPPING;
-        getLocationAllowance().then(filterAllowances);
     }
 
     /** --- Navigation --- */
@@ -150,9 +147,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     /** --- Location selection --- */
 
-    $scope.setDestination = function () {
-        if (locationAutocompleteService.isValidCode($scope.destination.code)) {
-            $scope.destination.location = locationAutocompleteService.getLocationFromCode($scope.destination.code);
+    $scope.confirmDestination = function () {
+        var success = destinationService.setDestination($scope.destinationCode);
+        if (success) {
             transitionToShoppingState();
         }
     };
@@ -177,3 +174,49 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
         }
     }
 }]);
+
+essSupply.service('OrderDestinationService', ['appProps', 'EmpInfoApi', 'SupplyLocationAutocompleteService',
+    function (appProps, empInfoApi, locationAutocompleteService) {
+
+        var defaultCode = undefined;
+        var destination = undefined;
+
+        return {
+            queryDefaultDestination: function () {
+                if (!defaultCode) {
+                    return empInfoApi.get({empId: appProps.user.employeeId, detail: true}, function (response) {
+                        defaultCode = response.employee.empWorkLocation.code;
+                    }).$promise
+                }
+            },
+
+            isDesinationConfirmed: function () {
+                return destination !== undefined;
+            },
+
+            /**
+             * Sets the destination corresponding to the given code.
+             * If code is valid sets the destination, otherwise returns false.
+             */
+            setDestination: function (code) {
+                if (locationAutocompleteService.isValidCode(code)) {
+                    destination = locationAutocompleteService.getLocationFromCode(code);
+                    return true;
+                }
+                return false;
+            },
+
+            getDefaultCode: function () {
+                return defaultCode;
+            },
+
+            getDestination: function () {
+                return destination;
+            },
+
+            getDestinationLocationId: function () {
+                return this.getDestination().locId;
+            }
+
+        }
+    }]);

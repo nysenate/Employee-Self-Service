@@ -80,6 +80,9 @@ essApp.config(function($routeProvider, $locationProvider) {
         resolve: {
             locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
                 return locAutoService.queryLocations();
+            }],
+            orderDestinationService: ['OrderDestinationService', function (orderDestinationService) {
+                return orderDestinationService.queryDefaultDestination();
             }]
         }
     });

@@ -8,7 +8,7 @@
     </a>
   </div>
 
-  <div loader-indicator class="loader" ng-show="state === states.SHOPPING && !inventory.response.$resolved"></div>
+  <div loader-indicator class="loader" ng-show="state === states.LOADING"></div>
 
   <%--Location Selection--%>
   <div ng-show="state === states.SELECTING_DESTINATION">
@@ -18,14 +18,14 @@
           <h4 style="display: inline-block;">Please select a destination: </h4>
           <input name="destination"
                  type="text"
-                 ng-model="destination.code"
+                 ng-model="destinationCode"
                  ui-autocomplete="getLocationAutocompleteOptions()"
                  destination-validator
                  ng-model-options="{debounce: 300}"
                  style="width: 80px;"/>
           <input type="button" value="Confirm" class="submit-button"
                  ng-disabled="selectDestinationForm.destination.$error.destination"
-                 ng-click="setDestination()">
+                 ng-click="confirmDestination()">
           <div ng-show="selectDestinationForm.destination.$error.destination"
                class="warning-text">
             Invalid location
@@ -36,7 +36,7 @@
   </div>
 
   <%--Ordering--%>
-  <div class="content-container" ng-show="inventory.response.$resolved && state == states.SHOPPING">
+  <div class="content-container" ng-show="state == states.SHOPPING">
     <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
     <div class="grid grid-pad">
