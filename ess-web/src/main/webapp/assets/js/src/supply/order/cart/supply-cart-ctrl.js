@@ -1,44 +1,39 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-'$scope', 'SupplyCartService', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', 'LocationService', 'modals', supplyCartController]);
+    '$scope', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplySubmitOrderApi', 'appProps', 'modals', supplyCartController]);
 
-function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService, modals) {
+function supplyCartController($scope, supplyCart, allowanceService, supplySubmitOrderApi, appProps, modals) {
 
-    $scope.myCartItems = function() {
+    $scope.myCartItems = function () {
         return supplyCart.getItems();
     };
 
-    $scope.orderQuantityRange = function(item) {
-        return supplyInventoryService.orderQuantityRange(item);
+    $scope.orderQuantityRange = function (item) {
+        return allowanceService.getAllowedQuantities(allowanceService.getAllowanceByItemId(item.id));
     };
 
-    $scope.cartHasItems = function() {
+    $scope.cartHasItems = function () {
         return supplyCart.getItems().length > 0
     };
 
-    $scope.removeFromCart = function(item) {
+    $scope.removeFromCart = function (item) {
         supplyCart.removeFromCart(item);
     };
 
-    $scope.submitOrder = function() {
-        // var lineItems = [];
-        // angular.forEach(supplyCart.getItems(), function(cartItem) {
-        //     lineItems.push({itemId: cartItem.item.id, quantity: cartItem.quantity});
-        // });
-
+    $scope.submitOrder = function () {
         var params = {customerId: appProps.user.employeeId, lineItems: supplyCart.getItems()}; // TODO: add location object to params
-        supplySubmitOrderApi.save(params, function(response) {
+        supplySubmitOrderApi.save(params, function (response) {
             supplyCart.reset();
             modals.open('supply-cart-checkout-modal');
-        }, function(response) {
+        }, function (response) {
             console.log("Error submitting order")
         });
     };
 
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
         modals.resolve();
     };
 
-    $scope.viewOrder = function() {
+    $scope.viewOrder = function () {
         modals.resolve();
         // locationService.go("/supply/history/location-history", false);
     }
