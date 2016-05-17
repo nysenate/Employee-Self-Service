@@ -20,7 +20,9 @@
       <hr ng-if="!$first"/>
       <div class="col-4-12 text-align-center">
         <div class="content">
-          <img ng-src="${ctxPath}/assets/img/supply/no_photo_available.png" class="supply-item-image-big">
+          <img ng-src="${ctxPath}/assets/img/supply/{{cartItem.item.id}}.png"
+               err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
+               class="supply-item-image-big">
         </div>
       </div>
       <div class="col-6-12">

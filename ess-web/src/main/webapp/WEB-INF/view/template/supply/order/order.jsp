@@ -44,7 +44,9 @@
            dir-paginate="allowance in displayAllowances | itemsPerPage: paginate.itemsPerPage"
            current-page="paginate.currPage"
            pagination-id="item-pagination">
-        <img ng-src="${ctxPath}/assets/img/supply/no_photo_available.png" class="supply-item-image">
+        <img ng-src="${ctxPath}/assets/img/supply/{{allowance.item.id}}.png"
+             err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
+             class="supply-item-image">
         <div>
           <p class="dark-gray bold" style="height: 40px;">{{allowance.item.description}}</p>
           <p class="dark-gray">{{allowance.item.standardQuantity}}/Pack</p>
