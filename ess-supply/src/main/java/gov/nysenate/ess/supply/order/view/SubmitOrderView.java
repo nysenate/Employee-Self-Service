@@ -7,6 +7,7 @@ public class SubmitOrderView implements ViewObject {
 
     protected int customerId;
     protected LineItemView[] lineItems;
+    protected String destinationId;
 
     public SubmitOrderView() {
     }
@@ -25,6 +26,14 @@ public class SubmitOrderView implements ViewObject {
 
     public void setLineItems(LineItemView[] lineItems) {
         this.lineItems = lineItems;
+    }
+
+    public String getDestinationId() {
+        return destinationId;
+    }
+
+    public void setDestinationId(String destinationId) {
+        this.destinationId = destinationId;
     }
 
     @Override

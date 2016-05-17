@@ -26,6 +26,7 @@
     <%-- Order --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/order-destination-service.js"></script>
 
     <%-- Cart --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-service.js"></script>

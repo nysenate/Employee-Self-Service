@@ -55,13 +55,12 @@ public class OrderRestApiCtrl extends BaseRestApiCtrl {
     public void submitOrder(@RequestBody SubmitOrderView submitOrderView) {
         // TODO: verify these views contain valid data by calling services
         // TODO: extract OrderVersion creation code into factory
-        // TODO: submitOrderView should contain the destination Location.
         Set<LineItem> lineItems = new HashSet<>();
         for (LineItemView lineItemView : submitOrderView.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
         }
         Employee customer = employeeService.getEmployee(submitOrderView.getCustomerId());
-        Location loc = customer.getWorkLocation();
+        Location loc = locationService.getLocation(new LocationId(submitOrderView.getDestinationId()));
         OrderVersion version = new OrderVersion.Builder().withCustomer(customer)
                                                          .withDestination(loc).withLineItems(lineItems)
                                                          .withStatus(OrderStatus.APPROVED).withModifiedBy(customer).build();
