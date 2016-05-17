@@ -1,9 +1,9 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', supplyOrderController]);
+        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService) {
+                               allowanceService, destinationService, modals) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
@@ -93,7 +93,15 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Shopping --- */
 
     $scope.addToCart = function (allowance) {
-        supplyCart.addToCart(allowance.item, allowance.selectedQuantity);
+        if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
+            modals.open('over-allowed-quantity-modal', {item: allowance.item, type: 'order'});
+        }
+        else if (supplyCart.isOverMonthlyAllowance(allowance.item, allowance.selectedQuantity)) {
+            modals.open('over-allowed-quantity-modal', {item: allowance.item, type: 'month'});
+        }
+        else {
+            supplyCart.addToCart(allowance.item, allowance.selectedQuantity);
+        }
     };
 
     $scope.isInCart = function (item) {
@@ -128,6 +136,22 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
             ctrl.$validators.destination = function (modelValue, viewValue) {
                 return locationAutocompleteService.isValidCode(modelValue) || modelValue.length === 0;
             }
+        }
+    }
+}]);
+
+/**
+ * Validator for the special order quantity form.
+ * Note: The form considers 'e' valid input. I would like to use this validator to mark 'e' as invalid, however
+ * this validator is not being called when 'e' characters are entered...
+ */
+essSupply.directive('wholeNumberValidator', [function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$validators.wholeNumber = function (modelValue, viewValue) {
+                return modelValue % 1 === 0 && modelValue !== null;
+            };
         }
     }
 }]);

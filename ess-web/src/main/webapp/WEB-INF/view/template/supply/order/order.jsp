@@ -67,5 +67,14 @@
     </div>
     <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
+
+    <div modal-container>
+      <div over-allowed-quantity-modal ng-if="isOpen('over-allowed-quantity-modal')">
+
+      </div>
+      <div item-special-request-modal ng-if="isOpen('item-special-request-modal')">
+
+      </div>
+    </div>
   </div>
 </div>

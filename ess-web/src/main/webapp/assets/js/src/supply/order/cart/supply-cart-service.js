@@ -5,35 +5,44 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', functi
     function LineItem(item, quantity) {
         this.item = item;
         this.quantity = quantity;
+        this.isSpecialRequest = undefined;
     }
 
     /** Array of LineItem's in the cart. */
     var lineItems = [];
 
-    /** Add a new item to the cart, returns the quantity of the item added. */
-    function addNewItemToCart(item, quantity) {
-        lineItems.push(new LineItem(item, quantity));
-        return quantity;
-    }
-
-    /** Add more of an item that is already in the cart. We need to verify this quantity is allowed. */
-    function addQuantityToCartItem(lineItem, quantity) {
-        var itemAllowance = allowanceService.getAllowanceByItemId(lineItem.item.id);
-        var totalQuantity = lineItem.quantity + quantity;
-        if (totalQuantity > itemAllowance.perOrderAllowance) {
-            // Trying to order over the per order max. Set to max allowed but not higher.
-            var maxAllowed = itemAllowance.perOrderAllowance - lineItem.quantity;
-            lineItem.quantity = itemAllowance.perOrderAllowance;
-            return maxAllowed;
-        }
-        lineItem.quantity += quantity;
-        return quantity;
+    function calculateNewQuantity(quantity, lineItem) {
+        return lineItem ? lineItem.quantity + quantity : quantity;
     }
 
     return {
-        /** Add an item to the cart, return the quantity added. */
-        addToCart: function (item, quantity) {
-            return this.itemInCart(item.id) ? addQuantityToCartItem(this.getItemById(item.id), quantity) : addNewItemToCart(item, quantity);
+        isOverOrderAllowance: function (item, quantity) {
+            var allowance = allowanceService.getAllowanceByItemId(item.id);
+            if (calculateNewQuantity(quantity, this.getItemById(item.id)) > allowance.perOrderAllowance) {
+                return true;
+            }
+            return false;
+        },
+
+        isOverMonthlyAllowance: function (item, quantity) {
+            var allowance = allowanceService.getAllowanceByItemId(item.id);
+            if (calculateNewQuantity(quantity, this.getItemById(item.id)) > allowance.remainingMonthlyAllowance) {
+                return true;
+            }
+            return false;
+        },
+
+        addToCart: function (item, quantity, isSpecialRequest) {
+            if (this.itemInCart(item.id)) {
+                this.getItemById(item.id).quantity += quantity;
+            }
+            else {
+                lineItems.push(new LineItem(item, quantity));
+            }
+            if (isSpecialRequest) {
+                this.getItemById(item.id).isSpecialRequest = true;
+            }
+            return true;
         },
 
         getItems: function () {
@@ -66,9 +75,9 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', functi
             return size;
         },
 
-        removeFromCart: function (item) {
+        removeFromCart: function (itemId) {
             $.grep(lineItems, function (lineItem, index) {
-                if (lineItem && lineItem.item.id === item.id) {
+                if (lineItem && lineItem.item.id === itemId) {
                     lineItems.splice(index, 1);
                 }
             });

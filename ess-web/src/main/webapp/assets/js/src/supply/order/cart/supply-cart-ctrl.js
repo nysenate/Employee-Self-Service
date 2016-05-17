@@ -18,7 +18,7 @@ function supplyCartController($scope, supplyCart, allowanceService, supplySubmit
     };
 
     $scope.removeFromCart = function (item) {
-        supplyCart.removeFromCart(item);
+        supplyCart.removeFromCart(item.id);
     };
 
     $scope.submitOrder = function () {
