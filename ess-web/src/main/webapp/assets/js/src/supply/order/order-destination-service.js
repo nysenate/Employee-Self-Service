@@ -32,6 +32,11 @@ function orderDestinationService(appProps, empInfoApi, locationAutocompleteServi
             return false;
         },
 
+        reset: function () {
+            defaultCode = undefined;
+            destination = undefined;
+        },
+
         getDefaultCode: function () {
             return defaultCode;
         },
