@@ -113,4 +113,29 @@ public class RangeUtilsTests extends CoreTests
         assertTrue(RangeUtils.intersects(r1, r4));
         assertFalse(RangeUtils.intersects(r1, r5));
     }
+
+    @Test
+    public void testRangeSetIntersects() {
+        Range<Integer> lowerSetRange = Range.closedOpen(2, 4);
+        Range<Integer> upperSetRange = Range.closedOpen(6, 8);
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();
+        rangeSet.add(lowerSetRange);
+        rangeSet.add(upperSetRange);
+
+        Range<Integer> nonIntersectingClosedBp = Range.closedOpen(1, 2);
+        Range<Integer> intersectingClosedBp = Range.closed(1, 2);
+        Range<Integer> enclosesLowerRange = Range.closed(1, 5);
+        Range<Integer> enclosesSet = Range.closed(1, 9);
+        Range<Integer> nonIntersectingInBetween = Range.closedOpen(4, 6);
+        Range<Integer> intersectingInBetween = Range.openClosed(4, 6);
+        Range<Integer> nonIntersectingOpenBp = Range.atLeast(8);
+
+        assertFalse(RangeUtils.intersects(rangeSet, nonIntersectingClosedBp));
+        assertTrue(RangeUtils.intersects(rangeSet, intersectingClosedBp));
+        assertTrue(RangeUtils.intersects(rangeSet, enclosesLowerRange));
+        assertTrue(RangeUtils.intersects(rangeSet, enclosesSet));
+        assertFalse(RangeUtils.intersects(rangeSet, nonIntersectingInBetween));
+        assertTrue(RangeUtils.intersects(rangeSet, intersectingInBetween));
+        assertFalse(RangeUtils.intersects(rangeSet, nonIntersectingOpenBp));
+    }
 }

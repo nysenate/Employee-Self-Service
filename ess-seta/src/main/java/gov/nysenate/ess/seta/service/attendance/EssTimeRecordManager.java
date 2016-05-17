@@ -312,6 +312,14 @@ public class EssTimeRecordManager implements TimeRecordManager
         // Get dates when there was a change of supervisor
         Set<LocalDate> newSupDates = transHistory.getEffectiveSupervisorIds(DateUtils.ALL_DATES).keySet();
 
+        // Get date ranges where the employee was required to enter time records
+        RangeSet<LocalDate> timeEntryRequiredDates = TreeRangeSet.create();
+        RangeUtils.toRangeMap(transHistory.getEffectivePersonnelStatus(DateUtils.ALL_DATES))
+                .asMapOfRanges().entrySet().stream()
+                .filter(entry ->  entry.getValue().isTimeEntryRequired())
+                .map(Map.Entry::getKey)
+                .forEach(timeEntryRequiredDates::add);
+
         // Get active dates of service
         RangeSet<LocalDate> activeDates = empInfoService.getEmployeeActiveDatesService(empId);
 
@@ -327,6 +335,8 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .flatMap(range -> activeDates.subRangeSet(range).asRanges().stream())
                 // Filter out ranges that are covered by already entered attendance periods
                 .filter(range -> !attendanceRecDates.encloses(range))
+                // Filter out ranges where the employee isn't required to enter time records
+                .filter(range -> RangeUtils.intersects(timeEntryRequiredDates, range))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

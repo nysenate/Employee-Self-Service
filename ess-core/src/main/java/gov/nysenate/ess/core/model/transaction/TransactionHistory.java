@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.model.transaction;
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.payroll.SalaryRec;
+import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -155,6 +156,18 @@ public class TransactionHistory
             lastRec.setEndDate(DateUtils.endOfDateRange(dateRange));
         }
         return salaryRecs;
+    }
+
+    /**
+     * Get the effective personnel status for the employee over the given date range
+     * @param dateRange Range<LocalDate>
+     * @return TreeMap<LocalDate, PersonnelStatus>
+     */
+    public TreeMap<LocalDate, PersonnelStatus> getEffectivePersonnelStatus(Range<LocalDate> dateRange) {
+        TreeMap<LocalDate, PersonnelStatus> effectivePersonnelStatusMap = new TreeMap<>();
+        getEffectiveEntriesDuring("CDSTATPER", dateRange, true)
+                .forEach((date, statper) -> effectivePersonnelStatusMap.put(date, PersonnelStatus.valueOf(statper)));
+        return effectivePersonnelStatusMap;
     }
 
     /**
