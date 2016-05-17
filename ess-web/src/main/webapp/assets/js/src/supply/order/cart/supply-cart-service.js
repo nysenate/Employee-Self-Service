@@ -1,6 +1,6 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCart', ['SupplyLocationAllowanceService', function (allowanceService) {
+essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', function (allowanceService) {
 
     function LineItem(item, quantity) {
         this.item = item;

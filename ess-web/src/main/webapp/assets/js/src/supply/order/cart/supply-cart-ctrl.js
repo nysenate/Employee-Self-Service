@@ -1,5 +1,5 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-'$scope', 'SupplyCart', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', 'LocationService', 'modals', supplyCartController]);
+'$scope', 'SupplyCartService', 'SupplyInventoryService', 'SupplySubmitOrderApi', 'appProps', 'LocationService', 'modals', supplyCartController]);
 
 function supplyCartController($scope, supplyCart, supplyInventoryService, supplySubmitOrderApi, appProps, locationService, modals) {
 

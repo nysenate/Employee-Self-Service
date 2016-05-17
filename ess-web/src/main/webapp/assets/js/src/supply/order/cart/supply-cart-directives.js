@@ -3,9 +3,9 @@ var essSupply = angular.module('essSupply');
 essSupply.directive('cartSummary', ['appProps', function(appProps) {
     return {
         restrict: 'E',
-        controller: function($scope, SupplyCart) {
+        controller: function($scope, SupplyCartService) {
             $scope.getTotalItems = function() {
-                return SupplyCart.getTotalItems();
+                return SupplyCartService.getTotalItems();
             }
         },
         templateUrl: appProps.ctxPath + '/template/supply/order/cart/cart-summary',

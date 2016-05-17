@@ -1,5 +1,5 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'appProps', 'LocationService', 'SupplyCart', 'PaginationModel', 'SupplyLocationAutocompleteService',
+    ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel', 'SupplyLocationAutocompleteService',
         'SupplyLocationAllowanceService', 'OrderDestinationService', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,

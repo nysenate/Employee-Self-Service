@@ -28,7 +28,7 @@
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js"></script>
 
     <%-- Cart --%>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-directives.js"></script>
 
