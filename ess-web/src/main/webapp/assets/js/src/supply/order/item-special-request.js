@@ -13,7 +13,8 @@ angular.module('essSupply').directive('itemSpecialRequestModal', ['appProps', fu
         function init() {
             params = modals.params();
             // Initialize to the current quantity in cart or 1 if not in cart.
-            $scope.quantity = supplyCart.getItemById(params.item.id).quantity || 1;
+            var lineItem = supplyCart.getItemById(params.item.id);
+            $scope.quantity = lineItem ? lineItem.quantity : 1;
         }
 
         init();

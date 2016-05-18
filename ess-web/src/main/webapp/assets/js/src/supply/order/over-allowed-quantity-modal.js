@@ -14,10 +14,10 @@ angular.module('essSupply').directive('overAllowedQuantityModal', ['appProps', f
             ORDER: 0,
             MONTH: 1
         };
-        
+
         var params = modals.params();
-        
-        function init () {
+
+        function init() {
             if (modals.params().type === 'order') {
                 $scope.type = $scope.types.ORDER;
             }
@@ -25,14 +25,14 @@ angular.module('essSupply').directive('overAllowedQuantityModal', ['appProps', f
                 $scope.type = $scope.types.MONTH;
             }
         }
-        
+
         init();
-        
+
         $scope.submitSpecialRequest = function () {
             modals.resolve();
             modals.open('item-special-request-modal', params);
         };
-        
+
         $scope.nevermind = function () {
             modals.resolve();
         }

@@ -34,10 +34,19 @@
       <div class="col-2-12">
         <div class="content">
           <p class="dark-gray bold cart-unit-size">{{cartItem.item.standardQuantity}}/Pack</p>
-          <label class="custom-select">Qty:
-            <select requisition-quantity-selector item="cartItem.item" warn-qty="cartItem.item.suggestedMaxQty + 1"
-                    ng-model="cartItem.quantity" ng-options="qty for qty in orderQuantityRange(cartItem.item)"></select>
-          </label>
+
+          <div ng-hide="cartItem.isSpecialRequest">
+            <label class="custom-select">Qty:
+              <select requisition-quantity-selector item="cartItem.item" warn-qty="cartItem.item.suggestedMaxQty + 1"
+                      ng-model="cartItem.quantity"
+                      ng-options="qty for qty in orderQuantityRange(cartItem.item)"></select>
+            </label>
+          </div>
+
+          <div ng-show="cartItem.isSpecialRequest">
+            <label>Qty:</label> {{cartItem.quantity}}
+          </div>
+
         </div>
       </div>
     </div>
@@ -51,7 +60,7 @@
         </a>
       </div>
       <div class="col-2-12">
-          <input ng-click="submitOrder()" class="submit-button margin-10" type="button" value="Checkout">
+        <input ng-click="submitOrder()" class="submit-button margin-10" type="button" value="Checkout">
       </div>
     </div>
   </div>
