@@ -26,9 +26,9 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
 
     /** --- Manage --- */
 
-    @RequestMapping(value="/manage/manage")
+    @RequestMapping(value="/manage/fulfillment")
     public String manageOrder() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/manage";
+        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/fulfillment";
     }
 
     @RequestMapping(value="/manage/reconciliation")
@@ -36,19 +36,19 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/manage/reconciliation";
     }
 
-    @RequestMapping(value="/manage/modal/editing-modal")
+    @RequestMapping(value="/manage/fulfillment/modal/fulfillment-editing-modal")
     public String managePendingModal() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/modal/manage-editing-modal";
+        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/fulfillment-editing-modal";
     }
 
-    @RequestMapping(value="/manage/modal/immutable-modal")
+    @RequestMapping(value="/manage/fulfillment/modal/fulfillment-immutable-modal")
     public String manageCompletedModal() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/modal/manage-immutable-modal";
+        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/fulfillment-immutable-modal";
     }
 
-    @RequestMapping(value="/manage/modal/editable-order-listing")
+    @RequestMapping(value="/manage/fulfillment/modal/editable-order-listing")
     public String editableOrderListing() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/modal/editable-order-listing";
+        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/editable-order-listing";
     }
 
     /** --- Order --- */

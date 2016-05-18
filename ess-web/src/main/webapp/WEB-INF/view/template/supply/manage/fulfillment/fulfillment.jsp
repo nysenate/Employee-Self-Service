@@ -1,4 +1,4 @@
-<div ng-controller="SupplyManageController">
+<div ng-controller="SupplyFulfillmentController">
   <div class="supply-order-hero">
     <h2>Manage Requisitions</h2>
   </div>
@@ -191,8 +191,8 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <div manage-editing-modal supply-employees='supplyEmployees' supply-items='itemSearch.matches' ng-if="isOpen('manage-editing-modal')"></div>
-    <div manage-immutable-modal ng-if="isOpen('manage-immutable-modal')"></div>
+    <div fulfillment-editing-modal supply-employees='supplyEmployees' supply-items='itemSearch.matches' ng-if="isOpen('fulfillment-editing-modal')"></div>
+    <div fulfillment-immutable-modal ng-if="isOpen('fulfillment-immutable-modal')"></div>
   </div>
 
 </div>

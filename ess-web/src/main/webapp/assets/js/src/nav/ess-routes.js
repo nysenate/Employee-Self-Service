@@ -92,8 +92,8 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/order/cart'
     });
 
-    $routeProvider.when(ctxPath + '/supply/manage/manage', {
-        templateUrl: ctxPath + '/template/supply/manage/manage',
+    $routeProvider.when(ctxPath + '/supply/manage/fulfillment', {
+        templateUrl: ctxPath + '/template/supply/manage/fulfillment',
         resolve: {
             locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
                 return locAutoService.queryLocations();

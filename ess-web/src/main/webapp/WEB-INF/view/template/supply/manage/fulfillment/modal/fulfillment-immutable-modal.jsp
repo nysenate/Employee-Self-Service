@@ -23,7 +23,7 @@
           </thead>
           <tbody>
           <tr ng-class="{warn: highlightLineItem(lineItem)}" ng-repeat="lineItem in shipment.order.activeVersion.lineItems">
-            <td>{{getItemCommodityCode(lineItem.item.id)}}</td>
+            <td>{{lineItem.item.commodityCode}}</td>
             <td>{{lineItem.item.description}}</td>
             <td>{{lineItem.quantity}}</td>
           </tr>

@@ -1,8 +1,8 @@
-essSupply = angular.module('essSupply').controller('SupplyManageController', ['$scope',
-    'SupplyShipmentsApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyManageController]);
+essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
+    'SupplyShipmentsApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyFulfillmentController]);
 
-function supplyManageController($scope, supplyShipmentsApi, supplyEmployeesApi,
-                                itemsApi, modals, $interval) {
+function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployeesApi,
+                                     itemsApi, modals, $interval) {
 
     $scope.pendingSearch = {
         matches: [],
@@ -193,10 +193,10 @@ function supplyManageController($scope, supplyShipmentsApi, supplyEmployeesApi,
     /** --- Modals --- */
 
     $scope.showEditingModal = function (shipment) {
-        modals.open('manage-editing-modal', shipment);
+        modals.open('fulfillment-editing-modal', shipment);
     };
 
     $scope.showImmutableModal = function (shipment) {
-        modals.open('manage-immutable-modal', shipment);
+        modals.open('fulfillment-immutable-modal', shipment);
     };
 }

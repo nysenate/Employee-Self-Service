@@ -1,9 +1,9 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.directive('manageImmutableModal', ['appProps', 'modals', 'LocationService', 'SupplyAcceptShipmentsApi',
+essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'LocationService', 'SupplyAcceptShipmentsApi',
     function (appProps, modals, locationService, acceptShipmentsApi) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/manage/modal/immutable-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/fulfillment-immutable-modal',
         link: link
     };
 
@@ -26,7 +26,7 @@ essSupply.directive('manageImmutableModal', ['appProps', 'modals', 'LocationServ
         };
 
         function reload() {
-            locationService.go("/supply/manage/manage", true);
+            locationService.go("/supply/manage/fulfillment", true);
         }
     }
 }]);

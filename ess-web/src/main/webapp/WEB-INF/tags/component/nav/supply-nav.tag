@@ -15,7 +15,7 @@
     <shiro:hasPermission name="supply:shipment:manage">
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/supply/manage/manage">Manage Requisitions</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/history/history">Requisition History</a></li>
     </ul>

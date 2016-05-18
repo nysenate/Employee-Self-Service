@@ -18,11 +18,11 @@
     <%--<script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-location-history-ctrl.js"></script>--%>
 
     <%-- Manage --%>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/supply-manage-ctrl.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/fulfillment/supply-fulfillment-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/supply-reconciliation-ctrl.js"></script>
 
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-editing-modal.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/modal/manage-immutable-modal.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/fulfillment/modal/fulfillment-editing-modal.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/manage/fulfillment/modal/fulfillment-immutable-modal.js"></script>
     <%-- Order --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js"></script>

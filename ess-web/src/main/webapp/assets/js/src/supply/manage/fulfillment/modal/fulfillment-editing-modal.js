@@ -1,17 +1,17 @@
 var essSupply = angular.module('essSupply')
-    .directive('manageEditingModal', ['appProps', function (appProps) {
+    .directive('fulfillmentEditingModal', ['appProps', function (appProps) {
         return {
-            templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editing-modal',
+            templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/fulfillment-editing-modal',
             scope: {
                 'supplyEmployees': '=',
                 'supplyItems': '='
             },
-            controller: 'ManageEditingModal',
+            controller: 'FulfillmentEditingModal',
             controllerAs: 'ctrl'
         };
     }])
 
-    .controller('ManageEditingModal', ['$scope', 'appProps', 'modals', 'SupplyUpdateShipmentsApi',
+    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyUpdateShipmentsApi',
         'SupplyUpdateOrderApi', 'SupplyLocationAutocompleteService', 'LocationService',
         function ($scope, appProps, modals, updateShipmentsApi, updateOrderApi, locationAutocompleteService, locationService) {
             /** Original shipment */
@@ -132,7 +132,7 @@ var essSupply = angular.module('essSupply')
             };
 
             function reload() {
-                locationService.go("/supply/manage/manage", true);
+                locationService.go("/supply/manage/fulfillment", true);
             }
 
             /** --- Location Autocomplete --- */
@@ -201,6 +201,6 @@ var essSupply = angular.module('essSupply')
         return {
             restrict: 'A',
             scope: false,
-            templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editable-order-listing'
+            templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/editable-order-listing'
         }
     }]);
