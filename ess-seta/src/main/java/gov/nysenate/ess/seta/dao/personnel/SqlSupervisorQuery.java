@@ -47,11 +47,32 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         /**  Retrieve just the APP/RTP/SUP/EMP transactions unless the employee doesn't
          *   have any of them (some earlier employees may be missing APP for example). */
         "WHERE \n" +
-        "    (per.NUXREFEM NOT IN (SELECT DISTINCT NUXREFEM FROM ${masterSchema}.PD21PTXNCODE\n" +
-        "                          WHERE CDTRANS IN ('APP', 'RTP', 'SUP'))\n" +
-        "    OR ptx.CDTRANS IN ('APP', 'RTP', 'SUP', 'EMP'))\n" +
-        "AND ptx.CDTRANSTYP = 'PER'\n" +
-        "AND ptx.CDSTATUS = 'A' AND ptx.DTEFFECT <= :endDate\n" +
+        "  (ptx.CDTRANS IN ('APP', 'RTP', 'SUP', 'EMP')\n" +
+        /** If the employee has no supervisor assigning transactions, allow their first personnel transaction */
+        "    OR (per.NUXREFEM NOT IN (\n" +
+        "        SELECT DISTINCT NUXREFEM FROM ESS_MASTER.PD21PTXNCODE\n" +
+        "          WHERE CDTRANS IN ('APP', 'RTP', 'SUP')\n" +
+        "      )\n" +
+        "      AND per.NUCHANGE IN (\n" +
+        "        SELECT code.NUCHANGE\n" +
+        "        FROM ESS_MASTER.PD21PTXNCODE code\n" +
+        "        JOIN (\n" +
+        "            SELECT NUXREFEM, NUCHANGE, DTTXNUPDATE,\n" +
+        "              ROW_NUMBER() OVER (PARTITION BY NUXREFEM ORDER BY DTEFFECT ASC) AS rn\n" +
+        "            FROM ESS_MASTER.PD21PTXNCODE\n" +
+        "            WHERE CDSTATUS = 'A'\n" +
+        "              AND CDTRANSTYP = 'PER'\n" +
+        "        ) ot\n" +
+        "          ON code.NUXREFEM = ot.NUXREFEM\n" +
+        "            AND code.NUCHANGE = ot.NUCHANGE\n" +
+        "            AND code.DTTXNUPDATE = ot.DTTXNUPDATE\n" +
+        "            AND ot.rn = 1\n" +
+        "          WHERE code.NUXREFEM = per.NUXREFEM\n" +
+        "      )\n" +
+        "    )\n" +
+        "  )" +
+        "  AND ptx.CDTRANSTYP = 'PER'\n" +
+        "  AND ptx.CDSTATUS = 'A' AND ptx.DTEFFECT <= :endDate\n" +
         "ORDER BY NUXREFEM, TRANS_RANK"),
 
     GET_SUP_EMP_TRANS_UPDATED_SINCE(

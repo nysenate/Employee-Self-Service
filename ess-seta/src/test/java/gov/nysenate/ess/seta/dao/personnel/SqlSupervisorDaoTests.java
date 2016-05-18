@@ -30,7 +30,7 @@ public class SqlSupervisorDaoTests extends SetaTests
     @Test
     public void testGetSupEmpGroup_ReturnsEmpGroup() throws Exception {
         SupervisorEmpGroup group =
-            supervisorDao.getSupervisorEmpGroup(1024, Range.closed(LocalDate.of(1970, 1, 1), LocalDate.of(2015, 8, 31)));
+            supervisorDao.getSupervisorEmpGroup(87, Range.closed(LocalDate.of(1970, 1, 1), LocalDate.of(2015, 8, 31)));
         logger.info(OutputUtils.toJson(group));
     }
 
