@@ -147,12 +147,12 @@ public class ShipmentTests extends SupplyUnitTests {
             shipment.addVersion(approved, approvedDateTime);
         }
 
-        @Test(expected = IllegalArgumentException.class)
-        public void cantAddPendingVersion() {
-            ShipmentVersion pending = new ShipmentVersion.Builder().withModifiedBy(stubEmployee).withStatus(ShipmentStatus.PENDING).build();
-            LocalDateTime pendingDateTime = processingDateTime.plusMinutes(5);
-            shipment.addVersion(pending, pendingDateTime);
-        }
+//        @Test(expected = IllegalArgumentException.class)
+//        public void cantAddPendingVersion() {
+//            ShipmentVersion pending = new ShipmentVersion.Builder().withModifiedBy(stubEmployee).withStatus(ShipmentStatus.PENDING).build();
+//            LocalDateTime pendingDateTime = processingDateTime.plusMinutes(5);
+//            shipment.addVersion(pending, pendingDateTime);
+//        }
 
         public class GivenCompletedVersion {
             protected ShipmentVersion completedVersion;
