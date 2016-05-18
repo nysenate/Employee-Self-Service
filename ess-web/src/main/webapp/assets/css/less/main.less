@@ -358,7 +358,7 @@ table.simple-table {
   background: #fafafa;
   box-shadow: 0 1px 1px #ccc;
   height:45px;
-  z-index: 100;
+  z-index: 1002;
   color: white;
   overflow: hidden;
 
@@ -1213,6 +1213,32 @@ table.attendance-entry-sub-table {
 
 .accruals-table, .detail-acc-history-table, #accrual-usage-details-table {
   width: 100%;
+  /** Scrollable Projections table */
+  &.projections {
+    .pay-period {
+      width: 40px;
+    }
+    .date {
+      width: 112px;
+    }
+    .rate {
+      width: 60px;
+    }
+    .used-hours {
+      width: 84px;
+    }
+    .available-hours {
+      width: 69px;
+    }
+    thead {
+      display: block;
+    }
+    tbody {
+      display: block;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  }
   thead {
     background: white;
     tr {

@@ -1,8 +1,11 @@
 var essTime = angular.module('essTime');
 
-essTime.controller('AccrualHistoryCtrl',
-    ['$scope', '$http', 'appProps', 'AccrualHistoryApi', 'EmpActiveYearsApi', 'modals',
-    function($scope, $http, appProps, AccrualHistoryApi, EmpActiveYearsApi, modals) {
+essTime.controller('AccrualHistoryCtrl', ['$scope', '$http', '$location', '$anchorScroll', '$timeout',
+                                          'appProps', 'AccrualHistoryApi', 'EmpActiveYearsApi', 'modals',
+                                          accrualHistoryCtrl]);
+
+function accrualHistoryCtrl($scope, $http, $location, $anchorScroll, $timeout,
+                            appProps, AccrualHistoryApi, EmpActiveYearsApi, modals) {
 
     $scope.state = {
         empId: appProps.user.employeeId,
@@ -44,6 +47,8 @@ essTime.controller('AccrualHistoryCtrl',
                             return acc.computed && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
                         }).reverse();
                     }
+                    // Scroll down to earliest projection
+                    $timeout(scrollToEarliestProjection, 5);
                 }
                 $scope.state.searching = false;
             }, function(resp) {
@@ -78,6 +83,22 @@ essTime.controller('AccrualHistoryCtrl',
             }
         }
     };
+
+    /**
+     *
+     */
+    function scrollToEarliestProjection() {
+        console.log('scrollin');
+        var earliestProjectionId = 'earliest-projection';
+        $location.hash(earliestProjectionId);
+        $anchorScroll();
+        $timeout(function() {
+            $location.hash('ng-app');
+            $timeout(function () {
+                $location.hash(null);
+            });
+        });
+    }
 
     /**
      * When a user enters in hours in the projections table, the totals need to be re-computed for
@@ -136,4 +157,4 @@ essTime.controller('AccrualHistoryCtrl',
             $scope.getAccSummaries($scope.state.selectedYear);
         });
     }();
-}]);
+};

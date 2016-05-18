@@ -61,7 +61,8 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/time/accrual/history', {
-        templateUrl: ctxPath + '/template/time/accrual/history'
+        templateUrl: ctxPath + '/template/time/accrual/history',
+        reloadOnSearch: false
     });
 
     $routeProvider.when(ctxPath + '/time/accrual/projections', {
