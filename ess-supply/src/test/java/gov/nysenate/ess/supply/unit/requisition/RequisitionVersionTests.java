@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
+import static gov.nysenate.ess.supply.unit.requisition.RequisitionFixture.createStubLineItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,58 +26,20 @@ public class RequisitionVersionTests extends SupplyUnitTests {
     private static Location stubLocation;
     private static Employee stubEmployee;
     private static Set<LineItem> stubLineItems;
-    private static String stubNote = "stub note";
 
     @BeforeClass
     public static void before() {
-        stubLocation = new Location(new LocationId("A42FB", 'W'));
-        stubEmployee = new Employee();
-        stubEmployee.setEmployeeId(1);
-        stubLineItems = createStubLineItem();
-    }
-
-    private static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(1, "", "", "", new Category(""), 1, 1, 1);
-        Set<LineItem> stubLineItems = new HashSet<>();
-        stubLineItems.add(new LineItem(stubItem, 1));
-        return stubLineItems;
+        stubLocation = RequisitionFixture.createStubLocation();
+        stubEmployee = RequisitionFixture.createEmployeeWithId(1);
+        stubLineItems = RequisitionFixture.createStubLineItem();
     }
 
     @Test
     public void defaultValues() {
-        RequisitionVersion version = new RequisitionVersion.Builder()
-                .withCustomer(stubEmployee)
-                .withDestination(stubLocation)
-                .withLineItems(stubLineItems)
-                .withStatus(RequisitionStatus.PENDING)
-                .withModifiedBy(stubEmployee)
-                .build();
-
+        RequisitionVersion version = RequisitionFixture.getMinimalPendingVersion();
         assertThat(version.getId(), is(0));
         assertThat(version.getIssuer().isPresent(), is(false));
         assertThat(version.getNote().isPresent(), is(false));
-    }
-
-    @Test
-    public void builderWorks() {
-        RequisitionVersion version = new RequisitionVersion.Builder()
-                .withId(1)
-                .withCustomer(stubEmployee)
-                .withDestination(stubLocation)
-                .withStatus(RequisitionStatus.PENDING)
-                .withLineItems(stubLineItems)
-                .withIssuer(stubEmployee)
-                .withModifiedBy(stubEmployee)
-                .withNote(stubNote)
-                .build();
-        assertThat(version.getId(), is(1));
-        assertThat(version.getCustomer(), is(stubEmployee));
-        assertThat(version.getDestination(), is(stubLocation));
-        assertThat(version.getStatus(), is(RequisitionStatus.PENDING));
-        assertThat(version.getLineItems(), is(stubLineItems));
-        assertThat(version.getIssuer().get(), is(stubEmployee));
-        assertThat(version.getModifiedBy(), is(stubEmployee));
-        assertThat(version.getNote().get(), is(stubNote));
     }
 
     @Test(expected = NullPointerException.class)

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static oracle.net.aso.C01.p;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -33,61 +34,23 @@ public class RequisitionTests extends SupplyUnitTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void firstVersionMustHavePendingStatus() {
-        RequisitionStatus status = RequisitionStatus.COMPLETED;
-        RequisitionVersion version = new RequisitionVersion.Builder()
-                .withId(1)
-                .withCustomer(new Employee())
-                .withDestination(new Location(new LocationId("A42FB", 'W')))
-                .withStatus(status)
-                .withLineItems(createStubLineItem())
-                .withModifiedBy(new Employee())
-                .build();
+        RequisitionVersion version = RequisitionFixture.getCompletedVersion();
         Requisition requisition = new Requisition(orderedDateTime, version);
     }
 
     @Test(expected = NullPointerException.class)
     public void orderDateTimeCannotBeNull() {
-        RequisitionVersion version = new RequisitionVersion.Builder()
-                .withId(1)
-                .withCustomer(new Employee())
-                .withDestination(new Location(new LocationId("A42FB", 'W')))
-                .withStatus(RequisitionStatus.PENDING)
-                .withLineItems(createStubLineItem())
-                .withModifiedBy(new Employee())
-                .build();
+        RequisitionVersion version = RequisitionFixture.getPendingVersion();
         Requisition requisition = new Requisition(null, version);
     }
 
     public class GivenPendingVersion {
         private Requisition requisition;
         private RequisitionVersion pendingRequisition;
-        private Location destination;
-        private Employee customer;
-        private Employee issuer;
-        private Set<LineItem> lineItems;
-        private String note;
-        private RequisitionStatus status;
 
         @Before
-        public void createRequisitionWithPendingVersion() {
-            destination = new Location(new LocationId("A42FB", 'W'));
-            customer = new Employee();
-            customer.setEmployeeId(1);
-            issuer = new Employee();
-            issuer.setEmployeeId(2);
-            lineItems = createStubLineItem();
-            note = "A note";
-            status = RequisitionStatus.PENDING;
-            pendingRequisition = new RequisitionVersion.Builder()
-                    .withId(1)
-                    .withCustomer(customer)
-                    .withDestination(destination)
-                    .withStatus(status)
-                    .withLineItems(lineItems)
-                    .withIssuer(issuer)
-                    .withModifiedBy(customer)
-                    .withNote(note)
-                    .build();
+        public void addPendingVersion() {
+            pendingRequisition = RequisitionFixture.getPendingVersion();
             requisition = new Requisition(orderedDateTime, pendingRequisition);
         }
 
@@ -121,24 +84,11 @@ public class RequisitionTests extends SupplyUnitTests {
         public class AddingProcessingVersion {
             private RequisitionVersion processingVersion;
             private LocalDateTime processedDateTime;
-            private Employee processedBy;
-            private RequisitionStatus processingStatus;
 
             @Before
             public void addProcessingVersion() {
                 processedDateTime = orderedDateTime.plusMinutes(5);
-                processedBy = new Employee();
-                processedBy.setEmployeeId(3);
-                processingStatus = RequisitionStatus.PROCESSING;
-                processingVersion = new RequisitionVersion.Builder()
-                        .withId(2)
-                        .withCustomer(customer)
-                        .withDestination(destination)
-                        .withStatus(processingStatus)
-                        .withLineItems(lineItems)
-                        .withIssuer(issuer)
-                        .withModifiedBy(processedBy)
-                        .build();
+                processingVersion = RequisitionFixture.getProcessingVersion();
                 requisition.addVersion(processedDateTime, processingVersion);
             }
 
@@ -166,15 +116,7 @@ public class RequisitionTests extends SupplyUnitTests {
                 @Before
                 public void addRejectedVersion() {
                     rejectedDateTime = processedDateTime.plusMinutes(2);
-                    rejectedVersion = new RequisitionVersion.Builder()
-                            .withId(3)
-                            .withCustomer(customer)
-                            .withDestination(destination)
-                            .withStatus(RequisitionStatus.REJECTED)
-                            .withLineItems(lineItems)
-                            .withIssuer(issuer)
-                            .withModifiedBy(processedBy)
-                            .build();
+                    rejectedVersion = RequisitionFixture.getRejectedVersion();
                     requisition.addVersion(rejectedDateTime, rejectedVersion);
                 }
 
@@ -196,21 +138,11 @@ public class RequisitionTests extends SupplyUnitTests {
             public class AddingCompletedVersion {
                 private RequisitionVersion completedVersion;
                 private LocalDateTime completedDateTime;
-                private RequisitionStatus completedStatus;
 
                 @Before
                 public void addCompletedVersion() {
                     completedDateTime = processedDateTime.plusMinutes(5);
-                    completedStatus = RequisitionStatus.COMPLETED;
-                    completedVersion = new RequisitionVersion.Builder()
-                            .withId(3)
-                            .withCustomer(customer)
-                            .withDestination(destination)
-                            .withStatus(completedStatus)
-                            .withLineItems(lineItems)
-                            .withIssuer(issuer)
-                            .withModifiedBy(processedBy)
-                            .build();
+                    completedVersion = RequisitionFixture.getCompletedVersion();
                     requisition.addVersion(completedDateTime, completedVersion);
                 }
 
@@ -234,15 +166,7 @@ public class RequisitionTests extends SupplyUnitTests {
                     @Before
                     public void addApprovedVersion() {
                         approvedDateTime = completedDateTime.plusMinutes(5);
-                        approvedVersion = new RequisitionVersion.Builder()
-                            .withId(4)
-                            .withCustomer(customer)
-                            .withDestination(destination)
-                            .withStatus(RequisitionStatus.APPROVED)
-                            .withLineItems(lineItems)
-                            .withIssuer(issuer)
-                            .withModifiedBy(processedBy)
-                            .build();
+                        approvedVersion = RequisitionFixture.getApprovedVersion();
                         requisition.addVersion(approvedDateTime, approvedVersion);
                     }
 

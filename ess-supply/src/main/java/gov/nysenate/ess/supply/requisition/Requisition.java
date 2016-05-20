@@ -116,4 +116,48 @@ public class Requisition {
     public Optional<String> getNote() {
         return getCurrentVersion().getNote();
     }
+
+    @Override
+    public String toString() {
+        return "Requisition{" +
+               "history=" + history +
+               ", orderedDateTime=" + orderedDateTime +
+               ", modifiedDateTime=" + modifiedDateTime +
+               ", processedDateTime=" + processedDateTime +
+               ", completedDateTime=" + completedDateTime +
+               ", approvedDateTime=" + approvedDateTime +
+               ", rejectedDateTime=" + rejectedDateTime +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Requisition that = (Requisition) o;
+        if (history != null ? !history.equals(that.history) : that.history != null) return false;
+        if (orderedDateTime != null ? !orderedDateTime.equals(that.orderedDateTime) : that.orderedDateTime != null)
+            return false;
+        if (modifiedDateTime != null ? !modifiedDateTime.equals(that.modifiedDateTime) : that.modifiedDateTime != null)
+            return false;
+        if (processedDateTime != null ? !processedDateTime.equals(that.processedDateTime) : that.processedDateTime != null)
+            return false;
+        if (completedDateTime != null ? !completedDateTime.equals(that.completedDateTime) : that.completedDateTime != null)
+            return false;
+        if (approvedDateTime != null ? !approvedDateTime.equals(that.approvedDateTime) : that.approvedDateTime != null)
+            return false;
+        return rejectedDateTime != null ? rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = history != null ? history.hashCode() : 0;
+        result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
+        result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
+        result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
+        result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
+        result = 31 * result + (approvedDateTime != null ? approvedDateTime.hashCode() : 0);
+        result = 31 * result + (rejectedDateTime != null ? rejectedDateTime.hashCode() : 0);
+        return result;
+    }
 }

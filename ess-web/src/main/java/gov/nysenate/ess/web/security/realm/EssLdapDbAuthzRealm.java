@@ -8,7 +8,9 @@ import gov.nysenate.ess.supply.security.SupplyAuthorization;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
@@ -97,7 +99,10 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         }
         /** Add supply permissions */
         for (String permission: supplyAuthorization.getPermissions(user)) {
+            Permission p;
+            WildcardPermission w;
             authInfo.addStringPermission(permission);
+            authInfo.getRoles();
         }
         return authInfo;
     }
