@@ -17,11 +17,11 @@
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">From:</label>
-          <input ng-model="filter.date.from" ng-change="reloadShipments()" type="datetime-local"/>
+          <input ng-model="filter.date.from" ng-change="reloadShipments()" type="date"/>
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">To:</label>
-          <input ng-model="filter.date.to" ng-change="reloadShipments()" type="datetime-local"/>
+          <input ng-model="filter.date.to" ng-change="reloadShipments()" type="date"/>
         </div>
       </div>
     </div>
@@ -39,6 +39,7 @@
         <thead>
         <tr>
           <th>Location</th>
+          <th>Ordered By</th>
           <th>Quantity</th>
           <th>Order Date</th>
           <th>Complete Date</th>
@@ -48,6 +49,7 @@
         <tbody>
         <tr ng-repeat="shipment in filteredShipments" ng-click="viewOrder(shipment)" ng-show="isInFilter(shipment)">
           <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
+          <td>{{shipment.order.activeVersion.customer.lastName}}</td>
           <td>{{getOrderQuantity(shipment)}}</td>
           <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
           <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>

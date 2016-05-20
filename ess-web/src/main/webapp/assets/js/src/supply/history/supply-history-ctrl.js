@@ -1,20 +1,22 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-['$scope', 'SupplyShipmentsApi', 'LocationService', supplyHistoryController]);
+    ['$scope', 'SupplyShipmentsApi', 'LocationService', supplyHistoryController]);
 
 function supplyHistoryController($scope, shipmentsApi, locationService) {
 
     $scope.filter = {
         date: {
             from: moment().subtract(1, 'month').toDate(),
-            to: new Date(), // need to use dates for datetime input in jsp
+            to: new Date(), // need to use date objects for date input in jsp
             min: new Date(2016, 1, 1, 0, 0, 0),
             max: moment().format() //TODO: max and min not working
         },
-        location: {                                         // LocationView object
+        // A LocationView object
+        location: {
             locations: null,
             selectedLocations: null
         },
-        issuer: {                                           // EmployeeView object
+        // An EmployeeView object
+        issuer: {
             issuers: null,
             selectedIssuer: null
         }
@@ -30,7 +32,7 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     $scope.issuers = [];
     // TODO: ---------------------------------
 
-    $scope.init = function() {
+    $scope.init = function () {
         getCompletedOrders();
     };
 
@@ -39,31 +41,28 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     function getCompletedOrders() {
         var params = {
             status: "APPROVED",
-            from: moment($scope.filter.date.from).format(),
-            to: moment($scope.filter.date.to).format()
+            // Only filtering by day so round dates to start/end of day.
+            from: moment($scope.filter.date.from).startOf('day').format(),
+            to: moment($scope.filter.date.to).endOf('day').format()
         };
-        shipmentsApi.get(params, function(response) {
+        shipmentsApi.get(params, function (response) {
             $scope.shipments = response.result;
             $scope.filteredShipments = $scope.shipments;
             $scope.initFilters();
             $scope.selectedLocation = $scope.locations[0];
             $scope.selectedIssuer = $scope.issuers[0];
-        }, function(response) {
+        }, function (response) {
 
         })
     }
 
-    $scope.reloadShipments = function() {
+    $scope.reloadShipments = function () {
         getCompletedOrders();
     };
 
-    $scope.$watch(function() {
-        console.log($scope.filter.date.to);
-    });
-
     // TODO: can't create filters by looping over shipments. Will NOT work once pagination in use.
     // TODO: will need to add location & issuer API with status and date range filters.
-    $scope.initFilters = function() {
+    $scope.initFilters = function () {
         $scope.locations.push("All");
         $scope.issuers.push("All");
         angular.forEach($scope.shipments, function (shipment) {
@@ -78,7 +77,7 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
 
     /** --- Filter --- */
 
-    $scope.isInFilter = function(shipment) {
+    $scope.isInFilter = function (shipment) {
         var inLocFilter = isInLocationFilter(shipment);
         var inIssuerFilter = isInIssuerFilter(shipment);
         return inLocFilter && inIssuerFilter;
@@ -87,23 +86,23 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     function isInLocationFilter(shipment) {
         return $scope.selectedLocation === "All" || shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode === $scope.selectedLocation;
     }
-    
+
     function isInIssuerFilter(shipment) {
         return $scope.selectedIssuer === 'All' || shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName === $scope.selectedIssuer;
     }
 
     /** --- Util methods --- */
-    
+
     // TODO: do we want quantity of items orderd or number of distinct items ordered?
-    $scope.getOrderQuantity = function(shipment) {
+    $scope.getOrderQuantity = function (shipment) {
         var size = 0;
-        angular.forEach(shipment.order.activeVersion.lineItems, function(lineItem) {
-            size += lineItem.quantity; 
+        angular.forEach(shipment.order.activeVersion.lineItems, function (lineItem) {
+            size += lineItem.quantity;
         });
         return size;
     };
 
-    $scope.viewOrder = function(shipment) {
+    $scope.viewOrder = function (shipment) {
         locationService.go("/supply/requisition/requisition-view", false, "shipment=" + shipment.id);
     };
 }
