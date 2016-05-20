@@ -4534,7 +4534,7 @@ table.simple-table tbody tr td {
   background: #fafafa;
   box-shadow: 0 1px 1px #ccc;
   height: 45px;
-  z-index: 100;
+  z-index: 1002;
   color: white;
   overflow: hidden;
 }
@@ -5327,6 +5327,44 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .detail-acc-history-table,
 #accrual-usage-details-table {
   width: 100%;
+  /** Scrollable Projections table */
+}
+.accruals-table.projections .pay-period,
+.detail-acc-history-table.projections .pay-period,
+#accrual-usage-details-table.projections .pay-period {
+  width: 40px;
+}
+.accruals-table.projections .date,
+.detail-acc-history-table.projections .date,
+#accrual-usage-details-table.projections .date {
+  width: 112px;
+}
+.accruals-table.projections .rate,
+.detail-acc-history-table.projections .rate,
+#accrual-usage-details-table.projections .rate {
+  width: 60px;
+}
+.accruals-table.projections .used-hours,
+.detail-acc-history-table.projections .used-hours,
+#accrual-usage-details-table.projections .used-hours {
+  width: 84px;
+}
+.accruals-table.projections .available-hours,
+.detail-acc-history-table.projections .available-hours,
+#accrual-usage-details-table.projections .available-hours {
+  width: 69px;
+}
+.accruals-table.projections thead,
+.detail-acc-history-table.projections thead,
+#accrual-usage-details-table.projections thead {
+  display: block;
+}
+.accruals-table.projections tbody,
+.detail-acc-history-table.projections tbody,
+#accrual-usage-details-table.projections tbody {
+  display: block;
+  max-height: 300px;
+  overflow-y: auto;
 }
 .accruals-table thead,
 .detail-acc-history-table thead,
@@ -6036,7 +6074,7 @@ table.simple-table tbody tr td {
   background: #fafafa;
   box-shadow: 0 1px 1px #ccc;
   height: 45px;
-  z-index: 100;
+  z-index: 1002;
   color: white;
   overflow: hidden;
 }
@@ -6829,6 +6867,44 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .detail-acc-history-table,
 #accrual-usage-details-table {
   width: 100%;
+  /** Scrollable Projections table */
+}
+.accruals-table.projections .pay-period,
+.detail-acc-history-table.projections .pay-period,
+#accrual-usage-details-table.projections .pay-period {
+  width: 40px;
+}
+.accruals-table.projections .date,
+.detail-acc-history-table.projections .date,
+#accrual-usage-details-table.projections .date {
+  width: 112px;
+}
+.accruals-table.projections .rate,
+.detail-acc-history-table.projections .rate,
+#accrual-usage-details-table.projections .rate {
+  width: 60px;
+}
+.accruals-table.projections .used-hours,
+.detail-acc-history-table.projections .used-hours,
+#accrual-usage-details-table.projections .used-hours {
+  width: 84px;
+}
+.accruals-table.projections .available-hours,
+.detail-acc-history-table.projections .available-hours,
+#accrual-usage-details-table.projections .available-hours {
+  width: 69px;
+}
+.accruals-table.projections thead,
+.detail-acc-history-table.projections thead,
+#accrual-usage-details-table.projections thead {
+  display: block;
+}
+.accruals-table.projections tbody,
+.detail-acc-history-table.projections tbody,
+#accrual-usage-details-table.projections tbody {
+  display: block;
+  max-height: 300px;
+  overflow-y: auto;
 }
 .accruals-table thead,
 .detail-acc-history-table thead,
