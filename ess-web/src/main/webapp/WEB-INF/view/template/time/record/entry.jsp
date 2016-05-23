@@ -146,6 +146,7 @@
             <li ng-show="errorTypes.raSa.notEnoughPersonalTime">Personal hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.notEnoughSickTime">Sick hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.noMiscTypeGiven">A Misc type must be given when using Miscellaneous hours.</li>
+            <li ng-show="errorTypes.raSa.noMiscHoursGiven">Miscellaneous hours must be present when a Misc type is selected.</li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
           </ul>
         </div>

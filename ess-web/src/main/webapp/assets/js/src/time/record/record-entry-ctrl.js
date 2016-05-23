@@ -633,6 +633,9 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
         if (entry.miscHours > 0 && !entry.miscType) {
             $scope.errorTypes.raSa.noMiscTypeGiven = true;
         }
+        if (entry.miscType && entry.miscHours <= 0) {
+            $scope.errorTypes.raSa.noMiscHoursGiven = true;
+        }
         if (!allEntryValuesInHalfHourIncrements(entry)) {
             $scope.errorTypes.raSa.halfHourIncrements = true;
         }
@@ -666,6 +669,7 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
             notEnoughPersonalTime: false,
             notEnoughSickTime: false,
             noMiscTypeGiven: false,
+            noMiscHoursGiven: false,
             halfHourIncrements: false
         },
         // Error messages to display in TE time entry form.
@@ -790,10 +794,9 @@ function recordEntryCtrl($scope, $filter, $q, $timeout, appProps, activeRecordsA
     };
 
     $scope.isMiscTypeValid = function(entry) {
-        if (isNaN(entry.miscHours) || entry.miscHours === null || entry.miscHours === 0) {
-            return true;
-        }
-        return entry.miscType !== null;
+        var miscTypePresent = entry.miscType !== null;
+        var validMiscHours = isNaN(entry.miscHours) || entry.miscHours === null || entry.miscHours === 0;
+        return miscTypePresent ^ validMiscHours;
     };
 
     function allEntryValuesInHalfHourIncrements(entry) {
