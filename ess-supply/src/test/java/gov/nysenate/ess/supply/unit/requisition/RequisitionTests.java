@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,13 +25,6 @@ import static org.hamcrest.Matchers.is;
 public class RequisitionTests extends SupplyUnitTests {
 
     private static final LocalDateTime orderedDateTime = LocalDateTime.now();
-
-    private static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(1, "", "", "", new Category(""), 1, 1, 1);
-        Set<LineItem> stubLineItems = new HashSet<>();
-        stubLineItems.add(new LineItem(stubItem, 1));
-        return stubLineItems;
-    }
 
     @Test(expected = IllegalArgumentException.class)
     public void firstVersionMustHavePendingStatus() {
@@ -131,6 +125,12 @@ public class RequisitionTests extends SupplyUnitTests {
                     assertThat(requisition.getModifiedDateTime(), is(rejectedDateTime));
                     assertThat(requisition.getProcessedDateTime().get(), is(processedDateTime));
                     assertThat(requisition.getOrderedDateTime(), is(orderedDateTime));
+                }
+
+                @Test
+                public void canGetLatestNonRejectedVersion() {
+                    RequisitionVersion actual = requisition.getLatestVersionWithStatusIn(EnumSet.complementOf(EnumSet.of(RequisitionStatus.REJECTED)));
+                    assertThat(actual, is(processingVersion));
                 }
 
             }

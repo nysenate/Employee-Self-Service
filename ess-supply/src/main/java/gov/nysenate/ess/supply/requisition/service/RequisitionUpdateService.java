@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 
 public interface RequisitionUpdateService {
 
-    void submitNewRequisition(LocalDateTime orderedDateTime, RequisitionVersion version);
+    void submitNewRequisition(RequisitionVersion version);
 
+    void updateRequisition(int requisitionId, RequisitionVersion newVersion);
+
+    void undoRejection(int requisitionId);
 }

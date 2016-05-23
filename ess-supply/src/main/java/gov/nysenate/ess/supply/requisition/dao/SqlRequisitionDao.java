@@ -10,4 +10,14 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     @Override
     public void insertRequisition(Requisition requisition) {
     }
+
+    @Override
+    public void saveRequisition(Requisition requisition) {
+
+    }
+
+    @Override
+    public Requisition getRequisition(int requisitionId) {
+        return null;
+    }
 }

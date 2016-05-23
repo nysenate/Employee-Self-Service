@@ -4,11 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -18,7 +17,6 @@ public class Requisition {
     private int id;
     private SortedMap<LocalDateTime, RequisitionVersion> history;
     private final LocalDateTime orderedDateTime;
-    private LocalDateTime modifiedDateTime;
     private LocalDateTime processedDateTime;
     private LocalDateTime completedDateTime;
     private LocalDateTime approvedDateTime;
@@ -27,7 +25,6 @@ public class Requisition {
     public Requisition(LocalDateTime orderedDateTime, RequisitionVersion firstVersion) {
         checkArgument(firstVersion.getStatus() == RequisitionStatus.PENDING, "First Requisition Version must have PENDING status");
         this.orderedDateTime = checkNotNull(orderedDateTime, "Requisition order date time cannot be null.");
-        this.modifiedDateTime = orderedDateTime;
         this.history = new TreeMap<>();
         history.put(orderedDateTime, firstVersion);
     }
@@ -45,12 +42,25 @@ public class Requisition {
         else if (version.getStatus() == RequisitionStatus.REJECTED) {
             rejectedDateTime = dateTime;
         }
-        modifiedDateTime = dateTime;
         history.put(dateTime, version);
     }
 
     public RequisitionVersion getCurrentVersion() {
         return history.get(history.lastKey());
+    }
+
+    public RequisitionVersion getLatestVersionWithStatusIn(EnumSet<RequisitionStatus> statuses) {
+        LocalDateTime latestDateTime = getHistory().firstKey();
+        RequisitionVersion latestVersion = getHistory().get(latestDateTime);
+        for (Map.Entry<LocalDateTime, RequisitionVersion> entry: getHistory().entrySet()) {
+            if (statuses.contains(entry.getValue().getStatus())) {
+                if (entry.getKey().isAfter(latestDateTime)) {
+                    latestDateTime = entry.getKey();
+                    latestVersion = entry.getValue();
+                }
+            }
+        }
+        return latestVersion;
     }
 
     /** Getters */
@@ -60,7 +70,7 @@ public class Requisition {
     }
 
     public SortedMap<LocalDateTime, RequisitionVersion> getHistory() {
-        return history;
+        return new TreeMap<>(history);
     }
 
     public LocalDateTime getOrderedDateTime() {
@@ -68,7 +78,7 @@ public class Requisition {
     }
 
     public LocalDateTime getModifiedDateTime() {
-        return modifiedDateTime;
+        return history.lastKey();
     }
 
     public Optional<LocalDateTime> getProcessedDateTime() {
@@ -122,7 +132,6 @@ public class Requisition {
         return "Requisition{" +
                "history=" + history +
                ", orderedDateTime=" + orderedDateTime +
-               ", modifiedDateTime=" + modifiedDateTime +
                ", processedDateTime=" + processedDateTime +
                ", completedDateTime=" + completedDateTime +
                ", approvedDateTime=" + approvedDateTime +
@@ -138,8 +147,6 @@ public class Requisition {
         if (history != null ? !history.equals(that.history) : that.history != null) return false;
         if (orderedDateTime != null ? !orderedDateTime.equals(that.orderedDateTime) : that.orderedDateTime != null)
             return false;
-        if (modifiedDateTime != null ? !modifiedDateTime.equals(that.modifiedDateTime) : that.modifiedDateTime != null)
-            return false;
         if (processedDateTime != null ? !processedDateTime.equals(that.processedDateTime) : that.processedDateTime != null)
             return false;
         if (completedDateTime != null ? !completedDateTime.equals(that.completedDateTime) : that.completedDateTime != null)
@@ -153,7 +160,6 @@ public class Requisition {
     public int hashCode() {
         int result = history != null ? history.hashCode() : 0;
         result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
-        result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
         result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
         result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
         result = 31 * result + (approvedDateTime != null ? approvedDateTime.hashCode() : 0);
