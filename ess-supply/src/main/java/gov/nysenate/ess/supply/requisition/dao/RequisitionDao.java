@@ -6,5 +6,5 @@ public interface RequisitionDao {
 
     int saveRequisition(Requisition requisition);
 
-    Requisition getRequisition(int requisitionId);
+    Requisition getRequisitionById(int requisitionId);
 }

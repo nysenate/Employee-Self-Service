@@ -35,4 +35,14 @@ public class SqlRequisitionDaoTests extends SupplyTests {
         int id = requisitionDao.saveRequisition(requisition);
         assertThat(id, is(greaterThan(0)));
     }
+
+    // TODO: can update requisition
+
+    @Test
+    public void canGetRequisitionById() {
+        int id = requisitionDao.saveRequisition(requisition);
+        Requisition actual = requisitionDao.getRequisitionById(id);
+        // only tests that the sql executes without errors
+        // cant do much testing unless we create versions with real employees
+    }
 }

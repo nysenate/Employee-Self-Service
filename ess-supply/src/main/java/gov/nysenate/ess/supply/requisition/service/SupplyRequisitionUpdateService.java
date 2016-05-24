@@ -23,14 +23,14 @@ public class SupplyRequisitionUpdateService implements RequisitionUpdateService 
 
     @Override
     public void updateRequisition(int requisitionId, RequisitionVersion newVersion) {
-        Requisition requisition = requisitionDao.getRequisition(requisitionId);
+        Requisition requisition = requisitionDao.getRequisitionById(requisitionId);
         requisition.addVersion(dateTimeFactory.now(), newVersion);
         requisitionDao.saveRequisition(requisition);
     }
 
     @Override
     public void undoRejection(int requisitionId) {
-        Requisition requisition = requisitionDao.getRequisition(requisitionId);
+        Requisition requisition = requisitionDao.getRequisitionById(requisitionId);
         RequisitionVersion newVersion = requisition.getLatestVersionWithStatusIn(nonRejectedRequisitionStatuses());
         updateRequisition(requisitionId, newVersion);
     }

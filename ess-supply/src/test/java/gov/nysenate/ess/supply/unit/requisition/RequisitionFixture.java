@@ -22,7 +22,7 @@ public class RequisitionFixture {
                 .withStatus(RequisitionStatus.PENDING)
                 .withLineItems(createStubLineItem())
                 .withIssuer(createEmployeeWithId(2))
-                .withModifiedBy(createEmployeeWithId(1))
+                .withCreatedBy(createEmployeeWithId(1))
                 .withNote("A note")
                 .build();
     }
@@ -35,7 +35,7 @@ public class RequisitionFixture {
                 .withStatus(RequisitionStatus.PROCESSING)
                 .withLineItems(createStubLineItem())
                 .withIssuer(createEmployeeWithId(2))
-                .withModifiedBy(createEmployeeWithId(3))
+                .withCreatedBy(createEmployeeWithId(3))
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class RequisitionFixture {
                 .withStatus(RequisitionStatus.REJECTED)
                 .withLineItems(createStubLineItem())
                 .withIssuer(createEmployeeWithId(2))
-                .withModifiedBy(createEmployeeWithId(4))
+                .withCreatedBy(createEmployeeWithId(4))
                 .build();
     }
 
@@ -59,7 +59,7 @@ public class RequisitionFixture {
                 .withStatus(RequisitionStatus.COMPLETED)
                 .withLineItems(createStubLineItem())
                 .withIssuer(createEmployeeWithId(2))
-                .withModifiedBy(createEmployeeWithId(2))
+                .withCreatedBy(createEmployeeWithId(2))
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class RequisitionFixture {
                 .withStatus(RequisitionStatus.APPROVED)
                 .withLineItems(createStubLineItem())
                 .withIssuer(createEmployeeWithId(2))
-                .withModifiedBy(createEmployeeWithId(2))
+                .withCreatedBy(createEmployeeWithId(2))
                 .build();
     }
 
@@ -81,12 +81,12 @@ public class RequisitionFixture {
                 .withDestination(createStubLocation())
                 .withStatus(RequisitionStatus.PENDING)
                 .withLineItems(createStubLineItem())
-                .withModifiedBy(createEmployeeWithId(1))
+                .withCreatedBy(createEmployeeWithId(1))
                 .build();
     }
 
     public static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(1, "", "", "", new Category(""), 1, 1, 1);
+        SupplyItem stubItem = new SupplyItem(2, "", "", "", new Category(""), 1, 1, 1);
         Set<LineItem> stubLineItems = new HashSet<>();
         stubLineItems.add(new LineItem(stubItem, 1));
         return stubLineItems;

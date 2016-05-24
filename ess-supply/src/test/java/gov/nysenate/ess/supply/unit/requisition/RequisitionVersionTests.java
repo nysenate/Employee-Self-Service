@@ -2,21 +2,16 @@ package gov.nysenate.ess.supply.unit.requisition;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.SupplyUnitTests;
-import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static gov.nysenate.ess.supply.unit.requisition.RequisitionFixture.createStubLineItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +45,7 @@ public class RequisitionVersionTests extends SupplyUnitTests {
                 .withStatus(RequisitionStatus.PENDING)
                 .withLineItems(stubLineItems)
                 .withIssuer(stubEmployee)
-                .withModifiedBy(stubEmployee)
+                .withCreatedBy(stubEmployee)
                 .build();
     }
 
@@ -62,7 +57,7 @@ public class RequisitionVersionTests extends SupplyUnitTests {
                 .withStatus(RequisitionStatus.PENDING)
                 .withLineItems(stubLineItems)
                 .withIssuer(stubEmployee)
-                .withModifiedBy(stubEmployee)
+                .withCreatedBy(stubEmployee)
                 .build();
     }
 
@@ -74,7 +69,7 @@ public class RequisitionVersionTests extends SupplyUnitTests {
                 .withDestination(stubLocation)
                 .withLineItems(stubLineItems)
                 .withIssuer(stubEmployee)
-                .withModifiedBy(stubEmployee)
+                .withCreatedBy(stubEmployee)
                 .build();
     }
 
@@ -86,7 +81,7 @@ public class RequisitionVersionTests extends SupplyUnitTests {
                 .withDestination(stubLocation)
                 .withStatus(RequisitionStatus.PENDING)
                 .withIssuer(stubEmployee)
-                .withModifiedBy(stubEmployee)
+                .withCreatedBy(stubEmployee)
                 .build();
     }
 
@@ -100,7 +95,7 @@ public class RequisitionVersionTests extends SupplyUnitTests {
                 .withLineItems(emptyLineItems)
                 .withStatus(RequisitionStatus.PENDING)
                 .withIssuer(stubEmployee)
-                .withModifiedBy(stubEmployee)
+                .withCreatedBy(stubEmployee)
                 .build();
     }
 }

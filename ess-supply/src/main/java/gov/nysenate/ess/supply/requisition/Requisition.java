@@ -28,6 +28,11 @@ public class Requisition {
         history.put(orderedDateTime, firstVersion);
     }
 
+    public Requisition(SortedMap<LocalDateTime, RequisitionVersion> history) {
+        this.orderedDateTime = checkNotNull(history.firstKey(), "Requisition order date time cannot be null.");
+        this.history = history;
+    }
+
     public void addVersion(LocalDateTime dateTime, RequisitionVersion version) {
         if (version.getStatus() == RequisitionStatus.PROCESSING) {
             processedDateTime = dateTime;
@@ -62,8 +67,6 @@ public class Requisition {
         return latestVersion;
     }
 
-    /** Getters */
-
     public int getId() {
         return id;
     }
@@ -84,16 +87,32 @@ public class Requisition {
         return Optional.ofNullable(processedDateTime);
     }
 
+    public void setProcessedDateTime(LocalDateTime processedDateTime) {
+        this.processedDateTime = processedDateTime;
+    }
+
     public Optional<LocalDateTime> getCompletedDateTime() {
         return Optional.ofNullable(completedDateTime);
+    }
+
+    public void setCompletedDateTime(LocalDateTime completedDateTime) {
+        this.completedDateTime = completedDateTime;
     }
 
     public Optional<LocalDateTime> getApprovedDateTime() {
         return Optional.ofNullable(approvedDateTime);
     }
 
+    public void setApprovedDateTime(LocalDateTime approvedDateTime) {
+        this.approvedDateTime = approvedDateTime;
+    }
+
     public Optional<LocalDateTime> getRejectedDateTime() {
         return Optional.ofNullable(rejectedDateTime);
+    }
+
+    public void setRejectedDateTime(LocalDateTime rejectedDateTime) {
+        this.rejectedDateTime = rejectedDateTime;
     }
 
     /** Getters - return information for the current requisition version. **/
@@ -119,7 +138,7 @@ public class Requisition {
     }
 
     public Employee getModifiedBy() {
-        return getCurrentVersion().getModifiedBy();
+        return getCurrentVersion().getCreatedBy();
     }
 
     public Optional<String> getNote() {

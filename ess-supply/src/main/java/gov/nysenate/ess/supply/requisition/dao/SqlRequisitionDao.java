@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.dao;
 
+import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
@@ -11,8 +12,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.SortedMap;
 
 @Repository
 public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
@@ -68,8 +72,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public Requisition getRequisition(int requisitionId) {
-        return null;
+    public Requisition getRequisitionById(int requisitionId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
+        String sql = SqlRequisitionQuery.GET_REQUISITION_BY_ID.getSql(schemaMap());
+        RequisitionRowMapper rowMapper = new RequisitionRowMapper(historyDao);
+        return localNamedJdbc.queryForObject(sql, params, rowMapper);
     }
 
     private enum SqlRequisitionQuery implements BasicSqlQuery {
@@ -82,6 +89,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "UPDATE ${supplySchema}.requisition SET active_version_id = :activeVersionId, ordered_date_time = :orderedDateTime, \n" +
                 "processed_date_time = :processedDateTime, completed_date_time = :completedDateTime, \n" +
                 "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime"
+        ),
+        GET_REQUISITION_BY_ID(
+                "SELECT requisition_id, processed_date_time, completed_date_time, approved_date_time, rejected_date_time \n" +
+                "FROM ${supplySchema}.requisition \n" +
+                "WHERE requisition_id = :requisitionId"
         );
 
         private String sql;
@@ -98,6 +110,25 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         @Override
         public DbVendor getVendor() {
             return DbVendor.POSTGRES;
+        }
+    }
+
+    private class RequisitionRowMapper extends BaseRowMapper<Requisition> {
+
+        private SqlRequisitionHistoryDao historyDao;
+
+        public RequisitionRowMapper(SqlRequisitionHistoryDao historyDao) {
+            this.historyDao = historyDao;
+        }
+
+        @Override
+        public Requisition mapRow(ResultSet rs, int i) throws SQLException {
+            Requisition requisition = new Requisition(historyDao.getRequisitionHistory(rs.getInt("requisition_id")));
+            requisition.setProcessedDateTime(getLocalDateTimeFromRs(rs, "processed_date_time"));
+            requisition.setCompletedDateTime(getLocalDateTimeFromRs(rs, "completed_date_time"));
+            requisition.setApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"));
+            requisition.setRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"));
+            return requisition;
         }
     }
 }

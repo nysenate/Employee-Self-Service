@@ -38,7 +38,7 @@ public class SqlReqLineItemDao extends SqlBaseDao {
         localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    public Set<LineItem> getLineItems(int versionId) {
+    protected Set<LineItem> getLineItems(int versionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("versionId", versionId);
         String sql = SqlReqLineItemQuery.GET_LINE_ITEMS.getSql(schemaMap());
         ReqLineItemHandler handler = new ReqLineItemHandler(itemService);
@@ -91,7 +91,7 @@ public class SqlReqLineItemDao extends SqlBaseDao {
             }
         };
 
-        public ReqLineItemHandler(SupplyItemService itemService) {
+        ReqLineItemHandler(SupplyItemService itemService) {
             this.itemService = itemService;
             lineItems = new TreeSet<>(alphabeticalItemDesc);
         }
@@ -103,7 +103,7 @@ public class SqlReqLineItemDao extends SqlBaseDao {
             lineItems.add(new LineItem(item, quantity));
         }
 
-        public Set<LineItem> getLineItems() {
+        Set<LineItem> getLineItems() {
             return lineItems;
         }
     }

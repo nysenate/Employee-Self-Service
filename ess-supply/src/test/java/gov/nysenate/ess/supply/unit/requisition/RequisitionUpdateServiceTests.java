@@ -63,7 +63,7 @@ public class RequisitionUpdateServiceTests extends SupplyTests {
     @Test
     public void canUpdateRequisition() {
         when(dateTimeFactory.now()).thenReturn(processedDateTime);
-        when(requisitionDao.getRequisition(requisitionId)).thenReturn(pendingRequisition());
+        when(requisitionDao.getRequisitionById(requisitionId)).thenReturn(pendingRequisition());
         updateService.updateRequisition(requisitionId, processingVersion);
         Mockito.verify(requisitionDao).saveRequisition(processingRequisition());
     }
@@ -72,7 +72,7 @@ public class RequisitionUpdateServiceTests extends SupplyTests {
     public void canUndoRequisitionRejection() {
         LocalDateTime undoDateTime = rejectedDateTime.plusMinutes(5);
         when(dateTimeFactory.now()).thenReturn(undoDateTime);
-        when(requisitionDao.getRequisition(requisitionId)).thenReturn(rejectedRequisition());
+        when(requisitionDao.getRequisitionById(requisitionId)).thenReturn(rejectedRequisition());
         Requisition expected = rejectedRequisition();
         expected.addVersion(undoDateTime, processingVersion);
 

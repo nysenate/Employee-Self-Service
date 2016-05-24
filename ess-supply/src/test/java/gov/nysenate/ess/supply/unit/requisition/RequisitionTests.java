@@ -1,12 +1,6 @@
 package gov.nysenate.ess.supply.unit.requisition;
 
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.SupplyUnitTests;
-import gov.nysenate.ess.supply.item.Category;
-import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
@@ -15,10 +9,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
 
-import static oracle.net.aso.C01.p;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -61,7 +52,7 @@ public class RequisitionTests extends SupplyUnitTests {
             assertThat(requisition.getLineItems(), is(currentVersion.getLineItems()));
             assertThat(requisition.getStatus(), is(currentVersion.getStatus()));
             assertThat(requisition.getIssuer(), is(currentVersion.getIssuer()));
-            assertThat(requisition.getModifiedBy(), is(currentVersion.getModifiedBy()));
+            assertThat(requisition.getModifiedBy(), is(currentVersion.getCreatedBy()));
             assertThat(requisition.getNote(), is(currentVersion.getNote()));
         }
 

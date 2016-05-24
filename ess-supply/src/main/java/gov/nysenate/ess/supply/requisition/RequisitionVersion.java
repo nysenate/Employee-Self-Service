@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,7 +18,7 @@ public final class RequisitionVersion {
     private final ImmutableSet<LineItem> lineItems;
     private final RequisitionStatus status;
     private final Employee issuer;
-    private final Employee modifiedBy;
+    private final Employee createdBy;
     private final String note;
 
     private RequisitionVersion(Builder builder) {
@@ -30,7 +29,7 @@ public final class RequisitionVersion {
         this.lineItems = ImmutableSet.copyOf(builder.lineItems);
         this.status = checkNotNull(builder.status, "Requisition Version requires non null status.");
         this.issuer = builder.issuer;
-        this.modifiedBy = builder.modifiedBy;
+        this.createdBy = builder.createdBy;
         this.note = builder.note;
     }
 
@@ -58,8 +57,8 @@ public final class RequisitionVersion {
         return Optional.ofNullable(issuer);
     }
 
-    public Employee getModifiedBy() {
-        return modifiedBy;
+    public Employee getCreatedBy() {
+        return createdBy;
     }
 
     public Optional<String> getNote() {
@@ -69,13 +68,12 @@ public final class RequisitionVersion {
     @Override
     public String toString() {
         return "RequisitionVersion{" +
-               "id=" + id +
-               ", customer=" + customer +
+               "customer=" + customer +
                ", destination=" + destination +
                ", lineItems=" + lineItems +
                ", status=" + status +
                ", issuer=" + issuer +
-               ", modifiedBy=" + modifiedBy +
+               ", createdBy=" + createdBy +
                ", note='" + note + '\'' +
                '}';
     }
@@ -84,28 +82,24 @@ public final class RequisitionVersion {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        RequisitionVersion that = (RequisitionVersion) o;
-
-        if (id != that.id) return false;
-        if (customer != null ? !customer.equals(that.customer) : that.customer != null) return false;
-        if (destination != null ? !destination.equals(that.destination) : that.destination != null) return false;
-        if (lineItems != null ? !lineItems.equals(that.lineItems) : that.lineItems != null) return false;
-        if (status != that.status) return false;
-        if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
-        if (modifiedBy != null ? !modifiedBy.equals(that.modifiedBy) : that.modifiedBy != null) return false;
-        return note != null ? note.equals(that.note) : that.note == null;
+        RequisitionVersion version = (RequisitionVersion) o;
+        if (customer != null ? !customer.equals(version.customer) : version.customer != null) return false;
+        if (destination != null ? !destination.equals(version.destination) : version.destination != null) return false;
+        if (lineItems != null ? !lineItems.equals(version.lineItems) : version.lineItems != null) return false;
+        if (status != version.status) return false;
+        if (issuer != null ? !issuer.equals(version.issuer) : version.issuer != null) return false;
+        if (createdBy != null ? !createdBy.equals(version.createdBy) : version.createdBy != null) return false;
+        return note != null ? note.equals(version.note) : version.note == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        int result = customer != null ? customer.hashCode() : 0;
         result = 31 * result + (destination != null ? destination.hashCode() : 0);
         result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (issuer != null ? issuer.hashCode() : 0);
-        result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
+        result = 31 * result + (createdBy != null ? createdBy.hashCode() : 0);
         result = 31 * result + (note != null ? note.hashCode() : 0);
         return result;
     }
@@ -117,7 +111,7 @@ public final class RequisitionVersion {
         private Set<LineItem> lineItems;
         private RequisitionStatus status;
         private Employee issuer;
-        private Employee modifiedBy;
+        private Employee createdBy;
         private String note;
 
         public Builder withId(int id) {
@@ -150,8 +144,8 @@ public final class RequisitionVersion {
             return this;
         }
 
-        public Builder withModifiedBy(Employee modifiedBy) {
-            this.modifiedBy = modifiedBy;
+        public Builder withCreatedBy(Employee createdBy) {
+            this.createdBy = createdBy;
             return this;
         }
 
