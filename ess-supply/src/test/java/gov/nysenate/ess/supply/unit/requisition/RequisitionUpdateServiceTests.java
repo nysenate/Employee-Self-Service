@@ -5,8 +5,8 @@ import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.dao.SqlRequisitionDao;
-import gov.nysenate.ess.supply.requisition.service.RequisitionUpdateService;
-import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionUpdateService;
+import gov.nysenate.ess.supply.requisition.service.RequisitionService;
+import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionService;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import gov.nysenate.ess.supply.util.date.SupplyDateTime;
 import org.junit.Before;
@@ -22,7 +22,7 @@ public class RequisitionUpdateServiceTests extends SupplyTests {
 
     @Mock private RequisitionDao requisitionDao = new SqlRequisitionDao();
     @Mock private DateTimeFactory dateTimeFactory = new SupplyDateTime();
-    @InjectMocks private RequisitionUpdateService updateService = new SupplyRequisitionUpdateService();
+    @InjectMocks private RequisitionService updateService = new SupplyRequisitionService();
 
     private static int requisitionId;
     private RequisitionVersion pendingVersion;
