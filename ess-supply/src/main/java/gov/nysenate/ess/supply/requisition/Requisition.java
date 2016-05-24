@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.*;

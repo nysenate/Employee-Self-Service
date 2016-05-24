@@ -18,7 +18,7 @@ public class SupplyRequisitionUpdateService implements RequisitionUpdateService 
 
     @Override
     public void submitNewRequisition(RequisitionVersion version) {
-        requisitionDao.insertRequisition(new Requisition(dateTimeFactory.now(), version));
+        requisitionDao.saveRequisition(new Requisition(dateTimeFactory.now(), version));
     }
 
     @Override

@@ -52,7 +52,7 @@ public class RequisitionUpdateServiceTests extends SupplyTests {
     @Test
     public void canSubmitNewRequisition() {
         updateService.submitNewRequisition(pendingVersion);
-        Mockito.verify(requisitionDao).insertRequisition(pendingRequisition());
+        Mockito.verify(requisitionDao).saveRequisition(pendingRequisition());
     }
 
     @Test(expected = IllegalArgumentException.class)

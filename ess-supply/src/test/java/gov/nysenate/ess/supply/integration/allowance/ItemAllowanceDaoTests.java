@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
 import gov.nysenate.ess.supply.allowance.dao.ItemAllowanceDao;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +18,7 @@ public class ItemAllowanceDaoTests extends SupplyTests {
 
     @Autowired private ItemAllowanceDao allowanceDao;
 
+    @Ignore
     @Test
     public void canGetAllowances() {
         Set<ItemAllowance> allowances = allowanceDao.getItemAllowances(new LocationId("A42FB", 'W'));
