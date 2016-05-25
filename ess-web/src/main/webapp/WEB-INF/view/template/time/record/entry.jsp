@@ -359,22 +359,22 @@
     <% /** Modals for record submission. */ %>
     <div ng-if="isOpen('submit-indicator')">
       <div ng-if="state.pageState === pageStates.SUBMIT_WARNING"
-           ng-init="serviceDifference = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
+           ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
               expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
         <h3 class="content-info" style="margin-bottom:0;">
           Hours entered are less than pay period requirement
         </h3>
         <div style="padding: 20px; text-align: left;">
-          <p ng-show="serviceDifference >= expectedDifference">
-            Warning: You are attempting to use {{serviceDifference}}
+          <p ng-show="serviceSurplus >= expectedDifference">
+            Warning: You are attempting to use {{expectedDifference}}
             excess hours to fulfill pay period hour requirement.
           </p>
-          <div ng-show="serviceDifference < expectedDifference">
+          <div ng-show="serviceSurplus < expectedDifference">
             <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
             <div style="display: flex; justify-content: space-around">
                 <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
                 <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
-                <span class="bold">Year To Date {{ serviceDifference < 0 ? "Deficit" : "Excess" }}: {{serviceDifference}} hrs.</span>
+                <span class="bold">Year To Date {{ serviceSurplus < 0 ? "Deficit" : "Excess" }}: {{serviceSurplus}} hrs.</span>
             </div>
           </div>
           <hr/>
