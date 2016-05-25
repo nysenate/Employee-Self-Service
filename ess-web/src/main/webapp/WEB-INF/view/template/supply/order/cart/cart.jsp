@@ -55,7 +55,7 @@
       <hr/>
       <div class="col-8-12 force-min-height"></div>
       <div class="col-2-12">
-        <a href="${ctxPath}/supply/order/order">
+        <a href="${ctxPath}/supply/order">
           <input class="submit-button margin-10" type="button" value="Continue Browsing">
         </a>
       </div>

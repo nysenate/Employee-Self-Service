@@ -50,8 +50,8 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', functi
         },
 
         itemInCart: function (itemId) {
-            var results = $.grep(lineItems, function (cartItem) {
-                return cartItem.item.id === itemId
+            var results = $.grep(lineItems, function (lineItem) {
+                return lineItem.item.id === itemId
             });
             return results.length > 0;
         },

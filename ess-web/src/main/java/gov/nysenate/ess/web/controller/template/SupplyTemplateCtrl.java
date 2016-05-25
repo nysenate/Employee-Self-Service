@@ -68,6 +68,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/item-special-request-modal";
     }
 
+    @RequestMapping(value="/order/special-order-item-modal")
+    public String specialOrderItemModal() {
+        return SUPPLY_TMPL_BASE_URL + "/order/special-order-item-modal";
+    }
+
     /** --- Cart --- */
 
     @RequestMapping(value="/order/cart")
