@@ -39,34 +39,41 @@
   <div class="content-container" ng-show="state == states.SHOPPING">
     <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
-    <div class="grid grid-pad">
+    </div>
+
+    <div class="grid">
       <div class="col-3-12 text-align-center"
            dir-paginate="allowance in displayAllowances | itemsPerPage: paginate.itemsPerPage"
            current-page="paginate.currPage"
            pagination-id="item-pagination">
-        <img ng-src="${ctxPath}/assets/img/supply/{{allowance.item.id}}.png"
-             err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
-             class="supply-item-image">
-        <div>
-          <p class="dark-gray bold" style="height: 40px;">{{allowance.item.description}}</p>
-          <p class="dark-gray">{{allowance.item.standardQuantity}}/Pack</p>
-        </div>
-        <div style="">
-          <label class="custom-select">
-            <select ng-model="allowance.selectedQuantity"
-                    ng-options="qty for qty in getAllowedQuantities(allowance)">
-            </select>
-          </label>
-          <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"
-                 type="button" value="Add to Cart">
-        </div>
-        <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
-          &#x2713; Added to cart.
+        <div class="content-container padding-10" ng-class="{'supply-special-item': allowance.visibility === 'SPECIAL'}">
+          <img ng-src="${ctxPath}/assets/img/supply/{{allowance.item.id}}.png"
+               err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
+               class="supply-item-image">
+          <div>
+            <p class="dark-gray bold" style="height: 40px;">{{allowance.item.description}}</p>
+            <p class="dark-gray">{{allowance.item.standardQuantity}}/Pack</p>
+          </div>
+          <div style="">
+            <label class="custom-select">
+              <select ng-model="allowance.selectedQuantity"
+                      ng-options="qty for qty in getAllowedQuantities(allowance)">
+              </select>
+            </label>
+            <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"
+                   type="button" value="Add to Cart">
+          </div>
+          <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
+            &#x2713; Added to cart.
+          </div>
         </div>
       </div>
     </div>
+
+  <div class="content-container">
     <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
                              boundary-links="true" max-size="10"></dir-pagination-controls>
+  </div>
 
     <div modal-container>
       <div over-allowed-quantity-modal ng-if="isOpen('over-allowed-quantity-modal')">
