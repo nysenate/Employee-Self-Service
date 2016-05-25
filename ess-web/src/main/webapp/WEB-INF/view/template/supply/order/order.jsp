@@ -36,9 +36,10 @@
   </div>
 
   <%--Ordering--%>
-  <div class="content-container" ng-show="state === states.SHOPPING">
-    <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
-                             boundary-links="true" max-size="10"></dir-pagination-controls>
+  <div ng-show="state === states.SHOPPING">
+    <div class="content-container">
+      <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
+                               boundary-links="true" max-size="10"></dir-pagination-controls>
     </div>
 
     <div class="grid">
@@ -46,7 +47,8 @@
            dir-paginate="allowance in displayAllowances | itemsPerPage: paginate.itemsPerPage"
            current-page="paginate.currPage"
            pagination-id="item-pagination">
-        <div class="content-container padding-10" ng-class="{'supply-special-item': allowance.visibility === 'SPECIAL'}">
+        <div class="content-container padding-10"
+             ng-class="{'supply-special-item': allowance.visibility === 'SPECIAL'}">
           <img ng-src="${ctxPath}/assets/img/supply/{{allowance.item.id}}.png"
                err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
                class="supply-item-image">
@@ -70,13 +72,13 @@
       </div>
     </div>
 
-  <div class="content-container">
-    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
-                             boundary-links="true" max-size="10"></dir-pagination-controls>
-  </div>
+    <div class="content-container">
+      <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
+                               boundary-links="true" max-size="10"></dir-pagination-controls>
+    </div>
 
-  <div modal-container>
-    <div over-allowed-quantity-modal ng-if="isOpen('over-allowed-quantity-modal')"></div>
+    <div modal-container>
+      <div over-allowed-quantity-modal ng-if="isOpen('over-allowed-quantity-modal')"></div>
     <div item-special-request-modal ng-if="isOpen('item-special-request-modal')"></div>
     <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
   </div>
