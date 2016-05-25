@@ -52,6 +52,16 @@ public interface EmployeeDao extends BaseDao
     public Set<Integer> getActiveEmployeeIds();
 
     /**
+     * Get raw column data from the employee table.
+     * This data will contain the most recent data for all columns that are set by Transactions
+     * @see gov.nysenate.ess.core.model.transaction.TransactionCode
+     *
+     * @param empId int - employee id
+     * @return ImmutableMap<String, String>
+     */
+    public Map<String, String> getRawEmployeeColumns(int empId);
+
+    /**
      * @return LocalDateTime - the date/time of the latest employee table update
      */
     public LocalDateTime getLastUpdateTime();

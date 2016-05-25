@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.view.EmpTransItemView;
 import gov.nysenate.ess.core.client.view.EmpTransRecordView;
 import gov.nysenate.ess.core.client.view.base.MapView;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static java.util.stream.Collectors.toList;
@@ -34,6 +36,7 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
     private static final Logger logger = LoggerFactory.getLogger(EmpTransactionRestApiCtrl.class);
 
     @Autowired private EmpTransactionService transactionService;
+    @Autowired private EmployeeDao employeeDao;
 
     /**
      * Transactions for employee API
@@ -73,6 +76,25 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
             itemMap.put(e.getKey(), new EmpTransItemView(e.getKey(), e.getValue()));
         });
         return new ViewObjectResponse<>(MapView.of(itemMap), "snapshot");
+    }
+
+    /**
+     * Retrieves a snapshot of the current state of an employees data.
+     * This method should be used when looking at current data as it is more accurate
+     *  than reconstructing data from the trasaction audit trail.
+     *
+     * @param empId Integer - employee id
+     */
+    @RequestMapping("/snapshot/current")
+    public BaseResponse getCurrentTransactionByEmpId(@RequestParam Integer empId) {
+        return new ViewObjectResponse<>(
+                MapView.of(
+                        employeeDao.getRawEmployeeColumns(empId).entrySet().stream()
+                                .collect(Collectors.toMap(Map.Entry::getKey,
+                                        (entry) -> new EmpTransItemView(entry.getKey(), entry.getValue())))
+                ),
+                "snapshot"
+        );
     }
 
     private static EnumSet<TransactionCode> timelineCodes =

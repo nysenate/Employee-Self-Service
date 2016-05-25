@@ -1,16 +1,23 @@
 package gov.nysenate.ess.core.dao.personnel;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -69,6 +76,25 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     public Set<Integer> getActiveEmployeeIds(){
         return new HashSet<>(remoteNamedJdbc.query(SqlEmployeeQuery.GET_ACTIVE_EMP_IDS.getSql(schemaMap()),
                 (rs, rowNum) -> rs.getInt("NUXREFEM")));
+    }
+
+    @Override
+    public Map<String, String> getRawEmployeeColumns(int empId) {
+        final String getRawEmpColsSql = SqlEmployeeQuery.GET_EMP_BY_ID_SQL.getSql(
+                schemaMap(), new OrderBy("DTTXNUPDATE", SortOrder.DESC), LimitOffset.ONE);
+        return remoteNamedJdbc.queryForObject(getRawEmpColsSql, new MapSqlParameterSource("empId", empId),
+                (rs, rowNum) -> {
+                    Map<String, String> employeeColumns = new HashMap<>();
+                    for (String colName : TransactionCode.getAllDbColumnsList()) {
+                        try {
+                            employeeColumns.put(colName, rs.getString(colName));
+                        } catch (SQLException ex) {
+                            employeeColumns.put(colName, null);
+                        }
+                    }
+                    return employeeColumns;
+                }
+        );
     }
 
     @Override

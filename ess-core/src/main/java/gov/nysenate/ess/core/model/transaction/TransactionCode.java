@@ -63,7 +63,7 @@ public enum TransactionCode
     RSH(TransactionType.PAY, "CDRESPCTRHD, CDRESPCTR", "RESP. CENTER HEAD CODE"),   /** TODO: Fix this.. */
     RTP(TransactionType.PER, "", "RE-APPOINTMENT"),
     SAL(TransactionType.PAY, "MOSALBIWKLY", "BIWEEKLY/HOURLY RATE"),
-    SAT(TransactionType.PAY, "MOADDSTATTAX", "ADDITION STATE WITHHELD"),
+    SAT(TransactionType.PAY, "MOADDSTATTAX", "ADDITIONAL STATE WITHHELD"),
     SEX(TransactionType.PER, "CDSEX", "SEX CODE"),
     SMS(TransactionType.PAY, "CDMARITALST", "STATE MARITAL STATUS"),
     SPE(TransactionType.PER, "CDSTATPER", "PERSONNEL STATUS"),
