@@ -12,14 +12,13 @@ import java.util.EnumSet;
 
 public interface RequisitionService {
 
-    void submitNewRequisition(RequisitionVersion version);
+    void saveRequisition(Requisition requisition);
 
-    void updateRequisition(int requisitionId, RequisitionVersion newVersion);
-
-    void undoRejection(int requisitionId);
+    void undoRejection(Requisition requisition);
 
     Requisition getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
+
 }

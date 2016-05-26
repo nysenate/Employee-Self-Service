@@ -10,5 +10,5 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(HierarchicalContextRunner.class)
 @ContextConfiguration(classes = {TestConfig.class, SupplyConfig.class})
 @ActiveProfiles("test")
-public class SupplyUnitTests {
+public abstract class SupplyUnitTests {
 }

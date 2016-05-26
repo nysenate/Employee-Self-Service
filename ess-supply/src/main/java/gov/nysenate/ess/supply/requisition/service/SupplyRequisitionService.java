@@ -21,22 +21,15 @@ public class SupplyRequisitionService implements RequisitionService {
     @Autowired private RequisitionDao requisitionDao;
 
     @Override
-    public void submitNewRequisition(RequisitionVersion version) {
-        requisitionDao.saveRequisition(new Requisition(dateTimeFactory.now(), version));
-    }
-
-    @Override
-    public void updateRequisition(int requisitionId, RequisitionVersion newVersion) {
-        Requisition requisition = requisitionDao.getRequisitionById(requisitionId);
-        requisition.addVersion(dateTimeFactory.now(), newVersion);
+    public void saveRequisition(Requisition requisition) {
         requisitionDao.saveRequisition(requisition);
     }
 
     @Override
-    public void undoRejection(int requisitionId) {
-        Requisition requisition = requisitionDao.getRequisitionById(requisitionId);
+    public void undoRejection(Requisition requisition) {
         RequisitionVersion newVersion = requisition.getLatestVersionWithStatusIn(nonRejectedRequisitionStatuses());
-        updateRequisition(requisitionId, newVersion);
+        requisition.addVersion(dateTimeFactory.now(), newVersion);
+        saveRequisition(requisition);
     }
 
     private EnumSet<RequisitionStatus> nonRejectedRequisitionStatuses() {
