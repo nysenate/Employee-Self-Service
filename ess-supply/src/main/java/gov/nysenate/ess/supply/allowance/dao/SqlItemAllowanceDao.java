@@ -52,15 +52,13 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
     }
 
     private enum SqlItemAllowanceQuery implements BasicSqlQuery {
-        // TODO: Ideally this will use the ordered date time, not the version created date time.
         GET_LOCATION_ITEM_ORDER_QTY_FOR_DATE_RANGE(
                 "SELECT SUM(i.quantity) as total FROM ${supplySchema}.line_item i\n" +
-                "INNER JOIN ${supplySchema}.order_version v ON v.version_id = i.version_id\n" +
-                "INNER JOIN ${supplySchema}.order o ON o.active_version = v.version_id\n" +
-                "INNER JOIN ${supplySchema}.order_history h ON (h.order_id, h.version_id) = (o.order_id, o.active_version)\n" +
+                "INNER JOIN ${supplySchema}.requisition_version v ON v.version_id = i.version_id\n" +
+                "INNER JOIN ${supplySchema}.requisition r ON r.active_version_id = v.version_id\n" +
                 "WHERE v.destination = :location\n" +
                 "AND i.item_id = :itemId\n" +
-                "AND h.created_date_time BETWEEN :fromDate AND :toDate"
+                "AND r.ordered_date_time BETWEEN :fromDate AND :toDate"
         );
 
         SqlItemAllowanceQuery(String sql) {
