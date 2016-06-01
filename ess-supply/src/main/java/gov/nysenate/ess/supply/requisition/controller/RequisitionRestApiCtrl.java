@@ -55,6 +55,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         RequisitionVersion version = new RequisitionVersion.Builder().withCustomer(customer)
                                                                      .withDestination(destination)
                                                                      .withLineItems(lineItems)
+                                                                     .withStatus(RequisitionStatus.PENDING)
+                                                                     .withCreatedBy(customer)
                                                                      .build();
         Requisition requisition = new Requisition(LocalDateTime.now(), version);
         requisitionService.saveRequisition(requisition);
@@ -94,13 +96,20 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return EnumSet.copyOf(statusList);
     }
 
-    @RequestMapping(value = "/{id}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionVersionView newVersionView) {
         Requisition requisition = requisitionService.getRequisitionById(id);
         newVersionView.setCreatedBy(getSubjectEmployeeView());
         newVersionView.setId(0);
         requisition.addVersion(LocalDateTime.now(), newVersionView.toRequisitionVersion());
         requisitionService.saveRequisition(requisition);
+    }
+
+    @RequestMapping("/{id}/undoReject")
+    public void undoRejection(@PathVariable int id) {
+        // TODO: this is not setting the correct created by employee.
+        Requisition requisition = requisitionService.getRequisitionById(id);
+        requisitionService.undoRejection(requisition);
     }
 
     private EmployeeView getSubjectEmployeeView() {

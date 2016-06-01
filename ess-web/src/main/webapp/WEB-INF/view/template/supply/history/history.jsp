@@ -48,10 +48,10 @@
         </thead>
         <tbody>
         <tr ng-repeat="shipment in filteredShipments" ng-click="viewOrder(shipment)" ng-show="isInFilter(shipment)">
-          <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
-          <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+          <td>{{shipment.activeVersion.destination.locId}}</td>
+          <td>{{shipment.activeVersion.customer.lastName}}</td>
           <td>{{getOrderQuantity(shipment)}}</td>
-          <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+          <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
           <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
           <td>{{shipment.activeVersion.issuer.lastName}}</td>
         </tr>

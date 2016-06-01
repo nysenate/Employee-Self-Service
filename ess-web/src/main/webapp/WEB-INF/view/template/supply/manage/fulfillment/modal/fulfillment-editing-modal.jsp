@@ -5,8 +5,8 @@
 
 <div class="padding-10">
   <div>
-    <h3 class="content-info">Order from {{shipment.order.activeVersion.customer.firstName}}
-      {{shipment.order.activeVersion.customer.initial}} {{shipment.order.activeVersion.customer.lastName}}</h3>
+    <h3 class="content-info">Order from {{shipment.activeVersion.customer.firstName}}
+      {{shipment.activeVersion.customer.initial}} {{shipment.activeVersion.customer.lastName}}</h3>
   </div>
 
   <%--Order content--%>
@@ -30,7 +30,7 @@
 
       <div class="padding-top-10">
         <label class="col-1-12">note:</label>
-        <textarea class="col-11-12" ng-model="displayOrderVersion.note"
+        <textarea class="col-11-12" ng-model="displayedVersion.note"
                   ng-change="onUpdate()"></textarea>
       </div>
     </div>
@@ -48,9 +48,9 @@
                style="width: 100px">
       </h4>
 
-      <h4 class="content-info">Ordered: {{shipment.order.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
+      <h4 class="content-info">Ordered: {{shipment.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
-        <a target="_blank" href="${ctxPath}/supply/requisition/requisition-view?shipment={{shipment.id}}&print=true">
+        <a target="_blank" href="${ctxPath}/supply/requisition/requisition-view?requisition={{shipment.id}}&print=true">
           Print
         </a>
         <a target="#" ng-click="close()" style="padding-left: 30px">
@@ -62,7 +62,7 @@
 
       <div class="text-align-center" style="padding-bottom: 20px;">
         <label>Assign to: </label>
-        <select ng-model="displayShipmentVersion.issuer"
+        <select ng-model="displayedVersion.issuer"
                 ng-options="emp.fullName for emp in supplyEmployees track by emp.employeeId"
                 ng-change="onUpdate()">
         </select>

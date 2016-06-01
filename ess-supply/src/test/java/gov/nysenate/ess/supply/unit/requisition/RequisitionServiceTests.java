@@ -57,6 +57,7 @@ public class RequisitionServiceTests extends SupplyTests {
 
     @Test
     public void canUndoRequisitionRejection() {
+        // TODO: undo version created by should be set to logged in user.
         LocalDateTime undoDateTime = rejectedDateTime.plusMinutes(5);
         when(dateTimeFactory.now()).thenReturn(undoDateTime);
         Requisition expected = rejectedRequisition();

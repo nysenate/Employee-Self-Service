@@ -1,7 +1,7 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'LocationService', 'SupplyAcceptShipmentsApi',
-    function (appProps, modals, locationService, acceptShipmentsApi) {
+essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'LocationService', 'SupplyRequisitionUndoRejectionApi',
+    function (appProps, modals, locationService, requisitionUndoRejectionApi) {
     return {
         templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/fulfillment-immutable-modal',
         link: link
@@ -11,7 +11,7 @@ essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'Locatio
         $scope.shipment = modals.params();
         
         $scope.acceptShipment = function() {
-            acceptShipmentsApi.save({id: $scope.shipment.id}, null,
+            requisitionUndoRejectionApi.save({id: $scope.shipment.id}, null,
             function(value, responseHeaders) {
                 $scope.close();
                 reload();

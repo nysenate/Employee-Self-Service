@@ -32,10 +32,10 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
-        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
-        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{shipment.activeVersion.destination.locId}}</td>
+        <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
-        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
       </tr>
       </tbody>
     </table>
@@ -70,10 +70,10 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
-        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
-        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{shipment.activeVersion.destination.locId}}</td>
+        <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
-        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{shipment.activeVersion.issuer.lastName}}</td>
       </tr>
       </tbody>
@@ -111,10 +111,10 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in completedSearch.matches" ng-click="showEditingModal(shipment)">
-        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
-        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{shipment.activeVersion.destination.locId}}</td>
+        <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
-        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{shipment.activeVersion.issuer.lastName}}</td>
       </tr>
@@ -153,10 +153,10 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in approvedSearch.matches" ng-click="showImmutableModal(shipment)">
-        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
-        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{shipment.activeVersion.destination.locId}}</td>
+        <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
-        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{shipment.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{shipment.activeVersion.issuer.lastName}}</td>
       </tr>
@@ -180,10 +180,10 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in canceledSearch.matches" ng-click="showImmutableModal(shipment)">
-        <td>{{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}</td>
-        <td>{{shipment.order.activeVersion.customer.lastName}}</td>
+        <td>{{shipment.activeVersion.destination.locId}}</td>
+        <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
-        <td>{{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
       </tr>
       </tbody>
     </table>

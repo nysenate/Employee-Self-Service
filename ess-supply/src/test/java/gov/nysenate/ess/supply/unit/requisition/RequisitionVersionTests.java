@@ -35,6 +35,7 @@ public class RequisitionVersionTests extends SupplyUnitTests {
         assertThat(version.getId(), is(0));
         assertThat(version.getIssuer().isPresent(), is(false));
         assertThat(version.getNote().isPresent(), is(false));
+
     }
 
     @Test(expected = NullPointerException.class)
@@ -46,6 +47,18 @@ public class RequisitionVersionTests extends SupplyUnitTests {
                 .withLineItems(stubLineItems)
                 .withIssuer(stubEmployee)
                 .withCreatedBy(stubEmployee)
+                .build();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void createdByNotNull() {
+        RequisitionVersion version = new RequisitionVersion.Builder()
+                .withId(1)
+                .withCustomer(stubEmployee)
+                .withDestination(stubLocation)
+                .withStatus(RequisitionStatus.PENDING)
+                .withLineItems(stubLineItems)
+                .withIssuer(stubEmployee)
                 .build();
     }
 

@@ -71,6 +71,10 @@ public class Requisition {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public SortedMap<LocalDateTime, RequisitionVersion> getHistory() {
         return new TreeMap<>(history);
     }

@@ -40,7 +40,7 @@ public class RequisitionVersionView implements ViewObject {
                                                .withDestination(destination.toLocation())
                                                .withLineItems(lineItems.stream().map(LineItemView::toLineItem).collect(Collectors.toSet()))
                                                .withStatus(RequisitionStatus.valueOf(status))
-                                               .withIssuer(issuer.toEmployee())
+                                               .withIssuer(issuer == null ? null : issuer.toEmployee())
                                                .withCreatedBy(createdBy.toEmployee())
                                                .withNote(note)
                                                .build();

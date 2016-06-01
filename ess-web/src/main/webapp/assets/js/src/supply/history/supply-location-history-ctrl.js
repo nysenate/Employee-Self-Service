@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyLocationHistoryCtrl', [
-    '$scope', 'appProps', 'EmpInfoApi', 'SupplyOrdersApi', supplyLocationHistoryCtrl]);
+    '$scope', 'appProps', 'EmpInfoApi', supplyLocationHistoryCtrl]);
 
-function supplyLocationHistoryCtrl($scope, appProps, empInfoApi, ordersApi) {
+function supplyLocationHistoryCtrl($scope, appProps, empInfoApi) {
 
     $scope.empLocation = null;
     $scope.locOrders = null;

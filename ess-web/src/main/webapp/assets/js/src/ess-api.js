@@ -133,38 +133,16 @@ essApi.factory('SupplyLocationAllowanceApi', ['$resource', 'appProps', function(
     return $resource(appProps.apiPath + '/supply/location/allowance/:id.json', {id: '@id'})
 }]);
 
-/** --- Supply Order API --- */
+/** --- Supply Requisition Api --- */
 
-essApi.factory('SupplyOrdersApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders.json')
+essApi.factory('SupplyRequisitionApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions.json')
 }]);
 
-essApi.factory('SupplyOrderByIdApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/:id.json', {id: '@id'})
+essApi.factory('SupplyRequisitionByIdApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id.json', {id: '@id'})
 }]);
 
-essApi.factory('SupplyUpdateOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders/:id/update.json', {id: '@id'})
-}]);
-
-essApi.factory('SupplySubmitOrderApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/orders')
-}]);
-
-/** --- Supply Shipments API --- */
-
-essApi.factory('SupplyShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments.json')
-}]);
-
-essApi.factory('SupplyShipmentByIdApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id.json', {id: '@id'})
-}]);
-
-essApi.factory('SupplyUpdateShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/update.json', {id: '@id'})
-}]);
-
-essApi.factory('SupplyAcceptShipmentsApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/shipments/:id/accept.json', {id: '@id'})
+essApi.factory('SupplyRequisitionUndoRejectionApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/:id/undoReject.json', {id: '@id'})
 }]);

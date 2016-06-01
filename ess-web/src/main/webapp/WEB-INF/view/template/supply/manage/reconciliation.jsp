@@ -64,7 +64,7 @@
           <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'"
                ng-repeat="shipment in getShipmentsWithItem(item)" ng-click="viewShipment(shipment)">
             <div class="col-3-12">
-              {{shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode}}
+              {{shipment.activeVersion.destination.locId}}
             </div>
             <div class="col-3-12">
               {{getOrderedQuantity(shipment, item)}}

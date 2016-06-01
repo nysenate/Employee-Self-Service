@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
-    'SupplyShipmentsApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyFulfillmentController]);
+    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyFulfillmentController]);
 
-function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployeesApi,
+function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                                      itemsApi, modals, $interval) {
 
     $scope.pendingSearch = {
@@ -87,7 +87,6 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
         }, function (errorResponse) {
             $scope.itemSearch.error = true;
             $scope.itemSearch.matches = [];
-            console.log(errorResponse);
         })
     }
 
@@ -97,7 +96,7 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
             status: "PENDING",
             from: moment.unix(1).format()
         };
-        $scope.pendingSearch.response = supplyShipmentsApi.get(params, function (response) {
+        $scope.pendingSearch.response = requisitionApi.get(params, function (response) {
             $scope.pendingSearch.matches = response.result;
             $scope.pendingSearch.error = false;
         }, function (errorResponse) {
@@ -111,7 +110,7 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
             status: "PROCESSING",
             from: moment.unix(1).format()
         };
-        $scope.processingSearch.response = supplyShipmentsApi.get(params, function (response) {
+        $scope.processingSearch.response = requisitionApi.get(params, function (response) {
             $scope.processingSearch.matches = response.result;
             $scope.processingSearch.error = false;
         }, function (errorResponse) {
@@ -125,7 +124,7 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
             status: "COMPLETED",
             from: moment.unix(1).format()
         };
-        $scope.completedSearch.response = supplyShipmentsApi.get(params, function (response) {
+        $scope.completedSearch.response = requisitionApi.get(params, function (response) {
             $scope.completedSearch.matches = response.result;
             $scope.completedSearch.error = false;
         }, function (errorResponse) {
@@ -139,7 +138,7 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
             status: "APPROVED",
             from: moment().startOf('day').format()
         };
-        $scope.approvedSearch.response = supplyShipmentsApi.get(params, function (response) {
+        $scope.approvedSearch.response = requisitionApi.get(params, function (response) {
             $scope.approvedSearch.matches = response.result;
             $scope.approvedSearch.error = false;
         }, function (errorResponse) {
@@ -151,10 +150,10 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
     /** Get shipments that have been canceled today. A shipment is canceled when its order is rejected. */
     function getCanceledShipments() {
         var params = {
-            status: "CANCELED",
+            status: "REJECTED",
             from: moment().startOf('day').format()
         };
-        $scope.canceledSearch.response = supplyShipmentsApi.get(params, function (response) {
+        $scope.canceledSearch.response = requisitionApi.get(params, function (response) {
             $scope.canceledSearch.matches = response.result;
             $scope.canceledSearch.error = false;
         }, function (errorResponse) {
@@ -165,10 +164,10 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
 
     /** --- Util methods --- */
 
-    /* Return the number of distinct items in an shipments order */
-    $scope.getOrderQuantity = function (shipment) {
+    /* Return the number of distinct items ordered in a requisition */
+    $scope.getOrderQuantity = function (requisition) {
         var size = 0;
-        angular.forEach(shipment.order.activeVersion.lineItems, function (item) {
+        angular.forEach(requisition.activeVersion.lineItems, function (item) {
             size++;
         });
         return size;
@@ -176,18 +175,21 @@ function supplyFulfillmentController($scope, supplyShipmentsApi, supplyEmployees
 
     /** --- Highlighting --- */
 
-    $scope.highlightShipment = function (shipment) {
+    $scope.highlightShipment = function (requisition) {
         var highlight = false;
-        angular.forEach(shipment.order.activeVersion.lineItems, function (lineItem) {
-            if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
-                highlight = true;
-            }
-        });
+        // TODO highlighting logic has changed, this needs to be updated.
+        // angular.forEach(requisition.activeVersion.lineItems, function (lineItem) {
+        //     if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
+        //         highlight = true;
+        //     }
+        // });
         return highlight;
     };
 
     $scope.highlightLineItem = function (lineItem) {
-        return lineItem.quantity > lineItem.item.suggestedMaxQty
+        // TODO highlighting logic has changed, this needs to be updated.
+        // return lineItem.quantity > lineItem.item.suggestedMaxQty
+        return false;
     };
 
     /** --- Modals --- */

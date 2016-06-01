@@ -1,16 +1,18 @@
-essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyShipmentByIdApi',
-    'LocationService', '$window', '$timeout', 'RequisitionHistory', 'SupplyUtils', supplyViewController]);
+essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyRequisitionByIdApi',
+    'LocationService', '$window', '$timeout', 'SupplyUtils', supplyViewController]);
 
-function supplyViewController($scope, shipmentApi, locationService, $window, $timeout, RequisitionHistory, supplyUtils) {
+function supplyViewController($scope, requisitionApi, locationService, $window, $timeout, supplyUtils) {
 
-    $scope.shipmentResource = {};
-    $scope.requisitionHistory = {};
+    $scope.requisitionResponse = {};
+    $scope.requisitionHistory = {
+        versions: []
+    };
     $scope.selectedVersion = {};
 
     $scope.init = function () {
-        var id = locationService.getSearchParam('shipment');
-        $scope.shipmentResource = shipmentApi.get({id: id});
-        $scope.shipmentResource.$promise
+        var id = locationService.getSearchParam('requisition');
+        $scope.requisitionResponse = requisitionApi.get({id: id});
+        $scope.requisitionResponse.$promise
             .then(extractShipment)
             .then(printIfRequested)
             .then(generateHistory)
@@ -32,11 +34,36 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
     };
 
     var generateHistory = function () {
-        $scope.requisitionHistory = new RequisitionHistory($scope.shipment);
+        generateVersions();
+        generateVersionNames();
+        // Reverse so versions are in descending order.
+        $scope.requisitionHistory.versions.reverse();
     };
 
+    function generateVersions() {
+        for (var k in $scope.shipment.history.items) {
+            if ($scope.shipment.history.items.hasOwnProperty(k)) {
+                $scope.requisitionHistory.versions.push($scope.shipment.history.items[k]);
+            }
+        }
+    }
+
+    function generateVersionNames() {
+        for (var i = 0; i < $scope.requisitionHistory.versions.length; i++) {
+            if (i === 0) {
+                $scope.requisitionHistory.versions[i].name = "Original";
+            }
+            else if (i === $scope.requisitionHistory.versions.length - 1) {
+                $scope.requisitionHistory.versions[i].name = "Current";
+            }
+            else {
+                $scope.requisitionHistory.versions[i].name = i + 1;
+            }
+        }
+    }
+
     var selectCurrentVersion = function () {
-        $scope.selectedVersion = $scope.requisitionHistory.current();
+        $scope.selectedVersion = $scope.requisitionHistory.versions[0];
     };
 
     var shipmentResourceErrorHandler = function (response) {
@@ -47,8 +74,8 @@ function supplyViewController($scope, shipmentApi, locationService, $window, $ti
     $scope.init();
 
     $scope.sortSelectedVersionLineItems = function () {
-        if ($scope.selectedVersion && $scope.selectedVersion.order) {
-            return supplyUtils.alphabetizeLineItems($scope.selectedVersion.order.lineItems);
+        if ($scope.selectedVersion && $scope.selectedVersion.lineItems) {
+            return supplyUtils.alphabetizeLineItems($scope.selectedVersion.lineItems);
         }
     };
 }

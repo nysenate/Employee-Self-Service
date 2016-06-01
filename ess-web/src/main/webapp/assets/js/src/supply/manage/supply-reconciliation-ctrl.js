@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-['$scope', 'SupplyShipmentsApi', 'LocationService', supplyReconciliationController]);
+['$scope', 'SupplyRequisitionApi', 'LocationService', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, shipmentsApi, locationService) {
+function supplyReconciliationController($scope, requisitionApi, locationService) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
@@ -23,11 +23,11 @@ function supplyReconciliationController($scope, shipmentsApi, locationService) {
             from: moment().startOf('day').format(),
             to: moment().format()
         };
-        $scope.reconcilableSearch.response = shipmentsApi.get(params, function(response) {
+        $scope.reconcilableSearch.response = requisitionApi.get(params, function(response) {
             $scope.reconcilableSearch.matches = response.result;
             $scope.reconcilableSearch.error = false;
             angular.forEach($scope.reconcilableSearch.matches, function(shipment) {
-                angular.forEach(shipment.order.activeVersion.lineItems, function(lineItem) {
+                angular.forEach(shipment.activeVersion.lineItems, function(lineItem) {
                     if ($scope.reconcilableItemMap.hasOwnProperty(lineItem.item.id)) {
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
                     }
@@ -68,7 +68,7 @@ function supplyReconciliationController($scope, shipmentsApi, locationService) {
     };
 
     $scope.getOrderedQuantity = function(shipment, item) {
-        var lineItems = shipment.order.activeVersion.lineItems;
+        var lineItems = shipment.activeVersion.lineItems;
         for(var i = 0; i < lineItems.length; i++) {
             if (lineItems[i].item.id === item.id) {
                 return lineItems[i].quantity;
@@ -77,7 +77,7 @@ function supplyReconciliationController($scope, shipmentsApi, locationService) {
     };
 
     $scope.viewShipment = function(shipment){
-        locationService.go("/supply/requisition/requisition-view", false, "shipment=" + shipment.id);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.id);
     };
 
     $scope.init = function() {

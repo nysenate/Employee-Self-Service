@@ -29,7 +29,7 @@ public final class RequisitionVersion {
         this.lineItems = ImmutableSet.copyOf(builder.lineItems);
         this.status = checkNotNull(builder.status, "Requisition Version requires non null status.");
         this.issuer = builder.issuer;
-        this.createdBy = builder.createdBy;
+        this.createdBy = checkNotNull(builder.createdBy, "Requisition Version requires created by employee.");
         this.note = builder.note;
     }
 

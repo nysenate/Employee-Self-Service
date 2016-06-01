@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-    ['$scope', 'SupplyShipmentsApi', 'LocationService', supplyHistoryController]);
+    ['$scope', 'SupplyRequisitionApi', 'LocationService', supplyHistoryController]);
 
-function supplyHistoryController($scope, shipmentsApi, locationService) {
+function supplyHistoryController($scope, requisitionApi, locationService) {
 
     $scope.filter = {
         date: {
@@ -45,7 +45,7 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
             from: moment($scope.filter.date.from).startOf('day').format(),
             to: moment($scope.filter.date.to).endOf('day').format()
         };
-        shipmentsApi.get(params, function (response) {
+        requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
             $scope.filteredShipments = $scope.shipments;
             $scope.initFilters();
@@ -66,8 +66,8 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
         $scope.locations.push("All");
         $scope.issuers.push("All");
         angular.forEach($scope.shipments, function (shipment) {
-            if ($scope.locations.indexOf(shipment.order.activeVersion.destination.code + "-" + shipment.order.activeVersion.destination.locationTypeCode) === -1) {
-                $scope.locations.push(shipment.order.activeVersion.destination.code + "-" + shipment.order.activeVersion.destination.locationTypeCode);
+            if ($scope.locations.indexOf(shipment.activeVersion.destination.locId) === -1) {
+                $scope.locations.push(shipment.activeVersion.destination.locId);
             }
             if ($scope.issuers.indexOf(shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName) === -1) {
                 $scope.issuers.push(shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName);
@@ -84,7 +84,7 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     };
 
     function isInLocationFilter(shipment) {
-        return $scope.selectedLocation === "All" || shipment.order.activeVersion.destination.code + '-' + shipment.order.activeVersion.destination.locationTypeCode === $scope.selectedLocation;
+        return $scope.selectedLocation === "All" || shipment.activeVersion.destination.locId === $scope.selectedLocation;
     }
 
     function isInIssuerFilter(shipment) {
@@ -96,13 +96,13 @@ function supplyHistoryController($scope, shipmentsApi, locationService) {
     // TODO: do we want quantity of items orderd or number of distinct items ordered?
     $scope.getOrderQuantity = function (shipment) {
         var size = 0;
-        angular.forEach(shipment.order.activeVersion.lineItems, function (lineItem) {
+        angular.forEach(shipment.activeVersion.lineItems, function (lineItem) {
             size += lineItem.quantity;
         });
         return size;
     };
 
     $scope.viewOrder = function (shipment) {
-        locationService.go("/supply/requisition/requisition-view", false, "shipment=" + shipment.id);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.id);
     };
 }

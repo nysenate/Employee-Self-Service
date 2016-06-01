@@ -68,6 +68,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     private MapSqlParameterSource getRequisitionParams(Requisition requisition, int activeVersionId) {
         return new MapSqlParameterSource()
+                .addValue("requisitionId", requisition.getId())
                 .addValue("activeVersionId", activeVersionId)
                 .addValue("orderedDateTime", toDate(requisition.getOrderedDateTime()))
                 .addValue("processedDateTime", requisition.getProcessedDateTime().map(SqlBaseDao::toDate).orElse(null))
@@ -93,8 +94,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("customerId", formatSearchString(customerId))
                 .addValue("statuses", extractEnumSetParams(statuses))
                 .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
-                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)))
-                .addValue("dateField", "r." + dateField);
+                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
         String sql = SqlRequisitionQuery.SEARCH_REQUISITIONS.getSql(schemaMap(), limitOffset);
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
@@ -120,7 +120,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         UPDATE_REQUISITION(
                 "UPDATE ${supplySchema}.requisition SET active_version_id = :activeVersionId, ordered_date_time = :orderedDateTime, \n" +
                 "processed_date_time = :processedDateTime, completed_date_time = :completedDateTime, \n" +
-                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime"
+                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime \n" +
+                "WHERE requisition_id = :requisitionId"
         ),
         GET_REQUISITION_BY_ID(
                 "SELECT requisition_id, processed_date_time, completed_date_time, approved_date_time, \n" +
@@ -132,7 +133,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "FROM ${supplySchema}.requisition as r \n" +
                 "INNER JOIN ${supplySchema}.requisition_version as v ON r.active_version_id = v.version_id \n" +
                 "WHERE v.destination LIKE :destination AND Coalesce(v.customer_id::text, '') LIKE :customerId \n" +
-                "AND v.status::text IN (:statuses) AND :dateField BETWEEN :fromDate AND :toDate"
+                "AND v.status::text IN (:statuses) AND r.modified_date_time BETWEEN :fromDate AND :toDate"
         ),
         SEARCH_REQUISITIONS_TOTAL(
                 "SELECT count(r.requisition_id) " + SEARCH_REQUISITIONS_BODY.getSql()
@@ -171,6 +172,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         @Override
         public Requisition mapRow(ResultSet rs, int i) throws SQLException {
             Requisition requisition = new Requisition(historyDao.getRequisitionHistory(rs.getInt("requisition_id")));
+            requisition.setId(rs.getInt("requisition_id"));
             requisition.setProcessedDateTime(getLocalDateTimeFromRs(rs, "processed_date_time"));
             requisition.setCompletedDateTime(getLocalDateTimeFromRs(rs, "completed_date_time"));
             requisition.setApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"));

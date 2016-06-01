@@ -4,15 +4,15 @@
   </div>
 
   <div loader-indicator class="loader"
-       ng-show="!shipmentResource.$resolved"></div>
+       ng-show="!requisitionResponse.$resolved"></div>
 
   <%--Version selection--%>
-  <div ng-show="shipmentResource.$resolved">
+  <div ng-show="requisitionResponse.$resolved">
     <div class="content-container large-print-font-size">
       <div class="content-info">
         <label>Select Version:</label>
         <select ng-model="selectedVersion"
-                ng-options="version.name for version in requisitionHistory.versions track by version.name">
+                ng-options="version.name for version in requisitionHistory.versions">
         </select>
         <a class="float-right" style="padding: 5px 20px 0px 0px;" href="javascript:if(window.print)window.print()">
           Print Page
@@ -25,21 +25,21 @@
       <div class="content-info">
         <div class="grid padding-10">
           <div class="col-4-12">
-            <b>Requested By:</b> {{selectedVersion.order.customer.lastName}}
+            <b>Requested By:</b> {{selectedVersion.customer.lastName}}
           </div>
           <div class="col-4-12">
-            <b>Requesting Office:</b> {{selectedVersion.order.destination.locId}}
+            <b>Requesting Office:</b> {{selectedVersion.destination.locId}}
           </div>
           <div class="col-4-12">
-            <b>Requested Date:</b> {{shipment.order.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
+            <b>Requested Date:</b> {{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
         </div>
         <div class="grid padding-10">
           <div class="col-4-12">
-            <b>Status:</b> {{selectedVersion.shipment.status}}
+            <b>Status:</b> {{selectedVersion.status}}
           </div>
           <div class="col-4-12">
-            <b>Issued By:</b> {{selectedVersion.shipment.issuer.lastName}}
+            <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
           </div>
           <div class="col-4-12">
             <b>Issued Date:</b> {{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
@@ -47,7 +47,7 @@
         </div>
         <div class="grid padding-10">
           <div class="col-4-12">
-            <b>Modified By:</b> {{selectedVersion.modifiedBy.lastName}}
+            <b>Modified By:</b> {{selectedVersion.createdBy.lastName}}
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@
             Note:
           </div>
           <div class="col-10-12">
-            {{selectedVersion.order.note}}
+            {{selectedVersion.note}}
           </div>
         </div>
       </div>

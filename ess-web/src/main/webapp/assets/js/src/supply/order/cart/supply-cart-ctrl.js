@@ -1,8 +1,8 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-    '$scope', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplySubmitOrderApi', 
+    '$scope', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplyRequisitionApi', 
     'SupplyOrderDestinationService', 'appProps', 'modals', supplyCartController]);
 
-function supplyCartController($scope, supplyCart, allowanceService, supplySubmitOrderApi, 
+function supplyCartController($scope, supplyCart, allowanceService, requisitionApi, 
                               destinationService, appProps, modals) {
 
     $scope.myCartItems = function () {
@@ -27,7 +27,7 @@ function supplyCartController($scope, supplyCart, allowanceService, supplySubmit
             lineItems: supplyCart.getItems(),
             destinationId: destinationService.getDestination().locId
         };
-        supplySubmitOrderApi.save(params, function (response) {
+        requisitionApi.save(params, function (response) {
             supplyCart.reset();
             destinationService.reset();
             modals.open('supply-cart-checkout-modal');

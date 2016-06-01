@@ -11,13 +11,11 @@ var essSupply = angular.module('essSupply')
         };
     }])
 
-    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyUpdateShipmentsApi',
-        'SupplyUpdateOrderApi', 'SupplyLocationAutocompleteService', 'LocationService',
-        function ($scope, appProps, modals, updateShipmentsApi, updateOrderApi, locationAutocompleteService, locationService) {
+    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyLocationAutocompleteService', 'LocationService',
+        function ($scope, appProps, modals, requisitionApi, locationAutocompleteService, locationService) {
             /** Original shipment */
             $scope.shipment = {};
-            $scope.displayOrderVersion = {};
-            $scope.displayShipmentVersion = {};
+            $scope.displayedVersion = {};
             $scope.dirty = false;
             /** Initializes the location autocomplete field. */
             $scope.dirtyLocationCode = "";
@@ -34,14 +32,11 @@ var essSupply = angular.module('essSupply')
 
             $scope.init = function () {
                 $scope.shipment = modals.params();
-                $scope.shipment.order.activeVersion.note = ""; // Reset note so new note can be added.
-                $scope.displayOrderVersion = angular.copy($scope.shipment.order.activeVersion);
-                $scope.displayShipmentVersion = angular.copy($scope.shipment.activeVersion);
-                $scope.dirtyLocationCode = $scope.displayOrderVersion.destination.code;
-
+                $scope.shipment.activeVersion.note = ""; // Reset note so new note can be added.
+                $scope.displayedVersion = angular.copy($scope.shipment.activeVersion);
+                $scope.dirtyLocationCode = $scope.displayedVersion.destination.code;
                 $scope.locationSearch.map = locationAutocompleteService.getCodeToLocationMap();
                 $scope.locationAutocompleteOptions = locationAutocompleteService.getLocationAutocompleteOptions();
-
                 initializeAddItemFeature();
             };
 
@@ -56,19 +51,12 @@ var essSupply = angular.module('essSupply')
             $scope.init();
 
             $scope.saveChanges = function () {
-                saveShipmentVersion($scope.displayShipmentVersion);
-                saveOrderVersion($scope.displayOrderVersion);
+                saveRequisition($scope.displayedVersion);
             };
 
-            function saveShipmentVersion(version) {
-                updateShipmentsApi.save(
+            function saveRequisition(version) {
+                requisitionApi.save(
                     {id: $scope.shipment.id},
-                    version, success, error);
-            }
-
-            function saveOrderVersion(version) {
-                updateOrderApi.save(
-                    {id: $scope.shipment.order.id},
                     version, success, error);
             }
 
@@ -84,8 +72,8 @@ var essSupply = angular.module('essSupply')
             };
 
             $scope.processOrder = function () {
-                $scope.displayShipmentVersion.status = 'PROCESSING';
-                if ($scope.displayShipmentVersion.issuer === null) {
+                $scope.displayedVersion.status = 'PROCESSING';
+                if ($scope.displayedVersion.issuer === null) {
                     setIssuerToLoggedInUser();
                 }
                 $scope.saveChanges();
@@ -94,38 +82,29 @@ var essSupply = angular.module('essSupply')
             function setIssuerToLoggedInUser() {
                 angular.forEach($scope.supplyEmployees, function (emp) {
                     if (emp.employeeId === appProps.user.employeeId) {
-                        $scope.displayShipmentVersion.issuer = emp
+                        $scope.displayedVersion.issuer = emp
                     }
                 })
             }
 
             $scope.completeOrder = function () {
-                $scope.displayShipmentVersion.status = 'COMPLETED';
+                $scope.displayedVersion.status = 'COMPLETED';
                 $scope.saveChanges();
             };
 
             $scope.approveShipment = function () {
-                $scope.displayShipmentVersion.status = 'APPROVED';
+                $scope.displayedVersion.status = 'APPROVED';
                 $scope.saveChanges();
             };
 
             $scope.rejectOrder = function () {
-                $scope.displayOrderVersion.status = 'REJECTED';
-                $scope.displayShipmentVersion.status = 'CANCELED';
+                $scope.displayedVersion.status = 'REJECTED';
                 $scope.saveChanges();
             };
 
             $scope.onUpdate = function () {
-                $scope.dirty = changesMadeToShipment() || changesMadeToOrder()
+                $scope.dirty = angular.toJson($scope.shipment.activeVersion) !== angular.toJson($scope.displayedVersion);
             };
-
-            function changesMadeToShipment() {
-                return angular.toJson($scope.shipment.activeVersion) !== angular.toJson($scope.displayShipmentVersion);
-            }
-
-            function changesMadeToOrder() {
-                return angular.toJson($scope.shipment.order.activeVersion) !== angular.toJson($scope.displayOrderVersion);
-            }
 
             $scope.closeModal = function () {
                 modals.resolve();
@@ -138,16 +117,16 @@ var essSupply = angular.module('essSupply')
             /** --- Location Autocomplete --- */
 
             /**
-             * If a valid location is selected in autocomplete, set display shipment
-             * version to equal that, otherwise reset to the original location.
+             * If a valid location is selected in autocomplete, update location. If selection is invalid,
+             * use original location.
              */
             $scope.onLocationUpdated = function () {
                 var loc = $scope.locationSearch.map.get($scope.dirtyLocationCode);
                 if (loc) {
-                    $scope.displayOrderVersion.destination = loc;
+                    $scope.displayedVersion.destination = loc;
                 }
                 else {
-                    $scope.displayOrderVersion.destination = $scope.shipment.order.activeVersion.destination;
+                    $scope.displayedVersion.destination = $scope.shipment.activeVersion.destination;
                 }
                 $scope.onUpdate();
             };
@@ -160,13 +139,13 @@ var essSupply = angular.module('essSupply')
                     // Trying to add invalid item, don't do anything.
                     return;
                 }
-                $scope.displayOrderVersion.lineItems.push({item: newItem, quantity: 1});
+                $scope.displayedVersion.lineItems.push({item: newItem, quantity: 1});
                 $scope.onUpdate();
             };
 
             function newItemIsDuplicate(newItem) {
                 var duplicateItem = false;
-                angular.forEach($scope.shipment.order.activeVersion.lineItems, function (lineItem) {
+                angular.forEach($scope.shipment.activeVersion.lineItems, function (lineItem) {
                     if (newItem.id === lineItem.item.id) {
                         duplicateItem = true;
                     }
