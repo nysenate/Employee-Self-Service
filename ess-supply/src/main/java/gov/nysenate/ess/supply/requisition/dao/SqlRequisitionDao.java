@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.supply.order.OrderStatus;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
@@ -27,7 +26,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Autowired private SqlRequisitionHistoryDao historyDao;
     @Autowired private SqlRequisitionVersionDao versionDao;
-    @Autowired private SqlReqLineItemDao lineItemDao;
+    @Autowired private SqlLineItemDao lineItemDao;
 
     @Override
     @Transactional(value = "localTxManager")

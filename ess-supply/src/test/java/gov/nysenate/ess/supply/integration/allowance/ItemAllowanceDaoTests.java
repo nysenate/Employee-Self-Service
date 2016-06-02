@@ -18,7 +18,6 @@ public class ItemAllowanceDaoTests extends SupplyTests {
 
     @Autowired private ItemAllowanceDao allowanceDao;
 
-    @Ignore
     @Test
     public void canGetAllowances() {
         Set<ItemAllowance> allowances = allowanceDao.getItemAllowances(new LocationId("A42FB", 'W'));

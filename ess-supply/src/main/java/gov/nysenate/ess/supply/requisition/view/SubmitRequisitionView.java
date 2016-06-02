@@ -1,15 +1,15 @@
-package gov.nysenate.ess.supply.order.view;
+package gov.nysenate.ess.supply.requisition.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 
-public class SubmitOrderView implements ViewObject {
+public class SubmitRequisitionView implements ViewObject {
 
     protected int customerId;
     protected LineItemView[] lineItems;
     protected String destinationId;
 
-    public SubmitOrderView() {
+    public SubmitRequisitionView() {
     }
 
     public int getCustomerId() {

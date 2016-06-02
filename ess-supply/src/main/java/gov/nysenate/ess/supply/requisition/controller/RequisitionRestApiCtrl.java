@@ -16,7 +16,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
-import gov.nysenate.ess.supply.order.view.SubmitOrderView;
+import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
@@ -45,7 +45,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private LocationService locationService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void submitRequisition(@RequestBody SubmitOrderView submitRequisitionView) {
+    public void submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
         Set<LineItem> lineItems = new HashSet<>();
         for (LineItemView lineItemView : submitRequisitionView.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());

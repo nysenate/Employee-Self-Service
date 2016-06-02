@@ -25,7 +25,7 @@ import java.util.Set;
 @Repository
 public class SqlRequisitionVersionDao extends SqlBaseDao {
 
-    @Autowired private SqlReqLineItemDao lineItemDao;
+    @Autowired private SqlLineItemDao lineItemDao;
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private LocationService locationService;
 
@@ -81,11 +81,11 @@ public class SqlRequisitionVersionDao extends SqlBaseDao {
 
     private class RequisitionVersionRowMapper extends BaseRowMapper<RequisitionVersion> {
 
-        private SqlReqLineItemDao lineItemDao;
+        private SqlLineItemDao lineItemDao;
         private EmployeeInfoService employeeInfoService;
         private LocationService locationService;
 
-        RequisitionVersionRowMapper(SqlReqLineItemDao lineItemDao, EmployeeInfoService employeeInfoService,
+        RequisitionVersionRowMapper(SqlLineItemDao lineItemDao, EmployeeInfoService employeeInfoService,
                                     LocationService locationService) {
             this.lineItemDao = lineItemDao;
             this.employeeInfoService = employeeInfoService;

@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
-public class SqlReqLineItemDao extends SqlBaseDao {
+public class SqlLineItemDao extends SqlBaseDao {
 
     @Autowired private SupplyItemService itemService;
 
