@@ -30,7 +30,7 @@ function supplyCartController($scope, supplyCart, allowanceService, requisitionA
         requisitionApi.save(params, function (response) {
             supplyCart.reset();
             destinationService.reset();
-            modals.open('supply-cart-checkout-modal');
+            modals.open('supply-cart-checkout-modal', response);
         }, function (response) {
             console.log("Error submitting order")
         });

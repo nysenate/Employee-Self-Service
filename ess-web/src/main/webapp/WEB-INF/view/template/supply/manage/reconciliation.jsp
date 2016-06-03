@@ -47,10 +47,13 @@
         <div ng-show="isItemSelected(item)" style="padding-left: 40px; padding-top: 0px; padding-bottom: 20px;">
           <%--Detail header--%>
           <div class="grid expandable-div-header">
+            <div class="col-1-12">
+              Id
+            </div>
             <div class="col-3-12">
               Location
             </div>
-            <div class="col-3-12">
+            <div class="col-2-12">
               Quantity
             </div>
             <div class="col-3-12">
@@ -63,10 +66,13 @@
           <%--Detail rows--%>
           <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'"
                ng-repeat="shipment in getShipmentsWithItem(item)" ng-click="viewShipment(shipment)">
+            <div class="col-1-12">
+              {{shipment.id}}
+            </div>
             <div class="col-3-12">
               {{shipment.activeVersion.destination.locId}}
             </div>
-            <div class="col-3-12">
+            <div class="col-2-12">
               {{getOrderedQuantity(shipment, item)}}
             </div>
             <div class="col-3-12">

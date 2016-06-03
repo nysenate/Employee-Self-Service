@@ -38,6 +38,7 @@
       <table class="ess-table supply-listing-table">
         <thead>
         <tr>
+          <th>Id</th>
           <th>Location</th>
           <th>Ordered By</th>
           <th>Quantity</th>
@@ -48,6 +49,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="shipment in filteredShipments" ng-click="viewOrder(shipment)" ng-show="isInFilter(shipment)">
+          <td>{{shipment.id}}</td>
           <td>{{shipment.activeVersion.destination.locId}}</td>
           <td>{{shipment.activeVersion.customer.lastName}}</td>
           <td>{{getOrderQuantity(shipment)}}</td>

@@ -1,6 +1,6 @@
 <div ng-controller="SupplyViewController">
   <div class="supply-order-hero">
-    <h2>Requisition Order</h2>
+    <h2>Requisition Order: {{shipment.id}}</h2>
   </div>
 
   <div loader-indicator class="loader"

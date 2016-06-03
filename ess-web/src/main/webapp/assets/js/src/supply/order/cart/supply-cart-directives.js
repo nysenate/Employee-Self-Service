@@ -12,3 +12,19 @@ essSupply.directive('cartSummary', ['appProps', function(appProps) {
         transclude: true
     }
 }]);
+
+/**
+ *  --- Cart Checkout Modal ---
+ */
+essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
+    return {
+        restrict: 'E',
+        templateUrl: appProps.ctxPath + '/template/supply/order/cart/cart-checkout-modal',
+        controller: 'CartCheckoutModalCtrl',
+        controllerAs: 'ctrl'
+    }
+}]).controller('CartCheckoutModalCtrl', ['$scope', 'modals', function ($scope, modals) {
+
+    $scope.id = modals.params().result.id;
+    console.log(modals.params());
+}]);

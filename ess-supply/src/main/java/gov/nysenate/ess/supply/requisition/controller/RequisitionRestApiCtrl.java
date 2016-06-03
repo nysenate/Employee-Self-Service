@@ -45,7 +45,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private LocationService locationService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
+    public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
         Set<LineItem> lineItems = new HashSet<>();
         for (LineItemView lineItemView : submitRequisitionView.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
@@ -59,7 +59,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                                                      .withCreatedBy(customer)
                                                                      .build();
         Requisition requisition = new Requisition(LocalDateTime.now(), version);
-        requisitionService.saveRequisition(requisition);
+        int id = requisitionService.saveRequisition(requisition);
+        return new ViewObjectResponse<>(new RequisitionView(requisitionService.getRequisitionById(id)));
     }
 
     @RequestMapping("/{id}")

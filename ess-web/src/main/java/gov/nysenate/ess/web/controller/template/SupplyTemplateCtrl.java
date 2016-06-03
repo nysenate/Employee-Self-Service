@@ -85,6 +85,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/cart/cart-summary";
     }
 
+    @RequestMapping(value="/order/cart/cart-checkout-modal")
+    public String cartCheckoutModal() {
+        return SUPPLY_TMPL_BASE_URL + "/order/cart/cart-checkout-modal";
+    }
+
     /** --- Requisition --- */
 
     @RequestMapping(value="/requisition/requisition-view")

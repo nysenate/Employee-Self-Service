@@ -16,6 +16,9 @@ import org.mockito.*;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.when;
 
 public class RequisitionServiceTests extends SupplyTests {
@@ -51,8 +54,10 @@ public class RequisitionServiceTests extends SupplyTests {
 
     @Test
     public void canSaveRequisition() {
-        requisitionService.saveRequisition(requisition);
+        when(requisitionDao.saveRequisition(requisition)).thenReturn(1);
+        int id = requisitionService.saveRequisition(requisition);
         Mockito.verify(requisitionDao).saveRequisition(pendingRequisition());
+        assertThat(id, is(1));
     }
 
     @Test

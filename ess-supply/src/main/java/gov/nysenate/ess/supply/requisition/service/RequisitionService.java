@@ -12,7 +12,7 @@ import java.util.EnumSet;
 
 public interface RequisitionService {
 
-    void saveRequisition(Requisition requisition);
+    int saveRequisition(Requisition requisition);
 
     void undoRejection(Requisition requisition);
 

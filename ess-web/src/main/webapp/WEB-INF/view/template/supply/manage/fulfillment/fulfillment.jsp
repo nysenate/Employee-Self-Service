@@ -24,6 +24,7 @@
     <table class="ess-table supply-listing-table" ng-show="pendingSearch.matches.length > 0">
       <thead>
       <tr>
+        <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
         <th>Item Count</th>
@@ -32,6 +33,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
+        <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -61,6 +63,7 @@
     <table class="ess-table supply-listing-table" ng-show="processingSearch.matches.length > 0">
       <thead>
       <tr>
+        <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
         <th>Item Count</th>
@@ -70,6 +73,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
+        <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -101,6 +105,7 @@
     <table class="ess-table supply-listing-table" ng-show="completedSearch.matches.length > 0">
       <thead>
       <tr>
+        <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
         <th>Item Count</th>
@@ -111,6 +116,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in completedSearch.matches" ng-click="showEditingModal(shipment)">
+        <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -143,6 +149,7 @@
     <table class="ess-table supply-listing-table" ng-show="approvedSearch.matches.length > 0">
       <thead>
       <tr>
+        <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
         <th>Item Count</th>
@@ -153,6 +160,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in approvedSearch.matches" ng-click="showImmutableModal(shipment)">
+        <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>
@@ -172,6 +180,7 @@
     <table class="ess-table supply-listing-table">
       <thead>
       <tr>
+        <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
         <th>Item Count</th>
@@ -180,6 +189,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="shipment in canceledSearch.matches" ng-click="showImmutableModal(shipment)">
+        <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
         <td>{{getOrderQuantity(shipment)}}</td>

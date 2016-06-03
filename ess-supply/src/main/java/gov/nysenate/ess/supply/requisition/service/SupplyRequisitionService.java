@@ -21,8 +21,8 @@ public class SupplyRequisitionService implements RequisitionService {
     @Autowired private RequisitionDao requisitionDao;
 
     @Override
-    public void saveRequisition(Requisition requisition) {
-        requisitionDao.saveRequisition(requisition);
+    public int saveRequisition(Requisition requisition) {
+        return requisitionDao.saveRequisition(requisition);
     }
 
     @Override

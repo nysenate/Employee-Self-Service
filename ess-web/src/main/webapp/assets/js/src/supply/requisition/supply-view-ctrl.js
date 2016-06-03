@@ -8,6 +8,7 @@ function supplyViewController($scope, requisitionApi, locationService, $window, 
         versions: []
     };
     $scope.selectedVersion = {};
+    $scope.shipemnt = {};
 
     $scope.init = function () {
         var id = locationService.getSearchParam('requisition');
