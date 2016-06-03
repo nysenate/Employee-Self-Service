@@ -1,11 +1,14 @@
 var essApp = angular.module('ess');
 
+/**  TODO: Make this browser compatible.  Doesn't work with current chrome version (50.0.2661.102) */
+
 essApp.directive('textAutoHeight', ['$timeout', function ($timeout) {
     return {
         restrict: 'A',
         scope: { text: '=' },
         link: function($scope, $elem, $attrs) {
             $timeout(function() {
+                console.warn("textAutoHeight directive may be incompatible with some browsers");
                 var minHeight = $elem[0].offsetHeight,
                     paddingLeft = $elem.css('paddingLeft'),
                     paddingRight = $elem.css('paddingRight');
