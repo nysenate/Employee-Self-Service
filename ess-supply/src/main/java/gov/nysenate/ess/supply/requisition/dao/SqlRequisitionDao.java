@@ -33,10 +33,12 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public int saveRequisition(Requisition requisition) {
         int requisitionId = 0;
         for (Map.Entry<LocalDateTime, RequisitionVersion> entry: requisition.getHistory().entrySet()) {
-            int versionId = versionDao.insertRequisitionVersion(entry.getValue());
-            lineItemDao.insertVersionLineItems(entry.getValue(), versionId);
-            requisitionId = saveRequisitionInfo(requisition, versionId);
-            historyDao.insertRequisitionHistory(requisitionId, versionId, entry.getKey());
+            if (entry.getValue().getId() == 0) {
+                int versionId = versionDao.insertRequisitionVersion(entry.getValue());
+                lineItemDao.insertVersionLineItems(entry.getValue(), versionId);
+                requisitionId = saveRequisitionInfo(requisition, versionId);
+                historyDao.insertRequisitionHistory(requisitionId, versionId, entry.getKey());
+            }
         }
         return requisitionId;
     }
@@ -119,7 +121,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         UPDATE_REQUISITION(
                 "UPDATE ${supplySchema}.requisition SET active_version_id = :activeVersionId, ordered_date_time = :orderedDateTime, \n" +
                 "processed_date_time = :processedDateTime, completed_date_time = :completedDateTime, \n" +
-                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime \n" +
+                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime, modified_date_time = :modifiedDateTime \n" +
                 "WHERE requisition_id = :requisitionId"
         ),
         GET_REQUISITION_BY_ID(
