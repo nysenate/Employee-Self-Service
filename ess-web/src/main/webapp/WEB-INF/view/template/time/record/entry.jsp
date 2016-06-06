@@ -132,8 +132,8 @@
         <hr/>
         <% /** Display an error message if part of the time record is invalid. */ %>
         <div ess-notification level="error" title="Time record has errors"
-             message="" class="margin-top-20"
-             ng-show="errorTypes.raSa.errors">
+             message="" class="time-entry-error-box margin-top-20"
+             ng-show="selRecordHasRaSaErrors()">
           <ul>
             <li ng-show="errorTypes.raSa.workHoursInvalidRange">Work hours must be between 0 and 24.</li>
             <li ng-show="errorTypes.raSa.vacationHoursInvalidRange">Vacation hours must be between 0 and 7.</li>
@@ -166,13 +166,13 @@
               <th>Total</th>
             </tr>
           </thead>
-          <tbody record-validator validate="checkRecordForErrors()" record="state.records[state.iSelectedRecord]">
+          <tbody record-validator validate="preValidation()" record="state.records[state.iSelectedRecord]">
           <tr class="time-record-row highlight-first"
               ng-repeat="(i,entry) in regRecords = (state.records[state.iSelectedRecord].timeEntries | filter:{payType: '!TE'})"
               ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}"
               ng-init="numRecs = regRecords.length">
             <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
-            <td entry-validator validate="areWorkHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.workHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
                      ng-model="entry.workHours" tabindex="{{entry.total < 7 || getSelectedRecord().dirty ? 1 : 2}}" name="numWorkHours"/>
@@ -181,37 +181,37 @@
               <input type="number" readonly time-record-input class="hours-input"
                      step=".5" min="0" max="7" ng-model="entry.holidayHours" name="numHolidayHours"/>
             </td>
-            <td entry-validator validate="areVacationHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.vacationHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      ng-model="entry.vacationHours" name="numVacationHours"
                      tabindex="{{accrualTabIndex.vacation(entry)}}"/>
             </td>
-            <td entry-validator validate="arePersonalHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.personalHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{accrualTabIndex.personal(entry)}}"
                      ng-model="entry.personalHours" name="numPersonalHours"/>
             </td>
-            <td entry-validator validate="areEmpSickHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.sickEmpHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{accrualTabIndex.sickEmp(entry)}}"
                      ng-model="entry.sickEmpHours" name="numSickEmpHours"/>
             </td>
-            <td entry-validator validate="areFamSickHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.sickFamHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{accrualTabIndex.sickFam(entry)}}"
                      ng-model="entry.sickFamHours" name="numSickFamHours"/>
             </td>
-            <td entry-validator validate="areMiscHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.miscHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="7"
                      tabindex="{{accrualTabIndex.misc(entry)}}"
                      ng-model="entry.miscHours" name="numMiscHours"/>
             </td>
-            <td entry-validator validate="isMiscTypeValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.miscType(entry)">
               <select style="font-size:.9em;" name="miscHourType"
                       ng-model="entry.miscType" ng-change="setDirty(entry)"
                       tabindex="{{!entry.miscHours ? 2 : 1}}"
@@ -219,7 +219,7 @@
                 <option value="">No Misc Hours</option>
               </select>
             </td>
-            <td entry-validator validate="areTotalHoursValid(entry)">
+            <td entry-validator validate="entryValidators.raSa.totalHours(entry)">
               <span>{{entry.total | number}}</span>
             </td>
           </tr>
@@ -272,12 +272,14 @@
         <hr/>
         <% /** Display an error message if part of the time record is invalid. */ %>
         <div ess-notification level="error" title="Time record has errors"
-             message="" class="margin-top-20"
-             ng-show="errorTypes.te.errors">
+             message="" class="time-entry-error-box margin-top-20"
+             ng-show="selRecordHasTeErrors()">
           <ul>
             <li ng-show="errorTypes.te.workHoursInvalidRange">Work hours must be between 0 and 24.</li>
             <li ng-show="errorTypes.te.notEnoughWorkHours">Work hours recorded exceeds available work hours.</li>
             <li ng-show="errorTypes.te.fifteenMinIncrements">Work hours must be in increments of 0.25</li>
+            <li ng-show="errorTypes.te.noComment">All recorded work hours must include a comment or description</li>
+            <li ng-show="errorTypes.te.noWorkHoursForComment">Commented entries must indicate 0 or more hours worked</li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="te-time-record-table">
@@ -288,18 +290,18 @@
               <th>Work Time Description / Comments</th>
             </tr>
           </thead>
-          <tbody record-validator validate="checkRecordForErrors()" record="state.records[state.iSelectedRecord]">
+          <tbody record-validator validate="preValidation()" record="state.records[state.iSelectedRecord]">
             <tr class="time-record-row highlight-first"
                 ng-repeat="(i,entry) in state.records[state.iSelectedRecord].timeEntries | filter:{payType: 'TE'}"
                 ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}">
               <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
-              <td entry-validator validate="areWorkHoursValid(entry)">
+              <td entry-validator validate="entryValidators.te.workHours(entry)">
                 <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                        placeholder="--" step="0.25" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
                        ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
               </td>
-              <td class="entry-comment-col">
-                <textarea text-auto-height text="entry.empComment" maxlength="150" ng-change="setDirty(entry)" class="entry-comment"
+              <td entry-validator validate="entryValidators.te.comment(entry)" class="entry-comment-col">
+                <textarea maxlength="150" rows="1" wrap="off" ng-change="setDirty(entry)" class="entry-comment"
                        ng-model="entry.empComment" name="entryComment" tabindex="{{entry.workHours ? 1 : 2}}"></textarea>
               </td>
             </tr>
