@@ -27,7 +27,7 @@ public class AllowanceTRV implements TimeRecordValidator {
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState) {
         // If the saved record contains entries where the employee was a temporary employee
-        return record.getRecordStatus().getScope() == TimeRecordScope.EMPLOYEE &&
+        return record.getScope() == TimeRecordScope.EMPLOYEE &&
                 record.getTimeEntries().stream()
                         .anyMatch(entry -> entry.getPayType() == PayType.TE);
     }

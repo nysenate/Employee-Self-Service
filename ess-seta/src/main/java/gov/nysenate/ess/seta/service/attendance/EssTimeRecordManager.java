@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.service.attendance;
 
 import com.google.common.collect.*;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,9 +64,16 @@ public class EssTimeRecordManager implements TimeRecordManager
     @Autowired protected EmpTransactionService transService;
     @Autowired protected EmployeeInfoService empInfoService;
 
+    @Autowired protected EventBus eventBus;
+
     /** When set to false, the scheduled run of ensureAllRecords wont run */
     @Value("${scheduler.timerecord.ensureall.enabled:false}")
     private boolean ensureAllEnabled;
+
+    @PostConstruct
+    public void init() {
+        eventBus.register(this);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -116,6 +125,7 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .filter(transRec -> recordAlteringTransCodes.contains(transRec.getTransCode()))
                 .map(TransactionRecord::getEmployeeId)
                 .distinct()
+                .peek(empId -> logger.info("Re checking records for employee {} due to detected transaction post", empId))
                 .forEach(this::ensureRecords);
     }
 
