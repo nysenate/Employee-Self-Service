@@ -4388,6 +4388,9 @@ a:hover {
 .text-align-left {
   text-align: left;
 }
+.text-align-center {
+  text-align: center;
+}
 .margin-10 {
   margin: 10px;
 }
@@ -4396,6 +4399,9 @@ a:hover {
 }
 .margin-left-10 {
   margin-left: 10px;
+}
+.margin-left-20 {
+  margin-left: 20px;
 }
 .clearfix {
   clear: both;
@@ -5134,6 +5140,7 @@ table.time-record-entry-table tbody tr td.today {
   height: 45px;
   width: 450px;
   border: 1px solid #ccc;
+  resize: vertical;
 }
 .save-record-container {
   padding: 10px;
@@ -5928,6 +5935,9 @@ a:hover {
 .text-align-left {
   text-align: left;
 }
+.text-align-center {
+  text-align: center;
+}
 .margin-10 {
   margin: 10px;
 }
@@ -5936,6 +5946,9 @@ a:hover {
 }
 .margin-left-10 {
   margin-left: 10px;
+}
+.margin-left-20 {
+  margin-left: 20px;
 }
 .clearfix {
   clear: both;
@@ -6674,6 +6687,7 @@ table.time-record-entry-table tbody tr td.today {
   height: 45px;
   width: 450px;
   border: 1px solid #ccc;
+  resize: vertical;
 }
 .save-record-container {
   padding: 10px;
@@ -8197,6 +8211,10 @@ button.ui-button::-moz-focus-inner {
   color: #6270bd;
   font-weight: bold;
 }
+.supply-special-item {
+  background-color: #f9cfc7;
+  border: 3px solid #eb6e55;
+}
 .expandable-div-header {
   color: #333;
   font-size: .9em;
@@ -8322,12 +8340,14 @@ label.custom-select {
   color: #fefefe;
   font-weight: bold;
 }
+.rejected-cell {
+  background: #e64727;
+  color: #fefefe;
+  font-weight: bold;
+}
 /** --- Other --- */
 .inline-block {
   display: inline-block;
-}
-.text-align-center {
-  text-align: center;
 }
 .width-100 {
   width: 100%;
