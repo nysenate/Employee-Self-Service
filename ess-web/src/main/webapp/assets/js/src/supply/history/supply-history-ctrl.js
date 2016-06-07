@@ -5,8 +5,8 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
 
     $scope.filter = {
         date: {
-            from: moment().subtract(1, 'month').toDate(),
-            to: new Date(), // need to use date objects for date input in jsp
+            from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
+            to: moment().format("MM/DD/YYYY"),
             min: new Date(2016, 1, 1, 0, 0, 0),
             max: moment().format() //TODO: max and min not working
         },

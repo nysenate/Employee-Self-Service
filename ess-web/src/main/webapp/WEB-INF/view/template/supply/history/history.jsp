@@ -17,11 +17,11 @@
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">From:</label>
-          <input ng-model="filter.date.from" ng-change="reloadShipments()" type="date"/>
+          <input datepicker ng-model="filter.date.from" ng-change="reloadShipments()"/>
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">To:</label>
-          <input ng-model="filter.date.to" ng-change="reloadShipments()" type="date"/>
+          <input datepicker ng-model="filter.date.to" ng-change="reloadShipments()"/>
         </div>
       </div>
     </div>
