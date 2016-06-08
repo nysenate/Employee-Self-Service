@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -89,7 +90,8 @@ public class EssCachedEmpTransactionService implements EmpTransactionService
         if (!transRecs.isEmpty()) {
             // Get the last updated record date/time
             lastUpdateDateTime = transRecs.stream()
-                .map(TransactionRecord::getUpdateDate).max(LocalDateTime::compareTo).get();
+                    .flatMap(tRec -> Arrays.asList(tRec.getAuditUpdateDate(), tRec.getUpdateDate()).stream())
+                    .max(LocalDateTime::compareTo).get();
             // Gather a set of affected employee ids and refresh their transaction cache
             transRecs.stream().map(TransactionRecord::getEmployeeId).distinct().forEach(empId -> {
                 logger.debug("Re-Caching transactions for employee {}", empId);

@@ -29,13 +29,19 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
     ),
 
     GET_LAST_UPDATED_RECS_SQL(
-        String.format(GET_TRANS_HISTORY_TEMPLATE.sql, "WHERE PTX.DTTXNUPDATE > :lastDateTime AND PTX.CDSTATUS = 'A'\n")
+        String.format(GET_TRANS_HISTORY_TEMPLATE.sql, "" +
+        "WHERE PTX.CDSTATUS = 'A' AND AUD.CDSTATUS = 'A'\n" +
+        "   AND (PTX.DTTXNUPDATE > :lastDateTime OR AUD.DTTXNUPDATE > :lastDateTime)\n")
     ),
 
     GET_MAX_UPDATE_DATE_TIME_SQL(
-        "SELECT CAST (MAX(PTX.DTTXNUPDATE) AS TIMESTAMP) AS MAX_DTTXNUPDATE\n" +
+        "SELECT GREATEST(\n" +
+        "   CAST (MAX(PTX.DTTXNUPDATE) AS TIMESTAMP),\n" +
+        "   CAST (MAX(AUD.DTTXNUPDATE) AS TIMESTAMP)\n" +
+        ") AS MAX_DTTXNUPDATE\n" +
         "FROM ${masterSchema}.PM21PERAUDIT AUD\n" +
-        "JOIN ${masterSchema}.PD21PTXNCODE PTX ON AUD.NUCHANGE = PTX.NUCHANGE"
+        "JOIN ${masterSchema}.PD21PTXNCODE PTX ON AUD.NUCHANGE = PTX.NUCHANGE\n" +
+        "WHERE AUD.CDSTATUS = 'A' AND PTX.CDSTATUS = 'A'"
     )
     ;
 
