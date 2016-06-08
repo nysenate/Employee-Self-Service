@@ -47,8 +47,6 @@ function accrualHistoryCtrl($scope, $http, $location, $anchorScroll, $timeout,
                             return acc.computed && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
                         }).reverse();
                     }
-                    // Scroll down to earliest projection
-                    $timeout(scrollToEarliestProjection, 5);
                 }
                 $scope.state.searching = false;
             }, function(resp) {
@@ -83,22 +81,6 @@ function accrualHistoryCtrl($scope, $http, $location, $anchorScroll, $timeout,
             }
         }
     };
-
-    /**
-     *
-     */
-    function scrollToEarliestProjection() {
-        console.log('scrollin');
-        var earliestProjectionId = 'earliest-projection';
-        $location.hash(earliestProjectionId);
-        $anchorScroll();
-        $timeout(function() {
-            $location.hash('ng-app');
-            $timeout(function () {
-                $location.hash(null);
-            });
-        });
-    }
 
     /**
      * When a user enters in hours in the projections table, the totals need to be re-computed for
@@ -146,8 +128,20 @@ function accrualHistoryCtrl($scope, $http, $location, $anchorScroll, $timeout,
     };
 
     $scope.floatTheadOpts = {
-        scrollingTop: 47
+        scrollingTop: 47,
+        useAbsolutePositioning: false
     };
+
+    /**
+     * Perform an immediate and delayed float-thead reflow
+     * Preferably immediate to reduce flicker but sometimes it is too early
+     */
+    $scope.$watch('activeAccrualTab', function () {
+        jQuery('.detail-acc-history-table').floatThead('reflow');
+        $timeout(function () {
+            jQuery('.detail-acc-history-table').floatThead('reflow');
+        }, 100); 
+    });
 
     /**
      * Initialize

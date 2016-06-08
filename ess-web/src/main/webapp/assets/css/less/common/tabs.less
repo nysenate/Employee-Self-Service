@@ -1,0 +1,30 @@
+@import "../lesshat";
+@import "./colors";
+
+.ess-tabs {
+  .tab-selector {
+    display: flex;
+    justify-content: space-around;
+
+    a {
+      flex-grow: 1;
+      color: black;
+      font-size: 1.1em;
+      text-align: center;
+      border-bottom: 1px solid fade(@teal, 25);
+      padding: 12px 0;
+
+      transition: background-color 0.3s, color .15s, box-shadow .3s, opacity 0.3s;
+      &:hover {
+        color: #004d4d;
+        background-color: #f7f7f7;
+      }
+
+      &.active {
+        border-bottom: 3px solid fade(@teal, 50);
+        color: teal;
+        font-weight: 600;
+      }
+    }
+  }
+}
