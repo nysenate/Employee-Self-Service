@@ -275,11 +275,13 @@
              message="" class="time-entry-error-box margin-top-20"
              ng-show="selRecordHasTeErrors()">
           <ul>
-            <li ng-show="errorTypes.te.workHoursInvalidRange">Work hours must be between 0 and 24.</li>
-            <li ng-show="errorTypes.te.notEnoughWorkHours">Work hours recorded exceeds available work hours.</li>
+            <li ng-show="errorTypes.te.workHoursInvalidRange">Work hours must be between 0 and 24</li>
+            <li ng-show="errorTypes.te.notEnoughWorkHours">Work hours recorded exceeds available work hours</li>
             <li ng-show="errorTypes.te.fifteenMinIncrements">Work hours must be in increments of 0.25</li>
-            <li ng-show="errorTypes.te.noComment">All recorded work hours must include a comment or description</li>
-            <li ng-show="errorTypes.te.noWorkHoursForComment">Commented entries must indicate 0 or more hours worked</li>
+            <li ng-show="errorTypes.te.noComment">
+              Must enter start and end work times for all work blocks during the entered work hours.
+            </li>
+            <li ng-show="errorTypes.te.noWorkHoursForComment">Commented entries must accompany 0 or more work hours entered</li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="te-time-record-table">
@@ -301,7 +303,7 @@
                        ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
               </td>
               <td entry-validator validate="entryValidators.te.comment(entry)" class="entry-comment-col">
-                <textarea maxlength="150" rows="1" wrap="off" ng-change="setDirty(entry)" class="entry-comment"
+                <textarea maxlength="150" ng-change="setDirty(entry)" class="entry-comment" text-auto-height text="entry.empComment"
                        ng-model="entry.empComment" name="entryComment" tabindex="{{entry.workHours ? 1 : 2}}"></textarea>
               </td>
             </tr>

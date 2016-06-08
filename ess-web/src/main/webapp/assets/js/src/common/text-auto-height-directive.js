@@ -10,18 +10,30 @@ essApp.directive('textAutoHeight', ['$timeout', function ($timeout) {
             $timeout(function() {
                 console.warn("textAutoHeight directive may be incompatible with some browsers");
                 var minHeight = $elem[0].offsetHeight,
-                    paddingLeft = $elem.css('paddingLeft'),
-                    paddingRight = $elem.css('paddingRight');
+                    paddingLeft = parseInt($elem.css('paddingLeft')) || 0,
+                    paddingRight = parseInt($elem.css('paddingRight')) || 0;
                 var $shadow = angular.element('<div></div>').css({
                     position: 'absolute',
                     top: -10000,
                     left: -10000,
-                    width: $elem[0].offsetWidth - parseInt(paddingLeft || 0) - parseInt(paddingRight || 0),
+                    width: $elem[0].offsetWidth - paddingLeft - paddingRight,
                     fontSize: $elem.css('fontSize'),
                     fontFamily: $elem.css('fontFamily'),
                     lineHeight: $elem.css('lineHeight'),
                     resize: 'none'
                 });
+                $scope.$watch(
+                    function () {return $elem[0].offsetWidth;}, 
+                    function(newWidth, oldWidth) {
+                        if (newWidth !== oldWidth) {
+                            $timeout(function () {
+                                var paddingLeft = parseInt($elem.css('paddingLeft')) || 0,
+                                    paddingRight = parseInt($elem.css('paddingRight')) || 0;
+                                $shadow.css('width', newWidth - paddingLeft - paddingRight);
+                            }, 50);
+                        }
+                    }
+                );
                 angular.element(document.body).append($shadow);
 
                 var update = function () {
@@ -47,7 +59,7 @@ essApp.directive('textAutoHeight', ['$timeout', function ($timeout) {
 
                 $elem.bind('keyup keydown keypress change', update);
                 update();
-            }, 50);
+            }, 100);
         }
     }
 }]);
