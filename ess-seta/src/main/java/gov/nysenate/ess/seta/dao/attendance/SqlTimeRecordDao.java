@@ -209,7 +209,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     private static boolean shouldInsert(TimeEntry entry, Optional<TimeRecord> oldRecord) {
         return oldRecord
                 .map(rec -> rec.getEntry(entry.getDate()))
-                .map(oldEnt -> oldEnt.equals(entry))
+                .map(oldEnt -> !oldEnt.equals(entry))
                 .orElse(!entry.isEmpty());
     }
 
