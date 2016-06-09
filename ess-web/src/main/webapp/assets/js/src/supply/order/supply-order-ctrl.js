@@ -31,6 +31,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.destinationCode = destinationService.getDefaultCode();
         initializeState();
         manageUrlParams();
+        initializeShoppingCart();
     };
 
     $scope.init();
@@ -91,6 +92,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     });
 
     /** --- Shopping --- */
+
+    function initializeShoppingCart() {
+        supplyCart.init();
+    }
 
     $scope.addToCart = function (allowance) {
         if (!supplyCart.itemInCart(allowance.item.id) && allowance.visibility === 'SPECIAL') {

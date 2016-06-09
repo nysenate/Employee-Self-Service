@@ -3,7 +3,7 @@ var essApi = angular.module('essApi', ['essCore']);
 
 var essMyInfo = angular.module('essMyInfo', ['essApi']);
 var essTime = angular.module('essTime', ['essApi']);
-var essSupply = angular.module('essSupply', ['essApi']);
+var essSupply = angular.module('essSupply', ['essApi', 'ngCookies']);
 var essHelp = angular.module('essHelp', ['essApi']);
 
 var essApp = angular.module('ess', [

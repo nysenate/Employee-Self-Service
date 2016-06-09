@@ -12,6 +12,7 @@
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-inventory-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-category-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/location/supply-location-autocomplete-service.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-cookie-service.js"></script>
 
     <%-- History --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/history/supply-history-ctrl.js"></script>

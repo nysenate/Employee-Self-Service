@@ -1,6 +1,6 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', function (allowanceService) {
+essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'SupplyCookieService', function (allowanceService, cookies) {
 
     function LineItem(item, quantity) {
         this.item = item;
@@ -9,13 +9,17 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', functi
     }
 
     /** Array of LineItem's in the cart. */
-    var lineItems = [];
+    var lineItems = cookies.getCart();
 
     function calculateNewQuantity(quantity, lineItem) {
         return lineItem ? lineItem.quantity + quantity : quantity;
     }
 
     return {
+        init: function () {
+            lineItems = cookies.getCart();
+            console.log("init: " + lineItems);
+        },
         isOverOrderAllowance: function (item, quantity) {
             var allowance = allowanceService.getAllowanceByItemId(item.id);
             if (calculateNewQuantity(quantity, this.getItemById(item.id)) > allowance.perOrderAllowance) {
@@ -42,6 +46,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', functi
             if (isSpecialRequest) {
                 this.getItemById(item.id).isSpecialRequest = true;
             }
+            cookies.addCart(lineItems);
             return true;
         },
 
@@ -81,10 +86,12 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', functi
                     lineItems.splice(index, 1);
                 }
             });
+            cookies.addCart(lineItems);
         },
 
         reset: function () {
             lineItems = [];
+            cookies.addCart(lineItems);
         }
     }
 }]);
