@@ -136,11 +136,11 @@
              ng-show="selRecordHasRaSaErrors()">
           <ul>
             <li ng-show="errorTypes.raSa.workHoursInvalidRange">Work hours must be between 0 and 24.</li>
-            <li ng-show="errorTypes.raSa.vacationHoursInvalidRange">Vacation hours must be between 0 and 7.</li>
-            <li ng-show="errorTypes.raSa.personalHoursInvalidRange">Personal hours must be between 0 and 7.</li>
-            <li ng-show="errorTypes.raSa.empSickHoursInvalidRange">Employee sick hours must be between 0 and 7.</li>
-            <li ng-show="errorTypes.raSa.famSickHoursInvalidRange">Family sick hours must be between 0 and 7.</li>
-            <li ng-show="errorTypes.raSa.miscHoursInvalidRange">Misc hours must be between 0 and 7.</li>
+            <li ng-show="errorTypes.raSa.vacationHoursInvalidRange">Vacation hours must be between 0 and 12.</li>
+            <li ng-show="errorTypes.raSa.personalHoursInvalidRange">Personal hours must be between 0 and 12.</li>
+            <li ng-show="errorTypes.raSa.empSickHoursInvalidRange">Employee sick hours must be between 0 and 12.</li>
+            <li ng-show="errorTypes.raSa.famSickHoursInvalidRange">Family sick hours must be between 0 and 12.</li>
+            <li ng-show="errorTypes.raSa.miscHoursInvalidRange">Misc hours must be between 0 and 12.</li>
             <li ng-show="errorTypes.raSa.totalHoursInvalidRange">Total hours must be between 0 and 24.</li>
             <li ng-show="errorTypes.raSa.notEnoughVacationTime">Vacation hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.notEnoughPersonalTime">Personal hours recorded exceeds hours available.</li>
@@ -183,31 +183,31 @@
             </td>
             <td entry-validator validate="entryValidators.raSa.vacationHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     placeholder="--" step=".5" min="0" max="7"
+                     placeholder="--" step=".5" min="0" max="12"
                      ng-model="entry.vacationHours" name="numVacationHours"
                      tabindex="{{accrualTabIndex.vacation(entry)}}"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.personalHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     placeholder="--" step=".5" min="0" max="7"
+                     placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.personal(entry)}}"
                      ng-model="entry.personalHours" name="numPersonalHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.sickEmpHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     placeholder="--" step=".5" min="0" max="7"
+                     placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.sickEmp(entry)}}"
                      ng-model="entry.sickEmpHours" name="numSickEmpHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.sickFamHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     placeholder="--" step=".5" min="0" max="7"
+                     placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.sickFam(entry)}}"
                      ng-model="entry.sickFamHours" name="numSickFamHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.miscHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     placeholder="--" step=".5" min="0" max="7"
+                     placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.misc(entry)}}"
                      ng-model="entry.miscHours" name="numMiscHours"/>
             </td>
