@@ -262,12 +262,12 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                             transHistory.getEffectivePayTypes(timeRecord.getDateRange()), timeRecord.getEndDate());
                 }
                 timeRecord.addTimeEntry(new TimeEntry(timeRecord, payTypeMap.get(entryDate), entryDate));
-            }
-            if (timeRecord.getEntry(entryDate).getPayType() != PayType.TE) {
-                // Set holiday hours if applicable
-                Optional<Holiday> holiday = holidayService.getHoliday(entryDate);
-                timeRecord.getEntry(entryDate).setHolidayHours(
-                        holiday.map(Holiday::getHours).orElse(null));
+                if (timeRecord.getEntry(entryDate).getPayType() != PayType.TE) {
+                    // Set holiday hours if applicable
+                    Optional<Holiday> holiday = holidayService.getHoliday(entryDate);
+                    timeRecord.getEntry(entryDate).setHolidayHours(
+                            holiday.map(Holiday::getHours).orElse(null));
+                }
             }
         }
     }

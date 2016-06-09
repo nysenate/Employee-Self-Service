@@ -136,6 +136,9 @@
              ng-show="selRecordHasRaSaErrors()">
           <ul>
             <li ng-show="errorTypes.raSa.workHoursInvalidRange">Work hours must be between 0 and 24.</li>
+            <li ng-show="errorTypes.raSa.holidayHoursInvalidRange">
+              Holiday hours must be at least 0 and may not exceed hours granted for the holiday
+            </li>
             <li ng-show="errorTypes.raSa.vacationHoursInvalidRange">Vacation hours must be between 0 and 12.</li>
             <li ng-show="errorTypes.raSa.personalHoursInvalidRange">Personal hours must be between 0 and 12.</li>
             <li ng-show="errorTypes.raSa.empSickHoursInvalidRange">Employee sick hours must be between 0 and 12.</li>
@@ -177,9 +180,10 @@
                      placeholder="--" step=".5" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
                      ng-model="entry.workHours" tabindex="{{entry.total < 7 || getSelectedRecord().dirty ? 1 : 2}}" name="numWorkHours"/>
             </td>
-            <td>
-              <input type="number" readonly time-record-input class="hours-input"
-                     step=".5" min="0" max="7" ng-model="entry.holidayHours" name="numHolidayHours"/>
+            <td entry-validator validate="entryValidators.raSa.holidayHours(entry)">
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+                     ng-readonly="!(entry.payType === 'SA' && isHoliday(entry))"
+                     step=".5" min="0" max="{{getHolidayHours(entry)}}" ng-model="entry.holidayHours" name="numHolidayHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.vacationHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"

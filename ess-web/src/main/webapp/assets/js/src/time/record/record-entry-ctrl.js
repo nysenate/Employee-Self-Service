@@ -1,12 +1,12 @@
 var essApp = angular.module('ess')
         .controller('RecordEntryController', ['$scope', '$rootScope', '$filter', '$q', '$timeout', 'appProps',
                                               'ActiveTimeRecordsApi', 'TimeRecordsApi', 'AccrualPeriodApi',
-                                              'AllowanceApi', 'MiscLeaveGrantApi', 'activeTimeEntryRow',
-                                              'RecordUtils', 'LocationService', 'modals',
+                                              'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi',
+                                              'activeTimeEntryRow', 'RecordUtils', 'LocationService', 'modals',
                                               recordEntryCtrl]);
 
 function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordsApi, accrualPeriodApi,
-                         allowanceApi, miscLeaveGrantApi, activeRow, recordUtils, locationService, modals) {
+                         allowanceApi, miscLeaveGrantApi, holidayApi, activeRow, recordUtils, locationService, modals) {
 
     function getInitialState() {
         return {
@@ -23,6 +23,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             tempEntries: false,               // True if the selected record contains TE pay entries
             annualEntries: false,             // True if the selected record contains RA or SA entries
             totals: {},                       // Stores record wide totals for time entry fields of the selected record
+            holidays: null,                   // Stores a map of holidays
 
             // Page state
             pageState: 0                      // References the values from $scope.pageStates
@@ -64,6 +65,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         $scope.initializeState();
         $scope.getRecords();
         $scope.getMiscLeaveTypeGrants();
+        $scope.getHolidays();
     };
 
     /** --- Watches --- */
@@ -183,9 +185,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }, function (resp) {
             if (resp.status === 400) {
                 //todo invalid record response
+                modals.open('500', {details: resp});
+                console.error(resp);
             } else {
                 modals.open('500', {details: resp});
-                console.log(resp);
+                console.error(resp);
             }
             $scope.state.pageState = $scope.pageStates.SUBMIT_FAILURE;
             record.recordStatus = currentStatus;
@@ -210,7 +214,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 }
             }, function (resp) {
                 modals.open('500', {details: resp});
-                console.log(resp);
+                console.error(resp);
             }).$promise;
         }
         // Return an automatically resolving promise if no request was made
@@ -237,7 +241,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 }
             }, function(resp) {
                 modals.open('500', {details: resp});
-                console.log(resp);
+                console.error(resp);
             }).$promise;
         }
         // Return an automatically resolving promise if no request was made
@@ -250,7 +254,26 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             $scope.state.miscLeaveGrants = response.result;
         }, function(response) {
             modals.open('500', {details: response});
-            console.log(response);
+            console.error(response);
+        });
+    };
+
+    $scope.getHolidays = function () {
+        var params = {
+            fromDate: moment().subtract(1, 'year').format('YYYY-MM-DD'),
+            toDate: moment().add(1, 'year').format('YYYY-MM-DD')
+        };
+        holidayApi.get(params, function (response) {
+            $scope.state.holidays = {};
+            angular.forEach(response.holidays, function (holiday) {
+                if (!holiday.unofficial) {
+                    $scope.state.holidays[holiday.date] = holiday;
+                }
+            });
+            console.log('retrieved holidays');
+        }, function (response) {
+            modals.open('500', {details: response});
+            console.error(response);
         });
     };
 
@@ -423,6 +446,28 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             }
             return false;
         }
+    };
+
+    /**
+     * Returns true iff the given entry is a holiday
+     * @param entry
+     * @returns {boolean}
+     */
+    $scope.isHoliday = function (entry) {
+        return $scope.state.holidays && $scope.state.holidays.hasOwnProperty(entry.date);
+    };
+
+    /**
+     * Return the number of holiday hours allotted for the given date
+     * Return 7 if the holidays have not yet been loaded to prevent error flickering
+     * @param entry
+     * @returns {number}
+     */
+    $scope.getHolidayHours = function (entry) {
+        if (!$scope.state.holidays) { // Return the max holiday hours if holidays have not yet loaded
+            return 7;
+        }
+        return $scope.isHoliday(entry) ? $scope.state.holidays[entry.date].hours : 0;
     };
 
     /** --- Internal Methods --- */
@@ -629,6 +674,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         // Error flags for regular / special annual pay time entries
         raSa: {
             workHoursInvalidRange: false,
+            holidayHoursInvalidRange: false,
             vacationHoursInvalidRange: false,
             personalHoursInvalidRange: false,
             empSickHoursInvalidRange: false,
@@ -753,6 +799,23 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 var isValid = true;
                 if (typeof hrs === 'undefined') {
                     $scope.errorTypes.raSa.workHoursInvalidRange = true;
+                    isValid = false;
+                }
+                isValid &= checkRaSaHourIncrements(hrs);
+                return isValid;
+            },
+            holidayHours: function (entry) {
+                // Short circuit if entry is not special annual, holidays are not yet loaded, or the entry is a non holiday
+                if (entry.payType !== 'SA' || !$scope.state.holidays || !$scope.isHoliday(entry)) {
+                    return true;
+                }
+                var hrs = entry.holidayHours;
+                var isValid = true;
+                if (hrs === 0 || hrs === null) { // Short circuit to true if hours are null or 0
+                    return true;
+                }
+                if (typeof hrs === 'undefined') {
+                    $scope.errorTypes.raSa.holidayHoursInvalidRange = true;
                     isValid = false;
                 }
                 isValid &= checkRaSaHourIncrements(hrs);
