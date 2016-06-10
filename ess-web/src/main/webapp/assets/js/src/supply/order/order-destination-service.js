@@ -5,7 +5,6 @@ essSupply.service('SupplyOrderDestinationService', ['appProps', 'SupplyCookieSer
 function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompleteService) {
 
     var defaultCode = undefined;
-    var destination = undefined;
 
     return {
         queryDefaultDestination: function () {
@@ -17,17 +16,16 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
         },
 
         isDestinationConfirmed: function () {
-            return destination !== undefined;
+            return cookies.getDestination() !== null && cookies.getDestination() !== undefined;
         },
 
         /**
-         * Sets the destination corresponding to the given code.
+         * Sets the destination corresponding to the given location code.
          * If code is valid sets the destination, otherwise returns false.
          */
         setDestination: function (code) {
             if (locationAutocompleteService.isValidCode(code)) {
-                destination = locationAutocompleteService.getLocationFromCode(code);
-                cookies.addDestination(destination);
+                cookies.addDestination(locationAutocompleteService.getLocationFromCode(code));
                 return true;
             }
             return false;
@@ -35,7 +33,6 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
 
         reset: function () {
             defaultCode = undefined;
-            destination = undefined;
             cookies.resetDestination();
         },
 
@@ -44,7 +41,7 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
         },
 
         getDestination: function () {
-            return destination;
+            return cookies.getDestination();
         }
     }
 }

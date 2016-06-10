@@ -91,10 +91,11 @@ essApp.config(function($routeProvider, $locationProvider) {
     $routeProvider.when(ctxPath + '/supply/order/cart', {
         templateUrl: ctxPath + '/template/supply/order/cart',
         resolve: {
-            locAutocomplete: ['SupplyLocationAllowanceService', 'SupplyCookieService','SupplyOrderDestinationService',function (
-                supplyLocationAllowanceService, supplyCookieService, supplyOrderDestinationService
-            ) {
-                   return supplyLocationAllowanceService.queryLocationAllowance(supplyCookieService.getDestination());
+            locAutocomplete: ['SupplyLocationAllowanceService', 'SupplyCookieService',
+                function (supplyLocationAllowanceService, supplyCookieService) {
+                    if (supplyCookieService.getDestination() !== null) {
+                        return supplyLocationAllowanceService.queryLocationAllowance(supplyCookieService.getDestination());
+                    }
             }]
         }
     });

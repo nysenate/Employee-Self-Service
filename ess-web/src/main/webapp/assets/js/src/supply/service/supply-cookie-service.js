@@ -58,7 +58,7 @@ function supplyCookieService($cookies,appProps) {
             var key = "destination";
             var cur = $cookies.get(key);
             if (cur == null || cur == undefined)
-                return [];
+                return null;
             else 
                 return deserialize(cur);
         },
