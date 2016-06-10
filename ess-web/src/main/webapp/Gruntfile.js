@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        properties: grunt.file.readJSON('grunt.properties.json'),
 
         /** Path locations to be used as templates */
         cssRoot: 'assets/css',
@@ -15,7 +16,7 @@ module.exports = function(grunt) {
         tagSource: 'WEB-INF/tags',
         bowerRoot: 'bower_components',
         jsDest: '<%= jsRoot %>/dest',
-        tomcatWeb: 'C:/tomcat/webapps/ROOT',
+        tomcatWeb: '<%= properties.deployDirectory %>',
 
         /** Compile LESS into css and place it into the css source directory */
         less: {
