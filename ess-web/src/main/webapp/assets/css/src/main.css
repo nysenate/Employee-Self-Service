@@ -2144,6 +2144,69 @@ table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
 
+/** Color Palette */
+.dark-red {
+  color: #b90504;
+}
+.light-teal {
+  color: #4196a7;
+}
+.teal {
+  color: #006b80;
+}
+.green {
+  color: #799933;
+}
+.navy {
+  color: #0e4e5a;
+}
+.orange {
+  color: #d19525;
+}
+.brown {
+  color: #583f0f;
+}
+.redorange {
+  color: #e64727;
+}
+.blue {
+  color: #104042;
+}
+.olive {
+  color: #808d0a;
+}
+.blue-purple {
+  color: #6270bd;
+}
+.gray {
+  color: #808080;
+}
+.white {
+  color: #fefefe;
+}
+.ess-tabs .tab-selector {
+  display: flex;
+  justify-content: space-around;
+}
+.ess-tabs .tab-selector a {
+  flex-grow: 1;
+  color: black;
+  font-size: 1.1em;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 107, 128, 0.25);
+  padding: 12px 0;
+  transition: background-color 0.3s, color 0.15s, box-shadow 0.3s, opacity 0.3s;
+}
+.ess-tabs .tab-selector a:hover {
+  color: #004d4d;
+  background-color: #f7f7f7;
+}
+.ess-tabs .tab-selector a.active {
+  border-bottom: 3px solid rgba(0, 107, 128, 0.5);
+  color: teal;
+  font-weight: 600;
+}
+
 /** --- Jquery Autocomplete --- */
 ul.ui-autocomplete {
   z-index: 1100;
@@ -5334,44 +5397,6 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .detail-acc-history-table,
 #accrual-usage-details-table {
   width: 100%;
-  /** Scrollable Projections table */
-}
-.accruals-table.projections .pay-period,
-.detail-acc-history-table.projections .pay-period,
-#accrual-usage-details-table.projections .pay-period {
-  width: 40px;
-}
-.accruals-table.projections .date,
-.detail-acc-history-table.projections .date,
-#accrual-usage-details-table.projections .date {
-  width: 112px;
-}
-.accruals-table.projections .rate,
-.detail-acc-history-table.projections .rate,
-#accrual-usage-details-table.projections .rate {
-  width: 60px;
-}
-.accruals-table.projections .used-hours,
-.detail-acc-history-table.projections .used-hours,
-#accrual-usage-details-table.projections .used-hours {
-  width: 84px;
-}
-.accruals-table.projections .available-hours,
-.detail-acc-history-table.projections .available-hours,
-#accrual-usage-details-table.projections .available-hours {
-  width: 69px;
-}
-.accruals-table.projections thead,
-.detail-acc-history-table.projections thead,
-#accrual-usage-details-table.projections thead {
-  display: block;
-}
-.accruals-table.projections tbody,
-.detail-acc-history-table.projections tbody,
-#accrual-usage-details-table.projections tbody {
-  display: block;
-  max-height: 300px;
-  overflow-y: auto;
 }
 .accruals-table thead,
 .detail-acc-history-table thead,
@@ -6881,44 +6906,6 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .detail-acc-history-table,
 #accrual-usage-details-table {
   width: 100%;
-  /** Scrollable Projections table */
-}
-.accruals-table.projections .pay-period,
-.detail-acc-history-table.projections .pay-period,
-#accrual-usage-details-table.projections .pay-period {
-  width: 40px;
-}
-.accruals-table.projections .date,
-.detail-acc-history-table.projections .date,
-#accrual-usage-details-table.projections .date {
-  width: 112px;
-}
-.accruals-table.projections .rate,
-.detail-acc-history-table.projections .rate,
-#accrual-usage-details-table.projections .rate {
-  width: 60px;
-}
-.accruals-table.projections .used-hours,
-.detail-acc-history-table.projections .used-hours,
-#accrual-usage-details-table.projections .used-hours {
-  width: 84px;
-}
-.accruals-table.projections .available-hours,
-.detail-acc-history-table.projections .available-hours,
-#accrual-usage-details-table.projections .available-hours {
-  width: 69px;
-}
-.accruals-table.projections thead,
-.detail-acc-history-table.projections thead,
-#accrual-usage-details-table.projections thead {
-  display: block;
-}
-.accruals-table.projections tbody,
-.detail-acc-history-table.projections tbody,
-#accrual-usage-details-table.projections tbody {
-  display: block;
-  max-height: 300px;
-  overflow-y: auto;
 }
 .accruals-table thead,
 .detail-acc-history-table thead,
