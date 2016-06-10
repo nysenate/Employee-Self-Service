@@ -102,6 +102,14 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return paginatedRowHandler.getList();
     }
 
+    @Override
+    public PaginatedList<Requisition> getOrderHistory(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
+                                                      Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
+
+        return null;
+    }
+
+
     private String formatSearchString(String param) {
         return param != null && param.equals("all") ? "%" : param;
     }

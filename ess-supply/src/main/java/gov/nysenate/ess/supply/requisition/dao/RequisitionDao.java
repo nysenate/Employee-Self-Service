@@ -17,4 +17,7 @@ public interface RequisitionDao {
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
+
+    PaginatedList<Requisition> getOrderHistory(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
+                                               Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
 }
