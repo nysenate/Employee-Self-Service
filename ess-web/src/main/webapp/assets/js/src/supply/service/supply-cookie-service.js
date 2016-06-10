@@ -5,12 +5,12 @@ essSupply.service('SupplyCookieService', ['$cookies', 'appProps', supplyCookieSe
 function supplyCookieService($cookies,appProps) {
     var userId = appProps.user.employeeId;
     /* Cart -> String*/
-    function serializatizeCart (cart) {
+    function serializatize (cart) {
         return JSON.stringify(cart);
     }
 
     /*String -> Cart*/
-    function deserializeCart  (json) {
+    function deserialize(json) {
         return JSON.parse(json);
     }
 
@@ -27,7 +27,7 @@ function supplyCookieService($cookies,appProps) {
     return {
         /*() ->add user Cart*/
         addCart: function (cart) {
-            var code = encodeCart(serializatizeCart(cart));
+            var code = encodeCart(serializatize(cart));
             var cur = $cookies.get(userId);
             if (cur != null || cur != undefined)
                $cookies.remove(userId);
@@ -40,7 +40,33 @@ function supplyCookieService($cookies,appProps) {
             if (cur == null || cur == undefined)
                 return [];
             else
-                return deserializeCart(decodeCart(cur));
-        }
+                return deserialize(decodeCart(cur));
+        },
+        resetCart:function () {
+            var cur = $cookies.get(userId);
+                if (cur != null || cur != undefined)
+                    $cookies.remove(userId);
+        },
+        addDestination: function (dist) {
+            var key = "destination";
+            var cur = $cookies.get(key);
+            if (cur != null || cur != undefined)
+                $cookies.remove(key);
+            $cookies.put(key, serializatize(dist));
+        },
+        getDestination: function () {
+            var key = "destination";
+            var cur = $cookies.get(key);
+            if (cur == null || cur == undefined)
+                return [];
+            else 
+                return deserialize(cur);
+        },
+        resetDestination:function () {
+            var key = "destination";
+            var cur = $cookies.get(key);
+            if (cur != null || cur != undefined)
+                $cookies.remove(key);
+        },
     }
 };

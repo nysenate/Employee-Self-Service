@@ -1,8 +1,8 @@
 /**
  * OrderDestinationService is responsible for storing and changing the user selected destination.
  */
-essSupply.service('SupplyOrderDestinationService', ['appProps', 'EmpInfoApi', 'SupplyLocationAutocompleteService', orderDestinationService]);
-function orderDestinationService(appProps, empInfoApi, locationAutocompleteService) {
+essSupply.service('SupplyOrderDestinationService', ['appProps', 'SupplyCookieService', 'EmpInfoApi', 'SupplyLocationAutocompleteService', orderDestinationService]);
+function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompleteService) {
 
     var defaultCode = undefined;
     var destination = undefined;
@@ -27,6 +27,7 @@ function orderDestinationService(appProps, empInfoApi, locationAutocompleteServi
         setDestination: function (code) {
             if (locationAutocompleteService.isValidCode(code)) {
                 destination = locationAutocompleteService.getLocationFromCode(code);
+                cookies.addDestination(destination);
                 return true;
             }
             return false;
@@ -35,6 +36,7 @@ function orderDestinationService(appProps, empInfoApi, locationAutocompleteServi
         reset: function () {
             defaultCode = undefined;
             destination = undefined;
+            cookies.resetDestination();
         },
 
         getDefaultCode: function () {

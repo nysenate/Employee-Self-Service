@@ -1,8 +1,8 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-    '$scope', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplyRequisitionApi', 
+    '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplyRequisitionApi',
     'SupplyOrderDestinationService', 'appProps', 'modals', supplyCartController]);
 
-function supplyCartController($scope, supplyCart, allowanceService, requisitionApi, 
+function supplyCartController($scope,cookies, supplyCart, allowanceService, requisitionApi,
                               destinationService, appProps, modals) {
 
     $scope.myCartItems = function () {
@@ -10,7 +10,7 @@ function supplyCartController($scope, supplyCart, allowanceService, requisitionA
     };
 
     $scope.orderQuantityRange = function (item) {
-        return allowanceService.getAllowedQuantities(allowanceService.getAllowanceByItemId(item.id));
+       return allowanceService.getAllowedQuantities(allowanceService.getAllowanceByItemId(item.id))
     };
 
     $scope.cartHasItems = function () {
@@ -25,14 +25,15 @@ function supplyCartController($scope, supplyCart, allowanceService, requisitionA
         var params = {
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getItems(),
-            destinationId: destinationService.getDestination().locId
-        };
+            destinationId: cookies.getDestination().locId
+            };
         requisitionApi.save(params, function (response) {
             supplyCart.reset();
             destinationService.reset();
+            cookies.resetDestination();
             modals.open('supply-cart-checkout-modal', response);
         }, function (response) {
-            console.log("Error submitting order")
+            console.log(response)
         });
     };
 
