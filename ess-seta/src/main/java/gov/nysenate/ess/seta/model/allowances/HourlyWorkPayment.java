@@ -37,6 +37,13 @@ public class HourlyWorkPayment {
         this.prevYearMoneyPaid = Optional.ofNullable(prevYearMoneyPaid).orElse(BigDecimal.ZERO);
     }
 
+    /** --- Overridden Methods --- */
+
+    @Override
+    public String toString() {
+        return effectDate + " - " + endDate + " " + hoursPaid + "hrs $" + hoursPaid;
+    }
+
     /** --- Functional Getters / Setters */
 
     public int getYear() {

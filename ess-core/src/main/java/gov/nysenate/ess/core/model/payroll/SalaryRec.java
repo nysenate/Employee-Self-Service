@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.util.DateUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class SalaryRec
+public class SalaryRec implements Comparable<SalaryRec>
 {
     /** The amount paid to the employee per pay period/hour/year */
     private BigDecimal salaryRate;
@@ -27,6 +27,14 @@ public class SalaryRec
 
     public SalaryRec(BigDecimal salaryRate, PayType payType, LocalDate effectDate) {
         this(salaryRate, payType, effectDate, DateUtils.THE_FUTURE);
+    }
+
+    /** --- Overridden Methods --- */
+
+    @Override
+    public int compareTo(SalaryRec o) {
+        // Compare based on salary rate
+        return this.getSalaryRate().compareTo(o.getSalaryRate());
     }
 
     /** --- Functional Getters --- */

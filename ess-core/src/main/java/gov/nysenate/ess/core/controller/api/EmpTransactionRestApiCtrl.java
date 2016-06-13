@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.model.transaction.TransactionType;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -48,21 +49,32 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
      * @param fromDate String - from date (inclusive)
      * @param toDate String - to date (inclusive)
      * @param codes String - comma separated list of tx codes
+     * @param type String - Get only transaction codes of a specific type
+     *             (PAY or PER for payroll or personnel) (overrides 'codes' param)
+     * @param restrictValues boolean - restrict returned values for each transaction record
+     *                       to only the values explicitly set by the transaction
+     *                       as determined by the transactions code. (default false)
+     *                       @see TransactionCode
      * @return ListViewResponse of EmpTransRecordViews
      */
     @RequestMapping("")
     public BaseResponse getTransactionsByEmpId(@RequestParam Integer empId,
                                                @RequestParam(required = false) String fromDate,
                                                @RequestParam(required = false) String toDate,
-                                               @RequestParam(required = false) String codes) {
+                                               @RequestParam(required = false) String codes,
+                                               @RequestParam(required = false) String type,
+                                               @RequestParam(defaultValue = "false") boolean restrictValues) {
         LocalDate fromLocalDate = (fromDate != null) ? parseISODate(fromDate, "from-date") : DateUtils.LONG_AGO;
         LocalDate toLocalDate = (toDate != null) ? parseISODate(toDate, "to-date") : DateUtils.THE_FUTURE;
         Range<LocalDate> range = Range.closed(fromLocalDate, toLocalDate);
-        Set<TransactionCode> codeSet = getTransCodesFromString(codes);
+        Set<TransactionCode> codeSet = type != null
+                ? TransactionCode.getTransactionsOfType(
+                        getEnumParameter("type", type, TransactionType.class))
+                : getTransCodesFromString(codes);
         return ListViewResponse.of(
             transactionService.getTransHistory(empId)
                 .getTransRecords(range, codeSet, SortOrder.ASC).stream()
-                .map(EmpTransRecordView::new)
+                .map(record -> new EmpTransRecordView(record, restrictValues))
                 .collect(toList()), "transactions");
     }
 
