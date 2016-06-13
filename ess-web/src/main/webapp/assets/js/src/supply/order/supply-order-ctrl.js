@@ -25,7 +25,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     /** --- Initialization --- */
 
-
     $scope.init = function () {
         $scope.paginate.itemsPerPage = 16;
         $scope.destinationCode = destinationService.getDefaultCode();

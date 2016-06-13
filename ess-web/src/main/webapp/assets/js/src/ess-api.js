@@ -146,3 +146,7 @@ essApi.factory('SupplyRequisitionByIdApi', ['$resource', 'appProps', function($r
 essApi.factory('SupplyRequisitionUndoRejectionApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/:id/undoReject.json', {id: '@id'})
 }]);
+
+essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/requisitions/orderHistory.json')
+}]);

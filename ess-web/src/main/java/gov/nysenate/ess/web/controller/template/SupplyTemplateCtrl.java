@@ -15,13 +15,13 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     /** --- History --- */
 
     @RequestMapping(value="/history/history")
-    public String orderHistory() {
+    public String requisitionHistory() {
         return SUPPLY_TMPL_BASE_URL + "/history/history";
     }
 
-    @RequestMapping(value="/history/location-history")
-    public String locationHistory() {
-        return SUPPLY_TMPL_BASE_URL + "/history/location-history";
+    @RequestMapping(value="/order-history")
+    public String orderHistory() {
+        return SUPPLY_TMPL_BASE_URL + "/history/order-history";
     }
 
     /** --- Manage --- */

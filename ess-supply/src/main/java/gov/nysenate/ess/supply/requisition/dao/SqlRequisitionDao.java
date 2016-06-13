@@ -2,9 +2,7 @@ package gov.nysenate.ess.supply.requisition.dao;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.*;
-import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.*;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
@@ -106,7 +104,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
      * {@inheritDoc}
      */
     @Override
-    public PaginatedList<Requisition> searchOrderHistory(String destinationId, int customerId, EnumSet<RequisitionStatus> statuses,
+    public synchronized PaginatedList<Requisition> searchOrderHistory(String destinationId, int customerId, EnumSet<RequisitionStatus> statuses,
                                                          Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("destination", formatSearchString(destinationId))
@@ -114,7 +112,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("statuses", extractEnumSetParams(statuses))
                 .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
                 .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
-        String sql = SqlRequisitionQuery.ORDER_HISTORY.getSql(schemaMap(), limitOffset);
+        String sql = SqlRequisitionQuery.ORDER_HISTORY.getSql(schemaMap(), new OrderBy("ordered_date_time", SortOrder.DESC), limitOffset);
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
@@ -173,7 +171,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "SELECT count(r.requisition_id) " + ORDER_HISTORY_BODY.getSql()
         ),
         ORDER_HISTORY(
-                "SELECT r.requisition_id, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
+                "SELECT r.requisition_id, r.ordered_date_time, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
                 "r.rejected_date_time, r.modified_date_time, \n" +
                 "(" + ORDER_HISTORY_TOTAL.getSql() + ") as total_rows " + ORDER_HISTORY_BODY.getSql()
         )
