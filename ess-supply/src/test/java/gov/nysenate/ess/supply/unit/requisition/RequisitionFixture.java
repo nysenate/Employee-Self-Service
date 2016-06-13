@@ -16,7 +16,7 @@ public class RequisitionFixture {
 
     public static RequisitionVersion getPendingVersion() {
         return new RequisitionVersion.Builder()
-                .withId(1)
+                .withId(0)
                 .withCustomer(createEmployeeWithId(1))
                 .withDestination(createStubLocation())
                 .withStatus(RequisitionStatus.PENDING)

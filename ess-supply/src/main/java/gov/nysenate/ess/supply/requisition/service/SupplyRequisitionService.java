@@ -46,4 +46,11 @@ public class SupplyRequisitionService implements RequisitionService {
                                                          Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
         return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, limitOffset);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public PaginatedList<Requisition> searchOrderHistory(String destination, int customerId, EnumSet<RequisitionStatus> statuses,
+                                                         Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
+        return requisitionDao.searchOrderHistory(destination, customerId, statuses, dateRange, dateField, limitOffset);
+    }
 }

@@ -7,7 +7,6 @@ import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
-import gov.nysenate.ess.supply.requisition.dao.SqlRequisitionDao;
 import gov.nysenate.ess.supply.unit.requisition.RequisitionFixture;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,12 +53,21 @@ public class SqlRequisitionDaoTests extends SupplyTests {
 
     @Test
     public void canSearchRequisitions() {
-        int id = requisitionDao.saveRequisition(requisition);
         LocalDateTime fromDate = LocalDateTime.now().minusMonths(1);
         LocalDateTime toDate = LocalDateTime.now();
         Range<LocalDateTime> dateRange = Range.closed(fromDate, toDate);
-        PaginatedList<Requisition> requsitions = requisitionDao.searchRequisitions("all", "all", EnumSet.allOf(RequisitionStatus.class),
-                                                                     dateRange, "ordered_date_time", LimitOffset.ALL);
-        assertThat(requsitions.getResults().size(), is(greaterThan(1)));
+        PaginatedList<Requisition> requisitions = requisitionDao.searchRequisitions("all", "all", EnumSet.allOf(RequisitionStatus.class),
+                                                                                    dateRange, "ordered_date_time", LimitOffset.ALL);
+        assertThat(requisitions.getResults().size(), is(greaterThan(1)));
+    }
+
+    @Test
+    public void canSearchOrderHistory() {
+        LocalDateTime fromDate = LocalDateTime.now().minusMonths(1);
+        LocalDateTime toDate = LocalDateTime.now();
+        Range<LocalDateTime> dateRange = Range.closed(fromDate, toDate);
+        PaginatedList<Requisition> requisitions = requisitionDao.searchOrderHistory("A42FB-W", 11168, EnumSet.allOf(RequisitionStatus.class),
+                                                                                    dateRange, "ordered_date_time", LimitOffset.ALL);
+        assertThat(requisitions.getResults().size(), is(greaterThan(1)));
     }
 }

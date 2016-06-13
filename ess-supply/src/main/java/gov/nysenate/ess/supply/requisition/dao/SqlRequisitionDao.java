@@ -102,11 +102,22 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return paginatedRowHandler.getList();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PaginatedList<Requisition> getOrderHistory(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                      Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
-
-        return null;
+    public PaginatedList<Requisition> searchOrderHistory(String destinationId, int customerId, EnumSet<RequisitionStatus> statuses,
+                                                         Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("destination", formatSearchString(destinationId))
+                .addValue("customerId", customerId)
+                .addValue("statuses", extractEnumSetParams(statuses))
+                .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
+                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
+        String sql = SqlRequisitionQuery.ORDER_HISTORY.getSql(schemaMap(), limitOffset);
+        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
+        localNamedJdbc.query(sql, params, paginatedRowHandler);
+        return paginatedRowHandler.getList();
     }
 
 
@@ -151,7 +162,22 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "SELECT r.requisition_id, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
                 "r.rejected_date_time, r.modified_date_time, \n" +
                 "(" + SEARCH_REQUISITIONS_TOTAL.getSql() + ") as total_rows " + SEARCH_REQUISITIONS_BODY.getSql()
-        );
+        ),
+        ORDER_HISTORY_BODY(
+                "FROM ${supplySchema}.requisition as r \n" +
+                "INNER JOIN ${supplySchema}.requisition_version as v ON r.active_version_id = v.version_id \n" +
+                "WHERE (v.destination = :destination OR v.customer_id = :customerId) \n" +
+                "AND v.status::text IN (:statuses) AND r.ordered_date_time BETWEEN :fromDate AND :toDate"
+        ),
+        ORDER_HISTORY_TOTAL(
+                "SELECT count(r.requisition_id) " + ORDER_HISTORY_BODY.getSql()
+        ),
+        ORDER_HISTORY(
+                "SELECT r.requisition_id, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
+                "r.rejected_date_time, r.modified_date_time, \n" +
+                "(" + ORDER_HISTORY_TOTAL.getSql() + ") as total_rows " + ORDER_HISTORY_BODY.getSql()
+        )
+        ;
 
         private String sql;
 

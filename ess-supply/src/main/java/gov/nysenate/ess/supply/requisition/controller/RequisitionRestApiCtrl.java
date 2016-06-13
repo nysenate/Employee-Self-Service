@@ -77,9 +77,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String to,
                                            @RequestParam(required = false) String dateField,
                                            WebRequest webRequest) {
-        LocalDateTime fromDateTime = from == null ? LocalDateTime.now().minusMonths(1) : parseISODateTime(from, "from");
-        LocalDateTime toDateTime = to == null ? LocalDateTime.now() : parseISODateTime(to, "to");
-        EnumSet<RequisitionStatus> statuses = status == null ? EnumSet.allOf(RequisitionStatus.class) : getEnumSetFromStringArray(status);
+        LocalDateTime fromDateTime = getFromDateTime(from);
+        LocalDateTime toDateTime = getToDateTime(to);
+        EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
         dateField = dateField == null ? "modified_date_time" : dateField;
 
         LimitOffset limoff = getLimitOffset(webRequest, 25);
@@ -87,6 +87,48 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         PaginatedList<Requisition> results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, limoff);
         List<RequisitionView> resultViews = results.getResults().stream().map(RequisitionView::new).collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
+    }
+
+    @RequestMapping("/orderHistory")
+    public BaseResponse orderHistory(@RequestParam String location,
+                                     @RequestParam int customerId,
+                                     @RequestParam(required = false) String[] status,
+                                     @RequestParam(required = false) String from,
+                                     @RequestParam(required = false) String to,
+                                     @RequestParam(required = false) String dateField,
+                                     WebRequest webRequest) {
+        LocalDateTime fromDateTime = getFromDateTime(from);
+        LocalDateTime toDateTime = getToDateTime(to);
+        EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
+        dateField = dateField == null ? "modified_date_time" : dateField;
+        LimitOffset limoff = getLimitOffset(webRequest, 25);
+
+        Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
+        PaginatedList<Requisition> results = requisitionService.searchOrderHistory(location, customerId, statuses, dateRange, dateField, limoff);
+        List<RequisitionView> resultViews = results.getResults().stream().map(RequisitionView::new).collect(Collectors.toList());
+        return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
+    }
+
+    /**
+     * @return the LocalDateTime represented by {@code from} or a LocalDateTime from one month ago if from is null.
+     */
+    private LocalDateTime getFromDateTime(String from) {
+        return from == null ? LocalDateTime.now().minusMonths(1) : parseISODateTime(from, "from");
+    }
+
+    /**
+     * @return the LocalDateTime represented by {@code to} or the current LocalDateTime.
+     */
+    private LocalDateTime getToDateTime(@RequestParam(required = false) String to) {
+        return to == null ? LocalDateTime.now() : parseISODateTime(to, "to");
+    }
+
+    /**
+     * @param status An array of strings each representing a {@link RequisitionStatus}.
+     * @return An enumset of the given statuses or an enumset of all RequisitionStatuses if status is null.
+     */
+    private EnumSet<RequisitionStatus> getStatusEnumSet(String[] status) {
+        return status == null ? EnumSet.allOf(RequisitionStatus.class) : getEnumSetFromStringArray(status);
     }
 
     private EnumSet<RequisitionStatus> getEnumSetFromStringArray(String[] status) {
