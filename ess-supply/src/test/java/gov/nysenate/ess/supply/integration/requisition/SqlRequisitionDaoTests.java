@@ -57,7 +57,7 @@ public class SqlRequisitionDaoTests extends SupplyTests {
         LocalDateTime toDate = LocalDateTime.now();
         Range<LocalDateTime> dateRange = Range.closed(fromDate, toDate);
         PaginatedList<Requisition> requisitions = requisitionDao.searchRequisitions("all", "all", EnumSet.allOf(RequisitionStatus.class),
-                                                                                    dateRange, "ordered_date_time", LimitOffset.ALL);
+                                                                                    dateRange, "processed_date_time", LimitOffset.ALL);
         assertThat(requisitions.getResults().size(), is(greaterThan(1)));
     }
 

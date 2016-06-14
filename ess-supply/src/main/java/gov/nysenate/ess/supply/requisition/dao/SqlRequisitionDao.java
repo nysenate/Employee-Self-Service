@@ -94,10 +94,29 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("statuses", extractEnumSetParams(statuses))
                 .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
                 .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
-        String sql = SqlRequisitionQuery.SEARCH_REQUISITIONS.getSql(schemaMap(), limitOffset);
+        ensureValidColumn(dateField);
+        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
+    }
+
+    /** Protect against sql injection attacks by validating that dateFiled
+     * matches one of the requisition date time fields. */
+    private void ensureValidColumn(String dateField) {
+        boolean matches = dateField.matches("ordered_date_time|processed_date_time|completed_date_time|" +
+                                            "approved_date_time|rejected_date_time|modified_date_time");
+        if (!matches) {
+            throw new RuntimeException("Given datefield: " + dateField + "is not a valid requisition date field.");
+        }
+    }
+
+    /** Dynamically generates query date range filter using the supplied {@code dateField}.
+     * Then completes the query by adding Order by and Limit Offset information. */
+    private String generateSearchQuery(SqlRequisitionQuery baseSearchQuery, String dateField, OrderBy orderBy, LimitOffset limoff) {
+        String sql = baseSearchQuery.getSql(schemaMap()) + dateField + " BETWEEN :fromDate AND :toDate";
+        sql = SqlQueryUtils.withOrderByClause(sql, orderBy);
+        return SqlQueryUtils.withLimitOffsetClause(sql, limoff, baseSearchQuery.getVendor());
     }
 
     /**
@@ -112,7 +131,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("statuses", extractEnumSetParams(statuses))
                 .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
                 .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
-        String sql = SqlRequisitionQuery.ORDER_HISTORY.getSql(schemaMap(), new OrderBy("ordered_date_time", SortOrder.DESC), limitOffset);
+        ensureValidColumn(dateField);
+        String sql = generateSearchQuery(SqlRequisitionQuery.ORDER_HISTORY_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
@@ -147,33 +167,25 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "FROM ${supplySchema}.requisition \n" +
                 "WHERE requisition_id = :requisitionId"
         ),
-        SEARCH_REQUISITIONS_BODY(
+        /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
+         * to complete this query. */
+        SEARCH_REQUISITIONS_PARTIAL(
+                "SELECT r.requisition_id, r.ordered_date_time, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
+                "r.rejected_date_time, r.modified_date_time, count(*) OVER() as total_rows \n" +
                 "FROM ${supplySchema}.requisition as r \n" +
                 "INNER JOIN ${supplySchema}.requisition_version as v ON r.active_version_id = v.version_id \n" +
                 "WHERE v.destination LIKE :destination AND Coalesce(v.customer_id::text, '') LIKE :customerId \n" +
-                "AND v.status::text IN (:statuses) AND r.modified_date_time BETWEEN :fromDate AND :toDate"
+                "AND v.status::text IN (:statuses) AND r."
         ),
-        SEARCH_REQUISITIONS_TOTAL(
-                "SELECT count(r.requisition_id) " + SEARCH_REQUISITIONS_BODY.getSql()
-        ),
-        SEARCH_REQUISITIONS(
-                "SELECT r.requisition_id, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
-                "r.rejected_date_time, r.modified_date_time, \n" +
-                "(" + SEARCH_REQUISITIONS_TOTAL.getSql() + ") as total_rows " + SEARCH_REQUISITIONS_BODY.getSql()
-        ),
-        ORDER_HISTORY_BODY(
+        /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
+         * to complete this query. */
+        ORDER_HISTORY_PARTIAL(
+                "SELECT r.requisition_id, r.ordered_date_time, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
+                "r.rejected_date_time, r.modified_date_time, count(*) OVER() as total_rows \n" +
                 "FROM ${supplySchema}.requisition as r \n" +
                 "INNER JOIN ${supplySchema}.requisition_version as v ON r.active_version_id = v.version_id \n" +
                 "WHERE (v.destination = :destination OR v.customer_id = :customerId) \n" +
-                "AND v.status::text IN (:statuses) AND r.ordered_date_time BETWEEN :fromDate AND :toDate"
-        ),
-        ORDER_HISTORY_TOTAL(
-                "SELECT count(r.requisition_id) " + ORDER_HISTORY_BODY.getSql()
-        ),
-        ORDER_HISTORY(
-                "SELECT r.requisition_id, r.ordered_date_time, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
-                "r.rejected_date_time, r.modified_date_time, \n" +
-                "(" + ORDER_HISTORY_TOTAL.getSql() + ") as total_rows " + ORDER_HISTORY_BODY.getSql()
+                "AND v.status::text IN (:statuses) AND r."
         )
         ;
 
