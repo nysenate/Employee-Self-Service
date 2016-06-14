@@ -73,10 +73,24 @@ public class EssAllowanceService implements AllowanceService {
      */
     private RangeSet<LocalDate> getBaseAllowanceUsage(AllowanceUsage allowanceUsage, TransactionHistory transHistory) {
         int year = allowanceUsage.getYear();
+        Range<LocalDate> yearRange = DateUtils.yearDateRange(year);
+
         List<HourlyWorkPayment> payments = getHourlyPayments(year, transHistory);
+
+        // Generate a range set including all dates where the employee was not a temporary employee
+        RangeMap<LocalDate, PayType> payTypeRangeMap =
+                RangeUtils.toRangeMap(transHistory.getEffectivePayTypes(yearRange));
+        RangeSet<LocalDate> nonTempEmploymentDates = TreeRangeSet.create();
+        payTypeRangeMap.asMapOfRanges().entrySet().stream()
+                .filter(entry -> entry.getValue() != PayType.TE)
+                .map(Map.Entry::getKey)
+                .forEach(nonTempEmploymentDates::add);
+
         // Initialize unpaid dates as entire year, paid dates will be removed as we iterate through payments
         RangeSet<LocalDate> unpaidDates = TreeRangeSet.create();
-        unpaidDates.add(DateUtils.yearDateRange(year));
+        unpaidDates.add(yearRange);
+        // Remove all dates where the employee was not a temporary employee
+        unpaidDates.removeAll(nonTempEmploymentDates);
 
         BigDecimal hoursPaid = BigDecimal.ZERO;
         BigDecimal moneyPaid = BigDecimal.ZERO;
@@ -109,6 +123,7 @@ public class EssAllowanceService implements AllowanceService {
                 .map(TimeRecord::getTimeEntries)
                 .flatMap(Collection::stream)
                 .filter(entry -> unpaidDates.contains(entry.getDate()))
+                .filter(timeEntry -> timeEntry.getPayType() == PayType.TE)
                 .collect(Collectors.toList());
 
         // Remove the record date ranges from unpaid dates
