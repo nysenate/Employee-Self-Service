@@ -29,7 +29,6 @@ var essSupply = angular.module('essSupply')
                 commodityCodesToItem: new Map()
             };
 
-
             $scope.init = function () {
                 $scope.shipment = modals.params();
                 $scope.shipment.activeVersion.note = ""; // Reset note so new note can be added.
@@ -51,13 +50,14 @@ var essSupply = angular.module('essSupply')
             $scope.init();
 
             $scope.saveChanges = function () {
-                saveRequisition($scope.displayedVersion);
+                saveRequisition();
             };
 
-            function saveRequisition(version) {
+            function saveRequisition() {
+                $scope.shipment.activeVersion = $scope.displayedVersion;
                 requisitionApi.save(
                     {id: $scope.shipment.id},
-                    version, success, error);
+                    $scope.shipment, success, error);
             }
 
             var success = function success(value, responseHeaders) {

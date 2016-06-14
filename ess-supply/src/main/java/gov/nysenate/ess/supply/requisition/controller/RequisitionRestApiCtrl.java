@@ -4,6 +4,8 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
@@ -16,16 +18,18 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
+import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
+import gov.nysenate.ess.supply.requisition.view.DetailedRequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
-import gov.nysenate.ess.supply.requisition.view.RequisitionVersionView;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -64,9 +68,10 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping("/{id}")
-    public BaseResponse getRequisitionById(@PathVariable int id) {
+    public BaseResponse getRequisitionById(@PathVariable int id,
+                                           @RequestParam(defaultValue = "false", required = false) boolean detail) {
         Requisition requisition = requisitionService.getRequisitionById(id);
-        return new ViewObjectResponse<>(new RequisitionView(requisition));
+        return new ViewObjectResponse<>(detail ? new DetailedRequisitionView(requisition) : new RequisitionView(requisition));
     }
 
     @RequestMapping("")
@@ -76,6 +81,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String from,
                                            @RequestParam(required = false) String to,
                                            @RequestParam(required = false) String dateField,
+                                           @RequestParam(defaultValue = "false", required = false) boolean detail,
                                            WebRequest webRequest) {
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
@@ -85,7 +91,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         LimitOffset limoff = getLimitOffset(webRequest, 25);
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Requisition> results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, limoff);
-        List<RequisitionView> resultViews = results.getResults().stream().map(RequisitionView::new).collect(Collectors.toList());
+        List<RequisitionView> resultViews = results.getResults().stream()
+                                                   .map(detail ? DetailedRequisitionView::new : RequisitionView::new)
+                                                   .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
@@ -96,6 +104,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                      @RequestParam(required = false) String from,
                                      @RequestParam(required = false) String to,
                                      @RequestParam(required = false) String dateField,
+                                     @RequestParam(defaultValue = "false", required = false) boolean detail,
                                      WebRequest webRequest) {
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
@@ -105,7 +114,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Requisition> results = requisitionService.searchOrderHistory(location, customerId, statuses, dateRange, dateField, limoff);
-        List<RequisitionView> resultViews = results.getResults().stream().map(RequisitionView::new).collect(Collectors.toList());
+        List<RequisitionView> resultViews = results.getResults().stream()
+                                                   .map(detail ? DetailedRequisitionView::new : RequisitionView::new)
+                                                   .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
@@ -139,13 +150,20 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return EnumSet.copyOf(statusList);
     }
 
+    /**
+     * Call this api to add a new {@link RequisitionVersion} to a {@link Requisition} and save it.
+     * The new version to be saved should be set as the requisitionView.activeVersion.
+     * No other data in the RequisitionView should be touched.
+     *
+     * @param id The id of the requisition.
+     * @param requisitionView A view containing requisition meta data along with the version to be saved.
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionVersionView newVersionView) {
-        Requisition requisition = requisitionService.getRequisitionById(id);
-        newVersionView.setCreatedBy(getSubjectEmployeeView());
-        newVersionView.setId(0);
-        requisition.addVersion(LocalDateTime.now(), newVersionView.toRequisitionVersion());
-        requisitionService.saveRequisition(requisition);
+    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+        requisitionView.getActiveVersion().setCreatedBy(getSubjectEmployeeView());
+        requisitionView.getActiveVersion().setId(0);
+        requisitionService.updateRequisition(id, requisitionView.getActiveVersion().toRequisitionVersion(),
+                                             requisitionView.getModifiedDateTime());
     }
 
     @RequestMapping("/{id}/undoReject")
@@ -154,6 +172,14 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         Requisition requisition = requisitionService.getRequisitionById(id);
         requisitionService.undoRejection(requisition);
     }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConcurrentRequisitionUpdateException.class)
+    @ResponseBody
+    public ErrorResponse handleConcurrentRequisitionUpdate(ConcurrentRequisitionUpdateException ex) {
+        return new ErrorResponse(ErrorCode.REQUISITION_UPDATE_CONFLICT);
+    }
+
 
     private EmployeeView getSubjectEmployeeView() {
         return new EmployeeView(getModifiedBy());

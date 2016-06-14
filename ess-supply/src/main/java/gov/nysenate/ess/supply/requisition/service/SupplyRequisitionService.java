@@ -7,6 +7,7 @@ import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
+import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,16 @@ public class SupplyRequisitionService implements RequisitionService {
     @Override
     public int saveRequisition(Requisition requisition) {
         return requisitionDao.saveRequisition(requisition);
+    }
+
+    @Override
+    public synchronized int updateRequisition(int requisitionId, RequisitionVersion requisitionVersion, LocalDateTime lastModified) {
+        Requisition persistedRequisition = requisitionDao.getRequisitionById(requisitionId);
+        if (!persistedRequisition.getModifiedDateTime().equals(lastModified)) {
+            throw new ConcurrentRequisitionUpdateException(requisitionId, lastModified, persistedRequisition.getModifiedDateTime());
+        }
+        persistedRequisition.addVersion(dateTimeFactory.now(), requisitionVersion);
+        return requisitionDao.saveRequisition(persistedRequisition);
     }
 
     @Override
