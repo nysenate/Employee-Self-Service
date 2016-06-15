@@ -25,6 +25,11 @@ public enum SqlAttendanceQuery implements BasicSqlQuery {
         GET_OPEN_ATTENDANCE_RECORDS.getSql() + "\n" +
         "   AND year.NUXREFEM = :empId"
     ),
+
+    GET_ATTENDANCE_RECORDS_FOR_YEAR (
+        GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
+        "   AND year.NUXREFEM = :empId AND year.DTPERIODYEAR = :year"
+    )
     ;
 
     private String sql;

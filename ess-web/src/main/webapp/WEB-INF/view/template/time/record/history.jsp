@@ -37,7 +37,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="record in records.employee" ng-click="go('/time/record/entry', {'record':record.beginDate})" title="Click to view record details">
+        <tr ng-repeat="record in records.employee" ng-click="go('/time/record/entry', {'record':record.beginDate})"
+            title="Click to view record details" class="e-timesheet">
           <td>{{record.beginDate | moment:'l'}} - {{record.endDate | moment:'l'}}</td>
           <td>{{record.payPeriod.payPeriodNum}}</td>
           <td ng-bind-html="record.recordStatus | timeRecordStatus:true"></td>
@@ -58,9 +59,16 @@
   <div class="content-container" ng-show="records.other.length > 0">
     <h1>Historical Attendance Records</h1>
 
-    <p class="content-info" style="">Time records that have been submitted for pay periods during {{year}} are listed
-      in the table below.<br/>You can view details about each pay period by clicking on the row.</p>
-    <div class="padding-10">
+    <p class="content-info" style="">
+      Time records that have been submitted for pay periods during {{year}} are listed in the table below. <br/>
+      You can view details about each pay period by clicking on the row.
+      <span ng-show="state.paperTimesheetsDisplayed">
+        <br>
+        <span class="bold">Note:</span>
+        Details are unavailable for attendance records entered via paper timesheet (designated by "(paper)" under Status)
+      </span>
+    </p>
+    <div class="padding-left-10 padding-top-10">
       <table id="attendance-history-table" class="ess-table attendance-listing-table"
              ng-model="records.other">
         <thead>
@@ -79,10 +87,15 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="record in records.other" ng-click="showDetails(record)">
+        <tr ng-repeat="record in records.other" ng-click="showDetails(record)"
+            ng-class="{'e-timesheet': !record.paperTimesheet}"
+            title="{{record.paperTimesheet ? '' : 'Click to view record details'}}">
           <td>{{record.beginDate | moment:'l'}} - {{record.endDate | moment:'l'}}</td>
           <td>{{record.payPeriod.payPeriodNum}}</td>
-          <td ng-bind-html="record.recordStatus | timeRecordStatus:true"></td>
+          <td>
+            <span ng-bind-html="record.recordStatus | timeRecordStatus:true"></span>
+            <span ng-show="record.paperTimesheet">(paper)</span>
+          </td>
           <td>{{record.totals.workHours}}</td>
           <td>{{record.totals.holidayHours}}</td>
           <td>{{record.totals.vacationHours}}</td>

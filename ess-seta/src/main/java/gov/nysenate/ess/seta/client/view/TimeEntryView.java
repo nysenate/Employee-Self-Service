@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @XmlRootElement
-public class TimeEntryView implements ViewObject
+public class TimeEntryView extends AttendanceHoursView
 {
 
     protected String entryId;
@@ -22,14 +22,6 @@ public class TimeEntryView implements ViewObject
     protected int empId;
     protected String employeeName;
     protected LocalDate date;
-    protected BigDecimal workHours;
-    protected BigDecimal travelHours;
-    protected BigDecimal holidayHours;
-    protected BigDecimal vacationHours;
-    protected BigDecimal personalHours;
-    protected BigDecimal sickEmpHours;
-    protected BigDecimal sickFamHours;
-    protected BigDecimal miscHours;
     protected String miscType;
     protected boolean active;
     protected String empComment;
@@ -39,23 +31,16 @@ public class TimeEntryView implements ViewObject
     protected LocalDateTime txOriginalDate;
     protected LocalDateTime txUpdateDate;
 
-    public TimeEntryView() {}
+    protected TimeEntryView() {}
 
     public TimeEntryView(TimeEntry entry) {
+        super(entry);
         if (entry != null) {
             this.entryId = entry.getEntryId() != null ? entry.getEntryId().toString() : null;
             this.timeRecordId = entry.getTimeRecordId() != null ? entry.getTimeRecordId().toString() : null;
             this.empId = entry.getEmpId();
             this.employeeName = entry.getEmployeeName();
             this.date = entry.getDate();
-            this.workHours = entry.getWorkHours().orElse(null);
-            this.travelHours = entry.getTravelHours().orElse(null);
-            this.holidayHours = entry.getHolidayHours().orElse(null);
-            this.vacationHours = entry.getVacationHours().orElse(null);
-            this.personalHours = entry.getPersonalHours().orElse(null);
-            this.sickEmpHours = entry.getSickEmpHours().orElse(null);
-            this.sickFamHours = entry.getSickFamHours().orElse(null);
-            this.miscHours = entry.getMiscHours().orElse(null);
             this.miscType = entry.getMiscType() != null ? entry.getMiscType().name() : null;
             this.active = entry.isActive();
             this.empComment = entry.getEmpComment();
@@ -117,46 +102,6 @@ public class TimeEntryView implements ViewObject
     @XmlElement
     public LocalDate getDate() {
         return date;
-    }
-
-    @XmlElement
-    public BigDecimal getWorkHours() {
-        return workHours;
-    }
-
-    @XmlElement
-    public BigDecimal getTravelHours() {
-        return travelHours;
-    }
-
-    @XmlElement
-    public BigDecimal getHolidayHours() {
-        return holidayHours;
-    }
-
-    @XmlElement
-    public BigDecimal getVacationHours() {
-        return vacationHours;
-    }
-
-    @XmlElement
-    public BigDecimal getPersonalHours() {
-        return personalHours;
-    }
-
-    @XmlElement
-    public BigDecimal getSickEmpHours() {
-        return sickEmpHours;
-    }
-
-    @XmlElement
-    public BigDecimal getSickFamHours() {
-        return sickFamHours;
-    }
-
-    @XmlElement
-    public BigDecimal getMiscHours() {
-        return miscHours;
     }
 
     @XmlElement

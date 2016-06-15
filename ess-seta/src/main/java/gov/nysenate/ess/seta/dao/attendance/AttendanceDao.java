@@ -31,4 +31,14 @@ public interface AttendanceDao
      * @return List<AttendanceRecord>
      */
     List<AttendanceRecord> getOpenAttendanceRecords(Integer empId);
+
+    /**
+     * Get attendance records for the specified employee for the given year
+     * Records are ordered by date in ascending order
+     *
+     * @param empId Integer
+     * @param year Integer
+     * @return List<AttendanceRecord>
+     */
+    List<AttendanceRecord> getAttendanceRecords(Integer empId, Integer year);
 }

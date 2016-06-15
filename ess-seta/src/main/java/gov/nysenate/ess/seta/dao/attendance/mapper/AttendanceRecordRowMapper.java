@@ -24,6 +24,7 @@ public class AttendanceRecordRowMapper extends BaseRowMapper<AttendanceRecord>
         record.setBeginDate(DateUtils.getLocalDate(rs.getDate("DTBEGIN")));
         record.setEndDate(DateUtils.getLocalDate(rs.getDate("DTEND")));
         record.setYear(Year.parse(rs.getString("DTPERIODYEAR")));
+        record.setPayPeriodNum(rs.getString("NUPERIOD"));
         record.setPostDate(DateUtils.getLocalDateTime(rs.getTimestamp("DTPOST")));
         record.setCreatedDate(DateUtils.getLocalDateTime(rs.getTimestamp("DTTXNORIGIN")));
         record.setUpdatedDate(DateUtils.getLocalDateTime(rs.getTimestamp("DTTXNUPDATE")));
