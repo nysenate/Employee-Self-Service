@@ -56,7 +56,7 @@ public enum AccrualRate
      * @return BigDecimal with prorated accrual rate to the nearest .25.
      */
     public BigDecimal getRate(int payPeriods, BigDecimal proratePercentage) {
-        return roundToNearestQuarter(getRate(payPeriods).multiply(proratePercentage));
+        return roundUpToNearestQuarter(getRate(payPeriods).multiply(proratePercentage));
     }
 
     /**
@@ -68,13 +68,13 @@ public enum AccrualRate
     }
 
     /**
-     * Rounds the given BigDecimal to the nearest .25 increment.
+     * Rounds the given BigDecimal up to the nearest .25 increment.
      *
      * @param num BigDecimal
      * @return BigDecimal with rounded value
      */
-    private BigDecimal roundToNearestQuarter(BigDecimal num) {
+    private BigDecimal roundUpToNearestQuarter(BigDecimal num) {
         BigDecimal four = new BigDecimal(4);
-        return num.multiply(four).setScale(0, RoundingMode.HALF_UP).divide(four);
+        return num.multiply(four).setScale(0, RoundingMode.CEILING).divide(four);
     }
 }
