@@ -28,7 +28,7 @@
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/order-destination-service.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/over-allowed-quantity-modal.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/order-more-modal.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/item-special-request-modal.js"></script>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/order/special-order-item-modal.js"></script>
 

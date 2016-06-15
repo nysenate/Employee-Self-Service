@@ -101,10 +101,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             modals.open('special-order-item-modal', {allowance: allowance});
         }
         else if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
-            modals.open('over-allowed-quantity-modal', {item: allowance.item, type: 'order'});
+            modals.open('order-more-modal', {item: allowance.item, type: 'order'});
         }
         else if (supplyCart.isOverMonthlyAllowance(allowance.item, allowance.selectedQuantity)) {
-            modals.open('over-allowed-quantity-modal', {item: allowance.item, type: 'month'});
+            modals.open('order-more-modal', {item: allowance.item, type: 'month'});
         }
         else {
             supplyCart.addToCart(allowance.item, allowance.selectedQuantity);

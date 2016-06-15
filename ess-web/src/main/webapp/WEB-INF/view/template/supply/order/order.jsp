@@ -78,7 +78,7 @@
     </div>
 
     <div modal-container>
-      <div over-allowed-quantity-modal ng-if="isOpen('over-allowed-quantity-modal')"></div>
+      <div order-more-modal ng-if="isOpen('order-more-modal')"></div>
     <div item-special-request-modal ng-if="isOpen('item-special-request-modal')"></div>
     <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
   </div>
