@@ -3,8 +3,12 @@
     <h2>Manage Requisitions</h2>
   </div>
 
-  <%--   Pending Orders   --%>
+  <%--Error saving requisition notification--%>
+  <div ess-notification level="error" title="Error saving requisition."
+       message="Your changes could not be saved because someone else made changes to the requisition. Please reload the page and try again."
+       ng-show="saveResponse.error"></div>
 
+  <%--   Pending Orders   --%>
   <%--Pending request loading animation. loader-indicator styling is bad inside a content-container this gets around that.--%>
   <div ng-show="!pendingSearch.response.$resolved">
     <div class="content-container">
@@ -18,7 +22,7 @@
     <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
 
     <div class="content-info" ng-show="pendingSearch.matches.length === 0 && pendingSearch.error === false">
-        <h2 class="dark-gray">No Pending Requests.</h2>
+      <h2 class="dark-gray">No Pending Requests.</h2>
     </div>
 
     <table class="ess-table supply-listing-table" ng-show="pendingSearch.matches.length > 0">
@@ -32,7 +36,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
+      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}"
+          ng-click="showEditingModal(shipment)">
         <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
@@ -72,7 +77,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}" ng-click="showEditingModal(shipment)">
+      <tr ng-repeat="shipment in processingSearch.matches" ng-class="{warn: highlightShipment(shipment)}"
+          ng-click="showEditingModal(shipment)">
         <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
         <td>{{shipment.activeVersion.customer.lastName}}</td>
@@ -201,7 +207,12 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <div fulfillment-editing-modal supply-employees='supplyEmployees' supply-items='itemSearch.matches' ng-if="isOpen('fulfillment-editing-modal')"></div>
+    <div fulfillment-editing-modal
+         supply-employees='supplyEmployees'
+         supply-items='itemSearch.matches'
+         ng-if="isOpen('fulfillment-editing-modal')">
+    </div>
+
     <div fulfillment-immutable-modal ng-if="isOpen('fulfillment-immutable-modal')"></div>
   </div>
 

@@ -1,8 +1,8 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
-    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', supplyFulfillmentController]);
+    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', 'LocationService', supplyFulfillmentController]);
 
 function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
-                                     itemsApi, modals, $interval) {
+                                     itemsApi, modals, $interval, locationService) {
 
     $scope.pendingSearch = {
         matches: [],
@@ -33,10 +33,16 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         response: {},
         error: false
     };
-    
+
     /** Items are sent to modals to allow adding of items to an order. */
     $scope.itemSearch = {
         matches: [],
+        response: {},
+        error: false
+    };
+
+    /** The response received from saving a requisition in the edit modal. */
+    $scope.saveResponse = {
         response: {},
         error: false
     };
@@ -79,7 +85,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         }, function (errorResponse) {
         })
     }
-    
+
     function getSupplyItems() {
         $scope.itemSearch.response = itemsApi.get(function (response) {
             $scope.itemSearch.matches = response.result;
@@ -195,8 +201,25 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     /** --- Modals --- */
 
     $scope.showEditingModal = function (shipment) {
-        modals.open('fulfillment-editing-modal', shipment);
+        /** Editing modal returns a promise containing the save requisition api request 
+         * if the user saved their changes, undefined otherwise.*/
+        $scope.saveResponse.response = modals.open('fulfillment-editing-modal', shipment)
+            .then(successfulSave)
+            .catch(errorSaving);
     };
+
+    function successfulSave(response) {
+        locationService.go("/supply/manage/fulfillment", true);
+    }
+
+    function errorSaving(response) {
+        if (response === undefined || response.status !== 409) {
+            // modal was rejected for a reason besides a failed update. E.g. clicking outside the modal will reject it.
+            return;
+        }
+        $scope.saveResponse = response;
+        $scope.saveResponse.error = true;
+    }
 
     $scope.showImmutableModal = function (shipment) {
         modals.open('fulfillment-immutable-modal', shipment);

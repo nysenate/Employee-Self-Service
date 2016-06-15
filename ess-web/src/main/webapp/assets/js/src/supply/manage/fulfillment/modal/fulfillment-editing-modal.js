@@ -11,8 +11,8 @@ var essSupply = angular.module('essSupply')
         };
     }])
 
-    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyLocationAutocompleteService', 'LocationService',
-        function ($scope, appProps, modals, requisitionApi, locationAutocompleteService, locationService) {
+    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyLocationAutocompleteService',
+        function ($scope, appProps, modals, requisitionApi, locationAutocompleteService) {
             /** Original shipment */
             $scope.shipment = {};
             $scope.displayedVersion = {};
@@ -49,26 +49,11 @@ var essSupply = angular.module('essSupply')
 
             $scope.init();
 
+            /** Close the modal and return the promise resulting from calling the save requisition api. */
             $scope.saveChanges = function () {
-                saveRequisition();
-            };
-
-            function saveRequisition() {
-                $scope.shipment.activeVersion = $scope.displayedVersion;
-                requisitionApi.save(
-                    {id: $scope.shipment.id},
-                    $scope.shipment, success, error);
-            }
-
-            var success = function success(value, responseHeaders) {
-                $scope.closeModal();
-                reload();
-            };
-
-            var error = function error(httpResponse) {
-                $scope.closeModal();
-                console.log("An error occurred: " + JSON.stringify(httpResponse));
-                // TODO
+                var requisition = angular.copy($scope.shipment);
+                requisition.activeVersion = $scope.displayedVersion;
+                modals.resolve(requisitionApi.save({id: $scope.shipment.id}, requisition).$promise);
             };
 
             $scope.processOrder = function () {
@@ -106,13 +91,9 @@ var essSupply = angular.module('essSupply')
                 $scope.dirty = angular.toJson($scope.shipment.activeVersion) !== angular.toJson($scope.displayedVersion);
             };
 
-            $scope.closeModal = function () {
-                modals.resolve();
+            $scope.close = function () {
+                modals.reject();
             };
-
-            function reload() {
-                locationService.go("/supply/manage/fulfillment", true);
-            }
 
             /** --- Location Autocomplete --- */
 
