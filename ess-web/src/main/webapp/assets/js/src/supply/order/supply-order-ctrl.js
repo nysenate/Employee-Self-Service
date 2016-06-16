@@ -132,9 +132,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
      * Used to determine when "more" is selected. */
     $scope.quantityChanged = function (allowance) {
         if (allowance.selectedQuantity === "more") {
-            modals.open('order-more-modal', {allowance: allowance})
+            modals.open('order-more-prompt-modal', {allowance: allowance})
                 .then(function (allowance) {
-                    modals.open('item-special-request-modal', {item: allowance.item});
+                    modals.open('order-custom-quantity-modal', {item: allowance.item});
                 });
         }
     };

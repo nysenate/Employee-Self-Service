@@ -58,14 +58,14 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/order";
     }
 
-    @RequestMapping(value="/order/order-more-modal")
-    public String overAllowedQuantityModal() {
-        return SUPPLY_TMPL_BASE_URL + "/order/order-more-modal";
+    @RequestMapping(value="/order/order-more-prompt-modal")
+    public String orderMorePromptModal() {
+        return SUPPLY_TMPL_BASE_URL + "/order/order-more-prompt-modal";
     }
 
-    @RequestMapping(value="/order/item-special-request-modal")
-    public String orderAdditional() {
-        return SUPPLY_TMPL_BASE_URL + "/order/item-special-request-modal";
+    @RequestMapping(value="/order/order-custom-quantity-modal")
+    public String orderCustomQuantityModal() {
+        return SUPPLY_TMPL_BASE_URL + "/order/order-custom-quantity-modal";
     }
 
     @RequestMapping(value="/order/special-order-item-modal")

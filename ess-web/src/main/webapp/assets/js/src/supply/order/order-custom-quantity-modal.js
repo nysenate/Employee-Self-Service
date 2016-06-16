@@ -1,11 +1,11 @@
-angular.module('essSupply').directive('itemSpecialRequestModal', ['appProps', function (appProps) {
+angular.module('essSupply').directive('orderCustomQuantityModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/order/item-special-request-modal',
-        controller: 'ItemSpecialRequestCtrl',
+        templateUrl: appProps.ctxPath + '/template/supply/order/order-custom-quantity-modal',
+        controller: 'OrderCustomQuantityModalCtrl',
         controllerAs: 'ctrl'
     }
 }])
-    .controller('ItemSpecialRequestCtrl', ['$scope', 'modals', 'SupplyCartService', function ($scope, modals, supplyCart) {
+    .controller('OrderCustomQuantityModalCtrl', ['$scope', 'modals', 'SupplyCartService', function ($scope, modals, supplyCart) {
 
         var params = {};
         $scope.quantity = 1;
