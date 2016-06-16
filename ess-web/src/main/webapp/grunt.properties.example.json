@@ -1,5 +1,5 @@
 {
-  "deployDirectory": "/usr/share/tomcat/webapps/timesheets"
+  "deployDirectory": "/usr/share/tomcat/webapps/timesheets",
 
   "defaultBeep":"beep:*",
   "lessBeep": "<%= properties.defaultBeep %>",
