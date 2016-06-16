@@ -2,7 +2,7 @@ essSupply = angular.module('essSupply').controller('SupplyCartController', [
     '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplyRequisitionApi',
     'SupplyOrderDestinationService', 'appProps', 'modals', supplyCartController]);
 
-function supplyCartController($scope,cookies, supplyCart, allowanceService, requisitionApi,
+function supplyCartController($scope, cookies, supplyCart, allowanceService, requisitionApi,
                               destinationService, appProps, modals) {
 
     $scope.myCartItems = function () {
@@ -10,7 +10,7 @@ function supplyCartController($scope,cookies, supplyCart, allowanceService, requ
     };
 
     $scope.orderQuantityRange = function (item) {
-       return allowanceService.getAllowedQuantities(allowanceService.getAllowanceByItemId(item.id))
+        return allowanceService.getAllowedQuantities(allowanceService.getAllowanceByItemId(item.id))
     };
 
     $scope.cartHasItems = function () {
@@ -26,7 +26,7 @@ function supplyCartController($scope,cookies, supplyCart, allowanceService, requ
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getCart(),
             destinationId: cookies.getDestination().locId
-            };
+        };
         requisitionApi.save(params, function (response) {
             supplyCart.reset();
             destinationService.reset();
@@ -35,6 +35,10 @@ function supplyCartController($scope,cookies, supplyCart, allowanceService, requ
         }, function (response) {
             console.log(response)
         });
+    };
+
+    $scope.orderedOverRecommended = function (cartItem) {
+        return cartItem.quantity > allowanceService.getAllowanceByItemId(cartItem.item.id).perOrderAllowance;
     };
 
     $scope.closeModal = function () {
