@@ -97,14 +97,21 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     $scope.addToCart = function (allowance) {
-        if (!supplyCart.itemInCart(allowance.item.id) && allowance.visibility === 'SPECIAL') {
+        // If more is selected, display
+        if (allowance.selectedQuantity === "more") {
+            $scope.quantityChanged(allowance);
+            return;
+        }
+        if (isNaN(allowance.selectedQuantity)) {
+            return;
+        }
+        // Cant add more than is allowed per order.
+        if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
+            return;
+        }
+        // first time adding special item, display modal.
+        if (!supplyCart.isItemInCart(allowance.item.id) && allowance.visibility === 'SPECIAL') {
             modals.open('special-order-item-modal', {allowance: allowance});
-        }
-        else if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
-            modals.open('order-more-modal', {item: allowance.item, type: 'order'});
-        }
-        else if (supplyCart.isOverMonthlyAllowance(allowance.item, allowance.selectedQuantity)) {
-            modals.open('order-more-modal', {item: allowance.item, type: 'month'});
         }
         else {
             supplyCart.addToCart(allowance.item, allowance.selectedQuantity);
@@ -112,11 +119,24 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.isInCart = function (item) {
-        return supplyCart.itemInCart(item.id)
+        return supplyCart.isItemInCart(item.id)
     };
 
     $scope.getAllowedQuantities = function (allowance) {
-        return allowanceService.getAllowedQuantities(allowance);
+        var allowedQuantities = allowanceService.getAllowedQuantities(allowance);
+        allowedQuantities.push("more");
+        return allowedQuantities;
+    };
+
+    /** This is called whenever an items quantity is changed.
+     * Used to determine when "more" is selected. */
+    $scope.quantityChanged = function (allowance) {
+        if (allowance.selectedQuantity === "more") {
+            modals.open('order-more-modal', {allowance: allowance})
+                .then(function (allowance) {
+                    modals.open('item-special-request-modal', {item: allowance.item});
+                });
+        }
     };
 
     /** --- Location selection --- */

@@ -14,7 +14,7 @@
     Would you like to continue?
   </p>
   <div class="text-align-center">
-    <input class="submit-button" type="button" value="Yes" ng-click="submitSpecialRequest()">
+    <input class="submit-button" type="button" value="Yes" ng-click="confirm()">
     <input class="neutral-button" type="button" value="Nevermind" ng-click="nevermind()">
   </div>
 </div>

@@ -6,7 +6,7 @@ function supplyCartController($scope,cookies, supplyCart, allowanceService, requ
                               destinationService, appProps, modals) {
 
     $scope.myCartItems = function () {
-        return supplyCart.getItems();
+        return supplyCart.getCart();
     };
 
     $scope.orderQuantityRange = function (item) {
@@ -14,7 +14,7 @@ function supplyCartController($scope,cookies, supplyCart, allowanceService, requ
     };
 
     $scope.cartHasItems = function () {
-        return supplyCart.getItems().length > 0
+        return supplyCart.getCart().length > 0
     };
 
     $scope.removeFromCart = function (item) {
@@ -24,7 +24,7 @@ function supplyCartController($scope,cookies, supplyCart, allowanceService, requ
     $scope.submitOrder = function () {
         var params = {
             customerId: appProps.user.employeeId,
-            lineItems: supplyCart.getItems(),
+            lineItems: supplyCart.getCart(),
             destinationId: cookies.getDestination().locId
             };
         requisitionApi.save(params, function (response) {

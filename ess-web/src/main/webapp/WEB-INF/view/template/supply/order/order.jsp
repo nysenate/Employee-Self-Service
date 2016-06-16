@@ -59,7 +59,8 @@
           <div style="">
             <label class="custom-select">
               <select ng-model="allowance.selectedQuantity"
-                      ng-options="qty for qty in getAllowedQuantities(allowance)">
+                      ng-options="qty for qty in getAllowedQuantities(allowance)"
+                      ng-change="quantityChanged(allowance)">
               </select>
             </label>
             <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"

@@ -13,7 +13,7 @@ angular.module('essSupply').directive('itemSpecialRequestModal', ['appProps', fu
         function init() {
             params = modals.params();
             // Initialize to the current quantity in cart or 1 if not in cart.
-            var lineItem = supplyCart.getItemById(params.item.id);
+            var lineItem = supplyCart.getCartLineItem(params.item.id);
             $scope.quantity = lineItem ? lineItem.quantity : 1;
         }
 
@@ -27,10 +27,10 @@ angular.module('essSupply').directive('itemSpecialRequestModal', ['appProps', fu
             }
             // User is entering total requested quantity. We don't want to add this quantity to the 
             // quantity already in the cart, so remove from cart first.
-            if (supplyCart.itemInCart(params.item.id)) {
+            if (supplyCart.isItemInCart(params.item.id)) {
                 supplyCart.removeFromCart(params.item.id);
             }
-            supplyCart.addToCart(params.item, $scope.quantity, true);
+            supplyCart.addToCart(params.item, $scope.quantity);
             modals.resolve();
         };
 
