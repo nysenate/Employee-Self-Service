@@ -16,7 +16,14 @@
     <% /** Record selection table for cases when there are a few active records to display. */ %>
     <table class="simple-table" ng-if="state.records.length <= 5">
       <thead>
-        <tr><th>Select</th><th>Pay Period</th><th>Supervisor</th><th>Period End</th><th>Status</th><th>Last Updated</th></tr>
+        <tr>
+          <th>Select</th>
+          <th>Pay Period</th>
+          <th>Supervisor</th>
+          <th>Period End</th>
+          <th>Status</th>
+          <th>Last Updated</th>
+        </tr>
       </thead>
       <tbody>
         <tr ng-repeat="record in state.records" ng-click="$parent.state.iSelectedRecord = $index">

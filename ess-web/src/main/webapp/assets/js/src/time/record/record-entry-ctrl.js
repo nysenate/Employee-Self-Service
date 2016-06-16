@@ -104,9 +104,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 $scope.state.records = response.result.items[$scope.state.empId];
                 angular.forEach($scope.state.records, function(record, index) {
                     // Compute the due from dates for each record
-                    var endDateMoment = moment(record.endDate);
+                    var endDateMoment = moment(record.endDate).add(1, 'days').startOf('day');
                     record.dueFromNowStr = endDateMoment.fromNow(false);
-                    record.isDue = endDateMoment.isBefore(moment().add(1, 'days').startOf('day'));
+                    record.isDue = endDateMoment.isBefore(moment());
                     // Set the record index
                     record.index = index;
                     // Assign indexes to the entries
