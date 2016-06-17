@@ -1,9 +1,9 @@
 <div class="padding-10">
   <div>
-    <h3 class="content-info">Special Request</h3>
+    <h3 class="content-info">Enter Quantity</h3>
   </div>
   <div class="bold">
-    You are submitting a special request. This will require management approval.
+    Enter the quantity you would like to request.
   </div>
   <div class="padding-10 text-align-center">
     <form name="specialRequestForm" novalidate>

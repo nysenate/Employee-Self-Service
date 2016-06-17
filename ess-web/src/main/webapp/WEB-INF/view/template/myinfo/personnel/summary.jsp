@@ -29,9 +29,17 @@
                 <tr><td>EMPLID</td><td>{{state.emp.nid}}</td></tr>
                 <tr><td>T&A Supervisor</td><td>{{state.emp.snapshot['NAFIRSTSUP'].value}} {{state.emp.snapshot['NALASTSUP'].value}}</td></tr>
                 <tr><td>Continuous Service From</td><td>{{state.emp.snapshot['DTCONTSERV'].value | moment:'MM/DD/YYYY'}}</td></tr>
-                <tr><td><span ng-hide="state.emp.payType === 'TE'">Bi Weekly Salary</span>
-                        <span ng-show="state.emp.payType === 'TE'">Hourly Rate</span></td>
-                    <td>{{state.emp.snapshot['MOSALBIWKLY'].value | currency}}</td></tr>
+                <tr>
+                    <td>
+                        <span ng-hide="state.emp.payType === 'TE'">Bi Weekly Salary</span>
+                        <span ng-show="state.emp.payType === 'TE'">Hourly Rate</span>
+                    </td>
+                    <td>{{state.emp.snapshot['MOSALBIWKLY'].value | currency}}</td>
+                </tr>
+                <tr ng-show="state.emp.payType === 'TE'">
+                    <td>Annual Allowance</td><td>{{state.emp.snapshot['MOAMTEXCEED'].value | currency}}</td>
+                </tr>
+
                 <tr><td>Direct Deposit</td><td>{{state.emp.snapshot['CDDIRECTDEPF'].value}}</td></tr>
                 <tr><td>Agency Code</td><td>{{state.emp.respCtr.agencyCode}}</td></tr>
                 </tbody>

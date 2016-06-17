@@ -12,7 +12,7 @@ function supplyViewController($scope, requisitionApi, locationService, $window, 
 
     $scope.init = function () {
         var id = locationService.getSearchParam('requisition');
-        $scope.requisitionResponse = requisitionApi.get({id: id});
+        $scope.requisitionResponse = requisitionApi.get({id: id, detail: true});
         $scope.requisitionResponse.$promise
             .then(extractShipment)
             .then(printIfRequested)

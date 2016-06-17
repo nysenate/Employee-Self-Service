@@ -34,6 +34,12 @@ essApi.factory('SupervisorTimeRecordCountsApi', ['$resource', 'appProps', functi
     return $resource(appProps.apiPath + '/timerecords/supervisor/count');
 }]);
 
+/** --- Attendance Record API --- */
+
+essApi.factory('AttendanceRecordApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/attendance/records');
+}]);
+
 /** --- Supervisor API --- */
 
 essApi.factory('SupervisorEmployeesApi', ['$resource', 'appProps', function ($resource, appProps) {

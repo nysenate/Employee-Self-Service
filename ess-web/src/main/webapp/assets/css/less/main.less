@@ -291,6 +291,10 @@ a {
   padding-top: 10px;
 }
 
+.padding-left-10 {
+  padding-left: 10px;
+}
+
 .half-opacity {
   opacity: 0.5;
 }
@@ -998,13 +1002,15 @@ table.time-record-entry-table {
   tbody {
     tr {
       border-bottom: 1px solid #eee !important;
-      cursor: pointer;
-      &:hover {
-        background: #e9eeff;
+      &.e-timesheet {
+        cursor: pointer;
+        &:hover {
+          background: #e9eeff;
+        }
       }
       &:nth-child(even) {
         background: fade(#333, 5%);
-        &:hover {
+        &.e-timesheet:hover {
           background: #e9eeff;
         }
       }

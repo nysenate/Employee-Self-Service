@@ -59,7 +59,8 @@
           <div style="">
             <label class="custom-select">
               <select ng-model="allowance.selectedQuantity"
-                      ng-options="qty for qty in getAllowedQuantities(allowance)">
+                      ng-options="qty for qty in getAllowedQuantities(allowance)"
+                      ng-change="quantityChanged(allowance)">
               </select>
             </label>
             <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"
@@ -78,9 +79,9 @@
     </div>
 
     <div modal-container>
-      <div over-allowed-quantity-modal ng-if="isOpen('over-allowed-quantity-modal')"></div>
-    <div item-special-request-modal ng-if="isOpen('item-special-request-modal')"></div>
-    <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
+      <div order-more-prompt-modal ng-if="isOpen('order-more-prompt-modal')"></div>
+      <div order-custom-quantity-modal ng-if="isOpen('order-custom-quantity-modal')"></div>
+      <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
+    </div>
   </div>
-</div>
 </div>

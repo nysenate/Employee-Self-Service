@@ -8,7 +8,6 @@ essApp.directive('textAutoHeight', ['$timeout', function ($timeout) {
         scope: { text: '=' },
         link: function($scope, $elem, $attrs) {
             $timeout(function() {
-                console.warn("textAutoHeight directive may be incompatible with some browsers");
                 var minHeight = $elem[0].offsetHeight,
                     paddingLeft = parseInt($elem.css('paddingLeft')) || 0,
                     paddingRight = parseInt($elem.css('paddingRight')) || 0;

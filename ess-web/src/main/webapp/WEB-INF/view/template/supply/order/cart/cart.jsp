@@ -35,15 +35,14 @@
         <div class="content">
           <p class="dark-gray bold cart-unit-size">{{cartItem.item.standardQuantity}}/Pack</p>
 
-          <div ng-hide="cartItem.isSpecialRequest">
+          <div ng-show="!orderedOverRecommended(cartItem)">
             <label class="custom-select">Qty:
-              <select requisition-quantity-selector item="cartItem.item" warn-qty="cartItem.item.suggestedMaxQty + 1"
-                      ng-model="cartItem.quantity"
+              <select ng-model="cartItem.quantity"
                       ng-options="qty for qty in orderQuantityRange(cartItem.item)"></select>
             </label>
           </div>
 
-          <div ng-show="cartItem.isSpecialRequest">
+          <div ng-show="orderedOverRecommended(cartItem)">
             <label>Qty:</label> {{cartItem.quantity}}
           </div>
 

@@ -144,7 +144,9 @@ public class RangeUtils
      */
     public static <T extends Comparable<? super T>> RangeSet<T> intersection(RangeSet<T> lhs, RangeSet<T> rhs) {
         RangeSet<T> intersection = TreeRangeSet.create();
-        rhs.asRanges().forEach(range -> intersection.addAll(lhs.subRangeSet(range)));
+        rhs.asRanges().stream()
+                .map(lhs::subRangeSet)
+                .forEach(intersection::addAll);
         return intersection;
     }
 

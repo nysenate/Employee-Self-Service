@@ -39,6 +39,7 @@ module.exports = function(grunt) {
         uglify: {
             vendor: {
                 options: {
+                    // beautify: true,
                     mangle: false,
                     preserveComments: 'some'
                 },
@@ -93,23 +94,23 @@ module.exports = function(grunt) {
         watch: {
             less: {
                 files: ['<%= lessSource %>/**.less', '<%= lessSource %>/common/**.less'],
-                tasks: ['less', 'cssmin', 'copy:css']
+                tasks: ['less', 'cssmin', 'copy:css', '<%= properties.lessBeep %>']
             },
             css: {
                 files: ['<%= cssVendor %>/**/*.css', '<%= cssSource %>/**/*.css'],
-                tasks: ['cssmin', 'copy:css']
+                tasks: ['cssmin', 'copy:css', '<%= properties.cssBeep %>']
             },
             jsVendor: {
                 files: ['<%= bowerRoot %>/**.js'],
-                tasks: ['uglify:vendor', 'copy:js']
+                tasks: ['uglify:vendor', 'copy:js', '<%= properties.jsVendorBeep %>']
             },
             jsSource: {
                 files: ['<%= jsSource %>/**/*.js'],
-                tasks: ['uglify:dev', 'uglify:prod', 'copy:js']
+                tasks: ['uglify:dev', 'uglify:prod', 'copy:js', '<%= properties.jsSourceBeep %>']
             },
             jsp: {
                 files: ['<%= jspSource %>/**/*.jsp', '<%= tagSource %>/**/*.tag'],
-                tasks: ['copy:jsp']
+                tasks: ['copy:jsp', '<%= properties.jspBeep %>']
             }
         },
 
@@ -141,6 +142,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-beep');
 
-    grunt.registerTask('default', ['less', 'cssmin', 'uglify', 'copy']);
+    grunt.registerTask('default', ['less', 'cssmin', 'uglify', 'copy', 'beep:*-*---*-**-**-*-']);
 };

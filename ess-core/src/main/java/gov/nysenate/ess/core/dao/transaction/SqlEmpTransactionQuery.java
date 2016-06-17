@@ -19,19 +19,18 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
 
     GET_TRANS_HISTORY_SQL(
         String.format(GET_TRANS_HISTORY_TEMPLATE.sql,
-            "WHERE AUD.NUXREFEM = :empId AND PTX.CDSTATUS = 'A' AND PTX.DTEFFECT BETWEEN :dateStart AND :dateEnd\n")
+            "WHERE AUD.NUXREFEM = :empId \n" +
+            "   AND PTX.CDSTATUS = 'A' AND AUD.CDSTATUS = 'A'\n" +
+            "   AND PTX.DTEFFECT BETWEEN :dateStart AND :dateEnd\n")
     ),
 
     GET_TRANS_HISTORY_SQL_FILTER_BY_CODE(
-        String.format(GET_TRANS_HISTORY_TEMPLATE.sql, "" +
-            "WHERE AUD.NUXREFEM = :empId AND PTX.CDSTATUS = 'A' AND PTX.DTEFFECT BETWEEN :dateStart AND :dateEnd " +
-            "AND PTX.CDTRANS IN (:transCodes)")
+        String.format(GET_TRANS_HISTORY_SQL.sql, "AND PTX.CDTRANS IN (:transCodes)")
     ),
 
     GET_LAST_UPDATED_RECS_SQL(
         String.format(GET_TRANS_HISTORY_TEMPLATE.sql, "" +
-        "WHERE PTX.CDSTATUS = 'A' AND AUD.CDSTATUS = 'A'\n" +
-        "   AND (PTX.DTTXNUPDATE > :lastDateTime OR AUD.DTTXNUPDATE > :lastDateTime)\n")
+        "WHERE PTX.DTTXNUPDATE > :lastDateTime OR AUD.DTTXNUPDATE > :lastDateTime\n")
     ),
 
     GET_MAX_UPDATE_DATE_TIME_SQL(
@@ -40,8 +39,8 @@ public enum SqlEmpTransactionQuery implements BasicSqlQuery
         "   CAST (MAX(AUD.DTTXNUPDATE) AS TIMESTAMP)\n" +
         ") AS MAX_DTTXNUPDATE\n" +
         "FROM ${masterSchema}.PM21PERAUDIT AUD\n" +
-        "JOIN ${masterSchema}.PD21PTXNCODE PTX ON AUD.NUCHANGE = PTX.NUCHANGE\n" +
-        "WHERE AUD.CDSTATUS = 'A' AND PTX.CDSTATUS = 'A'"
+        "JOIN ${masterSchema}.PD21PTXNCODE PTX \n" +
+        "   ON AUD.NUCHANGE = PTX.NUCHANGE"
     )
     ;
 

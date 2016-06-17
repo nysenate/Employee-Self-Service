@@ -22,7 +22,9 @@ essTime.service('RecordUtils', [function () {
         calculateDailyTotals: calculateDailyTotals,
         getTotal: getTotal,
         getRecordTotals: getRecordTotals,
-        getTimeEntryFields: getTimeEntryFields
+        getTimeEntryFields: getTimeEntryFields,
+        formatAttendRecord: formatAttendRecord,
+        compareRecords: compareRecords
     };
 
     // Return a copy of timeEntryFields array
@@ -75,6 +77,49 @@ essTime.service('RecordUtils', [function () {
         totals.raSaTotal = getTotal(record, 'total', ['RA', 'SA']);
         totals.total = getTotal(record, 'total');
         return totals;
+    }
+
+    /**
+     * Modify the given attend record so that it will be compatible with timesheets for a summary view
+     * @param attendRecord
+     * @returns {*}
+     */
+    function formatAttendRecord(attendRecord) {
+        attendRecord.totals = {
+            workHours: attendRecord.workHours,
+            holidayHours: attendRecord.holidayHours,
+            vacationHours: attendRecord.vacationHours,
+            personalHours: attendRecord.personalHours,
+            sickEmpHours: attendRecord.sickEmpHours,
+            sickFamHours: attendRecord.sickFamHours,
+            miscHours: attendRecord.miscHours,
+            total: attendRecord.totalHours
+        };
+        attendRecord.recordStatus = 'APPROVED_PERSONNEL';
+        attendRecord.payPeriod = {payPeriodNum: attendRecord.payPeriodNum};
+        return attendRecord;
+    }
+
+    /**
+     * Compare two attendance/timesheet records based on begin and end dates
+     * @param lhs
+     * @param rhs
+     * @returns {number}
+     */
+    function compareRecords(lhs, rhs) {
+        var lhsBegin = moment(lhs.beginDate),
+            rhsBegin = moment(rhs.beginDate);
+
+        if (lhsBegin.isBefore(rhsBegin)) return -1;
+        if (lhsBegin.isAfter(rhsBegin)) return 1;
+
+        var lhsEnd = moment(lhs.endDate),
+            rhsEnd = moment(rhs.endDate);
+
+        if (lhsEnd.isBefore(rhsEnd)) return -1;
+        if (lhsEnd.isAfter(rhsEnd)) return 1;
+
+        return 0;
     }
 }]);
 

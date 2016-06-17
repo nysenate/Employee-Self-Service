@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.*;
@@ -262,11 +263,20 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                             transHistory.getEffectivePayTypes(timeRecord.getDateRange()), timeRecord.getEndDate());
                 }
                 timeRecord.addTimeEntry(new TimeEntry(timeRecord, payTypeMap.get(entryDate), entryDate));
-                if (timeRecord.getEntry(entryDate).getPayType() != PayType.TE) {
-                    // Set holiday hours if applicable
-                    Optional<Holiday> holiday = holidayService.getHoliday(entryDate);
-                    timeRecord.getEntry(entryDate).setHolidayHours(
-                            holiday.map(Holiday::getHours).orElse(null));
+            }
+            TimeEntry entry = timeRecord.getEntry(entryDate);
+            if (entry.getPayType() != PayType.TE) {
+                // Set holiday hours if applicable
+                Optional<Holiday> holiday = holidayService.getHoliday(entryDate);
+                if (holiday.isPresent()) {
+                    // Set the holiday hours to the specified amount if RA
+                    if (entry.getPayType() == PayType.RA) {
+                        entry.setHolidayHours(holiday.get().getHours());
+                    }
+                    // Otherwise (SA), set the holiday hours to zero if they are null
+                    else if (!entry.getHolidayHours().isPresent()) {
+                        entry.setHolidayHours(BigDecimal.ZERO);
+                    }
                 }
             }
         }

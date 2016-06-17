@@ -7,6 +7,7 @@ public enum ErrorCode
     MISSING_PARAMETERS(3, "The necessary parameters were not provided."),
     INVALID_TIME_RECORD(4, "The provided time record contained invalid data"),
     EMPLOYEE_NOT_SUPERVISOR(5, "The given employee is not a supervisor"),
+    REQUISITION_UPDATE_CONFLICT(5, "The provided requisition was out of date."),
     ;
 
     private int code;

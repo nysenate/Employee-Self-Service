@@ -2,6 +2,8 @@ package gov.nysenate.ess.seta.dao.attendance;
 
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.dao.attendance.mapper.AttendanceRecordRowMapper;
 import gov.nysenate.ess.seta.model.attendance.AttendanceRecord;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -45,7 +47,16 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
     @Override
     public List<AttendanceRecord> getOpenAttendanceRecords(Integer empId) {
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
-        return remoteNamedJdbc.query(SqlAttendanceQuery.GET_OPEN_ATTENDANCE_RECORDS_FOR_EMPID.getSql(schemaMap())
-                ,params , new AttendanceRecordRowMapper());
+        return remoteNamedJdbc.query(SqlAttendanceQuery.GET_OPEN_ATTENDANCE_RECORDS_FOR_EMPID.getSql(schemaMap()),
+                params, new AttendanceRecordRowMapper());
+    }
+
+    @Override
+    public List<AttendanceRecord> getAttendanceRecords(Integer empId, Integer year) {
+        MapSqlParameterSource params = new MapSqlParameterSource("empId", empId)
+                .addValue("year", year);
+        return remoteNamedJdbc.query(SqlAttendanceQuery.GET_ATTENDANCE_RECORDS_FOR_YEAR.getSql(
+                        schemaMap()),
+                params, new AttendanceRecordRowMapper());
     }
 }

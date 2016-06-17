@@ -23,12 +23,12 @@ public interface AccrualDao extends BaseDao
      * A TreeMap is returned which maps the PeriodAccSummary object with it's associated 'basePayPeriod'.
      *
      * @param empId int - Employee id
-     * @param beforeDate LocalDate - The retrieved period summaries will be effective prior to this date.
+     * @param endDate LocalDate - The retrieved period summaries will be effective prior to this date.
      * @param limOff LimitOffset - Limit the result set
      * @param order SortOrder - Order by pay period end date
      * @return TreeMap<LocalDate, PeriodAccSummary>
      */
-    TreeMap<PayPeriod, PeriodAccSummary> getPeriodAccruals(int empId, LocalDate beforeDate, LimitOffset limOff,
+    TreeMap<PayPeriod, PeriodAccSummary> getPeriodAccruals(int empId, LocalDate endDate, LimitOffset limOff,
                                                            SortOrder order);
 
     /**
