@@ -4529,6 +4529,9 @@ a:hover {
 .padding-top-10 {
   padding-top: 10px;
 }
+.padding-left-10 {
+  padding-left: 10px;
+}
 .half-opacity {
   opacity: 0.5;
 }
@@ -5216,15 +5219,17 @@ table.time-record-entry-table tbody tr td.today {
 /* --- Attendance History Page --- */
 .attendance-listing-table tbody tr {
   border-bottom: 1px solid #eee !important;
+}
+.attendance-listing-table tbody tr.e-timesheet {
   cursor: pointer;
 }
-.attendance-listing-table tbody tr:hover {
+.attendance-listing-table tbody tr.e-timesheet:hover {
   background: #e9eeff;
 }
 .attendance-listing-table tbody tr:nth-child(even) {
   background: rgba(51, 51, 51, 0.05);
 }
-.attendance-listing-table tbody tr:nth-child(even):hover {
+.attendance-listing-table tbody tr:nth-child(even).e-timesheet:hover {
   background: #e9eeff;
 }
 .attendance-listing-table tbody tr td {
@@ -6038,6 +6043,9 @@ a:hover {
 .padding-top-10 {
   padding-top: 10px;
 }
+.padding-left-10 {
+  padding-left: 10px;
+}
 .half-opacity {
   opacity: 0.5;
 }
@@ -6725,15 +6733,17 @@ table.time-record-entry-table tbody tr td.today {
 /* --- Attendance History Page --- */
 .attendance-listing-table tbody tr {
   border-bottom: 1px solid #eee !important;
+}
+.attendance-listing-table tbody tr.e-timesheet {
   cursor: pointer;
 }
-.attendance-listing-table tbody tr:hover {
+.attendance-listing-table tbody tr.e-timesheet:hover {
   background: #e9eeff;
 }
 .attendance-listing-table tbody tr:nth-child(even) {
   background: rgba(51, 51, 51, 0.05);
 }
-.attendance-listing-table tbody tr:nth-child(even):hover {
+.attendance-listing-table tbody tr:nth-child(even).e-timesheet:hover {
   background: #e9eeff;
 }
 .attendance-listing-table tbody tr td {
