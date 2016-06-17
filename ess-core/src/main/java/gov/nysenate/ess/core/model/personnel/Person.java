@@ -5,14 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 /**
  * Represents basic information that is associated with a person.
  */
-public class Person
-{
+public class Person {
     protected String title;
     protected String firstName;
     protected String lastName;
