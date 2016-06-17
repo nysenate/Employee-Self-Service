@@ -13,6 +13,8 @@
     <session-config>
         <!-- Disables URL-based sessions (no more 'jsessionid' in the URL using Tomcat) -->
         <tracking-mode>COOKIE</tracking-mode>
+        <!-- Set the session to timeout after 30 mins -->
+        <session-timeout>30</session-timeout>
     </session-config>
 
     <!-- Configures the Spring profile -->
