@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.service.notification.email.simple.service;
 import gov.nysenate.ess.core.service.mail.MimeSendMailService;
 import gov.nysenate.ess.core.service.notification.NotificationUtils;
 import gov.nysenate.ess.core.service.notification.base.handler.base.DeliverServices;
-import gov.nysenate.ess.core.service.notification.base.message.base.Componet;
+import gov.nysenate.ess.core.service.notification.base.message.base.Component;
 import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailContent;
 import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailSubject;
 import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailMessage;
@@ -20,7 +20,7 @@ import java.util.List;
 public class SimpleEmailService extends MimeSendMailService implements DeliverServices<SimpleEmailMessage> {
     @Override
     public void delivery(SimpleEmailMessage message) throws ClassNotFoundException {
-        List<Componet> list = message.getComponet();
+        List<Component> list = message.getComponet();
         String subject = "";
         String content = "";
         for (int i = 0; i < list.size(); i++) {

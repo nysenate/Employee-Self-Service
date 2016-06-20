@@ -5,21 +5,17 @@ import java.awt.*;
 /**
  * Created by senateuser on 6/14/2016.
  */
-public interface Text extends Componet {
+public interface Text extends Component {
 
-    StringBuilder path = new StringBuilder(Componet.path).append("." + Text.class.getSimpleName());
+    StringBuilder path = new StringBuilder(Component.path).append("." + Text.class.getSimpleName());
 
     String getEncoding();
 
-    void setEncoding(String encoding);
-
     String getContent();
 
-    void setContent(String s);
 
     Color getColor();
 
-    void setColor(Color color);
 
     String toString();
 }

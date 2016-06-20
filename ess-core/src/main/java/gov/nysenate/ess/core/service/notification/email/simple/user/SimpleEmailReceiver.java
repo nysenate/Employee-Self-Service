@@ -6,13 +6,13 @@ import gov.nysenate.ess.core.service.notification.base.header.userType.Recevicer
 /**
  * Created by senateuser on 6/15/2016.
  */
-public class SimpleEmailRecevicer implements Recevicer {
+public class SimpleEmailReceiver implements Recevicer {
     private Person person;
 
-    private SimpleEmailRecevicer() {
+    private SimpleEmailReceiver() {
     }
 
-    public SimpleEmailRecevicer(Person person) {
+    public SimpleEmailReceiver(Person person) {
         this.person = person;
     }
 

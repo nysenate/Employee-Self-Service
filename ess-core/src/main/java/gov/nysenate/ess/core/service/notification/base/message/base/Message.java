@@ -15,11 +15,11 @@ public interface Message {
 
     Recevicer getRecevicer();
 
-    List<Componet> getComponet();
+    List<Component> getComponet();
 
-    void setComponet(List<Componet> componets);
+    void setComponet(List<Component> components);
 
-    void setComponet(Componet componets);
+    void setComponet(Component componets);
 
     Message copyTo();
 

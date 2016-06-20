@@ -30,40 +30,23 @@ public abstract class UTF8PaintText implements Text {
         return "utf-8";
     }
 
-    @Override
-    @Deprecated
-    public void setEncoding(String encoding) {
-    }
 
     @Override
     public String getContent() {
         return content;
     }
 
-    @Override
-    public void setContent(String s) {
-        content = s;
-        Charset.forName("UTF-8").encode(content);
-    }
 
     @Override
     public Color getColor() {
         return color;
     }
 
-    @Override
-    public void setColor(Color color) {
-        this.color = color;
-    }
 
     @Override
     public int getComponetId() {
         return id;
     }
 
-    @Override
-    public void setComponetId(int id) {
-        this.id = Integer.valueOf(id);
-    }
 
 }

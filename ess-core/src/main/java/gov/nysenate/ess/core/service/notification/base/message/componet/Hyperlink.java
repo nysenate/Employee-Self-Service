@@ -7,20 +7,22 @@ import java.awt.*;
 /**
  * Created by senateuser on 6/14/2016.
  */
-public abstract class URL implements Text {
+public abstract class Hyperlink implements Text {
 
-    private StringBuilder path = Text.path.append("." + URL.class.getName());
+    private StringBuilder path = Text.path.append("." + Hyperlink.class.getName());
 
     private String encode = "ASCII";
     private String url;
+    private String content;
     private Color color = new Color(0, 0, 0);
     private Integer id;
 
-    private URL() {
+    private Hyperlink() {
     }
 
-    public URL(String url, Color color) {
+    public Hyperlink(String url, String content, Color color) {
         this.url = url;
+        this.content = content;
         this.color = color;
     }
 
@@ -29,39 +31,23 @@ public abstract class URL implements Text {
         return encode;
     }
 
-    @Override
-    public void setEncoding(String encoding) {
-        this.encode = encoding;
-    }
 
     @Override
     public String getContent() {
-        return url;
+        return "<a href=" + url + ">" + content + "</a>";
     }
 
-    @Override
-    public void setContent(String s) {
-        url = s;
-    }
 
     @Override
     public Color getColor() {
         return color;
     }
 
-    @Override
-    public void setColor(Color color) {
-        this.color = color;
-    }
 
     @Override
     public int getComponetId() {
         return id;
     }
 
-    @Override
-    public void setComponetId(int id) {
-        this.id = id;
-    }
 
 }

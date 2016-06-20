@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.notification;
 
-import gov.nysenate.ess.core.service.notification.base.message.base.Componet;
+import gov.nysenate.ess.core.service.notification.base.message.base.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +56,7 @@ public class NotificationUtils {
         return map;
     }
 
-    public static Object deCompoent(Class<?> cla, Componet c) throws ClassNotFoundException {
+    public static Object deCompoent(Class<?> cla, Component c) throws ClassNotFoundException {
         return cla.cast(c);
     }
 
