@@ -24,11 +24,33 @@
     <div class="content-container large-print-font-size">
       <div class="content-info">
         <div class="grid padding-10">
-          <div class="col-4-12">
-            <b>Requested By:</b> {{selectedVersion.customer.lastName}}
+          <div class="col-4-12"
+               ns-popover ns-popover-template="customer-details" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-placement="top"
+               ns-popover-trigger="mouseenter" ns-popover-timeout=".2">
+            <b>Requested By:</b> {{selectedVersion.customer.fullName}}
+            <script type="text/ng-template" id="customer-details">
+              <div class="triangle"></div>
+              <div class="ns-popover-tooltip">
+                <ul>
+                  <li><b>Phone Number:</b> {{selectedVersion.customer.workPhone}}</li>
+                  <li><b>Email:</b> {{selectedVersion.customer.email}}</li>
+                </ul>
+              </div>
+            </script>
           </div>
-          <div class="col-4-12">
+          <div class="col-4-12"
+               ns-popover ns-popover-template="location-details" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-placement="top"
+               ns-popover-trigger="mouseenter" ns-popover-timeout=".2">
             <b>Requesting Office:</b> {{selectedVersion.destination.locId}}
+            <script type="text/ng-template" id="location-details">
+              <div class="triangle"></div>
+              <div class="ns-popover-tooltip">
+                <ul>
+                  <li><b>Office Name:</b> {{selectedVersion.destination.respCenterHead.name}}</li>
+                  <li><b>Address:</b> {{selectedVersion.destination.address.addr1}} {{selectedVersion.destination.address.city}} {{selectedVersion.destination.address.state}} {{selectedVersion.destination.address.zip5}}</li>
+                </ul>
+              </div>
+            </script>
           </div>
           <div class="col-4-12">
             <b>Requested Date:</b> {{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
