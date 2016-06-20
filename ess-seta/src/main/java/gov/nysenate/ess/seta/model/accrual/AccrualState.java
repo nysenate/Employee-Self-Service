@@ -20,7 +20,8 @@ public class AccrualState extends AccrualSummary
 
     protected LocalDate endDate;
     protected int payPeriodCount;
-    protected boolean employeeActive;
+    /** True iff the employee accrues time for the latest pay period */
+    protected boolean empAccruing;
     protected PayType payType;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
@@ -80,8 +81,8 @@ public class AccrualState extends AccrualSummary
      * Increments the accrued vacation and sick time based on the currently set vac/sick accrual rates.
      */
     public void incrementAccrualsEarned() {
-        this.setVacHoursAccrued(this.getVacHoursAccrued().add(this.vacRate));
-        this.setEmpHoursAccrued(this.getEmpHoursAccrued().add(this.sickRate));
+        this.setVacHoursAccrued(this.getVacHoursAccrued().add(this.getVacRate()));
+        this.setEmpHoursAccrued(this.getEmpHoursAccrued().add(this.getSickRate()));
     }
 
     /**
@@ -145,6 +146,16 @@ public class AccrualState extends AccrualSummary
         this.setTravelHoursUsed(BigDecimal.ZERO);
     }
 
+    /** Return 0 for sick rate if employee has accruals turned off */
+    public BigDecimal getSickRate() {
+        return empAccruing ? sickRate : BigDecimal.ZERO;
+    }
+
+    /** Return 0 for vacation rate if employee has accruals turned off */
+    public BigDecimal getVacRate() {
+        return empAccruing ? vacRate : BigDecimal.ZERO;
+    }
+
     /** --- Basic Getters/Setters --- */
 
     public LocalDate getEndDate() {
@@ -155,12 +166,12 @@ public class AccrualState extends AccrualSummary
         this.endDate = endDate;
     }
 
-    public boolean isEmployeeActive() {
-        return employeeActive;
+    public boolean isEmpAccruing() {
+        return empAccruing;
     }
 
-    public void setEmployeeActive(boolean isActive) {
-        this.employeeActive = isActive;
+    public void setEmpAccruing(boolean isActive) {
+        this.empAccruing = isActive;
     }
 
     public PayType getPayType() {
@@ -187,16 +198,8 @@ public class AccrualState extends AccrualSummary
         this.minHoursToEnd = minHoursToEnd;
     }
 
-    public BigDecimal getSickRate() {
-        return sickRate;
-    }
-
     public void setSickRate(BigDecimal sickRate) {
         this.sickRate = sickRate;
-    }
-
-    public BigDecimal getVacRate() {
-        return vacRate;
     }
 
     public void setVacRate(BigDecimal vacRate) {

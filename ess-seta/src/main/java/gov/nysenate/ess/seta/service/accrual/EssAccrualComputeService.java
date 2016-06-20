@@ -183,7 +183,6 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
         }
-        accrualState.setEmployeeActive(transHistory.getEffectiveEmpStatus(initialRange).lastEntry().getValue());
         accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).lastEntry().getValue());
         accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).lastEntry().getValue());
         accrualState.computeRates();
@@ -205,7 +204,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // If the employee was not allowed to accrue during the gap period, don't increment accruals
         if (!RangeUtils.intersects(accrualAllowedDates, gapPeriodRange)) {
+            accrualState.setEmpAccruing(false);
             return;
+        } else {
+            accrualState.setEmpAccruing(true);
         }
 
         TreeMap<LocalDate, BigDecimal> minHours = transHistory.getEffectiveMinHours(gapPeriodRange);
