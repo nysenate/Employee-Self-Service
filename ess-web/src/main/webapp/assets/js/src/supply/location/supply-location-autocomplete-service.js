@@ -35,8 +35,15 @@ function locationAutocompleteService(locationApi, respHeadLocationsApi) {
         });
     };
 
+    var reset = function () {
+        locations = [];
+        locationCodes = [];
+        codeToLocMap = new Map();
+    };
+
     return {
         initWithAllLocations: function () {
+            reset();
             return locationApi.get().$promise
                 .then(setLocations)
                 .then(setCodes)
@@ -45,6 +52,7 @@ function locationAutocompleteService(locationApi, respHeadLocationsApi) {
 
         /** Only get locations that fall under the logged in users responsibility Head. */
         initWithResponsibilityHeadLocations: function () {
+            reset();
             return respHeadLocationsApi.get().$promise
                 .then(setLocations)
                 .then(setCodes)
@@ -74,6 +82,7 @@ function locationAutocompleteService(locationApi, respHeadLocationsApi) {
                     focusOpen: false,
                     onlySelectValid: true,
                     outHeight: height || 300,
+                    minLength: 0,
                     source: function (request, response) {
                         var data = locationCodes;
                         data = autocompleteOptions.methods.filter(data, request.term);
@@ -84,9 +93,15 @@ function locationAutocompleteService(locationApi, respHeadLocationsApi) {
                             })
                         }
                         response(data);
+                    },
+                    // Remove jquery help messages.
+                    messages: {
+                        noResults: '',
+                        results: function () {
+                        }
                     }
                 },
-                methods: {}
+                methods: {},
             };
             return autocompleteOptions;
         }
