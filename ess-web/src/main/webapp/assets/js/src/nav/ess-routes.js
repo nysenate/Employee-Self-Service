@@ -77,15 +77,7 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     $routeProvider.when(ctxPath + '/supply/order', {
         templateUrl: ctxPath + '/template/supply/order',
-        reloadOnSearch: false,
-        resolve: {
-            locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
-                return locAutoService.queryLocations();
-            }],
-            orderDestinationService: ['SupplyOrderDestinationService', function (orderDestinationService) {
-                return orderDestinationService.queryDefaultDestination();
-            }]
-        }
+        reloadOnSearch: false
     });
 
     $routeProvider.when(ctxPath + '/supply/order/cart', {
@@ -104,7 +96,7 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/manage/fulfillment',
         resolve: {
             locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
-                return locAutoService.queryLocations();
+                return locAutoService.initWithAllLocations();
             }]
         }
     });

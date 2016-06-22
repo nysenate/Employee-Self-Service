@@ -121,6 +121,10 @@ essApi.factory('LocationApi', ['$resource', 'appProps', function($resource, appP
     return $resource(appProps.apiPath + '/locations.json')
 }]);
 
+essApi.factory('LocationsUnderResponsibilityHeadApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/locations/responsibilityHead.json')
+}]);
+
 /** --- Supply Items API --- */
 
 essApi.factory('SupplyItemsApi', ['$resource', 'appProps', function($resource, appProps) {

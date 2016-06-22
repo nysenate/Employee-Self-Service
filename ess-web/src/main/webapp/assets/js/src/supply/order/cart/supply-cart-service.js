@@ -15,10 +15,6 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
     }
 
     return {
-        init: function () {
-            cart = cookies.getCart();
-        },
-
         isOverOrderAllowance: function (item, quantity) {
             var allowance = allowanceService.getAllowanceByItemId(item.id);
             if (newQuantity(quantity, this.getCartLineItem(item.id)) > allowance.perOrderAllowance) {
