@@ -5,33 +5,20 @@ import gov.nysenate.ess.core.model.cache.CacheEvictEvent;
 import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
 import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
-import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.SizeOfPolicyConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 import static net.sf.ehcache.config.SizeOfPolicyConfiguration.MaxDepthExceededBehavior.ABORT;
 
+/**
+ * Defines methods that are required to manage a service that depends on one or more caches
+ * @param <ContentId>
+ */
 public interface CachingService<ContentId>
 {
-    Logger logger = LoggerFactory.getLogger(CachingService.class);
-
-    /**
-     * Performs cache creation and any pre-caching of data.
-     */
-    void setupCaches();
-
     /**
      * @return A ContentCache enum specifying which cache this is
      */
     ContentCache getCacheType();
-
-    /**
-     * Returns all cache instances.
-     */
-    List<Ehcache> getCaches();
 
     /**
      * Evicts a single item from the cache based on the given content id
@@ -39,17 +26,14 @@ public interface CachingService<ContentId>
     void evictContent(ContentId contentId);
 
     /**
-     * (Default Method)
-     * Clears all the cache entries from all caches.
+     * Clears all the cache entries from cache.
      */
-    default void evictCaches() {
-        if (getCaches() != null && !getCaches().isEmpty()) {
-            getCaches().forEach(c -> {
-                logger.info("Clearing out {} cache", c.getName());
-                c.removeAll();
-            });
-        }
-    }
+    void evictCache();
+
+    /**
+     * Pre-fetch a subset of currently active data and store it in the cache.
+     */
+    void warmCache();
 
     /**
      * If a CacheEvictEvent is sent out on the event bus, the caching service
@@ -60,7 +44,7 @@ public interface CachingService<ContentId>
     @Subscribe
     default void handleCacheEvictEvent(CacheEvictEvent evictEvent) {
         if (evictEvent.affects(getCacheType())) {
-            evictCaches();
+            evictCache();
         }
     }
 
@@ -77,11 +61,6 @@ public interface CachingService<ContentId>
     }
 
     /**
-     * Pre-fetch a subset of currently active data and store it in the cache.
-     */
-    void warmCaches();
-
-    /**
      * If a CacheWarmEvent is sent out on the event bus, the caching service
      * should check to if it has any affected caches and warm them.
      *
@@ -90,18 +69,7 @@ public interface CachingService<ContentId>
     @Subscribe
     default void handleCacheWarmEvent(CacheWarmEvent warmEvent) {
         if (warmEvent.affects(getCacheType())) {
-            warmCaches();
+            warmCache();
         }
-    }
-
-    /**
-     * (Default Method)
-     * Default 'size of' configuration which sets the maximum limit for how many nodes are traversed
-     * when computing the heap size of an object before bailing out to minimize performance impact.
-     *
-     * @return SizeOfPolicyConfiguration
-     */
-    default SizeOfPolicyConfiguration defaultSizeOfPolicy() {
-        return new SizeOfPolicyConfiguration().maxDepth(50000).maxDepthExceededBehavior(ABORT);
     }
 }
