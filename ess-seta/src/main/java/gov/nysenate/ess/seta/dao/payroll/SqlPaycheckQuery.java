@@ -6,11 +6,14 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum SqlPaycheckQuery implements BasicSqlQuery
 {
     GET_EMPLOYEE_PAYCHECKS_BY_YEAR(
-           "SELECT m.NUXREFEM, m.MONET, m.MOGROSS, m.MOCHECKAMT, m.MOADVICEAMT, m.NUPERIOD, m.DTCHECK," +
-           "l.CDDEDUCTION, l.DEDEDUCTIONF, d.MODEDUCTION\n" +
-           "from ${tsSchema}.PM25SALLEDG m join ${tsSchema}.PD25SALLEDG d on m.nuxrefem = d.nuxrefem and m.dtcheck = d.dtcheck\n" +
-           "join ${tsSchema}.PL25DEDUCTCD l on d.CDDEDUCTION = l.CDDEDUCTION\n" +
-           "where m.NUXREFEM = :empId and EXTRACT(YEAR FROM m.DTCHECK) = :year and d.cdstatus = 'A'"
+           "SELECT m.NUXREFEM, m.MONET, m.MOGROSS, m.MOCHECKAMT, m.MOADVICEAMT, m.NUPERIOD, m.DTCHECK,\n" +
+           "    l.CDDEDUCTION, l.DEDEDUCTIONF, d.MODEDUCTION\n" +
+           "FROM ${masterSchema}.PM25SALLEDG m\n" +
+           "JOIN ${tsSchema}.PD25SALLEDG d\n" +
+           "    ON m.NUXREFEM = d.NUXREFEM AND m.DTCHECK = d.DTCHECK\n" +
+           "JOIN ${masterSchema}.PL25DEDUCTCD l\n" +
+           "    ON d.CDDEDUCTION = l.CDDEDUCTION\n" +
+           "WHERE m.NUXREFEM = :empId AND EXTRACT(YEAR FROM m.DTCHECK) = :year AND d.CDSTATUS = 'A'"
     );
 
     private String sql;
