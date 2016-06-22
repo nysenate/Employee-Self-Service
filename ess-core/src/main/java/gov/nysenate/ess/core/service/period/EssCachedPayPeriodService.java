@@ -6,9 +6,11 @@ import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.period.PayPeriodDao;
+import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodNotFoundEx;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.util.SortOrder;
 import net.sf.ehcache.Cache;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 @Service
-public class EssCachedPayPeriodService implements PayPeriodService
+public class EssCachedPayPeriodService implements PayPeriodService, CachingService<PayPeriodType>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedPayPeriodService.class);
 
@@ -40,7 +42,7 @@ public class EssCachedPayPeriodService implements PayPeriodService
     @PostConstruct
     public void init() {
         this.eventBus.register(this);
-        this.payPeriodCache = this.cacheManageService.registerEternalCache("pay-periods");
+        this.payPeriodCache = this.cacheManageService.registerEternalCache(getCacheType().name());
         if (this.cacheManageService.isWarmOnStartup()) {
             cacheAfPayPeriods();
         }
@@ -76,6 +78,8 @@ public class EssCachedPayPeriodService implements PayPeriodService
         }
     }
 
+    /** --- Pay Period Service Implemented Methods --- */
+
     @Override
     public PayPeriod getPayPeriod(PayPeriodType type, LocalDate date) throws PayPeriodNotFoundEx {
         if (type.equals(PayPeriodType.AF)) {
@@ -96,6 +100,34 @@ public class EssCachedPayPeriodService implements PayPeriodService
             }
         }
         return payPeriodDao.getPayPeriods(type, dateRange, dateOrder);
+    }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService */
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.PAY_PERIOD;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(PayPeriodType key) {
+        payPeriodCache.remove(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        payPeriodCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        cacheAfPayPeriods();
     }
 
     /** --- Internal Methods --- */

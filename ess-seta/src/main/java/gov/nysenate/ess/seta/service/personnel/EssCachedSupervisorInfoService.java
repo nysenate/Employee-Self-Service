@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 
 @Service
-public class EssCachedSupervisorInfoService implements SupervisorInfoService
+public class EssCachedSupervisorInfoService implements SupervisorInfoService, CachingService<Integer>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedSupervisorInfoService.class);
 
@@ -52,9 +53,11 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService
     @PostConstruct
     public void init() {
         eventBus.register(this);
-        supEmployeeGroupCache = cacheManageService.registerTimeBasedCache(ContentCache.SUPERVISOR_EMP_GROUP.name(), 3600L);
+        supEmployeeGroupCache = cacheManageService.registerTimeBasedCache(getCacheType().name(), 3600L);
         lastSupOvrUpdate = lastSupTransUpdate = supervisorDao.getLastSupUpdateDate();
     }
+
+    /** --- Supervisor Info Service Implemented Methods --- */
 
     @Override
     public boolean isSupervisorDuring(int supId, Range<LocalDate> dateRange) {
@@ -158,6 +161,34 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService
         else {
             throw new SupervisorException("Grantee/Granter for override must both have been a supervisor.");
         }
+    }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService */
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.SUPERVISOR_EMP_GROUP;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(Integer supId) {
+        supEmployeeGroupCache.remove(supId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        supEmployeeGroupCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        // No warming for this cache
     }
 
     /** --- Internal Methods --- */
