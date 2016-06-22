@@ -36,7 +36,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightShipment(shipment)}"
+      <tr ng-repeat="shipment in pendingSearch.matches" ng-class="{warn: highlightRequisition(shipment)}"
           ng-click="showEditingModal(shipment)">
         <td>{{shipment.id}}</td>
         <td>{{shipment.activeVersion.destination.locId}}</td>
