@@ -95,7 +95,7 @@
                             <span class="font-weight-bold">STS Help Line at Senate x2011</span>
                         </li>
                         <li class="shift-down-slightly shift-right">
-                            <span>For personnel related questions:</span> <br/>
+                            <span>For Personnel related questions:</span> <br/>
                             <span class="font-weight-bold">Senate Personnel Office - (518) 455 3376</span>
                         </li>
                         <li class="shift-down-slightly">

@@ -8,7 +8,7 @@
 %>
 <div ng-controller="RecordEntryController">
   <div class="time-attendance-hero">
-    <h2>Time Record Entry</h2>
+    <h2>Attendance Record Entry</h2>
   </div>
   <div id="record-selection-container" class="record-selection-container content-container content-controls"
        ng-show="state.records.length > 0">
@@ -67,7 +67,6 @@
   <% /** Display a warning for previously unsubmitted records */ %>
   <div ess-notification level="warn" title="Earlier Unsubmitted Records"
        class="margin-top-20 margin-bottom-20" ng-show="errorTypes.record.prevUnsubmittedRecord">
-    There are earlier annual salary records that have not yet been submitted.<br>
     This record cannot be submitted until all previous annual salary records are submitted.
   </div>
 
@@ -265,7 +264,7 @@
                   {{ state.allowances[state.selectedYear].totalHours | number }}
                 </div>
                 <div class="ytd-hours">
-                  <div class="hours-caption">Prior Hours</div>
+                  <div class="hours-caption">Reported Hours</div>
                   {{state.allowances[state.selectedYear].hoursUsed | number}}
                 </div>
                 <div class="ytd-hours">
@@ -382,7 +381,7 @@
         <div style="padding: 20px; text-align: left;">
           <p ng-show="serviceSurplus >= expectedDifference">
             Warning: You are attempting to use {{expectedDifference}}
-            excess hours to fulfill pay period hour requirement.
+            excess hours.
           </p>
           <div ng-show="serviceSurplus < expectedDifference">
             <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
@@ -415,12 +414,12 @@
           </p>
           <hr/>
           <p>3. You will be saving and submitting this Time and Attendance Record to your T&A Supervisor.
-            Once submitted, you will no longer have the ability to edit this Record unless your supervisor or personnel
+            Once submitted, you will no longer have the ability to edit this Record unless your supervisor or Personnel
             disapproves the record.
           </p>
           <hr/>
           <div style="text-align: center;">
-            <input ng-click="submitRecord()" class="submit-button" style="margin-right: 20px;" type="button" value="I acknowledge"/>
+            <input ng-click="submitRecord()" class="submit-button" style="margin-right: 20px;" type="button" value="I agree"/>
             <input ng-click="closeModal()" class="reject-button" type="button" value="Cancel"/>
           </div>
         </div>

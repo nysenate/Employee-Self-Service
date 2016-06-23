@@ -75,19 +75,19 @@
 
     <toggle-panel open="false" ng-if="state.supRecords[state.selSupId]['APPROVED']"
           label="T&A Records Pending Approval By Personnel ({{state.supRecords[state.selSupId]['APPROVED'].length}})">
-      <p class="content-info">The following records have been recently approved and are awaiting approval by personnel.</p>
+      <p class="content-info">The following records have been recently approved and are awaiting approval by Personnel.</p>
       <div supervisor-record-list records="state.supRecords[state.selSupId]['APPROVED']"></div>
     </toggle-panel>
 
     <toggle-panel open="false" ng-if="state.supRecords[state.selSupId]['DISAPPROVED_PERSONNEL']"
                   label="T&A Records Rejected By Personnel Awaiting Employee Correction ({{state.supRecords[state.selSupId]['DISAPPROVED_PERSONNEL'].length}})">
-      <p class="content-info">The records have been rejected by personnel and are awaiting re-submission by the employee.</p>
+      <p class="content-info">The records have been rejected by Personnel and are awaiting re-submission by the employee.</p>
       <div supervisor-record-list records="state.supRecords[state.selSupId]['DISAPPROVED_PERSONNEL']"></div>
     </toggle-panel>
 
     <toggle-panel open="false" ng-if="state.supRecords[state.selSupId]['SUBMITTED_PERSONNEL']"
            label="T&A Personnel Rejected Records Pending Approval ({{state.supRecords[state.selSupId]['SUBMITTED_PERSONNEL'].length}})">
-      <p class="content-info">The following records have been recently submitted to personnel by employee to correct errors detected by personnel</p>
+      <p class="content-info">The following records have been recently submitted to Personnel by employee to correct errors detected by Personnel</p>
       <div supervisor-record-list records="state.supRecords[state.selSupId]['SUBMITTED_PERSONNEL']"></div>
     </toggle-panel>
 
