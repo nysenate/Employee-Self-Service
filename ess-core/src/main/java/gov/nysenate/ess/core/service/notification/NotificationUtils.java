@@ -6,22 +6,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by senateuser on 6/15/2016.
+ * Utilities for notification package
+ * Created by Chenguang He on 6/15/2016.
  */
 public class NotificationUtils {
     private NotificationUtils() {
     }
 
+    /**
+     * get a value from class path
+     *
+     * @param path class path
+     * @return value in string
+     */
     private static String getValue(String path) {
         String[] subs = path.split("\\.");
         return subs[subs.length - 1];
     }
 
+    /**
+     * get a name from class path
+     * @param path class path
+     * @return name in string
+     */
     private static String getName(String path) {
         String[] subs = path.split("\\.");
         return subs[1];
     }
 
+    /**
+     *  get header names
+     * @param castType cast type string
+     * @param eventType event type string
+     * @param notificationType notification type string
+     * @return header name
+     */
     public static String getHeaderName(StringBuilder castType, StringBuilder eventType, StringBuilder notificationType) {
         StringBuilder sb = new StringBuilder();
         sb.append(NotificationUtils.getName(castType.toString()));
@@ -32,6 +51,13 @@ public class NotificationUtils {
         return sb.toString();
     }
 
+    /**
+     *  get header value
+     * @param castType cast type string
+     * @param eventType event type string
+     * @param notificationType notification type string
+     * @return header value
+     */
     public static String getHeaderValue(StringBuilder castType, StringBuilder eventType, StringBuilder notificationType) {
         StringBuilder sb = new StringBuilder();
         sb.append(NotificationUtils.getValue(castType.toString()));
@@ -42,6 +68,13 @@ public class NotificationUtils {
         return sb.toString();
     }
 
+    /**
+     *  get header maps
+     * @param castType cast type string
+     * @param eventType event type string
+     * @param notificationType notification type string
+     * @return header maps
+     */
     public static Map<String, String> toMap(StringBuilder castType, StringBuilder eventType, StringBuilder notificationType) {
         Map<String, String> map = new HashMap<>();
         String name1 = getName(castType.toString());
@@ -56,6 +89,13 @@ public class NotificationUtils {
         return map;
     }
 
+    /**
+     *  cast component to its specific class
+     * @param cla class
+     * @param c component
+     * @return the object of class
+     * @throws ClassNotFoundException
+     */
     public static Object deCompoent(Class<?> cla, Component c) throws ClassNotFoundException {
         return cla.cast(c);
     }

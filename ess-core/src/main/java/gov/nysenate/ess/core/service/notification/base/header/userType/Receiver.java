@@ -1,9 +1,9 @@
 package gov.nysenate.ess.core.service.notification.base.header.userType;
 
 /**
- * message sender.
+ * message receiver
  * Created by Chenguang He  on 6/15/2016.
  */
-public interface Sender {
-    StringBuilder userType = new StringBuilder(Sender.class.getName());
+public interface Receiver {
+    StringBuilder userType = new StringBuilder(Receiver.class.getName());
 }

@@ -6,33 +6,39 @@ import gov.nysenate.ess.core.service.notification.base.message.base.Message;
 import gov.nysenate.ess.core.service.notification.email.simple.user.SimpleEmailReceiver;
 import gov.nysenate.ess.core.service.notification.email.simple.user.SimpleEmailSender;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by senateuser on 6/14/2016.
+ * Simple email message
+ * Created by Chenguang He on 6/14/2016.
  */
 public class SimpleEmailMessage implements Message {
     private List<Component> comp;
     private Map<String, String> header;
     private Integer id;
-    private SimpleEmailReceiver recevicer;
+    private SimpleEmailReceiver receiver;
     private SimpleEmailSender sender;
     private String subject;
 
     private SimpleEmailMessage() {
     }
 
-    public SimpleEmailMessage(SimpleEmailSender sender, SimpleEmailReceiver recevicer, List<Component> comp, Map<String, String> header, Integer id) {
-        comp = new ArrayList<>();
-        header = new HashMap<>();
+    /**
+     * the constructor
+     *
+     * @param sender   sender
+     * @param receiver receiver
+     * @param comp     the list of component
+     * @param header   the headers
+     * @param id       the id of message
+     */
+    public SimpleEmailMessage(SimpleEmailSender sender, SimpleEmailReceiver receiver, List<Component> comp, Map<String, String> header, Integer id) {
         this.id = id;
         this.header = header;
         this.comp = comp;
         this.sender = sender;
-        this.recevicer = recevicer;
+        this.receiver = receiver;
     }
 
     @Override
@@ -41,37 +47,37 @@ public class SimpleEmailMessage implements Message {
     }
 
     @Override
-    public SimpleEmailReceiver getRecevicer() {
-        return recevicer;
+    public SimpleEmailReceiver getReceiver() {
+        return receiver;
     }
 
     @Override
-    public List<Component> getComponet() {
+    public List<Component> getComponent() {
         return comp;
     }
 
     @Override
-    public void setComponet(List<Component> components) {
+    public void setComponent(List<Component> components) {
         for (Component c : components) {
-            setComponet(c);
+            setComponent(c);
         }
     }
 
     @Override
-    public void setComponet(Component componets) {
-        comp.add(componets);
+    public void setComponent(Component components) {
+        comp.add(components);
     }
 
     @Override
     public Message copyTo() {
-        Message clone = new SimpleEmailMessage(sender, recevicer, comp, header, id);
+        Message clone = new SimpleEmailMessage(sender, receiver, comp, header, id);
         return clone;
     }
 
     @Override
     public void copyFrom(Message message) {
         this.id = message.getMessageId();
-        this.comp = message.getComponet();
+        this.comp = message.getComponent();
         this.header = message.getHeader();
     }
 

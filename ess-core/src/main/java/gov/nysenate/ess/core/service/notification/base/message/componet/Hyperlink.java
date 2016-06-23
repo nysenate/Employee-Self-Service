@@ -1,29 +1,42 @@
 package gov.nysenate.ess.core.service.notification.base.message.componet;
 
+import gov.nysenate.ess.core.service.notification.base.message.base.Message;
 import gov.nysenate.ess.core.service.notification.base.message.base.Text;
 
 import java.awt.*;
+import java.io.IOException;
 
 /**
- * Created by senateuser on 6/14/2016.
+ *  the hyper link class in email message
+ * Created by Chenguang He  on 6/15/2016.
  */
-public abstract class Hyperlink implements Text {
+public class Hyperlink implements Text {
 
     private StringBuilder path = Text.path.append("." + Hyperlink.class.getName());
 
-    private String encode = "ASCII";
+    private String encode = "ASCII"; // encode
     private String url;
     private String content;
     private Color color = new Color(0, 0, 0);
     private Integer id;
+    private String bindTo;
 
     private Hyperlink() {
     }
 
-    public Hyperlink(String url, String content, Color color) {
+    /**
+     * the constructor
+     *
+     * @param url     the url
+     * @param content the content
+     * @param color   the color
+     * @param bindTo  the bind to
+     */
+    public Hyperlink(String url, String content, Color color, String bindTo) {
         this.url = url;
         this.content = content;
         this.color = color;
+        this.bindTo  = bindTo;
     }
 
     @Override
@@ -37,6 +50,11 @@ public abstract class Hyperlink implements Text {
         return "<a href=" + url + ">" + content + "</a>";
     }
 
+    @Override
+    public String getBind() {
+        return bindTo;
+    }
+
 
     @Override
     public Color getColor() {
@@ -47,6 +65,11 @@ public abstract class Hyperlink implements Text {
     @Override
     public int getComponetId() {
         return id;
+    }
+
+    @Override
+    public void attachTo(Message message) throws IOException {
+        message.setComponent(new Hyperlink(url, content, color,bindTo));
     }
 
 

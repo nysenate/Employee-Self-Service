@@ -49,6 +49,14 @@ public final class RequisitionVersion {
         return lineItems;
     }
 
+    public String toOrderString() {
+        StringBuilder sb = new StringBuilder();
+        for (LineItem l : lineItems) {
+            sb.append(l.getItem().getCommodityCode() + " x " + l.getQuantity() + "\n");
+        }
+        return sb.toString();
+    }
+
     public RequisitionStatus getStatus() {
         return status;
     }

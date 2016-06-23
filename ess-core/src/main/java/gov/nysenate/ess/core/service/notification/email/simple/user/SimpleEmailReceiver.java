@@ -1,12 +1,13 @@
 package gov.nysenate.ess.core.service.notification.email.simple.user;
 
 import gov.nysenate.ess.core.model.personnel.Person;
-import gov.nysenate.ess.core.service.notification.base.header.userType.Recevicer;
+import gov.nysenate.ess.core.service.notification.base.header.userType.Receiver;
 
 /**
- * Created by senateuser on 6/15/2016.
+ *  Simple email receiver
+ * Created by Chenguang He on 6/14/2016.
  */
-public class SimpleEmailReceiver implements Recevicer {
+public class SimpleEmailReceiver implements Receiver {
     private Person person;
 
     private SimpleEmailReceiver() {

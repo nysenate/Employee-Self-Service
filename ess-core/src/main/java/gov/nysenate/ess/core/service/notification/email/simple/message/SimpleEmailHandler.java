@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by senateuser on 6/15/2016.
+ * Simple email handle deliver the message to it's service.
+ * Created by Chenguang He on 6/14/2016.
  */
 @Service
 public class SimpleEmailHandler implements Handler<SimpleEmailMessage> {

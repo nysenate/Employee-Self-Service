@@ -6,22 +6,38 @@ import gov.nysenate.ess.core.service.notification.base.message.componet.UTF8Pain
 import java.awt.*;
 
 /**
- * Created by senateuser on 6/15/2016.
+ *  Simple email content
+ * Created by Chenguang He on 6/14/2016.
  */
 public class SimpleEmailContent extends UTF8PaintText {
 
     public StringBuilder path = new StringBuilder(super.path).append(".").append(SimpleEmailContent.class.getSimpleName());
     private Color color;
     private String content;
+    private String bindTo;
 
-    public SimpleEmailContent(Color color, String content) {
+    /**
+     * the constructor
+     *
+     * @param color   the color
+     * @param content the content
+     * @param bindTo  the bind text
+     */
+    public SimpleEmailContent(Color color, String content, String bindTo) {
         super(color, content);
         this.color = color;
         this.content = content;
+        this.bindTo = bindTo;
     }
 
     @Override
     public void attachTo(Message message) {
-        message.setComponet(new SimpleEmailSubject(color, content));
+        message.setComponent(new SimpleEmailSubject(color, content));
     }
+
+    @Override
+    public String getBind() {
+        return bindTo;
+    }
+
 }

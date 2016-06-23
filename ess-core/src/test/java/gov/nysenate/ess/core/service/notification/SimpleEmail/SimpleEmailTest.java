@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.notification.SimpleEmail;
+package gov.nysenate.ess.core.service.notification.simpleemail;
 
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.CoreTests;
@@ -36,8 +36,8 @@ public class SimpleEmailTest extends CoreTests {
         /*
             email content
          */
-        SimpleEmailSubject simpleEmailSubject = new SimpleEmailSubject(Color.black, "hello");
-        SimpleEmailContent simpleEmailContent = new SimpleEmailContent(Color.black, "test content");
+        SimpleEmailSubject simpleEmailSubject = new SimpleEmailSubject(Color.black, "hello" + "$hello$");
+        SimpleEmailContent simpleEmailContent = new SimpleEmailContent(Color.black, "test content", "$hello$");
         List<Component> componentList = new ArrayList<>();
         componentList.add(simpleEmailContent);
         componentList.add(simpleEmailSubject);
@@ -59,11 +59,11 @@ public class SimpleEmailTest extends CoreTests {
          * compose email
          */
         SimpleEmailMessage simpleEmailMessage = new SimpleEmailMessage(simpleEmailSender, simpleEmailReceiver, componentList, simpleEmailHeader.toMap(), 1);
-        simpleEmailMessage.setComponet(simpleEmailContent);
-        simpleEmailMessage.setComponet(simpleEmailSubject);
-
-        eventBus.register(simpleEmailHandler);
-
-        eventBus.post(simpleEmailMessage);
+        simpleEmailMessage.setComponent(simpleEmailContent);
+        simpleEmailMessage.setComponent(simpleEmailSubject);
+//
+//        eventBus.register(simpleEmailHandler);
+//
+//        eventBus.post(simpleEmailMessage);
     }
 }

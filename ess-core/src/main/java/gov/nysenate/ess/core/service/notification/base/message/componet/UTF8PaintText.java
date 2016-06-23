@@ -6,7 +6,8 @@ import java.awt.*;
 import java.nio.charset.Charset;
 
 /**
- * Created by senateuser on 6/14/2016.
+ * UTF8 encoded text
+ * Created by Chenguang He on 6/14/2016.
  */
 public abstract class UTF8PaintText implements Text {
 
@@ -19,6 +20,12 @@ public abstract class UTF8PaintText implements Text {
     private UTF8PaintText() {
     }
 
+    /**
+     * the constructor
+     *
+     * @param color   the color
+     * @param content the content
+     */
     public UTF8PaintText(Color color, String content) {
         this.color = color;
         this.content = content;
