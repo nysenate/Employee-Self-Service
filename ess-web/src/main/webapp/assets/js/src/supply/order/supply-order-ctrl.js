@@ -14,6 +14,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.paginate = angular.extend({}, paginationModel);
 
     $scope.filter = {
+        searchTerm: "",
         categories: []
     };
 
@@ -64,12 +65,18 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function filterAllowances() {
-        $scope.displayAllowances = allowanceService.getFilteredAllowances($scope.filter.categories);
+        $scope.displayAllowances = allowanceService.getFilteredAllowances($scope.filter.categories, $scope.filter.searchTerm);
     }
 
     function setToShoppingState() {
         $scope.state = $scope.states.SHOPPING;
     }
+
+    /** --- Search --- */
+
+    $scope.search = function () {
+        filterAllowances();
+    };
 
     /** --- Navigation --- */
 
