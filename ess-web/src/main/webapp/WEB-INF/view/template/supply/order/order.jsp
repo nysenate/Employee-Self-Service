@@ -40,9 +40,11 @@
     <div class="content-container">
       <%--Search--%>
       <div class="padding-10" style="text-align: center">
-        <input type="text"
-               ng-model="filter.searchTerm">
-        <input class="submit-button" ng-click="search()" type="button" value="Search">
+        <form>
+          <input type="text"
+                 ng-model="filter.searchTerm">
+          <input class="submit-button" ng-click="search()" type="submit" value="Search">
+        </form>
       </div>
 
       <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
