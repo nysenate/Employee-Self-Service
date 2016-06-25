@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>web</artifactId>
     <packaging>war</packaging>
-    <version>0.8</version>
+    <version>0.9</version>
     <description>Senate Electronic Timesheet Application</description>
     <parent>
         <groupId>gov.nysenate.ess</groupId>

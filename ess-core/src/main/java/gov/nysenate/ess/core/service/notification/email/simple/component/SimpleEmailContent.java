@@ -1,7 +1,7 @@
-package gov.nysenate.ess.core.service.notification.email.simple.componet;
+package gov.nysenate.ess.core.service.notification.email.simple.component;
 
 import gov.nysenate.ess.core.service.notification.base.message.base.Message;
-import gov.nysenate.ess.core.service.notification.base.message.componet.UTF8PaintText;
+import gov.nysenate.ess.core.service.notification.base.message.component.UTF8PaintText;
 
 import java.awt.*;
 

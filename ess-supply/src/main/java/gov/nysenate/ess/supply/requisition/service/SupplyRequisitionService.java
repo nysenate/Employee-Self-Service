@@ -1,9 +1,9 @@
 package gov.nysenate.ess.supply.requisition.service;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailContent;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailSubject;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailTemplate;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailContent;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailTemplate;
 import gov.nysenate.ess.core.service.notification.email.simple.header.SimpleEmailHeader;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;

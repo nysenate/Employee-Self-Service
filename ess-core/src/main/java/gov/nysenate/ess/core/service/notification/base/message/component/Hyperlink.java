@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.notification.base.message.componet;
+package gov.nysenate.ess.core.service.notification.base.message.component;
 
 import gov.nysenate.ess.core.service.notification.base.message.base.Message;
 import gov.nysenate.ess.core.service.notification.base.message.base.Text;

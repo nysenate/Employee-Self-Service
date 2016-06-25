@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.notification.base.handler.base;
 
 import com.google.common.eventbus.Subscribe;
-import gov.nysenate.ess.core.service.notification.base.handler.exception.UnSupportMessageException;
+import gov.nysenate.ess.core.service.notification.base.handler.exception.UnsupportedMessageException;
 
 /**
  *  message handler class
@@ -13,10 +13,10 @@ public interface Handler<T> {
      * it's used to handle the message.
      *
      * @param message message
-     * @throws UnSupportMessageException throw if the message can not be handled by this handler
+     * @throws UnsupportedMessageException throw if the message can not be handled by this handler
      * @throws ClassNotFoundException    throw if the message can not be casted into specific type
      */
     @Subscribe
-    void handle(T message) throws UnSupportMessageException, ClassNotFoundException;
+    void handle(T message) throws UnsupportedMessageException, ClassNotFoundException;
 
 }

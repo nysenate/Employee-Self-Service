@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.notification.email.simple.message;
 
 import gov.nysenate.ess.core.service.notification.base.handler.base.Handler;
-import gov.nysenate.ess.core.service.notification.base.handler.exception.UnSupportMessageException;
+import gov.nysenate.ess.core.service.notification.base.handler.exception.UnsupportedMessageException;
 import gov.nysenate.ess.core.service.notification.email.simple.service.SimpleEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class SimpleEmailHandler implements Handler<SimpleEmailMessage> {
     SimpleEmailService simpleEmailService;
 
     @Override
-    public void handle(SimpleEmailMessage message) throws UnSupportMessageException, ClassNotFoundException {
+    public void handle(SimpleEmailMessage message) throws UnsupportedMessageException, ClassNotFoundException {
         simpleEmailService.delivery(message);
     }
 }

@@ -3,7 +3,7 @@ package gov.nysenate.ess.supply.util.mail;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.notification.base.message.base.Component;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailSubject;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
 import gov.nysenate.ess.core.service.notification.email.simple.header.SimpleEmailHeader;
 import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailHandler;
 import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailMessage;

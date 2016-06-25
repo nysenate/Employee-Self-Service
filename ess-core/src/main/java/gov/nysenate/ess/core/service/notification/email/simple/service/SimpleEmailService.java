@@ -4,9 +4,9 @@ import gov.nysenate.ess.core.service.mail.MimeSendMailService;
 import gov.nysenate.ess.core.service.notification.NotificationUtils;
 import gov.nysenate.ess.core.service.notification.base.handler.base.DeliverServices;
 import gov.nysenate.ess.core.service.notification.base.message.base.Component;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailContent;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailSubject;
-import gov.nysenate.ess.core.service.notification.email.simple.componet.SimpleEmailTemplate;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailContent;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
+import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailTemplate;
 import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailMessage;
 import org.springframework.stereotype.Service;
 
