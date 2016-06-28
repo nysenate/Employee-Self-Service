@@ -180,7 +180,7 @@ public class EssAuthenticationFilter extends AuthenticationFilter
             redirectUrl = savedRequest.getRequestUrl();
         }
         if (redirectUrl.contains("api")) { // if the savedRequest is an API call, then we reset it to default page
-            redirectUrl = "/";
+            redirectUrl = getLoginUrl();
         }
         return redirectUrl;
     }
