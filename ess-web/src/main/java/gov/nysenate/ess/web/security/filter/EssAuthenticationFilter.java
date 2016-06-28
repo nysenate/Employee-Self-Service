@@ -1,9 +1,9 @@
 package gov.nysenate.ess.web.security.filter;
 
+import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
-import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -178,6 +178,9 @@ public class EssAuthenticationFilter extends AuthenticationFilter
         SavedRequest savedRequest = WebUtils.getAndClearSavedRequest(request);
         if (savedRequest != null && savedRequest.getMethod().equalsIgnoreCase(GET_METHOD)) {
             redirectUrl = savedRequest.getRequestUrl();
+        }
+        if (redirectUrl.contains("api")) { // if the savedRequest is an API call, then we reset it to default page
+            redirectUrl = "/";
         }
         return redirectUrl;
     }
