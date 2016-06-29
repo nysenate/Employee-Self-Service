@@ -346,15 +346,6 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <% /** Modals for validation. */%>
-    <div ng-if="isOpen('validate-indicator')" class="save-progress-modal">
-      <div ng-show="state.pageState === pageStates.VALIDATE_FAILURE">
-        <h3 class="content-info" style="margin-bottom:0;">Time record has errors</h3>
-        <h4>Your record has not been saved.</h4>
-        <h4>Errors must be fixed before you can continue.</h4>
-        <input ng-click="closeModal()" class="reject-button" type="button" value="Go back to ESS"/>
-      </div>
-    </div>
     <% /** Modals for record save. */ %>
     <div ng-if="isOpen('save-indicator')" class="save-progress-modal">
       <div ng-show="state.pageState === pageStates.SAVING">
@@ -367,38 +358,12 @@
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been saved.</h3>
         <h4>What would you like to do next?</h4>
         <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
-        <input ng-click="closeModal()" class="submit-button" type="button" value="Go back to ESS"/>
+        <input ng-click="resolveModal()" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
     </div>
     <% /** Modals for record submission. */ %>
     <div ng-if="isOpen('submit-indicator')">
-      <div ng-if="state.pageState === pageStates.SUBMIT_WARNING"
-           ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
-              expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
-        <h3 class="content-info" style="margin-bottom:0;">
-          Hours entered are less than pay period requirement
-        </h3>
-        <div style="padding: 20px; text-align: left;">
-          <p ng-show="serviceSurplus >= expectedDifference">
-            Warning: You are attempting to use {{expectedDifference}}
-            excess hours.
-          </p>
-          <div ng-show="serviceSurplus < expectedDifference">
-            <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
-            <div style="display: flex; justify-content: space-around">
-                <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
-                <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
-                <span class="bold">Year To Date {{ serviceSurplus < 0 ? "Deficit" : "Excess" }}: {{serviceSurplus}} hrs.</span>
-            </div>
-          </div>
-          <hr/>
-          <div style="text-align: center;">
-            <input ng-click="state.pageState = pageStates.SUBMIT_ACK" class="submit-button" style="margin-right: 20px;"
-                   type="button" value="Proceed"/>
-            <input ng-click="closeModal()" class="reject-button" type="button" value="Cancel"/>
-          </div>
-        </div>
-      </div>
+
       <div ng-show="state.pageState === pageStates.SUBMIT_ACK">
         <h3 class="content-info" style="margin-bottom:0;">
           Before submitting, you must acknowledge the following:
@@ -420,7 +385,7 @@
           <hr/>
           <div style="text-align: center;">
             <input ng-click="submitRecord()" class="submit-button" style="margin-right: 20px;" type="button" value="I agree"/>
-            <input ng-click="closeModal()" class="reject-button" type="button" value="Cancel"/>
+            <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
           </div>
         </div>
       </div>
@@ -436,6 +401,50 @@
         <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
         <input ng-click="finishSubmitModal()" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
+    </div>
+  <div ng-if="isOpen('expectedhrs-dialog')" class="save-progress-modal">
+    <div ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
+              expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
+      <h3 class="content-info" style="margin-bottom:0;">
+        Hours entered are less than pay period requirement
+      </h3>
+      <div style="padding: 20px; text-align: left;">
+        <p ng-show="serviceSurplus >= expectedDifference">
+          Warning: You are attempting to use {{expectedDifference}}
+          excess hours.
+        </p>
+        <div ng-show="serviceSurplus < expectedDifference">
+          <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
+          <div style="display: flex; justify-content: space-around">
+            <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
+            <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
+            <span class="bold">Year To Date {{ serviceSurplus < 0 ? "Deficit" : "Excess" }}: {{serviceSurplus}} hrs.</span>
+          </div>
+        </div>
+        <hr/>
+        <div style="text-align: center;">
+          <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;"
+                 type="button" value="Proceed"/>
+          <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
+        </div>
+      </div>
+    </div>
+   </div>
+   <div ng-if="isOpen('futureenddt-dialog')" class="save-progress-modal">
+      <h3 class="content-info" style="margin-bottom:0;">
+       Timesheet with a Future End Date
+      </h3>
+      <div style="padding: 20px; text-align: left;">
+        <div>
+          <p>Warning: You are attempting to submit a timesheet with a Future End Date.</p>
+          <p>Do you want to continue?</p>
+        </div>
+        <hr/>
+        <div style="text-align: center;">
+          <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;"
+                 type="button" value="Yes"/>
+          <input ng-click="rejectModal()" class="reject-button" type="button" value="No"/>
+        </div>
     </div>
   </div>
 </div>

@@ -37,6 +37,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/text-auto-height-directive.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/round-filter.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/common/err-src-directive.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/common/promise-utils.js"></script>
 
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">

@@ -3,10 +3,10 @@ var essApp = angular.module('ess')
                                               'ActiveTimeRecordsApi', 'TimeRecordsApi', 'AccrualPeriodApi',
                                               'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi',
                                               'activeTimeEntryRow', 'RecordUtils', 'LocationService', 'modals',
-                                              recordEntryCtrl]);
+                                              'promiseUtils', recordEntryCtrl]);
 
 function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordsApi, accrualPeriodApi,
-                         allowanceApi, miscLeaveGrantApi, holidayApi, activeRow, recordUtils, locationService, modals) {
+                         allowanceApi, miscLeaveGrantApi, holidayApi, activeRow, recordUtils, locationService, modals, promiseUtils) {
 
     function getInitialState() {
         return {
@@ -142,9 +142,18 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
         // Open the modal to indicate save/submit
         else if (submit) {
-            $scope.state.pageState = $scope.expectedHoursEntered()
-                    ?  $scope.pageStates.SUBMIT_ACK : $scope.pageStates.SUBMIT_WARNING;
-            modals.open('submit-indicator', {'record': record});
+            $scope.state.pageState =  $scope.pageStates.SUBMIT_ACK;
+            var modalDialogs = getSubmitDialogs();
+
+            if (modalDialogs && modalDialogs.length > 0 ){
+                promiseUtils.serial(modalDialogs).then(function (){
+                    modals.open('submit-indicator', {'record': record});
+                });
+            }
+            else {
+                modals.open('submit-indicator', {'record': record});
+            }
+
         }
         else {
             modals.open('save-indicator', {'record': record});
@@ -157,6 +166,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 record.dirty = false;
                 $scope.state.pageState = $scope.pageStates.SAVED;
             }, function (resp) {
+                modals.reject('save-indicator');
                 if (resp.status === 400) {
                     // todo invalid record response
                     modals.open('500', {details: resp});
@@ -295,9 +305,17 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
     /**
      * Closes any open modals by resolving them.
      */
-    $scope.closeModal = function() {
-        modals.resolve();
+    $scope.resolveModal = function (result) {
+        modals.resolve(result);
     };
+
+    /**
+     * Closes any open modals by rejecting them.
+     */
+    $scope.rejectModal = function (reason) {
+        modals.reject(reason);
+    };
+
 
     /**
      * Returns true if the given date falls on a weekend.
@@ -337,7 +355,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var record = $scope.getSelectedRecord();
         return $scope.recordValid() &&
                !$scope.selRecordHasRecordErrors() &&
-               !moment(record.endDate).isAfter(moment(), 'day');
+               !moment(record.beginDate).isAfter(moment(), 'day');
     };
 
     /**
@@ -426,6 +444,23 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
         return $scope.state.accrual.biWeekHrsExpected <= $scope.state.totals.raSaTotal;
     };
+
+    /**
+     * Checks if the hour total of the annual entries for the selected record
+     * is greater than or equal to the biweekly expected hours for the selected pay period
+     * @returns {boolean}
+     */
+    $scope.futureEndDate = function() {
+        var record = $scope.getSelectedRecord();
+
+        if (moment(record.endDate).isAfter(moment(), 'day')) {
+            return true;
+        }
+        else {
+            false;
+        }
+    };
+
 
     /**
      * Return a misc leave predicate function that will determine if a misc leave can be used on the given date
@@ -601,6 +636,25 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
 
     function isSalariedEmployee(entry) {
         return entry.payType === 'RA' || entry.payType === 'SA';
+    }
+
+
+    function getSubmitDialogs() {
+        var submitDialogs = [];
+        if (!$scope.expectedHoursEntered()) {
+            submitDialogs.push(function () {
+                return modals.open("expectedhrs-dialog");
+            });
+
+        };
+
+        if ($scope.futureEndDate()) {
+            submitDialogs.push(function () {
+                return  modals.open("futureenddt-dialog");
+            });
+        };
+
+        return submitDialogs
     }
 
     /** --- Validation --- **/
