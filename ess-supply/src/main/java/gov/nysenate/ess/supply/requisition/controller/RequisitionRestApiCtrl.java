@@ -120,6 +120,37 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
+
+    /**
+     * Call this api to add a new {@link RequisitionVersion} to a {@link Requisition} and save it.
+     * The new version to be saved should be set as the requisitionView.activeVersion.
+     * No other data in the RequisitionView should be touched.
+     *
+     * @param id              The id of the requisition.
+     * @param requisitionView A view containing requisition meta data along with the version to be saved.
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+        requisitionView.getActiveVersion().setCreatedBy(getSubjectEmployeeView());
+        requisitionView.getActiveVersion().setId(0);
+        requisitionService.updateRequisition(id, requisitionView.getActiveVersion().toRequisitionVersion(),
+                                             requisitionView.getModifiedDateTime());
+    }
+
+    @RequestMapping("/{id}/undoReject")
+    public void undoRejection(@PathVariable int id) {
+        // TODO: this is not setting the correct created by employee.
+        Requisition requisition = requisitionService.getRequisitionById(id);
+        requisitionService.undoRejection(requisition);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConcurrentRequisitionUpdateException.class)
+    @ResponseBody
+    public ErrorResponse handleConcurrentRequisitionUpdate(ConcurrentRequisitionUpdateException ex) {
+        return new ErrorResponse(ErrorCode.REQUISITION_UPDATE_CONFLICT);
+    }
+
     /**
      * @return the LocalDateTime represented by {@code from} or a LocalDateTime from one month ago if from is null.
      */
@@ -149,37 +180,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         }
         return EnumSet.copyOf(statusList);
     }
-
-    /**
-     * Call this api to add a new {@link RequisitionVersion} to a {@link Requisition} and save it.
-     * The new version to be saved should be set as the requisitionView.activeVersion.
-     * No other data in the RequisitionView should be touched.
-     *
-     * @param id The id of the requisition.
-     * @param requisitionView A view containing requisition meta data along with the version to be saved.
-     */
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
-        requisitionView.getActiveVersion().setCreatedBy(getSubjectEmployeeView());
-        requisitionView.getActiveVersion().setId(0);
-        requisitionService.updateRequisition(id, requisitionView.getActiveVersion().toRequisitionVersion(),
-                                             requisitionView.getModifiedDateTime());
-    }
-
-    @RequestMapping("/{id}/undoReject")
-    public void undoRejection(@PathVariable int id) {
-        // TODO: this is not setting the correct created by employee.
-        Requisition requisition = requisitionService.getRequisitionById(id);
-        requisitionService.undoRejection(requisition);
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(ConcurrentRequisitionUpdateException.class)
-    @ResponseBody
-    public ErrorResponse handleConcurrentRequisitionUpdate(ConcurrentRequisitionUpdateException ex) {
-        return new ErrorResponse(ErrorCode.REQUISITION_UPDATE_CONFLICT);
-    }
-
 
     private EmployeeView getSubjectEmployeeView() {
         return new EmployeeView(getModifiedBy());

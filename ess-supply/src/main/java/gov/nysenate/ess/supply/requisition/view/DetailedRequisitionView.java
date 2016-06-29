@@ -4,6 +4,8 @@ import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.TreeMap;
@@ -11,6 +13,7 @@ import java.util.TreeMap;
 /**
  * Adds requisition history to a {@link RequisitionView}.
  */
+@XmlRootElement
 public class DetailedRequisitionView extends RequisitionView {
 
     protected MapView<LocalDateTime, RequisitionVersionView> history;
@@ -26,6 +29,7 @@ public class DetailedRequisitionView extends RequisitionView {
         this.history = MapView.of(historyMap);
     }
 
+    @XmlElement
     public MapView<LocalDateTime, RequisitionVersionView> getHistory() {
         return history;
     }
