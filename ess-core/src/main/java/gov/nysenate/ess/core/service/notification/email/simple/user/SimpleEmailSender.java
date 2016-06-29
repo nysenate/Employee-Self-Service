@@ -4,7 +4,8 @@ import gov.nysenate.ess.core.model.personnel.Person;
 import gov.nysenate.ess.core.service.notification.base.header.userType.Sender;
 
 /**
- * Created by senateuser on 6/15/2016.
+ *  Simple email sender
+ * Created by Chenguang He on 6/14/2016.
  */
 public class SimpleEmailSender implements Sender {
     private Person person;

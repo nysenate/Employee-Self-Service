@@ -1,6 +1,8 @@
 package gov.nysenate.ess.core.dao.unit;
 
 import com.google.common.collect.ImmutableCollection;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
@@ -18,4 +20,9 @@ public interface LocationDao {
      * @return all locations with codes that contain the given <code>term</code>.
      */
     ImmutableCollection<Location> searchLocations(String term);
+
+    /**
+     * Get locations that are managed by the give {@code responsibilityHead}.
+     */
+    List<Location> getLocationsUnderResponsibilityHead(ResponsibilityHead responsibilityHead);
 }

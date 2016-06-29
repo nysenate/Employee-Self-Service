@@ -14,6 +14,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.paginate = angular.extend({}, paginationModel);
 
     $scope.filter = {
+        searchTerm: "",
         categories: []
     };
 
@@ -26,25 +27,37 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Initialization --- */
 
     $scope.init = function () {
+        $scope.state = $scope.states.LOADING;
         $scope.paginate.itemsPerPage = 16;
-        $scope.destinationCode = destinationService.getDefaultCode();
-        initializeState();
-        manageUrlParams();
-        initializeShoppingCart();
+        updateFiltersFromUrlParams();
+        if (!destinationService.isDestinationConfirmed()) {
+            loadDestinationInfo();
+        }
+        else {
+            loadShoppingInfo();
+        }
     };
 
     $scope.init();
 
     /** --- State --- */
 
-    function initializeState() {
-        $scope.state = $scope.states.SELECTING_DESTINATION;
-        if (destinationService.isDestinationConfirmed()) {
-            transitionToShoppingState();
-        }
+    function loadDestinationInfo() {
+        locationAutocompleteService.initWithResponsibilityHeadLocations()
+            .then(destinationService.queryDefaultDestination)
+            .then(setDestinationCode)
+            .then(setToSelectingDestinationState);
     }
 
-    function transitionToShoppingState() {
+    function setDestinationCode() {
+        $scope.destinationCode = destinationService.getDefaultCode();
+    }
+
+    function setToSelectingDestinationState() {
+        $scope.state = $scope.states.SELECTING_DESTINATION;
+    }
+
+    function loadShoppingInfo() {
         $scope.state = $scope.states.LOADING;
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(filterAllowances)
@@ -52,24 +65,30 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function filterAllowances() {
-        $scope.displayAllowances = allowanceService.getFilteredAllowances($scope.filter.categories);
+        $scope.displayAllowances = allowanceService.getFilteredAllowances($scope.filter.categories, $scope.filter.searchTerm);
     }
 
     function setToShoppingState() {
         $scope.state = $scope.states.SHOPPING;
     }
 
+    /** --- Search --- */
+
+    $scope.search = function () {
+        filterAllowances();
+    };
+
+    /** --- Navigation --- */
+
     /**
      * Synchronizes the categories and currPage objects with the values in the url.
      */
-    function manageUrlParams() {
+    function updateFiltersFromUrlParams() {
         $scope.filter.categories = locationService.getSearchParam("category") || [];
         $scope.paginate.currPage = locationService.getSearchParam("page") || 1;
         // Set page param. This ensures it gets set to 1 if it was never previously set.
         locationService.setSearchParam("page", $scope.paginate.currPage, true, true);
     }
-
-    /** --- Navigation --- */
 
     /**
      * Set the page url parameter when the user changes the page.
@@ -85,16 +104,12 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
      */
     $scope.$on('$locationChangeStart', function (event, newUrl) {
         if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
-            manageUrlParams();
+            updateFiltersFromUrlParams();
             filterAllowances();
         }
     });
 
     /** --- Shopping --- */
-
-    function initializeShoppingCart() {
-        supplyCart.init();
-    }
 
     $scope.addToCart = function (allowance) {
         // If more is selected, display
@@ -144,7 +159,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.confirmDestination = function () {
         var success = destinationService.setDestination($scope.destinationCode);
         if (success) {
-            transitionToShoppingState();
+            loadShoppingInfo();
         }
     };
 

@@ -4297,7 +4297,7 @@ input[type="number"]:focus {
 input[type="button"].submit-button {
   padding: 5px 10px;
   background: #799933;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #5b7326;
   border-bottom-style: solid;
@@ -4319,7 +4319,7 @@ input[type="button"].submit-button:hover {
 input[type="button"].reject-button {
   padding: 5px 10px;
   background: #e64727;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #c33417;
   border-bottom-style: solid;
@@ -4341,7 +4341,7 @@ input[type="button"].reject-button:hover {
 input[type="button"].neutral-button {
   padding: 5px 10px;
   background: #808080;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #676767;
   border-bottom-style: solid;
@@ -4363,7 +4363,7 @@ input[type="button"].neutral-button:hover {
 input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #006b80;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #00404d;
   border-bottom-style: solid;
@@ -4597,7 +4597,7 @@ table.simple-table tbody tr td {
 .hero-404 h4,
 .hero-404 p,
 .hero-404 span {
-  color: white;
+  color: #ffffff;
 }
 /** --- Home Page --- */
 .ess-top-header {
@@ -4947,7 +4947,7 @@ table.simple-table tbody tr td {
 .time-attendance-hero h4,
 .time-attendance-hero p,
 .time-attendance-hero span {
-  color: white;
+  color: #ffffff;
 }
 table.time-record-entry-table thead {
   background: white;
@@ -5614,7 +5614,7 @@ record-review-modal,
 .my-info-hero h4,
 .my-info-hero p,
 .my-info-hero span {
-  color: white;
+  color: #ffffff;
 }
 /** --- Paycheck History Page --- */
 #paycheck-history-table tbody tr {
@@ -5811,7 +5811,7 @@ input[type="number"]:focus {
 input[type="button"].submit-button {
   padding: 5px 10px;
   background: #799933;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #5b7326;
   border-bottom-style: solid;
@@ -5833,7 +5833,7 @@ input[type="button"].submit-button:hover {
 input[type="button"].reject-button {
   padding: 5px 10px;
   background: #e64727;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #c33417;
   border-bottom-style: solid;
@@ -5855,7 +5855,7 @@ input[type="button"].reject-button:hover {
 input[type="button"].neutral-button {
   padding: 5px 10px;
   background: #808080;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #676767;
   border-bottom-style: solid;
@@ -5877,7 +5877,7 @@ input[type="button"].neutral-button:hover {
 input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #006b80;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #00404d;
   border-bottom-style: solid;
@@ -6111,7 +6111,7 @@ table.simple-table tbody tr td {
 .hero-404 h4,
 .hero-404 p,
 .hero-404 span {
-  color: white;
+  color: #ffffff;
 }
 /** --- Home Page --- */
 .ess-top-header {
@@ -6461,7 +6461,7 @@ table.simple-table tbody tr td {
 .time-attendance-hero h4,
 .time-attendance-hero p,
 .time-attendance-hero span {
-  color: white;
+  color: #ffffff;
 }
 table.time-record-entry-table thead {
   background: white;
@@ -7128,7 +7128,7 @@ record-review-modal,
 .my-info-hero h4,
 .my-info-hero p,
 .my-info-hero span {
-  color: white;
+  color: #ffffff;
 }
 /** --- Paycheck History Page --- */
 #paycheck-history-table tbody tr {
@@ -8165,7 +8165,7 @@ button.ui-button::-moz-focus-inner {
 .supply-order-hero h4,
 .supply-order-hero p,
 .supply-order-hero span {
-  color: white;
+  color: #ffffff;
 }
 .dark-blue-purple {
   color: #374282;

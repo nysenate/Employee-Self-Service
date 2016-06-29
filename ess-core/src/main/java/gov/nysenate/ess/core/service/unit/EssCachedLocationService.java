@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class EssCachedLocationService implements LocationService {
+public class EssCachedLocationService implements LocationService, CachingService<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(EssCachedLocationService.class);
     private static final String LOCATION_CACHE_KEY = "location";
@@ -52,21 +53,55 @@ public class EssCachedLocationService implements LocationService {
     @PostConstruct
     public void init() {
         this.eventBus.register(this);
-        this.locationCache = this.cacheManageService.registerEternalCache(ContentCache.LOCATION.name());
+        this.locationCache = this.cacheManageService.registerEternalCache(getCacheType().name());
         if (this.cacheManageService.isWarmOnStartup()) {
             cacheLocations();
         }
     }
 
+    /** --- Location Service Implemented Methods --- */
+
+    /** {@inheritDoc} */
     @Override
     public Location getLocation(LocationId locId) {
         return getLocationCacheTree().getLocation(locId);
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<Location> getLocations() {
         return getLocationCacheTree().getLocations();
     }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService */
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.LOCATION;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(String key) {
+        locationCache.remove(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        locationCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        cacheLocations();
+    }
+
+    /** --- Internal Methods --- */
 
     private LocationCacheTree getLocationCacheTree() {
         Element element = getCachedLocationMap();

@@ -3,6 +3,7 @@ package gov.nysenate.ess.seta.service.attendance;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -44,7 +45,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class, adding caching")
-public class EssCachedTimeRecordService extends SqlDaoBaseService implements TimeRecordService
+public class EssCachedTimeRecordService extends SqlDaoBaseService implements TimeRecordService, CachingService<Integer>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedTimeRecordService.class);
 
@@ -67,7 +68,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     @PostConstruct
     public void init() {
         this.eventBus.register(this);
-        this.activeRecordCache = this.cacheManageService.registerEternalCache(ContentCache.ACTIVE_TIME_RECORDS.name());
+        this.activeRecordCache = this.cacheManageService.registerEternalCache(getCacheType().name());
     }
 
     /** Helper class to store a collection of time records in a cache. */
@@ -221,6 +222,34 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                 }
             }
         }
+    }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService */
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.ACTIVE_TIME_RECORDS;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(Integer supId) {
+        activeRecordCache.remove(supId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        activeRecordCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        // No warming for this cache
     }
 
     /** --- Internal Methods --- */

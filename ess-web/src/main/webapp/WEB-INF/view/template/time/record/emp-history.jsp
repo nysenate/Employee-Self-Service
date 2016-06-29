@@ -2,7 +2,7 @@
 
 <section ng-controller="EmpRecordHistoryCtrl">
     <div class="time-attendance-hero">
-        <h2>Employee Time Record History</h2>
+        <h2>Employee Attendance History</h2>
     </div>
     <div class="content-container content-controls">
         <p class="content-info">View Attendance Records for Employee &nbsp;
@@ -40,7 +40,7 @@
                     Time records that have been submitted for pay periods during
                     {{state.selectedRecYear}} are listed in the table below.
                     <br/>
-                    You can view details about each pay period by clicking the 'View Details' link to the right.
+                    You can view details about each pay period by clicking the row.
                     <span ng-show="state.paperTimesheetsDisplayed">
                         <br>
                         <span class="bold">Note:</span>

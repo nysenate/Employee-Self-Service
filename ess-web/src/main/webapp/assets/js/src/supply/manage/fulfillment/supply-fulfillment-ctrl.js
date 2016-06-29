@@ -181,21 +181,14 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
 
     /** --- Highlighting --- */
 
-    $scope.highlightShipment = function (requisition) {
+    $scope.highlightRequisition = function (requisition) {
         var highlight = false;
-        // TODO highlighting logic has changed, this needs to be updated.
-        // angular.forEach(requisition.activeVersion.lineItems, function (lineItem) {
-        //     if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
-        //         highlight = true;
-        //     }
-        // });
+        angular.forEach(requisition.activeVersion.lineItems, function (lineItem) {
+            if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
+                highlight = true;
+            }
+        });
         return highlight;
-    };
-
-    $scope.highlightLineItem = function (lineItem) {
-        // TODO highlighting logic has changed, this needs to be updated.
-        // return lineItem.quantity > lineItem.item.suggestedMaxQty
-        return false;
     };
 
     /** --- Modals --- */

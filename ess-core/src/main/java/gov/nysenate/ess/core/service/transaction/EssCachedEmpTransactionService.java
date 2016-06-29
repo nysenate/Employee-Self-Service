@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryMissingEx;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -24,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class EssCachedEmpTransactionService implements EmpTransactionService
+public class EssCachedEmpTransactionService implements EmpTransactionService, CachingService<Integer>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmpTransactionService.class);
 
@@ -39,7 +40,7 @@ public class EssCachedEmpTransactionService implements EmpTransactionService
     @PostConstruct
     public void init() {
         eventBus.register(this);
-        transCache = ehCacheManageService.registerEternalCache(ContentCache.TRANSACTION.name());
+        transCache = ehCacheManageService.registerEternalCache(getCacheType().name());
         lastUpdateDateTime = transactionDao.getMaxUpdateDateTime();
         lastCheckTime = LocalDateTime.now();
     }
@@ -66,6 +67,36 @@ public class EssCachedEmpTransactionService implements EmpTransactionService
         if (cachedElem == null) putTransactionHistoryInCache(empId, transactionHistory);
         return transactionHistory;
     }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService*/
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.TRANSACTION;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(Integer empId) {
+        transCache.remove(empId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        transCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        // No cache warming for transaction service
+    }
+
+    /** --- Internal Methods --- */
 
     private TransactionHistory getTransHistoryFromDao(int empId) {
         return transactionDao.getTransHistory(empId, EmpTransDaoOption.INITIALIZE_AS_APP);

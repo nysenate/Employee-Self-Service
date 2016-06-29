@@ -5,6 +5,29 @@ function locationAllowanceService(allowanceApi, supplyUtils) {
 
     var allowances = undefined;
 
+    function filterAllowancesByCategories(allowances, categories) {
+        if (categories.length === 0) {
+            return allowances;
+        }
+        var filtered = [];
+        angular.forEach(allowances, function (allowance) {
+            if (categories.indexOf(allowance.item.category.name) !== -1) {
+                filtered.push(allowance);
+            }
+        });
+        return filtered;
+    }
+
+    function filterAllowancesBySearch(allowances, searchTerm) {
+        var filtered = [];
+        angular.forEach(allowances, function (allowance) {
+            if (allowance.item.description.indexOf(searchTerm.toUpperCase()) !== -1) {
+                filtered.push(allowance);
+            }
+        });
+        return filtered
+    }
+
     return {
         queryLocationAllowance: function (location) {
             return allowanceApi.get({id: location.locId}, function (response) {
@@ -12,18 +35,9 @@ function locationAllowanceService(allowanceApi, supplyUtils) {
             }).$promise;
         },
 
-        getFilteredAllowances: function (categories) {
-            // If no categories given, return all allowances.
-            if (categories.length === 0) {
-                return allowances;
-            }
-            var filteredAllowances = [];
-            angular.forEach(allowances, function (allowance) {
-                if (categories.indexOf(allowance.item.category.name) !== -1) {
-                    filteredAllowances.push(allowance);
-                }
-            });
-            return filteredAllowances;
+        /** Returns allowances belonging to one of the given categories and a description containing the searchTerm. */
+        getFilteredAllowances: function (categories, searchTerm) {
+            return filterAllowancesBySearch(filterAllowancesByCategories(angular.copy(allowances), categories), searchTerm);
         },
 
         getAllowances: function () {

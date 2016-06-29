@@ -35,7 +35,7 @@ var essSupply = angular.module('essSupply')
                 $scope.displayedVersion = angular.copy($scope.shipment.activeVersion);
                 $scope.dirtyLocationCode = $scope.displayedVersion.destination.code;
                 $scope.locationSearch.map = locationAutocompleteService.getCodeToLocationMap();
-                $scope.locationAutocompleteOptions = locationAutocompleteService.getLocationAutocompleteOptions();
+                $scope.locationAutocompleteOptions = locationAutocompleteService.getLocationAutocompleteOptions(100);
                 initializeAddItemFeature();
             };
 
@@ -95,6 +95,11 @@ var essSupply = angular.module('essSupply')
                 modals.reject();
             };
 
+            /** Determines if a line item should be highlighted in the editable-order-listing.jsp */
+            $scope.highlightLineItem = function (lineItem) {
+                return lineItem.quantity > lineItem.item.suggestedMaxQty;
+            };
+
             /** --- Location Autocomplete --- */
 
             /**
@@ -140,6 +145,7 @@ var essSupply = angular.module('essSupply')
                     focusOpen: false,
                     onlySelectValid: true,
                     outHeight: 50,
+                    minLength: 0,
                     source: function (request, response) {
                         var data = $scope.addItemFeature.commodityCodes;
                         data = $scope.addItemAutocompleteOptions.methods.filter(data, request.term);
@@ -150,6 +156,12 @@ var essSupply = angular.module('essSupply')
                             })
                         }
                         response(data);
+                    },
+                    // Remove jquery help messages.
+                    messages: {
+                        noResults: '',
+                        results: function () {
+                        }
                     }
                 },
                 methods: {}

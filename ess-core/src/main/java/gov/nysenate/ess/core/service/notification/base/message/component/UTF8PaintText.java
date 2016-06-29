@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.notification.base.message.componet;
+package gov.nysenate.ess.core.service.notification.base.message.component;
 
 import gov.nysenate.ess.core.service.notification.base.message.base.Text;
 
@@ -6,7 +6,8 @@ import java.awt.*;
 import java.nio.charset.Charset;
 
 /**
- * Created by senateuser on 6/14/2016.
+ * UTF8 encoded text
+ * Created by Chenguang He on 6/14/2016.
  */
 public abstract class UTF8PaintText implements Text {
 
@@ -19,6 +20,12 @@ public abstract class UTF8PaintText implements Text {
     private UTF8PaintText() {
     }
 
+    /**
+     * the constructor
+     *
+     * @param color   the color
+     * @param content the content
+     */
     public UTF8PaintText(Color color, String content) {
         this.color = color;
         this.content = content;
@@ -30,40 +37,23 @@ public abstract class UTF8PaintText implements Text {
         return "utf-8";
     }
 
-    @Override
-    @Deprecated
-    public void setEncoding(String encoding) {
-    }
 
     @Override
     public String getContent() {
         return content;
     }
 
-    @Override
-    public void setContent(String s) {
-        content = s;
-        Charset.forName("UTF-8").encode(content);
-    }
 
     @Override
     public Color getColor() {
         return color;
     }
 
-    @Override
-    public void setColor(Color color) {
-        this.color = color;
-    }
 
     @Override
     public int getComponetId() {
         return id;
     }
 
-    @Override
-    public void setComponetId(int id) {
-        this.id = Integer.valueOf(id);
-    }
 
 }

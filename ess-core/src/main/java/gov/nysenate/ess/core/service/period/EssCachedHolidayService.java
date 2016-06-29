@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.dao.period.HolidayDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.period.Holiday;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -23,7 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class EssCachedHolidayService implements HolidayService
+public class EssCachedHolidayService implements HolidayService, CachingService<String>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedHolidayService.class);
     private static final String HOLIDAY_CACHE_KEY = "holiday";
@@ -55,7 +56,7 @@ public class EssCachedHolidayService implements HolidayService
     @PostConstruct
     public void init() {
         this.eventBus.register(this);
-        this.holidayCache = this.cacheManageService.registerEternalCache(ContentCache.HOLIDAY.name());
+        this.holidayCache = this.cacheManageService.registerEternalCache(getCacheType().name());
         if (this.cacheManageService.isWarmOnStartup()) {
             cacheHolidays();
         }
@@ -77,6 +78,36 @@ public class EssCachedHolidayService implements HolidayService
         }
         return holidays;
     }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService*/
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.HOLIDAY;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(String key) {
+        holidayCache.remove(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        holidayCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        cacheHolidays();
+    }
+
+    /** --- Internal Methods --- */
 
     private HolidayCacheTree getHolidayCacheTree(boolean createIfEmpty) {
         holidayCache.acquireReadLockOnKey(HOLIDAY_CACHE_KEY);

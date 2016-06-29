@@ -38,6 +38,15 @@
   <%--Ordering--%>
   <div ng-show="state === states.SHOPPING">
     <div class="content-container">
+      <%--Search--%>
+      <div class="padding-10" style="text-align: center">
+        <form>
+          <input type="text"
+                 ng-model="filter.searchTerm">
+          <input class="submit-button" ng-click="search()" type="submit" value="Search">
+        </form>
+      </div>
+
       <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
                                boundary-links="true" max-size="10"></dir-pagination-controls>
     </div>

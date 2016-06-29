@@ -27,7 +27,7 @@ public class EmpAccrualState
     public EmpAccrualState(AccrualState accrualState) {
         if (accrualState != null) {
             this.payPeriodCount = accrualState.payPeriodCount;
-            this.employeeActive = accrualState.employeeActive;
+            this.employeeActive = accrualState.empAccruing;
             this.payType = accrualState.payType;
             this.minTotalHours = accrualState.minTotalHours;
             this.minHoursToEnd = accrualState.minHoursToEnd;

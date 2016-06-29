@@ -16,8 +16,7 @@
   <div class="content-container" ng-show="records.employee.length > 0">
     <h1>Active Attendance Records</h1>
     <p class="content-info">The following time records are in progress or awaiting submission.
-      <br/>You can edit a record by clicking the 'Edit' link to
-      the right.</p>
+      <br/>You can edit a record by clicking the row</p>
     <div class="padding-10">
       <table id="attendance-active-table" class="ess-table attendance-listing-table"
              ng-model="records.employee">

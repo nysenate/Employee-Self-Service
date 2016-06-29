@@ -99,7 +99,7 @@
             <div ng-show="state.projections[state.selectedYear].length > 0">
                 <p class="content-info">
                     The following hours are projected and can be adjusted as time records are processed.<br/>
-                    Toggle the hours in the 'Use' column to get the projected available hours. No changes will be saved.
+                    Enter hours into the 'Use' column to view projected available hours. No changes will be saved.
                 </p>
                 <div class="padding-10">
                     <table class="detail-acc-history-table projections" float-thead-enabled=true

@@ -5,12 +5,14 @@ import com.google.common.collect.TreeRangeSet;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.*;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.model.unit.LocationType;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.service.unit.LocationService;
@@ -18,8 +20,6 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Service
-public class EssCachedEmployeeInfoService implements EmployeeInfoService
+public class EssCachedEmployeeInfoService implements EmployeeInfoService, CachingService<Integer>
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedEmployeeInfoService.class);
 
@@ -52,9 +52,13 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
     @PostConstruct
     protected void init() {
         this.eventBus.register(this);
-        this.empCache = this.cacheManageService.registerEternalCache("employees");
+        this.empCache = this.cacheManageService.registerEternalCache(getCacheType().name());
         lastUpdateDateTime = employeeDao.getLastUpdateTime();
     }
+
+    /** Employee Info Service Implemented Methods ---
+     * @see EmployeeInfoService
+     */
 
     /** {@inheritDoc} */
     @Override
@@ -99,6 +103,38 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
             }
         });
         return employedDates;
+    }
+
+    /** --- Caching Service Implemented Methods ---
+     * @see CachingService*/
+
+    /** {@inheritDoc} */
+    @Override
+    public ContentCache getCacheType() {
+        return ContentCache.EMPLOYEE;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictContent(Integer empId) {
+        empCache.remove(empId);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void evictCache() {
+        logger.info("Clearing {} cache..", getCacheType());
+        empCache.removeAll();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void warmCache() {
+        logger.info("Refreshing employee cache..");
+        empCache.removeAll();
+        Set<Employee> activeEmployees = employeeDao.getActiveEmployees();
+        activeEmployees.forEach(this::cacheEmployee);
+        logger.info("Finished refreshing employee cache: {} employees cached", activeEmployees.size());
     }
 
     /** --- Caching Methods --- */
@@ -151,16 +187,6 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService
             logger.debug("cached {} of {} updated employees", cached, updatedEmps.size());
         } else {
             logger.debug("found no updated employees");
-        }
-    }
-
-    public void cacheActiveEmployees() {
-        if (env.acceptsProfiles("!test")) {
-            logger.debug("Refreshing employee cache..");
-            empCache.removeAll();
-            Set<Employee> activeEmployees = employeeDao.getActiveEmployees();
-            activeEmployees.forEach(this::cacheEmployee);
-            logger.debug("Finished refreshing employee cache: {} employees cached", activeEmployees.size());
         }
     }
 
