@@ -15,6 +15,7 @@ public enum TimeRecordErrorCode {
     /** Time Entry errors */
     RECORD_EXCEEDS_ALLOWANCE(20, "The saved record contains time entries that exceed the employees yearly allowance"),
     RECORD_EXCEEDS_ACCRUAL(21, "The saved record contains time entries that exceed the employees accrual"),
+    INVALID_HORULY_INCREMENT(22, "The saved record contains time entries with invalid increments."),
     ;
 
     private int code;
