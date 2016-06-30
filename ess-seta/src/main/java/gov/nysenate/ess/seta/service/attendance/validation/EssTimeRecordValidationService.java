@@ -23,7 +23,6 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     @Autowired private TimeRecordDao timeRecordDao;
 
     @Autowired private PermittedModificationTRV permittedModificationTRV;
-    @Autowired private LifeCycleTRV lifeCycleTRV;
     @Autowired private AllowanceTRV allowanceTRV;
     @Autowired private AccrualTRV accrualTRV;
 
@@ -33,7 +32,6 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     public void init() {
         timeRecordValidators = ImmutableList.<TimeRecordValidator>builder()
                 .add(permittedModificationTRV)
-                .add(lifeCycleTRV)
                 .add(allowanceTRV)
                 .add(accrualTRV)
                 // TODO: ADD SOME more VALIDATORS

@@ -1,6 +1,6 @@
 var essTime = angular.module('essTime');
 
-essTime.controller('EmpRecordHistoryCtrl', ['$scope', '$q', 'appProps',  'ActiveYearsTimeRecordsApi', 'TimeRecordsApi',
+essTime.controller('EmpRecordHistoryCtrl', ['$scope', '$q', 'appProps',  'ActiveYearsTimeRecordsApi', 'TimeRecordApi',
                                             'AttendanceRecordApi', 'SupervisorEmployeesApi', 'modals', 'RecordUtils',
     empRecordHistoryCtrl]);
 

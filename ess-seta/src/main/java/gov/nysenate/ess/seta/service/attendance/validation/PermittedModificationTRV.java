@@ -32,6 +32,7 @@ public class PermittedModificationTRV implements TimeRecordValidator
         }
         TimeRecord prevRecord = previousState.get();
         // Check various user-immutable fields to ensure there are no changeS
+        checkTimeRecordField(record, prevRecord, "recordStatus", "String", TimeRecord::getRecordStatus);
         checkTimeRecordField(record, prevRecord, "timeRecordId", "String", TimeRecord::getTimeRecordId);
         checkTimeRecordField(record, prevRecord, "employeeId", "integer", TimeRecord::getEmployeeId);
         checkTimeRecordField(record, prevRecord, "supervisorId", "integer", TimeRecord::getSupervisorId);

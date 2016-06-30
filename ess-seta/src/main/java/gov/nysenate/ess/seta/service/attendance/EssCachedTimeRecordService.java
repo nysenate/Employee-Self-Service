@@ -8,11 +8,9 @@ import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
+import gov.nysenate.ess.seta.dao.attendance.TimeRecordAuditDao;
 import gov.nysenate.ess.seta.dao.attendance.TimeRecordDao;
-import gov.nysenate.ess.seta.model.attendance.TimeEntry;
-import gov.nysenate.ess.seta.model.attendance.TimeRecord;
-import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
-import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
+import gov.nysenate.ess.seta.model.attendance.*;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
@@ -51,6 +49,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     /** --- Daos --- */
     @Autowired protected TimeRecordDao timeRecordDao;
+    @Autowired protected TimeRecordAuditDao auditDao;
 
     /** --- Caching / Events --- */
     @Autowired protected EventBus eventBus;
@@ -201,6 +200,19 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
             updateCache(record);
         }
         return updated;
+    }
+
+    @Override
+    public boolean saveRecord(TimeRecord record, TimeRecordAction action) {
+        TimeRecordStatus currentStatus = record.getRecordStatus();
+        TimeRecordStatus nextStatus = currentStatus.getResultingStatus(action);
+        record.setRecordStatus(nextStatus);
+        boolean result = saveRecord(record);
+        // Generate an audit record for the time record if a significant action was made on the time record.
+        if (action != TimeRecordAction.SAVE) {
+            auditDao.auditTimeRecord(record.getTimeRecordId());
+        }
+        return result;
     }
 
     @Override

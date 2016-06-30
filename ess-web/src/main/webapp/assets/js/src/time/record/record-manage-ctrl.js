@@ -1,7 +1,7 @@
 var essApp = angular.module('ess');
 
 essApp.controller('RecordManageCtrl', ['$scope', '$q', 'appProps', 'RecordUtils', 'modals', 'badgeService',
-    'SupervisorTimeRecordsApi', 'EmpInfoApi', 'TimeRecordsApi',
+    'SupervisorTimeRecordsApi', 'EmpInfoApi', 'TimeRecordApi',
     recordManageCtrl]);
 
 function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeService, supRecordsApi, empInfoApi, timeRecordsApi) {
@@ -53,15 +53,9 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
         var to = moment().format('YYYY-MM-DD');
         var empId = appProps.user.employeeId;
         supRecordsApi.get({supId: empId, from: from, to: to}, function onSuccess(resp) {
-            if (resp.success) {
-                initializeRecords(resp.result.items);
-                updateRecordsPendingBadge();
-                $scope.selectNone();
-            }
-            else {
-                // TODO: Handle error
-                console.log("Error with retrieving active employee records.");
-            }
+            initializeRecords(resp.result.items);
+            updateRecordsPendingBadge();
+            $scope.selectNone();
             $scope.state.loading = false;
         }, function onFail(resp) {
             $scope.state.loading = false;
@@ -87,9 +81,10 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
     function submitRecords (records) {
         var promises = [];
         records.forEach(function(record) {
-            promises.push(timeRecordsApi.save(record,
+            promises.push(timeRecordsApi.save({action: record.action}, record,
                 function(response){console.log('success:', record.timeRecordId, response)},
-                function(response){console.log('fail:', record.timeRecordId, response)}).$promise);
+                function(response){console.log('fail:', record.timeRecordId, response)}
+            ).$promise);
         });
         $scope.state.loading = true;
         return $q.all(promises)
@@ -100,7 +95,7 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
                 $scope.state.loading = false;
                 modals.open('500', {details: resp});
                 console.log(resp);
-            })
+            });
     }
 
     /** --- Display Methods --- */
@@ -183,12 +178,13 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
         var selectedRecords = getSelectedRecords('SUBMITTED');
         if (selectedRecords) {
             selectedRecords.forEach(function (record) {
-                record.recordStatus = 'APPROVED';
+                record.action = "submit";
             });
-            $scope.submitPrompt(selectedRecords).then(function() {
-                console.log("meow");
-                submitRecords(selectedRecords);
-            });
+            $scope.submitPrompt(selectedRecords)
+                .then(function() {
+                    console.log("meow");
+                    submitRecords(selectedRecords);
+                });
         }
     };
 
@@ -246,11 +242,11 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
         console.log('review modal resolved:', reviewedRecords);
         var recordsToSubmit = [];
         angular.forEach(reviewedRecords.approved, function(record) {
-            record.recordStatus = 'APPROVED';
+            record.action = "submit";
             recordsToSubmit.push(record);
         });
         angular.forEach(reviewedRecords.disapproved, function(record) {
-            record.recordStatus = 'DISAPPROVED';
+            record.action = "reject";
             record.remarks = record.rejectionRemarks;
             recordsToSubmit.push(record);
         });

@@ -10,12 +10,8 @@ function promiseUtilsService($q){
      * Sequentially executes the given promises
      * @param: tasks   an array of functions that return a promise
      **/
-
     function serial(tasks) {
-        if (!tasks) {
-            return $q.when();
-        }
-        var prevPromise;
+        var prevPromise = $q.when();
         angular.forEach(tasks, function (task) {
             //First task
             if (!prevPromise) {
@@ -26,5 +22,4 @@ function promiseUtilsService($q){
         });
         return prevPromise;
     }
-
-};
+}

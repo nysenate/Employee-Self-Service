@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
 import gov.nysenate.ess.core.model.period.PayPeriod;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@WorkInProgress(author = "Ash", since = "2015/09/11", desc = "Reworking methods in the class")
 public interface TimeRecordService
 {
     /**
@@ -113,11 +113,25 @@ public interface TimeRecordService
     }
 
     /**
+     * Saves the given record
+     * This method is intended for internal use, when saving records from user input:
+     * @see #saveRecord(TimeRecord, TimeRecordAction)
      *
-     * @param record - TimeRecord class object containing data to be updated into the table
-     * @return Boolean value, true if data successfully updated else false.
+     * @param record TimeRecord - the time record to be saved
+     * @return boolean - true if data successfully updated else false.
      */
     boolean saveRecord(TimeRecord record);
+
+    /**
+     * Saves the given time record after applying the given action
+     * This potentially changes the status according to the given time record action
+     * @see TimeRecordStatus
+     * @see TimeRecordAction
+     * The record is then saved and a snapshot is recorded as an audit if specific actions are taken
+     * @param record TimeRecord - the time record to be submitted
+     * @return boolean - true iff record successfully submitted
+     */
+    boolean saveRecord(TimeRecord record, TimeRecordAction action);
 
     /**
      * Remove the time record with the specified time record id
