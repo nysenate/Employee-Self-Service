@@ -1,6 +1,5 @@
 package gov.nysenate.ess.seta.model.accrual;
 
-import gov.nysenate.ess.seta.service.attendance.validation.AccrualTRV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,6 @@ public class AccrualUsage
             this.travelHoursUsed = lhs.travelHoursUsed;
             this.vacHoursUsed = lhs.vacHoursUsed;
             this.perHoursUsed = lhs.perHoursUsed;
-            logger.info("AccrualUsage(b): perHoursUsed:"+perHoursUsed);
             this.empHoursUsed = lhs.empHoursUsed;
             this.famHoursUsed = lhs.famHoursUsed;
             this.holHoursUsed = lhs.holHoursUsed;
@@ -64,7 +62,6 @@ public class AccrualUsage
         this.travelHoursUsed = this.travelHoursUsed.add(usage.travelHoursUsed);
         this.vacHoursUsed = this.vacHoursUsed.add(usage.vacHoursUsed);
         this.perHoursUsed = this.perHoursUsed.add(usage.perHoursUsed);
-        logger.info("AccrualUsage(a): perHoursUsed:"+perHoursUsed);
         this.empHoursUsed = this.empHoursUsed.add(usage.empHoursUsed);
         this.famHoursUsed = this.famHoursUsed.add(usage.famHoursUsed);
         this.holHoursUsed = this.holHoursUsed.add(usage.holHoursUsed);
