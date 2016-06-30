@@ -23,6 +23,7 @@ public class TimeEntry extends AttendanceHours
     protected boolean active;
     protected String empComment;
     protected PayType payType;
+    protected boolean accruing;
     protected String originalUserId;
     protected String updateUserId;
     protected LocalDateTime originalDate;
@@ -43,6 +44,7 @@ public class TimeEntry extends AttendanceHours
         this.employeeName = record.getLastUpdater();
         this.date = date;
         this.active = true;
+        this.accruing = true;
         this.payType = payType;
         this.originalUserId = record.getOriginalUserId();
         this.updateUserId = this.originalUserId;
@@ -59,6 +61,7 @@ public class TimeEntry extends AttendanceHours
         this.date = other.date;
         this.miscType = other.miscType;
         this.active = other.active;
+        this.accruing = other.accruing;
         this.empComment = other.empComment;
         this.payType = other.payType;
         this.originalUserId = other.originalUserId;
@@ -161,6 +164,12 @@ public class TimeEntry extends AttendanceHours
     public boolean isActive() {
         return active;
     }
+
+    public boolean isAccruing() {
+        return accruing;
+    }
+
+    public void setAccruing(boolean accruing) { this.accruing = accruing; };
 
     public void setActive(boolean active) {
         this.active = active;

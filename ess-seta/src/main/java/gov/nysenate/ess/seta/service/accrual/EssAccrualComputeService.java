@@ -190,7 +190,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     }
 
     /**
-     *  @param gapPeriod PayPeriod
+     * @param gapPeriod PayPeriod
      * @param accrualState AccrualState
      * @param transHistory TransactionHistory
      * @param timeRecords List<TimeRecord>
