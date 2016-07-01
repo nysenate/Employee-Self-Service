@@ -9,6 +9,7 @@ function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accr
         empId: appProps.user.employeeId,
         today: moment(),
         projections: {},
+        accSummaries: {},
         selectedYear: moment().year(),
 
         // Page state
@@ -38,6 +39,10 @@ function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accr
                 $scope.state.error = null;
                 // Compute deltas
                 accrualUtils.computeDeltas(resp.result);
+                // Gather historical acc summaries
+                $scope.state.accSummaries[year] = resp.result.filter(function(acc) {
+                    return !acc.computed;
+                }).reverse();
                 // Gather projected acc records if year is 1 yr ago, current, or future.
                 if (year >= $scope.state.today.year() - 1) {
                     $scope.state.projections[year] = resp.result.filter(function(acc) {
@@ -64,18 +69,18 @@ function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accr
     $scope.recalculateProjectionTotals = function(year) {
         var projLen = $scope.state.projections[year].length;
         var summLen = $scope.state.accSummaries[year].length;
-        var baseRec = null, startIndex = 0;
+        var baseRec = null;
         if (summLen > 0) {
             baseRec = $scope.state.accSummaries[year][0];
-            startIndex = projLen - 1;
         }
         else {
             baseRec = $scope.state.projections[year][projLen - 1];
-            startIndex = projLen - 2;
         }
-        var per = baseRec.personalUsed, vac = baseRec.vacationUsed, sick = baseRec.empSickUsed + baseRec.famSickUsed;
+        var per = baseRec.personalUsed, 
+            vac = baseRec.vacationUsed, 
+            sick = baseRec.empSickUsed + baseRec.famSickUsed;
         // Acc projections are stored in reverse chrono order
-        for (var i = startIndex; i >= 0; i--) {
+        for (var i = 0; i < $scope.state.projections[year].length; i++) {
             var rec = $scope.state.projections[year][i];
             per += rec.personalUsedDelta || 0;
             vac += rec.vacationUsedDelta || 0;
