@@ -17,6 +17,10 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
     return {
         isOverOrderAllowance: function (item, quantity) {
             var allowance = allowanceService.getAllowanceByItemId(item.id);
+            // TODO -- Setting per order allowance to a minimum of 2 until database is up to date. 
+            // TODO -- Remove this once database is updated!
+            allowance.perOrderAllowance =  allowance.perOrderAllowance === 0 ? 2 : allowance.perOrderAllowance;
+            // TODO ---------------------------------------------------
             if (newQuantity(quantity, this.getCartLineItem(item.id)) > allowance.perOrderAllowance) {
                 return true;
             }
