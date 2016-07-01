@@ -20,6 +20,13 @@ public interface AttendanceDao
     RangeSet<LocalDate> getOpenDates(Integer empId);
 
     /**
+     * Get a set of years for which the employee has attendance records
+     * @param empId Integer - employee id
+     * @return SortedSet<Integer>
+     */
+    SortedSet<Integer> getAttendanceYears(Integer empId);
+
+    /**
      * Get attendance records for all employees for any open attendance years
      * @return ListMultimap<Integer, AttendanceRecord>
      */

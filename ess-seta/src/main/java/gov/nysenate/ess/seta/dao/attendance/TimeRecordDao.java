@@ -49,7 +49,7 @@ public interface TimeRecordDao extends BaseDao
     List<TimeRecord> getActiveRecords(Integer empId);
 
     /**
-     * Gets the distinct years that an employee has at least one time record for.
+     * Gets the distinct years that an employee has at least one time or attendance record for.
      * @param empId Integer - employee id
      * @param yearOrder - SortOrder - order the returned years
      * @return List<Integer>

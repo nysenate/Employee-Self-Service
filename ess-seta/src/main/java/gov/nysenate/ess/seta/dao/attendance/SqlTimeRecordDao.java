@@ -98,7 +98,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         SqlParameterSource params = new MapSqlParameterSource("empId", empId);
         OrderBy orderBy = new OrderBy("year", yearOrder);
         return remoteNamedJdbc.query(SqlTimeRecordQuery.GET_TREC_DISTINCT_YEARS.getSql(schemaMap(), orderBy), params,
-                new SingleColumnRowMapper<>());
+                (rs, rowNum) -> rs.getInt("year"));
     }
 
     @Override
