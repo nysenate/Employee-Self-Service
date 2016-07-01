@@ -14,8 +14,8 @@ essApi.factory('HolidayApi', ['$resource', 'appProps', function($resource, appPr
 
 /** --- Time Record API --- */
 
-essApi.factory('TimeRecordsApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/timerecords');
+essApi.factory('TimeRecordApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/timerecords');  
 }]);
 
 essApi.factory('ActiveTimeRecordsApi', ['$resource', 'appProps', function ($resource, appProps) {

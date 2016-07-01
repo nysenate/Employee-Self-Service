@@ -1,11 +1,11 @@
 var essApp = angular.module('ess')
         .controller('RecordEntryController', ['$scope', '$rootScope', '$filter', '$q', '$timeout', 'appProps',
-                                              'ActiveTimeRecordsApi', 'TimeRecordsApi', 'AccrualPeriodApi',
+                                              'ActiveTimeRecordsApi', 'TimeRecordApi', 'AccrualPeriodApi',
                                               'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi',
                                               'activeTimeEntryRow', 'RecordUtils', 'LocationService', 'modals',
                                               'promiseUtils', recordEntryCtrl]);
 
-function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordsApi, accrualPeriodApi,
+function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordSaveApi, accrualPeriodApi,
                          allowanceApi, miscLeaveGrantApi, holidayApi, activeRow, recordUtils, locationService, modals, promiseUtils) {
 
     function getInitialState() {
@@ -145,38 +145,31 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             $scope.state.pageState =  $scope.pageStates.SUBMIT_ACK;
             var modalDialogs = getSubmitDialogs();
 
-            if (modalDialogs && modalDialogs.length > 0 ){
-                promiseUtils.serial(modalDialogs).then(function (){
-                    modals.open('submit-indicator', {'record': record});
-                });
-            }
-            else {
-                modals.open('submit-indicator', {'record': record});
-            }
+            // Display any necessary dialogs prior to submit
+            promiseUtils.serial(modalDialogs)
+                // Open the submit dialog
+                .then(function () { return modals.open('submit-ack', {'record': record}); })
+                // Submit the record
+                .then($scope.submitRecord)
+                // Open the post save dialog
+                .then(function () { return modals.open('post-save'); })
+                // Logout if user chooses, otherwise reinitialize page
+                .then($scope.logout, $scope.init);
 
         }
         else {
             modals.open('save-indicator', {'record': record});
             $scope.state.pageState = $scope.pageStates.SAVING;
-            var currentStatus = record.recordStatus;
-            record.recordStatus = 'NOT_SUBMITTED';
-            recordsApi.save(record, function (resp) {
+            recordSaveApi.save({action: 'save'}, record, function (resp) {
                 record.updateDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
                 record.savedDate = record.updateDate;
                 record.dirty = false;
                 $scope.state.pageState = $scope.pageStates.SAVED;
             }, function (resp) {
                 modals.reject('save-indicator');
-                if (resp.status === 400) {
-                    // todo invalid record response
-                    modals.open('500', {details: resp});
-                    console.log(resp);
-                } else {
-                    modals.open('500', {details: resp});
-                    console.log(resp);
-                }
+                modals.open('500', {details: resp});
+                console.log(resp);
                 $scope.state.pageState = $scope.pageStates.SAVE_FAILURE;
-                record.recordStatus = currentStatus;
             });
         }
     };
@@ -187,23 +180,15 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
      */
     $scope.submitRecord = function() {
         var record = $scope.state.records[$scope.state.iSelectedRecord];
-        var currentStatus = record.recordStatus;
-        record.recordStatus = 'SUBMITTED';
-        $scope.state.pageState = $scope.pageStates.SUBMITTING;
-        recordsApi.save(record, function (resp) {
+        modals.open('submit-progress');
+        return recordSaveApi.save({action: 'submit'}, record, function (resp) {
+            modals.resolve();
             $scope.state.pageState = $scope.pageStates.SUBMITTED;
         }, function (resp) {
-            if (resp.status === 400) {
-                //todo invalid record response
-                modals.open('500', {details: resp});
-                console.error(resp);
-            } else {
-                modals.open('500', {details: resp});
-                console.error(resp);
-            }
-            $scope.state.pageState = $scope.pageStates.SUBMIT_FAILURE;
-            record.recordStatus = currentStatus;
-        });
+            modals.reject();
+            modals.open('500', {details: resp});
+            console.error(resp);
+        }).$promise;
     };
 
     /**
@@ -295,11 +280,6 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
      */
     $scope.getSelectedRecord = function() {
         return $scope.state.records[$scope.state.iSelectedRecord];
-    };
-
-    $scope.finishSubmitModal = function() {
-        $scope.closeModal();
-        $scope.init();
     };
 
     /**

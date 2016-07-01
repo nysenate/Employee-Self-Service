@@ -362,9 +362,8 @@
       </div>
     </div>
     <% /** Modals for record submission. */ %>
-    <div ng-if="isOpen('submit-indicator')">
-
-      <div ng-show="state.pageState === pageStates.SUBMIT_ACK">
+    <div ng-if="isOpen('submit-ack')">
+      <div>
         <h3 class="content-info" style="margin-bottom:0;">
           Before submitting, you must acknowledge the following:
         </h3>
@@ -384,22 +383,26 @@
           </p>
           <hr/>
           <div style="text-align: center;">
-            <input ng-click="submitRecord()" class="submit-button" style="margin-right: 20px;" type="button" value="I agree"/>
+            <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;" type="button" value="I agree"/>
             <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
           </div>
         </div>
       </div>
-      <div ng-show="state.pageState === pageStates.SUBMITTING" class="save-progress-modal">
+    </div>
+    <div ng-if="isOpen('submit-progress')">
+      <div class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">
           Saving and submitting time record...
         </h3>
         <div loader-indicator class="loader"></div>
       </div>
-      <div ng-show="state.pageState === pageStates.SUBMITTED" class="save-progress-modal">
+    </div>
+    <div ng-if="isOpen('post-save')">
+      <div class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been submitted.</h3>
         <h4>What would you like to do next?</h4>
-        <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
-        <input ng-click="finishSubmitModal()" class="submit-button" type="button" value="Go back to ESS"/>
+        <input ng-click="resolveModal()" class="reject-button" type="button" value="Log out of ESS"/>
+        <input ng-click="rejectModal()" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
     </div>
   <div ng-if="isOpen('expectedhrs-dialog')" class="save-progress-modal">

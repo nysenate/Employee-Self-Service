@@ -57,9 +57,11 @@ function locationAllowanceService(allowanceApi, supplyUtils) {
          */
         getAllowedQuantities: function (allowance) {
             // TODO: tempoary adjustment of per order allowances since database is inaccurate.
+            // TODO: Remove once database is updated.
             if (allowance.perOrderAllowance === 0) {
                 allowance.perOrderAllowance = 2;
             }
+            // TODO --------------------------------
             var range = [];
             for (var i = 1; i <= allowance.perOrderAllowance; i++) {
                 range.push(i);

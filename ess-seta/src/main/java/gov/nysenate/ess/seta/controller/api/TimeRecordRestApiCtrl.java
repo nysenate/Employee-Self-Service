@@ -11,6 +11,7 @@ import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.client.response.InvalidTimeRecordResponse;
 import gov.nysenate.ess.seta.client.view.TimeRecordView;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
@@ -157,10 +158,12 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * Post Data: json TimeRecordView
      */
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
-    public void saveRecord(@RequestBody TimeRecordView record) {
+    public void saveRecord(@RequestBody TimeRecordView record,
+                           @RequestParam(defaultValue = "SAVE") String action) {
+        TimeRecordAction timeRecordAction = getEnumParameter("action", action, TimeRecordAction.class);
         TimeRecord newRecord = record.toTimeRecord();
         validationService.validateTimeRecord(newRecord);
-        timeRecordService.saveRecord(newRecord);
+        timeRecordService.saveRecord(newRecord, timeRecordAction);
     }
 
     @ExceptionHandler(InvalidTimeRecordException.class)

@@ -77,6 +77,11 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         return TIME_TMPL_BASE_URL + "/accrual/history";
     }
 
+    @RequestMapping(value="/accrual/projections")
+    public String accrualProjections() {
+        return TIME_TMPL_BASE_URL + "/accrual/projections";
+    }
+
     /** --- Calendar --- */
 
     @RequestMapping(value="/period/calendar")

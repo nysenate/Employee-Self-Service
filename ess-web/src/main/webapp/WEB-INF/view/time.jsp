@@ -30,6 +30,8 @@
 
         <!-- Accruals -->
         <script type="text/javascript" src="${ctxPath}/assets/js/src/time/accrual/accrual-history-ctrl.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/accrual/accrual-projection-ctrl.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/accrual/accrual-utils.js"></script>
 
         <!-- Grants -->
         <script type="text/javascript" src="${ctxPath}/assets/js/src/time/grant/grant-ctrl.js"></script>
