@@ -37,6 +37,14 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
     }
 
     @Override
+    public SortedSet<Integer> getAttendanceYears(Integer empId) {
+        return new TreeSet<>(
+                remoteNamedJdbc.query(SqlAttendanceQuery.GET_ALL_ATTENDANCE_YEARS.getSql(schemaMap()),
+                        new MapSqlParameterSource("empId", empId), ((rs, rowNum) -> rs.getInt("DTPERIODYEAR")))
+        );
+    }
+
+    @Override
     public ListMultimap<Integer, AttendanceRecord> getOpenAttendanceRecords() {
         ListMultimap<Integer, AttendanceRecord> openRecords = ArrayListMultimap.create();
         remoteNamedJdbc.query(SqlAttendanceQuery.GET_OPEN_ATTENDANCE_RECORDS.getSql(schemaMap()), new AttendanceRecordRowMapper())

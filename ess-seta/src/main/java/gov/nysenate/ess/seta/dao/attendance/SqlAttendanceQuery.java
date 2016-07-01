@@ -4,13 +4,19 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlAttendanceQuery implements BasicSqlQuery {
+
     GET_OPEN_ATTENDANCE_YEARS(
         "SELECT DTPERIODYEAR\n" +
         "FROM ${masterSchema}.PM23ATTEND\n" +
         "WHERE CDSTATUS = 'A' AND NUXREFEM = :empId AND (DTCLOSE IS NULL OR DTCLOSE > SYSDATE)\n" +
         "ORDER BY DTPERIODYEAR ASC"
     ),
-
+    GET_ALL_ATTENDANCE_YEARS(
+        "SELECT DTPERIODYEAR\n" +
+        "FROM ${masterSchema}.PM23ATTEND\n" +
+        "WHERE CDSTATUS = 'A' AND NUXREFEM = :empId\n" +
+        "ORDER BY DTPERIODYEAR ASC"
+    ),
     GET_ATTENDANCE_RECORDS_SELECT(
         "SELECT rec.*\n" +
         "FROM ${masterSchema}.PM23ATTEND year\n" +

@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.client.response.InvalidTimeRecordResponse;
 import gov.nysenate.ess.seta.client.view.TimeRecordView;
+import gov.nysenate.ess.seta.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
@@ -48,6 +49,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @Autowired TimeRecordService timeRecordService;
     @Autowired AccrualInfoService accrualInfoService;
     @Autowired TimeRecordManager timeRecordManager;
+
+    @Autowired AttendanceDao attendanceDao;
 
     @Autowired TimeRecordValidationService validationService;
 
@@ -123,7 +126,10 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      */
     @RequestMapping(value = "activeYears")
     public BaseResponse getTimeRecordYears(@RequestParam Integer empId) {
-        return ListViewResponse.ofIntList(timeRecordService.getTimeRecordYears(empId, SortOrder.ASC), "years");
+        SortedSet<Integer> timeRecordYears = new TreeSet<>();
+        timeRecordYears.addAll(attendanceDao.getAttendanceYears(empId));
+        timeRecordYears.addAll(timeRecordService.getTimeRecordYears(empId, SortOrder.ASC));
+        return ListViewResponse.ofIntList(new ArrayList<>(timeRecordYears), "years");
     }
 
     /**
