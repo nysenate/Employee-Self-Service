@@ -37,7 +37,7 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
                 .add(lifeCycleTRV)
                 .add(allowanceTRV)
                 .add(accrualTRV)
-                .add(hourIncrementTRV)
+                //.add(hourIncrementTRV)  // Commented out to prevent errors from untested code.
                 // TODO: ADD SOME more VALIDATORS
                 .build();
     }
