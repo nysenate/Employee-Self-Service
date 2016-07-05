@@ -18,7 +18,7 @@
         <div class="pay-period-cal">
             <div ng-repeat="(i, month) in months" class="pay-period-month">
                 <div datepicker
-                     step-months="0" default-date="{{month}}" inline="false"
+                     step-months="false" default-date="{{month}}" inline="false"
                      before-show-day="periodHighlight()"></div>
             </div>
         </div>
