@@ -2,7 +2,6 @@ package gov.nysenate.ess.seta.service.attendance.validation;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.seta.model.attendance.TimeEntry;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
@@ -24,9 +23,7 @@ public class HourIncrementTRV implements TimeRecordValidator {
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState) {
         // If the saved record contains entries where the employee was a temporary employee
-        return record.getScope() == TimeRecordScope.EMPLOYEE &&
-                record.getTimeEntries().stream()
-                        .anyMatch(entry -> entry.getPayType() != PayType.TE);
+        return record.getScope() == TimeRecordScope.EMPLOYEE;
     }
 
     /**
@@ -55,7 +52,7 @@ public class HourIncrementTRV implements TimeRecordValidator {
      */
 
     private void checkHourIncrement(TimeEntry entry)  throws TimeRecordErrorException {
-        if (entry.getPayType().equals("TE")) {
+        if (entry.getPayType().toString().equalsIgnoreCase("TE")) {
             checkTeHourIncrements(entry);
         }
         else {
@@ -73,7 +70,7 @@ public class HourIncrementTRV implements TimeRecordValidator {
     private void checkTeHourIncrements(TimeEntry entry) throws TimeRecordErrorException {
         BigDecimal divisor = new BigDecimal(.25);
 
-        if (entry.getWorkHours().orElse(BigDecimal.ZERO).remainder(divisor).equals(BigDecimal.ZERO)) {
+        if (entry.getWorkHours().orElse(BigDecimal.ZERO).remainder(divisor).compareTo(BigDecimal.ZERO) == 0) {
             return;
         }
         throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
@@ -100,36 +97,36 @@ public class HourIncrementTRV implements TimeRecordValidator {
         BigDecimal sickFamTime = entry.getSickFamHours().orElse(BigDecimal.ZERO);
         BigDecimal miscTime = entry.getMiscHours().orElse(BigDecimal.ZERO);
 
-        if (!workTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        if (workTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("workTime", "decimal",
                             "worktime = " + workTime.toString(),  workTime.toString()));
 
-        } else if (!holidayTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (holidayTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("holidayTime", "decimal",
                             "holidayTime = " + holidayTime.toString(), holidayTime.toString()));
-        } else if (!travelTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (travelTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("travelTime", "decimal",
                             "travelTime = " + travelTime.toString(), travelTime.toString()));
-        } else if (!personalTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (personalTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("personalTime", "decimal",
                             "personalTime = " + personalTime.toString(), personalTime.toString()));
-        } else if (!vacationTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (vacationTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("vacationTime", "decimal",
                             "vacationTime = " + vacationTime.toString(), vacationTime.toString()));
-        } else if (!sickEmpTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (sickEmpTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("sickEmpTime", "decimal",
                             "sickEmpTime = " + sickEmpTime.toString(), sickEmpTime.toString()));
-        } else if (!sickFamTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (sickFamTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("sickFamTime", "decimal",
                             "sickFamTime = " + sickFamTime.toString(), sickFamTime.toString()));
-        } else if (!miscTime.remainder(divisor).equals(BigDecimal.ZERO)) {
+        } else if (miscTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
                     new InvalidParameterView("miscTime", "decimal",
                             "miscTime = " + miscTime.toString(), miscTime.toString()));
