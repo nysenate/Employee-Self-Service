@@ -226,4 +226,6 @@ function empRecordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, T
     $scope.init = function() {
         $scope.getEmployeeGroups($scope.state.supId);
     }();
+    
+    
 }
