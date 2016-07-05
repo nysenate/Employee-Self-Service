@@ -20,10 +20,10 @@
       <%--Add item--%>
       <div class="padding-10">
         <label> Add Commodity Code:
-        <input type="text"
-               ng-model="addItemFeature.newItemCommodityCode"
-               ui-autocomplete="addItemAutocompleteOptions"
-               style="width: 100px; height: 20px;">
+          <input type="text"
+                 ng-model="addItemFeature.newItemCommodityCode"
+                 ui-autocomplete="addItemAutocompleteOptions"
+                 style="width: 100px; height: 20px;">
         </label>
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
       </div>
@@ -82,15 +82,27 @@
 
       <%--Actions--%>
 
-      <input ng-show="shipment.activeVersion.status === 'PENDING'" ng-click="processOrder()" class="submit-button col-4-12" type="button" value="Process">
-      <input ng-show="shipment.activeVersion.status === 'PROCESSING'" ng-click="completeOrder()" class="submit-button col-4-12" type="button" value="Complete">
+      <%--Process button. Current status must be pending.--%>
+      <input ng-show="shipment.activeVersion.status === 'PENDING'" ng-click="processOrder()"
+             class="submit-button col-4-12" type="button" value="Process">
+
+      <%--Complete button. Current status must be PENDING.--%>
+      <input ng-show="shipment.activeVersion.status === 'PROCESSING'" ng-click="completeOrder()"
+             class="submit-button col-4-12" type="button" value="Complete">
+
+      <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>
       <shiro:hasPermission name="supply:shipment:approve">
-        <input ng-show="shipment.activeVersion.status === 'COMPLETED'" ng-click="approveShipment()" class="submit-button col-4-12" type="button" value="Approve">
+        <input ng-show="shipment.activeVersion.status === 'COMPLETED'" ng-click="approveShipment()"
+               class="submit-button col-4-12" type="button" value="Approve">
       </shiro:hasPermission>
+
+      <%--Save button. Requires a change to be made.--%>
       <input ng-click="saveChanges()" class="submit-button col-4-12" type="button" value="Save" ng-disabled="!dirty">
+
+      <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>
       <input ns-popover ns-popover-template="confirm" ns-popover-timeout="0.5"
              ng-show="shipment.activeVersion.status === 'PENDING' || shipment.activeVersion.status === 'PROCESSING'"
-             class="reject-button col-4-12" type="button" value="Reject">
+             class="reject-button col-4-12" type="button" value="Reject" ng-disabled="!displayedVersion.note">
     </div>
   </div>
 </div>
