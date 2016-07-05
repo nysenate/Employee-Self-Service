@@ -202,7 +202,7 @@ a {
 }
 
 .text-align-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .margin-10 {
@@ -695,15 +695,15 @@ table.time-record-entry-table {
   tbody {
     tr {
       height: 32px;
-      &:hover {
-        background: #f3f6ff;
-      }
       &.time-record-row {
         td {
           &:nth-child(1) {
             width: 150px;
             border-right: 1px solid #ccc;
           }
+        }
+        &:hover {
+          background: #f3f6ff;
         }
       }
       &.time-totals-row {
@@ -800,7 +800,13 @@ table.time-record-entry-table {
     text-align: center;
     width: 90%;
     margin: auto;
-    tr {
+    th {
+      border-bottom: 1px solid #ccc;
+    }
+    th, td {
+      padding: 5px;
+    }
+    tbody tr {
       &.active {
         background: #e7e9f6;
       }
@@ -808,12 +814,6 @@ table.time-record-entry-table {
         background: #E4EBFF;
       }
       cursor: pointer;
-    }
-    th {
-      border-bottom: 1px solid #ccc;
-    }
-    th, td {
-      padding: 5px;
     }
   }
 

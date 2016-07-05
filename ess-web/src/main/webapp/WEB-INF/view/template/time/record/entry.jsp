@@ -229,7 +229,7 @@
                 <option value="">No Misc Hours</option>
               </select>
             </td>
-            <td entry-validator validate="entryValidators.raSa.totalHours(entry)">
+            <td class="text-align-center" entry-validator validate="entryValidators.raSa.totalHours(entry)">
               <span>{{entry.total | number}}</span>
             </td>
           </tr>
