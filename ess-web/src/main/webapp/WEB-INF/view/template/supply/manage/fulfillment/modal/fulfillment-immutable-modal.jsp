@@ -30,6 +30,16 @@
           </tbody>
         </table>
       </div>
+
+      <div class="padding-top-10"
+           ng-show="shipment.activeVersion.note">
+        <div class="col-2-12 bold">
+          Note:
+        </div>
+        <div class="col-10-12">
+          {{shipment.activeVersion.note}}
+        </div>
+      </div>
     </div>
 
     <%--Right Margin--%>

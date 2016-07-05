@@ -28,6 +28,7 @@
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
       </div>
 
+      <%-- Add Note --%>
       <div class="padding-top-10">
         <label class="col-1-12">note:</label>
         <textarea class="col-11-12" ng-model="displayedVersion.note"
