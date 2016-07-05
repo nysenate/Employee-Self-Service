@@ -85,7 +85,7 @@
 
 
       <%--Note--%>
-      <div class="content-container no-print"
+      <div class="content-container"
            ng-show="selectedVersion.note">
         <div class="content-info">
           <div class="grid padding-10">
@@ -187,6 +187,21 @@
           </div>
           <div class="col-4-12">
             <b>Modified By:</b> {{selectedVersion.createdBy.lastName}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%--Note--%>
+    <div class="content-container large-print-font-size"
+         ng-show="selectedVersion.note">
+      <div class="content-info">
+        <div class="grid padding-10">
+          <div class="col-2-12 bold">
+            Note:
+          </div>
+          <div class="col-10-12">
+            {{selectedVersion.note}}
           </div>
         </div>
       </div>
