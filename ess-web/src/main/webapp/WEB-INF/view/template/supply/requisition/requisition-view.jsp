@@ -86,10 +86,10 @@
 
       <%--Note--%>
       <div class="content-container no-print"
-           ng-show="selectedVersion.order.note">
+           ng-show="selectedVersion.note">
         <div class="content-info">
           <div class="grid padding-10">
-            <div class="col-2-12">
+            <div class="col-2-12 bold">
               Note:
             </div>
             <div class="col-10-12">
