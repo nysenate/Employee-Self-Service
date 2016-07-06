@@ -56,14 +56,10 @@ public class SupplyPermissionFactory implements PermissionFactory {
 
     private Collection<Permission> supplyEmployeePermissions() {
         List<Permission> permissions = new ArrayList<>();
-        permissions.add(new WildcardPermission("supply:order:view"));
-        permissions.add(new WildcardPermission("supply:order:edit"));
-        permissions.add(new WildcardPermission("supply:shipment:manage"));
-        permissions.add(new WildcardPermission("supply:shipment:view"));
-        permissions.add(new WildcardPermission("supply:shipment:edit"));
-        permissions.add(new WildcardPermission("supply:shipment:process"));
-        permissions.add(new WildcardPermission("supply:shipment:complete"));
-        permissions.add(new WildcardPermission("supply:shipment:reject"));
+        permissions.add(new WildcardPermission("supply:employee")); // Generic supply employee permissions.
+        permissions.add(new WildcardPermission("supply:order:view")); // Can view all orders.
+        permissions.add(new WildcardPermission("supply:order:edit")); // Can edit all orders.
+        permissions.add(new WildcardPermission("supply:shipment:manage")); // Can view manage page's
         return permissions;
     }
 

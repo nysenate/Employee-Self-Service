@@ -47,7 +47,7 @@ public class SqlLocationDao extends SqlBaseDao implements LocationDao {
 
     /** {@inheritDoc} */
     @Override
-    public List<Location> getLocationsUnderResponsibilityHead(ResponsibilityHead responsibilityHead) {
+    public List<Location> getLocationsByResponsibilityHead(ResponsibilityHead responsibilityHead) {
         MapSqlParameterSource params = new MapSqlParameterSource("responsibilityHead", responsibilityHead.getCode());
         String sql = SqlLocationQuery.GET_LOCATIONS_BY_RESPONSIBILITY_HEAD.getSql(schemaMap());
         LocationRowMapper locationRowMapper = new LocationRowMapper("LOC_", "RCTRHD_");
