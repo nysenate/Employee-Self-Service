@@ -62,7 +62,7 @@
     </div>
   </div>
 
-  <div loader-indicator class="loader" ng-show="state.pageState === pageStates.FETCHING"></div>
+  <div loader-indicator class="loader" ng-show="state.request.records"></div>
 
   <% /** Display a warning for previously unsubmitted records */ %>
   <div ess-notification level="warn" title="Earlier Unsubmitted Records"
@@ -79,11 +79,11 @@
 
   <% /** If there are no active records for the user, display a warning message indicating such. */ %>
   <div class="margin-10-0" ess-notification level="error" title="No time records available to enter."
-       ng-show="state.pageState === pageStates.FETCHED && state.records.length == 0"
+       ng-show="!state.request.records && state.records.length == 0"
        message="Please contact Senate Personnel at (518) 455-3376 if you require any assistance."></div>
 
   <% /** Accruals and Time entry for regular/special annual time record entries. */ %>
-  <div class="content-container" ng-show="state.pageState !== pageStates.FETCHING && state.records[state.iSelectedRecord].timeEntries">
+  <div class="content-container" ng-show="!state.request.records && state.records[state.iSelectedRecord].timeEntries">
     <p class="content-info">All hours available need approval from appointing authority.</p>
     <div ess-notification level="warn" title="Record with multiple pay types" class="margin-10"
          ng-if="state.annualEntries && state.tempEntries">
@@ -97,7 +97,11 @@
       <!-- Annual Entry Form -->
       <div class="ra-sa-entry" ng-if="state.annualEntries">
         <h1 class="time-entry-table-title" ng-if="state.tempEntries">Regular/Special Annual Pay Entries</h1>
-        <div class="accrual-hours-container">
+        <div ng-show="state.request.accruals">
+          <h3 class="text-align-center">Loading Accruals...</h3>
+          <div loader-indicator class="sm-loader" style="margin: 15.5px auto;"></div>
+        </div>
+        <div class="accrual-hours-container" ng-hide="state.request.accruals">
           <div class="accrual-component">
             <div class="captioned-hour-square" style="float:left;">
               <div class="hours-caption personal">Personal Hours</div>
@@ -252,7 +256,11 @@
       <!-- Temporary Entry Form -->
       <div class="te-entry" ng-if="state.tempEntries">
         <h1 class="time-entry-table-title" ng-if="state.annualEntries">Temporary Pay Entries</h1>
-        <div class="allowance-container">
+        <div ng-show="state.request.allowances">
+          <h3 class="text-align-center">Loading Allowance...</h3>
+          <div loader-indicator class="sm-loader" style="margin: 15.5px auto;"></div>
+        </div>
+        <div class="allowance-container" ng-hide="state.request.allowances">
           <div class="allowance-component">
             <div class="captioned-hour-square">
               <div style="" class="hours-caption">
@@ -348,13 +356,13 @@
   <div modal-container>
     <% /** Modals for record save. */ %>
     <div ng-if="isOpen('save-indicator')" class="save-progress-modal">
-      <div ng-show="state.pageState === pageStates.SAVING">
+      <div ng-show="state.request.save">
         <h3 class="content-info" style="margin-bottom:0;">
           Saving time record...
         </h3>
         <div loader-indicator class="loader"></div>
       </div>
-      <div ng-show="state.pageState === pageStates.SAVED">
+      <div ng-hide="state.request.save">
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been saved.</h3>
         <h4>What would you like to do next?</h4>
         <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
