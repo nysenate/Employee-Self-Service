@@ -122,4 +122,4 @@ scheduler.timerecord.ensureall.cron = 0 0 0 * * *
 # --- TimeOut Configuration ------------------------------------------------
 
 #timeout in secs
-timeout = 80;
+timeout = 80
