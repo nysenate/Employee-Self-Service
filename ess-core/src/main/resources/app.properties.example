@@ -119,3 +119,7 @@ scheduler.timerecord.ensureall.enabled = false
 # (Default every night at midnight: 0 0 0 * * *)
 scheduler.timerecord.ensureall.cron = 0 0 0 * * *
 
+# --- TimeOut Configuration ------------------------------------------------
+
+#timeout in secs
+timeout = 80;
