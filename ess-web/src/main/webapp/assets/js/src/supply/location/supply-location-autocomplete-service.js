@@ -1,10 +1,10 @@
 angular.module('essSupply').service('SupplyLocationAutocompleteService',
-    ['LocationApi', 'LocationsUnderResponsibilityHeadApi', locationAutocompleteService]);
+    ['appProps', 'LocationApi', 'SupplyDestinationApi', locationAutocompleteService]);
 
 /**
  * This service handles the data for location autocomplete elements used in supply.
  */
-function locationAutocompleteService(locationApi, respHeadLocationsApi) {
+function locationAutocompleteService(appProps, locationApi, destinationApi) {
 
     var locations = [];
     var locationCodes = [];
@@ -53,7 +53,7 @@ function locationAutocompleteService(locationApi, respHeadLocationsApi) {
         /** Only get locations that fall under the logged in users responsibility Head. */
         initWithResponsibilityHeadLocations: function () {
             reset();
-            return respHeadLocationsApi.get().$promise
+            return destinationApi.get({empId: appProps.user.employeeId}).$promise
                 .then(setLocations)
                 .then(setCodes)
                 .then(setCodesToLocationMap);
