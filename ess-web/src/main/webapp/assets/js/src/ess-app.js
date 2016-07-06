@@ -32,67 +32,68 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
             var heartBeatingRate = 5; // in sec
             var idelTime = 0; // in sec.
             localStorage.setItem("alerted", "false");
-            setInterval(function () {
-                idelTime += heartBeatingRate;
-                $.ajax({
-                    type: "GET",
-                    url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + idelTime,
-                    success: function (data) {
-                        if (data["message"] > 0 && localStorage.getItem("alerted") == "false") {
-                            //timeout in data["message"]  time
-                            localStorage.setItem("alerted", "true");
-                            event.preventDefault();
-                            var tick = 60;
-                            var ticking = setInterval(function () {
-                                if (tick >= 0) {
-                                    $("#tick").text(tick);
-                                    tick = tick - 1;
-                                }
-                                else {
-                                    $.ajax({
-                                        type: "GET",
-                                        url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + -1,
-                                        success: function (data) {
-                                            window.location.replace(appProps.loginUrl);
-                                            window.location.reload(true);
-                                        }
-                                    });
-                                }
-                            }, 1000);
-                            $("#timeout-confirm").dialog({
-                                resizable: false,
-                                height: 240,
-                                width: 400,
-                                modal: true,
-                                closeOnEscape: false,
-                                open: function (event, ui) {
-                                    $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-                                },
-                                close: function () {
-                                },
-                                buttons: {
-                                    "Continue": function () {
+            if (hb == undefined) {
+                var hb = setInterval(function () {
+                    idelTime += heartBeatingRate;
+                    $.ajax({
+                        type: "GET",
+                        url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + idelTime,
+                        success: function (data) {
+                            if (data["message"] > 0 && localStorage.getItem("alerted") == "false") {
+                                //timeout in data["message"]  time
+                                localStorage.setItem("alerted", "true");
+                                event.preventDefault();
+                                var tick = 60;
+                                var ticking = setInterval(function () {
+                                    if (tick >= 0) {
+                                        $("#tick").text(tick);
+                                        tick = tick - 1;
+                                    }
+                                    else {
                                         $.ajax({
                                             type: "GET",
-                                            url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + idelTime
+                                            url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + -1,
+                                            success: function (data) {
+                                                window.location.replace(appProps.loginUrl);
+                                                window.location.reload(true);
+                                            }
                                         });
-                                        $(this).dialog("close");
-                                        idelTime = 0;
-                                        localStorage.setItem("alerted", "false");
-                                        tick = 60;
-                                        clearInterval(ticking);
                                     }
-                                }
-                            });
+                                }, 1000);
+                                $("#timeout-confirm").dialog({
+                                    resizable: false,
+                                    height: 240,
+                                    width: 400,
+                                    modal: true,
+                                    closeOnEscape: false,
+                                    open: function (event, ui) {
+                                        $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                                    },
+                                    close: function () {
+                                    },
+                                    buttons: {
+                                        "Continue": function () {
+                                            $.ajax({
+                                                type: "GET",
+                                                url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + idelTime
+                                            });
+                                            $(this).dialog("close");
+                                            idelTime = 0;
+                                            localStorage.setItem("alerted", "false");
+                                            tick = 60;
+                                            clearInterval(ticking);
+                                        }
+                                    }
+                                });
+                            }
                         }
-                    }
+                    });
+                }, heartBeatingRate * 1000);
+
+                $(document).on('change click keydown keypress keyup load  resize scroll select submit', function () {
+                    idelTime = 0;
                 });
-            }, heartBeatingRate * 1000);
-
-            $(document).on('change click keydown keypress keyup load  resize scroll select submit', function () {
-                idelTime = 0;
-            });
-
+            }
             return request;
         }
     };
