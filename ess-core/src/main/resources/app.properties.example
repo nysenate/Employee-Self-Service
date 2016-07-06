@@ -39,13 +39,18 @@ db.remote.name = dev
 db.remote.user =
 db.remote.pass =
 
-# Schema Configuration
+# Oracle Schema Configuration
 
 # The schema containing the read-only tables
 master.schema =
 
 # The schema containing read-write tables for timesheets
 ts.schema =
+
+# Postgres Schema Configuration
+
+# Ess common schema
+ess.schema =
 
 # Supply's schema
 supply.schema =
