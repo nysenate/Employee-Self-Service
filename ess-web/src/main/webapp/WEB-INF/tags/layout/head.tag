@@ -14,6 +14,7 @@
             apiPath: '${ctxPath}/api/v1',
             runtimeLevel: '${runtimeLevel}',
             loginUrl: '${loginUrl}',
+            sessionId: '${sessionId}',
             miscLeaves: ${miscLeaves}
         };
         <c:if test="${not empty principalJson}">

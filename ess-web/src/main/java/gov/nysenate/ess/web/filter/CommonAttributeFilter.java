@@ -50,7 +50,10 @@ public class CommonAttributeFilter implements Filter
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         logger.trace("CommonAttributeFilter processing url {}", httpServletRequest.getRequestURI());
-
+        if (((HttpServletRequest) request).getSession().isNew())
+            return;
+        if (((HttpServletRequest) request).getSession() == null)
+            return;
         setContextPathAttribute(httpServletRequest);
         setRuntimeLevelAttribute(request);
         setLoginUrlAttribute(request);
