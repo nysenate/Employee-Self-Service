@@ -124,7 +124,6 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         }
         else {
             List<TimeRecord> records = timeRecordDao.getActiveRecords(empId);
-            records.forEach(this::initializeEntries);
             cachedRecs = new TimeRecordCacheCollection(empId, records);
             activeRecordCache.acquireWriteLockOnKey(empId);
             activeRecordCache.put(new Element(empId, cachedRecs));
@@ -279,6 +278,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
             if (elem != null) {
                 TimeRecordCacheCollection cachedRecs = (TimeRecordCacheCollection) elem.getObjectValue();
                 if (record.isActive() && TimeRecordStatus.inProgress().contains(record.getRecordStatus())) {
+                    initializeEntries(record);
                     cachedRecs.update(record);
                 } else {
                     cachedRecs.remove(record.getTimeRecordId());
