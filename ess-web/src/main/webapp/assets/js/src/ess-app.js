@@ -30,9 +30,9 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
             $("#timeout-confirm").hide();
 
             var heartBeatingRate = 5; // in sec
-            var idelTime = 0; // in sec.
-            localStorage.setItem("alerted", "false");
-            if (hb == undefined) {
+            var idelTime = 0; // in sec.window.location.pathname
+            if (localStorage.getItem("hb") == null || window.location.pathname.split("/")[1] != localStorage.getItem("hb").split("/")[1]) {
+                localStorage.setItem("hb", window.location.pathname);
                 var hb = setInterval(function () {
                     idelTime += heartBeatingRate;
                     $.ajax({
@@ -93,6 +93,10 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
                 $(document).on('change click keydown keypress keyup load  resize scroll select submit', function () {
                     idelTime = 0;
                 });
+
+                window.onbeforeunload = function (e) {
+                    localStorage.removeItem("hb")
+                }
             }
             return request;
         }
