@@ -1,71 +1,69 @@
 package gov.nysenate.ess.supply.requisition.controller;
-//
-//import com.google.common.collect.Range;
-//import gov.nysenate.ess.core.client.response.base.BaseResponse;
-//import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-//import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-//import gov.nysenate.ess.core.client.response.error.ErrorCode;
-//import gov.nysenate.ess.core.client.response.error.ErrorResponse;
-//import gov.nysenate.ess.core.client.view.EmployeeView;
-//import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-//import gov.nysenate.ess.core.model.auth.SenatePerson;
-//import gov.nysenate.ess.core.model.personnel.Employee;
-//import gov.nysenate.ess.core.model.unit.Location;
-//import gov.nysenate.ess.core.model.unit.LocationId;
-//import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-//import gov.nysenate.ess.core.service.unit.LocationService;
-//import gov.nysenate.ess.core.util.LimitOffset;
-//import gov.nysenate.ess.core.util.PaginatedList;
-//import gov.nysenate.ess.supply.item.LineItem;
-//import gov.nysenate.ess.supply.item.view.LineItemView;
-//import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
-//import gov.nysenate.ess.supply.requisition.view.DetailedRequisitionView;
-//import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
-//import gov.nysenate.ess.supply.requisition.Requisition;
-//import gov.nysenate.ess.supply.requisition.RequisitionStatus;
-//import gov.nysenate.ess.supply.requisition.RequisitionVersion;
-//import gov.nysenate.ess.supply.requisition.service.RequisitionService;
-//import gov.nysenate.ess.supply.requisition.view.RequisitionView;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.MediaType;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.context.request.WebRequest;
-//
-//import java.time.LocalDateTime;
-//import java.util.*;
-//import java.util.stream.Collectors;
-//
-//@RestController
-//@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/requisitions")
-//public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
-//
-//    private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
-//
-//    @Autowired private RequisitionService requisitionService;
-//    @Autowired private EmployeeInfoService employeeService;
-//    @Autowired private LocationService locationService;
-//
-//    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
-//        Set<LineItem> lineItems = new HashSet<>();
-//        for (LineItemView lineItemView : submitRequisitionView.getLineItems()) {
-//            lineItems.add(lineItemView.toLineItem());
-//        }
-//        Employee customer = employeeService.getEmployee(submitRequisitionView.getCustomerId());
-//        Location destination = locationService.getLocation(new LocationId(submitRequisitionView.getDestinationId()));
-//        RequisitionVersion version = new RequisitionVersion.Builder().withCustomer(customer)
-//                                                                     .withDestination(destination)
-//                                                                     .withLineItems(lineItems)
-//                                                                     .withStatus(RequisitionStatus.PENDING)
-//                                                                     .withCreatedBy(customer)
-//                                                                     .build();
-//        Requisition requisition = new Requisition(LocalDateTime.now(), version);
-//        int id = requisitionService.saveRequisition(requisition);
+
+import com.google.common.collect.Range;
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
+import gov.nysenate.ess.core.client.view.EmployeeView;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.auth.SenatePerson;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.service.unit.LocationService;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.item.view.LineItemView;
+import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
+import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
+import gov.nysenate.ess.supply.requisition.Requisition;
+import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.service.RequisitionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/requisitions")
+public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
+
+    private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
+
+    @Autowired private RequisitionService requisitionService;
+    @Autowired private EmployeeInfoService employeeService;
+    @Autowired private LocationService locationService;
+
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
+        Set<LineItem> lineItems = new HashSet<>();
+        for (LineItemView lineItemView : submitRequisitionView.getLineItems()) {
+            lineItems.add(lineItemView.toLineItem());
+        }
+        LocalDateTime orderedDateTime = LocalDateTime.now();
+        Requisition requisition = new Requisition.Builder()
+                .withCustomer(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
+                .withDestination(locationService.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
+                .withLineItems(lineItems)
+                .withStatus(RequisitionStatus.PENDING)
+                .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
+                .withOrderedDateTime(orderedDateTime)
+                .build();
+        Requisition id = requisitionService.saveRequisition(requisition);
 //        return new ViewObjectResponse<>(new RequisitionView(requisitionService.getRequisitionById(id)));
-//    }
+        return null;
+    }
 //
 //    @RequestMapping("/{id}")
 //    public BaseResponse getRequisitionById(@PathVariable int id,
@@ -193,4 +191,4 @@ package gov.nysenate.ess.supply.requisition.controller;
 //        SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
 //        return person.getEmployeeId();
 //    }
-//}
+}

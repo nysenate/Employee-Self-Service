@@ -8,33 +8,13 @@ import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public interface RequisitionService {
 
-    /**
-     * Saves a {@link Requisition} without ensuring update consistency.
-     * This should only be used for saving a new requisition. For updating a requisition
-     * see {@link #updateRequisition(int, Requisition, LocalDateTime) updateRequisition}.
-     * @return The requisition id.
-     */
-    int saveRequisition(Requisition requisition);
+    Requisition saveRequisition(Requisition requisition);
 
-    /**
-     * Updates a {@link Requisition} by adding a {@link Requisition} to it and saving into the backing store.
-     * Checks to ensure the underlying requisition was not updated before this update was made. If so throw
-     * an {@link gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException}.
-     *
-     * This check is done by comparing the {@code lastModified} requisition date time according to the update
-     * with the lastModified date time of the requisition in the database. If they are not equal another update
-     * took place before this one and this update will have to be resubmitted.
-     * @param lastModified The requisition's last modified date time according to the update.
-     * @return The requisition id.
-     */
-    int updateRequisition(int requisitionId, Requisition requisition, LocalDateTime lastModified);
-
-    void undoRejection(Requisition requisition);
-
-    Requisition getRequisitionById(int requisitionId);
+    Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);

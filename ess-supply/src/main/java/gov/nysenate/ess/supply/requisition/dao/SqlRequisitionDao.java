@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.*;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,6 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.cert.PKIXRevocationChecker;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -28,10 +30,12 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     @Autowired private SqlLineItemDao lineItemDao;
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private LocationService locationService;
+    @Autowired private DateTimeFactory dateTimeFactory;
 
     @Override
     @Transactional(value = "localTxManager")
     public Requisition saveRequisition(Requisition requisition) {
+        requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
         requisition = insertRequisitionContent(requisition);
         saveRequisitionInfo(requisition);
         lineItemDao.insertRequisitionLineItems(requisition);
@@ -73,11 +77,12 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public synchronized Requisition getRequisitionById(int requisitionId) {
+    public synchronized Optional<Requisition> getRequisitionById(int requisitionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         String sql = SqlRequisitionQuery.GET_REQUISITION_BY_ID.getSql(schemaMap());
         RequisitionRowMapper rowMapper = new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao);
-        return localNamedJdbc.queryForObject(sql, params, rowMapper);
+        List<Requisition> results = localNamedJdbc.query(sql, params, rowMapper);
+        return results.size() == 1 ? Optional.of(results.get(0)) : Optional.empty();
     }
 
     @Override
@@ -143,7 +148,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("issuerId", requisition.getIssuer().map(Employee::getEmployeeId).orElse(null))
                 .addValue("note", requisition.getNote().orElse(null))
                 .addValue("modifiedBy", requisition.getModifiedBy().getEmployeeId())
-                .addValue("modifiedDateTime", toDate(requisition.getModifiedDateTime()))
+                .addValue("modifiedDateTime", requisition.getModifiedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("orderedDateTime", toDate(requisition.getOrderedDateTime()))
                 .addValue("processedDateTime", requisition.getProcessedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))

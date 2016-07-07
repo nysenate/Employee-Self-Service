@@ -39,7 +39,7 @@ public final class Requisition {
         this.issuer = builder.issuer;
         this.note = builder.note;
         this.modifiedBy = checkNotNull(builder.modifiedBy, "Requisition requires a modified by employee.");
-        this.modifiedDateTime = checkNotNull(builder.modifiedDateTime, "Requisition requires a modified date time.");
+        this.modifiedDateTime = builder.modifiedDateTime;
         this.orderedDateTime = checkNotNull(builder.orderedDateTime, "Requisition requires a ordered date time.");
         this.processedDateTime = builder.processedDateTime;
         this.completedDateTime = builder.completedDateTime;
@@ -107,6 +107,7 @@ public final class Requisition {
         return copy().withModifiedBy(modifiedBy).build();
     }
 
+    /** Modified date time should only be set by the dao layer before saving. */
     public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
         return copy().withModifiedDateTime(modifiedDateTime).build();
     }
@@ -173,8 +174,8 @@ public final class Requisition {
         return modifiedBy;
     }
 
-    public LocalDateTime getModifiedDateTime() {
-        return modifiedDateTime;
+    public Optional<LocalDateTime> getModifiedDateTime() {
+        return Optional.ofNullable(modifiedDateTime);
     }
 
     public LocalDateTime getOrderedDateTime() {
@@ -199,6 +200,77 @@ public final class Requisition {
 
     public boolean getSavedInSfms() {
         return savedInSfms;
+    }
+
+    @Override
+    public String toString() {
+        return "Requisition{" +
+               "requisitionId=" + requisitionId +
+               ", revisionId=" + revisionId +
+               ", customer=" + customer +
+               ", destination=" + destination +
+               ", lineItems=" + lineItems +
+               ", status=" + status +
+               ", issuer=" + issuer +
+               ", note='" + note + '\'' +
+               ", modifiedBy=" + modifiedBy +
+               ", modifiedDateTime=" + modifiedDateTime +
+               ", orderedDateTime=" + orderedDateTime +
+               ", processedDateTime=" + processedDateTime +
+               ", completedDateTime=" + completedDateTime +
+               ", approvedDateTime=" + approvedDateTime +
+               ", rejectedDateTime=" + rejectedDateTime +
+               ", savedInSfms=" + savedInSfms +
+               '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Requisition that = (Requisition) o;
+        if (requisitionId != that.requisitionId) return false;
+        if (revisionId != that.revisionId) return false;
+        if (savedInSfms != that.savedInSfms) return false;
+        if (customer != null ? !customer.equals(that.customer) : that.customer != null) return false;
+        if (destination != null ? !destination.equals(that.destination) : that.destination != null) return false;
+        if (lineItems != null ? !lineItems.equals(that.lineItems) : that.lineItems != null) return false;
+        if (status != that.status) return false;
+        if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
+        if (note != null ? !note.equals(that.note) : that.note != null) return false;
+        if (modifiedBy != null ? !modifiedBy.equals(that.modifiedBy) : that.modifiedBy != null) return false;
+        if (modifiedDateTime != null ? !modifiedDateTime.equals(that.modifiedDateTime) : that.modifiedDateTime != null)
+            return false;
+        if (orderedDateTime != null ? !orderedDateTime.equals(that.orderedDateTime) : that.orderedDateTime != null)
+            return false;
+        if (processedDateTime != null ? !processedDateTime.equals(that.processedDateTime) : that.processedDateTime != null)
+            return false;
+        if (completedDateTime != null ? !completedDateTime.equals(that.completedDateTime) : that.completedDateTime != null)
+            return false;
+        if (approvedDateTime != null ? !approvedDateTime.equals(that.approvedDateTime) : that.approvedDateTime != null)
+            return false;
+        return rejectedDateTime != null ? rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = requisitionId;
+        result = 31 * result + revisionId;
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + (destination != null ? destination.hashCode() : 0);
+        result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (issuer != null ? issuer.hashCode() : 0);
+        result = 31 * result + (note != null ? note.hashCode() : 0);
+        result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
+        result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
+        result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
+        result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
+        result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
+        result = 31 * result + (approvedDateTime != null ? approvedDateTime.hashCode() : 0);
+        result = 31 * result + (rejectedDateTime != null ? rejectedDateTime.hashCode() : 0);
+        result = 31 * result + (savedInSfms ? 1 : 0);
+        return result;
     }
 
     public static class Builder {

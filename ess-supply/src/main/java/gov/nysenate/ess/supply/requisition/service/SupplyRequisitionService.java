@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
+import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import gov.nysenate.ess.supply.util.mail.SendSimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +21,42 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Optional;
 
 @Service
 public class SupplyRequisitionService implements RequisitionService {
 
-    @Autowired private DateTimeFactory dateTimeFactory;
     @Autowired private RequisitionDao requisitionDao;
-    @Autowired
-    private SendSimpleEmail sendSimpleEmail;
+    @Autowired private SendSimpleEmail sendSimpleEmail;
 
     @Override
-    public int saveRequisition(Requisition requisition) {
-//        return requisitionDao.saveRequisition(requisition);
-        return 0;
+    public synchronized Requisition saveRequisition(Requisition requisition) {
+        checkPessimisticLocking(requisition);
+        requisition = requisitionDao.saveRequisition(requisition);
+        // TODO: email
+        return requisition;
     }
 
-    @Override
-    public synchronized int updateRequisition(int requisitionId, Requisition requisitionVersion, LocalDateTime lastModified) {
+    /**
+     * Ensure this requisition has not been updated behind the back of the user.
+     * Gets the matching requisition from the database, and compares its modified date time
+     * with that of the new {@code requisition}. If they do not match then the requisition
+     * has been updated by someone else and we should not save it.
+     * @param requisition
+     */
+    private void checkPessimisticLocking(Requisition requisition) {
+        Optional<Requisition> previousRevision = requisitionDao.getRequisitionById(requisition.getRequisitionId());
+        if (previousRevision.isPresent()) {
+            if (!previousRevision.get().getModifiedDateTime().equals(requisition.getModifiedDateTime())) {
+                throw new ConcurrentRequisitionUpdateException(requisition.getRequisitionId(),
+                                                               requisition.getModifiedDateTime().orElse(null),
+                                                               previousRevision.get().getModifiedDateTime().orElse(null));
+            }
+        }
+    }
+
+//    @Override
+//    public synchronized int updateRequisition(int requisitionId, Requisition requisitionVersion, LocalDateTime lastModified) {
 //        Requisition persistedRequisition = requisitionDao.getRequisitionById(requisitionId);
 //        if (!persistedRequisition.getModifiedDateTime().equals(lastModified)) {
 //            throw new ConcurrentRequisitionUpdateException(requisitionId, lastModified, persistedRequisition.getModifiedDateTime());
@@ -72,22 +92,11 @@ public class SupplyRequisitionService implements RequisitionService {
 //            sendSimpleEmail.send(requisitionVersion.getIssuer().orElse(requisitionVersion.getModifiedBy()), requisitionVersion.getCustomer(), simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
 //        }
 //        return res;
-        return 0;
-    }
+//        return 0;
+//    }
 
     @Override
-    public void undoRejection(Requisition requisition) {
-//        RequisitionVersion newVersion = requisition.getLatestVersionWithStatusIn(nonRejectedRequisitionStatuses());
-//        requisition.addVersion(dateTimeFactory.now(), newVersion);
-//        saveRequisition(requisition);
-    }
-
-    private EnumSet<RequisitionStatus> nonRejectedRequisitionStatuses() {
-        return EnumSet.complementOf(EnumSet.of(RequisitionStatus.REJECTED));
-    }
-
-    @Override
-    public Requisition getRequisitionById(int requisitionId) {
+    public Optional<Requisition> getRequisitionById(int requisitionId) {
         return requisitionDao.getRequisitionById(requisitionId);
     }
 
@@ -97,7 +106,9 @@ public class SupplyRequisitionService implements RequisitionService {
         return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, limitOffset);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PaginatedList<Requisition> searchOrderHistory(String destination, int customerId, EnumSet<RequisitionStatus> statuses,
                                                          Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
