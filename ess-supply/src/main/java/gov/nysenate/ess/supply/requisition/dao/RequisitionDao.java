@@ -11,7 +11,7 @@ import java.util.EnumSet;
 
 public interface RequisitionDao {
 
-    int saveRequisition(Requisition requisition);
+    Requisition saveRequisition(Requisition requisition);
 
     Requisition getRequisitionById(int requisitionId);
 

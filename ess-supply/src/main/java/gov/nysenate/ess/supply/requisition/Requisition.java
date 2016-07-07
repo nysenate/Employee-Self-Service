@@ -6,186 +6,301 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Requisition {
-
-    private int id;
-    private SortedMap<LocalDateTime, RequisitionVersion> history;
+public final class Requisition {
+    private final int requisitionId;
+    private final int revisionId;
+    private final Employee customer;
+    private final Location destination;
+    private final ImmutableSet<LineItem> lineItems;
+    private final RequisitionStatus status;
+    private final Employee issuer;
+    private final String note;
+    private final Employee modifiedBy;
+    private final LocalDateTime modifiedDateTime;
     private final LocalDateTime orderedDateTime;
-    private LocalDateTime processedDateTime;
-    private LocalDateTime completedDateTime;
-    private LocalDateTime approvedDateTime;
-    private LocalDateTime rejectedDateTime;
+    private final LocalDateTime processedDateTime;
+    private final LocalDateTime completedDateTime;
+    private final LocalDateTime approvedDateTime;
+    private final LocalDateTime rejectedDateTime;
+    private final boolean savedInSfms;
 
-    public Requisition(LocalDateTime orderedDateTime, RequisitionVersion firstVersion) {
-        checkArgument(firstVersion.getStatus() == RequisitionStatus.PENDING, "First Requisition Version must have PENDING status");
-        this.orderedDateTime = checkNotNull(orderedDateTime, "Requisition order date time cannot be null.");
-        this.history = new TreeMap<>();
-        history.put(orderedDateTime, firstVersion);
+    private Requisition(Builder builder) {
+        this.requisitionId = builder.requisitionId;
+        this.revisionId = builder.revisionId;
+        this.customer = checkNotNull(builder.customer, "Requisition requires non null customer.");
+        this.destination = checkNotNull(builder.destination, "Requisition requires non null destination.");
+        this.lineItems = ImmutableSet.copyOf(builder.lineItems);
+        this.status = checkNotNull(builder.status, "Requisition requires non null status.");
+        this.issuer = builder.issuer;
+        this.note = builder.note;
+        this.modifiedBy = checkNotNull(builder.modifiedBy, "Requisition requires a modified by employee.");
+        this.modifiedDateTime = checkNotNull(builder.modifiedDateTime, "Requisition requires a modified date time.");
+        this.orderedDateTime = checkNotNull(builder.orderedDateTime, "Requisition requires a ordered date time.");
+        this.processedDateTime = builder.processedDateTime;
+        this.completedDateTime = builder.completedDateTime;
+        this.approvedDateTime = builder.approvedDateTime;
+        this.rejectedDateTime = builder.rejectedDateTime;
+        this.savedInSfms = builder.savedInSfms;
     }
 
-    public Requisition(SortedMap<LocalDateTime, RequisitionVersion> history) {
-        this.orderedDateTime = checkNotNull(history.firstKey(), "Requisition order date time cannot be null.");
-        this.history = history;
+    /**
+     * Returns a {@link Requisition.Builder} which contains a copy of
+     * this requisitions data. Useful for creating new instances where
+     * only a few fields differ.
+     */
+    private Requisition.Builder copy() {
+        return new Requisition.Builder()
+                .withRequisitionId(this.requisitionId)
+                .withRevisionId(this.revisionId)
+                .withCustomer(this.customer)
+                .withDestination(this.destination)
+                .withLineItems(this.lineItems)
+                .withStatus(this.status)
+                .withIssuer(this.issuer)
+                .withNote(this.note)
+                .withModifiedBy(this.modifiedBy)
+                .withModifiedDateTime(this.modifiedDateTime)
+                .withOrderedDateTime(this.orderedDateTime)
+                .withProcessedDateTime(this.processedDateTime)
+                .withCompletedDateTime(this.completedDateTime)
+                .withApprovedDateTime(this.approvedDateTime)
+                .withRejectedDateTime(this.rejectedDateTime)
+                .withSavedInSfms(this.savedInSfms);
     }
 
-    public void addVersion(LocalDateTime dateTime, RequisitionVersion version) {
-        if (version.getStatus() == RequisitionStatus.PROCESSING) {
-            processedDateTime = dateTime;
-        }
-        else if (version.getStatus() == RequisitionStatus.COMPLETED) {
-            completedDateTime = dateTime;
-        }
-        else if (version.getStatus() == RequisitionStatus.APPROVED) {
-            approvedDateTime = dateTime;
-        }
-        else if (version.getStatus() == RequisitionStatus.REJECTED) {
-            rejectedDateTime = dateTime;
-        }
-        history.put(dateTime, version);
+    /** Basic Setters **/
+
+    public Requisition setRevisionId(int revisionId) {
+        return copy().withRevisionId(revisionId).build();
     }
 
-    public RequisitionVersion getCurrentVersion() {
-        return history.get(history.lastKey());
+    public Requisition setCustomer(Employee customer) {
+        return copy().withCustomer(customer).build();
     }
 
-    public RequisitionVersion getLatestVersionWithStatusIn(EnumSet<RequisitionStatus> statuses) {
-        LocalDateTime latestDateTime = getHistory().firstKey();
-        RequisitionVersion latestVersion = getHistory().get(latestDateTime);
-        for (Map.Entry<LocalDateTime, RequisitionVersion> entry: getHistory().entrySet()) {
-            if (statuses.contains(entry.getValue().getStatus())) {
-                if (entry.getKey().isAfter(latestDateTime)) {
-                    latestDateTime = entry.getKey();
-                    latestVersion = entry.getValue();
-                }
-            }
-        }
-        return latestVersion;
+    public Requisition setDestination(Location destination) {
+        return copy().withDestination(destination).build();
     }
 
-    public int getId() {
-        return id;
+    public Requisition setLineItems(Set<LineItem> lineItems) {
+        return copy().withLineItems(lineItems).build();
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public Requisition setStatus(RequisitionStatus status) {
+        return copy().withStatus(status).build();
     }
 
-    public SortedMap<LocalDateTime, RequisitionVersion> getHistory() {
-        return new TreeMap<>(history);
+    public Requisition setIssuer(Employee issuer) {
+        return copy().withIssuer(issuer).build();
+    }
+
+    public Requisition setNote(String note) {
+        return copy().withNote(note).build();
+    }
+
+    public Requisition setModifiedBy(Employee modifiedBy) {
+        return copy().withModifiedBy(modifiedBy).build();
+    }
+
+    public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        return copy().withModifiedDateTime(modifiedDateTime).build();
+    }
+
+    public Requisition setOrderedDateTime(LocalDateTime orderedDateTime) {
+        return copy().withOrderedDateTime(orderedDateTime).build();
+    }
+
+    public Requisition setProcessedDateTime(LocalDateTime processedDateTime) {
+        return copy().withProcessedDateTime(processedDateTime).build();
+    }
+
+    public Requisition setCompletedDateTime(LocalDateTime completedDateTime) {
+        return copy().withCompletedDateTime(completedDateTime).build();
+    }
+
+    public Requisition setApprovedDateTime(LocalDateTime approvedDateTime) {
+        return copy().withApprovedDateTime(approvedDateTime).build();
+    }
+
+    public Requisition setRejectedDateTime(LocalDateTime rejectedDateTime) {
+        return copy().withRejectedDateTime(rejectedDateTime).build();
+    }
+
+    public Requisition setSavedInSfms(boolean savedInSfms) {
+        return copy().withSavedInSfms(savedInSfms).build();
+    }
+
+    /** Basic Getters **/
+
+    public int getRequisitionId() {
+        return requisitionId;
+    }
+
+    public int getRevisionId() {
+        return revisionId;
+    }
+
+    public Employee getCustomer() {
+        return this.customer;
+    }
+
+    public Location getDestination() {
+        return destination;
+    }
+
+    public ImmutableSet<LineItem> getLineItems() {
+        return lineItems;
+    }
+
+    public RequisitionStatus getStatus() {
+        return status;
+    }
+
+    public Optional<Employee> getIssuer() {
+        return Optional.ofNullable(issuer);
+    }
+
+    public Optional<String> getNote() {
+        return Optional.ofNullable(note);
+    }
+
+    public Employee getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return modifiedDateTime;
     }
 
     public LocalDateTime getOrderedDateTime() {
         return orderedDateTime;
     }
 
-    public LocalDateTime getModifiedDateTime() {
-        return history.lastKey();
-    }
-
     public Optional<LocalDateTime> getProcessedDateTime() {
         return Optional.ofNullable(processedDateTime);
-    }
-
-    public void setProcessedDateTime(LocalDateTime processedDateTime) {
-        this.processedDateTime = processedDateTime;
     }
 
     public Optional<LocalDateTime> getCompletedDateTime() {
         return Optional.ofNullable(completedDateTime);
     }
 
-    public void setCompletedDateTime(LocalDateTime completedDateTime) {
-        this.completedDateTime = completedDateTime;
-    }
-
     public Optional<LocalDateTime> getApprovedDateTime() {
         return Optional.ofNullable(approvedDateTime);
-    }
-
-    public void setApprovedDateTime(LocalDateTime approvedDateTime) {
-        this.approvedDateTime = approvedDateTime;
     }
 
     public Optional<LocalDateTime> getRejectedDateTime() {
         return Optional.ofNullable(rejectedDateTime);
     }
 
-    public void setRejectedDateTime(LocalDateTime rejectedDateTime) {
-        this.rejectedDateTime = rejectedDateTime;
+    public boolean getSavedInSfms() {
+        return savedInSfms;
     }
 
-    /** Getters - return information for the current requisition version. **/
+    public static class Builder {
+        private int requisitionId;
+        private int revisionId;
+        private Employee customer;
+        private Location destination;
+        private Set<LineItem> lineItems;
+        private RequisitionStatus status;
+        private Employee issuer;
+        private String note;
+        private Employee modifiedBy;
+        private LocalDateTime modifiedDateTime;
+        private LocalDateTime orderedDateTime;
+        private LocalDateTime processedDateTime;
+        private LocalDateTime completedDateTime;
+        private LocalDateTime approvedDateTime;
+        private LocalDateTime rejectedDateTime;
+        private boolean savedInSfms;
 
-    public Employee getCustomer() {
-        return getCurrentVersion().getCustomer();
-    }
+        public Builder withRequisitionId(int requisitionId) {
+            this.requisitionId = requisitionId;
+            return this;
+        }
 
-    public Location getDestination() {
-        return getCurrentVersion().getDestination();
-    }
+        public Builder withRevisionId(int revisionId) {
+            this.revisionId = revisionId;
+            return this;
+        }
 
-    public ImmutableSet<LineItem> getLineItems() {
-        return getCurrentVersion().getLineItems();
-    }
+        public Builder withCustomer(Employee customer) {
+            this.customer = customer;
+            return this;
+        }
 
-    public RequisitionStatus getStatus() {
-        return getCurrentVersion().getStatus();
-    }
+        public Builder withDestination(Location destination) {
+            this.destination = destination;
+            return this;
+        }
 
-    public Optional<Employee> getIssuer() {
-        return getCurrentVersion().getIssuer();
-    }
+        public Builder withLineItems(Set<LineItem> lineItems) {
+            this.lineItems = lineItems;
+            return this;
+        }
 
-    public Employee getModifiedBy() {
-        return getCurrentVersion().getCreatedBy();
-    }
+        public Builder withStatus(RequisitionStatus status) {
+            this.status = status;
+            return this;
+        }
 
-    public Optional<String> getNote() {
-        return getCurrentVersion().getNote();
-    }
+        public Builder withIssuer(Employee issuer) {
+            this.issuer = issuer;
+            return this;
+        }
 
-    @Override
-    public String toString() {
-        return "Requisition{" +
-               "history=" + history +
-               ", orderedDateTime=" + orderedDateTime +
-               ", processedDateTime=" + processedDateTime +
-               ", completedDateTime=" + completedDateTime +
-               ", approvedDateTime=" + approvedDateTime +
-               ", rejectedDateTime=" + rejectedDateTime +
-               '}';
-    }
+        public Builder withNote(String note) {
+            this.note = note;
+            return this;
+        }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Requisition that = (Requisition) o;
-        if (history != null ? !history.equals(that.history) : that.history != null) return false;
-        if (orderedDateTime != null ? !orderedDateTime.equals(that.orderedDateTime) : that.orderedDateTime != null)
-            return false;
-        if (processedDateTime != null ? !processedDateTime.equals(that.processedDateTime) : that.processedDateTime != null)
-            return false;
-        if (completedDateTime != null ? !completedDateTime.equals(that.completedDateTime) : that.completedDateTime != null)
-            return false;
-        if (approvedDateTime != null ? !approvedDateTime.equals(that.approvedDateTime) : that.approvedDateTime != null)
-            return false;
-        return rejectedDateTime != null ? rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime == null;
-    }
+        public Builder withModifiedBy(Employee modifiedBy) {
+            this.modifiedBy = modifiedBy;
+            return this;
+        }
 
-    @Override
-    public int hashCode() {
-        int result = history != null ? history.hashCode() : 0;
-        result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
-        result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
-        result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
-        result = 31 * result + (approvedDateTime != null ? approvedDateTime.hashCode() : 0);
-        result = 31 * result + (rejectedDateTime != null ? rejectedDateTime.hashCode() : 0);
-        return result;
+        public Builder withModifiedDateTime(LocalDateTime modifiedDateTime) {
+            this.modifiedDateTime = modifiedDateTime;
+            return this;
+        }
+
+        public Builder withOrderedDateTime(LocalDateTime orderedDateTime) {
+            this.orderedDateTime = orderedDateTime;
+            return this;
+        }
+
+        public Builder withProcessedDateTime(LocalDateTime processedDateTime) {
+            this.processedDateTime = processedDateTime;
+            return this;
+        }
+
+        public Builder withCompletedDateTime(LocalDateTime completedDateTime) {
+            this.completedDateTime = completedDateTime;
+            return this;
+        }
+
+        public Builder withApprovedDateTime(LocalDateTime approvedDateTime) {
+            this.approvedDateTime = approvedDateTime;
+            return this;
+        }
+
+        public Builder withRejectedDateTime(LocalDateTime rejectedDateTime) {
+            this.rejectedDateTime = rejectedDateTime;
+            return this;
+        }
+
+        public Builder withSavedInSfms(boolean savedInSfms) {
+            this.savedInSfms = savedInSfms;
+            return this;
+        }
+
+        public Requisition build() {
+            return new Requisition(this);
+        }
     }
 }

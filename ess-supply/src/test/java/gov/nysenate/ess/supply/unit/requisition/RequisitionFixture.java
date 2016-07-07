@@ -6,84 +6,87 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
-import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 public class RequisitionFixture {
 
-    public static RequisitionVersion getPendingVersion() {
-        return new RequisitionVersion.Builder()
-                .withId(0)
+    public static Requisition getPendingRequisition() {
+        return new Requisition.Builder()
+                .withRequisitionId(0)
+                .withRevisionId(0)
                 .withCustomer(createEmployeeWithId(1))
                 .withDestination(createStubLocation())
+                .withLineItems(createStubLineItem())
                 .withStatus(RequisitionStatus.PENDING)
-                .withLineItems(createStubLineItem())
                 .withIssuer(createEmployeeWithId(2))
-                .withCreatedBy(createEmployeeWithId(1))
-                .withNote("A note")
+                .withModifiedBy(createEmployeeWithId(1))
+                .withModifiedDateTime(LocalDateTime.now())
+                .withOrderedDateTime(LocalDateTime.now())
                 .build();
     }
 
-    public static RequisitionVersion getProcessingVersion() {
-        return new RequisitionVersion.Builder()
-                .withId(2)
-                .withCustomer(createEmployeeWithId(1))
-                .withDestination(createStubLocation())
-                .withStatus(RequisitionStatus.PROCESSING)
-                .withLineItems(createStubLineItem())
-                .withIssuer(createEmployeeWithId(2))
-                .withCreatedBy(createEmployeeWithId(3))
-                .build();
-    }
-
-    public static RequisitionVersion getRejectedVersion() {
-        return new RequisitionVersion.Builder()
-                .withId(3)
-                .withCustomer(createEmployeeWithId(1))
-                .withDestination(createStubLocation())
-                .withStatus(RequisitionStatus.REJECTED)
-                .withLineItems(createStubLineItem())
-                .withIssuer(createEmployeeWithId(2))
-                .withCreatedBy(createEmployeeWithId(4))
-                .build();
-    }
-
-    public static RequisitionVersion getCompletedVersion() {
-        return new RequisitionVersion.Builder()
-                .withId(4)
-                .withCustomer(createEmployeeWithId(1))
-                .withDestination(createStubLocation())
-                .withStatus(RequisitionStatus.COMPLETED)
-                .withLineItems(createStubLineItem())
-                .withIssuer(createEmployeeWithId(2))
-                .withCreatedBy(createEmployeeWithId(2))
-                .build();
-    }
-
-    public static RequisitionVersion getApprovedVersion() {
-        return new RequisitionVersion.Builder()
-                .withId(5)
-                .withCustomer(createEmployeeWithId(1))
-                .withDestination(createStubLocation())
-                .withStatus(RequisitionStatus.APPROVED)
-                .withLineItems(createStubLineItem())
-                .withIssuer(createEmployeeWithId(2))
-                .withCreatedBy(createEmployeeWithId(2))
-                .build();
-    }
-
-    public static RequisitionVersion getMinimalPendingVersion() {
-        return new RequisitionVersion.Builder()
-                .withCustomer(createEmployeeWithId(1))
-                .withDestination(createStubLocation())
-                .withStatus(RequisitionStatus.PENDING)
-                .withLineItems(createStubLineItem())
-                .withCreatedBy(createEmployeeWithId(1))
-                .build();
-    }
+//    public static RequisitionVersion getProcessingVersion() {
+//        return new RequisitionVersion.Builder()
+//                .withId(2)
+//                .withCustomer(createEmployeeWithId(1))
+//                .withDestination(createStubLocation())
+//                .withStatus(RequisitionStatus.PROCESSING)
+//                .withLineItems(createStubLineItem())
+//                .withIssuer(createEmployeeWithId(2))
+//                .withCreatedBy(createEmployeeWithId(3))
+//                .build();
+//    }
+//
+//    public static RequisitionVersion getRejectedVersion() {
+//        return new RequisitionVersion.Builder()
+//                .withId(3)
+//                .withCustomer(createEmployeeWithId(1))
+//                .withDestination(createStubLocation())
+//                .withStatus(RequisitionStatus.REJECTED)
+//                .withLineItems(createStubLineItem())
+//                .withIssuer(createEmployeeWithId(2))
+//                .withCreatedBy(createEmployeeWithId(4))
+//                .build();
+//    }
+//
+//    public static RequisitionVersion getCompletedVersion() {
+//        return new RequisitionVersion.Builder()
+//                .withId(4)
+//                .withCustomer(createEmployeeWithId(1))
+//                .withDestination(createStubLocation())
+//                .withStatus(RequisitionStatus.COMPLETED)
+//                .withLineItems(createStubLineItem())
+//                .withIssuer(createEmployeeWithId(2))
+//                .withCreatedBy(createEmployeeWithId(2))
+//                .build();
+//    }
+//
+//    public static RequisitionVersion getApprovedVersion() {
+//        return new RequisitionVersion.Builder()
+//                .withId(5)
+//                .withCustomer(createEmployeeWithId(1))
+//                .withDestination(createStubLocation())
+//                .withStatus(RequisitionStatus.APPROVED)
+//                .withLineItems(createStubLineItem())
+//                .withIssuer(createEmployeeWithId(2))
+//                .withCreatedBy(createEmployeeWithId(2))
+//                .build();
+//    }
+//
+//    public static RequisitionVersion getMinimalPendingVersion() {
+//        return new RequisitionVersion.Builder()
+//                .withCustomer(createEmployeeWithId(1))
+//                .withDestination(createStubLocation())
+//                .withStatus(RequisitionStatus.PENDING)
+//                .withLineItems(createStubLineItem())
+//                .withCreatedBy(createEmployeeWithId(1))
+//                .build();
+//    }
 
     public static Set<LineItem> createStubLineItem() {
         SupplyItem stubItem = new SupplyItem(2, "", "", "", new Category(""), 1, 1, 1);

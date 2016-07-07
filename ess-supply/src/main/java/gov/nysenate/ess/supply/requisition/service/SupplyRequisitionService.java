@@ -9,9 +9,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
-import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
-import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import gov.nysenate.ess.supply.util.mail.SendSimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,53 +31,55 @@ public class SupplyRequisitionService implements RequisitionService {
 
     @Override
     public int saveRequisition(Requisition requisition) {
-        return requisitionDao.saveRequisition(requisition);
+//        return requisitionDao.saveRequisition(requisition);
+        return 0;
     }
 
     @Override
-    public synchronized int updateRequisition(int requisitionId, RequisitionVersion requisitionVersion, LocalDateTime lastModified) {
-        Requisition persistedRequisition = requisitionDao.getRequisitionById(requisitionId);
-        if (!persistedRequisition.getModifiedDateTime().equals(lastModified)) {
-            throw new ConcurrentRequisitionUpdateException(requisitionId, lastModified, persistedRequisition.getModifiedDateTime());
-        }
-        persistedRequisition.addVersion(dateTimeFactory.now(), requisitionVersion);
-        int res = requisitionDao.saveRequisition(persistedRequisition);
-        if (requisitionVersion.getStatus().equals(RequisitionStatus.REJECTED)) {
-            /**
-             * Subject
-             */
-            SimpleEmailSubject subject = new SimpleEmailSubject(Color.black, "Your order (" + requisitionId + ") has been reject");
-            /**
-             * elements
-             */
-            SimpleEmailContent detail = new SimpleEmailContent(Color.black, requisitionVersion.toOrderString(), "$detail$");
-            SimpleEmailContent note = new SimpleEmailContent(Color.black, requisitionVersion.getNote().get(), "$note$");
-            SimpleEmailContent rId = new SimpleEmailContent(Color.black, String.valueOf(requisitionId), "$requisitionId$");
-            SimpleEmailContent rejecter = new SimpleEmailContent(Color.black, requisitionVersion.getIssuer().orElse(requisitionVersion.getCreatedBy()).getFullName() + "\n" + requisitionVersion.getIssuer().orElse(requisitionVersion.getCreatedBy()).getEmail(), "$rejecter$");
-            SimpleEmailContent cname = new SimpleEmailContent(Color.black, String.valueOf(requisitionVersion.getCustomer().getFirstName() + " " + requisitionVersion.getCustomer().getLastName()), "$cname$");
-            SimpleEmailTemplate reject = null;
-            try {
-                reject = new SimpleEmailTemplate(Color.black, "", "reject_email");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ArrayList<gov.nysenate.ess.core.service.notification.base.message.base.Component> simpleEmailContentList = new ArrayList();
-            simpleEmailContentList.add(note);
-            simpleEmailContentList.add(rId);
-            simpleEmailContentList.add(cname);
-            simpleEmailContentList.add(reject);
-            simpleEmailContentList.add(detail);
-            simpleEmailContentList.add(rejecter);
-            sendSimpleEmail.send(requisitionVersion.getIssuer().orElse(requisitionVersion.getCreatedBy()), requisitionVersion.getCustomer(), simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
-        }
-        return res;
+    public synchronized int updateRequisition(int requisitionId, Requisition requisitionVersion, LocalDateTime lastModified) {
+//        Requisition persistedRequisition = requisitionDao.getRequisitionById(requisitionId);
+//        if (!persistedRequisition.getModifiedDateTime().equals(lastModified)) {
+//            throw new ConcurrentRequisitionUpdateException(requisitionId, lastModified, persistedRequisition.getModifiedDateTime());
+//        }
+//        persistedRequisition.addVersion(dateTimeFactory.now(), requisitionVersion);
+//        int res = requisitionDao.saveRequisition(persistedRequisition);
+//        if (requisitionVersion.getStatus().equals(RequisitionStatus.REJECTED)) {
+//            /**
+//             * Subject
+//             */
+//            SimpleEmailSubject subject = new SimpleEmailSubject(Color.black, "Your order (" + requisitionId + ") has been reject");
+//            /**
+//             * elements
+//             */
+//            SimpleEmailContent detail = new SimpleEmailContent(Color.black, requisitionVersion.toOrderString(), "$detail$");
+//            SimpleEmailContent note = new SimpleEmailContent(Color.black, requisitionVersion.getNote().get(), "$note$");
+//            SimpleEmailContent rId = new SimpleEmailContent(Color.black, String.valueOf(requisitionId), "$requisitionId$");
+//            SimpleEmailContent rejecter = new SimpleEmailContent(Color.black, requisitionVersion.getIssuer().orElse(requisitionVersion.getModifiedBy()).getFullName() + "\n" + requisitionVersion.getIssuer().orElse(requisitionVersion.getModifiedBy()).getEmail(), "$rejecter$");
+//            SimpleEmailContent cname = new SimpleEmailContent(Color.black, String.valueOf(requisitionVersion.getCustomer().getFirstName() + " " + requisitionVersion.getCustomer().getLastName()), "$cname$");
+//            SimpleEmailTemplate reject = null;
+//            try {
+//                reject = new SimpleEmailTemplate(Color.black, "", "reject_email");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            ArrayList<gov.nysenate.ess.core.service.notification.base.message.base.Component> simpleEmailContentList = new ArrayList();
+//            simpleEmailContentList.add(note);
+//            simpleEmailContentList.add(rId);
+//            simpleEmailContentList.add(cname);
+//            simpleEmailContentList.add(reject);
+//            simpleEmailContentList.add(detail);
+//            simpleEmailContentList.add(rejecter);
+//            sendSimpleEmail.send(requisitionVersion.getIssuer().orElse(requisitionVersion.getModifiedBy()), requisitionVersion.getCustomer(), simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
+//        }
+//        return res;
+        return 0;
     }
 
     @Override
     public void undoRejection(Requisition requisition) {
-        RequisitionVersion newVersion = requisition.getLatestVersionWithStatusIn(nonRejectedRequisitionStatuses());
-        requisition.addVersion(dateTimeFactory.now(), newVersion);
-        saveRequisition(requisition);
+//        RequisitionVersion newVersion = requisition.getLatestVersionWithStatusIn(nonRejectedRequisitionStatuses());
+//        requisition.addVersion(dateTimeFactory.now(), newVersion);
+//        saveRequisition(requisition);
     }
 
     private EnumSet<RequisitionStatus> nonRejectedRequisitionStatuses() {

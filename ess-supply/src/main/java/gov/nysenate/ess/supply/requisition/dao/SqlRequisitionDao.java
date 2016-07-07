@@ -2,10 +2,13 @@ package gov.nysenate.ess.supply.requisition.dao;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.*;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
-import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,66 +25,58 @@ import java.util.stream.Collectors;
 @Repository
 public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
-    @Autowired private SqlRequisitionHistoryDao historyDao;
-    @Autowired private SqlRequisitionVersionDao versionDao;
     @Autowired private SqlLineItemDao lineItemDao;
+    @Autowired private EmployeeInfoService employeeInfoService;
+    @Autowired private LocationService locationService;
 
     @Override
     @Transactional(value = "localTxManager")
-    public int saveRequisition(Requisition requisition) {
-        int requisitionId = 0;
-        for (Map.Entry<LocalDateTime, RequisitionVersion> entry: requisition.getHistory().entrySet()) {
-            if (entry.getValue().getId() == 0) {
-                int versionId = versionDao.insertRequisitionVersion(entry.getValue());
-                lineItemDao.insertVersionLineItems(entry.getValue(), versionId);
-                requisitionId = saveRequisitionInfo(requisition, versionId);
-                historyDao.insertRequisitionHistory(requisitionId, versionId, entry.getKey());
-            }
-        }
-        return requisitionId;
+    public Requisition saveRequisition(Requisition requisition) {
+        requisition = insertRequisitionContent(requisition);
+        saveRequisitionInfo(requisition);
+        lineItemDao.insertRequisitionLineItems(requisition);
+        return requisition;
     }
 
-    private int saveRequisitionInfo(Requisition requisition, int activeVersionId) {
-        boolean isUpdated = updateRequisitionInfo(requisition, activeVersionId);
-        if (isUpdated) {
-            return requisition.getId();
-        }
-        else {
-            return insertRequisitionInfo(requisition, activeVersionId);
-        }
-    }
-
-    private int insertRequisitionInfo(Requisition requisition, int activeVersionId) {
-        MapSqlParameterSource params = getRequisitionParams(requisition, activeVersionId);
-        String sql = SqlRequisitionQuery.INSERT_REQUISITION.getSql(schemaMap());
+    /**
+     * Inserts a new requisition revision into the requisition_content table.
+     * @return Requisition with its revisionId set.
+     */
+    private Requisition insertRequisitionContent(Requisition requisition) {
+        MapSqlParameterSource params = requisitionParams(requisition);
+        String sql = SqlRequisitionQuery.INSERT_REQUISITION_CONTENT.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        return (Integer) keyHolder.getKeys().get("requisition_id");
+        return requisition.setRevisionId((Integer) keyHolder.getKeys().get("revision_id"));
     }
 
-    private boolean updateRequisitionInfo(Requisition requisition, int activeVersionId) {
-        MapSqlParameterSource params = getRequisitionParams(requisition, activeVersionId);
+    /**
+     * Saves Requisition global information to the requisition table.
+     * Updates the row if it exists, otherwise inserts a new row.
+     */
+    private void saveRequisitionInfo(Requisition requisition) {
+        if (!updateRequisition(requisition)) {
+            insertRequisition(requisition);
+        }
+    }
+
+    private boolean updateRequisition(Requisition requisition) {
+        MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
-        return localNamedJdbc.update(sql, params) != 0;
+        return localNamedJdbc.update(sql, params) == 1;
     }
 
-    private MapSqlParameterSource getRequisitionParams(Requisition requisition, int activeVersionId) {
-        return new MapSqlParameterSource()
-                .addValue("requisitionId", requisition.getId())
-                .addValue("activeVersionId", activeVersionId)
-                .addValue("orderedDateTime", toDate(requisition.getOrderedDateTime()))
-                .addValue("processedDateTime", requisition.getProcessedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("modifiedDateTime", toDate(requisition.getModifiedDateTime()));
+    private void insertRequisition(Requisition requisition) {
+        MapSqlParameterSource params = requisitionParams(requisition);
+        String sql = SqlRequisitionQuery.INSERT_REQUISITION.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
     }
 
     @Override
     public synchronized Requisition getRequisitionById(int requisitionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         String sql = SqlRequisitionQuery.GET_REQUISITION_BY_ID.getSql(schemaMap());
-        RequisitionRowMapper rowMapper = new RequisitionRowMapper(historyDao);
+        RequisitionRowMapper rowMapper = new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao);
         return localNamedJdbc.queryForObject(sql, params, rowMapper);
     }
 
@@ -96,7 +91,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
         ensureValidColumn(dateField);
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
-        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
+        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
     }
@@ -133,11 +128,29 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
         ensureValidColumn(dateField);
         String sql = generateSearchQuery(SqlRequisitionQuery.ORDER_HISTORY_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
-        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(historyDao));
+        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
     }
 
+    private MapSqlParameterSource requisitionParams(Requisition requisition) {
+        return new MapSqlParameterSource()
+                .addValue("requisitionId", requisition.getRequisitionId())
+                .addValue("revisionId", requisition.getRevisionId())
+                .addValue("customerId", requisition.getCustomer().getEmployeeId())
+                .addValue("destination", requisition.getDestination().getLocId().toString())
+                .addValue("status", requisition.getStatus().toString())
+                .addValue("issuerId", requisition.getIssuer().map(Employee::getEmployeeId).orElse(null))
+                .addValue("note", requisition.getNote().orElse(null))
+                .addValue("modifiedBy", requisition.getModifiedBy().getEmployeeId())
+                .addValue("modifiedDateTime", toDate(requisition.getModifiedDateTime()))
+                .addValue("orderedDateTime", toDate(requisition.getOrderedDateTime()))
+                .addValue("processedDateTime", requisition.getProcessedDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("savedInSfms", requisition.getSavedInSfms());
+    }
 
     private String formatSearchString(String param) {
         return param != null && param.equals("all") ? "%" : param;
@@ -150,42 +163,52 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     private enum SqlRequisitionQuery implements BasicSqlQuery {
         INSERT_REQUISITION(
-                "INSERT INTO ${supplySchema}.requisition(active_version_id, ordered_date_time, processed_date_time, \n" +
-                "completed_date_time, approved_date_time, rejected_date_time, modified_date_time) \n" +
-                " VALUES (:activeVersionId, :orderedDateTime, :processedDateTime, :completedDateTime, \n" +
-                ":approvedDateTime, :rejectedDateTime, :modifiedDateTime)"
+                "INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time, \n" +
+                "processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms) \n" +
+                "VALUES (:revisionId, :orderedDateTime, :processedDateTime, :completedDateTime, \n" +
+                ":approvedDateTime, :rejectedDateTime, :savedInSfms)"
         ),
+
         UPDATE_REQUISITION(
-                "UPDATE ${supplySchema}.requisition SET active_version_id = :activeVersionId, ordered_date_time = :orderedDateTime, \n" +
+                "UPDATE ${supplySchema}.requisition SET current_revision_id = :revisionId, ordered_date_time = :orderedDateTime, \n" +
                 "processed_date_time = :processedDateTime, completed_date_time = :completedDateTime, \n" +
-                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime, modified_date_time = :modifiedDateTime \n" +
+                "approved_date_time = :approvedDateTime, rejected_date_time = :rejectedDateTime, \n" +
+                "saved_in_sfms = :savedInSfms \n" +
                 "WHERE requisition_id = :requisitionId"
         ),
+
+        /** Never insert the revision id, let it auto increment. */
+        INSERT_REQUISITION_CONTENT(
+                "INSERT INTO ${supplySchema}.requisition_content(requisition_id, destination, status, \n" +
+                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time) \n" +
+                "VALUES (:requisitionId, :destination, :status::${supplySchema}.requisition_status, \n" +
+                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime)"
+        ),
+
         GET_REQUISITION_BY_ID(
-                "SELECT requisition_id, processed_date_time, completed_date_time, approved_date_time, \n" +
-                "rejected_date_time, modified_date_time \n" +
-                "FROM ${supplySchema}.requisition \n" +
-                "WHERE requisition_id = :requisitionId"
+                "SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c \n" +
+                "ON r.current_revision_id = c.revision_id \n" +
+                "WHERE r.requisition_id = :requisitionId"
         ),
+
         /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
          * to complete this query. */
         SEARCH_REQUISITIONS_PARTIAL(
-                "SELECT r.requisition_id, r.ordered_date_time, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
-                "r.rejected_date_time, r.modified_date_time, count(*) OVER() as total_rows \n" +
+                "SELECT *, count(*) OVER() as total_rows \n" +
                 "FROM ${supplySchema}.requisition as r \n" +
-                "INNER JOIN ${supplySchema}.requisition_version as v ON r.active_version_id = v.version_id \n" +
-                "WHERE v.destination LIKE :destination AND Coalesce(v.customer_id::text, '') LIKE :customerId \n" +
-                "AND v.status::text IN (:statuses) AND r."
+                "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
+                "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
+                "AND c.status::text IN (:statuses) AND r."
         ),
+
         /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
          * to complete this query. */
         ORDER_HISTORY_PARTIAL(
-                "SELECT r.requisition_id, r.ordered_date_time, r.processed_date_time, r.completed_date_time, r.approved_date_time, \n" +
-                "r.rejected_date_time, r.modified_date_time, count(*) OVER() as total_rows \n" +
+                "SELECT *, count(*) OVER() as total_rows \n" +
                 "FROM ${supplySchema}.requisition as r \n" +
-                "INNER JOIN ${supplySchema}.requisition_version as v ON r.active_version_id = v.version_id \n" +
-                "WHERE (v.destination = :destination OR v.customer_id = :customerId) \n" +
-                "AND v.status::text IN (:statuses) AND r."
+                "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
+                "WHERE (c.destination = :destination OR c.customer_id = :customerId) \n" +
+                "AND c.status::text IN (:statuses) AND r."
         )
         ;
 
@@ -208,21 +231,37 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     private class RequisitionRowMapper extends BaseRowMapper<Requisition> {
 
-        private SqlRequisitionHistoryDao historyDao;
+        private EmployeeInfoService employeeInfoService;
+        private LocationService locationService;
+        private SqlLineItemDao lineItemDao;
 
-        public RequisitionRowMapper(SqlRequisitionHistoryDao historyDao) {
-            this.historyDao = historyDao;
+        protected RequisitionRowMapper(EmployeeInfoService employeeInfoService, LocationService locationService,
+                                    SqlLineItemDao lineItemDao) {
+            this.employeeInfoService = employeeInfoService;
+            this.locationService = locationService;
+            this.lineItemDao = lineItemDao;
         }
 
         @Override
         public Requisition mapRow(ResultSet rs, int i) throws SQLException {
-            Requisition requisition = new Requisition(historyDao.getRequisitionHistory(rs.getInt("requisition_id")));
-            requisition.setId(rs.getInt("requisition_id"));
-            requisition.setProcessedDateTime(getLocalDateTimeFromRs(rs, "processed_date_time"));
-            requisition.setCompletedDateTime(getLocalDateTimeFromRs(rs, "completed_date_time"));
-            requisition.setApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"));
-            requisition.setRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"));
-            return requisition;
+            return new Requisition.Builder()
+                    .withRequisitionId(rs.getInt("requisition_id"))
+                    .withRevisionId(rs.getInt("current_revision_id"))
+                    .withCustomer(employeeInfoService.getEmployee(rs.getInt("customer_id")))
+                    .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
+                    .withLineItems(lineItemDao.getLineItems(rs.getInt("current_revision_id")))
+                    .withStatus(RequisitionStatus.valueOf(rs.getString("status")))
+                    .withIssuer(employeeInfoService.getEmployee(rs.getInt("issuing_emp_id")))
+                    .withNote(rs.getString("note"))
+                    .withModifiedBy(employeeInfoService.getEmployee(rs.getInt("modified_by_id")))
+                    .withModifiedDateTime(getLocalDateTimeFromRs(rs, "modified_date_time"))
+                    .withOrderedDateTime(getLocalDateTimeFromRs(rs, "ordered_date_time"))
+                    .withProcessedDateTime(getLocalDateTimeFromRs(rs, "processed_date_time"))
+                    .withCompletedDateTime(getLocalDateTimeFromRs(rs, "completed_date_time"))
+                    .withApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"))
+                    .withRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"))
+                    .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
+                    .build();
         }
     }
 }
