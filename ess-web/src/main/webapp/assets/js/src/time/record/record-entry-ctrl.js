@@ -10,54 +10,35 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
 
     function getInitialState() {
         return {
-            empId: appProps.user.employeeId,  // Employee Id
-            miscLeaves: appProps.miscLeaves,  // Listing of misc leave types
-            miscLeaveGrants: null,            // List of records that grant use of a misc leave type
-            accrual: null,                    // Accrual info for selected record
-            allowances: {},                   // A map that stores yearly temp employee allowances
-            selectedYear: 0,                  // The year of the selected record (makes it easy to get the selected record's allowance)
-            records: [],                      // All active employee records
-            iSelectedRecord: 0,               // Index of the currently selected record,
-            salaryRecs: [],                   // A list of salary recs that are active during the selected record's date range
-            iSelSalRec: 0,                    // Index of the selected salary rec (used when there is a salary change mid record)
-            tempEntries: false,               // True if the selected record contains TE pay entries
-            annualEntries: false,             // True if the selected record contains RA or SA entries
-            totals: {},                       // Stores record wide totals for time entry fields of the selected record
-            holidays: null,                   // Stores a map of holidays
+            empId: appProps.user.employeeId,    // Employee Id
+            miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
+            miscLeaveGrants: null,              // List of records that grant use of a misc leave type
+            accrual: null,                      // Accrual info for selected record
+            allowances: {},                     // A map that stores yearly temp employee allowances
+            selectedYear: 0,                    // The year of the selected record (makes it easy to get the selected record's allowance)
+            records: [],                        // All active employee records
+            iSelectedRecord: 0,                 // Index of the currently selected record,
+            salaryRecs: [],                     // A list of salary recs that are active during the selected record's date range
+            iSelSalRec: 0,                      // Index of the selected salary rec (used when there is a salary change mid record)
+            tempEntries: false,                 // True if the selected record contains TE pay entries
+            annualEntries: false,               // True if the selected record contains RA or SA entries
+            totals: {},                         // Stores record wide totals for time entry fields of the selected record
+            holidays: null,                     // Stores a map of holidays
 
-            // Page state
-            pageState: 0                      // References the values from $scope.pageStates
+            request: {                          // Flags indicating if ajax requests are in progress
+                records: false,                 //  Get active records
+                accruals: false,                //  Get accruals for selected record
+                allowances: false,              //  Get allowances for selected record
+                save: false                     //  Save selected record
+            }
         }
     }
 
     $scope.state = null;                  // The container for all the state variables for this page
 
-    // Enumeration of the possible page states.
-    $scope.pageStates = {
-        INITIAL: 0,
-        FETCHING: 1,
-        FETCHED: 2,
-        SAVING: 3,
-        SAVED: 4,
-        SAVE_FAILURE: 5,
-        SUBMIT_WARNING: 6,
-        SUBMIT_ACK: 7,
-        SUBMITTING: 8,
-        SUBMITTED: 9,
-        SUBMIT_FAILURE: 10,
-        VALIDATE_FAILURE: 11
-    };
-
     // Create a new state from the values in the default state.
     $scope.initializeState = function() {
         $scope.state = getInitialState();
-    };
-
-    // A map of employee record statuses to the logical next status upon record submission
-    var nextStatusMap = {
-        NOT_SUBMITTED: "SUBMITTED",
-        DISAPPROVED: "SUBMITTED",
-        DISAPPROVED_PERSONNEL: "SUBMITTED_PERSONNEL"
     };
 
     $scope.init = function() {
@@ -87,6 +68,15 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
     });
 
+    $scope.$watchCollection('state.request', function (newVal, oldVal) {
+        console.log('bloop');
+        for (var field in newVal) {
+            if (newVal[field] != oldVal[field]) {
+                console.log(field, newVal[field]);
+            }
+        }
+    });
+
     /** --- API Methods --- */
 
     /**
@@ -95,7 +85,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
      */
     $scope.getRecords = function() {
         $scope.initializeState();
-        $scope.state.pageState = $scope.pageStates.FETCHING;
+        
+        $scope.state.request.records = true;
         activeRecordsApi.get({
             empId: $scope.state.empId,
             scope: 'E'
@@ -121,7 +112,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }, function (response) {    // handle request error
             modals.open('500', {action: 'get active records', details: response});
         }).$promise.finally(function() {
-            $scope.state.pageState = $scope.pageStates.FETCHED;
+            console.log('whoop');
+            $scope.state.request.records = false;
         });
     };
 
@@ -137,12 +129,10 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var entryErrors = $scope.selRecordHasEntryErrors();
         if (entryErrors || submit && $scope.selRecordHasRecordErrors()) {
             $scope.$broadcast('validateRecordEntries');
-            $scope.state.pageState = $scope.pageStates.VALIDATE_FAILURE;
             modals.open('validate-indicator', {'record': record});
         }
         // Open the modal to indicate save/submit
         else if (submit) {
-            $scope.state.pageState =  $scope.pageStates.SUBMIT_ACK;
             var modalDialogs = getSubmitDialogs();
 
             // Display any necessary dialogs prior to submit
@@ -159,17 +149,17 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
         else {
             modals.open('save-indicator', {'record': record});
-            $scope.state.pageState = $scope.pageStates.SAVING;
+            $scope.state.request.save = true;
             recordSaveApi.save({action: 'save'}, record, function (resp) {
                 record.updateDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
                 record.savedDate = record.updateDate;
                 record.dirty = false;
-                $scope.state.pageState = $scope.pageStates.SAVED;
             }, function (resp) {
-                modals.reject('save-indicator');
+                modals.reject();
                 modals.open('500', {details: resp});
                 console.log(resp);
-                $scope.state.pageState = $scope.pageStates.SAVE_FAILURE;
+            }).$promise.finally(function() {
+                $scope.state.request.save = false;
             });
         }
     };
@@ -183,12 +173,13 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         modals.open('submit-progress');
         return recordSaveApi.save({action: 'submit'}, record, function (resp) {
             modals.resolve();
-            $scope.state.pageState = $scope.pageStates.SUBMITTED;
         }, function (resp) {
             modals.reject();
             modals.open('500', {details: resp});
             console.error(resp);
-        }).$promise;
+        }).$promise.finally(function () {
+            $scope.state.request.save = false;
+        });
     };
 
     /**
@@ -200,6 +191,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             var empId = $scope.state.empId;
             var record = $scope.state.records[$scope.state.iSelectedRecord];
             var periodStartMoment = moment(record.payPeriod.startDate);
+            $scope.state.request.accruals = true;
             return accrualPeriodApi.get({
                 empId: empId,
                 beforeDate: periodStartMoment.format('YYYY-MM-DD')
@@ -210,7 +202,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             }, function (resp) {
                 modals.open('500', {details: resp});
                 console.error(resp);
-            }).$promise;
+            }).$promise.finally(function() {
+                $scope.state.request.accruals = false;
+            });
         }
         // Return an automatically resolving promise if no request was made
         return $q(function (resolve) {resolve()});
@@ -228,6 +222,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 empId: $scope.state.empId,
                 year: $scope.state.selectedYear
             };
+            $scope.state.request.allowances = true;
             return allowanceApi.get(params, function(response) {
                 for (var i in response.result) {
                     var allowance = response.result[i];
@@ -237,7 +232,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             }, function(resp) {
                 modals.open('500', {details: resp});
                 console.error(resp);
-            }).$promise;
+            }).$promise.finally(function () {
+                $scope.state.request.allowances = false;
+            });
         }
         // Return an automatically resolving promise if no request was made
         return $q(function (resolve) {resolve()});

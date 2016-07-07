@@ -4,7 +4,7 @@ essApp.directive('datepicker', [function(){
     return {
         restrict: 'AE',
         scope: {
-            stepMonths: "@",    // Set to zero to disable month toggle.
+            stepMonths: "@",    // Set to false to disable month toggle.
             inline: "@",        // Set true if datepicker should be inline
             defaultDate: "@",   // Default Date to display
             beforeShowDay: "&"  // See http://api.jqueryui.com/datepicker/#option-beforeShowDay
@@ -20,7 +20,7 @@ essApp.directive('datepicker', [function(){
                 beforeShowDay: $scope.beforeShowDay()
             });
 
-            if ($scope.stepMonths === 0) {
+            if ($scope.stepMonths === "false") {
                 element.find(".ui-datepicker-prev, .ui-datepicker-next").remove();
             }
         }

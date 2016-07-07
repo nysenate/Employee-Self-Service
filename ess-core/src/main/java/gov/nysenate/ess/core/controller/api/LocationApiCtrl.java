@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class LocationApiCtrl extends BaseRestApiCtrl {
 
     @Autowired private LocationDao locationDao;
-    @Autowired private EmployeeInfoService employeeService;
 
     @RequestMapping(value = "")
     public BaseResponse getLocations() {
@@ -36,31 +35,11 @@ public class LocationApiCtrl extends BaseRestApiCtrl {
                 new LocationId(locCode, locType))));
     }
 
-    /**
-     * @return A list of {@link Location Locations} that belong to the logged in users responsibility head.
-     */
-    @RequestMapping(value = "/responsibilityHead")
-    public BaseResponse getLocationsByResponsibilityHead() {
-        return ListViewResponse.of(locationDao.getLocationsUnderResponsibilityHead(getLoggedInEmployee().getRespCenter().getHead())
-                                              .stream()
-                                              .map(LocationView::new)
-                                              .collect(Collectors.toList()));
-    }
-
     @RequestMapping(value = "/search")
     public BaseResponse searchLocations(@RequestParam String term) {
         return ListViewResponse.of(locationDao.searchLocations(term)
                                               .stream()
                                               .map(LocationView::new)
                                               .collect(Collectors.toList()));
-    }
-
-    private Employee getLoggedInEmployee() {
-        return employeeService.getEmployee(getSubjectEmployeeId());
-    }
-
-    private int getSubjectEmployeeId() {
-        SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
-        return person.getEmployeeId();
     }
 }

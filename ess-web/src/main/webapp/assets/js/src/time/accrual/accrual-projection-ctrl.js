@@ -45,9 +45,9 @@ function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accr
                 }).reverse();
                 // Gather projected acc records if year is 1 yr ago, current, or future.
                 if (year >= $scope.state.today.year() - 1) {
-                    $scope.state.projections[year] = resp.result.filter(function(acc) {
-                        return acc.computed && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
-                    });
+                    $scope.state.projections[year] = resp.result
+                        .filter(isValidProjection)
+                        .map(initializeProjection);
                 }
             }
             $scope.state.searching = false;
@@ -74,7 +74,7 @@ function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accr
             baseRec = $scope.state.accSummaries[year][0];
         }
         else {
-            baseRec = $scope.state.projections[year][projLen - 1];
+            baseRec = $scope.state.projections[year][0];
         }
         var per = baseRec.personalUsed, 
             vac = baseRec.vacationUsed, 
@@ -90,6 +90,34 @@ function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accr
             rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - sick;
         }
     };
+
+    /** --- Internal Methods --- */
+
+    /**
+     * @param acc Accrual record
+     * @returns {*|boolean} - True iff the record is a computed projection
+     *                          and the employee is able to accrue/use accruals
+     */
+    function isValidProjection(acc) {
+        return acc.computed && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
+    }
+
+    /** Indicates delta fields that are used for input, used to init projection */
+    var deltaFields = ['personalUsedDelta', 'vacationUsedDelta', 'sickUsedDelta'];
+
+    /**
+     * Initialize the given projection for display
+     * @param projection - Accrual projection record
+     */
+    function initializeProjection(projection) {
+        // Set all 0 fields as null to facilitate initial entry
+        deltaFields.forEach(function (fieldName) {
+            if (projection[fieldName] === 0) {
+                projection[fieldName] = null;
+            }
+        });
+        return projection;
+    }
     
     $scope.init();
 }

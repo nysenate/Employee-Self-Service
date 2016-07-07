@@ -24,5 +24,5 @@ public interface LocationDao {
     /**
      * Get locations that are managed by the give {@code responsibilityHead}.
      */
-    List<Location> getLocationsUnderResponsibilityHead(ResponsibilityHead responsibilityHead);
+    List<Location> getLocationsByResponsibilityHead(ResponsibilityHead responsibilityHead);
 }

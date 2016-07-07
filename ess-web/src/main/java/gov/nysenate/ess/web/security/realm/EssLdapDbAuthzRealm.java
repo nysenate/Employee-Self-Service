@@ -3,14 +3,12 @@ package gov.nysenate.ess.web.security.realm;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.service.auth.LdapAuthService;
+import gov.nysenate.ess.core.service.permission.EssPermissionService;
 import gov.nysenate.ess.seta.service.personnel.SupervisorInfoService;
-import gov.nysenate.ess.supply.security.SupplyAuthorization;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
@@ -37,7 +35,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
 
     @Autowired private LdapAuthService essLdapAuthService;
     @Autowired private SupervisorInfoService supervisorInfoService;
-    @Autowired private SupplyAuthorization supplyAuthorization;
+    @Autowired private EssPermissionService essPermissionService;
 
     /**
      * {@inheritDoc}
@@ -97,13 +95,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         if (supervisorInfoService.isSupervisorDuring(user.getEmployeeId())) {
             authInfo.addRole("supervisor");
         }
-        /** Add supply permissions */
-        for (String permission: supplyAuthorization.getPermissions(user)) {
-            Permission p;
-            WildcardPermission w;
-            authInfo.addStringPermission(permission);
-            authInfo.getRoles();
-        }
+        authInfo.addObjectPermissions(essPermissionService.getPermissions(user));
         return authInfo;
     }
 
