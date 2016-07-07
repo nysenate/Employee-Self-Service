@@ -59,7 +59,7 @@
     <h1>Historical Attendance Records</h1>
 
     <p class="content-info" style="">
-      Time records that have been submitted for pay periods during {{year}} are listed in the table below. <br/>
+      Time records that have been submitted for pay periods during {{state.year}} are listed in the table below. <br/>
       You can view details about each pay period by clicking on the row.
       <span ng-show="state.paperTimesheetsDisplayed">
         <br>
