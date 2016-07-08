@@ -254,4 +254,11 @@ ALTER TABLE ONLY requisition_history
 ALTER TABLE ONLY requisition_history
     ADD CONSTRAINT requisition_history_version_id_fkey FOREIGN KEY (version_id) REFERENCES requisition_version(version_id);
 
+--
+-- Permissions
+--
 
+GRANT ALL PRIVILEGES ON SCHEMA supply TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA supply TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA supply TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA supply TO PUBLIC;
