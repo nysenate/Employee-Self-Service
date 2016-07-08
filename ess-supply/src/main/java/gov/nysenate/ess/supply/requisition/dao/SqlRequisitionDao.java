@@ -34,10 +34,12 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Override
     @Transactional(value = "localTxManager")
-    public Requisition saveRequisition(Requisition requisition) {
+    public synchronized Requisition saveRequisition(Requisition requisition) {
         requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
-        requisition = insertRequisitionContent(requisition);
+        // Get the next revision id and set it in the requisition.
+        requisition.setRevisionId(getNextRevisionId());
         saveRequisitionInfo(requisition);
+        insertRequisitionContent(requisition);
         lineItemDao.insertRequisitionLineItems(requisition);
         return requisition;
     }
@@ -46,12 +48,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
      * Inserts a new requisition revision into the requisition_content table.
      * @return Requisition with its revisionId set.
      */
-    private Requisition insertRequisitionContent(Requisition requisition) {
+    private void insertRequisitionContent(Requisition requisition) {
         MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.INSERT_REQUISITION_CONTENT.getSql(schemaMap());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        localNamedJdbc.update(sql, params, keyHolder);
-        return requisition.setRevisionId((Integer) keyHolder.getKeys().get("revision_id"));
+        localNamedJdbc.update(sql, params);
     }
 
     /**
@@ -166,7 +166,15 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return statuses.stream().map(Enum::name).collect(Collectors.toSet());
     }
 
+    private int getNextRevisionId() {
+        String sql = SqlRequisitionQuery.GET_NEXT_REVISION_ID.getSql(schemaMap());
+        return localNamedJdbc.query(sql, (rs, i) -> { return rs.getInt("nextval"); }).get(0);
+    }
+
     private enum SqlRequisitionQuery implements BasicSqlQuery {
+        GET_NEXT_REVISION_ID(
+                "SELECT nextval('${supplySchema}.requisition_content_revision_id_seq'::regclass)"
+        ),
         INSERT_REQUISITION(
                 "INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time, \n" +
                 "processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms) \n" +
@@ -184,9 +192,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
         /** Never insert the revision id, let it auto increment. */
         INSERT_REQUISITION_CONTENT(
-                "INSERT INTO ${supplySchema}.requisition_content(requisition_id, destination, status, \n" +
+                "INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status, \n" +
                 "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time) \n" +
-                "VALUES (:requisitionId, :destination, :status::${supplySchema}.requisition_status, \n" +
+                "VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status, \n" +
                 ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime)"
         ),
 
@@ -256,7 +264,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("current_revision_id")))
                     .withStatus(RequisitionStatus.valueOf(rs.getString("status")))
-                    .withIssuer(employeeInfoService.getEmployee(rs.getInt("issuing_emp_id")))
+                    .withIssuer(rs.getInt("issuing_emp_id") == 0 ? null : employeeInfoService.getEmployee(rs.getInt("issuing_emp_id")))
                     .withNote(rs.getString("note"))
                     .withModifiedBy(employeeInfoService.getEmployee(rs.getInt("modified_by_id")))
                     .withModifiedDateTime(getLocalDateTimeFromRs(rs, "modified_date_time"))

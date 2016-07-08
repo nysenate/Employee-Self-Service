@@ -59,6 +59,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
     }
 
     function getRequisitions(employeeInfoResponse) {
+        console.log(employeeInfoResponse);
         var params = {
             location: employeeInfoResponse.employee.empWorkLocation,
             customerId: employeeInfoResponse.employee.employeeId,
@@ -74,6 +75,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
     }
 
     function setRequisitions(orderHistoryResponse) {
+        console.log(orderHistoryResponse);
         $scope.requisitions = orderHistoryResponse.result;
         return $scope.requisitions;
     }
