@@ -4962,7 +4962,6 @@ table.time-record-entry-table tbody tr.time-record-row td:nth-child(1) {
   width: 150px;
   border-right: 1px solid #ccc;
 }
-
 table.time-record-entry-table tbody tr.time-record-row:hover {
   background: #f3f6ff;
 }
@@ -5053,15 +5052,12 @@ table.time-record-entry-table tbody tr td.today {
 .record-selection-container table td {
   padding: 5px;
 }
-
 .record-selection-container table tbody tr {
   cursor: pointer;
 }
-
 .record-selection-container table tbody tr.active {
   background: #e7e9f6;
 }
-
 .record-selection-container table tbody tr:hover {
   background: #E4EBFF;
 }
@@ -6480,7 +6476,6 @@ table.time-record-entry-table tbody tr.time-record-row td:nth-child(1) {
   width: 150px;
   border-right: 1px solid #ccc;
 }
-
 table.time-record-entry-table tbody tr.time-record-row:hover {
   background: #f3f6ff;
 }
@@ -6571,15 +6566,12 @@ table.time-record-entry-table tbody tr td.today {
 .record-selection-container table td {
   padding: 5px;
 }
-
 .record-selection-container table tbody tr {
   cursor: pointer;
 }
-
 .record-selection-container table tbody tr.active {
   background: #e7e9f6;
 }
-
 .record-selection-container table tbody tr:hover {
   background: #E4EBFF;
 }
