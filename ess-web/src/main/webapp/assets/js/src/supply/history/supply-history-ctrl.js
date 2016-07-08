@@ -66,11 +66,11 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
         $scope.locations.push("All");
         $scope.issuers.push("All");
         angular.forEach($scope.shipments, function (shipment) {
-            if ($scope.locations.indexOf(shipment.activeVersion.destination.locId) === -1) {
-                $scope.locations.push(shipment.activeVersion.destination.locId);
+            if ($scope.locations.indexOf(shipment.destination.locId) === -1) {
+                $scope.locations.push(shipment.destination.locId);
             }
-            if ($scope.issuers.indexOf(shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName) === -1) {
-                $scope.issuers.push(shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName);
+            if ($scope.issuers.indexOf(shipment.issuer.firstName + " " + shipment.issuer.lastName) === -1) {
+                $scope.issuers.push(shipment.issuer.firstName + " " + shipment.issuer.lastName);
             }
         });
     };
@@ -84,11 +84,11 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
     };
 
     function isInLocationFilter(shipment) {
-        return $scope.selectedLocation === "All" || shipment.activeVersion.destination.locId === $scope.selectedLocation;
+        return $scope.selectedLocation === "All" || shipment.destination.locId === $scope.selectedLocation;
     }
 
     function isInIssuerFilter(shipment) {
-        return $scope.selectedIssuer === 'All' || shipment.activeVersion.issuer.firstName + " " + shipment.activeVersion.issuer.lastName === $scope.selectedIssuer;
+        return $scope.selectedIssuer === 'All' || shipment.issuer.firstName + " " + shipment.issuer.lastName === $scope.selectedIssuer;
     }
 
     /** --- Util methods --- */
@@ -96,13 +96,13 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
     // TODO: do we want quantity of items orderd or number of distinct items ordered?
     $scope.getOrderQuantity = function (shipment) {
         var size = 0;
-        angular.forEach(shipment.activeVersion.lineItems, function (lineItem) {
+        angular.forEach(shipment.lineItems, function (lineItem) {
             size += lineItem.quantity;
         });
         return size;
     };
 
     $scope.viewOrder = function (shipment) {
-        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.id);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId);
     };
 }

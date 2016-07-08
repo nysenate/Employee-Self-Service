@@ -54,20 +54,21 @@
         </tr>
         </thead>
         <tbody>
-        <%--<tr ng-repeat="requisition in allRequisitions" ng-click="viewRequisition(requisition)">--%>
+        <%--<tr ng-repeat="requisition in allRequisitions" >--%>
         <tr dir-paginate="requisition in requisitions | itemsPerPage : paginate.itemsPerPage"
             current-page="paginate.currPage"
             pagination-id="order-history-pagination"
-            total-items="paginate.totalItems">
-          <td>{{requisition.id}}</td>
-          <td>{{requisition.activeVersion.customer.lastName}}</td>
-          <td>{{requisition.activeVersion.destination.locId}}</td>
+            total-items="paginate.totalItems"
+            ng-click="viewRequisition(requisition)">
+          <td>{{requisition.requisitionId}}</td>
+          <td>{{requisition.customer.lastName}}</td>
+          <td>{{requisition.destination.locId}}</td>
           <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
           <td ng-class="{'pending-cell': requisition.activeVersion.status === 'PENDING',
                        'processing-cell': requisition.activeVersion.status === 'PROCESSING',
                        'completed-cell': requisition.activeVersion.status === 'COMPLETED' || requisition.activeVersion.status === 'APPROVED',
                        'rejected-cell': requisition.activeVersion.status === 'REJECTED'}">
-            {{requisition.activeVersion.status}}
+            {{requisition.status}}
           </td>
         </tr>
         </tbody>

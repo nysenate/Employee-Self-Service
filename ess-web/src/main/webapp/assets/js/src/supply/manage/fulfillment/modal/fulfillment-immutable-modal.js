@@ -8,10 +8,10 @@ essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'Locatio
     };
 
     function link($scope, $elem, $attrs) {
-        $scope.shipment = modals.params();
+        $scope.requisition = modals.params();
         
         $scope.acceptShipment = function() {
-            requisitionUndoRejectionApi.save({id: $scope.shipment.id}, null,
+            requisitionUndoRejectionApi.save({id: $scope.requisition.requisitionId}, null,
             function(value, responseHeaders) {
                 $scope.close();
                 reload();

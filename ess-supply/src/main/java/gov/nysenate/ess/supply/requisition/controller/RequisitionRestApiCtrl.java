@@ -82,7 +82,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
         EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
-        dateField = dateField == null ? "modified_date_time" : dateField;
+        dateField = dateField == null ? "ordered_date_time" : dateField;
 
         LimitOffset limoff = getLimitOffset(webRequest, 25);
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");

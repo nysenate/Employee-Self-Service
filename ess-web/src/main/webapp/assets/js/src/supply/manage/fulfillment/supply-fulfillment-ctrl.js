@@ -142,7 +142,8 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
     function getApprovedShipments() {
         var params = {
             status: "APPROVED",
-            from: moment().startOf('day').format()
+            from: moment().startOf('day').format(),
+            dateField: "approved_date_time"
         };
         $scope.approvedSearch.response = requisitionApi.get(params, function (response) {
             $scope.approvedSearch.matches = response.result;
@@ -157,7 +158,8 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
     function getCanceledShipments() {
         var params = {
             status: "REJECTED",
-            from: moment().startOf('day').format()
+            from: moment().startOf('day').format(),
+            dateField: "rejected_date_time"
         };
         $scope.canceledSearch.response = requisitionApi.get(params, function (response) {
             $scope.canceledSearch.matches = response.result;
@@ -173,7 +175,7 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
     /* Return the number of distinct items ordered in a requisition */
     $scope.getOrderQuantity = function (requisition) {
         var size = 0;
-        angular.forEach(requisition.activeVersion.lineItems, function (item) {
+        angular.forEach(requisition.lineItems, function (item) {
             size++;
         });
         return size;
@@ -183,7 +185,7 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
 
     $scope.highlightRequisition = function (requisition) {
         var highlight = false;
-        angular.forEach(requisition.activeVersion.lineItems, function (lineItem) {
+        angular.forEach(requisition.lineItems, function (lineItem) {
             if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
                 highlight = true;
             }
@@ -193,10 +195,10 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
 
     /** --- Modals --- */
 
-    $scope.showEditingModal = function (shipment) {
+    $scope.showEditingModal = function (requisition) {
         /** Editing modal returns a promise containing the save requisition api request 
          * if the user saved their changes, undefined otherwise.*/
-        $scope.saveResponse.response = modals.open('fulfillment-editing-modal', shipment)
+        $scope.saveResponse.response = modals.open('fulfillment-editing-modal', requisition)
             .then(successfulSave)
             .catch(errorSaving);
     };
@@ -214,7 +216,7 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
         $scope.saveResponse.error = true;
     }
 
-    $scope.showImmutableModal = function (shipment) {
-        modals.open('fulfillment-immutable-modal', shipment);
+    $scope.showImmutableModal = function (requisition) {
+        modals.open('fulfillment-immutable-modal', requisition);
     };
 }

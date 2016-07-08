@@ -65,7 +65,7 @@ public class RequisitionView implements ViewObject {
                 .withDestination(destination.toLocation())
                 .withLineItems(lineItems.stream().map(LineItemView::toLineItem).collect(Collectors.toSet()))
                 .withStatus(RequisitionStatus.valueOf(status))
-                .withIssuer(issuer.toEmployee())
+                .withIssuer(issuer == null ? null : issuer.toEmployee())
                 .withNote(note)
                 .withModifiedBy(modifiedBy.toEmployee())
                 .withModifiedDateTime(modifiedDateTime)

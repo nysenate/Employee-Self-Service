@@ -67,16 +67,16 @@
           <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'"
                ng-repeat="shipment in getShipmentsWithItem(item)" ng-click="viewShipment(shipment)">
             <div class="col-1-12">
-              {{shipment.id}}
+              {{shipment.requisitionId}}
             </div>
             <div class="col-3-12">
-              {{shipment.activeVersion.destination.locId}}
+              {{shipment.destination.locId}}
             </div>
             <div class="col-2-12">
               {{getOrderedQuantity(shipment, item)}}
             </div>
             <div class="col-3-12">
-              {{shipment.activeVersion.issuer.lastName}}
+              {{shipment.issuer.lastName}}
             </div>
             <div class="col-3-12">
               {{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}

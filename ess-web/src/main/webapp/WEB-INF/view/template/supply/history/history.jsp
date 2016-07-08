@@ -49,13 +49,13 @@
         </thead>
         <tbody>
         <tr ng-repeat="shipment in filteredShipments" ng-click="viewOrder(shipment)" ng-show="isInFilter(shipment)">
-          <td>{{shipment.id}}</td>
-          <td>{{shipment.activeVersion.destination.locId}}</td>
-          <td>{{shipment.activeVersion.customer.lastName}}</td>
+          <td>{{shipment.requisitionId}}</td>
+          <td>{{shipment.destination.locId}}</td>
+          <td>{{shipment.customer.lastName}}</td>
           <td>{{getOrderQuantity(shipment)}}</td>
           <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
           <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
-          <td>{{shipment.activeVersion.issuer.lastName}}</td>
+          <td>{{shipment.issuer.lastName}}</td>
         </tr>
         </tbody>
       </table>

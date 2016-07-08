@@ -10,6 +10,8 @@ import gov.nysenate.ess.core.util.*;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 @Repository
 public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
+    private Logger logger = LoggerFactory.getLogger(SqlRequisitionDao.class);
+
     @Autowired private SqlLineItemDao lineItemDao;
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private LocationService locationService;
@@ -37,7 +41,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public synchronized Requisition saveRequisition(Requisition requisition) {
         requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
         // Get the next revision id and set it in the requisition.
-        requisition.setRevisionId(getNextRevisionId());
+        requisition = requisition.setRevisionId(getNextRevisionId());
         saveRequisitionInfo(requisition);
         insertRequisitionContent(requisition);
         lineItemDao.insertRequisitionLineItems(requisition);
