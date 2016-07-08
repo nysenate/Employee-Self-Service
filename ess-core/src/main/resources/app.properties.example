@@ -50,10 +50,10 @@ ts.schema =
 # Postgres Schema Configuration
 
 # Ess common schema
-ess.schema =
+ess.schema = ess
 
 # Supply's schema
-supply.schema =
+supply.schema = supply
 
 # --- Mail Configuration ------------------------------------------------------
 
@@ -122,4 +122,5 @@ scheduler.timerecord.ensureall.cron = 0 0 0 * * *
 # --- TimeOut Configuration ------------------------------------------------
 
 #timeout in secs
-timeout = 80
+timeout = 900
+
