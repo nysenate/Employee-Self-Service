@@ -1,7 +1,9 @@
 package gov.nysenate.ess.seta.model.accrual;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -16,8 +18,10 @@ import java.time.LocalDate;
 public class AccrualState extends AccrualSummary
 {
     private static MathContext FOUR_DIGITS_MAX = new MathContext(4);
+    private static BigDecimal HOURS_PER_DAY = new BigDecimal(7);
     private static BigDecimal MAX_YTD_HOURS = new BigDecimal("1820");
 
+    protected LocalDate beginDate;
     protected LocalDate endDate;
     protected int payPeriodCount;
     /** True iff the employee accrues time for the latest pay period */
@@ -32,6 +36,9 @@ public class AccrualState extends AccrualSummary
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
         if (annualAccSummary != null) {
+            this.beginDate = ObjectUtils.max(
+                    LocalDate.ofYearDay(annualAccSummary.getYear(), 1),
+                    annualAccSummary.getContServiceDate());
             this.endDate = annualAccSummary.getEndDate();
             this.payPeriodCount = annualAccSummary.getPayPeriodsBanked();
         }
@@ -47,7 +54,7 @@ public class AccrualState extends AccrualSummary
         periodAccSummary.setRefPayPeriod(refPeriod);
         periodAccSummary.setPayPeriod(currPeriod);
         periodAccSummary.setExpectedTotalHours(this.getYtdHoursExpected());
-        periodAccSummary.setExpectedBiweekHours(getHoursExpectedInPeriod(currPeriod.getNumWeekDaysInPeriod()));
+        periodAccSummary.setExpectedBiweekHours(this.getExpectedHoursForPeriod(currPeriod));
         periodAccSummary.setPrevTotalHoursYtd(this.getTotalHoursUsed());
         periodAccSummary.setSickRate(this.getSickRate());
         periodAccSummary.setVacRate(this.getVacRate());
@@ -92,7 +99,7 @@ public class AccrualState extends AccrualSummary
      * @param period PayPeriod
      */
     public void incrementYtdHoursExpected(PayPeriod period) {
-        BigDecimal hoursExpectedInPeriod = getHoursExpectedInPeriod(period.getNumWeekDaysInPeriod());
+        BigDecimal hoursExpectedInPeriod = getExpectedHoursForPeriod(period);
         if (ytdHoursExpected == null) {
             throw new IllegalStateException("YtdHoursExpected needs to be initialized before incrementing it.");
         }
@@ -102,9 +109,22 @@ public class AccrualState extends AccrualSummary
         this.setYtdHoursExpected(roundedYtdHours);
     }
 
-    private BigDecimal getHoursExpectedInPeriod(int numWeekDaysInPeriod) {
-        BigDecimal bdNumWeekDays = new BigDecimal(numWeekDaysInPeriod);
-        return getProratePercentage().multiply(new BigDecimal(7)).multiply(bdNumWeekDays);
+    /**
+     * Get the number hours the employee is required to work during the given pay period
+     * @param period PayPeriod
+     */
+    private BigDecimal getExpectedHoursForPeriod(PayPeriod period) {
+        return getHoursExpectedForDays(period.getNumWeekDaysInPeriod(Range.atLeast(beginDate)));
+    }
+
+    /**
+     * Get the number of hours expected of an employee for the given number of workdays
+     * @param numWorkDays number of days
+     */
+    private BigDecimal getHoursExpectedForDays(int numWorkDays) {
+        return getProratePercentage()
+                .multiply(HOURS_PER_DAY)
+                .multiply(new BigDecimal(numWorkDays));
     }
 
     /**

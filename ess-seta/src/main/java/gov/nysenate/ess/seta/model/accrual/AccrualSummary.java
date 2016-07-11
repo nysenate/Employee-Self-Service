@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.model.accrual;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
  * Holds basic accrual information (hours accrued/used/banked). This class is intended to
@@ -37,6 +38,26 @@ public class AccrualSummary extends AccrualUsage
         return empHoursAccrued.add(empHoursBanked);
     }
 
+    public void setVacHoursAccrued(BigDecimal vacHoursAccrued) {
+        this.vacHoursAccrued = Optional.ofNullable(vacHoursAccrued).orElse(BigDecimal.ZERO);
+    }
+
+    public void setVacHoursBanked(BigDecimal vacHoursBanked) {
+        this.vacHoursBanked = Optional.ofNullable(vacHoursBanked).orElse(BigDecimal.ZERO);
+    }
+
+    public void setPerHoursAccrued(BigDecimal perHoursAccrued) {
+        this.perHoursAccrued = Optional.ofNullable(perHoursAccrued).orElse(BigDecimal.ZERO);
+    }
+
+    public void setEmpHoursAccrued(BigDecimal empHoursAccrued) {
+        this.empHoursAccrued = Optional.ofNullable(empHoursAccrued).orElse(BigDecimal.ZERO);
+    }
+
+    public void setEmpHoursBanked(BigDecimal empHoursBanked) {
+        this.empHoursBanked = Optional.ofNullable(empHoursBanked).orElse(BigDecimal.ZERO);
+    }
+
     /** --- Copy Constructor --- */
 
     public AccrualSummary(AccrualSummary s) {
@@ -57,39 +78,19 @@ public class AccrualSummary extends AccrualUsage
         return vacHoursAccrued;
     }
 
-    public void setVacHoursAccrued(BigDecimal vacHoursAccrued) {
-        this.vacHoursAccrued = vacHoursAccrued;
-    }
-
     public BigDecimal getVacHoursBanked() {
         return vacHoursBanked;
-    }
-
-    public void setVacHoursBanked(BigDecimal vacHoursBanked) {
-        this.vacHoursBanked = vacHoursBanked;
     }
 
     public BigDecimal getPerHoursAccrued() {
         return perHoursAccrued;
     }
 
-    public void setPerHoursAccrued(BigDecimal perHoursAccrued) {
-        this.perHoursAccrued = perHoursAccrued;
-    }
-
     public BigDecimal getEmpHoursAccrued() {
         return empHoursAccrued;
     }
 
-    public void setEmpHoursAccrued(BigDecimal empHoursAccrued) {
-        this.empHoursAccrued = empHoursAccrued;
-    }
-
     public BigDecimal getEmpHoursBanked() {
         return empHoursBanked;
-    }
-
-    public void setEmpHoursBanked(BigDecimal empHoursBanked) {
-        this.empHoursBanked = empHoursBanked;
     }
 }

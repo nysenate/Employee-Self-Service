@@ -1,10 +1,12 @@
 package gov.nysenate.ess.seta.model.accrual;
 
+import com.google.common.base.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Helper class to store accrual usage numbers.
@@ -81,6 +83,38 @@ public class AccrualUsage
                         .add(famHoursUsed).add(holHoursUsed).add(miscHoursUsed);
     }
 
+    public void setWorkHours(BigDecimal workHours) {
+        this.workHours = Optional.ofNullable(workHours).orElse(BigDecimal.ZERO);
+    }
+
+    public void setTravelHoursUsed(BigDecimal travelHoursUsed) {
+        this.travelHoursUsed = Optional.ofNullable(travelHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
+    public void setVacHoursUsed(BigDecimal vacHoursUsed) {
+        this.vacHoursUsed = Optional.ofNullable(vacHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
+    public void setPerHoursUsed(BigDecimal perHoursUsed) {
+        this.perHoursUsed = Optional.ofNullable(perHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
+    public void setEmpHoursUsed(BigDecimal empHoursUsed) {
+        this.empHoursUsed = Optional.ofNullable(empHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
+    public void setFamHoursUsed(BigDecimal famHoursUsed) {
+        this.famHoursUsed = Optional.ofNullable(famHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
+    public void setHolHoursUsed(BigDecimal holHoursUsed) {
+        this.holHoursUsed = Optional.ofNullable(holHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
+    public void setMiscHoursUsed(BigDecimal miscHoursUsed) {
+        this.miscHoursUsed = Optional.ofNullable(miscHoursUsed).orElse(BigDecimal.ZERO);
+    }
+
     /** --- Basic Getters/Setters --- */
 
     public int getEmpId() {
@@ -95,63 +129,31 @@ public class AccrualUsage
         return workHours;
     }
 
-    public void setWorkHours(BigDecimal workHours) {
-        this.workHours = workHours;
-    }
-
     public BigDecimal getTravelHoursUsed() {
         return travelHoursUsed;
-    }
-
-    public void setTravelHoursUsed(BigDecimal travelHoursUsed) {
-        this.travelHoursUsed = travelHoursUsed;
     }
 
     public BigDecimal getVacHoursUsed() {
         return vacHoursUsed;
     }
 
-    public void setVacHoursUsed(BigDecimal vacHoursUsed) {
-        this.vacHoursUsed = vacHoursUsed;
-    }
-
     public BigDecimal getPerHoursUsed() {
         return perHoursUsed;
-    }
-
-    public void setPerHoursUsed(BigDecimal perHoursUsed) {
-        this.perHoursUsed = perHoursUsed;
     }
 
     public BigDecimal getEmpHoursUsed() {
         return empHoursUsed;
     }
 
-    public void setEmpHoursUsed(BigDecimal empHoursUsed) {
-        this.empHoursUsed = empHoursUsed;
-    }
-
     public BigDecimal getFamHoursUsed() {
         return famHoursUsed;
-    }
-
-    public void setFamHoursUsed(BigDecimal famHoursUsed) {
-        this.famHoursUsed = famHoursUsed;
     }
 
     public BigDecimal getHolHoursUsed() {
         return holHoursUsed;
     }
 
-    public void setHolHoursUsed(BigDecimal holHoursUsed) {
-        this.holHoursUsed = holHoursUsed;
-    }
-
     public BigDecimal getMiscHoursUsed() {
         return miscHoursUsed;
-    }
-
-    public void setMiscHoursUsed(BigDecimal miscHoursUsed) {
-        this.miscHoursUsed = miscHoursUsed;
     }
 }

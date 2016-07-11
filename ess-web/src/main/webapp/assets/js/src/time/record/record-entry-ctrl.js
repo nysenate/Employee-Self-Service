@@ -68,15 +68,6 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
     });
 
-    $scope.$watchCollection('state.request', function (newVal, oldVal) {
-        console.log('bloop');
-        for (var field in newVal) {
-            if (newVal[field] != oldVal[field]) {
-                console.log(field, newVal[field]);
-            }
-        }
-    });
-
     /** --- API Methods --- */
 
     /**
@@ -112,7 +103,6 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }, function (response) {    // handle request error
             modals.open('500', {action: 'get active records', details: response});
         }).$promise.finally(function() {
-            console.log('whoop');
             $scope.state.request.records = false;
         });
     };

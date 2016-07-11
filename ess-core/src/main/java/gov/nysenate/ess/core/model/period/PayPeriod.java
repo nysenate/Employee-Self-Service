@@ -2,6 +2,8 @@ package gov.nysenate.ess.core.model.period;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -61,27 +63,38 @@ public class PayPeriod implements Comparable<PayPeriod>
     }
 
     /**
-     * Returns the number of week days between the start date and end date (inclusive) of this pay period.
+     * Returns the number of week days between the start date and end date (inclusive) of this pay period,
+     * that fall within the given active dates date range
+     * @return int
+     */
+    public int getNumWeekDaysInPeriod(Range<LocalDate> activeDates) {
+        if (startDate == null || endDate == null) {
+            throw new IllegalStateException("Start date and/or end date is null. " +
+                    "Cannot compute number of pay period work days");
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalStateException("Pay period end date cannot be before start date");
+        }
+        int workDays = 0;
+        for (LocalDate day = startDate; !day.isAfter(endDate); day = day.plusDays(1)) {
+            if (DateUtils.WEEKEND.contains(day.getDayOfWeek())) {
+                continue;
+            }
+            if (!activeDates.contains(day)) {
+                continue;
+            }
+            workDays++;
+        }
+        return workDays;
+    }
+
+    /**
+     * @see #getNumWeekDaysInPeriod(Range)
+     * Overload that assumes all days in period are active dates
      * @return int
      */
     public int getNumWeekDaysInPeriod() {
-        if (startDate != null && endDate != null) {
-            if (endDate.isBefore(startDate)) {
-                throw new IllegalStateException("Pay period end date cannot be before start date");
-            }
-            LocalDate date = startDate;
-            int workDays = 0;
-            while (!date.isAfter(endDate)) {
-                DayOfWeek dayOfWeek = date.getDayOfWeek();
-                if (!dayOfWeek.equals(DayOfWeek.SATURDAY) && !dayOfWeek.equals(DayOfWeek.SUNDAY)) {
-                    workDays++;
-                }
-                date = date.plusDays(1);
-            }
-            return workDays;
-        }
-        throw new IllegalStateException("Start date and/or end date is null. " +
-                                        "Cannot compute number of pay period work days");
+        return getNumWeekDaysInPeriod(Range.all());
     }
 
     /**
