@@ -3,7 +3,7 @@
   <%--Non printing requisition view. See bottom half for the version used when printing.--%>
   <div class="no-print">
     <div class="supply-order-hero">
-      <h2>Requisition Order: {{shipment.id}}</h2>
+      <h2>Requisition Order: {{selectedVersion.requisitionId}}</h2>
     </div>
 
     <div loader-indicator class="loader"
@@ -61,7 +61,7 @@
               </script>
             </div>
             <div class="col-4-12">
-              <b>Requested Date:</b> {{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
+              <b>Requested Date:</b> {{selectedVersion.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
             </div>
           </div>
           <div class="grid padding-10">
@@ -72,7 +72,7 @@
               <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
             </div>
             <div class="col-4-12">
-              <b>Issued Date:</b> {{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+              <b>Issued Date:</b> {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
             </div>
           </div>
           <div class="grid padding-10">
@@ -139,7 +139,7 @@
       <div class="content-info">
         <div class="grid padding-10">
           <div class="col-6-12">
-            <b>Requisition Id:</b> {{shipment.id}}
+            <b>Requisition Id:</b> {{selectedVersion.requisitionId}}
           </div>
           <div class="col-6-12">
             <b>Version:</b> {{selectedVersion.name}}
@@ -169,7 +169,7 @@
             <b>Requested By:</b> {{selectedVersion.customer.fullName}}
           </div>
           <div class="col-4-12">
-            <b>Requested Date:</b> {{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
+            <b>Requested Date:</b> {{selectedVersion.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-4-12">
             <b>Status:</b> {{selectedVersion.status}}
@@ -183,7 +183,7 @@
             <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
           </div>
           <div class="col-4-12">
-            <b>Issued Date:</b> {{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+            <b>Issued Date:</b> {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
           </div>
           <div class="col-4-12">
             <b>Modified By:</b> {{selectedVersion.createdBy.lastName}}

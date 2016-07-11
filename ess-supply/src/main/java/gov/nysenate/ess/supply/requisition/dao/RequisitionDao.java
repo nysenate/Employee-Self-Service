@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.dao;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -8,6 +9,7 @@ import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 public interface RequisitionDao {
@@ -28,4 +30,6 @@ public interface RequisitionDao {
      */
     PaginatedList<Requisition> searchOrderHistory(String destinationId, int customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
+
+    ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
 }

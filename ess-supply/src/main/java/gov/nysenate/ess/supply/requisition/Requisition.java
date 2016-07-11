@@ -75,6 +75,10 @@ public final class Requisition {
 
     /** Basic Setters **/
 
+    public Requisition setRequisitionId(int requisitionId) {
+        return copy().withRequisitionId(requisitionId).build();
+    }
+
     public Requisition setRevisionId(int revisionId) {
         return copy().withRevisionId(revisionId).build();
     }
@@ -200,6 +204,14 @@ public final class Requisition {
 
     public boolean getSavedInSfms() {
         return savedInSfms;
+    }
+
+    public String toOrderString() {
+        StringBuilder sb = new StringBuilder();
+        for (LineItem l : lineItems) {
+            sb.append(l.getItem().getCommodityCode() + " x " + l.getQuantity() + "\n");
+        }
+        return sb.toString();
     }
 
     @Override

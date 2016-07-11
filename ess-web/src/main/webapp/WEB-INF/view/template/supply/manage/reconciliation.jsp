@@ -60,7 +60,7 @@
               Issued By
             </div>
             <div class="col-3-12">
-              Completed Date
+              Approved Date
             </div>
           </div>
           <%--Detail rows--%>
@@ -79,7 +79,7 @@
               {{shipment.issuer.lastName}}
             </div>
             <div class="col-3-12">
-              {{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+              {{shipment.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}
             </div>
           </div>
         </div>

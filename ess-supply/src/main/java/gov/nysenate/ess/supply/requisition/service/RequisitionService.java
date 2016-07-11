@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -34,4 +35,5 @@ public interface RequisitionService {
     PaginatedList<Requisition> searchOrderHistory(String destination, int customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
 
+    ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
 }

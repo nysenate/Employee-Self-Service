@@ -1,7 +1,7 @@
-essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyRequisitionByIdApi',
+essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyRequisitionHistoryApi',
     'LocationService', '$window', '$timeout', 'SupplyUtils', supplyViewController]);
 
-function supplyViewController($scope, requisitionApi, locationService, $window, $timeout, supplyUtils) {
+function supplyViewController($scope, historyApi, locationService, $window, $timeout, supplyUtils) {
 
     $scope.requisitionResponse = {};
     $scope.requisitionHistory = {
@@ -12,7 +12,7 @@ function supplyViewController($scope, requisitionApi, locationService, $window, 
 
     $scope.init = function () {
         var id = locationService.getSearchParam('requisition');
-        $scope.requisitionResponse = requisitionApi.get({id: id, detail: true});
+        $scope.requisitionResponse = historyApi.get({id: id});
         $scope.requisitionResponse.$promise
             .then(extractShipment)
             .then(printIfRequested)
@@ -42,9 +42,9 @@ function supplyViewController($scope, requisitionApi, locationService, $window, 
     };
 
     function generateVersions() {
-        for (var k in $scope.shipment.history.items) {
-            if ($scope.shipment.history.items.hasOwnProperty(k)) {
-                $scope.requisitionHistory.versions.push($scope.shipment.history.items[k]);
+        for (var k in $scope.shipment) {
+            if ($scope.shipment.hasOwnProperty(k)) {
+                $scope.requisitionHistory.versions.push($scope.shipment[k]);
             }
         }
     }
@@ -65,6 +65,7 @@ function supplyViewController($scope, requisitionApi, locationService, $window, 
 
     var selectCurrentVersion = function () {
         $scope.selectedVersion = $scope.requisitionHistory.versions[0];
+        console.log($scope.selectedVersion);
     };
 
     var shipmentResourceErrorHandler = function (response) {

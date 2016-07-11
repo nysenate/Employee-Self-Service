@@ -122,7 +122,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="requisition in completedSearch.matches" ng-click="showEditingModal(requisition)">
-        <td>{{requisition.id}}</td>
+        <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
         <td>{{getOrderQuantity(requisition)}}</td>

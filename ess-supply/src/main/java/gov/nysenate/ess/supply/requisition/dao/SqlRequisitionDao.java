@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.dao;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -19,7 +20,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.cert.PKIXRevocationChecker;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         requisition = requisition.setModifiedDateTime(dateTimeFactory.now());
         // Get the next revision id and set it in the requisition.
         requisition = requisition.setRevisionId(getNextRevisionId());
-        saveRequisitionInfo(requisition);
+        requisition = saveRequisitionInfo(requisition);
         insertRequisitionContent(requisition);
         lineItemDao.insertRequisitionLineItems(requisition);
         return requisition;
@@ -61,23 +61,22 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     /**
      * Saves Requisition global information to the requisition table.
      * Updates the row if it exists, otherwise inserts a new row.
+     * @return the requisition with its requisitionId set.
      */
-    private void saveRequisitionInfo(Requisition requisition) {
-        if (!updateRequisition(requisition)) {
-            insertRequisition(requisition);
-        }
-    }
-
-    private boolean updateRequisition(Requisition requisition) {
+    private Requisition saveRequisitionInfo(Requisition requisition) {
+        // Try to update
         MapSqlParameterSource params = requisitionParams(requisition);
         String sql = SqlRequisitionQuery.UPDATE_REQUISITION.getSql(schemaMap());
-        return localNamedJdbc.update(sql, params) == 1;
-    }
-
-    private void insertRequisition(Requisition requisition) {
-        MapSqlParameterSource params = requisitionParams(requisition);
-        String sql = SqlRequisitionQuery.INSERT_REQUISITION.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
+        boolean updated = localNamedJdbc.update(sql, params) == 1;
+        if (!updated) {
+            // If not updated, then Insert.
+            MapSqlParameterSource params1 = requisitionParams(requisition);
+            String sql1 = SqlRequisitionQuery.INSERT_REQUISITION.getSql(schemaMap());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            localNamedJdbc.update(sql1, params1, keyHolder);
+            requisition = requisition.setRequisitionId((Integer) keyHolder.getKeys().get("requisition_id"));
+        }
+        return requisition;
     }
 
     @Override
@@ -109,7 +108,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
      * matches one of the requisition date time fields. */
     private void ensureValidColumn(String dateField) {
         boolean matches = dateField.matches("ordered_date_time|processed_date_time|completed_date_time|" +
-                                            "approved_date_time|rejected_date_time|modified_date_time");
+                                            "approved_date_time|rejected_date_time");
         if (!matches) {
             throw new RuntimeException("Given datefield: " + dateField + "is not a valid requisition date field.");
         }
@@ -140,6 +139,13 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
+    }
+
+    @Override
+    public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
+        String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap());
+        List<Requisition> requisitions =  localNamedJdbc.query(sql, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+        return ImmutableList.copyOf(requisitions);
     }
 
     private MapSqlParameterSource requisitionParams(Requisition requisition) {
@@ -226,6 +232,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
                 "WHERE (c.destination = :destination OR c.customer_id = :customerId) \n" +
                 "AND c.status::text IN (:statuses) AND r."
+        ),
+        GET_REQUISITION_HISTORY(
+                "SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c \n" +
+                "ON r.requisition_id = c.requisition_id \n"
         )
         ;
 
@@ -263,7 +273,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         public Requisition mapRow(ResultSet rs, int i) throws SQLException {
             return new Requisition.Builder()
                     .withRequisitionId(rs.getInt("requisition_id"))
-                    .withRevisionId(rs.getInt("current_revision_id"))
+                    .withRevisionId(rs.getInt("revision_id"))
                     .withCustomer(employeeInfoService.getEmployee(rs.getInt("customer_id")))
                     .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("current_revision_id")))

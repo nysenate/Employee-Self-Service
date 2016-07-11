@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.controller;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
@@ -121,6 +122,12 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
         requisitionView.setModifiedBy(getSubjectEmployeeView());
         requisitionService.saveRequisition(requisitionView.toRequisition());
+    }
+
+    @RequestMapping(value = "/history/{id}")
+    public BaseResponse requisitionHistory(@PathVariable int id) {
+        ImmutableList<Requisition> requisitions = requisitionService.getRequisitionHistory(id);
+        return ListViewResponse.of(requisitions.stream().map(RequisitionView::new).collect(Collectors.toList()));
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)

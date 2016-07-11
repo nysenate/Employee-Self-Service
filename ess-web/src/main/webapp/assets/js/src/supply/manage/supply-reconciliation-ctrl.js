@@ -28,7 +28,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService)
             $scope.reconcilableSearch.matches = response.result;
             $scope.reconcilableSearch.error = false;
             angular.forEach($scope.reconcilableSearch.matches, function(shipment) {
-                angular.forEach(shipment.activeVersion.lineItems, function(lineItem) {
+                angular.forEach(shipment.lineItems, function(lineItem) {
                     if ($scope.reconcilableItemMap.hasOwnProperty(lineItem.item.id)) {
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
                     }
@@ -69,7 +69,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService)
     };
 
     $scope.getOrderedQuantity = function(shipment, item) {
-        var lineItems = shipment.activeVersion.lineItems;
+        var lineItems = shipment.lineItems;
         for(var i = 0; i < lineItems.length; i++) {
             if (lineItems[i].item.id === item.id) {
                 return lineItems[i].quantity;
