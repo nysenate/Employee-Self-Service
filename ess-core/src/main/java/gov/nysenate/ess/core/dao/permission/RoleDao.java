@@ -12,4 +12,9 @@ public interface RoleDao {
      * @return Immutable list of the users roles.
      */
     ImmutableList<EssRole> getRoles(Employee employee);
+
+    /**
+     * Get a list of {@link Employee Employee's} with the given role.
+     */
+    ImmutableList<Employee> getEmployeesWithRole(EssRole role);
 }

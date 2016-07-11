@@ -40,4 +40,8 @@ public class EssPermissionService {
         permissions.addAll(supplyPermissionFactory.getPermissions(employee, roles));
         return ImmutableList.copyOf(permissions);
     }
+
+    public ImmutableList<Employee> getEmployeesWithRole(EssRole role) {
+        return roleDao.getEmployeesWithRole(role);
+    }
 }
