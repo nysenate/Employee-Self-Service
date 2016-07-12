@@ -58,11 +58,11 @@
            pagination-id="item-pagination">
         <div class="content-container padding-10"
              ng-class="{'supply-special-item': allowance.visibility === 'SPECIAL'}">
-          <img ng-src="${ctxPath}/assets/img/supply/{{allowance.item.id}}.png"
-               err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
-               class="supply-item-image">
+            <img ng-src="${imageUrl}/{{allowance.item.commodityCode}}.jpg"
+                 err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
+                 class="supply-item-image">
           <div>
-            <p class="dark-gray bold" style="height: 40px;">{{allowance.item.description}}</p>
+              <p class="dark-gray bold" style="height: 40px;overflow: hidden;">{{allowance.item.description}}</p>
             <p class="dark-gray">{{allowance.item.standardQuantity}}/Pack</p>
           </div>
           <div style="">
