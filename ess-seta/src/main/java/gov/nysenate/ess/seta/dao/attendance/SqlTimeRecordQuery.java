@@ -30,7 +30,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "    ON rec.NUXREFEM = att.NUXREFEM AND rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
         "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
         "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'\n" +
-        "WHERE att.CDSTATUS = 'A' AND per.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'\n" +
+        "WHERE per.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'\n" +
         "    AND per.CDPERIOD = 'AF'\n"
     ),
     GET_TIME_REC_BY_ID(

@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Associates a supervisor to an employee during a specific time period.
@@ -36,9 +37,9 @@ public class EmployeeSupInfo
 
     public Range<LocalDate> getEffectiveDateRange() {
         if (supEndDate == null) {
-            return Range.atLeast(startDate);
+            return Range.atLeast(supStartDate);
         }
-        return Range.closedOpen(startDate, endDate.plusDays(1));
+        return Range.closedOpen(supStartDate, supEndDate.plusDays(1));
     }
 
     /** --- Overrides --- */

@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.client.view.AccrualsView;
 import gov.nysenate.ess.seta.model.accrual.PeriodAccSummary;
+import gov.nysenate.ess.seta.model.auth.EssTimePermission;
 import gov.nysenate.ess.seta.service.accrual.AccrualComputeService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
@@ -24,6 +25,9 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.ACCRUAL;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/accruals")
 public class AccrualRestApiCtrl extends BaseRestApiCtrl
@@ -36,6 +40,10 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
     @RequestMapping("")
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String beforeDate) {
         LocalDate beforeLocalDate = parseISODate(beforeDate, "pay period");
+
+        checkPermission(new EssTimePermission( empId, ACCRUAL, GET,
+                Range.closedOpen(LocalDate.ofYearDay(beforeLocalDate.getYear(), 1), beforeLocalDate)));
+
         PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, beforeLocalDate.minusDays(1));
         PeriodAccSummary periodAccSummary = accrualService.getAccruals(empId, payPeriod);
         return new ViewObjectResponse<>(new AccrualsView(periodAccSummary));
@@ -45,6 +53,9 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String fromDate, @RequestParam String toDate) {
         LocalDate fromLocalDate = parseISODate(fromDate, "from date");
         LocalDate toLocalDate = parseISODate(toDate, "to date");
+
+        checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.closed(fromLocalDate, toLocalDate)));
+
         List<PayPeriod> periods =
             payPeriodService.getPayPeriods(PayPeriodType.AF, Range.closed(fromLocalDate, toLocalDate), SortOrder.ASC);
         TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualService.getAccruals(empId, periods);

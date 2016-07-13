@@ -1,7 +1,8 @@
-package gov.nysenate.ess.core.service.permission;
+package gov.nysenate.ess.core.service.auth;
 
 import com.google.common.collect.ImmutableList;
-import gov.nysenate.ess.core.model.permission.EssRole;
+import com.google.common.collect.ImmutableSet;
+import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.Permission;
 
@@ -16,5 +17,5 @@ public interface PermissionFactory {
      * An employee's overall permissions in Ess is the sum of their permissions from
      * all implementations of this class.
      */
-    ImmutableList<Permission> getPermissions(Employee employee, ImmutableList<EssRole> roles);
+    ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles);
 }

@@ -3,11 +3,14 @@ package gov.nysenate.ess.core.controller.api;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
+import gov.nysenate.ess.core.model.auth.DateTimeRangePermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.LimitOffset;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.Permission;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +43,23 @@ public class BaseRestApiCtrl
 
     /** --- Request Parsers / Getters --- */
 
+    /**
+     * @return The currently authenticated subject
+     */
     protected Subject getSubject() {
         return SecurityUtils.getSubject();
     }
+
+    /**
+     * Check that the currently authenticated subject is authorized for the given permission at the given time
+     * @param permission
+     * @throws AuthorizationException if the user is not authorized for the given permission
+     */
+    protected void checkPermission(Permission permission)
+            throws AuthorizationException {
+        getSubject().checkPermission(permission);
+    }
+
 
     /**
      * Attempts to parse a date request parameter

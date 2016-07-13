@@ -15,6 +15,7 @@ import gov.nysenate.ess.seta.model.attendance.TimeRecord;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
+import gov.nysenate.ess.seta.model.auth.EssTimePermission;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
 import gov.nysenate.ess.seta.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.seta.service.attendance.ActiveTimeRecordCacheEvictEvent;
@@ -26,6 +27,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +35,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.SUPERVISOR_TIME_RECORDS;
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.TIME_RECORDS;
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.TIME_RECORD_ACTIVE_YEARS;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/timerecords")
@@ -66,11 +74,14 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      *                     from - Date - default Jan 1 on year of 'to' Date - Gets time records that begin on or after this date
      *                     status - String[] - default all statuses - Will only get time records with one of these statuses
      */
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "", method = GET, produces = "application/json")
     public BaseResponse getRecordsJson(@RequestParam Integer[] empId,
                                        @RequestParam(required = false) String from,
                                        @RequestParam(required = false) String to,
                                        @RequestParam(required = false) String[] status) {
+        /**
+         * permission check occurs in {@link TimeRecordRestApiCtrl#getRecords(Set, Range, Set)}
+         */
         return getRecordResponse(
                 getRecords(empId, from, to, status), false);
     }
@@ -83,9 +94,13 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * @param scope String (accepted values are 'E', 'S', 'P', for employee, supervisor, and personnel respectively.
      * @return TimeRecord ListView Response
      */
-    @RequestMapping(value = "/active", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/active", method = GET, produces = "application/json")
     public BaseResponse getActiveRecords(@RequestParam Integer[] empId,
                                          @RequestParam(required = false) String[] scope) {
+        Arrays.stream(empId)
+                .map(eId -> new EssTimePermission(eId, TIME_RECORDS, GET, LocalDate.now()))
+                .forEach(this::checkPermission);
+
         Set<TimeRecordScope> scopes = (scope != null)
             ? Stream.of(scope).map(TimeRecordScope::getScopeFromCode).collect(Collectors.toSet())
             : Sets.newHashSet(TimeRecordScope.EMPLOYEE, TimeRecordScope.SUPERVISOR);
@@ -98,12 +113,46 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         return getRecordResponse(activeRecsPerEmp, false);
     }
 
-    @RequestMapping(value = "/supervisor/count", method = RequestMethod.GET, produces = "application/json")
+    /**
+     * Get Time Record Years API
+     * -------------------------
+     *
+     * Returns the years during which the given employee has at least one time record during.
+     *
+     * Request Params: empId - employeeId
+     */
+    @RequestMapping(value = "activeYears")
+    public BaseResponse getTimeRecordYears(@RequestParam Integer empId) {
+        checkPermission(new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS, GET, LocalDateTime.now()));
+        SortedSet<Integer> timeRecordYears = new TreeSet<>();
+        timeRecordYears.addAll(attendanceDao.getAttendanceYears(empId));
+        timeRecordYears.addAll(timeRecordService.getTimeRecordYears(empId, SortOrder.ASC));
+        return ListViewResponse.ofIntList(new ArrayList<>(timeRecordYears), "years");
+    }
+
+    /**
+     * Get Active Supervisor Record Count API
+     * --------------------------------------
+     * Get the number of records needing action for a specific supervisor
+     *
+     * Usage:       (GET) /api/v1/timerecords/supervisor/count
+     *
+     * Request Params:
+     * @param supId int - supervisor id
+     * @param from String - ISO 8601 Date formatted
+     * @param to String - ISO 8601 Date formatted
+     * @param status String - {@link TimeRecordStatus}
+     * @return ViewObjectResponse
+     */
+    @RequestMapping(value = "/supervisor/count", method = GET, produces = "application/json")
     public BaseResponse getActiveSupervisorRecordCount(@RequestParam int supId,
                                                        @RequestParam(required = false) String from,
                                                        @RequestParam(required = false) String to,
                                                        @RequestParam(required = false) String[] status) {
         Range<LocalDate> dateRange = parseDateRange(from, to);
+
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_RECORDS, GET, dateRange));
+
         Set<TimeRecordStatus> statuses = parseStatuses(status, TimeRecordStatus.inProgress());
         return new ViewObjectResponse<>(new ViewObject() {
             public Integer getCount() throws SupervisorException {
@@ -117,22 +166,6 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     }
 
     /**
-     * Get Time Record Years API
-     * -------------------------
-     *
-     * Returns the years during which the given employee has at least one time record during.
-     *
-     * Request Params: empId - employeeId
-     */
-    @RequestMapping(value = "activeYears")
-    public BaseResponse getTimeRecordYears(@RequestParam Integer empId) {
-        SortedSet<Integer> timeRecordYears = new TreeSet<>();
-        timeRecordYears.addAll(attendanceDao.getAttendanceYears(empId));
-        timeRecordYears.addAll(timeRecordService.getTimeRecordYears(empId, SortOrder.ASC));
-        return ListViewResponse.ofIntList(new ArrayList<>(timeRecordYears), "years");
-    }
-
-    /**
      * Get Active Supervisor Record
      * ----------------------------
      *
@@ -143,13 +176,16 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * @return
      * @throws SupervisorException
      */
-    @RequestMapping(value = "/supervisor", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/supervisor", method = GET, produces = "application/json")
     public BaseResponse getActiveSupervisorRecords(@RequestParam int supId,
                                                    @RequestParam(required = false) String from,
                                                    @RequestParam(required = false) String to,
                                                    @RequestParam(required = false) String[] status)
             throws SupervisorException {
         Range<LocalDate> dateRange = parseDateRange(from, to);
+
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_RECORDS, GET, dateRange));
+
         Set<TimeRecordStatus> statuses = parseStatuses(status, TimeRecordStatus.inProgress());
         return getRecordResponse(timeRecordService.getSupervisorRecords(supId, dateRange, statuses), false);
     }
@@ -168,6 +204,9 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
                            @RequestParam(defaultValue = "SAVE") String action) {
         TimeRecordAction timeRecordAction = getEnumParameter("action", action, TimeRecordAction.class);
         TimeRecord newRecord = record.toTimeRecord();
+
+        checkPermission(new EssTimePermission(record.getEmployeeId(), TIME_RECORDS, POST, newRecord.getDateRange()));
+
         validationService.validateTimeRecord(newRecord);
         timeRecordService.saveRecord(newRecord, timeRecordAction);
     }
@@ -189,6 +228,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * all [required] (true/false) - Indicate if active time records for all employees should be evicted
      * empId [optional,list] (integer) - List the employee ids that you want to evict active time records for otherwise.
      */
+    @RequiresPermissions("admin:cache:delete")
     @RequestMapping(value = "/active/cacheEvict", method = RequestMethod.DELETE, produces = "application/json")
     public BaseResponse evictActiveRecords(@RequestParam(required = true) boolean all,
                                            @RequestParam(required = false) Integer[] empId) {
@@ -208,6 +248,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
     private ListMultimap<Integer, TimeRecord> getRecords(Set<Integer> empIds, Range<LocalDate> dateRange,
                                                          Set<TimeRecordStatus> statuses) {
+        empIds.forEach(empId -> checkPermission(new EssTimePermission(empId, TIME_RECORDS, GET, dateRange)));
+
         ListMultimap<Integer, TimeRecord> records = LinkedListMultimap.create();
         timeRecordService.getTimeRecords(empIds, dateRange, statuses)
                 .forEach(record -> records.put(record.getEmployeeId(), record));

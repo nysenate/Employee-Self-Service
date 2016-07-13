@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.dao.attendance;
 
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.seta.model.attendance.AttendanceRecord;
 
@@ -48,4 +49,14 @@ public interface AttendanceDao
      * @return List<AttendanceRecord>
      */
     List<AttendanceRecord> getAttendanceRecords(Integer empId, Integer year);
+
+    /**
+     * Get attendance records for the specified employee intersecting with the given dates
+     * Records are ordered by date in ascending order
+     *
+     * @param empId Integer
+     * @param dates Range<LocalDate>
+     * @return List<AttendanceRecord>
+     */
+    List<AttendanceRecord> getAttendanceRecords(Integer empId, Range<LocalDate> dates);
 }
