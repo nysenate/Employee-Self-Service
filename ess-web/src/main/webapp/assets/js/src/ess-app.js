@@ -31,6 +31,7 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
 
             var heartBeatingRate = 5; // in sec
             var idelTime = 0; // in sec.window.location.pathname
+            localStorage.setItem("alerted", "false");
             if (localStorage.getItem("hb") == null || window.location.pathname.split("/")[1] != localStorage.getItem("hb").split("/")[1]) {
                 localStorage.setItem("hb", window.location.pathname);
                 var hb = setInterval(function () {

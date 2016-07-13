@@ -127,5 +127,5 @@ timeout = 900
 # --- Image Folder URL --------------------------------------------------------
 
 #absolute path prefix for images
-image.url = /assets/supply_photos/
+image.url = /assets/supply_photos
 
