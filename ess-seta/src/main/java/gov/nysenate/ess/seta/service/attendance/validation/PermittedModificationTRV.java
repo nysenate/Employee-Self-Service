@@ -3,6 +3,7 @@ package gov.nysenate.ess.seta.service.attendance.validation;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.seta.model.attendance.TimeEntry;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,13 @@ public class PermittedModificationTRV implements TimeRecordValidator
     private static final Logger logger = LoggerFactory.getLogger(PermittedModificationTRV.class);
 
     @Override
-    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState) {
+    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         return true;
     }
 
     @Override
-    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState) throws TimeRecordErrorException {
+    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
+            throws TimeRecordErrorException {
         if (!previousState.isPresent()) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.NO_EXISTING_RECORD);
         }

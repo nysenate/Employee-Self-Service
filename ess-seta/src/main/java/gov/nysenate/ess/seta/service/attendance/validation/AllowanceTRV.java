@@ -3,6 +3,7 @@ package gov.nysenate.ess.seta.service.attendance.validation;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.seta.model.allowances.AllowanceUsage;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.seta.service.allowance.AllowanceService;
 import gov.nysenate.ess.core.model.payroll.PayType;
@@ -25,7 +26,7 @@ public class AllowanceTRV implements TimeRecordValidator {
     @Autowired private AllowanceService allowanceService;
 
     @Override
-    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState) {
+    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         // If the saved record contains entries where the employee was a temporary employee
         return record.getScope() == TimeRecordScope.EMPLOYEE &&
                 record.getTimeEntries().stream()
@@ -33,7 +34,8 @@ public class AllowanceTRV implements TimeRecordValidator {
     }
 
     @Override
-    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState) throws TimeRecordErrorException {
+    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
+            throws TimeRecordErrorException {
         AllowanceUsage allowanceUsage =
                 allowanceService.getAllowanceUsage(record.getEmployeeId(), record.getBeginDate().getYear());
 

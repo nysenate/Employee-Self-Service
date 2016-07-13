@@ -207,7 +207,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
         checkPermission(new EssTimePermission(record.getEmployeeId(), TIME_RECORDS, POST, newRecord.getDateRange()));
 
-        validationService.validateTimeRecord(newRecord);
+        validationService.validateTimeRecord(newRecord, timeRecordAction);
         timeRecordService.saveRecord(newRecord, timeRecordAction);
     }
 

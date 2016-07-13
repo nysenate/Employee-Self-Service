@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.seta.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.service.attendance.TimeRecordService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +42,14 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     }
 
     @Override
-    public void validateTimeRecord(TimeRecord record) throws InvalidTimeRecordException {
+    public void validateTimeRecord(TimeRecord record, TimeRecordAction action) throws InvalidTimeRecordException {
         Optional<TimeRecord> prevState = getPreviousState(record);
         Map<TimeRecordErrorCode, ViewObject> errors = new EnumMap<>(TimeRecordErrorCode.class);
         timeRecordValidators.stream()
-                .filter(validator -> validator.isApplicable(record, prevState))
+                .filter(validator -> validator.isApplicable(record, prevState, action))
                 .forEach(validator -> {
                     try {
-                        validator.checkTimeRecord(record, prevState);
+                        validator.checkTimeRecord(record, prevState, action);
                     } catch (TimeRecordErrorException ex) {
                         errors.put(ex.getCode(), ex.getErrorData());
                     }
@@ -65,7 +66,7 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
      * @param record TimeRecord
      * @return Optional<TimeRecord>
      */
-    Optional<TimeRecord> getPreviousState(TimeRecord record) {
+    private Optional<TimeRecord> getPreviousState(TimeRecord record) {
         // Return empty if the record doesn't have an id
         if (record.getTimeRecordId() == null) {
             return Optional.empty();

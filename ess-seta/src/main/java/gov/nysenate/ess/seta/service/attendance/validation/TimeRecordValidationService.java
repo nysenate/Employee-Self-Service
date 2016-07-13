@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.service.attendance.validation;
 
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 
 /**
  * A service that validates time records according to NY Senate rules
@@ -8,7 +9,7 @@ import gov.nysenate.ess.seta.model.attendance.TimeRecord;
 public interface TimeRecordValidationService
 {
     /**
-     * Checks the given TimeRecord for inconsistencies with NY Senate time and attendence policy
+     * Checks the given TimeRecord and TimeRecordAction for inconsistencies with NY Senate time and attendence policy
      * Ensures that :
      *  - All used accrual time is subtractable from the employees accruals to date
      *  - The employee is permitted to use accrual time if it is spent
@@ -17,8 +18,9 @@ public interface TimeRecordValidationService
      *  - A time record for this pay period has not already been submitted
      *  - The pay period for this time record is valid
      *
-     * @param record
+     * @param record {@link TimeRecord} The time record that will be saved
+     * @param action {@link TimeRecordAction} the requested action to be performed on the time record
      * @throws InvalidTimeRecordException if the given time record is not valid
      */
-    public void validateTimeRecord(TimeRecord record) throws InvalidTimeRecordException;
+    void validateTimeRecord(TimeRecord record, TimeRecordAction action) throws InvalidTimeRecordException;
 }
