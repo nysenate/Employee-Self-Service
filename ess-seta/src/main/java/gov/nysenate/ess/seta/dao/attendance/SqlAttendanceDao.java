@@ -2,6 +2,7 @@ package gov.nysenate.ess.seta.dao.attendance;
 
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.dao.attendance.mapper.AttendanceRecordRowMapper;
@@ -17,6 +18,7 @@ import java.util.TreeSet;
 @Service
 public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
 {
+    /** {@inheritDoc} */
     @Override
     public SortedSet<Integer> getOpenAttendanceYears(Integer empId) {
         return new TreeSet<>(
@@ -25,6 +27,7 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
         );
     }
 
+    /** {@inheritDoc} */
     @Override
     public RangeSet<LocalDate> getOpenDates(Integer empId) {
         RangeSet<LocalDate> activeDates = TreeRangeSet.create();
@@ -36,6 +39,7 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
         return activeDates;
     }
 
+    /** {@inheritDoc} */
     @Override
     public SortedSet<Integer> getAttendanceYears(Integer empId) {
         return new TreeSet<>(
@@ -44,6 +48,7 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
         );
     }
 
+    /** {@inheritDoc} */
     @Override
     public ListMultimap<Integer, AttendanceRecord> getOpenAttendanceRecords() {
         ListMultimap<Integer, AttendanceRecord> openRecords = ArrayListMultimap.create();
@@ -52,6 +57,7 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
         return openRecords;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AttendanceRecord> getOpenAttendanceRecords(Integer empId) {
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
@@ -59,11 +65,23 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
                 params, new AttendanceRecordRowMapper());
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AttendanceRecord> getAttendanceRecords(Integer empId, Integer year) {
         MapSqlParameterSource params = new MapSqlParameterSource("empId", empId)
                 .addValue("year", year);
         return remoteNamedJdbc.query(SqlAttendanceQuery.GET_ATTENDANCE_RECORDS_FOR_YEAR.getSql(
+                        schemaMap()),
+                params, new AttendanceRecordRowMapper());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<AttendanceRecord> getAttendanceRecords(Integer empId, Range<LocalDate> dates) {
+        MapSqlParameterSource params = new MapSqlParameterSource("empId", empId)
+                .addValue("startDate", toDate(DateUtils.startOfDateRange(dates)))
+                .addValue("endDate", toDate(DateUtils.endOfDateRange(dates)));
+        return remoteNamedJdbc.query(SqlAttendanceQuery.GET_ATTENDANCE_RECORDS_FOR_DATES.getSql(
                         schemaMap()),
                 params, new AttendanceRecordRowMapper());
     }

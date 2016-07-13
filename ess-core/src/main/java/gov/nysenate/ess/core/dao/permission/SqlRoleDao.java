@@ -1,10 +1,11 @@
 package gov.nysenate.ess.core.dao.permission;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.permission.EssRole;
+import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.EnumSet;
 import java.util.List;
 
 @Repository
@@ -22,7 +24,7 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /** {@inheritDoc} */
-    public ImmutableList<EssRole> getRoles(Employee employee) {
+    public ImmutableSet<EssRole> getRoles(Employee employee) {
         MapSqlParameterSource params = new MapSqlParameterSource("employeeId", employee.getEmployeeId());
         String sql = SqlRoleQuery.GET_EMPLOYEE_ROLES.getSql(schemaMap());
         List<EssRole> roles = localNamedJdbc.query(sql, params, ((rs, i) -> {
@@ -30,7 +32,7 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
         }));
         // Everyone has the senate employee role by default.
         roles.add(EssRole.SENATE_EMPLOYEE);
-        return ImmutableList.copyOf(roles);
+        return ImmutableSet.copyOf(EnumSet.copyOf(roles));
     }
 
     @Override

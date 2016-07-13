@@ -160,4 +160,18 @@ public class HttpResponseUtils
         }
         return MediaType.TEXT_PLAIN;
     }
+
+    /**
+     * Constructs the full request url including query parameters for the given {@link HttpServletRequest}
+     * @param request HttpServletRequest
+     * @return String
+     */
+    public static String getFullUrl(HttpServletRequest request) {
+        StringBuffer url = request.getRequestURL();
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            url.append("?").append(queryString);
+        }
+        return url.toString();
+    }
 }

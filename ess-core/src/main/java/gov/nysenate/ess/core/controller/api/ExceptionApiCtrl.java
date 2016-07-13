@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.client.view.base.ParameterView;
 import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
 import gov.nysenate.ess.core.client.response.auth.AuthorizationResponse;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.util.HttpResponseUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * This class contains global controller exception handlers.
@@ -61,18 +64,25 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthenticatedException.class)
     @ResponseBody
-    public AuthorizationResponse handleUnauthenticatedException(UnauthenticatedException ex) {
-        logger.debug(ExceptionUtils.getStackTrace(ex));
-        Subject subject = getSubject();
-        return new AuthorizationResponse(AuthorizationStatus.UNAUTHENTICATED, subject);
+    public AuthorizationResponse handleUnauthenticatedException(HttpServletRequest request,
+                                                                UnauthenticatedException ex) {
+        return getAuthResponse(AuthorizationStatus.UNAUTHENTICATED, request);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseBody
-    public AuthorizationResponse handleUnauthorizedException(UnauthorizedException ex) {
-        logger.debug(ExceptionUtils.getStackTrace(ex));
+    public AuthorizationResponse handleUnauthorizedException(HttpServletRequest request,
+                                                             UnauthorizedException ex) {
+        return getAuthResponse(AuthorizationStatus.UNAUTHORIZED, request);
+    }
+
+    /** --- Internal Methods --- */
+
+    private AuthorizationResponse getAuthResponse(AuthorizationStatus status, HttpServletRequest request) {
         Subject subject = getSubject();
-        return new AuthorizationResponse(AuthorizationStatus.UNAUTHORIZED, subject);
+        String url = HttpResponseUtils.getFullUrl(request);
+        logger.warn("{} access attempt - user: {} url:{}", status, subject.getPrincipal(), url);
+        return new AuthorizationResponse(status, subject, url);
     }
 }

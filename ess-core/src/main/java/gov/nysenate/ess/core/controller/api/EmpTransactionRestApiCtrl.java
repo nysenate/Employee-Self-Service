@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.view.EmpTransItemView;
 import gov.nysenate.ess.core.client.view.EmpTransRecordView;
 import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionType;
@@ -16,6 +17,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,10 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.model.auth.CorePermissionObject.TRANSACTION_HISTORY;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/empTransactions")
@@ -64,6 +68,8 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
                                                @RequestParam(required = false) String codes,
                                                @RequestParam(required = false) String type,
                                                @RequestParam(defaultValue = "false") boolean restrictValues) {
+        checkPermission(new CorePermission(empId, TRANSACTION_HISTORY, GET));
+
         LocalDate fromLocalDate = (fromDate != null) ? parseISODate(fromDate, "from-date") : DateUtils.LONG_AGO;
         LocalDate toLocalDate = (toDate != null) ? parseISODate(toDate, "to-date") : DateUtils.THE_FUTURE;
         Range<LocalDate> range = Range.closed(fromLocalDate, toLocalDate);
@@ -81,6 +87,8 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
     @RequestMapping("/snapshot")
     public BaseResponse getFlatTransactionByEmpId(@RequestParam Integer empId,
                                                   @RequestParam(required = false) String date) {
+        checkPermission(new CorePermission(empId, TRANSACTION_HISTORY, GET));
+
         LocalDate localDate = (date != null) ? parseISODate(date, "date") : LocalDate.now();
         Map<String, EmpTransItemView> itemMap = new HashMap<>();
         transactionService.getTransHistory(empId).getRecordSnapshots()
@@ -93,12 +101,14 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
     /**
      * Retrieves a snapshot of the current state of an employees data.
      * This method should be used when looking at current data as it is more accurate
-     *  than reconstructing data from the trasaction audit trail.
+     *  than reconstructing data from the transaction audit trail.
      *
      * @param empId Integer - employee id
      */
     @RequestMapping("/snapshot/current")
     public BaseResponse getCurrentTransactionByEmpId(@RequestParam Integer empId) {
+        checkPermission(new CorePermission(empId, TRANSACTION_HISTORY, GET));
+
         return new ViewObjectResponse<>(
                 MapView.of(
                         employeeDao.getRawEmployeeColumns(empId).entrySet().stream()
@@ -121,6 +131,8 @@ public class EmpTransactionRestApiCtrl extends BaseRestApiCtrl
      */
     @RequestMapping("/timeline")
     public BaseResponse getEmpTimeline(@RequestParam Integer empId) {
+        checkPermission(new CorePermission(empId, TRANSACTION_HISTORY, GET));
+
         return ListViewResponse.of(
             transactionService.getTransHistory(empId)
                 .getTransRecords(DateUtils.ALL_DATES, timelineCodes, SortOrder.ASC)

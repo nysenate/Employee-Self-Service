@@ -14,14 +14,15 @@ public enum SqlAttendanceQuery implements BasicSqlQuery {
     GET_ALL_ATTENDANCE_YEARS(
         "SELECT DTPERIODYEAR\n" +
         "FROM ${masterSchema}.PM23ATTEND\n" +
-        "WHERE CDSTATUS = 'A' AND NUXREFEM = :empId\n" +
+        "WHERE NUXREFEM = :empId\n" +
         "ORDER BY DTPERIODYEAR ASC"
     ),
     GET_ATTENDANCE_RECORDS_SELECT(
         "SELECT rec.*\n" +
         "FROM ${masterSchema}.PM23ATTEND year\n" +
-        "JOIN ${masterSchema}.PD23ATTEND rec ON year.NUXREFEM = rec.NUXREFEM AND year.DTPERIODYEAR = rec.DTPERIODYEAR\n" +
-        "WHERE year.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'"
+        "JOIN ${masterSchema}.PD23ATTEND rec\n" +
+        "   ON year.NUXREFEM = rec.NUXREFEM AND year.DTPERIODYEAR = rec.DTPERIODYEAR\n" +
+        "WHERE rec.CDSTATUS = 'A'"
     ),
     GET_OPEN_ATTENDANCE_RECORDS(
         GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
@@ -35,7 +36,14 @@ public enum SqlAttendanceQuery implements BasicSqlQuery {
     GET_ATTENDANCE_RECORDS_FOR_YEAR (
         GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
         "   AND year.NUXREFEM = :empId AND year.DTPERIODYEAR = :year"
-    )
+    ),
+
+    GET_ATTENDANCE_RECORDS_FOR_DATES (
+        GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
+        "   AND year.NUXREFEM = :empId\n" +
+        "   AND (rec.DTBEGIN BETWEEN :startDate AND :endDate\n" +
+        "       OR rec.DTEND BETWEEN :startDate AND :endDate)"
+    ),
     ;
 
     private String sql;
