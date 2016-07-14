@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.seta.model.attendance.TimeEntry;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
     private static final Logger logger = LoggerFactory.getLogger(FieldRangeTRV.class);
 
     @Override
-    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState) {
+    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         // If the saved record contains entries where the employee was a temporary employee
         return record.getScope() == TimeRecordScope.EMPLOYEE;
     }
@@ -37,7 +38,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
      */
 
     @Override
-    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState) throws TimeRecordErrorException {
+    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
         ImmutableList<TimeEntry> entries =  record.getTimeEntries();
         int x = -1;
 
