@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.seta.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.seta.model.accrual.PeriodAccUsage;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.seta.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.seta.service.accrual.EssAccrualComputeService;
 import gov.nysenate.ess.core.model.payroll.PayType;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Optional;
 
 /**
@@ -31,7 +31,7 @@ public class AccrualTRV implements TimeRecordValidator {
     @Autowired private PayPeriodService payPeriodService;
 
     @Override
-    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState) {
+    public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         // If the saved record contains entries where the employee was a temporary employee
         return record.getScope() == TimeRecordScope.EMPLOYEE &&
                 record.getTimeEntries().stream()
@@ -39,7 +39,8 @@ public class AccrualTRV implements TimeRecordValidator {
     }
 
     @Override
-    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState) throws TimeRecordErrorException {
+    public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
+            throws TimeRecordErrorException {
 
         PeriodAccUsage periodAccUsage;
         periodAccUsage = record.getPeriodAccUsage();

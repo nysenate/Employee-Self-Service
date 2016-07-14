@@ -13,8 +13,8 @@ var essSupply = angular.module('essSupply')
 
     .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyLocationAutocompleteService',
         function ($scope, appProps, modals, requisitionApi, locationAutocompleteService) {
-            /** Original shipment */
-            $scope.shipment = {};
+            /** Original requisition */
+            $scope.requisition = {};
             $scope.displayedVersion = {};
             $scope.dirty = false;
             /** Initializes the location autocomplete field. */
@@ -30,9 +30,9 @@ var essSupply = angular.module('essSupply')
             };
 
             $scope.init = function () {
-                $scope.shipment = modals.params();
-                $scope.shipment.activeVersion.note = ""; // Reset note so new note can be added.
-                $scope.displayedVersion = angular.copy($scope.shipment.activeVersion);
+                $scope.requisition = modals.params();
+                $scope.requisition.note = ""; // Reset note so new note can be added. // TODO: remove this 'feature'
+                $scope.displayedVersion = angular.copy($scope.requisition);
                 $scope.dirtyLocationCode = $scope.displayedVersion.destination.code;
                 $scope.locationSearch.map = locationAutocompleteService.getCodeToLocationMap();
                 $scope.locationAutocompleteOptions = locationAutocompleteService.getLocationAutocompleteOptions(100);
@@ -51,13 +51,12 @@ var essSupply = angular.module('essSupply')
 
             /** Close the modal and return the promise resulting from calling the save requisition api. */
             $scope.saveChanges = function () {
-                var requisition = angular.copy($scope.shipment);
-                requisition.activeVersion = $scope.displayedVersion;
-                modals.resolve(requisitionApi.save({id: $scope.shipment.id}, requisition).$promise);
+                modals.resolve(requisitionApi.save({id: $scope.requisition.requisitionId}, $scope.displayedVersion).$promise);
             };
 
             $scope.processOrder = function () {
                 $scope.displayedVersion.status = 'PROCESSING';
+                $scope.displayedVersion.processedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
                 if ($scope.displayedVersion.issuer === null) {
                     setIssuerToLoggedInUser();
                 }
@@ -74,21 +73,24 @@ var essSupply = angular.module('essSupply')
 
             $scope.completeOrder = function () {
                 $scope.displayedVersion.status = 'COMPLETED';
+                $scope.displayedVersion.completedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
                 $scope.saveChanges();
             };
 
             $scope.approveShipment = function () {
                 $scope.displayedVersion.status = 'APPROVED';
+                $scope.displayedVersion.approvedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
                 $scope.saveChanges();
             };
 
             $scope.rejectOrder = function () {
                 $scope.displayedVersion.status = 'REJECTED';
+                $scope.displayedVersion.rejectedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
                 $scope.saveChanges();
             };
 
             $scope.onUpdate = function () {
-                $scope.dirty = angular.toJson($scope.shipment.activeVersion) !== angular.toJson($scope.displayedVersion);
+                $scope.dirty = angular.toJson($scope.requisition) !== angular.toJson($scope.displayedVersion);
             };
 
             $scope.close = function () {
@@ -112,7 +114,7 @@ var essSupply = angular.module('essSupply')
                     $scope.displayedVersion.destination = loc;
                 }
                 else {
-                    $scope.displayedVersion.destination = $scope.shipment.activeVersion.destination;
+                    $scope.displayedVersion.destination = $scope.requisition.destination;
                 }
                 $scope.onUpdate();
             };
@@ -131,7 +133,7 @@ var essSupply = angular.module('essSupply')
 
             function newItemIsDuplicate(newItem) {
                 var duplicateItem = false;
-                angular.forEach($scope.shipment.activeVersion.lineItems, function (lineItem) {
+                angular.forEach($scope.requisition.lineItems, function (lineItem) {
                     if (newItem.id === lineItem.item.id) {
                         duplicateItem = true;
                     }

@@ -78,5 +78,13 @@ function accrualHistoryCtrl($scope, appProps, AccrualHistoryApi, EmpActiveYearsA
         $scope.getEmpActiveYears(function() {
             $scope.getAccSummaries($scope.state.selectedYear);
         });
+        // make sure that the table head is in position
+        $timeout(function () {
+            jQuery('.detail-acc-history-table').floatThead('reflow');
+        });
+        // make extra sure that the table head is in position
+        $timeout(function () {
+            jQuery('.detail-acc-history-table').floatThead('reflow');
+        }, 50);
     }();
 }

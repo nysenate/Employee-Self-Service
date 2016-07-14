@@ -40,50 +40,11 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: requisition; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
---
-
-CREATE TABLE requisition (
-    requisition_id integer NOT NULL,
-    active_version_id integer NOT NULL,
-    ordered_date_time timestamp without time zone NOT NULL,
-    processed_date_time timestamp without time zone,
-    completed_date_time timestamp without time zone,
-    approved_date_time timestamp without time zone,
-    rejected_date_time timestamp without time zone,
-    modified_date_time timestamp without time zone NOT NULL
-);
-
-
-ALTER TABLE requisition OWNER TO postgres;
-
---
--- Name: Requisition_requisition_id_seq; Type: SEQUENCE; Schema: supply; Owner: postgres
---
-
-CREATE SEQUENCE "Requisition_requisition_id_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE "Requisition_requisition_id_seq" OWNER TO postgres;
-
---
--- Name: Requisition_requisition_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
---
-
-ALTER SEQUENCE "Requisition_requisition_id_seq" OWNED BY requisition.requisition_id;
-
-
---
--- Name: line_item; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
+-- Name: line_item; Type: TABLE; Schema: supply; Owner: postgres; Tablespace: 
 --
 
 CREATE TABLE line_item (
-    version_id integer NOT NULL,
+    revision_id integer NOT NULL,
     item_id smallint NOT NULL,
     quantity smallint NOT NULL
 );
@@ -92,75 +53,68 @@ CREATE TABLE line_item (
 ALTER TABLE line_item OWNER TO postgres;
 
 --
--- Name: requisition_history; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
+-- Name: requisition; Type: TABLE; Schema: supply; Owner: postgres; Tablespace: 
 --
 
-CREATE TABLE requisition_history (
+CREATE TABLE requisition (
     requisition_id integer NOT NULL,
-    version_id integer NOT NULL,
-    created_date_time timestamp without time zone NOT NULL
+    current_revision_id integer NOT NULL,
+    ordered_date_time timestamp without time zone NOT NULL,
+    processed_date_time timestamp without time zone,
+    completed_date_time timestamp without time zone,
+    approved_date_time timestamp without time zone,
+    rejected_date_time timestamp without time zone,
+    saved_in_sfms boolean NOT NULL
 );
 
 
-ALTER TABLE requisition_history OWNER TO postgres;
+ALTER TABLE requisition OWNER TO postgres;
 
 --
--- Name: COLUMN requisition_history.created_date_time; Type: COMMENT; Schema: supply; Owner: postgres
+-- Name: requisition_content; Type: TABLE; Schema: supply; Owner: postgres; Tablespace: 
 --
 
-COMMENT ON COLUMN requisition_history.created_date_time IS 'The date time this version was created';
-
-
---
--- Name: requisition_version; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
---
-
-CREATE TABLE requisition_version (
-    version_id integer NOT NULL,
-    customer_id smallint NOT NULL,
+CREATE TABLE requisition_content (
+    requisition_id integer NOT NULL,
+    revision_id integer NOT NULL,
     destination text NOT NULL,
     status requisition_status NOT NULL,
     issuing_emp_id smallint,
-    created_emp_id smallint NOT NULL,
-    note text
+    note text,
+    customer_id smallint NOT NULL,
+    modified_by_id smallint NOT NULL,
+    modified_date_time timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE requisition_version OWNER TO postgres;
+ALTER TABLE requisition_content OWNER TO postgres;
 
 --
--- Name: COLUMN requisition_version.customer_id; Type: COMMENT; Schema: supply; Owner: postgres
+-- Name: COLUMN requisition_content.destination; Type: COMMENT; Schema: supply; Owner: postgres
 --
 
-COMMENT ON COLUMN requisition_version.customer_id IS 'The employee id of the customer. References SFMS employee tables.';
-
-
---
--- Name: COLUMN requisition_version.destination; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON COLUMN requisition_version.destination IS 'The location code concatenated with ''-'' and the location type';
+COMMENT ON COLUMN requisition_content.destination IS 'The location code concatenated with ''-'' and the location type';
 
 
 --
--- Name: COLUMN requisition_version.created_emp_id; Type: COMMENT; Schema: supply; Owner: postgres
+-- Name: COLUMN requisition_content.note; Type: COMMENT; Schema: supply; Owner: postgres
 --
 
-COMMENT ON COLUMN requisition_version.created_emp_id IS 'The employee id of whoever made this version';
-
-
---
--- Name: COLUMN requisition_version.note; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON COLUMN requisition_version.note IS 'Any note or comment about a requisition version';
+COMMENT ON COLUMN requisition_content.note IS 'Any note or comment about this requisition';
 
 
 --
--- Name: requisition_version_version_id_seq; Type: SEQUENCE; Schema: supply; Owner: postgres
+-- Name: COLUMN requisition_content.modified_by_id; Type: COMMENT; Schema: supply; Owner: postgres
 --
 
-CREATE SEQUENCE requisition_version_version_id_seq
+COMMENT ON COLUMN requisition_content.modified_by_id IS 'The employee id of the employee who saved this modification';
+
+
+--
+-- Name: requisition_content_revision_id_seq; Type: SEQUENCE; Schema: supply; Owner: postgres
+--
+
+CREATE SEQUENCE requisition_content_revision_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -168,90 +122,88 @@ CREATE SEQUENCE requisition_version_version_id_seq
     CACHE 1;
 
 
-ALTER TABLE requisition_version_version_id_seq OWNER TO postgres;
+ALTER TABLE requisition_content_revision_id_seq OWNER TO postgres;
 
 --
--- Name: requisition_version_version_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
+-- Name: requisition_content_revision_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
 --
 
-ALTER SEQUENCE requisition_version_version_id_seq OWNED BY requisition_version.version_id;
+ALTER SEQUENCE requisition_content_revision_id_seq OWNED BY requisition_content.revision_id;
+
+
+--
+-- Name: requisition_requisition_id_seq; Type: SEQUENCE; Schema: supply; Owner: postgres
+--
+
+CREATE SEQUENCE requisition_requisition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE requisition_requisition_id_seq OWNER TO postgres;
+
+--
+-- Name: requisition_requisition_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
+--
+
+ALTER SEQUENCE requisition_requisition_id_seq OWNED BY requisition.requisition_id;
 
 
 --
 -- Name: requisition_id; Type: DEFAULT; Schema: supply; Owner: postgres
 --
 
-ALTER TABLE ONLY requisition ALTER COLUMN requisition_id SET DEFAULT nextval('"Requisition_requisition_id_seq"'::regclass);
+ALTER TABLE ONLY requisition ALTER COLUMN requisition_id SET DEFAULT nextval('requisition_requisition_id_seq'::regclass);
 
 
 --
--- Name: version_id; Type: DEFAULT; Schema: supply; Owner: postgres
---
-
-ALTER TABLE ONLY requisition_version ALTER COLUMN version_id SET DEFAULT nextval('requisition_version_version_id_seq'::regclass);
-
-
---
--- Name: Requisition_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace:
---
-
-ALTER TABLE ONLY requisition
-    ADD CONSTRAINT "Requisition_pkey" PRIMARY KEY (requisition_id);
-
-
---
--- Name: line_item_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace:
+-- Name: line_item_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY line_item
-    ADD CONSTRAINT line_item_pkey PRIMARY KEY (version_id, item_id);
+    ADD CONSTRAINT line_item_pkey PRIMARY KEY (revision_id, item_id);
 
 
 --
--- Name: requisition_history_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace:
+-- Name: requisition_content_revision_id_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace: 
 --
 
-ALTER TABLE ONLY requisition_history
-    ADD CONSTRAINT requisition_history_pkey PRIMARY KEY (requisition_id, version_id);
-
-
---
--- Name: requisition_version_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace:
---
-
-ALTER TABLE ONLY requisition_version
-    ADD CONSTRAINT requisition_version_pkey PRIMARY KEY (version_id);
+ALTER TABLE ONLY requisition_content
+    ADD CONSTRAINT requisition_content_revision_id_pkey PRIMARY KEY (revision_id);
 
 
 --
--- Name: line_item_version_id_fkey; Type: FK CONSTRAINT; Schema: supply; Owner: postgres
---
-
-ALTER TABLE ONLY line_item
-    ADD CONSTRAINT line_item_version_id_fkey FOREIGN KEY (version_id) REFERENCES requisition_version(version_id);
-
-
---
--- Name: requisition_active_version_id_fkey; Type: FK CONSTRAINT; Schema: supply; Owner: postgres
+-- Name: requisition_current_revision_id_unique; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace: 
 --
 
 ALTER TABLE ONLY requisition
-    ADD CONSTRAINT requisition_active_version_id_fkey FOREIGN KEY (active_version_id) REFERENCES requisition_version(version_id);
+    ADD CONSTRAINT requisition_current_revision_id_unique UNIQUE (current_revision_id);
 
 
 --
--- Name: requisition_history_requisition_id_fkey; Type: FK CONSTRAINT; Schema: supply; Owner: postgres
+-- Name: requisition_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace: 
 --
 
-ALTER TABLE ONLY requisition_history
-    ADD CONSTRAINT requisition_history_requisition_id_fkey FOREIGN KEY (requisition_id) REFERENCES requisition(requisition_id);
+ALTER TABLE ONLY requisition
+    ADD CONSTRAINT requisition_pkey PRIMARY KEY (requisition_id);
 
 
 --
--- Name: requisition_history_version_id_fkey; Type: FK CONSTRAINT; Schema: supply; Owner: postgres
+-- Name: line_item_requisition_content_revision_id_fkey; Type: FK CONSTRAINT; Schema: supply; Owner: postgres
 --
 
-ALTER TABLE ONLY requisition_history
-    ADD CONSTRAINT requisition_history_version_id_fkey FOREIGN KEY (version_id) REFERENCES requisition_version(version_id);
+ALTER TABLE ONLY line_item
+    ADD CONSTRAINT line_item_requisition_content_revision_id_fkey FOREIGN KEY (revision_id) REFERENCES requisition_content(revision_id);
 
 
+--
+-- Permissions
+--
+
+GRANT ALL PRIVILEGES ON SCHEMA supply TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA supply TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA supply TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA supply TO PUBLIC;

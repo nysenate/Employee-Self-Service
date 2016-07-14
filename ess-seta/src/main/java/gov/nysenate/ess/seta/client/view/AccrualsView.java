@@ -7,6 +7,7 @@ import gov.nysenate.ess.seta.model.accrual.PeriodAccSummary;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @XmlRootElement(name = "Accruals")
 public class AccrualsView implements ViewObject
@@ -15,25 +16,25 @@ public class AccrualsView implements ViewObject
     protected boolean computed;
     protected AccrualStateView empState;
 
-    protected BigDecimal sickAccruedYtd;
-    protected BigDecimal personalAccruedYtd;
-    protected BigDecimal vacationAccruedYtd;
-    protected BigDecimal serviceYtd;
-    protected BigDecimal serviceYtdExpected;
-    protected BigDecimal biWeekHrsExpected;
+    protected BigDecimal sickAccruedYtd = BigDecimal.ZERO;
+    protected BigDecimal personalAccruedYtd = BigDecimal.ZERO;
+    protected BigDecimal vacationAccruedYtd = BigDecimal.ZERO;
+    protected BigDecimal serviceYtd = BigDecimal.ZERO;
+    protected BigDecimal serviceYtdExpected = BigDecimal.ZERO;
+    protected BigDecimal biWeekHrsExpected = BigDecimal.ZERO;
 
-    protected BigDecimal sickBanked;
-    protected BigDecimal vacationBanked;
+    protected BigDecimal sickBanked = BigDecimal.ZERO;
+    protected BigDecimal vacationBanked = BigDecimal.ZERO;
 
-    protected BigDecimal empSickUsed;
-    protected BigDecimal famSickUsed;
-    protected BigDecimal personalUsed;
-    protected BigDecimal vacationUsed;
-    protected BigDecimal holidayUsed;
-    protected BigDecimal miscUsed;
+    protected BigDecimal empSickUsed = BigDecimal.ZERO;
+    protected BigDecimal famSickUsed = BigDecimal.ZERO;
+    protected BigDecimal personalUsed = BigDecimal.ZERO;
+    protected BigDecimal vacationUsed = BigDecimal.ZERO;
+    protected BigDecimal holidayUsed = BigDecimal.ZERO;
+    protected BigDecimal miscUsed = BigDecimal.ZERO;
 
-    protected BigDecimal vacationRate;
-    protected BigDecimal sickRate;
+    protected BigDecimal vacationRate = BigDecimal.ZERO;
+    protected BigDecimal sickRate = BigDecimal.ZERO;
 
     /** --- Constructors --- */
 
@@ -66,15 +67,21 @@ public class AccrualsView implements ViewObject
     /** --- Functional Getters --- */
 
     public BigDecimal getVacationAvailable() {
-        return this.vacationAccruedYtd.add(this.vacationBanked).subtract(this.vacationUsed);
+        return Optional.ofNullable(vacationAccruedYtd).orElse(BigDecimal.ZERO)
+                .add(Optional.ofNullable(this.vacationBanked).orElse(BigDecimal.ZERO))
+                .subtract(Optional.ofNullable(this.vacationUsed).orElse(BigDecimal.ZERO));
     }
 
     public BigDecimal getPersonalAvailable() {
-        return this.personalAccruedYtd.subtract(this.personalUsed);
+        return Optional.ofNullable(personalAccruedYtd).orElse(BigDecimal.ZERO)
+                .subtract(Optional.ofNullable(personalUsed).orElse(BigDecimal.ZERO));
     }
 
     public BigDecimal getSickAvailable() {
-        return this.sickAccruedYtd.add(this.sickBanked).subtract(this.empSickUsed).subtract(this.famSickUsed);
+        return Optional.ofNullable(sickAccruedYtd).orElse(BigDecimal.ZERO)
+                .add(Optional.ofNullable(sickBanked).orElse(BigDecimal.ZERO))
+                .subtract(Optional.ofNullable(empSickUsed).orElse(BigDecimal.ZERO))
+                .subtract(Optional.ofNullable(famSickUsed).orElse(BigDecimal.ZERO));
     }
 
     /** --- Basic Getters --- */

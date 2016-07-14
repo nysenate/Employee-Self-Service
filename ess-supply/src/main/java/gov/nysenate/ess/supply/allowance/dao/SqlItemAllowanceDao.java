@@ -42,13 +42,14 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
     }
 
     private int queryQtyOrderedMonthToDate(SupplyItem item, LocationId locationId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("itemId", item.getId())
-                .addValue("location", locationId.toString())
-                .addValue("fromDate", toDate(LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0)))
-                .addValue("toDate", toDate(LocalDateTime.now()));
-        String sql = SqlItemAllowanceQuery.GET_LOCATION_ITEM_ORDER_QTY_FOR_DATE_RANGE.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, (rs, i) -> rs.getInt("total"));
+        return 0;
+//        MapSqlParameterSource params = new MapSqlParameterSource()
+//                .addValue("itemId", item.getId())
+//                .addValue("location", locationId.toString())
+//                .addValue("fromDate", toDate(LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0)))
+//                .addValue("toDate", toDate(LocalDateTime.now()));
+//        String sql = SqlItemAllowanceQuery.GET_LOCATION_ITEM_ORDER_QTY_FOR_DATE_RANGE.getSql(schemaMap());
+//        return localNamedJdbc.queryForObject(sql, params, (rs, i) -> rs.getInt("total"));
     }
 
     private enum SqlItemAllowanceQuery implements BasicSqlQuery {

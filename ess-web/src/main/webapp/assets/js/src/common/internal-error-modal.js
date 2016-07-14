@@ -8,7 +8,7 @@ function (modals) {
             '<h1>Internal Error</h1>' +
             '<p class="internal-error-text">' +
                 'We are sorry to report that an error occurred on the ESS server while processing your request.<br>' +
-                'Please contact Personnel at (518) 455-3376 and notify us of this issue so that we can fix it!' +
+                'Please contact the STS Help Line at (518) 455-2011 and notify us of this issue so that we can fix it!' +
             '</p>' +
             '<pre class="internal-error-details" ng-show="showDetails">{{details | json}}</pre>' +
             '<div class="button-container">' +

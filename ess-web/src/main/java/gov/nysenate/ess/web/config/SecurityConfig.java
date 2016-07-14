@@ -5,6 +5,8 @@ import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
 import gov.nysenate.ess.web.security.realm.EssLdapDbAuthzRealm;
 import gov.nysenate.ess.web.security.xsrf.XsrfTokenValidator;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
+import org.apache.shiro.cache.CacheManager;
+import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.SimpleAccountRealm;
@@ -61,7 +63,13 @@ public class SecurityConfig
     public WebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(essAuthzRealm);
+        securityManager.setCacheManager(shiroCacheManager());
         return securityManager;
+    }
+
+    @Bean(name = "shiroCacheManager")
+    public CacheManager shiroCacheManager() {
+        return new MemoryConstrainedCacheManager();
     }
 
     /**

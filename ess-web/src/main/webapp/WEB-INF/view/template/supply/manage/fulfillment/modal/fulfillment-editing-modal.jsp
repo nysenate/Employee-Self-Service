@@ -5,8 +5,8 @@
 
 <div class="padding-10">
   <div>
-    <h3 class="content-info">Order from {{shipment.activeVersion.customer.firstName}}
-      {{shipment.activeVersion.customer.initial}} {{shipment.activeVersion.customer.lastName}}</h3>
+    <h3 class="content-info">Order from {{requisition.customer.firstName}}
+      {{requisition.customer.initial}} {{requisition.customer.lastName}}</h3>
   </div>
 
   <%--Order content--%>
@@ -49,9 +49,9 @@
                style="width: 100px">
       </h4>
 
-      <h4 class="content-info">Ordered: {{shipment.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
+      <h4 class="content-info">Ordered: {{requisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
-        <a target="_blank" href="${ctxPath}/supply/requisition/requisition-view?requisition={{shipment.id}}&print=true">
+        <a target="_blank" href="${ctxPath}/supply/requisition/requisition-view?requisition={{requisition.requisitionId}}&print=true">
           Print
         </a>
         <a target="#" ng-click="close()" style="padding-left: 30px">
@@ -83,16 +83,16 @@
       <%--Actions--%>
 
       <%--Process button. Current status must be pending.--%>
-      <input ng-show="shipment.activeVersion.status === 'PENDING'" ng-click="processOrder()"
+      <input ng-show="requisition.status === 'PENDING'" ng-click="processOrder()"
              class="submit-button col-4-12" type="button" value="Process">
 
       <%--Complete button. Current status must be PENDING.--%>
-      <input ng-show="shipment.activeVersion.status === 'PROCESSING'" ng-click="completeOrder()"
+      <input ng-show="requisition.status === 'PROCESSING'" ng-click="completeOrder()"
              class="submit-button col-4-12" type="button" value="Complete">
 
       <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>
       <shiro:hasPermission name="supply:shipment:approve">
-        <input ng-show="shipment.activeVersion.status === 'COMPLETED'" ng-click="approveShipment()"
+        <input ng-show="requisition.status === 'COMPLETED'" ng-click="approveShipment()"
                class="submit-button col-4-12" type="button" value="Approve">
       </shiro:hasPermission>
 
@@ -101,7 +101,7 @@
 
       <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>
       <input ns-popover ns-popover-template="confirm" ns-popover-timeout="0.5"
-             ng-show="shipment.activeVersion.status === 'PENDING' || shipment.activeVersion.status === 'PROCESSING'"
+             ng-show="requisition.status === 'PENDING' || requisition.status === 'PROCESSING'"
              class="reject-button col-4-12" type="button" value="Reject" ng-disabled="!displayedVersion.note">
     </div>
   </div>

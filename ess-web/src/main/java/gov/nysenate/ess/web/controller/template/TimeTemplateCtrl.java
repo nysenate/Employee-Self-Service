@@ -1,5 +1,6 @@
 package gov.nysenate.ess.web.controller.template;
 
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,9 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
     private static final Logger logger = LoggerFactory.getLogger(TimeTemplateCtrl.class);
     protected static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
 
-    /** --- Records --- */
+    private static final String NOT_A_SUPERVISOR_PAGE = TIME_TMPL_BASE_URL + "/error/not-supervisor";
+
+    /** --- Record Pages --- */
 
     @RequestMapping(value="/record/entry")
     public String entry() {
@@ -27,28 +30,44 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         return TIME_TMPL_BASE_URL + "/record/history";
     }
 
+    /** --- Record Templates --- */
+
     @RequestMapping(value="/record/details")
     public String recordDetails() {
         return TIME_TMPL_BASE_URL + "/record/details";
     }
 
 
-    /** --- Supervisor Records --- */
+    /** --- Supervisor Pages ---
+     *
+     * For these pages, if the requester is not a supervisor, they are served an error page
+     * */
 
     @RequestMapping(value="/record/manage")
     public String manage() {
+        if (!isSupervisor()) {
+            return NOT_A_SUPERVISOR_PAGE;
+        }
         return TIME_TMPL_BASE_URL + "/record/manage";
     }
 
     @RequestMapping(value="/record/emphistory")
     public String employeeHistory() {
+        if (!isSupervisor()) {
+            return NOT_A_SUPERVISOR_PAGE;
+        }
         return TIME_TMPL_BASE_URL + "/record/emp-history";
     }
 
     @RequestMapping(value="/record/grant")
     public String grant() {
+        if (!isSupervisor()) {
+            return NOT_A_SUPERVISOR_PAGE;
+        }
         return TIME_TMPL_BASE_URL + "/record/grant";
     }
+
+    /** --- Supervisor Templates --- */
 
     @RequestMapping(value = "/record/supervisor-record-list")
     public String recordList() {
@@ -87,5 +106,11 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
     @RequestMapping(value="/period/calendar")
     public String payPeriodView() {
         return TIME_TMPL_BASE_URL + "/period/calendar";
+    }
+
+    /** --- Internal Methods --- */
+
+    private boolean isSupervisor() {
+        return SecurityUtils.getSubject().hasRole("supervisor");
     }
 }

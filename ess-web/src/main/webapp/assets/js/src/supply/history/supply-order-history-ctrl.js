@@ -83,6 +83,6 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
     }
 
     $scope.viewRequisition = function (requisition) {
-        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + requisition.id);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + requisition.requisitionId);
     }
 }

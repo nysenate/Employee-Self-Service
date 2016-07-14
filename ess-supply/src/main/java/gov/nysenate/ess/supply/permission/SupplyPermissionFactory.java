@@ -1,10 +1,11 @@
 package gov.nysenate.ess.supply.permission;
 
 import com.google.common.collect.ImmutableList;
-import gov.nysenate.ess.core.model.permission.EssRole;
+import com.google.common.collect.ImmutableSet;
+import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.core.service.permission.PermissionFactory;
+import gov.nysenate.ess.core.service.auth.PermissionFactory;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
@@ -21,7 +22,7 @@ public class SupplyPermissionFactory implements PermissionFactory {
     @Autowired private LocationService locationService;
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableList<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
         Location location = locationService.getLocation(employee.getWorkLocation().getLocId());
         List<Permission> permissions = new ArrayList<>();
         for (EssRole role : roles) {

@@ -14,6 +14,7 @@
             apiPath: '${ctxPath}/api/v1',
             runtimeLevel: '${runtimeLevel}',
             loginUrl: '${loginUrl}',
+            imageUrl: '${imageUrl}',
             sessionId: '${sessionId}',
             miscLeaves: ${miscLeaves}
         };

@@ -12,12 +12,14 @@ public class AuthorizationResponse
 {
     @XmlElement protected AuthorizationStatusView status;
     @XmlElement protected String user;
+    @XmlElement protected String url;
 
-    public AuthorizationResponse(AuthorizationStatus status, Subject subject) {
+    public AuthorizationResponse(AuthorizationStatus status, Subject subject, String url) {
         this.status = new AuthorizationStatusView(status);
         if (subject != null && subject.getPrincipal() != null) {
             this.user = subject.getPrincipal().toString();
         }
+        this.url = url;
     }
 
     public AuthorizationStatusView getStatus() {
@@ -26,5 +28,9 @@ public class AuthorizationResponse
 
     public String getUser() {
         return user;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

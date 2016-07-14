@@ -1,12 +1,16 @@
 package gov.nysenate.ess.core.util;
 
 import com.google.common.collect.BoundType;
+import com.google.common.collect.DiscreteDomain;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.EnumSet;
 
 public class DateUtils
 {
@@ -17,6 +21,9 @@ public class DateUtils
     public static final Range<LocalDate> ALL_DATES = Range.closed(LONG_AGO, THE_FUTURE);
     public static final Range<LocalDateTime> ALL_DATE_TIMES = Range.closed(LONG_AGO.atStartOfDay(), atEndOfDay(THE_FUTURE));
 
+    public static final ImmutableSet<DayOfWeek> WEEKEND = ImmutableSet.copyOf(
+            EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+    );
     /**
      * Returns a LocalDateTime that represents the time just before the start of the next day.
      */
@@ -92,6 +99,33 @@ public class DateUtils
     }
 
     /**
+     * Converts the given date range to a date time range
+     * The resulting date time range is in the format [start of earliest day, start of latest day + 1)
+     * @param localDateRange Range<LocalDate>
+     * @return Range<LocalDateTime>
+     */
+    public static Range<LocalDateTime> toDateTimeRange(Range<LocalDate> localDateRange) {
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+        if (localDateRange.hasLowerBound()) {
+            startDateTime = startOfDateRange(localDateRange).atStartOfDay();
+        }
+        if (localDateRange.hasUpperBound()) {
+            endDateTime = endOfDateRange(localDateRange).plusDays(1).atStartOfDay();
+        }
+        if (startDateTime == null && endDateTime == null) {
+            return Range.all();
+        }
+        if (startDateTime == null) {
+            return Range.lessThan(endDateTime);
+        }
+        if (endDateTime == null) {
+            return Range.atLeast(startDateTime);
+        }
+        return Range.closedOpen(startDateTime, endDateTime);
+    }
+
+    /**
      * Convert a LocalDateTime to a Date.
      */
     public static Date toDate(LocalDateTime localDateTime) {
@@ -158,18 +192,18 @@ public class DateUtils
      * @return LocalDateTime - Upper bound in the dateTime range
      */
     public static LocalDateTime endOfDateTimeRange(Range<LocalDateTime> dateTimeRange) {
-        if (dateTimeRange != null) {
-            LocalDateTime upper;
-            if (dateTimeRange.hasUpperBound()) {
-                upper = (dateTimeRange.upperBoundType().equals(BoundType.CLOSED))
-                        ? dateTimeRange.upperEndpoint() : dateTimeRange.upperEndpoint().minusNanos(1);
-            }
-            else {
-                upper = atEndOfDay(THE_FUTURE);
-            }
-            return upper;
+        if (dateTimeRange == null) {
+            throw new IllegalArgumentException("Supplied localDateTimeRange is null.");
         }
-        throw new IllegalArgumentException("Supplied localDateTimeRange is null.");
+        LocalDateTime upper;
+        if (dateTimeRange.hasUpperBound()) {
+            upper = (dateTimeRange.upperBoundType().equals(BoundType.CLOSED))
+                    ? dateTimeRange.upperEndpoint() : dateTimeRange.upperEndpoint().minusNanos(1);
+        }
+        else {
+            upper = atEndOfDay(THE_FUTURE);
+        }
+        return upper;
     }
 
     /**

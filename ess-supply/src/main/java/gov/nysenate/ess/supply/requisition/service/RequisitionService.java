@@ -1,43 +1,21 @@
 package gov.nysenate.ess.supply.requisition.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
-import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public interface RequisitionService {
 
-    /**
-     * Saves a {@link Requisition} without ensuring update consistency.
-     * This should only be used for saving a new requisition. For updating a requisition
-     * see {@link #updateRequisition(int, RequisitionVersion, LocalDateTime) updateRequisition}.
-     * @return The requisition id.
-     */
-    int saveRequisition(Requisition requisition);
+    Requisition saveRequisition(Requisition requisition);
 
-    /**
-     * Updates a {@link Requisition} by adding a {@link RequisitionVersion} to it and saving into the backing store.
-     * Checks to ensure the underlying requisition was not updated before this update was made. If so throw
-     * an {@link gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException}.
-     *
-     * This check is done by comparing the {@code lastModified} requisition date time according to the update
-     * with the lastModified date time of the requisition in the database. If they are not equal another update
-     * took place before this one and this update will have to be resubmitted.
-     * @param requisitionId
-     * @param requisitionVersion
-     * @param lastModified The requisition's last modified date time according to the update.
-     * @return The requisition id.
-     */
-    int updateRequisition(int requisitionId, RequisitionVersion requisitionVersion, LocalDateTime lastModified);
-
-    void undoRejection(Requisition requisition);
-
-    Requisition getRequisitionById(int requisitionId);
+    Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
@@ -57,4 +35,5 @@ public interface RequisitionService {
     PaginatedList<Requisition> searchOrderHistory(String destination, int customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
 
+    ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
 }

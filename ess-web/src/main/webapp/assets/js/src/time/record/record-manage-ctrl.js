@@ -1,11 +1,10 @@
 var essApp = angular.module('ess');
 
 essApp.controller('RecordManageCtrl', ['$scope', '$q', 'appProps', 'RecordUtils', 'modals', 'badgeService',
-    'SupervisorTimeRecordsApi', 'EmpInfoApi', 'TimeRecordApi',
+    'SupervisorTimeRecordsApi', 'TimeRecordApi',
     recordManageCtrl]);
 
-function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeService, supRecordsApi, empInfoApi, timeRecordsApi) {
-
+function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeService, supRecordsApi, timeRecordsApi) {
     $scope.state = {
         // Data
         supIds: {},
@@ -83,7 +82,7 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
         records.forEach(function(record) {
             promises.push(timeRecordsApi.save({action: record.action}, record,
                 function(response){console.log('success:', record.timeRecordId, response)},
-                function(response){console.log('fail:', record.timeRecordId, response)}
+                function(response){console.log('fail:', record.timeRecordId, response); return response;}
             ).$promise);
         });
         $scope.state.loading = true;

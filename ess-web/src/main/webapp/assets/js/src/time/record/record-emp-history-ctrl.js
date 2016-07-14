@@ -202,7 +202,8 @@ function empRecordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, T
     $scope.getAttendRecords = function (emp, year) {
         var params = {
             empId: $scope.state.selectedEmp.empId,
-            year: $scope.state.selectedRecYear
+            from: $scope.state.supStartDate.format('YYYY-MM-DD'),
+            to: $scope.state.supEndDate.format('YYYY-MM-DD')
         };
         return AttendanceRecordApi.get(params, function (response) {
             console.log('got attendance records', response.records);

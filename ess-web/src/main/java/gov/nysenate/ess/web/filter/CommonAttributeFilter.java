@@ -35,10 +35,13 @@ public class CommonAttributeFilter implements Filter
     public static String CONTEXT_PATH_ATTRIBUTE = "ctxPath";
     public static String RUNTIME_LEVEL_ATTRIBUTE = "runtimeLevel";
     public static String LOGIN_URL_ATTRIBUTE = "loginUrl";
+    public static String IMAGE_URL_ATTRIBUTE = "imageUrl";
     public static String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
 
     @Value("${runtime.level}") private String runtimeLevel;
     @Value("${login.url}") private String loginUrl;
+    @Value("${image.url}")
+    private String imageUrl;
 
     @Autowired
     private XsrfValidator xsrfValidator;
@@ -59,7 +62,7 @@ public class CommonAttributeFilter implements Filter
         setLoginUrlAttribute(request);
         setXsrfTokenAttribute(httpServletRequest);
         setMiscLeaveAttribute(httpServletRequest);
-
+        setImageUrl(request);
         chain.doFilter(request, response);
     }
 
@@ -81,6 +84,11 @@ public class CommonAttributeFilter implements Filter
     private void setLoginUrlAttribute(ServletRequest request) {
         request.setAttribute(LOGIN_URL_ATTRIBUTE, loginUrl);
     }
+
+    private void setImageUrl(ServletRequest request) {
+        request.setAttribute(IMAGE_URL_ATTRIBUTE, imageUrl);
+    }
+
 
     private void setXsrfTokenAttribute(HttpServletRequest httpServletRequest) {
         HttpSession session = httpServletRequest.getSession();

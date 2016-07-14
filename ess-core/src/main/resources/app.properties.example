@@ -50,10 +50,10 @@ ts.schema =
 # Postgres Schema Configuration
 
 # Ess common schema
-ess.schema =
+ess.schema = ess
 
 # Supply's schema
-supply.schema =
+supply.schema = supply
 
 # --- Mail Configuration ------------------------------------------------------
 
@@ -119,7 +119,13 @@ scheduler.timerecord.ensureall.enabled = false
 # (Default every night at midnight: 0 0 0 * * *)
 scheduler.timerecord.ensureall.cron = 0 0 0 * * *
 
-# --- TimeOut Configuration ------------------------------------------------
+# --- Timeout Configuration ------------------------------------------------
 
 #timeout in secs
-timeout = 80
+timeout = 900
+
+# --- Image Folder URL --------------------------------------------------------
+
+#absolute path prefix for images
+image.url = /assets/supply_photos
+

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.requisition.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailContent;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
@@ -9,7 +10,6 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
-import gov.nysenate.ess.supply.requisition.RequisitionVersion;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
@@ -22,72 +22,73 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Optional;
 
 @Service
 public class SupplyRequisitionService implements RequisitionService {
 
-    @Autowired private DateTimeFactory dateTimeFactory;
     @Autowired private RequisitionDao requisitionDao;
-    @Autowired
-    private SendSimpleEmail sendSimpleEmail;
+    @Autowired private SendSimpleEmail sendSimpleEmail;
 
     @Override
-    public int saveRequisition(Requisition requisition) {
-        return requisitionDao.saveRequisition(requisition);
+    public synchronized Requisition saveRequisition(Requisition requisition) {
+        checkPessimisticLocking(requisition);
+        requisition = requisitionDao.saveRequisition(requisition);
+        if (requisition.getStatus() == RequisitionStatus.REJECTED) {
+            sendRejectEmail(requisition);
+        }
+        return requisition;
     }
 
-    @Override
-    public synchronized int updateRequisition(int requisitionId, RequisitionVersion requisitionVersion, LocalDateTime lastModified) {
-        Requisition persistedRequisition = requisitionDao.getRequisitionById(requisitionId);
-        if (!persistedRequisition.getModifiedDateTime().equals(lastModified)) {
-            throw new ConcurrentRequisitionUpdateException(requisitionId, lastModified, persistedRequisition.getModifiedDateTime());
-        }
-        persistedRequisition.addVersion(dateTimeFactory.now(), requisitionVersion);
-        int res = requisitionDao.saveRequisition(persistedRequisition);
-        if (requisitionVersion.getStatus().equals(RequisitionStatus.REJECTED)) {
-            /**
-             * Subject
-             */
-            SimpleEmailSubject subject = new SimpleEmailSubject(Color.black, "Your order (" + requisitionId + ") has been reject");
-            /**
-             * elements
-             */
-            SimpleEmailContent detail = new SimpleEmailContent(Color.black, requisitionVersion.toOrderString(), "$detail$");
-            SimpleEmailContent note = new SimpleEmailContent(Color.black, requisitionVersion.getNote().get(), "$note$");
-            SimpleEmailContent rId = new SimpleEmailContent(Color.black, String.valueOf(requisitionId), "$requisitionId$");
-            SimpleEmailContent rejecter = new SimpleEmailContent(Color.black, requisitionVersion.getIssuer().orElse(requisitionVersion.getCreatedBy()).getFullName() + "\n" + requisitionVersion.getIssuer().orElse(requisitionVersion.getCreatedBy()).getEmail(), "$rejecter$");
-            SimpleEmailContent cname = new SimpleEmailContent(Color.black, String.valueOf(requisitionVersion.getCustomer().getFirstName() + " " + requisitionVersion.getCustomer().getLastName()), "$cname$");
-            SimpleEmailTemplate reject = null;
-            try {
-                reject = new SimpleEmailTemplate(Color.black, "", "reject_email");
-            } catch (IOException e) {
-                e.printStackTrace();
+    /**
+     * Ensure this requisition has not been updated behind the back of the user.
+     * Gets the matching requisition from the database, and compares its modified date time
+     * with that of the new {@code requisition}. If they do not match then the requisition
+     * has been updated by someone else and we should not save it.
+     * @param requisition
+     */
+    private void checkPessimisticLocking(Requisition requisition) {
+        Optional<Requisition> previousRevision = requisitionDao.getRequisitionById(requisition.getRequisitionId());
+        if (previousRevision.isPresent()) {
+            if (!previousRevision.get().getModifiedDateTime().equals(requisition.getModifiedDateTime())) {
+                throw new ConcurrentRequisitionUpdateException(requisition.getRequisitionId(),
+                                                               requisition.getModifiedDateTime().orElse(null),
+                                                               previousRevision.get().getModifiedDateTime().orElse(null));
             }
-            ArrayList<gov.nysenate.ess.core.service.notification.base.message.base.Component> simpleEmailContentList = new ArrayList();
-            simpleEmailContentList.add(note);
-            simpleEmailContentList.add(rId);
-            simpleEmailContentList.add(cname);
-            simpleEmailContentList.add(reject);
-            simpleEmailContentList.add(detail);
-            simpleEmailContentList.add(rejecter);
-            sendSimpleEmail.send(requisitionVersion.getIssuer().orElse(requisitionVersion.getCreatedBy()), requisitionVersion.getCustomer(), simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
         }
-        return res;
+    }
+
+    private void sendRejectEmail(Requisition requisition) {
+        /**
+         * Subject
+         */
+        SimpleEmailSubject subject = new SimpleEmailSubject(Color.black, "Your order (" + requisition.getRequisitionId() + ") has been reject");
+        /**
+         * elements
+         */
+        SimpleEmailContent detail = new SimpleEmailContent(Color.black, requisition.toOrderString(), "$detail$");
+        SimpleEmailContent note = new SimpleEmailContent(Color.black, requisition.getNote().get(), "$note$");
+        SimpleEmailContent rId = new SimpleEmailContent(Color.black, String.valueOf(requisition.getRequisitionId()), "$requisitionId$");
+        SimpleEmailContent rejecter = new SimpleEmailContent(Color.black, requisition.getIssuer().orElse(requisition.getModifiedBy()).getFullName() + "\n" + requisition.getIssuer().orElse(requisition.getModifiedBy()).getEmail(), "$rejecter$");
+        SimpleEmailContent cname = new SimpleEmailContent(Color.black, String.valueOf(requisition.getCustomer().getFirstName() + " " + requisition.getCustomer().getLastName()), "$cname$");
+        SimpleEmailTemplate reject = null;
+        try {
+            reject = new SimpleEmailTemplate(Color.black, "", "reject_email");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ArrayList<gov.nysenate.ess.core.service.notification.base.message.base.Component> simpleEmailContentList = new ArrayList();
+        simpleEmailContentList.add(note);
+        simpleEmailContentList.add(rId);
+        simpleEmailContentList.add(cname);
+        simpleEmailContentList.add(reject);
+        simpleEmailContentList.add(detail);
+        simpleEmailContentList.add(rejecter);
+        sendSimpleEmail.send(requisition.getIssuer().orElse(requisition.getModifiedBy()), requisition.getCustomer(), simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
     }
 
     @Override
-    public void undoRejection(Requisition requisition) {
-        RequisitionVersion newVersion = requisition.getLatestVersionWithStatusIn(nonRejectedRequisitionStatuses());
-        requisition.addVersion(dateTimeFactory.now(), newVersion);
-        saveRequisition(requisition);
-    }
-
-    private EnumSet<RequisitionStatus> nonRejectedRequisitionStatuses() {
-        return EnumSet.complementOf(EnumSet.of(RequisitionStatus.REJECTED));
-    }
-
-    @Override
-    public Requisition getRequisitionById(int requisitionId) {
+    public Optional<Requisition> getRequisitionById(int requisitionId) {
         return requisitionDao.getRequisitionById(requisitionId);
     }
 
@@ -97,10 +98,17 @@ public class SupplyRequisitionService implements RequisitionService {
         return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, limitOffset);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PaginatedList<Requisition> searchOrderHistory(String destination, int customerId, EnumSet<RequisitionStatus> statuses,
                                                          Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
         return requisitionDao.searchOrderHistory(destination, customerId, statuses, dateRange, dateField, limitOffset);
+    }
+
+    @Override
+    public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
+        return requisitionDao.getRequisitionHistory(requisitionId);
     }
 }

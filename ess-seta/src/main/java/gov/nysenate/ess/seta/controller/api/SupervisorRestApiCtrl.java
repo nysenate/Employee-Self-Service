@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.seta.client.view.*;
+import gov.nysenate.ess.seta.model.auth.EssTimePermission;
 import gov.nysenate.ess.seta.model.personnel.SupervisorChain;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
 import gov.nysenate.ess.seta.model.personnel.SupervisorMissingEmpsEx;
@@ -25,13 +26,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/supervisor")
@@ -48,6 +50,10 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
                                                @RequestParam(required = false) String toDate) {
         LocalDate fromLocalDate = (fromDate != null) ? parseISODate(fromDate, "from date") : DateUtils.LONG_AGO;
         LocalDate toLocalDate = (toDate != null) ? parseISODate(toDate, "to date") : DateUtils.THE_FUTURE;
+
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_EMPLOYEES, GET,
+                Range.closed(fromLocalDate, toLocalDate)));
+
         return new ViewObjectResponse<>(
             new SupervisorEmpGroupView(
                 supInfoService.getSupervisorEmpGroup(supId, Range.closed(fromLocalDate, toLocalDate))));
@@ -57,6 +63,9 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
     public BaseResponse getSupervisorChain(@RequestParam Integer empId,
                                            @RequestParam(required = false) String date) {
         LocalDate localDate = (date != null) ? parseISODate(date, "date") : LocalDate.now();
+
+        checkPermission(new EssTimePermission(empId, SUPERVISOR, GET, localDate));
+
         SupervisorChain supervisorChain = supInfoService.getSupervisorChain(empId, localDate, 3);
         Map<Integer, Employee> empMap = supervisorChain.getChain().stream()
                 .map(empInfoService::getEmployee)
@@ -68,22 +77,33 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
 
     @RequestMapping(value = "/overrides")
     public BaseResponse getSupervisorOverrides(@RequestParam Integer supId) {
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_OVERRIDES, GET, LocalDate.now()));
+
         List<SupervisorOverride> overrides = supInfoService.getSupervisorOverrides(supId);
         return ListViewResponse.of(overrides.stream()
                 .map(ovr -> new SupervisorOverrideView(ovr, empInfoService.getEmployee(ovr.getGranterSupervisorId())))
                 .collect(toList()), "overrides");
     }
 
-    @RequestMapping(value = "/grants", method = RequestMethod.GET)
+    @RequestMapping(value = "/grants", method = GET)
     public BaseResponse getSupervisorGrants(@RequestParam Integer supId) {
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_OVERRIDES, GET, LocalDate.now()));
+
         List<SupervisorOverride> overrides = supInfoService.getSupervisorGrants(supId);
         return ListViewResponse.of(overrides.stream()
                 .map(ovr -> new SupervisorGrantView(ovr, empInfoService.getEmployee(ovr.getGranteeSupervisorId())))
                 .collect(toList()), "grants");
     }
 
-    @RequestMapping(value = "/grants", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/grants", method = POST, consumes = "application/json")
     public BaseResponse updateSupervisorGrants(@RequestBody SupervisorGrantSimpleView[] grantViews) {
+        Set<Integer> supIds = Arrays.stream(grantViews)
+                .map(SupervisorGrantSimpleView::getGranterSupervisorId)
+                .collect(Collectors.toSet());
+
+        supIds.forEach(supId ->
+                checkPermission(new EssTimePermission(supId, SUPERVISOR_OVERRIDES, POST, LocalDate.now())));
+
         for (SupervisorGrantSimpleView grantView : grantViews) {
             if (grantView == null || grantView.getGranteeSupervisorId() == 0 || grantView.getGranterSupervisorId() == 0) {
                 throw new IllegalArgumentException("Grant must contain a valid supervisor and override supervisor id.");

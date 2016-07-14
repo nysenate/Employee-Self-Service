@@ -8,7 +8,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
-import gov.nysenate.ess.supply.requisition.RequisitionVersion;
+import gov.nysenate.ess.supply.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -23,11 +23,15 @@ public class SqlLineItemDao extends SqlBaseDao {
 
     @Autowired private SupplyItemService itemService;
 
-    protected void insertVersionLineItems(RequisitionVersion version, int versionId) {
+    /**
+     * Does a batch insert of all line items for a requisition.
+     * @param requisition
+     */
+    protected void insertRequisitionLineItems(Requisition requisition) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (LineItem lineItem: version.getLineItems()) {
+        for (LineItem lineItem: requisition.getLineItems()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("versionId", versionId)
+                    .addValue("revisionId", requisition.getRevisionId())
                     .addValue("itemId", lineItem.getItem().getId())
                     .addValue("quantity", lineItem.getQuantity());
             paramList.add(params);
@@ -38,8 +42,8 @@ public class SqlLineItemDao extends SqlBaseDao {
         localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    protected Set<LineItem> getLineItems(int versionId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("versionId", versionId);
+    protected Set<LineItem> getLineItems(int revisionId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("revisionId", revisionId);
         String sql = SqlReqLineItemQuery.GET_LINE_ITEMS.getSql(schemaMap());
         ReqLineItemHandler handler = new ReqLineItemHandler(itemService);
         localNamedJdbc.query(sql, params, handler);
@@ -49,13 +53,13 @@ public class SqlLineItemDao extends SqlBaseDao {
     private enum SqlReqLineItemQuery implements BasicSqlQuery {
 
         INSERT_LINE_ITEM(
-                "INSERT INTO ${supplySchema}.line_item(version_id, item_id, quantity) \n" +
-                "VALUES (:versionId, :itemId, :quantity)"
+                "INSERT INTO ${supplySchema}.line_item(revision_id, item_id, quantity) \n" +
+                "VALUES (:revisionId, :itemId, :quantity)"
         ),
         GET_LINE_ITEMS(
                 "SELECT item_id, quantity \n" +
                 "FROM ${supplySchema}.line_item \n" +
-                "WHERE version_id = :versionId"
+                "WHERE revision_id = :revisionId"
         );
 
         SqlReqLineItemQuery(String sql) {
@@ -77,6 +81,7 @@ public class SqlLineItemDao extends SqlBaseDao {
 
     /**
      * Return a set of line items sorted alphabetically by their descriptions.
+     *
      * Cant sort in original select statement since description information is
      * not contained in local database.
      */

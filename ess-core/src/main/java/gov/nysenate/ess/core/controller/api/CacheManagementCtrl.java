@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.cache.CacheEvictEvent;
 import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,7 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * @return ListViewResponse<CacheStatsView>
      * @see CacheStatsView for response format
      */
+    @RequiresPermissions("admin:cache:get")
     @RequestMapping(value = "/stats", method = RequestMethod.GET)
     public ListViewResponse<CacheStatsView> getCacheStats() {
         return ListViewResponse.of(
@@ -62,6 +64,7 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      *
      * @return SimpleResponse - indicating cache warm success
      */
+    @RequiresPermissions("admin:cache:put")
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.PUT)
     public SimpleResponse warmCache(@PathVariable String cacheName) {
         eventBus.post(new CacheWarmEvent(getAffectedCaches(cacheName)));
@@ -82,6 +85,7 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      *
      * @return SimpleResponse - indicating cache warm success
      */
+    @RequiresPermissions("admin:cache:delete")
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.DELETE)
     public SimpleResponse evictCache(@PathVariable String cacheName) {
         eventBus.post(new CacheEvictEvent(getAffectedCaches(cacheName)));
