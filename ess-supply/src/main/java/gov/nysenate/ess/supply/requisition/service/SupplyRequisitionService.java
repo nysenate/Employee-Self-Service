@@ -69,7 +69,6 @@ public class SupplyRequisitionService implements RequisitionService {
         SimpleEmailContent detail = new SimpleEmailContent(Color.black, requisition.toOrderString(), "$detail$");
         SimpleEmailContent note = new SimpleEmailContent(Color.black, requisition.getNote().get(), "$note$");
         SimpleEmailContent rId = new SimpleEmailContent(Color.black, String.valueOf(requisition.getRequisitionId()), "$requisitionId$");
-        SimpleEmailContent rejecter = new SimpleEmailContent(Color.black, requisition.getIssuer().orElse(requisition.getModifiedBy()).getFullName() + "\n" + requisition.getIssuer().orElse(requisition.getModifiedBy()).getEmail(), "$rejecter$");
         SimpleEmailContent cname = new SimpleEmailContent(Color.black, String.valueOf(requisition.getCustomer().getFirstName() + " " + requisition.getCustomer().getLastName()), "$cname$");
         SimpleEmailTemplate reject = null;
         try {
@@ -83,7 +82,6 @@ public class SupplyRequisitionService implements RequisitionService {
         simpleEmailContentList.add(cname);
         simpleEmailContentList.add(reject);
         simpleEmailContentList.add(detail);
-        simpleEmailContentList.add(rejecter);
         sendSimpleEmail.send(requisition.getIssuer().orElse(requisition.getModifiedBy()), requisition.getCustomer(), simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
     }
 
