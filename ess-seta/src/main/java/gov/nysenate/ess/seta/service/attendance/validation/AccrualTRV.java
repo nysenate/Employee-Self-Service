@@ -47,7 +47,6 @@ public class AccrualTRV implements TimeRecordValidator {
 
         PayPeriod previousPP = payPeriodService.getPayPeriod(PayPeriodType.AF, record.getBeginDate().minusDays(1));
 
-        logger.info("*Previous Pay Period: {} -  {}", previousPP.getStartDate(), previousPP.getEndDate());
         PeriodAccSummary periodAccSummary;
         periodAccSummary = essAccrualComputeService.getAccruals(record.getEmployeeId(), previousPP);
 

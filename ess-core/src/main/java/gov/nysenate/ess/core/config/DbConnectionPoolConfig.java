@@ -87,7 +87,9 @@ public class DbConnectionPoolConfig
         catch (PropertyVetoException ex) {
             logger.error("Error when setting the database driver " + driver + "{}", ex.getMessage());
         }
-        pool.setJdbcUrl(String.format(jdbcUrlTemplate, type, host, name));
+        final String jdbcUrl = String.format(jdbcUrlTemplate, type, host, name);
+
+        pool.setJdbcUrl(jdbcUrl);
         pool.setUser(user);
         pool.setPassword(pass);
         return pool;

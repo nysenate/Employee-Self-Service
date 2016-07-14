@@ -45,7 +45,7 @@ public class EssTimeRecordManagerTests extends SetaTests
 
     @Test
     public void ensureRecordsTest() {
-        int empId = 6221;
+        int empId = 11497;
 
         RangeSet<LocalDate> openDates = attendanceDao.getOpenDates(empId);
         List<PayPeriod> payPeriods = openDates.asRanges().stream()

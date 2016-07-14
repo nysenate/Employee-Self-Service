@@ -26,6 +26,10 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     @Autowired private AllowanceTRV allowanceTRV;
     @Autowired private AccrualTRV accrualTRV;
     @Autowired private HourIncrementTRV hourIncrementTRV;
+    @Autowired private MiscTRV miscTRV;
+    @Autowired private TotalTRV totalTRV;
+    @Autowired private FieldRangeTRV fieldMaxMinTRV;
+    @Autowired private DateRangeTRV dateRangeTRV;
 
     private ImmutableList<TimeRecordValidator> timeRecordValidators;
 
@@ -36,6 +40,10 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
                 .add(allowanceTRV)
                 .add(accrualTRV)
                 .add(hourIncrementTRV)
+                .add(miscTRV)
+                .add(totalTRV)
+                .add(fieldMaxMinTRV)
+                .add(dateRangeTRV)
                 // TODO: ADD SOME more VALIDATORS
                 .build();
     }
