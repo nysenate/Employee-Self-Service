@@ -40,7 +40,7 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
 
     function getCompletedOrders() {
         var params = {
-            status: "APPROVED",
+            status: ["APPROVED", "REJECTED"],
             // Only filtering by day so round dates to start/end of day.
             from: moment($scope.filter.date.from).startOf('day').format(),
             to: moment($scope.filter.date.to).endOf('day').format()
@@ -69,8 +69,10 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
             if ($scope.locations.indexOf(shipment.destination.locId) === -1) {
                 $scope.locations.push(shipment.destination.locId);
             }
-            if ($scope.issuers.indexOf(shipment.issuer.firstName + " " + shipment.issuer.lastName) === -1) {
-                $scope.issuers.push(shipment.issuer.firstName + " " + shipment.issuer.lastName);
+            if (shipment.issuer !== null) {
+                if ($scope.issuers.indexOf(shipment.issuer.firstName + " " + shipment.issuer.lastName) === -1) {
+                    $scope.issuers.push(shipment.issuer.firstName + " " + shipment.issuer.lastName);
+                }
             }
         });
     };
