@@ -1,9 +1,9 @@
 var essTime = angular.module('essTime');
 
-essTime.controller('AccrualProjectionCtrl', ['$scope', 'appProps', 'AccrualHistoryApi', 'modals', 'AccrualUtils', 
+essTime.controller('AccrualProjectionCtrl', ['$scope', '$timeout', 'appProps', 'AccrualHistoryApi', 'modals', 'AccrualUtils', 
                                            accrualProjectionCtrl]);
 
-function accrualProjectionCtrl($scope, appProps, AccrualHistoryApi, modals, accrualUtils) {
+function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, modals, accrualUtils) {
 
     $scope.state = {
         empId: appProps.user.employeeId,
