@@ -192,7 +192,7 @@
             </td>
             <td entry-validator validate="entryValidators.raSa.holidayHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     ng-readonly="!(entry.payType === 'SA' && isHoliday(entry))"
+                     ng-readonly="!isHoliday(entry)" placeholder="{{isHoliday(entry) ? '--' : ''}}"
                      step=".5" min="0" max="{{getHolidayHours(entry)}}" ng-model="entry.holidayHours" name="numHolidayHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.vacationHours(entry)">
