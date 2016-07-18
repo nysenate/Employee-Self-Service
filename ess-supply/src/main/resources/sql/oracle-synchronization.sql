@@ -19,8 +19,9 @@ END SYNCHRONIZE_SUPPLY;
 -------------------------------------------------------------------
 
 
--- TODO: Save inserted and not inserted requisitions in array like element.
 -- TODO: Calling Supply API's.
+-- Failed insert call, send requisition_id and sqlerrm message
+-- send list of successfully inserted requisitions at the end.
 -- TODO: Clean up TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD') calls
 
 CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
@@ -249,7 +250,10 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     item_id             NUMBER;
     quantity            NUMBER;
     standard_quantity   NUMBER;
-    issue_unit           VARCHAR2(10);
+    issue_unit          VARCHAR2(10);
+
+    -- Script processing information
+    successful_inserts  VARCHAR2(32000); -- CSV of requisition_id's that were successfully inserted into oracle.
 
     BEGIN
       login();
@@ -309,6 +313,13 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
 
           -- Commit a single requisition insert.
           COMMIT;
+
+          -- Add to list of successful inserts
+          IF successful_inserts IS NULL THEN
+            successful_inserts := requisition_id;
+            ELSE
+            successful_inserts := successful_inserts || ',' || requisition_id;
+          END IF;
 
           -- If theres any exceptions while inserting a requisition, skip to next requisition.
           EXCEPTION
