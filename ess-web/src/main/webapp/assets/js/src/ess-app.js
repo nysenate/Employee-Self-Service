@@ -44,7 +44,6 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
                             if (data["message"] > 0 && localStorage.getItem("alerted") == "false") {
                                 //timeout in data["message"]  time
                                 localStorage.setItem("alerted", "true");
-                                event.preventDefault();
                                 var tick = 60;
                                 var ticking = setInterval(function () {
                                     if (tick >= 0) {
@@ -70,6 +69,7 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
                                     closeOnEscape: false,
                                     open: function (event, ui) {
                                         $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                                        $(".ui-widget-overlay").attr('style', 'position: fixed;top: 0;left: 0; width: 100%;height: 100%; background: #666666 url(ui-bg_diagonals-thick_20_666666_40x40.png) 50% 50% repeat;opacity: .50;filter:Alpha(Opacity=50); ');
                                     },
                                     close: function () {
                                     },
@@ -97,7 +97,8 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
                 });
 
                 window.onbeforeunload = function (e) {
-                    localStorage.removeItem("hb")
+                    localStorage.removeItem("hb");
+                    clearInterval(hb);
                 }
             }
             return request;
