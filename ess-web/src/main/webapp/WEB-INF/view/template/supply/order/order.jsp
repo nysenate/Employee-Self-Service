@@ -73,7 +73,7 @@
               </select>
             </label>
             <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"
-                   type="button" value="Add to Cart">
+                   type="button" value="Add to Cart" style="padding: 0px 5px;">
           </div>
           <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
             &#x2713; Added to cart.

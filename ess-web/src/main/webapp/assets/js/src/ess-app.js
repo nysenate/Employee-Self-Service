@@ -28,7 +28,8 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
                 $("body").append(myvar);
             }
             $("#timeout-confirm").hide();
-
+            $("#timeout-confirm").dialog();
+            $("#timeout-confirm").dialog("close");
             var heartBeatingRate = 5; // in sec
             var idelTime = 0; // in sec.window.location.pathname
             localStorage.setItem("alerted", "false");
