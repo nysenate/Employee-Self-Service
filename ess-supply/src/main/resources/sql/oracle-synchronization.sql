@@ -1,7 +1,7 @@
 CREATE OR REPLACE PACKAGE SYNCHRONIZE_SUPPLY AS
   -- Config
-  ESS_USERNAME VARCHAR2(50) := '';
-  ESS_PASSWORD VARCHAR2(50) := '';
+  ESS_USERNAME VARCHAR2(50) := 'caseiras';
+  ESS_PASSWORD VARCHAR2(50) := 'a';
   -- Constants
   SUPPLY_LOCATION_CODE VARCHAR2(6) := 'LC100S';
   SUPPLY_LOCATION_TYPE VARCHAR2(1) := 'P';
@@ -19,9 +19,7 @@ END SYNCHRONIZE_SUPPLY;
 -------------------------------------------------------------------
 
 
-
--- TODO: Savepoint, rollbacks, committing.
--- TODO: Exception handling.
+-- TODO: Save inserted and not inserted requisitions in array like element.
 -- TODO: Calling Supply API's.
 -- TODO: Clean up TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD') calls
 
@@ -49,16 +47,16 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       utl_http.end_response(res);
       EXCEPTION
       WHEN utl_http.end_of_body THEN
-      -- TODO: better error handling
       utl_http.end_response(res);
     END;
 
-  FUNCTION get_requisitions_xml(iso_date VARCHAR2)
+  FUNCTION get_requisitions_xml(iso_date VARCHAR2, limit NUMBER, offset NUMBER)
     RETURN XMLTYPE IS xml XMLTYPE;
     req                   utl_http.req;
     res                   utl_http.resp;
     url                   VARCHAR2(4000) :=
-    'http://10.3.13.63:8080/timesheets/api/v1/supply/requisitions.xml?status=APPROVED&limit=1&to=' || iso_date;
+    'http://10.3.13.63:8080/timesheets/api/v1/supply/requisitions.xml?status=APPROVED&limit=' || limit || '&offset=' ||
+    offset || '&to=' || iso_date;
     buffer                VARCHAR(32000);
     BEGIN
       req := UTL_HTTP.begin_request(url, 'GET', 'HTTP/1.1');
@@ -66,9 +64,10 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       res := utl_http.get_response(req);
       utl_http.read_text(res, buffer);
       utl_http.end_response(res);
+
+      --dbms_output.put_line(buffer);
       RETURN XMLTYPE(buffer);
       EXCEPTION
-      -- TODO exception handling.
       WHEN utl_http.end_of_body THEN
       utl_http.end_response(res);
     END;
@@ -113,7 +112,6 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       -- If no nuissue found, default to 0.
       IF nuissue IS NULL
       THEN
-        dbms_output.put_line('no nuissue found for date' || TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD'));
         nuissue := 0;
       END IF;
       -- Increment the current nuissue.
@@ -214,8 +212,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       new_standard_quantity := get_supply_inventory(item_id) - issued_standard_quantity;
       IF new_standard_quantity < 0
       THEN
-        new_standard_quantity := 0; -- TODO temporary.
-        --       TODO: not good! throw exceptions/rollback.
+        RAISE_APPLICATION_ERROR(-20000, 'Cannot set inventory count to negative for item ' || item_id);
       END IF;
       UPDATE FM12INVENTRY
       SET AMQTYOHSTD = new_standard_quantity,
@@ -232,62 +229,98 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
   --------------------------*/
 
   PROCEDURE synchronize_with_supply IS
-    query_limit        NUMBER := 1;
-    query_offset       NUMBER := 1;
-    query_to_date      VARCHAR2(20);
-    XML                XMLTYPE;
-    item_count         NUMBER := 1;
+    query_limit         NUMBER := 1;
+    query_offset        NUMBER := 1;
+    query_to_date       VARCHAR2(20);
+    total_results       NUMBER := 1;
+    requisition_xml     XMLTYPE;
+    item_count          NUMBER := 1;
 
     -- Requisition information.
-    requisition_id     NUMBER;
-    approved_date_time VARCHAR2(23);
-    destination_code   VARCHAR2(6);
-    destination_type   VARCHAR2(1);
-    issuer_uid         VARCHAR2(12);
-    cdrespctrhd        VARCHAR2(10);
+    requisition_id      NUMBER;
+    approved_date_time  VARCHAR2(23);
+    destination_code    VARCHAR2(6);
+    destination_type    VARCHAR2(1);
+    issuer_uid          VARCHAR2(12);
+    responsibility_head VARCHAR2(10);
 
     -- Requisition Item information.
-    nuissue            NUMBER;
-    item_id            NUMBER;
-    quantity           NUMBER;
-    standard_quantity  NUMBER;
-    cdissunit          VARCHAR2(10);
+    nuissue             NUMBER;
+    item_id             NUMBER;
+    quantity            NUMBER;
+    standard_quantity   NUMBER;
+    issue_unit           VARCHAR2(10);
 
     BEGIN
       login();
       query_to_date := current_iso_date();
-      xml := get_requisitions_xml(query_to_date);
 
-      -- Extract Requisition data
-      requisition_id := xml.extract('/ListViewResponse/result/requisitionId/text()').getNumberVal();
-      approved_date_time := xml.extract('/ListViewResponse/result/approvedDateTime/text()').getStringVal();
-      destination_code := xml.extract('/ListViewResponse/result/destination/code/text()').getStringVal();
-      destination_type := xml.extract('/ListViewResponse/result/destination/locationTypeCode/text()').getStringVal();
-      issuer_uid := UPPER(xml.extract('/ListViewResponse/result/issuer/uid/text()').getStringVal());
-      cdrespctrhd := get_responsibility_head(destination_code, destination_type);
-
-      -- Loop through all items in the requisition order.
-      WHILE xml.existsNode('//lineItems/lineItems[' || item_count || ']') = 1
+      -- Loop through all requisitions needing to be synchronized, inserting each one into Oracle.
       LOOP
-        -- Extract item data.
-        item_id := xml.extract('//lineItems/lineItems[' || item_count || ']/item/id/text()').getNumberVal();
-        quantity := xml.extract('//lineItems/lineItems[' || item_count || ']/quantity/text()').getNumberVal();
-        cdissunit := xml.extract('//lineItems/lineItems[' || item_count || ']/item/unit/text()').getStringVal();
-        nuissue := get_next_nuissue(item_id, destination_code, destination_type, approved_date_time);
-        standard_quantity := quantity * get_standard_unit_size(cdissunit);
+        BEGIN
+          SAVEPOINT requisition_insert_savepoint;
+          requisition_xml := get_requisitions_xml(query_to_date, query_limit, query_offset);
 
-        -- Insert item moves.
-        insert_item_move(requisition_id, nuissue, item_id, approved_date_time, destination_code, destination_type,
-                         issuer_uid, quantity, standard_quantity, cdissunit, cdrespctrhd);
-        subtract_items_from_inventory(item_id, standard_quantity);
-        insert_item_move_audit(requisition_id, nuissue, item_id, approved_date_time, destination_code, destination_type,
-                               issuer_uid, quantity, standard_quantity, cdissunit, cdrespctrhd);
+          -- Check if there are any more results.
+          total_results := requisition_xml.extract('/ListViewResponse/total/text()').getNumberVal();
+          -- Increment offset.
+          query_offset := query_offset + 1;
 
-        -- increment and continue looping through items.
-        item_count := item_count + 1;
+          -- If no more results, exit.
+          EXIT WHEN total_results = 0;
+
+          -- Extract Requisition data
+          requisition_id := requisition_xml.extract('/ListViewResponse/result/requisitionId/text()').getNumberVal();
+          approved_date_time := requisition_xml.extract(
+              '/ListViewResponse/result/approvedDateTime/text()').getStringVal();
+          destination_code := requisition_xml.extract(
+              '/ListViewResponse/result/destination/code/text()').getStringVal();
+          destination_type := requisition_xml.extract(
+              '/ListViewResponse/result/destination/locationTypeCode/text()').getStringVal();
+          issuer_uid := UPPER(requisition_xml.extract('/ListViewResponse/result/issuer/uid/text()').getStringVal());
+          responsibility_head := get_responsibility_head(destination_code, destination_type);
+
+          -- reset item_count;
+          item_count := 1;
+          -- Loop through all items in the requisition.
+          WHILE requisition_xml.existsNode('//lineItems/lineItems[' || item_count || ']') = 1
+          LOOP
+            -- Extract item data.
+            item_id := requisition_xml.extract(
+                '//lineItems/lineItems[' || item_count || ']/item/id/text()').getNumberVal();
+            quantity := requisition_xml.extract(
+                '//lineItems/lineItems[' || item_count || ']/quantity/text()').getNumberVal();
+            issue_unit := requisition_xml.extract(
+                '//lineItems/lineItems[' || item_count || ']/item/unit/text()').getStringVal();
+            nuissue := get_next_nuissue(item_id, destination_code, destination_type, approved_date_time);
+            standard_quantity := quantity * get_standard_unit_size(issue_unit);
+
+            -- Insert item moves.
+            insert_item_move(requisition_id, nuissue, item_id, approved_date_time, destination_code, destination_type,
+                             issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
+            subtract_items_from_inventory(item_id, standard_quantity);
+            insert_item_move_audit(requisition_id, nuissue, item_id, approved_date_time, destination_code,
+                                   destination_type,
+                                   issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
+
+            -- increment and continue looping through items.
+            item_count := item_count + 1;
+          END LOOP;
+
+          -- Commit a single requisition insert.
+          COMMIT;
+
+          -- If theres any exceptions while inserting a requisition, skip to next requisition.
+          EXCEPTION
+          WHEN OTHERS THEN
+          -- TODO: send error to supply.
+          dbms_output.put_line('Caught exception');
+          dbms_output.put_line(sqlerrm);
+          -- Skip to the next requisition.
+          ROLLBACK TO requisition_insert_savepoint;
+
+        END;
       END LOOP;
-
-      COMMIT;
     END;
 
 END SYNCHRONIZE_SUPPLY;
