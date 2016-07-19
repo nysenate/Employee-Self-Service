@@ -1,8 +1,9 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-    ['$scope', 'SupplyRequisitionApi', 'LocationService', supplyHistoryController]);
+    ['$scope', 'SupplyRequisitionApi', 'LocationService', 'PaginationModel', supplyHistoryController]);
 
-function supplyHistoryController($scope, requisitionApi, locationService) {
-
+function supplyHistoryController($scope, requisitionApi, locationService, paginationModel) {
+    $scope.paginate = angular.extend({}, paginationModel);
+    $scope.loading = true;
     $scope.filter = {
         date: {
             from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
@@ -33,6 +34,7 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
     // TODO: ---------------------------------
 
     $scope.init = function () {
+        $scope.paginate.itemsPerPage = 12;
         getCompletedOrders();
     };
 
@@ -43,21 +45,54 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
             status: ["APPROVED", "REJECTED"],
             // Only filtering by day so round dates to start/end of day.
             from: moment($scope.filter.date.from).startOf('day').format(),
-            to: moment($scope.filter.date.to).endOf('day').format()
+            to: moment($scope.filter.date.to).endOf('day').format(),
+            limit: $scope.paginate.itemsPerPage,
+            offset: $scope.paginate.getOffset()
         };
         requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
-            $scope.filteredShipments = $scope.shipments;
             $scope.initFilters();
             $scope.selectedLocation = $scope.locations[0];
             $scope.selectedIssuer = $scope.issuers[0];
+            $scope.filteredShipments = filter($scope.shipments);
+            $scope.paginate.setTotalItems(response.total);
         }, function (response) {
 
         })
     }
 
+    function getUpdatedOrders() {
+        var params = {
+            status: ["APPROVED", "REJECTED"],
+            // Only filtering by day so round dates to start/end of day.
+            from: moment($scope.filter.date.from).startOf('day').format(),
+            to: moment($scope.filter.date.to).endOf('day').format(),
+            limit: $scope.paginate.itemsPerPage,
+            offset: $scope.paginate.getOffset()
+        };
+        requisitionApi.get(params, function (response) {
+            $scope.shipments = response.result;
+            $scope.filteredShipments = filter($scope.shipments);
+            $scope.paginate.setTotalItems(response.total);
+        }, function (response) {
+
+        })
+    }
+
+    var filter = function (shipments) {
+        if ($scope.selectedLocation == 'ALL' && $scope.selectedIssuer == 'ALL')
+            return shipments;
+        var res = [];
+        shipments.map(function (s) {
+            if ($scope.isInFilter(s))
+                res.push(s);
+        });
+        return res;
+    };
+
     $scope.reloadShipments = function () {
-        getCompletedOrders();
+        $scope.loading = true;
+        getUpdatedOrders();
     };
 
     // TODO: can't create filters by looping over shipments. Will NOT work once pagination in use.
@@ -104,7 +139,17 @@ function supplyHistoryController($scope, requisitionApi, locationService) {
         return size;
     };
 
-    $scope.viewOrder = function (shipment) {
+    /** Updates the displayed requisitions whenever filters or page is changed. */
+    $scope.updateRequisitions = function () {
+        $scope.loading = true;
+        getUpdatedOrders();
+    };
+
+    function doneLoading() {
+        $scope.loading = false;
+    }
+
+    $scope.viewRequisition = function (shipment) {
         locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId);
     };
 }
