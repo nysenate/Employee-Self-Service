@@ -40,7 +40,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     name   VARCHAR2(4000);
     buffer VARCHAR2(32000);
     BEGIN
-      req := utl_http.begin_request(url, 'POST', ' HTTP/1.1');
+      req := utl_http.begin_request(url, 'POST', 'HTTP/1.1');
       utl_http.set_header(req, 'Accept', 'application/json');
       utl_http.set_header(req, 'Content-Type', 'application/x-www-form-urlencoded');
       res := utl_http.get_response(req);
@@ -225,6 +225,25 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
             AND CDSTATUS = 'A';
     END;
 
+  PROCEDURE send_failure_to_supply(requisition_id NUMBER, error_message VARCHAR2) IS
+    req     utl_http.req;
+    res     utl_http.resp;
+    url     VARCHAR2(4000) := 'http://10.3.13.63:8080/timesheets/api/v1/supply/error';
+    message VARCHAR2(4000) := 'Error saving requisition: ' || requisition_id || '. ' || error_message;
+    BEGIN
+      req := utl_http.begin_request(url, 'POST', 'HTTP/1.1');
+      utl_http.set_header(req, 'Accept', 'text/xml');
+      utl_http.set_header(req, 'Content-Type', 'text/plain');
+      utl_http.set_header(req, 'Content-Length', length(message));
+      utl_http.set_body_charset('UTF-8');
+      utl_http.write_text(req, message);
+      res := utl_http.get_response(req);
+      utl_http.end_response(res);
+      EXCEPTION
+      WHEN utl_http.end_of_body THEN
+      utl_http.end_response(res);
+    END;
+
   /*------------------------
   ----- Public methods -----
   --------------------------*/
@@ -315,18 +334,17 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
           COMMIT;
 
           -- Add to list of successful inserts
-          IF successful_inserts IS NULL THEN
+          IF successful_inserts IS NULL
+          THEN
             successful_inserts := requisition_id;
-            ELSE
+          ELSE
             successful_inserts := successful_inserts || ',' || requisition_id;
           END IF;
 
           -- If theres any exceptions while inserting a requisition, skip to next requisition.
           EXCEPTION
           WHEN OTHERS THEN
-          -- TODO: send error to supply.
-          dbms_output.put_line('Caught exception');
-          dbms_output.put_line(sqlerrm);
+          send_failure_to_supply(requisition_id, sqlerrm);
           -- Skip to the next requisition.
           ROLLBACK TO requisition_insert_savepoint;
 
