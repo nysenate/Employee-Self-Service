@@ -1,5 +1,6 @@
 package gov.nysenate.ess.web.filter;
 
+import gov.nysenate.ess.core.util.HttpResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,6 @@ public class RestApiFilter implements Filter
      * change frequently.
      */
     private void setNoStoreHeaders(HttpServletResponse response) {
-        response.setHeader("Cache-Control", "no-store");
-        response.setIntHeader("Expires", -1);
+        HttpResponseUtils.preventCaching(response);
     }
 }

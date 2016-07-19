@@ -1,10 +1,15 @@
 package gov.nysenate.ess.web.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
+import gov.nysenate.ess.core.client.response.auth.AuthorizationResponse;
+import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
+import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticationFilter;
@@ -12,6 +17,10 @@ import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.InvalidMediaTypeException;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
@@ -20,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static gov.nysenate.ess.core.model.auth.AuthorizationStatus.UNAUTHENTICATED;
 
 /**
  *
@@ -63,11 +74,15 @@ public class EssAuthenticationFilter extends AuthenticationFilter
                 }
             }
         }
-        else {
-            /** User should be redirected to the login page since they do not have access. */
-            saveRequestAndRedirectToLogin(request, response);
+        /** If the unauthenticated request was an API request,
+         * send an appropriately formatted response instead of redirecting to login */
+        if (((HttpServletRequest) request).getRequestURI().startsWith(BaseRestApiCtrl.REST_PATH)) {
+            writeApiUnauthenticatedResponse(request, response);
             return false;
         }
+        /** User should be redirected to the login page since they do not have access. */
+        saveRequestAndRedirectToLogin(request, response);
+        return false;
     }
 
     /**
@@ -198,6 +213,43 @@ public class EssAuthenticationFilter extends AuthenticationFilter
 
     protected AuthenticationToken createAuthToken(String username, String password, boolean rememberMe, String host) {
         return new UsernamePasswordToken(username, password, rememberMe, host);
+    }
+
+    /**
+     * Generate an unauthenticated error response for an unauthenticated api call
+     * @param request {@link ServletRequest}
+     * @param response {@link ServletResponse}
+     * @throws IOException
+     */
+    private void writeApiUnauthenticatedResponse(ServletRequest request, ServletResponse response) throws IOException {
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        MediaType mediaType;
+        // Send Json unless the content type is explicitly set
+        try {
+            mediaType = MediaType.parseMediaType(request.getContentType());
+        } catch (InvalidMediaTypeException ex) {
+            mediaType = MediaType.APPLICATION_JSON;
+        }
+
+        AuthorizationResponse authResponse = new AuthorizationResponse(
+                UNAUTHENTICATED,
+                SecurityUtils.getSubject(),
+                HttpResponseUtils.getFullUrl((HttpServletRequest) request));
+
+        HttpResponseUtils.preventCaching(httpResponse);
+        // Write authorization response in desired format
+        if (mediaType == MediaType.APPLICATION_JSON) {
+            httpResponse.getWriter().append(OutputUtils.toJson(authResponse));
+        } else if (mediaType == MediaType.APPLICATION_XML) {
+            httpResponse.getWriter().append(OutputUtils.toXml(authResponse));
+        } else {
+            // Just send the error code if the format isn't supported
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        httpResponse.setContentType(mediaType.getType());
+        httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        httpResponse.flushBuffer();
     }
 
     /** Functional Getters/Setters */

@@ -125,6 +125,15 @@ public class HttpResponseUtils
     }
 
     /**
+     * Sets headers that instruct browsers not to cache the given response
+     * @param response HttpServletResponse
+     */
+    public static void preventCaching(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store");
+        response.setIntHeader("Expires", -1);
+    }
+
+    /**
      * Determines the highest quality media type that is accepted by the request and attempts
      * to establish a hierarchy of media types to be returned if the type is wild-carded.
      * That hierarchy is as follows: JSON, XML, HTML.
