@@ -23,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -143,7 +146,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Override
     public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
-        String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap());
+        String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap()) + "and r.requisition_id = " + requisitionId;
         List<Requisition> requisitions =  localNamedJdbc.query(sql, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         return ImmutableList.copyOf(requisitions);
     }
