@@ -48,14 +48,14 @@ function supplyCookieService($cookies,appProps) {
                     $cookies.remove(userId);
         },
         addDestination: function (dist) {
-            var key = "destination";
+            var key = "destination" + userId;
             var cur = $cookies.get(key);
             if (cur != null || cur != undefined)
                 $cookies.remove(key);
             $cookies.put(key, serializatize(dist));
         },
         getDestination: function () {
-            var key = "destination";
+            var key = "destination" + userId;
             var cur = $cookies.get(key);
             if (cur == null || cur == undefined)
                 return null;
@@ -63,10 +63,10 @@ function supplyCookieService($cookies,appProps) {
                 return deserialize(cur);
         },
         resetDestination:function () {
-            var key = "destination";
+            var key = "destination" + userId;
             var cur = $cookies.get(key);
             if (cur != null || cur != undefined)
                 $cookies.remove(key);
         },
     }
-};
+}
