@@ -19,7 +19,7 @@ public interface RequisitionDao {
     Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                  Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
+                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset);
 
     /**
      * Searches the order history for a employee.
@@ -32,4 +32,10 @@ public interface RequisitionDao {
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
 
     ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
+
+    /**
+     * Marks requisitions as saved in SFMS.
+     * @param requisitionIds The id's of the requisitions to be marked as saved.
+     */
+    void savedInSfms(List<Integer> requisitionIds);
 }

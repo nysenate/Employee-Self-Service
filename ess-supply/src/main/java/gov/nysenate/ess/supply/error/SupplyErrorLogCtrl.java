@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.error;
 
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,9 @@ public class SupplyErrorLogCtrl {
     @Autowired private SupplyErrorLogService errorLogService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "text/plain")
-    public void logErrorMessage(@RequestBody String message) {
+    public BaseResponse logErrorMessage(@RequestBody String message) {
+        logger.error("Supply Error: " + message);
         errorLogService.saveError(message);
+        return new SimpleResponse();
     }
 }

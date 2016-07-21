@@ -12,7 +12,6 @@ import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
-import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import gov.nysenate.ess.supply.util.mail.SendSimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,8 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Optional;
+import java.util.*;
+import java.util.List;
 
 @Service
 public class SupplyRequisitionService implements RequisitionService {
@@ -92,8 +90,8 @@ public class SupplyRequisitionService implements RequisitionService {
 
     @Override
     public PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                         Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
-        return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, limitOffset);
+                                                         Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset) {
+        return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, savedInSfms, limitOffset);
     }
 
     /**
@@ -108,5 +106,10 @@ public class SupplyRequisitionService implements RequisitionService {
     @Override
     public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
         return requisitionDao.getRequisitionHistory(requisitionId);
+    }
+
+    @Override
+    public void savedInSfms(List<Integer> requisitionIds) {
+        requisitionDao.savedInSfms(requisitionIds);
     }
 }

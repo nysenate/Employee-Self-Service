@@ -2,13 +2,10 @@ package gov.nysenate.ess.supply.integration.requisition;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.SupplyTests;
-import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.unit.requisition.RequisitionFixture;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -19,7 +16,6 @@ import java.util.EnumSet;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @Transactional
@@ -41,8 +37,8 @@ public class SqlRequisitionDaoTests extends SupplyTests {
     @Test
     public void canSearchRequisitions() {
         Range<LocalDateTime> dateRange = Range.closed(LocalDateTime.now().minusMonths(1), LocalDateTime.now());
-        requisitionDao.searchRequisitions("A42FB", "all", EnumSet.allOf(RequisitionStatus.class),
-                                          dateRange, "ordered_date_time", LimitOffset.ALL);
+        requisitionDao.searchRequisitions("A42FB", "any", EnumSet.allOf(RequisitionStatus.class),
+                                          dateRange, "ordered_date_time", "any", LimitOffset.ALL);
     }
 
     @Test

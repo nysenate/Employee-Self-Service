@@ -9,6 +9,7 @@ import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 public interface RequisitionService {
@@ -18,7 +19,7 @@ public interface RequisitionService {
     Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                  Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
+                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset);
 
     /**
      * Search a users order history.
@@ -36,4 +37,9 @@ public interface RequisitionService {
                                                   Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset);
 
     ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
+
+    /**
+     * Takes a list of requisition ids and marks them each as being saved in SFMS.
+     */
+    void savedInSfms(List<Integer> requisitionIds);
 }

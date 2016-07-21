@@ -65,20 +65,19 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping("/{id}")
-    public BaseResponse getRequisitionById(@PathVariable int id,
-                                           @RequestParam(defaultValue = "false", required = false) boolean history) {
+    public BaseResponse getRequisitionById(@PathVariable int id) {
         Requisition requisition = requisitionService.getRequisitionById(id).orElse(null);
-        return new ViewObjectResponse<>(history ? null : new RequisitionView(requisition)); // TODO: implement history
+        return new ViewObjectResponse<>(new RequisitionView(requisition));
     }
 
     @RequestMapping("")
-    public BaseResponse searchRequisitions(@RequestParam(defaultValue = "all", required = false) String location,
-                                           @RequestParam(defaultValue = "all", required = false) String customerId,
+    public BaseResponse searchRequisitions(@RequestParam(defaultValue = "any", required = false) String location,
+                                           @RequestParam(defaultValue = "any", required = false) String customerId,
                                            @RequestParam(required = false) String[] status,
                                            @RequestParam(required = false) String from,
                                            @RequestParam(required = false) String to,
                                            @RequestParam(required = false) String dateField,
-                                           @RequestParam(defaultValue = "false", required = false) boolean history,
+                                           @RequestParam(defaultValue = "any", required = false) String savedInSfms,
                                            WebRequest webRequest) {
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
@@ -87,9 +86,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         LimitOffset limoff = getLimitOffset(webRequest, 25);
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
-        PaginatedList<Requisition> results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, limoff);
+        PaginatedList<Requisition> results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff);
         List<RequisitionView> resultViews = results.getResults().stream()
-                                                   .map(history ? null : RequisitionView::new) // TODO: history view
+                                                   .map(RequisitionView::new)
                                                    .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
@@ -101,7 +100,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                      @RequestParam(required = false) String from,
                                      @RequestParam(required = false) String to,
                                      @RequestParam(required = false) String dateField,
-                                     @RequestParam(defaultValue = "false", required = false) boolean history,
                                      WebRequest webRequest) {
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
@@ -112,7 +110,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Requisition> results = requisitionService.searchOrderHistory(location, customerId, statuses, dateRange, dateField, limoff);
         List<RequisitionView> resultViews = results.getResults().stream()
-                                                   .map(history ? null : RequisitionView::new) // TODO: history view
+                                                   .map(RequisitionView::new)
                                                    .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -93,13 +94,14 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Override
     public synchronized PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                         Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
+                                                                      Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("destination", formatSearchString(destination))
                 .addValue("customerId", formatSearchString(customerId))
                 .addValue("statuses", extractEnumSetParams(statuses))
                 .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
-                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
+                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)))
+                .addValue("savedInSfms", formatSearchString(savedInSfms));
         ensureValidColumn(dateField);
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
@@ -151,6 +153,19 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return ImmutableList.copyOf(requisitions);
     }
 
+    @Override
+    public void savedInSfms(List<Integer> requisitionIds) {
+        List<SqlParameterSource> paramsList = new ArrayList<>();
+        for (Integer id: requisitionIds) {
+            MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", id);
+            paramsList.add(params);
+        }
+        String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
+        SqlParameterSource[] batchParams = new SqlParameterSource[paramsList.size()];
+        batchParams = paramsList.toArray(batchParams);
+        localNamedJdbc.batchUpdate(sql, batchParams);
+    }
+
     private MapSqlParameterSource requisitionParams(Requisition requisition) {
         return new MapSqlParameterSource()
                 .addValue("requisitionId", requisition.getRequisitionId())
@@ -171,7 +186,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     private String formatSearchString(String param) {
-        return param != null && param.equals("all") ? "%" : param;
+        return param != null && param.equals("any") ? "%" : param;
     }
 
     /** Convert an EnumSet into a Set containing each enum's name. */
@@ -224,7 +239,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "FROM ${supplySchema}.requisition as r \n" +
                 "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
                 "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
-                "AND c.status::text IN (:statuses) AND r."
+                "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
         ),
 
         /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
@@ -239,6 +254,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         GET_REQUISITION_HISTORY(
                 "SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c \n" +
                 "ON r.requisition_id = c.requisition_id \n"
+        ),
+        SET_SAVED_IN_SFMS(
+                "UPDATE ${supplySchema}.requisition \n" +
+                "SET saved_in_sfms = TRUE \n" +
+                "WHERE requisition_id = :requisitionId"
         )
         ;
 

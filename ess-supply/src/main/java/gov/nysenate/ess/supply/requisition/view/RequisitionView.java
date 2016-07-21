@@ -8,6 +8,8 @@ import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -78,6 +80,7 @@ public class RequisitionView implements ViewObject {
                 .build();
     }
 
+    @XmlElement
     public int getRequisitionId() {
         return requisitionId;
     }
@@ -86,6 +89,7 @@ public class RequisitionView implements ViewObject {
         this.requisitionId = requisitionId;
     }
 
+    @XmlElement
     public int getRevisionId() {
         return revisionId;
     }
@@ -94,6 +98,7 @@ public class RequisitionView implements ViewObject {
         this.revisionId = revisionId;
     }
 
+    @XmlElement
     public EmployeeView getCustomer() {
         return customer;
     }
@@ -102,6 +107,7 @@ public class RequisitionView implements ViewObject {
         this.customer = customer;
     }
 
+    @XmlElement
     public LocationView getDestination() {
         return destination;
     }
@@ -110,6 +116,7 @@ public class RequisitionView implements ViewObject {
         this.destination = destination;
     }
 
+    @XmlElement
     public Set<LineItemView> getLineItems() {
         return lineItems;
     }
@@ -118,6 +125,7 @@ public class RequisitionView implements ViewObject {
         this.lineItems = lineItems;
     }
 
+    @XmlElement
     public String getStatus() {
         return status;
     }
@@ -126,6 +134,7 @@ public class RequisitionView implements ViewObject {
         this.status = status;
     }
 
+    @XmlElement
     public EmployeeView getIssuer() {
         return issuer;
     }
@@ -134,6 +143,7 @@ public class RequisitionView implements ViewObject {
         this.issuer = issuer;
     }
 
+    @XmlElement
     public String getNote() {
         return note;
     }
@@ -142,6 +152,7 @@ public class RequisitionView implements ViewObject {
         this.note = note;
     }
 
+    @XmlElement
     public EmployeeView getModifiedBy() {
         return modifiedBy;
     }
@@ -150,6 +161,7 @@ public class RequisitionView implements ViewObject {
         this.modifiedBy = modifiedBy;
     }
 
+    @XmlElement
     public LocalDateTime getModifiedDateTime() {
         return modifiedDateTime;
     }
@@ -158,6 +170,7 @@ public class RequisitionView implements ViewObject {
         this.modifiedDateTime = modifiedDateTime;
     }
 
+    @XmlElement
     public LocalDateTime getOrderedDateTime() {
         return orderedDateTime;
     }
@@ -166,6 +179,7 @@ public class RequisitionView implements ViewObject {
         this.orderedDateTime = orderedDateTime;
     }
 
+    @XmlElement
     public LocalDateTime getProcessedDateTime() {
         return processedDateTime;
     }
@@ -174,6 +188,7 @@ public class RequisitionView implements ViewObject {
         this.processedDateTime = processedDateTime;
     }
 
+    @XmlElement
     public LocalDateTime getCompletedDateTime() {
         return completedDateTime;
     }
@@ -182,6 +197,7 @@ public class RequisitionView implements ViewObject {
         this.completedDateTime = completedDateTime;
     }
 
+    @XmlElement
     public LocalDateTime getApprovedDateTime() {
         return approvedDateTime;
     }
@@ -190,6 +206,7 @@ public class RequisitionView implements ViewObject {
         this.approvedDateTime = approvedDateTime;
     }
 
+    @XmlElement
     public LocalDateTime getRejectedDateTime() {
         return rejectedDateTime;
     }
@@ -198,6 +215,7 @@ public class RequisitionView implements ViewObject {
         this.rejectedDateTime = rejectedDateTime;
     }
 
+    @XmlElement
     public boolean isSavedInSfms() {
         return savedInSfms;
     }

@@ -19,11 +19,6 @@ END SYNCHRONIZE_SUPPLY;
 -------------------------------------------------------------------
 
 
--- TODO: Calling Supply API's.
--- Failed insert call, send requisition_id and sqlerrm message
--- send list of successfully inserted requisitions at the end.
--- TODO: Clean up TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD') calls
-
 CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
 
   /*-------------------------
@@ -56,8 +51,8 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     req                   utl_http.req;
     res                   utl_http.resp;
     url                   VARCHAR2(4000) :=
-    'http://10.3.13.63:8080/timesheets/api/v1/supply/requisitions.xml?status=APPROVED&limit=' || limit || '&offset=' ||
-    offset || '&to=' || iso_date;
+    'http://10.3.13.63:8080/timesheets/api/v1/supply/requisitions.xml?status=APPROVED&limit=' || limit -- TODO savedInSfms
+    || '&offset=' || offset || '&to=' || iso_date;
     buffer                VARCHAR(32000);
     BEGIN
       req := UTL_HTTP.begin_request(url, 'GET', 'HTTP/1.1');
@@ -65,8 +60,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       res := utl_http.get_response(req);
       utl_http.read_text(res, buffer);
       utl_http.end_response(res);
-
-      --dbms_output.put_line(buffer);
+      dbms_output.put_line(buffer);
       RETURN XMLTYPE(buffer);
       EXCEPTION
       WHEN utl_http.end_of_body THEN
@@ -146,6 +140,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     END;
 
   -- TODO insert requisition_id
+  -- TODO insure requisition_id does not already exist
   /* Insert an item move into FD12ExpIssue. */
   PROCEDURE insert_item_move(requisition_id      NUMBER,
                              nuissue             NUMBER,
@@ -176,6 +171,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     END;
 
   -- TODO insert requisition id.
+  -- TODO insure requisition_id does not already exist
   /* Has all columns from the insert_item_move query plus the new amqtyohstd value for the from location. */
   PROCEDURE insert_item_move_audit(requisition_id      NUMBER,
                                    nuissue             NUMBER,
@@ -244,6 +240,31 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       utl_http.end_response(res);
     END;
 
+  /**
+   * Send a CSV of successfully inserted requisition id's to supply.
+   * This is called at the end of the procedure.
+   */
+  PROCEDURE send_finished_to_supply(inserted_ids VARCHAR2) IS
+    req    utl_http.req;
+    res    utl_http.resp;
+    url    VARCHAR2(4000) := 'http://10.3.13.63:8080/timesheets/api/v1/supply/sfms/synch';
+    buffer VARCHAR2(32000);
+    BEGIN
+      dbms_output.put_line('sending results to supply: ' || inserted_ids);
+      req := utl_http.begin_request(url, 'POST', 'HTTP/1.1');
+      utl_http.set_header(req, 'Accept', 'text/xml');
+      utl_http.set_header(req, 'Content-Type', 'text/plain');
+      utl_http.set_header(req, 'Content-Length', NVL(length(inserted_ids), 0)); -- never set length to null, zero instead
+      utl_http.set_body_charset('UTF-8');
+      utl_http.write_text(req, inserted_ids);
+      res := utl_http.get_response(req);
+      utl_http.read_text(res, buffer);
+      utl_http.end_response(res);
+      EXCEPTION
+      WHEN utl_http.end_of_body THEN
+      utl_http.end_response(res);
+    END;
+
   /*------------------------
   ----- Public methods -----
   --------------------------*/
@@ -274,6 +295,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     -- Script processing information
     successful_inserts  VARCHAR2(32000); -- CSV of requisition_id's that were successfully inserted into oracle.
 
+    INVALID_XML_RESPONSE EXCEPTION;
     BEGIN
       login();
       query_to_date := current_iso_date();
@@ -282,15 +304,17 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       LOOP
         BEGIN
           SAVEPOINT requisition_insert_savepoint;
-          requisition_xml := get_requisitions_xml(query_to_date, query_limit, query_offset);
-
-          -- Check if there are any more results.
-          total_results := requisition_xml.extract('/ListViewResponse/total/text()').getNumberVal();
-          -- Increment offset.
-          query_offset := query_offset + 1;
-
-          -- If no more results, exit.
-          EXIT WHEN total_results = 0;
+          -- TODO still dont like this. How to handle invalid xml exception.
+          BEGIN
+            requisition_xml := get_requisitions_xml(query_to_date, query_limit, query_offset);
+            total_results := requisition_xml.extract('/ListViewResponse/total/text()').getNumberVal();
+            EXCEPTION
+            WHEN OTHERS THEN
+            dbms_output.put_line(sqlerrm);
+            query_offset := query_offset + 1;
+          END;
+          -- Exit when we have paginated through all the results.
+          EXIT WHEN query_offset > total_results;
 
           -- Extract Requisition data
           requisition_id := requisition_xml.extract('/ListViewResponse/result/requisitionId/text()').getNumberVal();
@@ -303,7 +327,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
           issuer_uid := UPPER(requisition_xml.extract('/ListViewResponse/result/issuer/uid/text()').getStringVal());
           responsibility_head := get_responsibility_head(destination_code, destination_type);
 
-          -- reset item_count;
+          -- Looping through new requisition, reset item_count;
           item_count := 1;
           -- Loop through all items in the requisition.
           WHILE requisition_xml.existsNode('//lineItems/lineItems[' || item_count || ']') = 1
@@ -341,15 +365,22 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
             successful_inserts := successful_inserts || ',' || requisition_id;
           END IF;
 
-          -- If theres any exceptions while inserting a requisition, skip to next requisition.
+          -- Increment offset.
+          query_offset := query_offset + 1;
+
+          -- If there's any exceptions while inserting a requisition, skip to next requisition.
           EXCEPTION
           WHEN OTHERS THEN
-          send_failure_to_supply(requisition_id, sqlerrm);
-          -- Skip to the next requisition.
           ROLLBACK TO requisition_insert_savepoint;
+          query_offset := query_offset + 1;
+          dbms_output.put_line(sqlerrm);
+          send_failure_to_supply(requisition_id, sqlerrm);
 
         END;
       END LOOP;
+
+      send_finished_to_supply(successful_inserts);
+
     END;
 
 END SYNCHRONIZE_SUPPLY;
