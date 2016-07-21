@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,19 +25,57 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
     @Override
     public Set<ItemAllowance> getItemAllowances(LocationId locationId) {
         List<SupplyItem> items = itemService.getSupplyItems(LimitOffset.ALL).getResults();
-        return items.stream()
-                    .map(i -> createAllowanceFromItemAndLoc(i, locationId))
-                    .collect(Collectors.toSet());
+        Set<ItemAllowance> itemAllowances = items.stream()
+                                                 .map(i -> createAllowanceFromItemAndLoc(i, locationId))
+                                                 .collect(Collectors.toSet());
+        // TODO: entire functionality needs to be refactored. for now remove items that are hidden from return set.
+        return itemAllowances.stream()
+                             .filter(a -> a.getVisibility() != ItemVisibility.HIDDEN)
+                             .collect(Collectors.toSet());
+    }
+
+    private List<Integer> getLocationSpecificItems() {
+        return localNamedJdbc.query(SqlItemAllowanceQuery.GET_LOCATION_SPECIFIC_ITEMS.getSql(schemaMap()),
+                                    ((rs, i) -> {
+                                        return rs.getInt("item_id");
+                                    }));
     }
 
     private ItemAllowance createAllowanceFromItemAndLoc(SupplyItem item, LocationId locationId) {
         // Not fully implemented yet, for now all items are allowed and visible.
         ItemAllowance allowance = new ItemAllowance();
         allowance.setSupplyItem(item);
-        allowance.setVisibility(ItemVisibility.VISIBLE);
+        if (getLocationSpecificItems().contains(item.getId())) {
+            if (canLocationOrderItem(locationId, item)) {
+//                // TODO: Item visibility and Special vs not special needs to be separated!
+//                // Location specific items are not guaranteed to be special items.
+                allowance.setVisibility(ItemVisibility.SPECIAL);
+            } else {
+                allowance.setVisibility(ItemVisibility.HIDDEN);
+            }
+        } else {
+            allowance.setVisibility(ItemVisibility.VISIBLE);
+        }
         allowance.setPerMonthAllowance(item.getMaxQtyPerMonth());
         allowance.setQtyOrderedMonthToDate(queryQtyOrderedMonthToDate(item, locationId));
         return allowance;
+    }
+
+    /**
+     * Checks if a location is allowed to order a item.
+     *
+     * @param item
+     * @return
+     */
+    private boolean canLocationOrderItem(LocationId locationId, SupplyItem item) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("locationId", locationId.toString())
+                .addValue("itemId", item.getId());
+        String sql = SqlItemAllowanceQuery.CAN_LOCATION_ORDER_ITEM.getSql(schemaMap());
+        List<Integer> results = localNamedJdbc.query(sql, params, (rs, i) -> {
+            return rs.getInt("count");
+        });
+        return results.get(0) != 0;
     }
 
     private int queryQtyOrderedMonthToDate(SupplyItem item, LocationId locationId) {
@@ -60,6 +97,13 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
                 "WHERE v.destination = :location\n" +
                 "AND i.item_id = :itemId\n" +
                 "AND r.ordered_date_time BETWEEN :fromDate AND :toDate"
+        ),
+        GET_LOCATION_SPECIFIC_ITEMS(
+                "SELECT DISTINCT item_id from ${supplySchema}.location_specific_items"
+        ),
+        CAN_LOCATION_ORDER_ITEM(
+                "SELECT count(*) as count from ${supplySchema}.location_specific_items \n" +
+                "WHERE item_id = :itemId AND location_id = :locationId"
         );
 
         SqlItemAllowanceQuery(String sql) {
