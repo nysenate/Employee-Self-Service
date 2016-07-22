@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.integration.item;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.SupplyTests;
+import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.OracleSupplyItemDao;
@@ -44,7 +45,7 @@ public class SupplyItemDaoTests extends SupplyTests {
     public void canGetItemById() {
         // TODO: item name and suggested max qty will have to be adjusted when those values get added to the database.
         SupplyItem expected = new SupplyItem(111, "K1", "KO-REC-TYPE TAPE/1 LINE SIZE GR-23031",
-                                             "1", new Category("KORECTYPE"), 1, 1, 1);
+                                             "1", new Category("KORECTYPE"), 1, 1, 1, ItemVisibility.VISIBLE);
         SupplyItem actual = itemDao.getItemById(TEST_ITEM_ID);
         assertThat(actual, equalTo(expected));
     }

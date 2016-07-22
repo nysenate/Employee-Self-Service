@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.unit.requisition;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.SupplyItem;
@@ -31,7 +32,7 @@ public class RequisitionFixture {
     }
 
     public static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(2, "", "", "", new Category(""), 1, 1, 1);
+        SupplyItem stubItem = new SupplyItem(2, "", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
         Set<LineItem> stubLineItems = new HashSet<>();
         stubLineItems.add(new LineItem(stubItem, 1));
         return stubLineItems;

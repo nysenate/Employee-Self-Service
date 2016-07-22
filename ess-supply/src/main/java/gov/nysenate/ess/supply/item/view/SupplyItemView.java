@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.item.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.SupplyItem;
 
 public class SupplyItemView implements ViewObject {
@@ -13,6 +14,7 @@ public class SupplyItemView implements ViewObject {
     protected int maxQtyPerOrder;
     protected int suggestedMaxQty;
     protected int standardQuantity;
+    protected String visibility;
 
     public SupplyItemView() {
     }
@@ -26,10 +28,12 @@ public class SupplyItemView implements ViewObject {
         this.maxQtyPerOrder = item.getMaxQtyPerOrder();
         this.suggestedMaxQty = item.getMaxQtyPerMonth();
         this.standardQuantity = item.getUnitStandardQuantity();
+        this.visibility = item.getVisibility().toString();
     }
 
     public SupplyItem toSupplyItem() {
-        return new SupplyItem(id, commodityCode, description, unit, category.toCategory(), maxQtyPerOrder, suggestedMaxQty, standardQuantity);
+        return new SupplyItem(id, commodityCode, description, unit, category.toCategory(),
+                              maxQtyPerOrder, suggestedMaxQty, standardQuantity, ItemVisibility.valueOf(visibility));
     }
 
     public int getId() {
@@ -62,6 +66,10 @@ public class SupplyItemView implements ViewObject {
 
     public int getStandardQuantity() {
         return standardQuantity;
+    }
+
+    public String getVisibility() {
+        return visibility;
     }
 
     @Override
