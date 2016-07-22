@@ -56,6 +56,10 @@ function locationAllowanceService(allowanceApi, supplyUtils) {
          * Returns an array with integers from 1 to the per order allowance for an allowance.
          */
         getAllowedQuantities: function (allowance) {
+            // Some items have an per order allowance of 99999, this is too much, cap it at 50.
+            if (allowance.perOrderAllowance > 50) {
+                allowance.perOrderAllowance = 50;
+            }
             var range = [];
             for (var i = 1; i <= allowance.perOrderAllowance; i++) {
                 range.push(i);
