@@ -17,17 +17,9 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
                 rs.getString("DeCommodityf"),
                 rs.getString("CdIssUnit"),
                 new Category(rs.getString("CdCategory")),
-                getQuantityOrDefault(rs.getInt("numaxunitord"), 2),
-                getQuantityOrDefault(rs.getInt("numaxunitmon"), 4),
+                rs.getInt("numaxunitord"),
+                rs.getInt("numaxunitmon"),
                 rs.getInt("AmStdUnit")
         );
-    }
-
-    // Lots of invalid data in database.
-    private int getQuantityOrDefault(int qty, int defaultQty) {
-        if (qty != 0 && qty < 100) {
-            return qty;
-        }
-        return defaultQty;
     }
 }
