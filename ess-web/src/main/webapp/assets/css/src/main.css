@@ -8210,7 +8210,6 @@ button.ui-button::-moz-focus-inner {
 }
 .supply-special-item {
   background-color: #f9cfc7;
-  border: 3px solid #eb6e55;
 }
 .expandable-div-header {
   color: #333;
@@ -8377,8 +8376,4 @@ ul.pagination li a {
   color: #999;
   padding: 3px 7px;
   vertical-align: initial;
-}
-
-select::-ms-expand {
-  display: none;
 }
