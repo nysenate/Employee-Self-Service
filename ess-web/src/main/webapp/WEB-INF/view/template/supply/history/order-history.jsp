@@ -64,10 +64,10 @@
           <td>{{requisition.customer.lastName}}</td>
           <td>{{requisition.destination.locId}}</td>
           <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
-          <td ng-class="{'pending-cell': requisition.activeVersion.status === 'PENDING',
-                       'processing-cell': requisition.activeVersion.status === 'PROCESSING',
-                       'completed-cell': requisition.activeVersion.status === 'COMPLETED' || requisition.activeVersion.status === 'APPROVED',
-                       'rejected-cell': requisition.activeVersion.status === 'REJECTED'}">
+          <td ng-class="{'pending-cell': requisition.status === 'PENDING',
+                       'processing-cell': requisition.status === 'PROCESSING',
+                       'completed-cell': requisition.status === 'COMPLETED' || requisition.status === 'APPROVED',
+                       'rejected-cell': requisition.status === 'REJECTED'}">
             {{requisition.status}}
           </td>
         </tr>
