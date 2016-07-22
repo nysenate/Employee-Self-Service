@@ -27,7 +27,8 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
         return new SupplyItem(
                 rs.getInt("Nuxrefco"),
                 rs.getString("CdCommodity"),
-                rs.getString("DeCommodityf"),
+                // Use the supply app specific description. If not available fall back to the default description.
+                rs.getString("DeCommdtyEssSupply") == null ? rs.getString("DeCommodityf") : rs.getString("DeCommdtyEssSupply"),
                 rs.getString("CdIssUnit"),
                 new Category(rs.getString("CdCategory")),
                 rs.getInt("numaxunitord"),
