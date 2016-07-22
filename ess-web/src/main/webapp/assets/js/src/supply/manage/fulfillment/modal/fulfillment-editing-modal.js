@@ -99,7 +99,7 @@ var essSupply = angular.module('essSupply')
 
             /** Determines if a line item should be highlighted in the editable-order-listing.jsp */
             $scope.highlightLineItem = function (lineItem) {
-                return lineItem.quantity > lineItem.item.suggestedMaxQty;
+                return lineItem.quantity > lineItem.item.suggestedMaxQty || lineItem.item.visibility === 'SPECIAL';
             };
 
             /** --- Location Autocomplete --- */

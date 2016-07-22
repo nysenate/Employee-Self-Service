@@ -186,7 +186,7 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
     $scope.highlightRequisition = function (requisition) {
         var highlight = false;
         angular.forEach(requisition.lineItems, function (lineItem) {
-            if (lineItem.quantity > lineItem.item.suggestedMaxQty) {
+            if (lineItem.quantity > lineItem.item.suggestedMaxQty || lineItem.item.visibility === 'SPECIAL') {
                 highlight = true;
             }
         });
