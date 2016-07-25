@@ -14,4 +14,9 @@ public class ErrorPageCtrl
         modelMap.put("message", "Sorry, the page you requested could not be found.");
         return "error";
     }
+
+    @RequestMapping(value = "/restricted")
+    public String accessRestrictedPage() {
+        return "restricted";
+    }
 }

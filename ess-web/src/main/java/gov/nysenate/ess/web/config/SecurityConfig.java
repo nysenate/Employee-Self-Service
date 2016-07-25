@@ -1,6 +1,7 @@
 package gov.nysenate.ess.web.config;
 
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.web.security.filter.DepartmentalAuthorizationFilter;
 import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
 import gov.nysenate.ess.web.security.realm.EssLdapDbAuthzRealm;
 import gov.nysenate.ess.web.security.xsrf.XsrfTokenValidator;

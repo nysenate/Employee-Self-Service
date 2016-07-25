@@ -21,6 +21,16 @@ ldap.dn.template = CN={0},O=senate
 # Number of bytes generated for XSRF token
 xsrf.token.bytes = 128
 
+# If enabled will restrict all users from departments outside of the specified whitelist
+# (default: false)
+restrict.department.enabled = false
+
+# If departmental restriction is enabled,
+# only the responsibility center heads listed below can use the application.
+# Takes a comma separated list of resp center codes, short names, or full names.  Case insensitive.
+# (example: STSBAC,Senate Technology Services)
+restrict.department.whitelist =
+
 # --- Database Configuration --------------------------------------------------
 
 # Local Postgres Database

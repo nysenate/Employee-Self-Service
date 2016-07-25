@@ -3,6 +3,7 @@ package gov.nysenate.ess.seta.service.attendance;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import gov.nysenate.ess.core.service.auth.DepartmentalWhitelistService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
@@ -63,6 +64,7 @@ public class EssTimeRecordManager implements TimeRecordManager
     @Autowired protected PayPeriodService payPeriodService;
     @Autowired protected EmpTransactionService transService;
     @Autowired protected EmployeeInfoService empInfoService;
+    @Autowired protected DepartmentalWhitelistService deptWhitelistService;
 
     @Autowired protected EventBus eventBus;
 
@@ -94,6 +96,8 @@ public class EssTimeRecordManager implements TimeRecordManager
 
         // Create and patch records for each employee
         int totalSaved = empIds.stream()
+                // Do not modify records for departments that are not yet in ESS
+                .filter(deptWhitelistService::isAllowed)
                 .sorted()
                 .map(empId -> ensureRecords(empId,
                         accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC),
