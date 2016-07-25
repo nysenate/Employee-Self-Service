@@ -1,0 +1,88 @@
+@import "include";
+
+/**
+* Styles that override the default styling for various common elements
+*/
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  background: #f1f1f1;
+  height: 100%;
+  .open-sans;
+}
+
+body {
+  overflow-y: scroll;
+}
+
+a:hover, a:active, a:focus {
+  outline: 0 !important;
+  border: none;
+}
+
+ul {
+  list-style: none;
+}
+
+ol.horizontal, ul.horizontal {
+  li {
+    display: inline-block;
+  }
+}
+
+label {
+  color: #111;
+  .font-weight-light;
+}
+
+h1, h2 {
+  .font-weight-normal;
+}
+
+h1 {
+  color: #333;
+}
+
+hr {
+  outline: 0;
+  border-width: 1px;
+  border-color: #ccc;
+  border-style: solid none none none;
+}
+
+button {
+  border: 1px solid #aaa;
+  background: #eee;
+  .box-shadow(0px, 0px, 1px, #ddd);
+  padding: 2px;
+  &:hover {
+    background: #f9f9f9;
+    .box-shadow(0px, 0px, 2px, #fff);
+    .transition-duration(.5s);
+  }
+}
+
+select {
+  padding: .3em .5em;
+  background: white;
+  border: 1px solid #999;
+}
+
+textarea {
+  border: 1px solid #999;
+}
+
+a {
+  color: teal;
+  text-decoration: none;
+  &:hover {
+    cursor: pointer;
+    color: darken(teal, 10%);
+  }
+}

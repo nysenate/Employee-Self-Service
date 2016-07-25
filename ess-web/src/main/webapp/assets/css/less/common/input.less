@@ -1,0 +1,76 @@
+@import "include";
+
+/**
+* Styles related to inputs
+*/
+
+.inactive-stitches {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+input[type="button"].submit-button {
+  .styled-button(@green, white);
+}
+
+input[type="button"].reject-button {
+  .styled-button(@redorange, white);
+}
+
+input[type="button"].neutral-button {
+  .styled-button(@gray, white);
+}
+
+input[type="button"].time-neutral-button {
+  .styled-button(@teal, white);
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+  border: 1px solid #ccc;
+  outline: 0;
+  background: #fafafa;
+  padding: .3em;
+  &.error {
+    border-color: @dark-red;
+  }
+  &:focus {
+    border-color: #999;
+  }
+}
+
+.styled-button(@bgColor, @textColor) {
+  padding: 5px 10px;
+  background: @bgColor;
+  color: @textColor;
+  .font-weight-bold;
+  border: 2px none darken(@bgColor, 10%);
+  border-bottom-style: solid;
+
+  &.inactive, &[disabled="disabled"] {
+    color: #333;
+    border: 0;
+    cursor: not-allowed;
+    .inactive-stitches;
+    &:hover {
+      .inactive-stitches;
+    }
+  }
+
+  &:hover {
+    background: saturate(@bgColor, 20%);
+  }
+}
+
+/** Remove the number spinners in chrome */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

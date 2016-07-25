@@ -1,0 +1,46 @@
+@import "include";
+/**
+* Styles for text
+*/
+
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.bold-text {
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.info-text {
+  background: @teal;
+  color: white;
+  .bold-text;
+}
+
+.warning-text {
+  background: @orange;
+  color: white;
+  .bold-text;
+}
+
+.error-text {
+  background: @dark-red;
+  color: white;
+  .bold-text;
+}
+
+.success-text {
+  background: @olive;
+  color: white;
+  .bold-text;
+}

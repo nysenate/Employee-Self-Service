@@ -51,3 +51,26 @@ table.ess-table {
     }
   }
 }
+
+table.simple-table {
+  width: 100%;
+  text-align: left;
+  thead {
+    tr {
+      border-bottom: 1px solid #ddd;
+      th {
+        padding: 5px;
+      }
+    }
+  }
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background: #fafafa;
+      }
+      td {
+        padding: 5px;
+      }
+    }
+  }
+}
