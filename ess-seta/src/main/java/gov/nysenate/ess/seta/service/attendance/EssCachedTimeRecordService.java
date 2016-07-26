@@ -296,8 +296,10 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
      */
     private void initializeEntries(TimeRecord timeRecord) {
         RangeMap<LocalDate, PayType> payTypeMap = null;
+
         for (LocalDate entryDate = timeRecord.getBeginDate(); !entryDate.isAfter(timeRecord.getEndDate());
              entryDate = entryDate.plusDays(1)) {
+            boolean newEntry = false;
             if (!timeRecord.containsEntry(entryDate)) {
                 if (payTypeMap == null) {
                     TransactionHistory transHistory = transService.getTransHistory(timeRecord.getEmployeeId());
@@ -305,18 +307,20 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                             transHistory.getEffectivePayTypes(timeRecord.getDateRange()), timeRecord.getEndDate());
                 }
                 timeRecord.addTimeEntry(new TimeEntry(timeRecord, payTypeMap.get(entryDate), entryDate));
+                newEntry = true;
             }
             TimeEntry entry = timeRecord.getEntry(entryDate);
             if (entry.getPayType() != PayType.TE) {
                 // Set holiday hours if applicable
                 Optional<Holiday> holiday = holidayService.getHoliday(entryDate);
                 if (holiday.isPresent()) {
-                    // Set the holiday hours to the specified amount if RA
-                    if (entry.getPayType() == PayType.RA) {
+                    // Set the holiday hours to the specified amount if RA only if it is a new entry
+                    // not be overridden
+                    if (entry.getPayType() == PayType.RA && newEntry) {
                         entry.setHolidayHours(holiday.get().getHours());
                     }
-                    // Otherwise (SA), set the holiday hours to zero if they are null
-                    else if (!entry.getHolidayHours().isPresent()) {
+                    // Otherwise (SA), set the holiday hours to zero if it is null and a new entry
+                    else if (!entry.getHolidayHours().isPresent() && newEntry) {
                         entry.setHolidayHours(BigDecimal.ZERO);
                     }
                 }
