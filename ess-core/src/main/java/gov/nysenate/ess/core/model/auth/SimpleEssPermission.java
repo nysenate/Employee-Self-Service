@@ -8,8 +8,8 @@ import org.apache.shiro.authz.permission.WildcardPermission;
 public enum SimpleEssPermission {
 
     /** Granted to users belonging to departments that are granted access to the app */
-    DEPARTMENT_ACCESS("core:department-access")
-
+    DEPARTMENT_ACCESS("core:department-access"),
+    TIMEOUT_EXEMPT("core:timeout-exempt")
     ;
 
     private String permissionString;

@@ -8377,3 +8377,8 @@ ul.pagination li a {
   padding: 3px 7px;
   vertical-align: initial;
 }
+
+select::-ms-expand {
+  display: none;
+}
+

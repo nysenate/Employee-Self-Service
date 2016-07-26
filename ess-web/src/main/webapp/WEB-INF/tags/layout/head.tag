@@ -16,6 +16,7 @@
             loginUrl: '${loginUrl}',
             imageUrl: '${imageUrl}',
             sessionId: '${sessionId}',
+            timeoutExempt: '${timeoutExempt}',
             miscLeaves: ${miscLeaves}
         };
         <c:if test="${not empty principalJson}">

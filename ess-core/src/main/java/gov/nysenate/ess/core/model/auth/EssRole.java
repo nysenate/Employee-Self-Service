@@ -4,8 +4,9 @@ public enum EssRole {
     /** General */
     ADMIN,
     SENATE_EMPLOYEE,
-
+    TIMEOUT_EXEMPT,
     /** Supply */
     SUPPLY_EMPLOYEE,
     SUPPLY_MANAGER
+
 }
