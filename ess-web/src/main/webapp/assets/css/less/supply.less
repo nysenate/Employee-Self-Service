@@ -185,6 +185,11 @@ label.custom-select {
     -moz-box-shadow: 0 0 10px 100px #ffbcbc inset;
     box-shadow: 0 0 10px 100px #ffbcbc inset;
   }
+
+  // Hide ie drop down arrow
+  &::-ms-expand {
+    display: none;
+  }
 }
 
 /* Select arrow styling */
