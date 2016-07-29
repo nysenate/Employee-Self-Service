@@ -20,6 +20,20 @@ ALTER SCHEMA ess OWNER TO postgres;
 
 SET search_path = ess, pg_catalog;
 
+--
+-- ess_role enum type
+--
+CREATE TYPE ess_role AS ENUM (
+    'ADMIN',
+    'SENATE_EMPLOYEE',
+    'TIMEOUT_EXEMPT',
+    'SUPPLY_EMPLOYEE',
+    'SUPPLY_MANAGER'
+);
+
+ALTER TYPE ess_role OWNER TO postgres;
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -31,7 +45,7 @@ SET default_with_oids = false;
 CREATE TABLE user_roles (
     id integer NOT NULL,
     employee_id smallint NOT NULL,
-    role text NOT NULL
+    role ess_role NOT NULL
 );
 
 
@@ -86,6 +100,7 @@ GRANT ALL PRIVILEGES ON SCHEMA ess TO PUBLIC;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA ess TO PUBLIC;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ess TO PUBLIC;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA ess TO PUBLIC;
+GRANT ALL PRIVILEGES ON TYPE ess_role TO PUBLIC;
 
 --
 -- PostgreSQL database dump complete
