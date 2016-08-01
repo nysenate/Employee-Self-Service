@@ -19,6 +19,16 @@ public class ResponsibilityCenter
 
     public ResponsibilityCenter() {}
 
+    public ResponsibilityCenter(ResponsibilityCenter other) {
+        this.active = other.active;
+        this.code = other.code;
+        this.name = other.name;
+        this.effectiveDateBegin = other.effectiveDateBegin;
+        this.effectiveDateEnd = other.effectiveDateEnd;
+        this.agency = new Agency(other.agency);
+        this.head = new ResponsibilityHead(other.head);
+    }
+
     public boolean isActive() {
         return active;
     }

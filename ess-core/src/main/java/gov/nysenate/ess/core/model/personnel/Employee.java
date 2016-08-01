@@ -36,7 +36,7 @@ public class Employee extends Person
         this.jobTitle = other.jobTitle;
         this.payType = other.payType;
         this.nid = other.nid;
-        this.respCenter = other.respCenter;
+        this.respCenter = new ResponsibilityCenter(other.respCenter);
         this.workLocation = other.workLocation;
         this.updateDateTime = other.updateDateTime;
     }

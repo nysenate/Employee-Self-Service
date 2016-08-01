@@ -36,8 +36,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@WorkInProgress(author = "Sam", since = "2015/09/15",
-        desc = "currently in testing.  Dependencies EmpTransactionService and EmployeeInfoService still have some bugs")
 @Service
 public class EssTimeRecordManager implements TimeRecordManager
 {
@@ -89,10 +87,13 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     @Override
     public void ensureAllActiveRecords() {
+        logger.info("***** CHECKING ACTIVE TIME RECORDS *****");
         // Get all employees with open attendance periods, also get all active time records
         Set<Integer> empIds = employeeDao.getActiveEmployeeIds();
-        logger.info("getting active time records...");
+        logger.info("getting active attendance records...");
         ListMultimap<Integer, AttendanceRecord> activeAttendanceRecords = attendanceDao.getOpenAttendanceRecords();
+
+        logger.info("processing active employee records...");
 
         // Create and patch records for each employee
         int totalSaved = empIds.stream()
@@ -123,7 +124,6 @@ public class EssTimeRecordManager implements TimeRecordManager
      * @param event TransactionHistoryUpdateEvent
      */
     @Subscribe
-    @WorkInProgress(author = "sam", since = "9/30/2015", desc = "has not been tested, need to simulate transaction posts")
     public synchronized void handleTransactionHistoryUpdateEvent(TransactionHistoryUpdateEvent event) {
         event.getTransRecs().stream()
                 .filter(transRec -> recordAlteringTransCodes.contains(transRec.getTransCode()))

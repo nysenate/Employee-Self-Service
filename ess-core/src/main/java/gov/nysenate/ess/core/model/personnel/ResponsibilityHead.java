@@ -15,6 +15,14 @@ public class ResponsibilityHead
 
     public ResponsibilityHead() {}
 
+    public ResponsibilityHead(ResponsibilityHead other) {
+        this.active = other.active;
+        this.code = other.code;
+        this.shortName = other.shortName;
+        this.name = other.name;
+        this.affiliateCode = other.affiliateCode;
+    }
+
     public boolean isActive() {
         return active;
     }

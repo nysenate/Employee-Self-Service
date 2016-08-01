@@ -68,8 +68,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
         empCache.releaseReadLockOnKey(empId);
         if (elem != null) {
             return (Employee) elem.getObjectValue();
-        }
-        else {
+        } else {
             return getEmployeeAndPutInCache(empId);
         }
     }
@@ -77,7 +76,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     /** {@inheritDoc} */
     @Override
     public Employee getEmployee(int empId, LocalDate effectiveDate) throws EmployeeNotFoundEx {
-        Employee employee = getEmployee(empId);
+        Employee employee = new Employee(getEmployee(empId));
         TransactionHistory transHistory = transService.getTransHistory(empId);
         employee.setActive(transHistory.latestValueOf("CDEMPSTATUS", effectiveDate, true).orElse("I").equals("A"));
         employee.setSupervisorId(
@@ -205,7 +204,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
         ResponsibilityCenter rctr = emp.getRespCenter();
         rctr.setCode(Integer.parseInt(transHistory.latestValueOf("CDRESPCTR", effectiveDate, true).orElse(Integer.toString(rctr.getCode()))));
         setAgencyAtDate(rctr, transHistory, effectiveDate);
-        getRespHeadAtDate(rctr, transHistory, effectiveDate);
+        setRespHeadAtDate(rctr, transHistory, effectiveDate);
     }
 
     private static void setAgencyAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
@@ -216,7 +215,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
         agency.setCode(transHistory.latestValueOf("CDAGENCY", effectiveDate, true).orElse(agency.getCode()));
     }
 
-    private static void getRespHeadAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
+    private static void setRespHeadAtDate(ResponsibilityCenter respCtr, TransactionHistory transHistory, LocalDate effectiveDate) {
         if (respCtr.getHead() == null) {
             respCtr.setHead(new ResponsibilityHead());
         }

@@ -12,6 +12,13 @@ public class Agency
 
     public Agency() {}
 
+    public Agency(Agency other) {
+        this.code = other.code;
+        this.active = other.active;
+        this.shortName = other.shortName;
+        this.name = other.name;
+    }
+
     public String getCode() {
         return code;
     }
