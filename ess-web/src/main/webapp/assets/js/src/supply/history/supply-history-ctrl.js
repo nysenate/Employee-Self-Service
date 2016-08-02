@@ -1,9 +1,12 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-    ['$scope', 'SupplyRequisitionApi', 'LocationService', 'PaginationModel', supplyHistoryController]);
+    ['$scope', 'EmployeesByRoleApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi', 'PaginationModel', supplyHistoryController]);
 
-function supplyHistoryController($scope, requisitionApi, locationService, paginationModel) {
+function supplyHistoryController($scope, employeesByRoleApi, requisitionApi, locationService, locationApi, paginationModel) {
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.loading = true;
+    $scope.locations = [];
+    $scope.issuers = [];
+    $scope.issuerNameToID = [];
     $scope.filter = {
         date: {
             from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
@@ -52,15 +55,11 @@ function supplyHistoryController($scope, requisitionApi, locationService, pagina
         requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
             $scope.initFilters();
-            $scope.selectedLocation = $scope.locations[0];
-            $scope.selectedIssuer = $scope.issuers[0];
-            $scope.filteredShipments = filter($scope.shipments);
             $scope.paginate.setTotalItems(response.total);
         }, function (response) {
 
         })
     }
-
     function getUpdatedOrders() {
         var params = {
             status: ["APPROVED", "REJECTED"],
@@ -68,48 +67,75 @@ function supplyHistoryController($scope, requisitionApi, locationService, pagina
             from: moment($scope.filter.date.from).startOf('day').format(),
             to: moment($scope.filter.date.to).endOf('day').format(),
             limit: $scope.paginate.itemsPerPage,
-            offset: $scope.paginate.getOffset()
+            offset: $scope.paginate.getOffset(),
+            location: $scope.selectedLocation,
+            issuerId: $scope.issuerNameToID[$scope.selectedIssuer]
         };
         requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
-            $scope.filteredShipments = filter($scope.shipments);
             $scope.paginate.setTotalItems(response.total);
         }, function (response) {
 
         })
     }
 
-    var filter = function (shipments) {
-        if ($scope.selectedLocation == 'ALL' && $scope.selectedIssuer == 'ALL')
-            return shipments;
-        var res = [];
-        shipments.map(function (s) {
-            if ($scope.isInFilter(s))
-                res.push(s);
-        });
-        return res;
-    };
+    function getFilteredOrders() {
+        var params = {
+            status: ["APPROVED", "REJECTED"],
+            // Only filtering by day so round dates to start/end of day.
+            from: moment($scope.filter.date.from).startOf('day').format(),
+            to: moment($scope.filter.date.to).endOf('day').format(),
+            limit: $scope.paginate.itemsPerPage,
+            offset: 1,
+            location: $scope.selectedLocation,
+            issuerId: $scope.issuerNameToID[$scope.selectedIssuer]
+        };
+        requisitionApi.get(params, function (response) {
+            $scope.shipments = response.result;
+            $scope.paginate.setTotalItems(response.total);
+        }, function (response) {
+
+        })
+    }
 
     $scope.reloadShipments = function () {
         $scope.loading = true;
-        getUpdatedOrders();
+        getFilteredOrders();
+    };
+    Array.prototype.insert = function (index, item) {
+        this.splice(index, 0, item);
     };
 
     // TODO: can't create filters by looping over shipments. Will NOT work once pagination in use.
     // TODO: will need to add location & issuer API with status and date range filters.
     $scope.initFilters = function () {
-        $scope.locations.push("All");
-        $scope.issuers.push("All");
-        angular.forEach($scope.shipments, function (shipment) {
-            if ($scope.locations.indexOf(shipment.destination.locId) === -1) {
-                $scope.locations.push(shipment.destination.locId);
-            }
-            if (shipment.issuer !== null) {
-                if ($scope.issuers.indexOf(shipment.issuer.firstName + " " + shipment.issuer.lastName) === -1) {
-                    $scope.issuers.push(shipment.issuer.firstName + " " + shipment.issuer.lastName);
-                }
-            }
+        locationApi.get().$promise
+            .then(setLocations);
+        employeesByRoleApi.get({role: "SUPPLY_EMPLOYEE"}).$promise
+            .then(setIssuers);
+    };
+    var setLocations = function (response) {
+        response.result.forEach(function (e) {
+            $scope.locations.push(e.locId);
         });
+        sortCodes($scope.locations);
+        $scope.locations.insert(0, "All");
+        $scope.selectedLocation = $scope.locations[0];
+    };
+    var setIssuers = function (response) {
+        response.result.forEach(function (e) {
+            $scope.issuers.push(e.fullName);
+            $scope.issuerNameToID[e.fullName] = e.employeeId;
+        });
+        $scope.issuers.insert(0, "All");
+        $scope.selectedIssuer = $scope.issuers[0];
+    };
+    var sortCodes = function (codes) {
+        codes.sort(function (a, b) {
+            if (a < b) return -1;
+            if (a > b) return 1;
+            return 0;
+        })
     };
 
     /** --- Filter --- */
@@ -125,7 +151,7 @@ function supplyHistoryController($scope, requisitionApi, locationService, pagina
     }
 
     function isInIssuerFilter(shipment) {
-        return $scope.selectedIssuer === 'All' || shipment.issuer.firstName + " " + shipment.issuer.lastName === $scope.selectedIssuer;
+        return $scope.selectedIssuer === "All" || shipment.issuer.firstName + " " + shipment.issuer.lastName === $scope.selectedIssuer;
     }
 
     /** --- Util methods --- */

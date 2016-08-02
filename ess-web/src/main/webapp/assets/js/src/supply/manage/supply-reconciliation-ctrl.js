@@ -1,22 +1,31 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-['$scope', 'SupplyRequisitionApi', 'LocationService', supplyReconciliationController]);
+    ['$scope', 'SupplyReconciliationApi', 'SupplyRequisitionApi', 'LocationService', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, requisitionApi, locationService) {
+function supplyReconciliationController($scope, supplyReconciliationApi, requisitionApi, locationService) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
-    
+
+    $scope.viewItems = [];
     $scope.reconcilableSearch = {
         matches: [],
         items: [],
         response: {},
         error: false
     };
+    $scope.currentPage = 1;
+    $scope.reconciliations = {};
     
     /** Map of unique item id's to array of all shipments containing that item objects. */
     $scope.reconcilableItemMap= {};
 
     function initItems() {
+        //Get reconciliation page
+        supplyReconciliationApi.get().$promise.then(function (response) {
+            response.result.forEach(function (item) {
+                $scope.reconciliations[item.item_category] = item.page;
+            });
+
         // Get shipments completed today
         var params = {
             status: "APPROVED",
@@ -35,6 +44,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService)
                     else {
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
+                        lineItem.item["page"] = $scope.reconciliations[lineItem.item.category.name];
                         $scope.reconcilableSearch.items.push(lineItem.item);
                     }
                 })
@@ -43,6 +53,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService)
             $scope.reconcilableSearch.matches = [];
             $scope.reconcilableSearch.items = [];
             $scope.reconcilableSearch.error = true;
+        });
         });
     }
 
@@ -83,6 +94,12 @@ function supplyReconciliationController($scope, requisitionApi, locationService)
 
     $scope.init = function() {
         initItems();
+    };
+
+    $scope.setCurrentPage = function (e) {
+        $("#page" + $scope.currentPage).css("text-decoration", "");
+        $scope.currentPage = e;
+        $("#page" + $scope.currentPage).css("text-decoration", "underline");
     };
 
     $scope.init();

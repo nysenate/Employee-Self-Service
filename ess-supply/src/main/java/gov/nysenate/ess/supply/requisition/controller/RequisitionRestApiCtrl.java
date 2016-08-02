@@ -18,12 +18,12 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
-import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
-import gov.nysenate.ess.supply.requisition.view.RequisitionView;
-import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
+import gov.nysenate.ess.supply.requisition.view.RequisitionView;
+import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +71,15 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping("")
-    public BaseResponse searchRequisitions(@RequestParam(defaultValue = "any", required = false) String location,
-                                           @RequestParam(defaultValue = "any", required = false) String customerId,
+    public BaseResponse searchRequisitions(@RequestParam(defaultValue = "All", required = false) String location,
+                                           @RequestParam(defaultValue = "All", required = false) String customerId,
                                            @RequestParam(required = false) String[] status,
                                            @RequestParam(required = false) String from,
                                            @RequestParam(required = false) String to,
+                                           @RequestParam(defaultValue = "All", required = false) String issuerId,
+                                           @RequestParam(defaultValue = "All", required = false) String pageId,
                                            @RequestParam(required = false) String dateField,
-                                           @RequestParam(defaultValue = "any", required = false) String savedInSfms,
+                                           @RequestParam(defaultValue = "All", required = false) String savedInSfms,
                                            WebRequest webRequest) {
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
@@ -86,7 +88,11 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         LimitOffset limoff = getLimitOffset(webRequest, 25);
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
-        PaginatedList<Requisition> results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff);
+        PaginatedList<Requisition> results;
+        if (!issuerId.equals("All"))
+            results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff, issuerId);
+        else
+            results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff);
         List<RequisitionView> resultViews = results.getResults().stream()
                                                    .map(RequisitionView::new)
                                                    .collect(Collectors.toList());

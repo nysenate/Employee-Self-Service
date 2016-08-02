@@ -19,8 +19,10 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SupplyRequisitionService implements RequisitionService {
@@ -92,6 +94,11 @@ public class SupplyRequisitionService implements RequisitionService {
     public PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                          Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset) {
         return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, savedInSfms, limitOffset);
+    }
+
+    @Override
+    public PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses, Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID) {
+        return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, savedInSfms, limitOffset, issuerID);
     }
 
     /**

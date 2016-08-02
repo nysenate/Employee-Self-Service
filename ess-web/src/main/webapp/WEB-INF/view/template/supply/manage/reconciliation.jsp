@@ -13,7 +13,8 @@
 
   <div class="content-container" ng-show="reconcilableSearch.response.$resolved && reconcilableSearch.items.length > 0">
     <p class="content-info">
-      Items shipped today.
+      <span id="page1" ng-click="setCurrentPage(1)" style="padding-right: 150px;    text-decoration: underline;">Page One</span>
+      <span id="page2" style="padding-left:150px;" ng-click="setCurrentPage(2)">Page Two</span>
     </p>
 
     <%--Header--%>
@@ -30,7 +31,7 @@
         </div>
       </div>
       <%--Item rows--%>
-      <div ng-repeat="item in reconcilableSearch.items">
+      <div ng-repeat="item in reconcilableSearch.items | filter : {'page' : currentPage}">
         <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'" ng-click="setSelected(item)">
           <div class="col-3-12">
             {{item.commodityCode}}

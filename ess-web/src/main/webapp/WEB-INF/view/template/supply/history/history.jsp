@@ -56,7 +56,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr dir-paginate="shipment in filteredShipments | itemsPerPage : paginate.itemsPerPage"
+                <tr dir-paginate="shipment in shipments | itemsPerPage : paginate.itemsPerPage"
                     current-page="paginate.currPage"
                     pagination-id="order-history-pagination"
                     total-items="paginate.totalItems"

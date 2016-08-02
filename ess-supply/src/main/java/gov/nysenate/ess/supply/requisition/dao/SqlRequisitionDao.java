@@ -106,6 +106,23 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         return paginatedRowHandler.getList();
     }
 
+    public synchronized PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
+                                                                      Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("destination", formatSearchString(destination))
+                .addValue("customerId", formatSearchString(customerId))
+                .addValue("statuses", extractEnumSetParams(statuses))
+                .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
+                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)))
+                .addValue("issuerId", formatSearchString(issuerID))
+                .addValue("savedInSfms", formatSearchString(savedInSfms));
+        ensureValidColumn(dateField);
+        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL_WITH_ISSUER, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
+        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+        localNamedJdbc.query(sql, params, paginatedRowHandler);
+        return paginatedRowHandler.getList();
+    }
+
     /** Protect against sql injection attacks by validating that dateFiled
      * matches one of the requisition date time fields. */
     private void ensureValidColumn(String dateField) {
@@ -183,7 +200,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     private String formatSearchString(String param) {
-        return param != null && param.equals("any") ? "%" : param;
+        return param != null && (param.equals("All")) ? "%" : param;
     }
 
     /** Convert an EnumSet into a Set containing each enum's name. */
@@ -238,6 +255,14 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
                 "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
         ),
+        SEARCH_REQUISITIONS_PARTIAL_WITH_ISSUER(
+                "SELECT *, count(*) OVER() as total_rows \n" +
+                        "FROM ${supplySchema}.requisition as r \n" +
+                        "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
+                        "WHERE c.destination LIKE :destination AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId  AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
+                        "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
+        ),
+
 
         /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
          * to complete this query. */

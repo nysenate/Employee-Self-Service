@@ -21,6 +21,9 @@ public interface RequisitionDao {
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset);
 
+    PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
+                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerId);
+
     /**
      * Searches the order history for a employee.
      * An employees order history includes all orders for his work location plus all orders they have made themselves
