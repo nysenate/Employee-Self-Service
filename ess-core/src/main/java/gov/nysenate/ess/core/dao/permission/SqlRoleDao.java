@@ -50,7 +50,7 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
         ),
         GET_EMPLOYEES_BY_ROLE(
                 "SELECT employee_id FROM ${essSchema}.user_roles \n" +
-                "WHERE role = :role"
+                "WHERE role = :role::${essSchema}.ess_role"
         )
         ;
 
