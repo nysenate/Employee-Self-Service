@@ -79,10 +79,6 @@ essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource
     return $resource(appProps.apiPath + '/employees/activeYears');
 }]);
 
-essApi.factory('EmployeesByRoleApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/employees/:role.json', {role : '@role'})
-}]);
-
 /** --- Transaction API --- */
 
 essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {
@@ -165,4 +161,10 @@ essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', fun
 
 essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/reconciliation.json')
+}]);
+
+/** --- Supply Employees API --- */
+
+essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/employees')
 }]);

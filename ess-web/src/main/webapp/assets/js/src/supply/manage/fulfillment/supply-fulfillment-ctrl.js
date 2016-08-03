@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
-    'SupplyRequisitionApi', 'EmployeesByRoleApi', 'SupplyItemsApi', 'modals', '$interval', 'LocationService', supplyFulfillmentController]);
+    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', 'LocationService', supplyFulfillmentController]);
 
-function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
+function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                                      itemsApi, modals, $interval, locationService) {
 
     $scope.pendingSearch = {
@@ -80,7 +80,7 @@ function supplyFulfillmentController($scope, requisitionApi, employeesByRoleApi,
      */
 
     function getSupplyEmployees() {
-        employeesByRoleApi.get({role: "SUPPLY_EMPLOYEE"}, function (response) {
+        supplyEmployeesApi.get(function (response) {
             $scope.supplyEmployees = response.result;
         }, function (errorResponse) {
         })

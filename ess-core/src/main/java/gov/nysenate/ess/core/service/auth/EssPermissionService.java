@@ -42,8 +42,4 @@ public class EssPermissionService {
                 .flatMap(Collection::stream)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     }
-
-    public ImmutableList<Employee> getEmployeesWithRole(EssRole role) {
-        return roleDao.getEmployeesWithRole(role);
-    }
 }
