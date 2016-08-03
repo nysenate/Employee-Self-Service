@@ -22,9 +22,9 @@
           <th>Check Date</th>
           <th>Pay Period</th>
           <th>Gross</th>
-          <th ng-repeat="(desc, value) in deductionMap">{{desc | formatDeductionHeader}}</th>
-          <th>Direct Deposit</th>
-          <th>Check</th>
+          <th ng-repeat="col in deductionCols">{{col | formatDeductionHeader}}</th>
+          <th ng-if="dirDepositPresent">Direct Deposit</th>
+          <th ng-if="checkPresent">Check</th>
         </tr>
         </thead>
         <tbody>
@@ -34,14 +34,16 @@
           <td ng-class="{bold: isSignificantChange(paycheck.grossIncome, paychecks[$index - 1].grossIncome)}">
             {{paycheck.grossIncome | currency}}
           </td>
-          <td ng-repeat="(desc, value) in deductionMap"
-              ng-class="{bold: isSignificantChange(paycheck.deductions[desc].amount, paychecks[$parent.$index - 1].deductions[desc].amount)}">
-            {{paycheck.deductions[desc].amount | currency}}
+          <td ng-repeat="col in deductionCols"
+              ng-class="{bold: isSignificantChange(paycheck.deductions[col].amount, paychecks[$parent.$index - 1].deductions[col].amount)}">
+            {{paycheck.deductions[col].amount | currency}}
           </td>
-          <td ng-class="{bold: isSignificantChange(paycheck.directDepositAmount, paychecks[$index - 1].directDepositAmount)}">
+          <td ng-class="{bold: isSignificantChange(paycheck.directDepositAmount, paychecks[$index - 1].directDepositAmount)}"
+              ng-if="dirDepositPresent">
             {{paycheck.directDepositAmount | currency}}
           </td>
-          <td ng-class="{bold: isSignificantChange(paycheck.checkAmount, paychecks[$index - 1].checkAmount)}">
+          <td ng-class="{bold: isSignificantChange(paycheck.checkAmount, paychecks[$index - 1].checkAmount)}"
+              ng-if="checkPresent">
             {{paycheck.checkAmount | currency}}
           </td>
         </tr>
@@ -49,9 +51,9 @@
           <td>Annual Totals</td>
           <td colspan="1"></td>
           <td>{{ytd.gross | currency}}</td>
-          <td ng-repeat="(desc, value) in deductionMap">{{ytd[desc] || 0 | currency}}</td>
-          <td>{{ytd.directDeposit | currency}}</td>
-          <td>{{ytd.check | currency}}</td>
+          <td ng-repeat="col in deductionCols">{{ytd[col] || 0 | currency}}</td>
+          <td ng-if="dirDepositPresent">{{ytd.directDeposit | currency}}</td>
+          <td ng-if="checkPresent">{{ytd.check | currency}}</td>
         </tr>
         </tbody>
       </table>

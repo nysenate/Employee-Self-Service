@@ -11,11 +11,13 @@ import java.math.BigDecimal;
 public class DeductionView implements ViewObject
 {
     protected String code;
+    protected int order;
     protected String description;
     protected BigDecimal amount;
 
     public DeductionView(Deduction deduction) {
         this.code = deduction.getCode();
+        this.order = deduction.getOrder();
         this.description = deduction.getDescription();
         this.amount = deduction.getAmount();
     }
@@ -29,6 +31,11 @@ public class DeductionView implements ViewObject
     @XmlElement
     public String getCode() {
         return code;
+    }
+
+    @XmlElement
+    public int getOrder() {
+        return order;
     }
 
     @XmlElement

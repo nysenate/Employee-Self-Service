@@ -8,14 +8,20 @@ import java.math.BigDecimal;
  */
 public class Deduction
 {
+    private int order;
     private String code;
     private String description;
     private BigDecimal amount;
 
-    public Deduction(String code, String description, BigDecimal amount) {
+    public Deduction(String code, int order, String description, BigDecimal amount) {
+        this.order = order;
         this.code = code;
         this.description = description;
         this.amount = amount;
+    }
+
+    public int getOrder() {
+        return order;
     }
 
     public String getCode() {
