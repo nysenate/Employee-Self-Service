@@ -46,8 +46,6 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     protected ErrorResponse handleInvalidRequestParameterException(InvalidRequestParamEx ex) {
-        logger.debug("Handling invalid request param");
-        logger.debug(ExceptionUtils.getStackTrace(ex));
         return new ViewObjectErrorResponse(ErrorCode.INVALID_ARGUMENTS, new InvalidParameterView(ex));
     }
 
@@ -55,8 +53,6 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
     protected ErrorResponse handleMissingParameterException(MissingServletRequestParameterException ex) {
-        logger.debug("Handling missing servlet request param");
-        logger.debug(ExceptionUtils.getStackTrace(ex));
         return new ViewObjectErrorResponse(ErrorCode.MISSING_PARAMETERS,
                                            new ParameterView(ex.getParameterName(), ex.getParameterType()));
     }
