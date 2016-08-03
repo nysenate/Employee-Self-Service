@@ -5,8 +5,7 @@ CREATE OR REPLACE PACKAGE SYNCHRONIZE_SUPPLY AS
 
   /*
   Updates Fd12ExpIssue, Fd12ExpAudit, and Fm12Inventry tables for all item movements in the given requisition.
-  Requisitions is in XML format.
-  Expects a single requisition at a time.
+  requisition_xml_string is a single requisition serialized to xml.
   */
   FUNCTION synchronize_with_supply(requisition_xml_string VARCHAR2)
     RETURN NUMBER;
@@ -164,6 +163,28 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
             AND CDSTATUS = 'A';
     END;
 
+  /*
+  Checks if a requisition has already been inserted into SFMS.
+  Returns TRUE if it has already been inserted, FALSE otherwise.
+   */
+  FUNCTION is_duplicate(requisition_id NUMBER)
+    RETURN BOOLEAN IS isDuplicate BOOLEAN;
+    results NUMBER;
+    BEGIN
+      SELECT count(*) INTO results
+      FROM fd12expissue
+      WHERE NUREQUISITIONID = requisition_id
+            AND cdstatus = 'A';
+
+      -- If any rows exist with that NuRequisitionId, its a duplicate.
+      IF results > 0
+        THEN
+        RETURN TRUE;
+      END IF;
+
+      RETURN FALSE;
+    END;
+
   /*------------------------
   ----- Public methods -----
   --------------------------*/
@@ -197,6 +218,12 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       destination_type := requisition_xml.extract('/RequisitionView/destination/locationTypeCode/text()').getStringVal();
       issuer_uid := UPPER(requisition_xml.extract('/RequisitionView/issuer/uid/text()').getStringVal());
       responsibility_head := get_responsibility_head(destination_code, destination_type);
+
+      -- Ensure this requisition has not been inserted before.
+      IF is_duplicate(requisition_id)
+        THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Requisition ' || requisition_id || ' has already been inserted into SFMS.');
+      END IF;
 
       -- Loop through all items in the requisition.
       WHILE requisition_xml.existsNode('//lineItems/lineItems[' || item_count || ']') = 1

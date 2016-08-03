@@ -14,25 +14,34 @@ import org.springframework.context.annotation.*;
 @Import(BaseConfig.class)
 public class CoreConfig {
 
+    /**
+     * An object mapper for serializing objects into json.
+     */
     @Bean
     public ObjectMapper jsonObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new GuavaModule());
-        objectMapper.registerModule(new JSR310Module());
+        configureMapper(objectMapper);
         return objectMapper;
     }
 
+    /**
+     * An object mapper for serializing objects into XML
+     */
     @Bean
     public ObjectMapper xmlObjectMapper() {
         ObjectMapper objectMapper = new XmlMapper();
+        configureMapper(objectMapper);
+        return objectMapper;
+    }
+
+    /**
+     * Common object mapper config used by both json and xml mappers.
+     */
+    private void configureMapper(ObjectMapper objectMapper) {
         objectMapper.disable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new GuavaModule());
         objectMapper.registerModule(new JSR310Module());
-        return objectMapper;
     }
 }

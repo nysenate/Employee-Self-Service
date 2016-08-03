@@ -42,7 +42,7 @@ import java.util.List;
 public class WebApplicationConfig extends WebMvcConfigurerAdapter
 {
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationConfig.class);
-    @Autowired ObjectMapper jsonObjectMapper;
+    @Autowired private ObjectMapper jsonObjectMapper;
 
     @PostConstruct
     public void init() {

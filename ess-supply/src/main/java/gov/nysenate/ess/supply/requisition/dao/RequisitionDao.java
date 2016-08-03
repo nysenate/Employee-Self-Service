@@ -34,8 +34,7 @@ public interface RequisitionDao {
     ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
 
     /**
-     * Marks requisitions as saved in SFMS.
-     * @param requisitionIds The id's of the requisitions to be marked as saved.
+     * Marks a requisition as saved in SFMS.
      */
-    void savedInSfms(List<Integer> requisitionIds);
+    void savedInSfms(int requisitionId);
 }
