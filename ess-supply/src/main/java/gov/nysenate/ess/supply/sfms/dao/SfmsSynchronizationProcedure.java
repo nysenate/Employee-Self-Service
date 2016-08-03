@@ -2,7 +2,6 @@ package gov.nysenate.ess.supply.sfms.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import gov.nysenate.ess.core.config.CoreConfig;
-import gov.nysenate.ess.supply.error.SupplyErrorLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +22,10 @@ import java.util.Map;
 @Repository
 public class SfmsSynchronizationProcedure extends StoredProcedure {
 
+    private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationProcedure.class);
     private static final String PROCEDURE_NAME = "SYNCHRONIZE_SUPPLY.synchronize_with_supply";
     private static final String RESPONSE = "response";
     private static final String PARAMETER = "requisitionXml";
-
-    private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationProcedure.class);
-    @Autowired private SupplyErrorLogService errorLogService;
 
     @Autowired
     public SfmsSynchronizationProcedure(ComboPooledDataSource remoteDataSource) {
@@ -56,9 +53,7 @@ public class SfmsSynchronizationProcedure extends StoredProcedure {
                 return ((BigDecimal) responseMap.get(RESPONSE)).intValue();
             }
         } catch (UncategorizedSQLException ex) {
-            String message = "Error synchronizing with SFMS. Exception is : " + ex.getMessage();
-            logger.error(message);
-            errorLogService.saveError(message);
+            logger.error("Error synchronizing with SFMS. Exception is : " + ex.getMessage());
         }
         return 0;
     }

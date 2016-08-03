@@ -139,3 +139,6 @@ timeout = 900
 #absolute path prefix for images
 image.url = /assets/supply_photos
 
+# --- SFMS Synchronization --------------------------------------------------
+
+supply.sfms.synchronization.cron = 0 0 0 * * *

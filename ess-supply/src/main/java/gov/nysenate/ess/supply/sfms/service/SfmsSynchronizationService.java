@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.supply.error.SupplyErrorLogService;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
@@ -15,6 +14,7 @@ import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,7 +25,6 @@ import java.util.List;
 public class SfmsSynchronizationService {
 
     private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationService.class);
-    @Autowired private SupplyErrorLogService errorLogService;
 
     @Autowired private RequisitionService requisitionService;
     @Autowired private SfmsSynchronizationProcedure synchronizationProcedure;
@@ -41,6 +40,7 @@ public class SfmsSynchronizationService {
      *
      * Should be run at the top of each hour.
      */
+    @Scheduled(cron = "${supply.sfms.synchronization.cron}")
     public void synchronizeRequisitions() {
         // Get all requisitions not saved in sfms since app release in 2016.
         LocalDateTime start = LocalDateTime.of(2016, 1, 1, 0, 0);
@@ -70,10 +70,7 @@ public class SfmsSynchronizationService {
         try {
             xml = xmlObjectMapper.writeValueAsString(new RequisitionView(requisition));
         } catch (JsonProcessingException e) {
-            String message = "Error serializing requisition with id = " + requisition.getRequisitionId()
-                             + "Exception: " + e.getMessage();
-            logger.error(message);
-            errorLogService.saveError(message);
+            logger.error("Error serializing requisition with id = " + requisition.getRequisitionId() + ".", e);
         }
         return xml;
     }
