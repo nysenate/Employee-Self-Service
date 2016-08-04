@@ -66,8 +66,8 @@
 
   <% /** Display a warning for previously unsubmitted records */ %>
   <div ess-notification level="warn" title="Earlier Unsubmitted Records"
-       class="margin-top-20 margin-bottom-20" ng-show="errorTypes.record.prevUnsubmittedRecord">
-    This record cannot be submitted until all previous annual salary records are submitted.
+       class="margin-top-20 margin-bottom-20" ng-show="errorTypes.record.prevUnsubmittedRecord"
+       message="This record cannot be submitted until all previous annual salary records are submitted.">
   </div>
 
   <% /** Display an error message if there are notes for a disapproved time record. */ %>
