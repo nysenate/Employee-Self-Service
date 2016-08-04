@@ -42,7 +42,9 @@ import java.util.List;
 public class WebApplicationConfig extends WebMvcConfigurerAdapter
 {
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationConfig.class);
+
     @Autowired private ObjectMapper jsonObjectMapper;
+    @Autowired private ObjectMapper xmlObjectMapper;
 
     @PostConstruct
     public void init() {
@@ -91,14 +93,11 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
 
     @Bean
     public MappingJackson2HttpMessageConverter jackson2Converter() {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper(jsonObjectMapper);
-        return converter;
+        return new MappingJackson2HttpMessageConverter(jsonObjectMapper);
     }
 
+    @Bean
     public MappingJackson2XmlHttpMessageConverter jackson2XmlConverter() {
-        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        builder.indentOutput(true).dateFormat(new SimpleDateFormat("yyyy-MM-dd"));
-        return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build());
+        return new MappingJackson2XmlHttpMessageConverter(xmlObjectMapper);
     }
 }
