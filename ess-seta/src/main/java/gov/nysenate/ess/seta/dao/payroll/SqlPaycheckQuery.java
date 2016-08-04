@@ -7,7 +7,7 @@ public enum SqlPaycheckQuery implements BasicSqlQuery
 {
     GET_EMPLOYEE_PAYCHECKS_BY_YEAR(
            "SELECT m.NUXREFEM, m.MONET, m.MOGROSS, m.MOCHECKAMT, m.MOADVICEAMT, m.NUPERIOD, m.DTCHECK,\n" +
-           "    l.CDDEDUCTION, l.DEDEDUCTIONF, d.MODEDUCTION\n" +
+           "    l.CDDEDUCTION, l.DEDEDUCTIONF, l.CDORDER, d.MODEDUCTION\n" +
            "FROM ${masterSchema}.PM25SALLEDG m\n" +
            "JOIN ${masterSchema}.PD25SALLEDG d\n" +
            "    ON m.NUXREFEM = d.NUXREFEM AND m.DTCHECK = d.DTCHECK\n" +
