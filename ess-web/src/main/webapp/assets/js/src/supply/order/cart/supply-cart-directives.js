@@ -25,6 +25,6 @@ essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
     }
 }]).controller('CartCheckoutModalCtrl', ['$scope', 'modals', function ($scope, modals) {
 
-    $scope.id = modals.params().result.id;
+    $scope.requisitionId = modals.params().result.requisitionId;
     console.log(modals.params());
 }]);
