@@ -1,19 +1,40 @@
 var essMyInfo = angular.module('essMyInfo');
 
 essMyInfo.controller('EmpCheckHistoryCtrl',
-    ['$scope', 'appProps', 'EmpCheckHistoryApi', 'modals',
-        function($scope, appProps, EmpCheckHistoryApi, modals) {
+    ['$scope', '$filter', 'appProps', 'EmpCheckHistoryApi', 'modals',
+        function($scope, $filter, appProps, EmpCheckHistoryApi, modals) {
 
             /** Map with deduction descriptions as keys.
              * Map is used instead of array for faster look ups.
              * This map's keys represent the set of all deductions used in $scope.paychecks. */
             $scope.deductionMap = {};
 
+            /**
+             * A listing of deduction codes in the order that they should appear as columns
+             * @type {Array}
+             */
+            $scope.deductionCodes = [
+                5, 6, 8, 7, 11, 514, 12, 546, 548, 502, 519,                // Tax
+                301, 303, 302, 410, 321, 416, 418, 10, 661, 663, 18, 9, 4,  // Health Ins., Def. Comp., ERS
+                850, 851, 3, 326, 327, 427, 355, 422, 421, 428, 0           // SEFA, Bonds, Group Life, Park Fee, Dep care, misc
+            ].map(function(num) {
+                return $filter('zeroPad')(num, 3);
+            });
+
+            /**
+             * Ordered listing of deduction column names
+             * @type {Array}
+             */
+            $scope.deductionCols = [];
+
             $scope.checkHistory = {
                 searching: false,
                 recordYears: null,
                 year: null
             };
+            
+            $scope.dirDepositPresent = false;
+            $scope.checkPresent = false;
 
             var initialYtd = {
                 gross: 0,
@@ -42,6 +63,7 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                     initDeductionMap(response.paychecks);
                     addDeductionsToPaychecks(response.paychecks);
                     initYtdValues(response.paychecks);
+                    initDeductionCols(response.paychecks);
                     $scope.checkHistory.searching = false;
                 }, function(response) {
                     $scope.checkHistory.searching = false;
@@ -63,6 +85,34 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                         }
                     }
                 }
+                
+                if ($scope.ytd.check > 0) {
+                    $scope.checkPresent = true;
+                }
+
+                if ($scope.ytd.directDeposit > 0) {
+                    $scope.dirDepositPresent = true;
+                }
+            }
+
+            function initDeductionCols(paychecks) {
+                var deductionList = [];
+                var deductionCodeMap = {};
+                angular.forEach(paychecks, function (paycheck) {
+                    angular.forEach(paycheck.deductions, function (deduction) {
+                        if (deduction.code && !deductionCodeMap.hasOwnProperty(deduction.code)) {
+                            deductionList.push(deduction);
+                            deductionCodeMap[deduction.code] = true;
+                        }
+                    });
+                });
+                $scope.deductionCols = deductionList
+                    .sort(function(a, b) {
+                        return getDeductCodeOrder(a) - getDeductCodeOrder(b);
+                    })
+                    .map(function(deduction) {
+                        return deduction.description;
+                    });
             }
 
             function initDeductionMap(paychecks) {
@@ -112,6 +162,20 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
              * Removes the need to default to 0 in view if deduction is undefined, which simplifies bolding of changes. */
             function createEmptyDeduction() {
                 return { amount: 0 };
+            }
+
+            /**
+             * Gets a value representing the column order of a deduction
+             * Lower values come first
+             * @param deduction
+             * @returns {*}
+             */
+            function getDeductCodeOrder(deduction) {
+                var order = $scope.deductionCodes.indexOf(deduction.code);
+                if (order < 0) {
+                    return Number.MAX_VALUE;
+                }
+                return order;
             }
 
             /** Compares two currency values, returning true if they differ by more than 3 cents. */

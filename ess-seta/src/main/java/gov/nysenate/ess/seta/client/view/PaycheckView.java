@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import static java.util.stream.Collectors.toMap;
@@ -29,7 +31,11 @@ public class PaycheckView implements ViewObject
         this.checkDate = paycheck.getCheckDate();
         this.grossIncome = paycheck.getGrossIncome();
         this.netIncome = paycheck.getNetIncome();
-        this.deductions = paycheck.getDeductions().stream().collect(toMap(Deduction::getDescription, DeductionView::new, (a,b) -> a, TreeMap::new));
+        this.deductions = Optional.ofNullable(paycheck.getDeductions())
+                .orElse(Collections.emptyList()).stream()
+                .collect(toMap(
+                        Deduction::getDescription,
+                        DeductionView::new, (a, b) -> a, TreeMap::new));
         this.directDepositAmount = paycheck.getDirectDepositAmount();
         this.checkAmount = paycheck.getCheckAmount();
     }

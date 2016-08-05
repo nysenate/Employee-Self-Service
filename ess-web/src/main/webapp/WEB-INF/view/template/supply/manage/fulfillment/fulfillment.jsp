@@ -77,7 +77,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in processingSearch.matches" ng-class="{warn: highlightShipment(requisition)}"
+      <tr ng-repeat="requisition in processingSearch.matches" ng-class="{warn: highlightRequisition(requisition)}"
           ng-click="showEditingModal(requisition)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
@@ -121,7 +121,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in completedSearch.matches" ng-click="showEditingModal(requisition)">
+      <tr ng-repeat="requisition in completedSearch.matches" ng-class="{warn: highlightRequisition(requisition)}"
+          ng-click="showEditingModal(requisition)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>

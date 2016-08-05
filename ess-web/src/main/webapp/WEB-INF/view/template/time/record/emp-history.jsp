@@ -32,8 +32,10 @@
             </div>
             <ess-notification level="warn" title="No Employee Records For {{state.selectedRecYear}}"
                               ng-hide="state.records.length > 0">
-                It appears as if the employee has no records for the selected year.<br>
-                Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
+                <p>
+                    It appears as if the employee has no records for the selected year.<br>
+                    Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
+                </p>
             </ess-notification>
             <div ng-show="state.records.length > 0">
                 <p class="content-info">

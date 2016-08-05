@@ -39,53 +39,6 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
---
--- Name: error_log; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
---
-
-CREATE TABLE error_log (
-  id integer NOT NULL,
-  date_time timestamp without time zone DEFAULT now() NOT NULL,
-  message text NOT NULL
-);
-
-
-ALTER TABLE error_log OWNER TO postgres;
-
---
--- Name: COLUMN error_log.date_time; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON COLUMN error_log.date_time IS 'The date time of the error';
-
-
---
--- Name: COLUMN error_log.message; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON COLUMN error_log.message IS 'The error message';
-
-
---
--- Name: error_log_id_seq; Type: SEQUENCE; Schema: supply; Owner: postgres
---
-
-CREATE SEQUENCE error_log_id_seq
-START WITH 1
-INCREMENT BY 1
-NO MINVALUE
-NO MAXVALUE
-CACHE 1;
-
-
-ALTER TABLE error_log_id_seq OWNER TO postgres;
-
---
--- Name: error_log_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
---
-
-ALTER SEQUENCE error_log_id_seq OWNED BY error_log.id;
-
 
 --
 -- Name: line_item; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
@@ -245,13 +198,6 @@ ALTER SEQUENCE requisition_requisition_id_seq OWNED BY requisition.requisition_i
 -- Name: id; Type: DEFAULT; Schema: supply; Owner: postgres
 --
 
-ALTER TABLE ONLY error_log ALTER COLUMN id SET DEFAULT nextval('error_log_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: supply; Owner: postgres
---
-
 ALTER TABLE ONLY location_specific_items ALTER COLUMN id SET DEFAULT nextval('location_specific_items_id_seq'::regclass);
 
 
@@ -260,14 +206,6 @@ ALTER TABLE ONLY location_specific_items ALTER COLUMN id SET DEFAULT nextval('lo
 --
 
 ALTER TABLE ONLY requisition ALTER COLUMN requisition_id SET DEFAULT nextval('requisition_requisition_id_seq'::regclass);
-
-
---
--- Name: error_log_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace:
---
-
-ALTER TABLE ONLY error_log
-  ADD CONSTRAINT error_log_pkey PRIMARY KEY (id);
 
 
 --

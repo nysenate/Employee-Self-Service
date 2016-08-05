@@ -220,22 +220,6 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         return timeRecordDao.deleteRecord(timeRecordId);
     }
 
-    @Subscribe
-    public void handleActiveTimeRecordCacheEvict(ActiveTimeRecordCacheEvictEvent event) {
-        if (event != null) {
-            if (event.allRecords) {
-                logger.debug("Clearing out all cached active time records...");
-                activeRecordCache.removeAll();
-            }
-            else {
-                for (Integer empId : event.affectedEmployees) {
-                    logger.debug("Clearing out active time records for {}", empId);
-                    activeRecordCache.remove(empId);
-                }
-            }
-        }
-    }
-
     /** --- Caching Service Implemented Methods ---
      * @see CachingService */
 
@@ -247,8 +231,8 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     /** {@inheritDoc} */
     @Override
-    public void evictContent(Integer supId) {
-        activeRecordCache.remove(supId);
+    public void evictContent(Integer empId) {
+        activeRecordCache.remove(empId);
     }
 
     /** {@inheritDoc} */

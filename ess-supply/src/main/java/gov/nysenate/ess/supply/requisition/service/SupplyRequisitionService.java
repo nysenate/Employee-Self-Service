@@ -116,7 +116,7 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void savedInSfms(List<Integer> requisitionIds) {
-        requisitionDao.savedInSfms(requisitionIds);
+    public void savedInSfms(int requisitionId) {
+        requisitionDao.savedInSfms(requisitionId);
     }
 }

@@ -44,55 +44,42 @@
 .dark-red {
   color: #b90504;
 }
-
 .light-teal {
   color: #4196a7;
 }
-
 .teal {
   color: #006b80;
 }
-
 .green {
   color: #799933;
 }
-
 .navy {
   color: #0e4e5a;
 }
-
 .orange {
   color: #d19525;
 }
-
 .brown {
   color: #583f0f;
 }
-
 .redorange {
   color: #e64727;
 }
-
 .blue {
   color: #104042;
 }
-
 .olive {
   color: #808d0a;
 }
-
 .blue-purple {
   color: #6270bd;
 }
-
 .gray {
   color: #808080;
 }
-
 .white {
   color: #fefefe;
 }
-
 /** Loading sprites */
 .loading-colors {
   background: url('../../img/loading.GIF');
@@ -112,30 +99,24 @@
 .font-weight-bold {
   font-weight: 600;
 }
-
 table.ess-table {
   width: 100%;
 }
-
 table.ess-table.center-align thead tr th,
 table.ess-table.center-align tbody tr td {
   text-align: center;
 }
-
 table.ess-table thead {
   background: white;
 }
-
 table.ess-table thead tr {
   color: #333;
   font-size: .9em;
   border-bottom: 1px solid #155C69;
 }
-
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
-
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -143,75 +124,60 @@ table.ess-table.no-focus tbody tr:hover {
   -o-transition: 0.5s;
   transition: 0.5s;
 }
-
 table.ess-table tbody tr {
   border-top: 1px solid transparent;
   border-bottom: 1px solid #bbb;
 }
-
 table.ess-table tbody tr td {
   text-align: left;
 }
-
 table.ess-table tbody tr td.invalid,
 table.ess-table tbody tr td input.ng-invalid {
   background: #ffbcbc;
 }
-
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
-
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
-
 .ess-notification h1 {
   font-size: 2.5em;
 }
-
 .ess-notification h1,
 .ess-notification h2,
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
-
 .ess-notification ul {
   padding: 0;
 }
-
 .ess-notification.info {
   background: white;
 }
-
 .ess-notification.info h1,
 .ess-notification.info h2,
 .ess-notification.info h3,
@@ -220,15 +186,12 @@ table.simple-table tbody tr td {
 .ess-notification.info span {
   color: #0e4e5a;
 }
-
 .ess-notification.warn {
   background: #d19525;
 }
-
 .ess-notification.error {
   background: #e64727;
 }
-
 /* Credit to http://codepen.io/desandro/pen/igHbG */
 /* change font size to change size */
 .loader {
@@ -238,7 +201,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 100px auto;
 }
-
 .sm-loader {
   font-size: 20px;
   position: relative;
@@ -246,7 +208,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 40px auto;
 }
-
 .dot {
   width: 1em;
   height: 1em;
@@ -266,20 +227,16 @@ table.simple-table tbody tr td {
   -o-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
 }
-
 .dot1,
 .dot2 {
   left: 0;
 }
-
 .dot3 {
   left: 1.5em;
 }
-
 .dot4 {
   left: 3em;
 }
-
 @-webkit-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -296,7 +253,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-webkit-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -306,7 +262,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-moz-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -323,7 +278,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-moz-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -333,7 +287,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-o-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -350,7 +303,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-o-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -360,7 +312,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -377,7 +328,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -387,14 +337,12 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 .dot1 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
   -o-animation-name: reveal;
   animation-name: reveal;
 }
-
 .dot2,
 .dot3 {
   -webkit-animation-name: slide;
@@ -402,7 +350,6 @@ table.simple-table tbody tr td {
   -o-animation-name: slide;
   animation-name: slide;
 }
-
 .dot4 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
@@ -414,100 +361,78 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
-
 .vertical-align {
   top: 50%;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
 .horizontal-align {
   left: 50%;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 }
-
 .center-align {
   top: 50%;
   left: 50%;
@@ -515,12 +440,10 @@ table.simple-table tbody tr td {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-
 .align-parent {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container {
   position: fixed;
   width: 100vw;
@@ -531,7 +454,6 @@ table.simple-table tbody tr td {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container > ng-transclude > *,
 #modal-container > #common-modals > * {
   background: #fafafa;
@@ -545,7 +467,6 @@ table.simple-table tbody tr td {
   transform: translate(-50%, -50%);
   z-index: 1004;
 }
-
 #modal-container > ng-transclude > *:not(.custom-fit),
 #modal-container > #common-modals > *:not(.custom-fit) {
   max-height: 80vh;
@@ -553,7 +474,6 @@ table.simple-table tbody tr td {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 #modal-container #modal-backdrop {
   position: fixed;
   background: rgba(0, 0, 0, 0.6);
@@ -561,51 +481,42 @@ table.simple-table tbody tr td {
   height: 100vh;
   z-index: 1003;
 }
-
 #modal-container .background-modal {
   z-index: 1002;
 }
-
 .modal-max-height {
   max-height: 80vh;
   overflow-y: auto;
 }
-
 .modal-max-width {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 .modal-fit {
   max-height: 80vh;
   overflow-y: auto;
   max-width: 80vw;
   overflow-x: auto;
 }
-
 /** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
   z-index: 9001;
 }
-
 #internal-error-modal h1 {
   margin-top: 0;
   color: #e64727;
 }
-
 #internal-error-modal p.internal-error-text {
   width: 45em;
 }
-
 #internal-error-modal pre.internal-error-details {
   text-align: initial;
   max-height: 45vh;
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
@@ -615,21 +526,17 @@ table.simple-table tbody tr td {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -637,7 +544,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -645,7 +551,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -653,7 +558,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -661,7 +565,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -688,7 +591,6 @@ table.simple-table tbody tr td {
   overflow: visible;
   /* removes extra width in IE */
 }
-
 .ui-button,
 .ui-button:link,
 .ui-button:visited,
@@ -696,25 +598,20 @@ table.simple-table tbody tr td {
 .ui-button:active {
   text-decoration: none;
 }
-
 /* to make room for the icon, a width needs to be set here */
 .ui-button-icon-only {
   width: 2.2em;
 }
-
 /* button elements seem to need a little more width */
 button.ui-button-icon-only {
   width: 2.4em;
 }
-
 .ui-button-icons-only {
   width: 3.4em;
 }
-
 button.ui-button-icons-only {
   width: 3.7em;
 }
-
 /* button text element */
 .ui-button .ui-button-text {
   display: block;
@@ -722,37 +619,30 @@ button.ui-button-icons-only {
   color: #444;
   font-weight: normal;
 }
-
 .ui-button-text-only .ui-button-text {
   padding: .4em 1em;
 }
-
 .ui-button-icon-only .ui-button-text,
 .ui-button-icons-only .ui-button-text {
   padding: .4em;
   text-indent: -9999999px;
 }
-
 .ui-button-text-icon-primary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 1em .4em 2.1em;
 }
-
 .ui-button-text-icon-secondary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 2.1em .4em 1em;
 }
-
 .ui-button-text-icons .ui-button-text {
   padding-left: 2.1em;
   padding-right: 2.1em;
 }
-
 /* no icon support for input elements, provide padding by default */
 input.ui-button {
   padding: .4em 1em;
 }
-
 /* button icon element(s) */
 .ui-button-icon-only .ui-icon,
 .ui-button-text-icon-primary .ui-icon,
@@ -763,45 +653,37 @@ input.ui-button {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-button-icon-only .ui-icon {
   left: 50%;
   margin-left: -8px;
 }
-
 .ui-button-text-icon-primary .ui-button-icon-primary,
 .ui-button-text-icons .ui-button-icon-primary,
 .ui-button-icons-only .ui-button-icon-primary {
   left: .5em;
 }
-
 .ui-button-text-icon-secondary .ui-button-icon-secondary,
 .ui-button-text-icons .ui-button-icon-secondary,
 .ui-button-icons-only .ui-button-icon-secondary {
   right: .5em;
 }
-
 /* button sets */
 .ui-buttonset {
   margin-right: 7px;
 }
-
 .ui-buttonset .ui-button {
   margin-left: 0;
   margin-right: -0.3em;
   font-weight: normal;
   border: 1px solid #999;
 }
-
 .ui-buttonset .ui-button.ui-state-hover .ui-button-text,
 .ui-buttonset .ui-button.ui-state-active .ui-button-text {
   color: teal;
 }
-
 .ui-buttonset .ui-button.ui-state-active {
   background: #eee;
 }
-
 /* workarounds */
 /* reset extra padding in Firefox, see h5bp.com/l */
 input.ui-button::-moz-focus-inner,
@@ -809,7 +691,6 @@ button.ui-button::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
-
 /*!
  * jQuery UI Datepicker 1.10.4
  * http://jqueryui.com
@@ -833,12 +714,10 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 10px #cccccc;
   box-shadow: 0 0 10px #cccccc;
 }
-
 .ui-datepicker .ui-datepicker-header {
   position: relative;
   padding: .2em 0;
 }
-
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
   position: absolute;
@@ -846,28 +725,22 @@ button.ui-button::-moz-focus-inner {
   width: 1.8em;
   height: 1.8em;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover,
 .ui-datepicker .ui-datepicker-next-hover {
   top: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev {
   left: 2px;
 }
-
 .ui-datepicker .ui-datepicker-next {
   right: 2px;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover {
   left: 1px;
 }
-
 .ui-datepicker .ui-datepicker-next-hover {
   right: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev span,
 .ui-datepicker .ui-datepicker-next span {
   display: block;
@@ -877,47 +750,39 @@ button.ui-button::-moz-focus-inner {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-datepicker .ui-datepicker-title {
   margin: 0 2.3em;
   line-height: 1.8em;
   text-align: center;
 }
-
 .ui-datepicker .ui-datepicker-title select {
   font-size: 1em;
   margin: 1px 0;
 }
-
 .ui-datepicker select.ui-datepicker-month,
 .ui-datepicker select.ui-datepicker-year {
   width: 49%;
 }
-
 .ui-datepicker table {
   width: 100%;
   font-size: .9em;
   border-collapse: collapse;
   margin: 0 0 .4em;
 }
-
 .ui-datepicker th {
   padding: .7em .3em;
   text-align: center;
   font-weight: bold;
   border: 0;
 }
-
 .ui-datepicker td {
   border: 0;
   padding: 1px;
   text-align: center;
 }
-
 .ui-datepicker td.ui-datepicker-current-day {
   background: #edf7a4;
 }
-
 .ui-datepicker td span,
 .ui-datepicker td a {
   display: block;
@@ -925,7 +790,6 @@ button.ui-button::-moz-focus-inner {
   text-decoration: none;
   color: #006b80;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane {
   background-image: none;
   margin: .7em 0 0 0;
@@ -934,7 +798,6 @@ button.ui-button::-moz-focus-inner {
   border-right: 0;
   border-bottom: 0;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button {
   float: right;
   margin: .5em .2em .4em;
@@ -943,96 +806,76 @@ button.ui-button::-moz-focus-inner {
   width: auto;
   overflow: visible;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: left;
 }
-
 /* with multiple calendars */
 .ui-datepicker.ui-datepicker-multi {
   width: auto;
 }
-
 .ui-datepicker-multi .ui-datepicker-group {
   float: left;
 }
-
 .ui-datepicker-multi .ui-datepicker-group table {
   width: 95%;
   margin: 0 auto .4em;
 }
-
 .ui-datepicker-multi-2 .ui-datepicker-group {
   width: 50%;
 }
-
 .ui-datepicker-multi-3 .ui-datepicker-group {
   width: 33.3%;
 }
-
 .ui-datepicker-multi-4 .ui-datepicker-group {
   width: 25%;
 }
-
 .ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
   border-left-width: 0;
 }
-
 .ui-datepicker-multi .ui-datepicker-buttonpane {
   clear: left;
 }
-
 .ui-datepicker-row-break {
   clear: both;
   width: 100%;
   font-size: 0;
 }
-
 /* RTL support */
 .ui-datepicker-rtl {
   direction: rtl;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev {
   right: 2px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next {
   left: 2px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev:hover {
   right: 1px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next:hover {
   left: 1px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane {
   clear: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button {
   float: left;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
 .ui-datepicker-rtl .ui-datepicker-group {
   float: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
   border-right-width: 0;
   border-left-width: 1px;
 }
-
 /*!
  * jQuery UI Dialog 1.10.4
  * http://jqueryui.com
@@ -1056,7 +899,6 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 60px #777777;
   box-shadow: 0 0 60px #777777;
 }
-
 .ui-dialog .ui-dialog-titlebar {
   padding: .7em 1em;
   position: relative;
@@ -1065,7 +907,6 @@ button.ui-button::-moz-focus-inner {
   background: #006b80;
   color: white;
 }
-
 .ui-dialog .ui-dialog-title {
   font-size: 1.1em;
   margin: .1em 0;
@@ -1075,7 +916,6 @@ button.ui-button::-moz-focus-inner {
   text-overflow: ellipsis;
   font-weight: bold;
 }
-
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
   right: .3em;
@@ -1093,11 +933,9 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: none;
   box-shadow: none;
 }
-
 .ui-dialog .ui-dialog-titlebar-close:hover {
   background-color: #ff5544;
 }
-
 .ui-dialog .ui-dialog-content {
   position: relative;
   border: 0;
@@ -1105,23 +943,19 @@ button.ui-button::-moz-focus-inner {
   background: none;
   overflow: auto;
 }
-
 .ui-dialog .ui-dialog-buttonpane {
   text-align: left;
   border-width: 1px 0 0 0;
   background-image: none;
   padding: .3em 1em .5em .4em;
 }
-
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: right;
 }
-
 .ui-dialog .ui-dialog-buttonpane button {
   margin: .5em .4em .5em 0;
   cursor: pointer;
 }
-
 .ui-dialog .ui-resizable-se {
   width: 12px;
   height: 12px;
@@ -1129,11 +963,9 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   background-position: 16px 16px;
 }
-
 .ui-draggable .ui-dialog-titlebar {
   cursor: move;
 }
-
 /*!
  * jQuery UI Resizable 1.10.4
  * http://jqueryui.com
@@ -1145,18 +977,15 @@ button.ui-button::-moz-focus-inner {
 .ui-resizable {
   position: relative;
 }
-
 .ui-resizable-handle {
   position: absolute;
   font-size: 0.1px;
   display: block;
 }
-
 .ui-resizable-disabled .ui-resizable-handle,
 .ui-resizable-autohide .ui-resizable-handle {
   display: none;
 }
-
 .ui-resizable-n {
   cursor: n-resize;
   height: 7px;
@@ -1164,7 +993,6 @@ button.ui-button::-moz-focus-inner {
   top: -5px;
   left: 0;
 }
-
 .ui-resizable-s {
   cursor: s-resize;
   height: 7px;
@@ -1172,7 +1000,6 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   left: 0;
 }
-
 .ui-resizable-e {
   cursor: e-resize;
   width: 7px;
@@ -1180,7 +1007,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-w {
   cursor: w-resize;
   width: 7px;
@@ -1188,7 +1014,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-se {
   cursor: se-resize;
   width: 12px;
@@ -1196,7 +1021,6 @@ button.ui-button::-moz-focus-inner {
   right: 1px;
   bottom: 1px;
 }
-
 .ui-resizable-sw {
   cursor: sw-resize;
   width: 9px;
@@ -1204,7 +1028,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   bottom: -5px;
 }
-
 .ui-resizable-nw {
   cursor: nw-resize;
   width: 9px;
@@ -1212,7 +1035,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   top: -5px;
 }
-
 .ui-resizable-ne {
   cursor: ne-resize;
   width: 9px;
@@ -1220,7 +1042,6 @@ button.ui-button::-moz-focus-inner {
   right: -5px;
   top: -5px;
 }
-
 /** Media Queries */
 /**
 * Styles that override the default styling for various common elements
@@ -1232,7 +1053,6 @@ button.ui-button::-moz-focus-inner {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
-
 html,
 body {
   margin: 0;
@@ -1243,48 +1063,39 @@ body {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
 }
-
 body {
   overflow-y: scroll;
 }
-
 a:hover,
 a:active,
 a:focus {
   outline: 0 !important;
   border: none;
 }
-
 ul {
   list-style: none;
 }
-
 ol.horizontal li,
 ul.horizontal li {
   display: inline-block;
 }
-
 label {
   color: #111;
   font-weight: 300;
 }
-
 h1,
 h2 {
   font-weight: 400;
 }
-
 h1 {
   color: #333;
 }
-
 hr {
   outline: 0;
   border-width: 1px;
   border-color: #ccc;
   border-style: solid none none none;
 }
-
 button {
   border: 1px solid #aaa;
   background: #eee;
@@ -1293,7 +1104,6 @@ button {
   box-shadow: 0px 0px 1px #dddddd;
   padding: 2px;
 }
-
 button:hover {
   background: #f9f9f9;
   -webkit-box-shadow: 0px 0px 2px #ffffff;
@@ -1304,22 +1114,18 @@ button:hover {
   -o-transition-duration: 0.5s;
   transition-duration: 0.5s;
 }
-
 select {
   padding: .3em .5em;
   background: white;
   border: 1px solid #999;
 }
-
 textarea {
   border: 1px solid #999;
 }
-
 a {
   color: teal;
   text-decoration: none;
 }
-
 a:hover {
   cursor: pointer;
   color: #004d4d;
@@ -1331,15 +1137,12 @@ a:hover {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
 }
-
 .font-weight-light {
   font-weight: 300;
 }
-
 .font-weight-normal {
   font-weight: 400;
 }
-
 .font-weight-bold {
   font-weight: 600;
 }
@@ -1453,30 +1256,24 @@ table.ess-table tbody tr td input.ng-invalid {
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -1489,7 +1286,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -1681,82 +1479,63 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
@@ -1856,33 +1635,26 @@ table.simple-table tbody tr td {
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
-/** JQuery UI css */
-/** Media Queries */
 /**
 * Styles for text
 */
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -1890,7 +1662,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -1898,7 +1669,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -1906,7 +1676,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -1914,7 +1683,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -2399,102 +2167,79 @@ button.ui-button::-moz-focus-inner {
 .dark-red {
   color: #b90504;
 }
-
 .light-teal {
   color: #4196a7;
 }
-
 .teal {
   color: #006b80;
 }
-
 .green {
   color: #799933;
 }
-
 .navy {
   color: #0e4e5a;
 }
-
 .orange {
   color: #d19525;
 }
-
 .brown {
   color: #583f0f;
 }
-
 .redorange {
   color: #e64727;
 }
-
 .blue {
   color: #104042;
 }
-
 .olive {
   color: #808d0a;
 }
-
 .blue-purple {
   color: #6270bd;
 }
-
 .gray {
   color: #808080;
 }
-
 .white {
   color: #fefefe;
 }
-
 /** Loading sprites */
 .loading-colors {
   background: url('../../img/loading.GIF');
   background-repeat: no-repeat;
 }
-
 /** Fonts */
 .open-sans {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
 }
-
 .font-weight-light {
   font-weight: 300;
 }
-
 .font-weight-normal {
   font-weight: 400;
 }
-
 .font-weight-bold {
   font-weight: 600;
 }
-
 table.ess-table {
   width: 100%;
 }
-
 table.ess-table.center-align thead tr th,
 table.ess-table.center-align tbody tr td {
   text-align: center;
 }
-
 table.ess-table thead {
   background: white;
 }
-
 table.ess-table thead tr {
   color: #333;
   font-size: .9em;
   border-bottom: 1px solid #155C69;
 }
-
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
-
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -2502,75 +2247,60 @@ table.ess-table.no-focus tbody tr:hover {
   -o-transition: 0.5s;
   transition: 0.5s;
 }
-
 table.ess-table tbody tr {
   border-top: 1px solid transparent;
   border-bottom: 1px solid #bbb;
 }
-
 table.ess-table tbody tr td {
   text-align: left;
 }
-
 table.ess-table tbody tr td.invalid,
 table.ess-table tbody tr td input.ng-invalid {
   background: #ffbcbc;
 }
-
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
-
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
-
 .ess-notification h1 {
   font-size: 2.5em;
 }
-
 .ess-notification h1,
 .ess-notification h2,
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
-
 .ess-notification ul {
   padding: 0;
 }
-
 .ess-notification.info {
   background: white;
 }
-
 .ess-notification.info h1,
 .ess-notification.info h2,
 .ess-notification.info h3,
@@ -2579,15 +2309,12 @@ table.simple-table tbody tr td {
 .ess-notification.info span {
   color: #0e4e5a;
 }
-
 .ess-notification.warn {
   background: #d19525;
 }
-
 .ess-notification.error {
   background: #e64727;
 }
-
 /* Credit to http://codepen.io/desandro/pen/igHbG */
 /* change font size to change size */
 .loader {
@@ -2597,7 +2324,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 100px auto;
 }
-
 .sm-loader {
   font-size: 20px;
   position: relative;
@@ -2605,7 +2331,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 40px auto;
 }
-
 .dot {
   width: 1em;
   height: 1em;
@@ -2625,20 +2350,16 @@ table.simple-table tbody tr td {
   -o-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
 }
-
 .dot1,
 .dot2 {
   left: 0;
 }
-
 .dot3 {
   left: 1.5em;
 }
-
 .dot4 {
   left: 3em;
 }
-
 @-webkit-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -2655,7 +2376,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-webkit-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -2665,7 +2385,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-moz-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -2682,7 +2401,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-moz-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -2692,7 +2410,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-o-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -2709,7 +2426,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-o-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -2719,7 +2435,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -2736,7 +2451,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -2746,14 +2460,12 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 .dot1 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
   -o-animation-name: reveal;
   animation-name: reveal;
 }
-
 .dot2,
 .dot3 {
   -webkit-animation-name: slide;
@@ -2761,7 +2473,6 @@ table.simple-table tbody tr td {
   -o-animation-name: slide;
   animation-name: slide;
 }
-
 .dot4 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
@@ -2773,100 +2484,78 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
-
 .vertical-align {
   top: 50%;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
 .horizontal-align {
   left: 50%;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 }
-
 .center-align {
   top: 50%;
   left: 50%;
@@ -2874,12 +2563,10 @@ table.simple-table tbody tr td {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-
 .align-parent {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container {
   position: fixed;
   width: 100vw;
@@ -2890,7 +2577,6 @@ table.simple-table tbody tr td {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container > ng-transclude > *,
 #modal-container > #common-modals > * {
   background: #fafafa;
@@ -2904,7 +2590,6 @@ table.simple-table tbody tr td {
   transform: translate(-50%, -50%);
   z-index: 1004;
 }
-
 #modal-container > ng-transclude > *:not(.custom-fit),
 #modal-container > #common-modals > *:not(.custom-fit) {
   max-height: 80vh;
@@ -2912,7 +2597,6 @@ table.simple-table tbody tr td {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 #modal-container #modal-backdrop {
   position: fixed;
   background: rgba(0, 0, 0, 0.6);
@@ -2920,51 +2604,42 @@ table.simple-table tbody tr td {
   height: 100vh;
   z-index: 1003;
 }
-
 #modal-container .background-modal {
   z-index: 1002;
 }
-
 .modal-max-height {
   max-height: 80vh;
   overflow-y: auto;
 }
-
 .modal-max-width {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 .modal-fit {
   max-height: 80vh;
   overflow-y: auto;
   max-width: 80vw;
   overflow-x: auto;
 }
-
 /** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
   z-index: 9001;
 }
-
 #internal-error-modal h1 {
   margin-top: 0;
   color: #e64727;
 }
-
 #internal-error-modal p.internal-error-text {
   width: 45em;
 }
-
 #internal-error-modal pre.internal-error-details {
   text-align: initial;
   max-height: 45vh;
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
@@ -2974,21 +2649,17 @@ table.simple-table tbody tr td {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -2996,7 +2667,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -3004,7 +2674,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -3012,7 +2681,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -3020,7 +2688,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -3147,7 +2814,6 @@ button.ui-button::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
-
 /*!
  * jQuery UI Datepicker 1.10.4
  * http://jqueryui.com
@@ -3171,12 +2837,10 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 10px #cccccc;
   box-shadow: 0 0 10px #cccccc;
 }
-
 .ui-datepicker .ui-datepicker-header {
   position: relative;
   padding: .2em 0;
 }
-
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
   position: absolute;
@@ -3184,28 +2848,22 @@ button.ui-button::-moz-focus-inner {
   width: 1.8em;
   height: 1.8em;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover,
 .ui-datepicker .ui-datepicker-next-hover {
   top: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev {
   left: 2px;
 }
-
 .ui-datepicker .ui-datepicker-next {
   right: 2px;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover {
   left: 1px;
 }
-
 .ui-datepicker .ui-datepicker-next-hover {
   right: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev span,
 .ui-datepicker .ui-datepicker-next span {
   display: block;
@@ -3215,47 +2873,39 @@ button.ui-button::-moz-focus-inner {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-datepicker .ui-datepicker-title {
   margin: 0 2.3em;
   line-height: 1.8em;
   text-align: center;
 }
-
 .ui-datepicker .ui-datepicker-title select {
   font-size: 1em;
   margin: 1px 0;
 }
-
 .ui-datepicker select.ui-datepicker-month,
 .ui-datepicker select.ui-datepicker-year {
   width: 49%;
 }
-
 .ui-datepicker table {
   width: 100%;
   font-size: .9em;
   border-collapse: collapse;
   margin: 0 0 .4em;
 }
-
 .ui-datepicker th {
   padding: .7em .3em;
   text-align: center;
   font-weight: bold;
   border: 0;
 }
-
 .ui-datepicker td {
   border: 0;
   padding: 1px;
   text-align: center;
 }
-
 .ui-datepicker td.ui-datepicker-current-day {
   background: #edf7a4;
 }
-
 .ui-datepicker td span,
 .ui-datepicker td a {
   display: block;
@@ -3263,7 +2913,6 @@ button.ui-button::-moz-focus-inner {
   text-decoration: none;
   color: #006b80;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane {
   background-image: none;
   margin: .7em 0 0 0;
@@ -3272,7 +2921,6 @@ button.ui-button::-moz-focus-inner {
   border-right: 0;
   border-bottom: 0;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button {
   float: right;
   margin: .5em .2em .4em;
@@ -3281,96 +2929,76 @@ button.ui-button::-moz-focus-inner {
   width: auto;
   overflow: visible;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: left;
 }
-
 /* with multiple calendars */
 .ui-datepicker.ui-datepicker-multi {
   width: auto;
 }
-
 .ui-datepicker-multi .ui-datepicker-group {
   float: left;
 }
-
 .ui-datepicker-multi .ui-datepicker-group table {
   width: 95%;
   margin: 0 auto .4em;
 }
-
 .ui-datepicker-multi-2 .ui-datepicker-group {
   width: 50%;
 }
-
 .ui-datepicker-multi-3 .ui-datepicker-group {
   width: 33.3%;
 }
-
 .ui-datepicker-multi-4 .ui-datepicker-group {
   width: 25%;
 }
-
 .ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
   border-left-width: 0;
 }
-
 .ui-datepicker-multi .ui-datepicker-buttonpane {
   clear: left;
 }
-
 .ui-datepicker-row-break {
   clear: both;
   width: 100%;
   font-size: 0;
 }
-
 /* RTL support */
 .ui-datepicker-rtl {
   direction: rtl;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev {
   right: 2px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next {
   left: 2px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev:hover {
   right: 1px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next:hover {
   left: 1px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane {
   clear: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button {
   float: left;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
 .ui-datepicker-rtl .ui-datepicker-group {
   float: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
   border-right-width: 0;
   border-left-width: 1px;
 }
-
 /*!
  * jQuery UI Dialog 1.10.4
  * http://jqueryui.com
@@ -3394,7 +3022,6 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 60px #777777;
   box-shadow: 0 0 60px #777777;
 }
-
 .ui-dialog .ui-dialog-titlebar {
   padding: .7em 1em;
   position: relative;
@@ -3403,7 +3030,6 @@ button.ui-button::-moz-focus-inner {
   background: #006b80;
   color: white;
 }
-
 .ui-dialog .ui-dialog-title {
   font-size: 1.1em;
   margin: .1em 0;
@@ -3413,7 +3039,6 @@ button.ui-button::-moz-focus-inner {
   text-overflow: ellipsis;
   font-weight: bold;
 }
-
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
   right: .3em;
@@ -3431,11 +3056,9 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: none;
   box-shadow: none;
 }
-
 .ui-dialog .ui-dialog-titlebar-close:hover {
   background-color: #ff5544;
 }
-
 .ui-dialog .ui-dialog-content {
   position: relative;
   border: 0;
@@ -3443,23 +3066,19 @@ button.ui-button::-moz-focus-inner {
   background: none;
   overflow: auto;
 }
-
 .ui-dialog .ui-dialog-buttonpane {
   text-align: left;
   border-width: 1px 0 0 0;
   background-image: none;
   padding: .3em 1em .5em .4em;
 }
-
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: right;
 }
-
 .ui-dialog .ui-dialog-buttonpane button {
   margin: .5em .4em .5em 0;
   cursor: pointer;
 }
-
 .ui-dialog .ui-resizable-se {
   width: 12px;
   height: 12px;
@@ -3467,11 +3086,9 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   background-position: 16px 16px;
 }
-
 .ui-draggable .ui-dialog-titlebar {
   cursor: move;
 }
-
 /*!
  * jQuery UI Resizable 1.10.4
  * http://jqueryui.com
@@ -3483,18 +3100,15 @@ button.ui-button::-moz-focus-inner {
 .ui-resizable {
   position: relative;
 }
-
 .ui-resizable-handle {
   position: absolute;
   font-size: 0.1px;
   display: block;
 }
-
 .ui-resizable-disabled .ui-resizable-handle,
 .ui-resizable-autohide .ui-resizable-handle {
   display: none;
 }
-
 .ui-resizable-n {
   cursor: n-resize;
   height: 7px;
@@ -3502,7 +3116,6 @@ button.ui-button::-moz-focus-inner {
   top: -5px;
   left: 0;
 }
-
 .ui-resizable-s {
   cursor: s-resize;
   height: 7px;
@@ -3510,7 +3123,6 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   left: 0;
 }
-
 .ui-resizable-e {
   cursor: e-resize;
   width: 7px;
@@ -3518,7 +3130,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-w {
   cursor: w-resize;
   width: 7px;
@@ -3526,7 +3137,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-se {
   cursor: se-resize;
   width: 12px;
@@ -3534,7 +3144,6 @@ button.ui-button::-moz-focus-inner {
   right: 1px;
   bottom: 1px;
 }
-
 .ui-resizable-sw {
   cursor: sw-resize;
   width: 9px;
@@ -3542,7 +3151,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   bottom: -5px;
 }
-
 .ui-resizable-nw {
   cursor: nw-resize;
   width: 9px;
@@ -3550,7 +3158,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   top: -5px;
 }
-
 .ui-resizable-ne {
   cursor: ne-resize;
   width: 9px;
@@ -3558,7 +3165,6 @@ button.ui-button::-moz-focus-inner {
   right: -5px;
   top: -5px;
 }
-
 /** Media Queries */
 /**
 * Styles related to inputs
@@ -3566,12 +3172,10 @@ button.ui-button::-moz-focus-inner {
 .inactive-stitches {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 .button-container {
   display: flex;
   justify-content: space-around;
 }
-
 input[type="button"].submit-button {
   padding: 5px 10px;
   background: #799933;
@@ -3580,7 +3184,6 @@ input[type="button"].submit-button {
   border: 2px none #5b7326;
   border-bottom-style: solid;
 }
-
 input[type="button"].submit-button.inactive,
 input[type="button"].submit-button[disabled="disabled"] {
   color: #333;
@@ -3588,16 +3191,13 @@ input[type="button"].submit-button[disabled="disabled"] {
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].submit-button.inactive:hover,
 input[type="button"].submit-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].submit-button:hover {
   background: #81ad1f;
 }
-
 input[type="button"].reject-button {
   padding: 5px 10px;
   background: #e64727;
@@ -3606,7 +3206,6 @@ input[type="button"].reject-button {
   border: 2px none #c33417;
   border-bottom-style: solid;
 }
-
 input[type="button"].reject-button.inactive,
 input[type="button"].reject-button[disabled="disabled"] {
   color: #333;
@@ -3614,16 +3213,13 @@ input[type="button"].reject-button[disabled="disabled"] {
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].reject-button.inactive:hover,
 input[type="button"].reject-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].reject-button:hover {
   background: #fe370f;
 }
-
 input[type="button"].neutral-button {
   padding: 5px 10px;
   background: #808080;
@@ -3632,7 +3228,6 @@ input[type="button"].neutral-button {
   border: 2px none #676767;
   border-bottom-style: solid;
 }
-
 input[type="button"].neutral-button.inactive,
 input[type="button"].neutral-button[disabled="disabled"] {
   color: #333;
@@ -3640,16 +3235,13 @@ input[type="button"].neutral-button[disabled="disabled"] {
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].neutral-button.inactive:hover,
 input[type="button"].neutral-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].neutral-button:hover {
   background: #996767;
 }
-
 input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #006b80;
@@ -3658,7 +3250,6 @@ input[type="button"].time-neutral-button {
   border: 2px none #00404d;
   border-bottom-style: solid;
 }
-
 input[type="button"].time-neutral-button.inactive,
 input[type="button"].time-neutral-button[disabled="disabled"] {
   color: #333;
@@ -3666,16 +3257,13 @@ input[type="button"].time-neutral-button[disabled="disabled"] {
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].time-neutral-button.inactive:hover,
 input[type="button"].time-neutral-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-
 input[type="button"].time-neutral-button:hover {
   background: #006b80;
 }
-
 input[type="text"],
 input[type="password"],
 input[type="number"] {
@@ -3684,26 +3272,22 @@ input[type="number"] {
   background: #fafafa;
   padding: .3em;
 }
-
 input[type="text"].error,
 input[type="password"].error,
 input[type="number"].error {
   border-color: #b90504;
 }
-
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus {
   border-color: #999;
 }
-
 /** Remove the number spinners in chrome */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type="number"] {
   -moz-appearance: textfield;
 }
@@ -3733,7 +3317,6 @@ input[type="number"] {
   overflow: visible;
   /* removes extra width in IE */
 }
-
 .ui-button,
 .ui-button:link,
 .ui-button:visited,
@@ -3741,25 +3324,20 @@ input[type="number"] {
 .ui-button:active {
   text-decoration: none;
 }
-
 /* to make room for the icon, a width needs to be set here */
 .ui-button-icon-only {
   width: 2.2em;
 }
-
 /* button elements seem to need a little more width */
 button.ui-button-icon-only {
   width: 2.4em;
 }
-
 .ui-button-icons-only {
   width: 3.4em;
 }
-
 button.ui-button-icons-only {
   width: 3.7em;
 }
-
 /* button text element */
 .ui-button .ui-button-text {
   display: block;
@@ -3767,37 +3345,30 @@ button.ui-button-icons-only {
   color: #444;
   font-weight: normal;
 }
-
 .ui-button-text-only .ui-button-text {
   padding: .4em 1em;
 }
-
 .ui-button-icon-only .ui-button-text,
 .ui-button-icons-only .ui-button-text {
   padding: .4em;
   text-indent: -9999999px;
 }
-
 .ui-button-text-icon-primary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 1em .4em 2.1em;
 }
-
 .ui-button-text-icon-secondary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 2.1em .4em 1em;
 }
-
 .ui-button-text-icons .ui-button-text {
   padding-left: 2.1em;
   padding-right: 2.1em;
 }
-
 /* no icon support for input elements, provide padding by default */
 input.ui-button {
   padding: .4em 1em;
 }
-
 /* button icon element(s) */
 .ui-button-icon-only .ui-icon,
 .ui-button-text-icon-primary .ui-icon,
@@ -3808,45 +3379,37 @@ input.ui-button {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-button-icon-only .ui-icon {
   left: 50%;
   margin-left: -8px;
 }
-
 .ui-button-text-icon-primary .ui-button-icon-primary,
 .ui-button-text-icons .ui-button-icon-primary,
 .ui-button-icons-only .ui-button-icon-primary {
   left: .5em;
 }
-
 .ui-button-text-icon-secondary .ui-button-icon-secondary,
 .ui-button-text-icons .ui-button-icon-secondary,
 .ui-button-icons-only .ui-button-icon-secondary {
   right: .5em;
 }
-
 /* button sets */
 .ui-buttonset {
   margin-right: 7px;
 }
-
 .ui-buttonset .ui-button {
   margin-left: 0;
   margin-right: -0.3em;
   font-weight: normal;
   border: 1px solid #999;
 }
-
 .ui-buttonset .ui-button.ui-state-hover .ui-button-text,
 .ui-buttonset .ui-button.ui-state-active .ui-button-text {
   color: teal;
 }
-
 .ui-buttonset .ui-button.ui-state-active {
   background: #eee;
 }
-
 /* workarounds */
 /* reset extra padding in Firefox, see h5bp.com/l */
 input.ui-button::-moz-focus-inner,
@@ -3878,12 +3441,10 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 10px #cccccc;
   box-shadow: 0 0 10px #cccccc;
 }
-
 .ui-datepicker .ui-datepicker-header {
   position: relative;
   padding: .2em 0;
 }
-
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
   position: absolute;
@@ -3891,28 +3452,22 @@ button.ui-button::-moz-focus-inner {
   width: 1.8em;
   height: 1.8em;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover,
 .ui-datepicker .ui-datepicker-next-hover {
   top: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev {
   left: 2px;
 }
-
 .ui-datepicker .ui-datepicker-next {
   right: 2px;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover {
   left: 1px;
 }
-
 .ui-datepicker .ui-datepicker-next-hover {
   right: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev span,
 .ui-datepicker .ui-datepicker-next span {
   display: block;
@@ -3922,47 +3477,39 @@ button.ui-button::-moz-focus-inner {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-datepicker .ui-datepicker-title {
   margin: 0 2.3em;
   line-height: 1.8em;
   text-align: center;
 }
-
 .ui-datepicker .ui-datepicker-title select {
   font-size: 1em;
   margin: 1px 0;
 }
-
 .ui-datepicker select.ui-datepicker-month,
 .ui-datepicker select.ui-datepicker-year {
   width: 49%;
 }
-
 .ui-datepicker table {
   width: 100%;
   font-size: .9em;
   border-collapse: collapse;
   margin: 0 0 .4em;
 }
-
 .ui-datepicker th {
   padding: .7em .3em;
   text-align: center;
   font-weight: bold;
   border: 0;
 }
-
 .ui-datepicker td {
   border: 0;
   padding: 1px;
   text-align: center;
 }
-
 .ui-datepicker td.ui-datepicker-current-day {
   background: #edf7a4;
 }
-
 .ui-datepicker td span,
 .ui-datepicker td a {
   display: block;
@@ -3970,7 +3517,6 @@ button.ui-button::-moz-focus-inner {
   text-decoration: none;
   color: #006b80;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane {
   background-image: none;
   margin: .7em 0 0 0;
@@ -3979,7 +3525,6 @@ button.ui-button::-moz-focus-inner {
   border-right: 0;
   border-bottom: 0;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button {
   float: right;
   margin: .5em .2em .4em;
@@ -3988,90 +3533,71 @@ button.ui-button::-moz-focus-inner {
   width: auto;
   overflow: visible;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: left;
 }
-
 /* with multiple calendars */
 .ui-datepicker.ui-datepicker-multi {
   width: auto;
 }
-
 .ui-datepicker-multi .ui-datepicker-group {
   float: left;
 }
-
 .ui-datepicker-multi .ui-datepicker-group table {
   width: 95%;
   margin: 0 auto .4em;
 }
-
 .ui-datepicker-multi-2 .ui-datepicker-group {
   width: 50%;
 }
-
 .ui-datepicker-multi-3 .ui-datepicker-group {
   width: 33.3%;
 }
-
 .ui-datepicker-multi-4 .ui-datepicker-group {
   width: 25%;
 }
-
 .ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
   border-left-width: 0;
 }
-
 .ui-datepicker-multi .ui-datepicker-buttonpane {
   clear: left;
 }
-
 .ui-datepicker-row-break {
   clear: both;
   width: 100%;
   font-size: 0;
 }
-
 /* RTL support */
 .ui-datepicker-rtl {
   direction: rtl;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev {
   right: 2px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next {
   left: 2px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev:hover {
   right: 1px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next:hover {
   left: 1px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane {
   clear: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button {
   float: left;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
 .ui-datepicker-rtl .ui-datepicker-group {
   float: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
   border-right-width: 0;
@@ -4467,75 +3993,57 @@ button.ui-button::-moz-focus-inner {
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
@@ -4718,7 +4226,6 @@ button.ui-button::-moz-focus-inner {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -4731,7 +4238,8 @@ button.ui-button::-moz-focus-inner {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -4948,75 +4456,57 @@ button.ui-button::-moz-focus-inner {
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
@@ -5123,24 +4613,19 @@ table.ess-table tbody tr td input.ng-invalid {
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
@@ -5213,102 +4698,79 @@ table.simple-table tbody tr td {
 .dark-red {
   color: #b90504;
 }
-
 .light-teal {
   color: #4196a7;
 }
-
 .teal {
   color: #006b80;
 }
-
 .green {
   color: #799933;
 }
-
 .navy {
   color: #0e4e5a;
 }
-
 .orange {
   color: #d19525;
 }
-
 .brown {
   color: #583f0f;
 }
-
 .redorange {
   color: #e64727;
 }
-
 .blue {
   color: #104042;
 }
-
 .olive {
   color: #808d0a;
 }
-
 .blue-purple {
   color: #6270bd;
 }
-
 .gray {
   color: #808080;
 }
-
 .white {
   color: #fefefe;
 }
-
 /** Loading sprites */
 .loading-colors {
   background: url('../../img/loading.GIF');
   background-repeat: no-repeat;
 }
-
 /** Fonts */
 .open-sans {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
 }
-
 .font-weight-light {
   font-weight: 300;
 }
-
 .font-weight-normal {
   font-weight: 400;
 }
-
 .font-weight-bold {
   font-weight: 600;
 }
-
 table.ess-table {
   width: 100%;
 }
-
 table.ess-table.center-align thead tr th,
 table.ess-table.center-align tbody tr td {
   text-align: center;
 }
-
 table.ess-table thead {
   background: white;
 }
-
 table.ess-table thead tr {
   color: #333;
   font-size: .9em;
   border-bottom: 1px solid #155C69;
 }
-
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
-
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -5316,75 +4778,60 @@ table.ess-table.no-focus tbody tr:hover {
   -o-transition: 0.5s;
   transition: 0.5s;
 }
-
 table.ess-table tbody tr {
   border-top: 1px solid transparent;
   border-bottom: 1px solid #bbb;
 }
-
 table.ess-table tbody tr td {
   text-align: left;
 }
-
 table.ess-table tbody tr td.invalid,
 table.ess-table tbody tr td input.ng-invalid {
   background: #ffbcbc;
 }
-
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
-
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
-
 .ess-notification h1 {
   font-size: 2.5em;
 }
-
 .ess-notification h1,
 .ess-notification h2,
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
-
 .ess-notification ul {
   padding: 0;
 }
-
 .ess-notification.info {
   background: white;
 }
-
 .ess-notification.info h1,
 .ess-notification.info h2,
 .ess-notification.info h3,
@@ -5393,15 +4840,12 @@ table.simple-table tbody tr td {
 .ess-notification.info span {
   color: #0e4e5a;
 }
-
 .ess-notification.warn {
   background: #d19525;
 }
-
 .ess-notification.error {
   background: #e64727;
 }
-
 /* Credit to http://codepen.io/desandro/pen/igHbG */
 /* change font size to change size */
 .loader {
@@ -5411,7 +4855,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 100px auto;
 }
-
 .sm-loader {
   font-size: 20px;
   position: relative;
@@ -5419,7 +4862,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 40px auto;
 }
-
 .dot {
   width: 1em;
   height: 1em;
@@ -5439,20 +4881,16 @@ table.simple-table tbody tr td {
   -o-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
 }
-
 .dot1,
 .dot2 {
   left: 0;
 }
-
 .dot3 {
   left: 1.5em;
 }
-
 .dot4 {
   left: 3em;
 }
-
 @-webkit-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -5469,7 +4907,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-webkit-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -5479,7 +4916,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-moz-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -5496,7 +4932,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-moz-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -5506,7 +4941,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-o-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -5523,7 +4957,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-o-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -5533,7 +4966,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -5550,7 +4982,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -5560,14 +4991,12 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 .dot1 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
   -o-animation-name: reveal;
   animation-name: reveal;
 }
-
 .dot2,
 .dot3 {
   -webkit-animation-name: slide;
@@ -5575,7 +5004,6 @@ table.simple-table tbody tr td {
   -o-animation-name: slide;
   animation-name: slide;
 }
-
 .dot4 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
@@ -5587,100 +5015,78 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
-
 .vertical-align {
   top: 50%;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
 .horizontal-align {
   left: 50%;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 }
-
 .center-align {
   top: 50%;
   left: 50%;
@@ -5688,12 +5094,10 @@ table.simple-table tbody tr td {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-
 .align-parent {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container {
   position: fixed;
   width: 100vw;
@@ -5704,7 +5108,6 @@ table.simple-table tbody tr td {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container > ng-transclude > *,
 #modal-container > #common-modals > * {
   background: #fafafa;
@@ -5718,7 +5121,6 @@ table.simple-table tbody tr td {
   transform: translate(-50%, -50%);
   z-index: 1004;
 }
-
 #modal-container > ng-transclude > *:not(.custom-fit),
 #modal-container > #common-modals > *:not(.custom-fit) {
   max-height: 80vh;
@@ -5726,7 +5128,6 @@ table.simple-table tbody tr td {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 #modal-container #modal-backdrop {
   position: fixed;
   background: rgba(0, 0, 0, 0.6);
@@ -5734,107 +5135,45 @@ table.simple-table tbody tr td {
   height: 100vh;
   z-index: 1003;
 }
-
 #modal-container .background-modal {
   z-index: 1002;
 }
-
 .modal-max-height {
   max-height: 80vh;
   overflow-y: auto;
 }
-
 .modal-max-width {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 .modal-fit {
   max-height: 80vh;
   overflow-y: auto;
   max-width: 80vw;
   overflow-x: auto;
 }
-
 /** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
   z-index: 9001;
 }
-
 #internal-error-modal h1 {
   margin-top: 0;
   color: #e64727;
 }
-
 #internal-error-modal p.internal-error-text {
   width: 45em;
 }
-
 #internal-error-modal pre.internal-error-details {
   text-align: initial;
   max-height: 45vh;
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
-/**
-* Styles for text
-*/
-.text-align-left {
-  text-align: left;
-}
-
-.text-align-center {
-  text-align: center !important;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.bold-text {
-  padding: 10px;
-  margin: 0;
-  font-weight: 600;
-}
-
-.info-text {
-  background: #006b80;
-  color: white;
-  padding: 10px;
-  margin: 0;
-  font-weight: 600;
-}
-
-.warning-text {
-  background: #d19525;
-  color: white;
-  padding: 10px;
-  margin: 0;
-  font-weight: 600;
-}
-
-.error-text {
-  background: #b90504;
-  color: white;
-  padding: 10px;
-  margin: 0;
-  font-weight: 600;
-}
-
-.success-text {
-  background: #808d0a;
-  color: white;
-  padding: 10px;
-  margin: 0;
-  font-weight: 600;
-}
-
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -5861,7 +5200,6 @@ table.simple-table tbody tr td {
   overflow: visible;
   /* removes extra width in IE */
 }
-
 .ui-button,
 .ui-button:link,
 .ui-button:visited,
@@ -5869,25 +5207,20 @@ table.simple-table tbody tr td {
 .ui-button:active {
   text-decoration: none;
 }
-
 /* to make room for the icon, a width needs to be set here */
 .ui-button-icon-only {
   width: 2.2em;
 }
-
 /* button elements seem to need a little more width */
 button.ui-button-icon-only {
   width: 2.4em;
 }
-
 .ui-button-icons-only {
   width: 3.4em;
 }
-
 button.ui-button-icons-only {
   width: 3.7em;
 }
-
 /* button text element */
 .ui-button .ui-button-text {
   display: block;
@@ -5895,37 +5228,30 @@ button.ui-button-icons-only {
   color: #444;
   font-weight: normal;
 }
-
 .ui-button-text-only .ui-button-text {
   padding: .4em 1em;
 }
-
 .ui-button-icon-only .ui-button-text,
 .ui-button-icons-only .ui-button-text {
   padding: .4em;
   text-indent: -9999999px;
 }
-
 .ui-button-text-icon-primary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 1em .4em 2.1em;
 }
-
 .ui-button-text-icon-secondary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 2.1em .4em 1em;
 }
-
 .ui-button-text-icons .ui-button-text {
   padding-left: 2.1em;
   padding-right: 2.1em;
 }
-
 /* no icon support for input elements, provide padding by default */
 input.ui-button {
   padding: .4em 1em;
 }
-
 /* button icon element(s) */
 .ui-button-icon-only .ui-icon,
 .ui-button-text-icon-primary .ui-icon,
@@ -5936,45 +5262,37 @@ input.ui-button {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-button-icon-only .ui-icon {
   left: 50%;
   margin-left: -8px;
 }
-
 .ui-button-text-icon-primary .ui-button-icon-primary,
 .ui-button-text-icons .ui-button-icon-primary,
 .ui-button-icons-only .ui-button-icon-primary {
   left: .5em;
 }
-
 .ui-button-text-icon-secondary .ui-button-icon-secondary,
 .ui-button-text-icons .ui-button-icon-secondary,
 .ui-button-icons-only .ui-button-icon-secondary {
   right: .5em;
 }
-
 /* button sets */
 .ui-buttonset {
   margin-right: 7px;
 }
-
 .ui-buttonset .ui-button {
   margin-left: 0;
   margin-right: -0.3em;
   font-weight: normal;
   border: 1px solid #999;
 }
-
 .ui-buttonset .ui-button.ui-state-hover .ui-button-text,
 .ui-buttonset .ui-button.ui-state-active .ui-button-text {
   color: teal;
 }
-
 .ui-buttonset .ui-button.ui-state-active {
   background: #eee;
 }
-
 /* workarounds */
 /* reset extra padding in Firefox, see h5bp.com/l */
 input.ui-button::-moz-focus-inner,
@@ -5982,7 +5300,6 @@ button.ui-button::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
-
 /*!
  * jQuery UI Datepicker 1.10.4
  * http://jqueryui.com
@@ -6006,12 +5323,10 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 10px #cccccc;
   box-shadow: 0 0 10px #cccccc;
 }
-
 .ui-datepicker .ui-datepicker-header {
   position: relative;
   padding: .2em 0;
 }
-
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
   position: absolute;
@@ -6019,28 +5334,22 @@ button.ui-button::-moz-focus-inner {
   width: 1.8em;
   height: 1.8em;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover,
 .ui-datepicker .ui-datepicker-next-hover {
   top: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev {
   left: 2px;
 }
-
 .ui-datepicker .ui-datepicker-next {
   right: 2px;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover {
   left: 1px;
 }
-
 .ui-datepicker .ui-datepicker-next-hover {
   right: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev span,
 .ui-datepicker .ui-datepicker-next span {
   display: block;
@@ -6050,47 +5359,39 @@ button.ui-button::-moz-focus-inner {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-datepicker .ui-datepicker-title {
   margin: 0 2.3em;
   line-height: 1.8em;
   text-align: center;
 }
-
 .ui-datepicker .ui-datepicker-title select {
   font-size: 1em;
   margin: 1px 0;
 }
-
 .ui-datepicker select.ui-datepicker-month,
 .ui-datepicker select.ui-datepicker-year {
   width: 49%;
 }
-
 .ui-datepicker table {
   width: 100%;
   font-size: .9em;
   border-collapse: collapse;
   margin: 0 0 .4em;
 }
-
 .ui-datepicker th {
   padding: .7em .3em;
   text-align: center;
   font-weight: bold;
   border: 0;
 }
-
 .ui-datepicker td {
   border: 0;
   padding: 1px;
   text-align: center;
 }
-
 .ui-datepicker td.ui-datepicker-current-day {
   background: #edf7a4;
 }
-
 .ui-datepicker td span,
 .ui-datepicker td a {
   display: block;
@@ -6098,7 +5399,6 @@ button.ui-button::-moz-focus-inner {
   text-decoration: none;
   color: #006b80;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane {
   background-image: none;
   margin: .7em 0 0 0;
@@ -6107,7 +5407,6 @@ button.ui-button::-moz-focus-inner {
   border-right: 0;
   border-bottom: 0;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button {
   float: right;
   margin: .5em .2em .4em;
@@ -6116,96 +5415,76 @@ button.ui-button::-moz-focus-inner {
   width: auto;
   overflow: visible;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: left;
 }
-
 /* with multiple calendars */
 .ui-datepicker.ui-datepicker-multi {
   width: auto;
 }
-
 .ui-datepicker-multi .ui-datepicker-group {
   float: left;
 }
-
 .ui-datepicker-multi .ui-datepicker-group table {
   width: 95%;
   margin: 0 auto .4em;
 }
-
 .ui-datepicker-multi-2 .ui-datepicker-group {
   width: 50%;
 }
-
 .ui-datepicker-multi-3 .ui-datepicker-group {
   width: 33.3%;
 }
-
 .ui-datepicker-multi-4 .ui-datepicker-group {
   width: 25%;
 }
-
 .ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
   border-left-width: 0;
 }
-
 .ui-datepicker-multi .ui-datepicker-buttonpane {
   clear: left;
 }
-
 .ui-datepicker-row-break {
   clear: both;
   width: 100%;
   font-size: 0;
 }
-
 /* RTL support */
 .ui-datepicker-rtl {
   direction: rtl;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev {
   right: 2px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next {
   left: 2px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev:hover {
   right: 1px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next:hover {
   left: 1px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane {
   clear: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button {
   float: left;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
 .ui-datepicker-rtl .ui-datepicker-group {
   float: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
   border-right-width: 0;
   border-left-width: 1px;
 }
-
 /*!
  * jQuery UI Dialog 1.10.4
  * http://jqueryui.com
@@ -6229,7 +5508,6 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 60px #777777;
   box-shadow: 0 0 60px #777777;
 }
-
 .ui-dialog .ui-dialog-titlebar {
   padding: .7em 1em;
   position: relative;
@@ -6238,7 +5516,6 @@ button.ui-button::-moz-focus-inner {
   background: #006b80;
   color: white;
 }
-
 .ui-dialog .ui-dialog-title {
   font-size: 1.1em;
   margin: .1em 0;
@@ -6248,7 +5525,6 @@ button.ui-button::-moz-focus-inner {
   text-overflow: ellipsis;
   font-weight: bold;
 }
-
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
   right: .3em;
@@ -6266,11 +5542,9 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: none;
   box-shadow: none;
 }
-
 .ui-dialog .ui-dialog-titlebar-close:hover {
   background-color: #ff5544;
 }
-
 .ui-dialog .ui-dialog-content {
   position: relative;
   border: 0;
@@ -6278,23 +5552,19 @@ button.ui-button::-moz-focus-inner {
   background: none;
   overflow: auto;
 }
-
 .ui-dialog .ui-dialog-buttonpane {
   text-align: left;
   border-width: 1px 0 0 0;
   background-image: none;
   padding: .3em 1em .5em .4em;
 }
-
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: right;
 }
-
 .ui-dialog .ui-dialog-buttonpane button {
   margin: .5em .4em .5em 0;
   cursor: pointer;
 }
-
 .ui-dialog .ui-resizable-se {
   width: 12px;
   height: 12px;
@@ -6302,11 +5572,9 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   background-position: 16px 16px;
 }
-
 .ui-draggable .ui-dialog-titlebar {
   cursor: move;
 }
-
 /*!
  * jQuery UI Resizable 1.10.4
  * http://jqueryui.com
@@ -6318,18 +5586,15 @@ button.ui-button::-moz-focus-inner {
 .ui-resizable {
   position: relative;
 }
-
 .ui-resizable-handle {
   position: absolute;
   font-size: 0.1px;
   display: block;
 }
-
 .ui-resizable-disabled .ui-resizable-handle,
 .ui-resizable-autohide .ui-resizable-handle {
   display: none;
 }
-
 .ui-resizable-n {
   cursor: n-resize;
   height: 7px;
@@ -6337,7 +5602,6 @@ button.ui-button::-moz-focus-inner {
   top: -5px;
   left: 0;
 }
-
 .ui-resizable-s {
   cursor: s-resize;
   height: 7px;
@@ -6345,7 +5609,6 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   left: 0;
 }
-
 .ui-resizable-e {
   cursor: e-resize;
   width: 7px;
@@ -6353,7 +5616,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-w {
   cursor: w-resize;
   width: 7px;
@@ -6361,7 +5623,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-se {
   cursor: se-resize;
   width: 12px;
@@ -6369,7 +5630,6 @@ button.ui-button::-moz-focus-inner {
   right: 1px;
   bottom: 1px;
 }
-
 .ui-resizable-sw {
   cursor: sw-resize;
   width: 9px;
@@ -6377,7 +5637,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   bottom: -5px;
 }
-
 .ui-resizable-nw {
   cursor: nw-resize;
   width: 9px;
@@ -6385,7 +5644,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   top: -5px;
 }
-
 .ui-resizable-ne {
   cursor: ne-resize;
   width: 9px;
@@ -6393,7 +5651,6 @@ button.ui-button::-moz-focus-inner {
   right: -5px;
   top: -5px;
 }
-
 /** Media Queries */
 /**
 * Styles for text
@@ -6401,21 +5658,17 @@ button.ui-button::-moz-focus-inner {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -6423,7 +5676,6 @@ button.ui-button::-moz-focus-inner {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -6431,7 +5683,6 @@ button.ui-button::-moz-focus-inner {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -6439,7 +5690,6 @@ button.ui-button::-moz-focus-inner {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -6604,30 +5854,24 @@ table.ess-table tbody tr td input.ng-invalid {
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -6640,7 +5884,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -6832,82 +6077,63 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
@@ -7007,7 +6233,6 @@ table.simple-table tbody tr td {
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
@@ -7017,21 +6242,17 @@ table.simple-table tbody tr td {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -7039,7 +6260,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -7047,7 +6267,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -7055,7 +6274,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -7842,30 +7060,24 @@ table.ess-table tbody tr td input.ng-invalid {
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -7878,7 +7090,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -8070,82 +7283,63 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
@@ -8245,7 +7439,6 @@ table.simple-table tbody tr td {
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
@@ -8255,21 +7448,17 @@ table.simple-table tbody tr td {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -8277,7 +7466,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -8285,7 +7473,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -8293,7 +7480,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -8827,14 +8013,12 @@ button.ui-button::-moz-focus-inner {
 .hero-404 span {
   color: #ffffff;
 }
-
 #restricted-warning {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   width: 100%;
   height: 100%;
 }
-
 #restricted-warning .ess-notification {
   position: absolute;
   top: 50%;
@@ -9238,14 +8422,12 @@ button.ui-button::-moz-focus-inner {
 .hero-404 span {
   color: #ffffff;
 }
-
 #restricted-warning {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
   width: 100%;
   height: 100%;
 }
-
 #restricted-warning .ess-notification {
   position: absolute;
   top: 50%;
@@ -9696,30 +8878,24 @@ table.ess-table tbody tr td input.ng-invalid {
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -9732,7 +8908,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -9924,82 +9101,63 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
@@ -10099,7 +9257,6 @@ table.simple-table tbody tr td {
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
@@ -10109,21 +9266,17 @@ table.simple-table tbody tr td {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -10131,7 +9284,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -10139,7 +9291,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -10147,7 +9298,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -10803,7 +9953,6 @@ label.custom-select {
   -moz-box-shadow: 0 0 10px 100px #ffbcbc inset;
   box-shadow: 0 0 10px 100px #ffbcbc inset;
 }
-
 .custom-select select::-ms-expand {
   display: none;
 }
@@ -10883,102 +10032,79 @@ ul.pagination li a {
 .dark-red {
   color: #b90504;
 }
-
 .light-teal {
   color: #4196a7;
 }
-
 .teal {
   color: #006b80;
 }
-
 .green {
   color: #799933;
 }
-
 .navy {
   color: #0e4e5a;
 }
-
 .orange {
   color: #d19525;
 }
-
 .brown {
   color: #583f0f;
 }
-
 .redorange {
   color: #e64727;
 }
-
 .blue {
   color: #104042;
 }
-
 .olive {
   color: #808d0a;
 }
-
 .blue-purple {
   color: #6270bd;
 }
-
 .gray {
   color: #808080;
 }
-
 .white {
   color: #fefefe;
 }
-
 /** Loading sprites */
 .loading-colors {
   background: url('../../img/loading.GIF');
   background-repeat: no-repeat;
 }
-
 /** Fonts */
 .open-sans {
   font-family: 'Open Sans', sans-serif;
   font-weight: 400;
 }
-
 .font-weight-light {
   font-weight: 300;
 }
-
 .font-weight-normal {
   font-weight: 400;
 }
-
 .font-weight-bold {
   font-weight: 600;
 }
-
 table.ess-table {
   width: 100%;
 }
-
 table.ess-table.center-align thead tr th,
 table.ess-table.center-align tbody tr td {
   text-align: center;
 }
-
 table.ess-table thead {
   background: white;
 }
-
 table.ess-table thead tr {
   color: #333;
   font-size: .9em;
   border-bottom: 1px solid #155C69;
 }
-
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
-
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -10986,75 +10112,60 @@ table.ess-table.no-focus tbody tr:hover {
   -o-transition: 0.5s;
   transition: 0.5s;
 }
-
 table.ess-table tbody tr {
   border-top: 1px solid transparent;
   border-bottom: 1px solid #bbb;
 }
-
 table.ess-table tbody tr td {
   text-align: left;
 }
-
 table.ess-table tbody tr td.invalid,
 table.ess-table tbody tr td input.ng-invalid {
   background: #ffbcbc;
 }
-
 table.ess-table tbody tr.active {
   background: #DAE5EE;
 }
-
 table.simple-table {
   width: 100%;
   text-align: left;
 }
-
 table.simple-table thead tr {
   border-bottom: 1px solid #ddd;
 }
-
 table.simple-table thead tr th {
   padding: 5px;
 }
-
 table.simple-table tbody tr:nth-child(odd) {
   background: #fafafa;
 }
-
 table.simple-table tbody tr td {
   padding: 5px;
 }
-
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
-
 .ess-notification h1 {
   font-size: 2.5em;
 }
-
 .ess-notification h1,
 .ess-notification h2,
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
-
 .ess-notification ul {
   padding: 0;
 }
-
 .ess-notification.info {
   background: white;
 }
-
 .ess-notification.info h1,
 .ess-notification.info h2,
 .ess-notification.info h3,
@@ -11063,15 +10174,12 @@ table.simple-table tbody tr td {
 .ess-notification.info span {
   color: #0e4e5a;
 }
-
 .ess-notification.warn {
   background: #d19525;
 }
-
 .ess-notification.error {
   background: #e64727;
 }
-
 /* Credit to http://codepen.io/desandro/pen/igHbG */
 /* change font size to change size */
 .loader {
@@ -11081,7 +10189,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 100px auto;
 }
-
 .sm-loader {
   font-size: 20px;
   position: relative;
@@ -11089,7 +10196,6 @@ table.simple-table tbody tr td {
   height: 1em;
   margin: 40px auto;
 }
-
 .dot {
   width: 1em;
   height: 1em;
@@ -11109,20 +10215,16 @@ table.simple-table tbody tr td {
   -o-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
 }
-
 .dot1,
 .dot2 {
   left: 0;
 }
-
 .dot3 {
   left: 1.5em;
 }
-
 .dot4 {
   left: 3em;
 }
-
 @-webkit-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -11139,7 +10241,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-webkit-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -11149,7 +10250,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-moz-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -11166,7 +10266,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-moz-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -11176,7 +10275,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @-o-keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -11193,7 +10291,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @-o-keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -11203,7 +10300,6 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 @keyframes reveal {
   from {
     -webkit-transform: scale(0.001);
@@ -11220,7 +10316,6 @@ table.simple-table tbody tr td {
     transform: scale(1);
   }
 }
-
 @keyframes slide {
   to {
     -webkit-transform: translateX(1.5em);
@@ -11230,14 +10325,12 @@ table.simple-table tbody tr td {
     transform: translateX(1.5em);
   }
 }
-
 .dot1 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
   -o-animation-name: reveal;
   animation-name: reveal;
 }
-
 .dot2,
 .dot3 {
   -webkit-animation-name: slide;
@@ -11245,7 +10338,6 @@ table.simple-table tbody tr td {
   -o-animation-name: slide;
   animation-name: slide;
 }
-
 .dot4 {
   -webkit-animation-name: reveal;
   -moz-animation-name: reveal;
@@ -11257,100 +10349,78 @@ table.simple-table tbody tr td {
   animation-direction: reverse;
   /* thx @HugoGiraudel */
 }
-
 /**
 * Utility classes used for positioning, sizing, and space related properties
 */
 .inline-block {
   display: inline-block;
 }
-
 .float-right {
   float: right;
 }
-
 .float-left {
   float: left;
 }
-
 .margin-10 {
   margin: 10px;
 }
-
 .margin-10-0 {
   margin: 10px 0;
 }
-
 .margin-left-10 {
   margin-left: 10px;
 }
-
 .margin-left-20 {
   margin-left: 20px;
 }
-
 .margin-top-20 {
   margin-top: 20px !important;
 }
-
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
-
 .padding-10 {
   padding: 10px;
 }
-
 .padding-top-5 {
   padding-top: 5px;
 }
-
 .padding-top-10 {
   padding-top: 10px;
 }
-
 .padding-left-10 {
   padding-left: 10px;
 }
-
 .clearfix {
   clear: both;
 }
-
 .width-100 {
   width: 100%;
 }
-
 .hidden {
   display: none;
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .visibility-hidden {
   visibility: hidden;
 }
-
 .scroll-x {
   overflow-x: auto;
 }
-
 .vertical-align {
   top: 50%;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
 .horizontal-align {
   left: 50%;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 }
-
 .center-align {
   top: 50%;
   left: 50%;
@@ -11358,12 +10428,10 @@ table.simple-table tbody tr td {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-
 .align-parent {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container {
   position: fixed;
   width: 100vw;
@@ -11374,7 +10442,6 @@ table.simple-table tbody tr td {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-
 #modal-container > ng-transclude > *,
 #modal-container > #common-modals > * {
   background: #fafafa;
@@ -11388,7 +10455,6 @@ table.simple-table tbody tr td {
   transform: translate(-50%, -50%);
   z-index: 1004;
 }
-
 #modal-container > ng-transclude > *:not(.custom-fit),
 #modal-container > #common-modals > *:not(.custom-fit) {
   max-height: 80vh;
@@ -11396,7 +10462,6 @@ table.simple-table tbody tr td {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 #modal-container #modal-backdrop {
   position: fixed;
   background: rgba(0, 0, 0, 0.6);
@@ -11404,51 +10469,42 @@ table.simple-table tbody tr td {
   height: 100vh;
   z-index: 1003;
 }
-
 #modal-container .background-modal {
   z-index: 1002;
 }
-
 .modal-max-height {
   max-height: 80vh;
   overflow-y: auto;
 }
-
 .modal-max-width {
   max-width: 80vw;
   overflow-x: auto;
 }
-
 .modal-fit {
   max-height: 80vh;
   overflow-y: auto;
   max-width: 80vw;
   overflow-x: auto;
 }
-
 /** --- Error Modal --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
   z-index: 9001;
 }
-
 #internal-error-modal h1 {
   margin-top: 0;
   color: #e64727;
 }
-
 #internal-error-modal p.internal-error-text {
   width: 45em;
 }
-
 #internal-error-modal pre.internal-error-details {
   text-align: initial;
   max-height: 45vh;
   max-width: 45em;
   overflow: auto;
 }
-
 /**
 * Styles for page hero
 */
@@ -11458,21 +10514,17 @@ table.simple-table tbody tr td {
 .text-align-left {
   text-align: left;
 }
-
 .text-align-center {
   text-align: center !important;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .bold-text {
   padding: 10px;
   margin: 0;
   font-weight: 600;
 }
-
 .info-text {
   background: #006b80;
   color: white;
@@ -11480,7 +10532,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .warning-text {
   background: #d19525;
   color: white;
@@ -11488,7 +10539,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .error-text {
   background: #b90504;
   color: white;
@@ -11496,7 +10546,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 .success-text {
   background: #808d0a;
   color: white;
@@ -11504,7 +10553,6 @@ table.simple-table tbody tr td {
   margin: 0;
   font-weight: 600;
 }
-
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -11531,7 +10579,6 @@ table.simple-table tbody tr td {
   overflow: visible;
   /* removes extra width in IE */
 }
-
 .ui-button,
 .ui-button:link,
 .ui-button:visited,
@@ -11539,25 +10586,20 @@ table.simple-table tbody tr td {
 .ui-button:active {
   text-decoration: none;
 }
-
 /* to make room for the icon, a width needs to be set here */
 .ui-button-icon-only {
   width: 2.2em;
 }
-
 /* button elements seem to need a little more width */
 button.ui-button-icon-only {
   width: 2.4em;
 }
-
 .ui-button-icons-only {
   width: 3.4em;
 }
-
 button.ui-button-icons-only {
   width: 3.7em;
 }
-
 /* button text element */
 .ui-button .ui-button-text {
   display: block;
@@ -11565,37 +10607,30 @@ button.ui-button-icons-only {
   color: #444;
   font-weight: normal;
 }
-
 .ui-button-text-only .ui-button-text {
   padding: .4em 1em;
 }
-
 .ui-button-icon-only .ui-button-text,
 .ui-button-icons-only .ui-button-text {
   padding: .4em;
   text-indent: -9999999px;
 }
-
 .ui-button-text-icon-primary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 1em .4em 2.1em;
 }
-
 .ui-button-text-icon-secondary .ui-button-text,
 .ui-button-text-icons .ui-button-text {
   padding: .4em 2.1em .4em 1em;
 }
-
 .ui-button-text-icons .ui-button-text {
   padding-left: 2.1em;
   padding-right: 2.1em;
 }
-
 /* no icon support for input elements, provide padding by default */
 input.ui-button {
   padding: .4em 1em;
 }
-
 /* button icon element(s) */
 .ui-button-icon-only .ui-icon,
 .ui-button-text-icon-primary .ui-icon,
@@ -11606,45 +10641,37 @@ input.ui-button {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-button-icon-only .ui-icon {
   left: 50%;
   margin-left: -8px;
 }
-
 .ui-button-text-icon-primary .ui-button-icon-primary,
 .ui-button-text-icons .ui-button-icon-primary,
 .ui-button-icons-only .ui-button-icon-primary {
   left: .5em;
 }
-
 .ui-button-text-icon-secondary .ui-button-icon-secondary,
 .ui-button-text-icons .ui-button-icon-secondary,
 .ui-button-icons-only .ui-button-icon-secondary {
   right: .5em;
 }
-
 /* button sets */
 .ui-buttonset {
   margin-right: 7px;
 }
-
 .ui-buttonset .ui-button {
   margin-left: 0;
   margin-right: -0.3em;
   font-weight: normal;
   border: 1px solid #999;
 }
-
 .ui-buttonset .ui-button.ui-state-hover .ui-button-text,
 .ui-buttonset .ui-button.ui-state-active .ui-button-text {
   color: teal;
 }
-
 .ui-buttonset .ui-button.ui-state-active {
   background: #eee;
 }
-
 /* workarounds */
 /* reset extra padding in Firefox, see h5bp.com/l */
 input.ui-button::-moz-focus-inner,
@@ -11652,7 +10679,6 @@ button.ui-button::-moz-focus-inner {
   border: 0;
   padding: 0;
 }
-
 /*!
  * jQuery UI Datepicker 1.10.4
  * http://jqueryui.com
@@ -11676,12 +10702,10 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 10px #cccccc;
   box-shadow: 0 0 10px #cccccc;
 }
-
 .ui-datepicker .ui-datepicker-header {
   position: relative;
   padding: .2em 0;
 }
-
 .ui-datepicker .ui-datepicker-prev,
 .ui-datepicker .ui-datepicker-next {
   position: absolute;
@@ -11689,28 +10713,22 @@ button.ui-button::-moz-focus-inner {
   width: 1.8em;
   height: 1.8em;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover,
 .ui-datepicker .ui-datepicker-next-hover {
   top: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev {
   left: 2px;
 }
-
 .ui-datepicker .ui-datepicker-next {
   right: 2px;
 }
-
 .ui-datepicker .ui-datepicker-prev-hover {
   left: 1px;
 }
-
 .ui-datepicker .ui-datepicker-next-hover {
   right: 1px;
 }
-
 .ui-datepicker .ui-datepicker-prev span,
 .ui-datepicker .ui-datepicker-next span {
   display: block;
@@ -11720,47 +10738,39 @@ button.ui-button::-moz-focus-inner {
   top: 50%;
   margin-top: -8px;
 }
-
 .ui-datepicker .ui-datepicker-title {
   margin: 0 2.3em;
   line-height: 1.8em;
   text-align: center;
 }
-
 .ui-datepicker .ui-datepicker-title select {
   font-size: 1em;
   margin: 1px 0;
 }
-
 .ui-datepicker select.ui-datepicker-month,
 .ui-datepicker select.ui-datepicker-year {
   width: 49%;
 }
-
 .ui-datepicker table {
   width: 100%;
   font-size: .9em;
   border-collapse: collapse;
   margin: 0 0 .4em;
 }
-
 .ui-datepicker th {
   padding: .7em .3em;
   text-align: center;
   font-weight: bold;
   border: 0;
 }
-
 .ui-datepicker td {
   border: 0;
   padding: 1px;
   text-align: center;
 }
-
 .ui-datepicker td.ui-datepicker-current-day {
   background: #edf7a4;
 }
-
 .ui-datepicker td span,
 .ui-datepicker td a {
   display: block;
@@ -11768,7 +10778,6 @@ button.ui-button::-moz-focus-inner {
   text-decoration: none;
   color: #006b80;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane {
   background-image: none;
   margin: .7em 0 0 0;
@@ -11777,7 +10786,6 @@ button.ui-button::-moz-focus-inner {
   border-right: 0;
   border-bottom: 0;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button {
   float: right;
   margin: .5em .2em .4em;
@@ -11786,96 +10794,76 @@ button.ui-button::-moz-focus-inner {
   width: auto;
   overflow: visible;
 }
-
 .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
   float: left;
 }
-
 /* with multiple calendars */
 .ui-datepicker.ui-datepicker-multi {
   width: auto;
 }
-
 .ui-datepicker-multi .ui-datepicker-group {
   float: left;
 }
-
 .ui-datepicker-multi .ui-datepicker-group table {
   width: 95%;
   margin: 0 auto .4em;
 }
-
 .ui-datepicker-multi-2 .ui-datepicker-group {
   width: 50%;
 }
-
 .ui-datepicker-multi-3 .ui-datepicker-group {
   width: 33.3%;
 }
-
 .ui-datepicker-multi-4 .ui-datepicker-group {
   width: 25%;
 }
-
 .ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
   border-left-width: 0;
 }
-
 .ui-datepicker-multi .ui-datepicker-buttonpane {
   clear: left;
 }
-
 .ui-datepicker-row-break {
   clear: both;
   width: 100%;
   font-size: 0;
 }
-
 /* RTL support */
 .ui-datepicker-rtl {
   direction: rtl;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev {
   right: 2px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next {
   left: 2px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-prev:hover {
   right: 1px;
   left: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-next:hover {
   left: 1px;
   right: auto;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane {
   clear: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button {
   float: left;
 }
-
 .ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
 .ui-datepicker-rtl .ui-datepicker-group {
   float: right;
 }
-
 .ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
 .ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
   border-right-width: 0;
   border-left-width: 1px;
 }
-
 /*!
  * jQuery UI Dialog 1.10.4
  * http://jqueryui.com
@@ -11899,7 +10887,6 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: 0 0 60px #777777;
   box-shadow: 0 0 60px #777777;
 }
-
 .ui-dialog .ui-dialog-titlebar {
   padding: .7em 1em;
   position: relative;
@@ -11908,7 +10895,6 @@ button.ui-button::-moz-focus-inner {
   background: #006b80;
   color: white;
 }
-
 .ui-dialog .ui-dialog-title {
   font-size: 1.1em;
   margin: .1em 0;
@@ -11918,7 +10904,6 @@ button.ui-button::-moz-focus-inner {
   text-overflow: ellipsis;
   font-weight: bold;
 }
-
 .ui-dialog .ui-dialog-titlebar-close {
   position: absolute;
   right: .3em;
@@ -11936,11 +10921,9 @@ button.ui-button::-moz-focus-inner {
   -moz-box-shadow: none;
   box-shadow: none;
 }
-
 .ui-dialog .ui-dialog-titlebar-close:hover {
   background-color: #ff5544;
 }
-
 .ui-dialog .ui-dialog-content {
   position: relative;
   border: 0;
@@ -11948,23 +10931,19 @@ button.ui-button::-moz-focus-inner {
   background: none;
   overflow: auto;
 }
-
 .ui-dialog .ui-dialog-buttonpane {
   text-align: left;
   border-width: 1px 0 0 0;
   background-image: none;
   padding: .3em 1em .5em .4em;
 }
-
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
   float: right;
 }
-
 .ui-dialog .ui-dialog-buttonpane button {
   margin: .5em .4em .5em 0;
   cursor: pointer;
 }
-
 .ui-dialog .ui-resizable-se {
   width: 12px;
   height: 12px;
@@ -11972,11 +10951,9 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   background-position: 16px 16px;
 }
-
 .ui-draggable .ui-dialog-titlebar {
   cursor: move;
 }
-
 /*!
  * jQuery UI Resizable 1.10.4
  * http://jqueryui.com
@@ -11988,18 +10965,15 @@ button.ui-button::-moz-focus-inner {
 .ui-resizable {
   position: relative;
 }
-
 .ui-resizable-handle {
   position: absolute;
   font-size: 0.1px;
   display: block;
 }
-
 .ui-resizable-disabled .ui-resizable-handle,
 .ui-resizable-autohide .ui-resizable-handle {
   display: none;
 }
-
 .ui-resizable-n {
   cursor: n-resize;
   height: 7px;
@@ -12007,7 +10981,6 @@ button.ui-button::-moz-focus-inner {
   top: -5px;
   left: 0;
 }
-
 .ui-resizable-s {
   cursor: s-resize;
   height: 7px;
@@ -12015,7 +10988,6 @@ button.ui-button::-moz-focus-inner {
   bottom: -5px;
   left: 0;
 }
-
 .ui-resizable-e {
   cursor: e-resize;
   width: 7px;
@@ -12023,7 +10995,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-w {
   cursor: w-resize;
   width: 7px;
@@ -12031,7 +11002,6 @@ button.ui-button::-moz-focus-inner {
   top: 0;
   height: 100%;
 }
-
 .ui-resizable-se {
   cursor: se-resize;
   width: 12px;
@@ -12039,7 +11009,6 @@ button.ui-button::-moz-focus-inner {
   right: 1px;
   bottom: 1px;
 }
-
 .ui-resizable-sw {
   cursor: sw-resize;
   width: 9px;
@@ -12047,7 +11016,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   bottom: -5px;
 }
-
 .ui-resizable-nw {
   cursor: nw-resize;
   width: 9px;
@@ -12055,7 +11023,6 @@ button.ui-button::-moz-focus-inner {
   left: -5px;
   top: -5px;
 }
-
 .ui-resizable-ne {
   cursor: ne-resize;
   width: 9px;
@@ -12063,7 +11030,6 @@ button.ui-button::-moz-focus-inner {
   right: -5px;
   top: -5px;
 }
-
 /** Media Queries */
 /**
 * Styles for ESS Time
@@ -12076,11 +11042,9 @@ button.ui-button::-moz-focus-inner {
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
-
 .time-attendance-hero h1 {
   font-size: 2.5em;
 }
-
 .time-attendance-hero h1,
 .time-attendance-hero h2,
 .time-attendance-hero h3,
@@ -12089,65 +11053,52 @@ button.ui-button::-moz-focus-inner {
 .time-attendance-hero span {
   color: #ffffff;
 }
-
 table.time-record-entry-table thead {
   background: white;
 }
-
 table.time-record-entry-table thead tr th {
   width: 65px;
 }
-
 table.time-record-entry-table tbody tr {
   height: 32px;
 }
-
 table.time-record-entry-table tbody tr.time-record-row td:nth-child(1) {
   width: 150px;
   border-right: 1px solid #ccc;
 }
-
 table.time-record-entry-table tbody tr.time-record-row:hover {
   background: #f3f6ff;
 }
-
 table.time-record-entry-table tbody tr.time-totals-row {
   border-top: 2px solid teal;
 }
-
 table.time-record-entry-table tbody tr.time-totals-row td {
   font-size: 1.1em;
   text-align: center;
 }
-
 table.time-record-entry-table tbody tr.time-totals-row td:first-child {
   font-weight: 600;
   font-size: 1em;
   text-align: right;
   padding-right: 20px;
 }
-
 table.time-record-entry-table tbody tr.time-totals-row td:last-child {
   font-size: 1.1em;
   font-weight: 600;
 }
-
 table.time-record-entry-table tbody tr.active.highlight-first td:nth-child(1) {
   border-color: #006b80;
   background: #006b80;
   color: white;
 }
-
 table.time-record-entry-table tbody tr.weekend {
   background: #eee;
 }
-
 table.time-record-entry-table tbody tr td {
   text-align: center;
   border-right: 1px solid #dedede;
   /** Credit css-tricks */
 }
-
 table.time-record-entry-table tbody tr td input[type="text"],
 table.time-record-entry-table tbody tr td input[type="number"] {
   width: 100%;
@@ -12157,22 +11108,18 @@ table.time-record-entry-table tbody tr td input[type="number"] {
   border: 0;
   background: none;
 }
-
 table.time-record-entry-table tbody tr td input:disabled {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
   cursor: not-allowed;
 }
-
 table.time-record-entry-table tbody tr td.date-column {
   width: 180px;
   text-align: right;
   padding-right: 20px;
 }
-
 table.time-record-entry-table tbody tr td.entry-comment-col {
   width: 75%;
 }
-
 table.time-record-entry-table tbody tr td > textarea.entry-comment {
   height: 2em;
   width: 100%;
@@ -12188,68 +11135,55 @@ table.time-record-entry-table tbody tr td > textarea.entry-comment {
   -webkit-transition: 0.05s;
   -o-transition: 0.05s;
 }
-
 table.time-record-entry-table tbody tr td.today {
   border-left: 3px solid #799933;
 }
-
 .record-selection-container {
   text-align: center;
   padding-bottom: 10px;
   border-bottom: 1px solid rgba(0, 107, 128, 0.55);
   overflow: auto;
 }
-
 .record-selection-container table {
   text-align: center;
   width: 90%;
   margin: auto;
 }
-
 .record-selection-container table th {
   border-bottom: 1px solid #ccc;
 }
-
 .record-selection-container table th,
 .record-selection-container table td {
   padding: 5px;
 }
-
 .record-selection-container table tbody tr {
   cursor: pointer;
 }
-
 .record-selection-container table tbody tr.active {
   background: #e7e9f6;
 }
-
 .record-selection-container table tbody tr:hover {
   background: #E4EBFF;
 }
-
 .record-selection-container .record-selection-menu {
   width: 185px;
   margin: 5px 10px 5px 5px;
 }
-
 .record-selection-container .record-selection-menu-details {
   float: left;
   margin: 5px 5px 5px 25px;
   line-height: 29px;
 }
-
 .save-progress-modal {
   height: auto;
   padding-bottom: 30px;
   width: 400px;
   text-align: center;
 }
-
 .content-container h1.time-entry-table-title {
   text-align: center;
   margin-top: 10px;
 }
-
 /** --- Accruals --- */
 .sick,
 .personal,
@@ -12257,39 +11191,32 @@ table.time-record-entry-table tbody tr td.today {
 .misc {
   color: white;
 }
-
 .sick {
   background: #d19525;
   border-color: #d19525;
 }
-
 .personal {
   background: #4196a7;
   border-color: #4196a7;
 }
-
 .vacation {
   background: #799933;
   border-color: #799933;
 }
-
 .misc {
   background: #e64727;
   border-color: #e64727;
 }
-
 .captioned-hour-square {
   margin: 5px auto;
   padding: 0 3px;
 }
-
 .captioned-hour-square .hours-caption {
   font-size: 1em;
   line-height: 20px;
   padding: 0.2em;
   font-weight: 600;
 }
-
 .captioned-hour-square .hours-display {
   line-height: 30px;
   font-weight: 600;
@@ -12304,50 +11231,40 @@ table.time-record-entry-table tbody tr td.today {
   border-radius: 0 0 2px 2px;
   background-clip: padding-box;
 }
-
 .captioned-hour-square .ytd-hours {
   border-right: 1px solid #ddd;
   min-width: 110px;
   display: inline-block;
 }
-
 .captioned-hour-square .ytd-hours:last-child {
   border-right: none;
 }
-
 .accrual-hours-container {
   margin: auto;
   text-align: center;
   padding: 0 20px;
 }
-
 .accrual-component {
   display: block;
   float: left;
   text-align: center;
 }
-
 .accrual-component .captioned-hour-square {
   width: 150px;
 }
-
 .accrual-component .captioned-hour-square .hours-display {
   font-size: 1.2em;
   font-weight: 600;
 }
-
 .accrual-component .captioned-hour-square .hours-display.sick {
   border-color: #d19525;
 }
-
 .accrual-component .captioned-hour-square .hours-display.personal {
   border-color: #006b80;
 }
-
 .accrual-component .captioned-hour-square .hours-display.vacation {
   border-color: #799933;
 }
-
 .accrual-component .hour-label {
   color: #333;
   padding: 0px;
@@ -12355,48 +11272,39 @@ table.time-record-entry-table tbody tr td.today {
   font-size: 1em;
   font-weight: 400;
 }
-
 .allowance-container {
   margin: auto;
   display: flex;
   justify-content: space-around;
   padding: 0 20px;
 }
-
 .allowance-component {
   text-align: center;
   flex-grow: 1;
 }
-
 .allowance-component .hours-caption {
   background: #5c7474;
   color: white;
 }
-
 .allowance-component .captioned-hour-square .hours-display {
   display: flex;
   font-size: 1em;
 }
-
 .allowance-component .captioned-hour-square .hours-display .ytd-hours {
   flex-grow: 1;
 }
-
 .allowance-component .captioned-hour-square .hours-display .ytd-hours .hours-caption {
   background: white;
   color: #0e4e5a;
 }
-
 .record-remarks-container {
   float: left;
 }
-
 .record-remarks-container label {
   font-weight: 600;
   margin: 0 10px 0 10px;
   line-height: 55px;
 }
-
 .record-remarks-container .record-remarks-text-area {
   margin: 5px 0;
   height: 45px;
@@ -12404,103 +11312,81 @@ table.time-record-entry-table tbody tr td.today {
   border: 1px solid #ccc;
   resize: vertical;
 }
-
 .save-record-container {
   padding: 10px;
   background: #f9f9f9;
 }
-
 .save-record-container input[type="button"] {
   margin-top: 10px;
   width: 8.5em;
 }
-
 /* --- Attendance History Page --- */
 .attendance-listing-table tbody tr {
   border-bottom: 1px solid #eee !important;
 }
-
 .attendance-listing-table tbody tr.e-timesheet {
   cursor: pointer;
 }
-
 .attendance-listing-table tbody tr.e-timesheet:hover {
   background: #e9eeff;
 }
-
 .attendance-listing-table tbody tr:nth-child(even) {
   background: rgba(51, 51, 51, 0.05);
 }
-
 .attendance-listing-table tbody tr:nth-child(even).e-timesheet:hover {
   background: #e9eeff;
 }
-
 .attendance-listing-table tbody tr td {
   padding: .5em;
   border: 0;
 }
-
 .attendance-listing-table tbody tr td .action-link {
   font-size: .9em;
 }
-
 record-detail-modal,
 [record-detail-modal] {
   width: 60em;
   padding: 0.4em;
 }
-
 .record-details-section {
   padding: .3em;
   text-align: center;
 }
-
 h1.attendance-entry-sub-table-title {
   color: white;
   background: #006B80;
 }
-
 table.attendance-entry-sub-table {
   width: 100%;
   font-size: 1em;
   border-left: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
 }
-
 table.attendance-entry-sub-table thead tr th.day-col {
   width: 3.4em;
 }
-
 table.attendance-entry-sub-table thead tr th.date-col {
   width: 6em;
 }
-
 table.attendance-entry-sub-table thead tr th.hour-col {
   width: 5em;
 }
-
 table.attendance-entry-sub-table tbody tr {
   border-bottom: none !important;
 }
-
 table.attendance-entry-sub-table tbody tr:nth-child(odd) {
   background: rgba(51, 51, 51, 0.05);
 }
-
 table.attendance-entry-sub-table tbody tr td {
   padding: .4em !important;
   border-right: 1px solid #ddd;
 }
-
 table.attendance-entry-sub-table tbody tr.time-totals-row {
   border-top: 2px solid teal;
 }
-
 table.attendance-entry-sub-table.small-text tbody tr td {
   font-size: 0.9em !important;
 }
-
 /* --- Request Time Off Page --- */
 .timeoff-request-accrual-container {
   width: 600px;
@@ -12510,41 +11396,33 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
 }
-
 .timeoff-request-accrual-container .accrual-section-title {
   color: #333;
 }
-
 .timeoff-request-accrual-container .accrual-section {
   margin-top: 10px;
 }
-
 .timeoff-request-accrual-container .accrual-section .accrual-component {
   width: 100px;
 }
-
 .timeoff-request-form-container {
   width: 400px;
   display: inline-block;
   vertical-align: top;
 }
-
 .timeoff-request-form-container .label-container,
 .timeoff-request-form-container .input-container {
   display: inline-block;
   margin-bottom: 10px;
 }
-
 .timeoff-request-form-container .label-container {
   width: 90px;
   padding-right: 20px;
   text-align: right;
 }
-
 .timeoff-request-form-container .input-container {
   width: 300px;
 }
-
 .timeoff-request-form-container .input-container .date-input {
   width: 220px;
   background: url(../../img/20px-999999/calendar.png);
@@ -12552,23 +11430,19 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   background-position: 195px 2px;
   background-size: 18px;
 }
-
 .timeoff-request-form-container #number-hours-requested {
   width: 40px;
 }
-
 .timeoff-request-form-container #reason-textarea {
   resize: none;
   width: 290px;
   padding: 5px;
   height: 67px;
 }
-
 /** --- View Pay Period Calendar Page --- */
 .pay-period-cal-container .legend-container {
   color: #777;
 }
-
 .pay-period-cal-container .legend-container .legend-block {
   margin-left: 20px;
   display: inline-block;
@@ -12576,49 +11450,39 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   height: 20px;
   margin-right: 10px;
 }
-
 .pay-period-cal-container .pay-period-cal {
   width: 730px;
   margin: auto;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month {
   display: inline-block;
   margin: 10px;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
   /** Highlighted dates */
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .ui-datepicker-month {
   font-weight: bold;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .ui-datepicker-current-day {
   background: none;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .current-date span {
   font-weight: 600;
   border: 2px solid #e64727;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .weekend-date span {
   color: #aaa;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .holiday-date span {
   background: #d4ff60;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .pay-period-end-date span {
   background: #B8E3EB;
 }
-
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .holiday-date.pay-period-end-date span {
   background: #d4ff60;
   /* Old browsers */
@@ -12637,52 +11501,44 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d4ff60', endColorstr='#B8E3EB', GradientType=1);
   /* IE6-9 fallback on horizontal gradient */
 }
-
 /** --- Accrual History Page --- */
 .accruals-table,
 .detail-acc-history-table,
 #accrual-usage-details-table {
   width: 100%;
 }
-
 .accruals-table thead,
 .detail-acc-history-table thead,
 #accrual-usage-details-table thead {
   background: white;
 }
-
 .accruals-table thead tr,
 .detail-acc-history-table thead tr,
 #accrual-usage-details-table thead tr {
   border: 0;
 }
-
 .accruals-table thead tr th,
 .detail-acc-history-table thead tr th,
 #accrual-usage-details-table thead tr th {
   border: 0;
   padding: 8px;
 }
-
 .accruals-table thead tr:last-of-type,
 .detail-acc-history-table thead tr:last-of-type,
 #accrual-usage-details-table thead tr:last-of-type {
   border-bottom: 1px solid #006b80;
 }
-
 .accruals-table tbody tr:nth-child(even),
 .detail-acc-history-table tbody tr:nth-child(even),
 #accrual-usage-details-table tbody tr:nth-child(even) {
   background: rgba(51, 51, 51, 0.05);
 }
-
 .accruals-table tbody tr.highlighted,
 .detail-acc-history-table tbody tr.highlighted,
 #accrual-usage-details-table tbody tr.highlighted {
   border: 1px solid #006b80;
   border-left-width: 3px;
 }
-
 .accruals-table tbody tr td,
 .detail-acc-history-table tbody tr td,
 #accrual-usage-details-table tbody tr td {
@@ -12691,119 +11547,90 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   text-align: center;
   padding: 8px;
 }
-
 .accruals-table tbody tr td.accrual-hours,
 .detail-acc-history-table tbody tr td.accrual-hours,
 #accrual-usage-details-table tbody tr td.accrual-hours {
   border: 0;
   color: #333;
 }
-
 .accruals-table tbody tr td.accrual-hours.personal,
 .detail-acc-history-table tbody tr td.accrual-hours.personal,
 #accrual-usage-details-table tbody tr td.accrual-hours.personal {
   background: rgba(65, 150, 167, 0.1);
 }
-
 .accruals-table tbody tr td.accrual-hours.sick,
 .detail-acc-history-table tbody tr td.accrual-hours.sick,
 #accrual-usage-details-table tbody tr td.accrual-hours.sick {
   background: rgba(209, 149, 37, 0.1);
 }
-
 .accruals-table tbody tr td.accrual-hours.vacation,
 .detail-acc-history-table tbody tr td.accrual-hours.vacation,
 #accrual-usage-details-table tbody tr td.accrual-hours.vacation {
   background: rgba(121, 153, 51, 0.1);
 }
-
 .accruals-table tbody tr td.available-hours,
 .detail-acc-history-table tbody tr td.available-hours,
 #accrual-usage-details-table tbody tr td.available-hours {
   font-weight: bold;
 }
-
 .accruals-table tbody tr td.available-hours.personal,
 .detail-acc-history-table tbody tr td.available-hours.personal,
 #accrual-usage-details-table tbody tr td.available-hours.personal {
   background: rgba(65, 150, 167, 0.2);
 }
-
 .accruals-table tbody tr td.available-hours.sick,
 .detail-acc-history-table tbody tr td.available-hours.sick,
 #accrual-usage-details-table tbody tr td.available-hours.sick {
   background: rgba(209, 149, 37, 0.2);
 }
-
 .accruals-table tbody tr td.available-hours.vacation,
 .detail-acc-history-table tbody tr td.available-hours.vacation,
 #accrual-usage-details-table tbody tr td.available-hours.vacation {
   background: rgba(121, 153, 51, 0.2);
 }
-
 .accruals-table tbody tr td input,
 .detail-acc-history-table tbody tr td input,
 #accrual-usage-details-table tbody tr td input {
   width: 50px;
 }
-
 /** --- Manage Employee Records Page --- */
 .emp-manage-actions-container {
   padding: .5em;
   text-align: right;
 }
-
 table.approve-attendance-rec-table {
   padding: 10px;
 }
-
 table.approve-attendance-rec-table tbody tr {
   cursor: pointer;
 }
-
 table.approve-attendance-rec-table tbody tr.name-row {
   border-top: 2px solid #4196a7;
 }
-
 table.approve-attendance-rec-table tbody tr.active:hover td {
   background: #EEF4F9;
 }
-
 table.approve-attendance-rec-table tbody tr.active td:nth-child(1) {
   background: white;
 }
-
 table.approve-attendance-rec-table tbody tr:hover td {
   background: white;
 }
-
 table.approve-attendance-rec-table tbody td {
   padding: .5em;
 }
-
 table.approve-attendance-rec-table tbody td:nth-child(1) {
   border-right: 1px solid #ddd;
 }
-
-.small-employee-profile-pic {
-  height: 30px;
-  width: 30px;
-  background-size: 30px;
-  background-repeat: no-repeat;
-  background-image: url("http://strangebeaver.com/wp-content/uploads/2011/01/fb/16.jpg");
-}
-
 record-review-modal,
 [record-review-modal] {
   max-width: 90vw;
-  overflow-x: scroll;
+  overflow-x: auto;
   padding: 0.4em;
 }
-
 #record-review-content {
   width: 1113px;
 }
-
 #record-review-content #record-selection-pane {
   max-height: 80vh;
   overflow-y: auto;
@@ -12816,36 +11643,28 @@ record-review-modal,
   background: #f5f5f5;
   overflow-x: hidden;
 }
-
 #record-review-content #record-selection-pane #record-selection-table {
   background: white;
 }
-
 #record-review-content #record-selection-pane #record-selection-table tbody tr:hover {
   background: #e9eeff;
   cursor: pointer;
 }
-
 #record-review-content #record-selection-pane #record-selection-table tbody tr.active {
   background: #E4EBFF;
 }
-
 #record-review-content #record-selection-pane #record-selection-table tbody tr.approved {
   background: #cffc9e;
 }
-
 #record-review-content #record-selection-pane #record-selection-table tbody tr.disapproved {
   background: #e64727;
 }
-
 #record-review-content #record-selection-pane #record-selection-table tbody tr td {
   text-align: center;
 }
-
 #record-review-content #record-selection-pane #record-selection-table tbody tr td.name-column {
   text-align: left;
 }
-
 #record-review-content #record-details-view {
   max-height: 80vh;
   overflow-y: auto;
@@ -12853,12 +11672,10 @@ record-review-modal,
   width: 830px;
   margin: 0;
 }
-
 #record-review-content #record-details-view #remarks-container {
   padding: .3em;
   text-align: center;
 }
-
 #record-review-content #record-details-view #action-container {
   text-align: center;
   margin: 0.4em 0;
@@ -12867,11 +11684,9 @@ record-review-modal,
   display: flex;
   justify-content: flex-end;
 }
-
 #record-review-content #record-details-view #action-container .record-approval-buttons {
   flex-grow: 1;
 }
-
 #record-review-content .pane-title {
   text-align: center;
   margin: 0;
@@ -12879,7 +11694,6 @@ record-review-modal,
   font-weight: 600;
   background: white;
 }
-
 /** --- My Info Page --- */
 .my-info-hero {
   padding: .3em;
@@ -12888,11 +11702,9 @@ record-review-modal,
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
-
 .my-info-hero h1 {
   font-size: 2.5em;
 }
-
 .my-info-hero h1,
 .my-info-hero h2,
 .my-info-hero h3,
@@ -12901,46 +11713,37 @@ record-review-modal,
 .my-info-hero span {
   color: #ffffff;
 }
-
 /** --- Paycheck History Page --- */
 #paycheck-history-table tbody tr {
   border-bottom: 1px solid #eee !important;
 }
-
 #paycheck-history-table tbody tr:not(.yearly-totals):hover {
   background: #e9eeff;
 }
-
 #paycheck-history-table tbody tr:nth-child(even) {
   background: rgba(51, 51, 51, 0.05);
 }
-
 #paycheck-history-table tbody tr:nth-child(even):hover {
   background: #e9eeff;
 }
-
 #paycheck-history-table tbody tr td {
   text-align: center;
   white-space: nowrap;
   padding: .5em;
   border: 0;
 }
-
 #paycheck-history-table tbody tr.yearly-totals {
   border-top: 2px solid teal;
 }
-
 #paycheck-history-table tbody tr.yearly-totals td {
   font-weight: 600;
 }
-
 .reject-modal-textarea {
   resize: none;
   margin: 10px;
   width: 375px;
   height: 100px;
 }
-
 .reject-modal-button-wrapper {
   padding: .4em;
   background: #eee;
@@ -12948,48 +11751,38 @@ record-review-modal,
   overflow: auto;
   clear: both;
 }
-
 .reject-modal-error {
   margin: 0;
   text-align: center;
   color: #b90504;
 }
-
 .approve-submit-modal-details {
   text-align: center;
 }
-
 .approve-submit-modal-details ul {
   padding: 0;
   margin: 0;
 }
-
 .approve-submit-modal-details .review-listing {
   padding: 10px;
 }
-
 .approve-submit-modal-details div.review-listing:last-child {
   margin-bottom: 20px;
 }
-
 .approve-submit-modal-details div.approve-input-container {
   margin-bottom: 10px;
 }
-
 .approve-submit-modal-details div.approve-input-container input:first-child {
   margin-right: 20px;
 }
-
 .approve-submit-modal-details .acknowledged-message {
   text-align: left;
   margin: 10px 20px;
 }
-
 /** --- Transaction History --- */
 .tx-effect-date {
   color: #00404d;
 }
-
 .tx-container {
   padding: 20px;
   background: #f7f7f7;
@@ -12997,42 +11790,34 @@ record-review-modal,
   border-bottom: 1px solid #f1f1f1;
   margin-left: 20px;
 }
-
 .tx-container.grid {
   margin-left: 20px;
 }
-
 .tx-data {
   margin: 0;
   border: 0;
 }
-
 .tx-data p {
   font-size: 1em;
 }
-
 .tx-label {
   color: #104042;
   font-weight: bold;
 }
-
 .tx-update-date {
   font-size: 0.9em;
   color: #666;
 }
-
 /** --- Supervisor Grant Page --- */
 .success-bold-label {
   color: #799933;
   font-weight: bold;
 }
-
 /** --- Directives --- */
 /** Toggle Panel Directive */
 .toggle-panel-label {
   cursor: pointer;
 }
-
 .toggle-panel-label:hover {
   color: #006b80;
 }

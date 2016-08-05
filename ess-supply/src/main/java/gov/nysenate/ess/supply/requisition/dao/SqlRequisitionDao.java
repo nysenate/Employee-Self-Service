@@ -168,16 +168,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public void savedInSfms(List<Integer> requisitionIds) {
-        List<SqlParameterSource> paramsList = new ArrayList<>();
-        for (Integer id: requisitionIds) {
-            MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", id);
-            paramsList.add(params);
-        }
+    public void savedInSfms(int requisitionId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
-        SqlParameterSource[] batchParams = new SqlParameterSource[paramsList.size()];
-        batchParams = paramsList.toArray(batchParams);
-        localNamedJdbc.batchUpdate(sql, batchParams);
+        localNamedJdbc.update(sql, params);
     }
 
     private MapSqlParameterSource requisitionParams(Requisition requisition) {

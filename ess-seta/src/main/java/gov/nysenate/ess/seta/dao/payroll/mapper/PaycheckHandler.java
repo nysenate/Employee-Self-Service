@@ -3,6 +3,7 @@ package gov.nysenate.ess.seta.dao.payroll.mapper;
 import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.seta.model.payroll.Deduction;
 import gov.nysenate.ess.seta.model.payroll.Paycheck;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,23 +23,36 @@ public class PaycheckHandler extends BaseHandler
     @Override
     public void processRow(ResultSet rs) throws SQLException {
         LocalDate date = getLocalDateFromRs(rs, "DTCHECK");
-        if (dateToPaycheck.containsKey(date)) {
-            Deduction deduction = new Deduction(
-                    rs.getString("CDDEDUCTION"), rs.getString("DEDEDUCTIONF"), rs.getBigDecimal("MODEDUCTION"));
-            dateToPaycheck.get(date).addDeduction(deduction);
-        }
-        else {
-            Paycheck paycheck = new Paycheck(rs.getString("NUPERIOD"), getLocalDateFromRs(rs, "DTCHECK"),
-                                             rs.getBigDecimal("MOGROSS"), rs.getBigDecimal("MONET"),
-                                             rs.getBigDecimal("MOADVICEAMT"), rs.getBigDecimal("MOCHECKAMT"));
-            Deduction deduction = new Deduction(
-                    rs.getString("CDDEDUCTION"), rs.getString("DEDEDUCTIONF"), rs.getBigDecimal("MODEDUCTION"));
-            paycheck.addDeduction(deduction);
+        Paycheck paycheck = dateToPaycheck.get(date);
+        if (paycheck == null) {
+            paycheck = paycheckRowMapper.mapRow(rs, rs.getRow());
             dateToPaycheck.put(date, paycheck);
         }
+        Deduction deduction = deductionRowMapper.mapRow(rs, rs.getRow());
+        paycheck.addDeduction(deduction);
     }
 
     public List<Paycheck> getPaychecks() {
         return new ArrayList<>(dateToPaycheck.values());
     }
+
+    private static final RowMapper<Paycheck> paycheckRowMapper = ((rs, rowNum) ->
+            new Paycheck(
+                    rs.getString("NUPERIOD"),
+                    getLocalDateFromRs(rs, "DTCHECK"),
+                    rs.getBigDecimal("MOGROSS"),
+                    rs.getBigDecimal("MONET"),
+                    rs.getBigDecimal("MOADVICEAMT"),
+                    rs.getBigDecimal("MOCHECKAMT")
+            )
+    );
+
+    private static final RowMapper<Deduction> deductionRowMapper = ((rs, rowNum) ->
+            new Deduction(
+                    rs.getString("CDDEDUCTION"),
+                    rs.getInt("CDORDER"),
+                    rs.getString("DEDEDUCTIONF"),
+                    rs.getBigDecimal("MODEDUCTION")
+            )
+    );
 }

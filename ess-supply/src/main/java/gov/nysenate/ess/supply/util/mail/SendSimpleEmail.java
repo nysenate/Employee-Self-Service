@@ -22,13 +22,12 @@ import java.util.List;
 public class SendSimpleEmail {
     @Autowired
     EventBus eventBus;
-    @Autowired
-    SimpleEmailHandler simpleEmailHandler;
 
     private SendSimpleEmail() {
     }
 
-    public void send(Employee sender, Employee receiver, List<Component> simpleEmailContent, SimpleEmailHeader simpleEmailHeader, SimpleEmailSubject simpleEmailSubject, int messageId) {
+    public void send(Employee sender, Employee receiver, List<Component> simpleEmailContent,
+                     SimpleEmailHeader simpleEmailHeader, SimpleEmailSubject simpleEmailSubject, int messageId) {
         List<Component> components = new ArrayList<>();
         components.addAll(simpleEmailContent);
         components.add(simpleEmailSubject);
@@ -39,8 +38,6 @@ public class SendSimpleEmail {
         SimpleEmailMessage simpleEmailMessage = new SimpleEmailMessage(
                 simpleEmailSender, simpleEmailReceiver, components, simpleEmailHeader.toMap(), messageId
         );
-        eventBus.register(simpleEmailHandler);
         eventBus.post(simpleEmailMessage);
-
     }
 }

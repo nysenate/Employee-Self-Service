@@ -18,16 +18,13 @@ import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.seta.model.auth.EssTimePermission;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
 import gov.nysenate.ess.seta.service.accrual.AccrualInfoService;
-import gov.nysenate.ess.seta.service.attendance.ActiveTimeRecordCacheEvictEvent;
 import gov.nysenate.ess.seta.service.attendance.TimeRecordManager;
 import gov.nysenate.ess.seta.service.attendance.TimeRecordService;
 import gov.nysenate.ess.seta.service.attendance.validation.InvalidTimeRecordException;
 import gov.nysenate.ess.seta.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,33 +212,6 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleInvalidTimeRecordException(InvalidTimeRecordException ex) {
         return new InvalidTimeRecordResponse(getTimeRecordView(ex.getTimeRecord()), ex.getDetectedErrors());
-    }
-
-    /**
-     * Admin Time Record API
-     * --------------------
-     *
-     * Active record cache eviction API
-     * (DELETE) /api/v1/timerecords/active/cacheEvict
-     *
-     * Params:
-     * all [required] (true/false) - Indicate if active time records for all employees should be evicted
-     * empId [optional,list] (integer) - List the employee ids that you want to evict active time records for otherwise.
-     */
-    @RequiresPermissions("admin:cache:delete")
-    @RequestMapping(value = "/active/cacheEvict", method = RequestMethod.DELETE, produces = "application/json")
-    public BaseResponse evictActiveRecords(@RequestParam(required = true) boolean all,
-                                           @RequestParam(required = false) Integer[] empId) {
-        String responseType = "time record cache evict";
-        if (all) {
-            eventBus.post(new ActiveTimeRecordCacheEvictEvent(true, null));
-            return new SimpleResponse(true, "Sent out all active time record cache clear event", responseType);
-        }
-        else if (empId != null && empId.length > 0) {
-            eventBus.post(new ActiveTimeRecordCacheEvictEvent(false, Sets.newHashSet(empId)));
-            return new SimpleResponse(true, "Sent out active time record cache clear event for given emp ids.", responseType);
-        }
-        return new SimpleResponse(false, "Did not send out any active time record cache evictions", responseType);
     }
 
     /** --- Internal Methods --- */

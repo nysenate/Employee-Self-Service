@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.config.BaseConfig;
 import gov.nysenate.ess.web.util.AsciiArt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -41,6 +42,9 @@ import java.util.List;
 public class WebApplicationConfig extends WebMvcConfigurerAdapter
 {
     private static final Logger logger = LoggerFactory.getLogger(WebApplicationConfig.class);
+
+    @Autowired private ObjectMapper jsonObjectMapper;
+    @Autowired private ObjectMapper xmlObjectMapper;
 
     @PostConstruct
     public void init() {
@@ -89,25 +93,11 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
 
     @Bean
     public MappingJackson2HttpMessageConverter jackson2Converter() {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper(objectMapper());
-        return converter;
-    }
-
-    public MappingJackson2XmlHttpMessageConverter jackson2XmlConverter() {
-        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        builder.indentOutput(true).dateFormat(new SimpleDateFormat("yyyy-MM-dd"));
-        return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build());
+        return new MappingJackson2HttpMessageConverter(jsonObjectMapper);
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.registerModule(new GuavaModule());
-        objectMapper.registerModule(new JSR310Module());
-        return objectMapper;
+    public MappingJackson2XmlHttpMessageConverter jackson2XmlConverter() {
+        return new MappingJackson2XmlHttpMessageConverter(xmlObjectMapper);
     }
 }

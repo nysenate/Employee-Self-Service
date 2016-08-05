@@ -41,7 +41,7 @@ public interface RequisitionService {
     ImmutableList<Requisition> getRequisitionHistory(int requisitionId);
 
     /**
-     * Takes a list of requisition ids and marks them each as being saved in SFMS.
+     * Marks a requisition as being saved in sfms.
      */
-    void savedInSfms(List<Integer> requisitionIds);
+    void savedInSfms(int requisitionId);
 }
