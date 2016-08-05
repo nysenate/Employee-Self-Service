@@ -11,20 +11,20 @@
                 <div class="col-6-12 padding-10">
                     <label class="bold">Location:</label>
                     <select ng-model="selectedLocation" ng-options="location for location in locations"
-                            ng-change="reloadShipments()"></select>
+                            ng-change="onFilterChange()"></select>
                 </div>
                 <div class="col-6-12 padding-10">
                     <label class="bold">Issuer:</label>
                     <select ng-model="selectedIssuer" ng-options="emp for emp in issuers"
-                            ng-change="reloadShipments()"></select>
+                            ng-change="onFilterChange()"></select>
                 </div>
                 <div class="col-6-12" style="padding: 0 10px 10px 10px;">
                     <label class="bold">From:</label>
-                    <input datepicker ng-model="filter.date.from" ng-change="reloadShipments()"/>
+                    <input datepicker ng-model="filter.date.from" ng-change="onFilterChange()"/>
                 </div>
                 <div class="col-6-12" style="padding: 0 10px 10px 10px;">
                     <label class="bold">To:</label>
-                    <input datepicker ng-model="filter.date.to" ng-change="reloadShipments()"/>
+                    <input datepicker ng-model="filter.date.to" ng-change="onFilterChange()"/>
                 </div>
             </div>
         </div>
@@ -38,7 +38,7 @@
 
     <div class="content-container large-print-font-size" ng-show="shipments.length > 0">
         <div>
-            <dir-pagination-controls class="text-align-center" on-page-change="updateRequisitions()"
+            <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()"
                                      pagination-id="order-history-pagination"
                                      boundary-links="true" max-size="10"></dir-pagination-controls>
         </div>
