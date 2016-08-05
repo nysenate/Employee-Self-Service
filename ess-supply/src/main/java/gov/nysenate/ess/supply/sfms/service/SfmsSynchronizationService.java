@@ -27,7 +27,8 @@ public class SfmsSynchronizationService {
 
     private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationService.class);
 
-    @Value("${supply.synchronization.cron.enabled}") private boolean synchronizationEnabled;
+    @Value("${scheduler.supply.sfms_synchronization.enabled}")
+    private boolean synchronizationEnabled;
     @Autowired private RequisitionService requisitionService;
     @Autowired private SfmsSynchronizationProcedure synchronizationProcedure;
     @Autowired private ObjectMapper xmlObjectMapper;
@@ -42,7 +43,7 @@ public class SfmsSynchronizationService {
      *
      * Should be run at the top of each hour.
      */
-    @Scheduled(cron = "${supply.sfms.synchronization.cron}")
+    @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
     public void synchronizeRequisitions() {
         // Only run if enabled in app.properties.
         if (!synchronizationEnabled) {
