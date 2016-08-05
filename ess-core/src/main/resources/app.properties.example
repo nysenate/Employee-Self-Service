@@ -129,6 +129,9 @@ scheduler.timerecord.ensureall.enabled = false
 # (Default every night at midnight: 0 0 0 * * *)
 scheduler.timerecord.ensureall.cron = 0 0 0 * * *
 
+# Determines if the supply synchronization process will run
+supply.synchronization.cron.enabled = false
+
 # Determines when to run the supply to SFMS synchronization process
 supply.sfms.synchronization.cron = 0 0 0 * * *
 

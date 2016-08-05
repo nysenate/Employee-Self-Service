@@ -14,6 +14,7 @@ import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ public class SfmsSynchronizationService {
 
     private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationService.class);
 
+    @Value("${supply.synchronization.cron.enabled}") private boolean synchronizationEnabled;
     @Autowired private RequisitionService requisitionService;
     @Autowired private SfmsSynchronizationProcedure synchronizationProcedure;
     @Autowired private ObjectMapper xmlObjectMapper;
@@ -42,6 +44,10 @@ public class SfmsSynchronizationService {
      */
     @Scheduled(cron = "${supply.sfms.synchronization.cron}")
     public void synchronizeRequisitions() {
+        // Only run if enabled in app.properties.
+        if (!synchronizationEnabled) {
+            return;
+        }
         // Get all requisitions not saved in sfms since app release in 2016.
         LocalDateTime start = LocalDateTime.of(2016, 1, 1, 0, 0);
         LocalDateTime end = dateTimeFactory.now();
