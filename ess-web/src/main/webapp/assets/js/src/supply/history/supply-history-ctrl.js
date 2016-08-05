@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-    ['$scope', 'EmployeesByRoleApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi', 'PaginationModel', supplyHistoryController]);
+    ['$scope', 'SupplyEmployeesApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi', 'PaginationModel', supplyHistoryController]);
 
-function supplyHistoryController($scope, employeesByRoleApi, requisitionApi, locationService, locationApi, paginationModel) {
+function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, locationService, locationApi, paginationModel) {
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.loading = true;
     $scope.shipments = null;
@@ -46,7 +46,7 @@ function supplyHistoryController($scope, employeesByRoleApi, requisitionApi, loc
     function initFilters() {
         locationApi.get().$promise
             .then(setLocations);
-        employeesByRoleApi.get({role: "SUPPLY_EMPLOYEE"}).$promise
+        supplyEmployeesApi.get().$promise
             .then(setIssuers);
     }
 
