@@ -156,7 +156,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -169,7 +168,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -1274,7 +1274,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -1287,7 +1286,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -2279,7 +2279,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -2292,7 +2291,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -4226,7 +4226,6 @@ button.ui-button::-moz-focus-inner {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -4239,7 +4238,8 @@ button.ui-button::-moz-focus-inner {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -4810,7 +4810,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -4823,7 +4822,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -5872,7 +5872,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -5885,7 +5884,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -7078,7 +7078,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -7091,7 +7090,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -8896,7 +8896,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -8909,7 +8908,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -10144,7 +10144,6 @@ table.simple-table tbody tr td {
 }
 .ess-notification {
   padding: .3em;
-  padding-bottom: 20px;
   font-weight: bold;
   text-align: center;
   border-bottom: 1px solid #ddd;
@@ -10157,7 +10156,8 @@ table.simple-table tbody tr td {
 .ess-notification h3,
 .ess-notification h4,
 .ess-notification p,
-.ess-notification span {
+.ess-notification span,
+.ess-notification li {
   color: white;
 }
 .ess-notification ul {
@@ -11622,17 +11622,10 @@ table.approve-attendance-rec-table tbody td {
 table.approve-attendance-rec-table tbody td:nth-child(1) {
   border-right: 1px solid #ddd;
 }
-.small-employee-profile-pic {
-  height: 30px;
-  width: 30px;
-  background-size: 30px;
-  background-repeat: no-repeat;
-  background-image: url("http://strangebeaver.com/wp-content/uploads/2011/01/fb/16.jpg");
-}
 record-review-modal,
 [record-review-modal] {
   max-width: 90vw;
-  overflow-x: scroll;
+  overflow-x: auto;
   padding: 0.4em;
 }
 #record-review-content {
