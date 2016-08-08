@@ -53,7 +53,7 @@ public class SfmsSynchronizationService {
         LocalDateTime start = LocalDateTime.of(2016, 1, 1, 0, 0);
         LocalDateTime end = dateTimeFactory.now();
         Range<LocalDateTime> dateRange = Range.closed(start, end);
-        List<Requisition> requisitions = requisitionService.searchRequisitions("any", "any",
+        List<Requisition> requisitions = requisitionService.searchRequisitions("All", "All",
                                                                                EnumSet.of(RequisitionStatus.APPROVED),
                                                                                dateRange, "approved_date_time",
                                                                                "false", LimitOffset.ALL).getResults();
