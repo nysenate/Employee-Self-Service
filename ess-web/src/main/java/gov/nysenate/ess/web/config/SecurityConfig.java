@@ -1,9 +1,6 @@
 package gov.nysenate.ess.web.config;
 
-import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.web.security.filter.DepartmentalAuthorizationFilter;
 import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
-import gov.nysenate.ess.web.security.realm.EssLdapDbAuthzRealm;
 import gov.nysenate.ess.web.security.xsrf.XsrfTokenValidator;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.cache.CacheManager;
@@ -11,16 +8,15 @@ import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.SimpleAccountRealm;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 
@@ -37,18 +33,12 @@ public class SecurityConfig
     @Value("${login.success.url:/}") private String loginSuccessUrl;
     @Value("${xsrf.token.bytes:128}") private int xsrfBytesSize;
 
-    @Autowired private Environment environment;
-
-    @Autowired
-    private EssLdapDbAuthzRealm essAuthzRealm;
-
     /**
      * Shiro Filter factory that sets up the url authentication mechanism and applies the security
      * manager instance.
      */
     @Bean(name = "shiroFilter")
     public ShiroFilterFactoryBean shiroFilter() {
-        logger.info("{}", OutputUtils.toJson(environment.getActiveProfiles()));
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager());
         shiroFilter.setLoginUrl(loginUrl);
@@ -61,9 +51,8 @@ public class SecurityConfig
      * Configures the shiro security manager with the instance of the active realm.
      */
     @Bean(name = "securityManager")
-    public WebSecurityManager securityManager() {
+    public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(essAuthzRealm);
         securityManager.setCacheManager(shiroCacheManager());
         return securityManager;
     }
@@ -71,6 +60,17 @@ public class SecurityConfig
     @Bean(name = "shiroCacheManager")
     public CacheManager shiroCacheManager() {
         return new MemoryConstrainedCacheManager();
+    }
+
+    /**
+     * This is needed for Shiro annotations to work
+     * @return
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor() {
+        AuthorizationAttributeSourceAdvisor advisor = new AuthorizationAttributeSourceAdvisor();
+        advisor.setSecurityManager(securityManager());
+        return advisor;
     }
 
     /**
@@ -87,6 +87,7 @@ public class SecurityConfig
      * XsrfValidator implementation instance.
      */
     @Bean(name = "xsrfValidator")
+    @DependsOn("properties")
     public XsrfValidator xsrfValidator() {
         return new XsrfTokenValidator(xsrfBytesSize);
     }

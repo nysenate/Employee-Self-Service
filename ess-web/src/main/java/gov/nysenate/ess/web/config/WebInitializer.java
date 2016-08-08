@@ -21,9 +21,9 @@ import static javax.servlet.DispatcherType.*;
  * Note that this class is functionally equivalent to a web.xml configuration but we try
  * to do as much in Java to reduce complexity.
  */
-public class WebIntializer implements WebApplicationInitializer
+public class WebInitializer implements WebApplicationInitializer
 {
-    protected static String DISPATCHER_SERVLET_NAME = "timesheets";
+    protected static String DISPATCHER_SERVLET_NAME = "ess";
 
     /**
      * Bootstraps the web application. This method is invoked automatically by Spring.

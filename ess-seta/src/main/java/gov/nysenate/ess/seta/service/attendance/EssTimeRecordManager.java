@@ -3,31 +3,31 @@ package gov.nysenate.ess.seta.service.attendance;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import gov.nysenate.ess.core.service.auth.DepartmentalWhitelistService;
-import gov.nysenate.ess.core.service.period.PayPeriodService;
-import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.RangeUtils;
-import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.annotation.WorkInProgress;
-import gov.nysenate.ess.seta.dao.attendance.AttendanceDao;
-import gov.nysenate.ess.seta.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.seta.model.attendance.*;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
+import gov.nysenate.ess.core.model.transaction.TransactionRecord;
+import gov.nysenate.ess.core.service.auth.DepartmentalWhitelistService;
+import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
+import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.seta.dao.attendance.AttendanceDao;
+import gov.nysenate.ess.seta.dao.attendance.TimeRecordDao;
+import gov.nysenate.ess.seta.model.attendance.*;
 import gov.nysenate.ess.seta.service.accrual.AccrualInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +57,7 @@ public class EssTimeRecordManager implements TimeRecordManager
     @Autowired protected AttendanceDao attendanceDao;
 
     /** --- Services --- */
+    @Lazy
     @Autowired protected TimeRecordService timeRecordService;
     @Autowired protected AccrualInfoService accrualInfoService;
     @Autowired protected PayPeriodService payPeriodService;
