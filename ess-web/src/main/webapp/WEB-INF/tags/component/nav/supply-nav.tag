@@ -21,7 +21,7 @@
     </ul>
     </shiro:hasPermission>
   </section>
-  <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="shouldDisplayCategoryFilter">
+  <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController" ng-show="shouldDisplayCategoryFilter()">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
     <div class="padding-10">
       <a style="padding-left: 10px;" ng-click="clearSelections()">
@@ -30,7 +30,7 @@
     </div>
     <div style="height: 300px; overflow-y: auto">
       <ul class="sub-topic-list">
-        <li ng-repeat="cat in categories">
+        <li ng-repeat="cat in getCategories()">
           <input type="checkbox" ng-model="cat.selected" ng-change="onCategorySelected()">
           <label>{{cat.name}}</label>
         </li>

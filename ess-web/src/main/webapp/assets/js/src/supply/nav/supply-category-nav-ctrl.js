@@ -1,29 +1,30 @@
 var essSupply = angular.module('essSupply').controller('SupplyNavigationController',
-    ['$scope', 'appProps', 'LocationService', 'SupplyCategoryService', supplyNavigationController]);
+    ['$scope', '$location', 'appProps', 'LocationService', 'SupplyCategoryService', 'SupplyOrderDestinationService', supplyNavigationController]);
 
-function supplyNavigationController($scope, appProps, locationService, SupplyCategoryService) {
+function supplyNavigationController($scope, $location, appProps, locationService, categoryService, destinationService) {
 
-    $scope.categories = null;
-    $scope.shouldDisplayCategoryFilter = null;
-
-    $scope.init = function() {
-        $scope.categories = SupplyCategoryService.getCategories();
+    $scope.getCategories = function () {
+        return categoryService.getCategories();
     };
 
-    $scope.init();
+    $scope.shouldDisplayCategoryFilter = function () {
+        return onRequisitionOrderPage($location.path()) && destinationIsSelected();
+    };
 
-    /** Only display the categories sidebar if on requisition order page.
-     * Update selected categories when back/forward navigation is used. */
-    $scope.$on('$locationChangeStart', function(event, newUrl) {
-        $scope.shouldDisplayCategoryFilter = isRequisitionOrderPage(newUrl);
-        if($scope.shouldDisplayCategoryFilter) {
+    function onRequisitionOrderPage(path) {
+        return path === appProps.ctxPath + "/supply/order"
+    }
+
+    function destinationIsSelected() {
+        return destinationService.isDestinationConfirmed();
+    }
+
+    /** Update selected categories when back/forward navigation is used. */
+    $scope.$on('$locationChangeStart', function (event, newUrl) {
+        if ($scope.shouldDisplayCategoryFilter) {
             updateSelectedCategoriesFromUrl();
         }
     });
-
-    function isRequisitionOrderPage(url) {
-        return url.indexOf(appProps.ctxPath + "/supply/order") > -1;
-    }
 
     /**
      * This updates the category sidebar checkboxes to match the categories
@@ -31,7 +32,7 @@ function supplyNavigationController($scope, appProps, locationService, SupplyCat
      */
     function updateSelectedCategoriesFromUrl() {
         var categoryNamesInUrl = locationService.getSearchParam("category") || [];
-        angular.forEach($scope.categories, function(category) {
+        angular.forEach(categoryService.getCategories(), function (category) {
             category.selected = categoryNamesInUrl.indexOf(category.name) !== -1;
         });
     }
@@ -40,16 +41,16 @@ function supplyNavigationController($scope, appProps, locationService, SupplyCat
      * When a category is selected, add it to the url params.
      * The order page controller depends on the url params to know which categories are selected.
      */
-    $scope.onCategorySelected = function() {
+    $scope.onCategorySelected = function () {
         var selectedCategoryNames = [];
-        angular.forEach($scope.categories, function(category) {
-            if(category.selected) selectedCategoryNames.push(category.name);
+        angular.forEach(categoryService.getCategories(), function (category) {
+            if (category.selected) selectedCategoryNames.push(category.name);
         });
         locationService.setSearchParam("category", selectedCategoryNames, true, false);
     };
-    
+
     $scope.clearSelections = function () {
-        angular.forEach($scope.categories, function (cat) {
+        angular.forEach(categoryService.getCategories(), function (cat) {
             cat.selected = false;
         });
         $scope.onCategorySelected();
