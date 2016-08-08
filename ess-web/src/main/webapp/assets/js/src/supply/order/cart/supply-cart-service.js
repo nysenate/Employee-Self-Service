@@ -16,8 +16,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
 
     return {
         isOverOrderAllowance: function (item, quantity) {
-            var allowance = allowanceService.getAllowanceByItemId(item.id);
-            if (newQuantity(quantity, this.getCartLineItem(item.id)) > allowance.perOrderAllowance) {
+            if (newQuantity(quantity, this.getCartLineItem(item.id)) > item.maxQtyPerOrder) {
                 return true;
             }
             return false;

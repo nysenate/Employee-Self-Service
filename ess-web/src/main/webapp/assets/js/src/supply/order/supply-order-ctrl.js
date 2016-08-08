@@ -1,9 +1,9 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', supplyOrderController]);
+        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService, modals) {
+                               allowanceService, destinationService, modals, supplyUtils) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
@@ -17,6 +17,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         searchTerm: "",
         categories: []
     };
+
+    // All allowances for the selected destination.
+    var allowances = [];
 
     // An array of allowances which match the current filters.
     $scope.displayAllowances = [];
@@ -60,12 +63,18 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     function loadShoppingInfo() {
         $scope.state = $scope.states.LOADING;
         allowanceService.queryLocationAllowance(destinationService.getDestination())
+            .then(saveAllowances)
             .then(filterAllowances)
             .then(setToShoppingState);
     }
 
+    function saveAllowances(allowanceResponse) {
+        allowances = allowanceResponse.result.itemAllowances;
+    }
+
     function filterAllowances() {
-        $scope.displayAllowances = allowanceService.getFilteredAllowances($scope.filter.categories, $scope.filter.searchTerm);
+        $scope.displayAllowances = allowanceService.filterAllowances(allowances, $scope.filter.categories, $scope.filter.searchTerm);
+        $scope.displayAllowances = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
     }
 
     function setToShoppingState() {
@@ -137,8 +146,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         return supplyCart.isItemInCart(item.id)
     };
 
-    $scope.getAllowedQuantities = function (allowance) {
-        var allowedQuantities = allowanceService.getAllowedQuantities(allowance);
+    $scope.getAllowedQuantities = function (item) {
+        var allowedQuantities = allowanceService.getAllowedQuantities(item);
         allowedQuantities.push("more");
         return allowedQuantities;
     };

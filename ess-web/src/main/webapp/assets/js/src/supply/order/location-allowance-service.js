@@ -1,9 +1,7 @@
 angular.module('essSupply').service('SupplyLocationAllowanceService',
-    ['SupplyLocationAllowanceApi', 'SupplyUtils', locationAllowanceService]);
+    ['SupplyLocationAllowanceApi', locationAllowanceService]);
 
-function locationAllowanceService(allowanceApi, supplyUtils) {
-
-    var allowances = undefined;
+function locationAllowanceService(allowanceApi) {
 
     function filterAllowancesByCategories(allowances, categories) {
         if (categories.length === 0) {
@@ -30,38 +28,41 @@ function locationAllowanceService(allowanceApi, supplyUtils) {
 
     return {
         queryLocationAllowance: function (location) {
-            return allowanceApi.get({id: location.locId}, function (response) {
-                allowances = supplyUtils.alphabetizeAllowances(response.result.itemAllowances);
-            }).$promise;
+            return allowanceApi.get({id: location.locId}).$promise;
         },
 
-        /** Returns allowances belonging to one of the given categories and a description containing the searchTerm. */
-        getFilteredAllowances: function (categories, searchTerm) {
-            return filterAllowancesBySearch(filterAllowancesByCategories(angular.copy(allowances), categories), searchTerm);
-        },
-
-        getAllowances: function () {
-            return angular.copy(allowances);
-        },
-
-        getAllowanceByItemId: function (itemId) {
-            for (var i = 0; i < allowances.length; i++) {
-                if (allowances[i].item.id === itemId) {
-                    return allowances[i];
-                }
+        /**
+         * Returns a new array of allowances with each element belonging to one of the
+         * supplied categories and with a description matching the search term.
+         *
+         * Does not modify the supplied allowances array.
+         *
+         * @param allowances An array of allowances to filter.
+         * @param categories An array of categories. The returned allowances must belong
+         * to at least one of these categories.
+         * @param searchTerm A search term that the returned allowance's description must contain.
+         */
+        filterAllowances: function (allowances, categories, searchTerm) {
+            var filteredAllowances = angular.copy(allowances);
+            if (categories !== undefined && categories !== null && categories.length > 0) {
+                filteredAllowances = filterAllowancesByCategories(filteredAllowances, categories);
             }
+            if (searchTerm !== undefined && searchTerm !== null && searchTerm.length > 0) {
+                filteredAllowances = filterAllowancesBySearch(filteredAllowances, searchTerm);
+            }
+            return filteredAllowances;
         },
 
         /**
          * Returns an array with integers from 1 to the per order allowance for an allowance.
          */
-        getAllowedQuantities: function (allowance) {
+        getAllowedQuantities: function (item) {
             // Some items have an per order allowance of 99999, this is too much, cap it at 50.
-            if (allowance.perOrderAllowance > 50) {
-                allowance.perOrderAllowance = 50;
+            if (item.maxQtyPerOrder > 50) {
+                item.maxQtyPerOrder = 50;
             }
             var range = [];
-            for (var i = 1; i <= allowance.perOrderAllowance; i++) {
+            for (var i = 1; i <= item.maxQtyPerOrder; i++) {
                 range.push(i);
             }
             return range;

@@ -11,12 +11,13 @@ essSupply.service('SupplyUtils', [function () {
         },
         
         alphabetizeAllowances: function (allowances) {
-            allowances.sort(function (a, b) {
+            var allowancesCopy = angular.copy(allowances);
+            allowancesCopy.sort(function (a, b) {
                 if (a.item.description < b.item.description) return -1;
                 if (a.item.description > b.item.description) return 1;
                 return 0;
             });
-            return allowances;
+            return allowancesCopy;
         }
     }
 }]);

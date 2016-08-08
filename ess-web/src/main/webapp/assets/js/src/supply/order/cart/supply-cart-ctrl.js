@@ -10,7 +10,7 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
     };
 
     $scope.orderQuantityRange = function (item) {
-        return allowanceService.getAllowedQuantities(allowanceService.getAllowanceByItemId(item.id))
+        return allowanceService.getAllowedQuantities(item)
     };
 
     $scope.cartHasItems = function () {
@@ -38,7 +38,7 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
     };
 
     $scope.orderedOverRecommended = function (cartItem) {
-        return cartItem.quantity > allowanceService.getAllowanceByItemId(cartItem.item.id).perOrderAllowance;
+        return cartItem.quantity > cartItem.item.maxQtyPerOrder;
     };
 
     $scope.closeModal = function () {
