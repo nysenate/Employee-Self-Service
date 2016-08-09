@@ -77,7 +77,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String from,
                                            @RequestParam(required = false) String to,
                                            @RequestParam(defaultValue = "All", required = false) String issuerId,
-                                           @RequestParam(defaultValue = "All", required = false) String pageId,
                                            @RequestParam(required = false) String dateField,
                                            @RequestParam(defaultValue = "All", required = false) String savedInSfms,
                                            WebRequest webRequest) {
