@@ -89,10 +89,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         LimitOffset limoff = getLimitOffset(webRequest, 25);
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Requisition> results;
-        if (!issuerId.equals("All"))
-            results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff, issuerId);
-        else
-            results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff);
+        results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff, issuerId);
         List<RequisitionView> resultViews = results.getResults().stream()
                                                    .map(RequisitionView::new)
                                                    .collect(Collectors.toList());

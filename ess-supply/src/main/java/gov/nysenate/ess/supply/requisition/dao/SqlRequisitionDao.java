@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -24,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
@@ -90,22 +92,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public synchronized PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                                      Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("destination", formatSearchString(destination))
-                .addValue("customerId", formatSearchString(customerId))
-                .addValue("statuses", extractEnumSetParams(statuses))
-                .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
-                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)))
-                .addValue("savedInSfms", formatSearchString(savedInSfms));
-        ensureValidColumn(dateField);
-        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
-        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
-        localNamedJdbc.query(sql, params, paginatedRowHandler);
-        return paginatedRowHandler.getList();
-    }
-
     public synchronized PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                                       Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID) {
         MapSqlParameterSource params = new MapSqlParameterSource()

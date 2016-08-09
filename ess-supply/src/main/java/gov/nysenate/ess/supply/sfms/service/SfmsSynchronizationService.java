@@ -56,7 +56,7 @@ public class SfmsSynchronizationService {
         List<Requisition> requisitions = requisitionService.searchRequisitions("All", "All",
                                                                                EnumSet.of(RequisitionStatus.APPROVED),
                                                                                dateRange, "approved_date_time",
-                                                                               "false", LimitOffset.ALL).getResults();
+                "false", LimitOffset.ALL, "All").getResults();
         logger.info("Synchronizing {} requisitions with SFMS.", requisitions.size());
         for (Requisition requisition : requisitions) {
             int result = synchronizationProcedure.synchronizeRequisition(toXml(requisition));

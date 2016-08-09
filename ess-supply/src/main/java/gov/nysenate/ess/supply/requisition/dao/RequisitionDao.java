@@ -9,7 +9,6 @@ import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 
 public interface RequisitionDao {
@@ -17,9 +16,6 @@ public interface RequisitionDao {
     Requisition saveRequisition(Requisition requisition);
 
     Optional<Requisition> getRequisitionById(int requisitionId);
-
-    PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerId);

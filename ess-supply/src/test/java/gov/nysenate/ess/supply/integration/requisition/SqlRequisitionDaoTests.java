@@ -14,10 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 @Transactional
 @TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
 public class SqlRequisitionDaoTests extends SupplyTests {
@@ -38,7 +34,7 @@ public class SqlRequisitionDaoTests extends SupplyTests {
     public void canSearchRequisitions() {
         Range<LocalDateTime> dateRange = Range.closed(LocalDateTime.now().minusMonths(1), LocalDateTime.now());
         requisitionDao.searchRequisitions("A42FB", "any", EnumSet.allOf(RequisitionStatus.class),
-                                          dateRange, "ordered_date_time", "any", LimitOffset.ALL);
+                dateRange, "ordered_date_time", "any", LimitOffset.ALL, "All");
     }
 
     @Test
