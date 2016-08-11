@@ -39,12 +39,20 @@
   <div ng-show="state === states.SHOPPING">
     <div class="content-container">
       <%--Search--%>
-      <div class="padding-10" style="text-align: center">
-        <form>
-          <input type="text"
-                 ng-model="filter.searchTerm">
-          <input class="submit-button" ng-click="search()" type="submit" value="Search">
-        </form>
+      <div class="padding-10" style="display: flex; justify-content: space-between;">
+        <div style="display: inline-block;">
+          <span class="supply-text">Destination: </span>{{destinationCode}}
+        </div>
+        <div style="display: inline-block;">
+          <form>
+            <input type="text"
+                   ng-model="filter.searchTerm">
+            <input class="submit-button" ng-click="search()" type="submit" value="Search">
+          </form>
+        </div>
+        <div style="display: inline-block;">
+          <a ng-click="resetDestination()">Cancel Requisition</a>
+        </div>
       </div>
 
       <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()" pagination-id="item-pagination"
@@ -58,11 +66,11 @@
            pagination-id="item-pagination">
         <div class="content-container padding-10"
              ng-class="{'supply-special-item': allowance.visibility === 'SPECIAL'}">
-            <img ng-src="${imageUrl}/{{allowance.item.commodityCode}}.jpg"
-                 err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
-                 class="supply-item-image">
+          <img ng-src="${imageUrl}/{{allowance.item.commodityCode}}.jpg"
+               err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
+               class="supply-item-image">
           <div>
-              <p class="dark-gray bold" style="height: 40px;overflow: hidden;">{{allowance.item.description}}</p>
+            <p class="dark-gray bold" style="height: 40px;overflow: hidden;">{{allowance.item.description}}</p>
             <p class="dark-gray">{{allowance.item.standardQuantity}}/Pack</p>
           </div>
           <div style="">

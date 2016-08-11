@@ -34,10 +34,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.paginate.itemsPerPage = 16;
         updateFiltersFromUrlParams();
         if (!destinationService.isDestinationConfirmed()) {
-            loadDestinationInfo();
+            loadSelectDestinationState();
         }
         else {
-            loadShoppingInfo();
+            loadShoppingState();
         }
     };
 
@@ -45,7 +45,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     /** --- State --- */
 
-    function loadDestinationInfo() {
+    function loadSelectDestinationState() {
         locationAutocompleteService.initWithResponsibilityHeadLocations()
             .then(destinationService.queryDefaultDestination)
             .then(setDestinationCode)
@@ -60,8 +60,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.state = $scope.states.SELECTING_DESTINATION;
     }
 
-    function loadShoppingInfo() {
+    function loadShoppingState() {
         $scope.state = $scope.states.LOADING;
+        $scope.destinationCode = destinationService.getDestination().code;
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(saveAllowances)
             .then(filterAllowances)
@@ -168,13 +169,19 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.confirmDestination = function () {
         var success = destinationService.setDestination($scope.destinationCode);
         if (success) {
-            loadShoppingInfo();
+            loadShoppingState();
         }
     };
 
     $scope.getLocationAutocompleteOptions = function () {
         return locationAutocompleteService.getLocationAutocompleteOptions();
     };
+
+    $scope.resetDestination = function () {
+        supplyCart.reset();
+        destinationService.reset();
+        locationService.go("/supply/order", true);
+    }
 }
 
 /**

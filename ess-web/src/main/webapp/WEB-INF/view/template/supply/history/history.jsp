@@ -5,7 +5,7 @@
         </div>
 
         <div>
-            <p class="content-info dark-blue-purple bold large-print-font-size" style="margin-bottom: 0px;">Show
+            <p class="content-info supply-text large-print-font-size" style="margin-bottom: 0px;">Show
                 Requisitions ordered during the following date range.</p>
             <div class="grid text-align-center">
                 <div class="col-6-12 padding-10">

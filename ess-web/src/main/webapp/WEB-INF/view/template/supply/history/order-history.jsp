@@ -6,7 +6,7 @@
   <div loader-indicator class="loader" ng-show="loading === true"></div>
 
   <div class="content-container" ng-show="loading === false">
-    <h4 class="content-info dark-blue-purple" style="margin-bottom: 0;">Recently ordered requisitions</h4>
+    <h4 class="content-info supply-text" style="margin-bottom: 0;">Recently ordered requisitions</h4>
 
     <%--Filters--%>
     <div class="grid">
