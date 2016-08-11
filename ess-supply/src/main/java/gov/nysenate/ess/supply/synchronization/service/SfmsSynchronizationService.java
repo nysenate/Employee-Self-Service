@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.sfms.service;
+package gov.nysenate.ess.supply.synchronization.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
-import gov.nysenate.ess.supply.sfms.dao.SfmsSynchronizationProcedure;
+import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +37,10 @@ public class SfmsSynchronizationService {
     /**
      * Inserts supply requisitions into SFMS for all requisitions where savedInSfms = <code>false</code>
      * On success, savedInSfms gets set to <code>true</code>.
-     *
+     * <p>
      * Checks all requisitions, so any errors in previous runs will be
      * automatically attempted again in the next run.
-     *
+     * <p>
      * Should be run at the top of each hour.
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
@@ -56,7 +56,7 @@ public class SfmsSynchronizationService {
         List<Requisition> requisitions = requisitionService.searchRequisitions("All", "All",
                                                                                EnumSet.of(RequisitionStatus.APPROVED),
                                                                                dateRange, "approved_date_time",
-                "false", LimitOffset.ALL, "All").getResults();
+                                                                               "false", LimitOffset.ALL, "All").getResults();
         logger.info("Synchronizing {} requisitions with SFMS.", requisitions.size());
         for (Requisition requisition : requisitions) {
             int result = synchronizationProcedure.synchronizeRequisition(toXml(requisition));
@@ -69,6 +69,7 @@ public class SfmsSynchronizationService {
     /**
      * Serialize requisition to xml. Does not use {@link OutputUtils} because the SFMS
      * procedure expects dates to be ISO strings.
+     *
      * @param requisition
      * @return
      */

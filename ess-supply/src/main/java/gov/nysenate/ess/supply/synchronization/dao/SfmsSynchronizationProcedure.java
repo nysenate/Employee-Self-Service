@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.sfms.dao;
+package gov.nysenate.ess.supply.synchronization.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import gov.nysenate.ess.core.config.CoreConfig;
