@@ -7,5 +7,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile({"test", "dev", "prod"})
 @Import({PropertyConfig.class, LdapConfig.class, EventBusConfig.class, SchedulerConfig.class,
-        DbConnectionPoolConfig.class, DatabaseConfig.class, CacheConfig.class, BeanPostProcessorConfig.class})
+        DbConnectionPoolConfig.class, DatabaseConfig.class, CacheConfig.class, BeanPostProcessorConfig.class,
+        FreemarkerConfig.class})
 public class BaseConfig {}

@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.notification.email.simple.service;
 
-import gov.nysenate.ess.core.service.mail.MimeSendMailService;
+import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.notification.NotificationUtils;
 import gov.nysenate.ess.core.service.notification.base.handler.base.DeliverServices;
 import gov.nysenate.ess.core.service.notification.base.message.base.Component;
@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleE
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailTemplate;
 import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,7 +22,10 @@ import java.util.Map;
  */
 
 @Service
-public class SimpleEmailService extends MimeSendMailService implements DeliverServices<SimpleEmailMessage> {
+public class SimpleEmailService implements DeliverServices<SimpleEmailMessage> {
+
+    @Autowired SendMailService sendMailService;
+
     @Override
     public void delivery(SimpleEmailMessage message) throws ClassNotFoundException {
         List<Component> list = message.getComponent();
@@ -46,6 +50,6 @@ public class SimpleEmailService extends MimeSendMailService implements DeliverSe
                 map.entrySet()) {
             content = content.replace(e.getKey(), e.getValue());
         }
-        sendMessage(message.getReceiver().getEmail(), message.getSender().getEmail(), subject, content);
+        sendMailService.sendMessage(message.getReceiver().getEmail(), message.getSender().getEmail(), subject, content);
     }
 }
