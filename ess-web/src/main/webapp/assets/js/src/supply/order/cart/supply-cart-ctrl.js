@@ -1,9 +1,20 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
     '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplyRequisitionApi',
-    'SupplyOrderDestinationService', 'appProps', 'modals', supplyCartController]);
+    'SupplyOrderDestinationService', 'appProps', 'modals', 'LocationService', supplyCartController]);
 
 function supplyCartController($scope, cookies, supplyCart, allowanceService, requisitionApi,
-                              destinationService, appProps, modals) {
+                              destinationService, appProps, modals, locationService) {
+
+    $scope.destinationCode = null;
+
+    $scope.init = function () {
+        var destination = destinationService.getDestination();
+        if (destination != null) {
+            $scope.destinationCode = destination.code;
+        }
+    };
+
+    $scope.init();
 
     $scope.myCartItems = function () {
         return supplyCart.getCart();
@@ -48,5 +59,11 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
     $scope.viewOrder = function () {
         modals.resolve();
         // locationService.go("/supply/history/location-history", false);
+    };
+
+    $scope.resetDestination = function () {
+        supplyCart.reset();
+        destinationService.reset();
+        locationService.go("/supply/order", true);
     }
 }

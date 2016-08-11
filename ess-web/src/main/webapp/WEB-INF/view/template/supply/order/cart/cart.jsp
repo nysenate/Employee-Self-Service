@@ -16,6 +16,17 @@
   </div>
 
   <div class="content-container">
+    <div class="content-info" ng-show="cartHasItems()">
+      <div class="padding-10" style="display: flex; justify-content: space-between;">
+        <div style="display: inline-block;">
+          <span class="supply-text">Destination: </span>{{destinationCode}}
+        </div>
+        <div style="display: inline-block;">
+          <a ng-click="resetDestination()">Cancel Requisition</a>
+        </div>
+      </div>
+    </div>
+
     <div class="grid" ng-class="{'padding-top-10': $first}" ng-repeat="cartItem in myCartItems()">
       <hr ng-if="!$first"/>
       <div class="col-4-12 text-align-center">
@@ -66,7 +77,7 @@
 
   <div modal-container>
     <cart-checkout-modal ng-if="isOpen('supply-cart-checkout-modal')">
-      </cart-checkout-modal>
+    </cart-checkout-modal>
   </div>
 
 </div>
