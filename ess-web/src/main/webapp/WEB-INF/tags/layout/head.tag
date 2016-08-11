@@ -16,6 +16,7 @@
             loginUrl: '${loginUrl}',
             imageUrl: '${imageUrl}',
             sessionId: '${sessionId}',
+            releaseVersion: '${releaseVersion}',
             timeoutExempt: '${timeoutExempt}',
             miscLeaves: ${miscLeaves}
         };

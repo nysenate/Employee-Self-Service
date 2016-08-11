@@ -40,10 +40,11 @@ public class CommonAttributeFilter implements Filter
     public static String IMAGE_URL_ATTRIBUTE = "imageUrl";
     public static String TIMEOUT_ATTRIBUTE = "timeoutExempt";
     public static String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
-
+    public static String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
     @Value("${runtime.level}") private String runtimeLevel;
     @Value("${login.url}") private String loginUrl;
-
+    @Value("${cache.frontend.expire}")
+    private long webCache;
     @Value("${image.url}")
     private String imageUrl;
 
@@ -67,12 +68,23 @@ public class CommonAttributeFilter implements Filter
         setLoginUrlAttribute(request);
         setXsrfTokenAttribute(httpServletRequest);
         setMiscLeaveAttribute(httpServletRequest);
+        setReleaseVersionAttribute(httpServletRequest);
+        setDisableCache(response);
         setImageUrl(request);
         chain.doFilter(request, response);
     }
 
     private static void setContextPathAttribute(HttpServletRequest httpServletRequest) {
         httpServletRequest.setAttribute(CONTEXT_PATH_ATTRIBUTE, httpServletRequest.getContextPath());
+    }
+
+    private void setDisableCache(ServletResponse response) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        long now = System.currentTimeMillis();
+        httpServletResponse.addHeader("Cache-Control", "max-age=" + webCache);
+        httpServletResponse.addHeader("Cache-Control", "must-revalidate");
+        httpServletResponse.setDateHeader("Last-Modified", now);
+        httpServletResponse.setDateHeader("Expires", now + webCache * 1000);
     }
 
     private static void setTimeoutAttribute(HttpServletRequest httpServletRequest) {
@@ -111,6 +123,10 @@ public class CommonAttributeFilter implements Filter
 
     private static void setMiscLeaveAttribute(HttpServletRequest request) {
         request.setAttribute(MISC_LEAVE_ATTRIBUTE, MiscLeaveType.getJsonLabels());
+    }
+
+    private void setReleaseVersionAttribute(HttpServletRequest request) {
+        request.setAttribute(RELEASEVERSION_ATTRIBUTE, "1");
     }
 
     /** Life-cycle is maintained by Spring. The init method is not used. */

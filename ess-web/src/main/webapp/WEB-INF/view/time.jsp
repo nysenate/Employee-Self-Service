@@ -8,33 +8,49 @@
     <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
     <jsp:body>
         <ess:ts-assets/>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/time.js"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/time.js?v=${releaseVersion}"></script>
 
         <!-- Time Entry -->
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-filters.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-directives.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-utils.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-entry-ctrl.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-history-ctrl.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-manage-ctrl.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/supervisor-record-list.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-review-modal.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-emp-history-ctrl.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/record/record-validation.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-filters.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-directives.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-utils.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-entry-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-history-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-manage-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/supervisor-record-list.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-review-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-emp-history-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-validation.js?v=${releaseVersion}"></script>
 
         <!-- Time Off Requests -->
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/timeoff/new-request-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/timeoff/new-request-ctrl.js?v=${releaseVersion}"></script>
 
         <!-- Pay Period Viewer -->
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/period/pay-period-view-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/period/pay-period-view-ctrl.js?v=${releaseVersion}"></script>
 
         <!-- Accruals -->
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/accrual/accrual-history-ctrl.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/accrual/accrual-projection-ctrl.js"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/accrual/accrual-utils.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/accrual-history-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/accrual-projection-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/accrual-utils.js?v=${releaseVersion}"></script>
 
         <!-- Grants -->
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/time/grant/grant-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/grant/grant-ctrl.js?v=${releaseVersion}"></script>
 
     </jsp:body>
 </ess-layout:head>

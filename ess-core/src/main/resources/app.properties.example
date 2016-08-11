@@ -144,3 +144,8 @@ timeout = 900
 
 #absolute path prefix for images
 image.url = /assets/supply_photos
+
+# -------------------Web Cache------------------------------------------------
+
+# in secs, 0  = no cache
+cache.frontend.expire = 60
