@@ -50,7 +50,7 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
      */
     @PostConstruct
     public void init() throws IOException {
-        emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
+//        emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
     }
 
     /** {@inheritDoc} */
