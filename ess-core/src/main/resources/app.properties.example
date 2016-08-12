@@ -149,3 +149,4 @@ image.url = /assets/supply_photos
 
 # in secs, 0  = no cache
 cache.frontend.expire = 60
+
