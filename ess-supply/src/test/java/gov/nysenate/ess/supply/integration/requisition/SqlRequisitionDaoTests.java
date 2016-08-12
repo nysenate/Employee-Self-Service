@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
-import gov.nysenate.ess.supply.unit.requisition.RequisitionFixture;
+import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.TransactionConfiguration;

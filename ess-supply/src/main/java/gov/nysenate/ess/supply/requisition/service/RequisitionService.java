@@ -17,6 +17,8 @@ public interface RequisitionService {
 
     Optional<Requisition> getRequisitionById(int requisitionId);
 
+    PaginatedList<Requisition> searchRequisitions(Range<LocalDateTime> dateRange);
+
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                   Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID);
     /**

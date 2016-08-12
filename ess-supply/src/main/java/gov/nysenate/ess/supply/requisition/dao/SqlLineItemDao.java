@@ -1,10 +1,13 @@
 package gov.nysenate.ess.supply.requisition.dao;
 
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -50,6 +54,18 @@ public class SqlLineItemDao extends SqlBaseDao {
         return handler.getLineItems();
     }
 
+    public Set<LineItem> getAggregateLineItems(LocationId locationId, Range<LocalDateTime> dateRange) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("locationId", locationId.toString())
+                .addValue("from", toDate(DateUtils.startOfDateTimeRange(dateRange)))
+                .addValue("to", toDate(DateUtils.endOfDateTimeRange(dateRange)));
+        String sql = SqlReqLineItemQuery.LOCATION_AGGREGATE_LINE_ITEMS.getSql(schemaMap());
+        ReqLineItemHandler handler = new ReqLineItemHandler(itemService);
+        localNamedJdbc.query(sql, params, handler);
+        // TODO not going to work, need to sum all items
+        return handler.getLineItems();
+    }
+
     private enum SqlReqLineItemQuery implements BasicSqlQuery {
 
         INSERT_LINE_ITEM(
@@ -60,6 +76,13 @@ public class SqlLineItemDao extends SqlBaseDao {
                 "SELECT item_id, quantity \n" +
                 "FROM ${supplySchema}.line_item \n" +
                 "WHERE revision_id = :revisionId"
+        ),
+        LOCATION_AGGREGATE_LINE_ITEMS(
+                "SELECT item_id, quantity FROM ${supplySchema}.line_item i \n" +
+                "INNER JOIN ${supplySchema}.requisition_content c ON c.revision_id = i.revision_id \n" +
+                "INNER JOIN ${supplySchema}.requisition r ON r.current_revision_id = c.revision_id \n" +
+                "WHERE c.destination = :locationId \n" +
+                "AND r.ordered_date_time BETWEEN :from AND :to"
         );
 
         SqlReqLineItemQuery(String sql) {

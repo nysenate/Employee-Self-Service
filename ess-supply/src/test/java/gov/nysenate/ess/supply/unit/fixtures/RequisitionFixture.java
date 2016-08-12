@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.unit.requisition;
+package gov.nysenate.ess.supply.unit.fixtures;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
@@ -26,13 +26,13 @@ public class RequisitionFixture {
                 .withStatus(RequisitionStatus.PENDING)
                 .withIssuer(createEmployeeWithId(2))
                 .withModifiedBy(createEmployeeWithId(1))
-                .withModifiedDateTime(LocalDateTime.now())
-                .withOrderedDateTime(LocalDateTime.now())
+                .withModifiedDateTime(LocalDateTime.of(2016, 1, 1, 1, 1))
+                .withOrderedDateTime(LocalDateTime.of(2016, 1, 1, 1, 1))
                 .build();
     }
 
     public static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(2, "", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
+        SupplyItem stubItem = new SupplyItem(2, "AA", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
         Set<LineItem> stubLineItems = new HashSet<>();
         stubLineItems.add(new LineItem(stubItem, 1));
         return stubLineItems;
