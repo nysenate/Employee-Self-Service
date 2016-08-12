@@ -9820,8 +9820,9 @@ button.ui-button::-moz-focus-inner {
 .supply-order-hero span {
   color: #ffffff;
 }
-.dark-blue-purple {
+.supply-text {
   color: #374282;
+  font-weight: bold;
 }
 .requisition-title {
   display: inline-block;
