@@ -20,12 +20,16 @@ public class TimeRecordEmailServiceTests extends SetaTests {
 
     @Test
     public void timeRecordNotificationTest() {
-        int empId = 11423;
-
-        Collection<TimeRecord> activeRecords = timeRecordService.getActiveTimeRecords(empId);
-        logger.info("sending emails...");
-        timeRecordEmailService.sendEmailReminders(9896, activeRecords);
-        logger.info("sent");
+        /**
+         * Uncomment to run test
+         * We do not want this test to run automatically because it will send somebody emails
+         */
+//        int empId = -1;
+//
+//        Collection<TimeRecord> activeRecords = timeRecordService.getActiveTimeRecords(empId);
+//        logger.info("sending emails...");
+//        timeRecordEmailService.sendEmailReminders(9896, activeRecords);
+//        logger.info("sent");
     }
 
 }

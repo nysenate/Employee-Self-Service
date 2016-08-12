@@ -3,6 +3,7 @@ package gov.nysenate.ess.web.controller.page;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.ShiroUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.subject.Subject;
@@ -35,10 +36,6 @@ public abstract class BaseEssPageCtrl
     }
 
     protected SenatePerson getUser() {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
-            return (SenatePerson) subject.getPrincipal();
-        }
-        throw new UnauthenticatedException("User has not been authenticated.");
+        return ShiroUtils.getAuthenticatedUser();
     }
 }

@@ -1,14 +1,21 @@
 package gov.nysenate.ess.seta.controller.api;
 
 import com.google.common.collect.*;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.seta.client.response.InvalidTimeRecordResponse;
+import gov.nysenate.ess.seta.client.view.TimeRecordNotFoundData;
 import gov.nysenate.ess.seta.client.view.TimeRecordView;
 import gov.nysenate.ess.seta.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
@@ -19,12 +26,14 @@ import gov.nysenate.ess.seta.model.auth.EssTimePermission;
 import gov.nysenate.ess.seta.model.personnel.SupervisorException;
 import gov.nysenate.ess.seta.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.seta.service.attendance.TimeRecordManager;
+import gov.nysenate.ess.seta.service.attendance.TimeRecordNotFoundEx;
 import gov.nysenate.ess.seta.service.attendance.TimeRecordService;
 import gov.nysenate.ess.seta.service.attendance.validation.InvalidTimeRecordException;
 import gov.nysenate.ess.seta.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.seta.service.notification.TimeRecordEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +46,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.SUPERVISOR_TIME_RECORDS;
-import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.TIME_RECORDS;
-import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.TIME_RECORD_ACTIVE_YEARS;
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -58,6 +65,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @Autowired AttendanceDao attendanceDao;
 
     @Autowired TimeRecordValidationService validationService;
+
+    @Autowired TimeRecordEmailService emailService;
 
     /**
      * Get Time Record API
@@ -188,6 +197,61 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     }
 
     /**
+     * Send Time Record Reminder
+     * -------------------------
+     * Send email reminders to employees requesting that they submit a time record
+     *
+     * Usage:       (POST) /api/3/timerecords/reminder
+     *
+     * Request Params:
+     * <code>empId</code> and <code>beginDate</code> will be multi-mapped together using common indexes
+     * e.g. <code>{empId: [11423, 11168], beginDate: ['2016-07-28', '2016-08-11', '2016-08-11']}</code>
+     *  will result in <code>{11423: ['2016-07-28', '2016-08-11'], 11168: ['2016-08-11']}</code>
+     * This will send an email to each employee for the records with the begin dates mapped to that employee
+     * @param empId Integer[] - employee ids
+     * @param beginDate String[] - ISO 8601 formatted date - time record begin dates
+     * @return {@link SimpleResponse} indicating message send success
+     */
+    @RequestMapping(value = "/reminder", method = POST)
+    public BaseResponse sendReminderEmails(@RequestParam Integer[] empId,
+                                           @RequestParam String[] beginDate) {
+        // Convert array parameters to usable forms
+        List<Integer> empIdList = Arrays.asList(empId);
+        List<LocalDate> beginDateList = Arrays.stream(beginDate)
+                .map(dateString -> parseISODate(dateString, "beginDate"))
+                .collect(Collectors.toList());
+
+        // Ensure empId -> beginDate mapping is valid
+        if (empIdList.size() != beginDateList.size()) {
+            throw new InvalidRequestParamEx(
+                    OutputUtils.toJson(ImmutableMap.of("empId", empId, "beginDate", beginDate)),
+                    "empId, beginDate", "Integer, String",
+                    "must pass the same number of 'empId' and 'beginDate' parameters"
+            );
+        }
+
+        Multimap<Integer, LocalDate> empIdDateMap = TreeMultimap.create();
+
+        // Simultaneously iterate through employee ids and begin dates to check permissions
+        // and organize parameters into a map
+        Iterator<Integer> empIdIterator = empIdList.iterator();
+        Iterator<LocalDate> beginDateIterator = beginDateList.iterator();
+        while (empIdIterator.hasNext() && beginDateIterator.hasNext()) {
+            Integer eId = empIdIterator.next();
+            LocalDate bDate = beginDateIterator.next();
+            // Check for notification permissions for each time record that will be included in the notification
+            checkPermission(new EssTimePermission(eId, TIME_RECORD_NOTIFICATION, POST, bDate));
+            // add id and date to map
+            empIdDateMap.put(eId, bDate);
+        }
+
+        emailService.sendEmailReminders(
+                ShiroUtils.getAuthenticatedEmpId(), empIdDateMap);
+
+        return new SimpleResponse(true, "Sent time record email reminders", "time-record-reminder-success");
+    }
+
+    /**
      * Save Time Record API
      * --------------------
      *
@@ -208,10 +272,27 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         timeRecordService.saveRecord(newRecord, timeRecordAction);
     }
 
+    /**
+     * Handle cases where an invalid time record is posted
+     * Return a response indicating time record errors
+     * @param ex {@link InvalidTimeRecordException}
+     * @return {@link InvalidTimeRecordResponse}
+     */
     @ExceptionHandler(InvalidTimeRecordException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleInvalidTimeRecordException(InvalidTimeRecordException ex) {
         return new InvalidTimeRecordResponse(getTimeRecordView(ex.getTimeRecord()), ex.getDetectedErrors());
+    }
+
+    /**
+     * Handle cases where a specifically requested time record was not found
+     * @param ex {@link TimeRecordNotFoundEx}
+     * @return {@link ViewObjectErrorResponse}
+     */
+    @ExceptionHandler(TimeRecordNotFoundEx.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public BaseResponse handleTimeRecordNotFoundEx(TimeRecordNotFoundEx ex) {
+        return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND, new TimeRecordNotFoundData(ex));
     }
 
     /** --- Internal Methods --- */

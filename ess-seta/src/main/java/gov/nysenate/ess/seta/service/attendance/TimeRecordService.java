@@ -1,6 +1,7 @@
 package gov.nysenate.ess.seta.service.attendance;
 
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
@@ -79,7 +80,19 @@ public interface TimeRecordService
      * @param statuses Set<TimeRecordStatus> - time record statuses to retrieve
      * @return List<TimeRecord>
      */
-    List<TimeRecord> getTimeRecords(Set<Integer> empIds, Collection<PayPeriod> payPeriods, Set<TimeRecordStatus> statuses);
+    List<TimeRecord> getTimeRecords(Set<Integer> empIds,
+                                    Collection<PayPeriod> payPeriods, Set<TimeRecordStatus> statuses);
+
+    /**
+     * Given a map of employee ids to record begin dates,
+     * return a map of employee ids to time records that correspond to those begin dates
+     * @param empIdBeginDateMap {@link Multimap} - mapping of employee id -> record begin dates
+     * @return {@link Multimap} - Mapping of employee id -> {@link TimeRecord} corresponding to passed in begin dates
+     * @throws TimeRecordNotFoundEx - if one of the mappings of empId -> beginDate
+     *                                does not correspond to an existing time record
+     */
+    Multimap<Integer, TimeRecord> getTimeRecords(Multimap<Integer, LocalDate> empIdBeginDateMap)
+            throws TimeRecordNotFoundEx;
 
     /**
      * Retrieves the time records for an employee with employee id 'empId' that were to be approved by the given

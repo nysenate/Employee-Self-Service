@@ -26,6 +26,7 @@ import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.seta.service.personnel.SupervisorInfoService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +147,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                 .collect(toList());
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<TimeRecord> getTimeRecords(Set<Integer> empIds, Collection<PayPeriod> payPeriods,
                                            Set<TimeRecordStatus> statuses) {
@@ -159,6 +161,43 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                 .collect(toList());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Multimap<Integer, TimeRecord> getTimeRecords(Multimap<Integer, LocalDate> empIdBeginDateMap)
+            throws TimeRecordNotFoundEx {
+
+        // Establish a date range that encloses all given dates
+        RangeSet<LocalDate> recordDateRangeSet = TreeRangeSet.create();
+        empIdBeginDateMap.values().stream()
+                .map(Range::singleton)
+                .forEach(recordDateRangeSet::add);
+        Range<LocalDate> overallRecordRange = recordDateRangeSet.span();
+
+        // Get time records over those dates
+        List<TimeRecord> timeRecords = getTimeRecords(
+                empIdBeginDateMap.keySet(), overallRecordRange, TimeRecordStatus.getAll());
+
+        Set<Map.Entry<Integer, LocalDate>> foundDates = new HashSet<>();
+
+        // Convert retrieved time records into a multimap
+        HashMultimap<Integer, TimeRecord> timeRecordMultimap = HashMultimap.create();
+        timeRecords.stream()
+                .peek(tRec -> foundDates.add(ImmutablePair.of(tRec.getEmployeeId(), tRec.getBeginDate())))
+                .filter(tRec -> empIdBeginDateMap.containsKey(tRec.getEmployeeId()) &&
+                        empIdBeginDateMap.get(tRec.getEmployeeId()).contains(tRec.getBeginDate()))
+                .forEach(timeRecord -> timeRecordMultimap.put(timeRecord.getEmployeeId(), timeRecord));
+
+        // Check to make sure that all requested records were found
+        empIdBeginDateMap.entries().forEach(entry -> {
+            if (!foundDates.contains(entry)) {
+                throw new TimeRecordNotFoundEx(entry.getKey(), entry.getValue());
+            }
+        });
+
+        return timeRecordMultimap;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public List<TimeRecord> getTimeRecordsWithSupervisor(Integer empId, Integer supId, Range<LocalDate> dateRange) {
         List<TimeRecord> timeRecords = getTimeRecords(Collections.singleton(empId), dateRange, TimeRecordStatus.getAll());

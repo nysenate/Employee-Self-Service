@@ -1,8 +1,6 @@
 package gov.nysenate.ess.seta.service.notification;
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimaps;
+import com.google.common.collect.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -11,6 +9,8 @@ import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.template.EssTemplateException;
 import gov.nysenate.ess.seta.model.attendance.TimeRecord;
+import gov.nysenate.ess.seta.model.attendance.TimeRecordStatus;
+import gov.nysenate.ess.seta.service.attendance.TimeRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,8 @@ import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +34,7 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
     @Autowired private SendMailService sendMailService;
     @Autowired private Configuration freemarkerCfg;
     @Autowired private EmployeeInfoService empInfoService;
+    @Autowired private TimeRecordService timeRecordService;
 
     @Value("${freemarker.time.templates.time_record_reminder:time_record_reminder.ftlh}")
     private String emailTemplateName;
@@ -55,10 +55,9 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
 
     /** {@inheritDoc} */
     @Override
-    public void sendEmailReminders(Integer supId, Collection<TimeRecord> timeRecords) {
+    public void sendEmailReminders(Integer supId, Multimap<Integer, LocalDate> recordDates) {
         // Group records by employee
-        ImmutableListMultimap<Integer, TimeRecord> timeRecordMultimap =
-                Multimaps.index(timeRecords, TimeRecord::getEmployeeId);
+        Multimap<Integer, TimeRecord> timeRecordMultimap = timeRecordService.getTimeRecords(recordDates);
         // Generate messages for each employee
         ArrayList<MimeMessage> messages =
                 timeRecordMultimap.asMap().entrySet().stream()
@@ -107,5 +106,4 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
         }
         return out.toString();
     }
-
 }

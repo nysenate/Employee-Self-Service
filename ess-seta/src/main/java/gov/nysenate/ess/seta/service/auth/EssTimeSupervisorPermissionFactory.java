@@ -22,9 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.ATTENDANCE_RECORDS;
-import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.TIME_RECORDS;
-import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.TIME_RECORD_ACTIVE_YEARS;
+import static gov.nysenate.ess.seta.model.auth.TimePermissionObject.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -69,7 +67,8 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
                 new EssTimePermission(empId, ATTENDANCE_RECORDS,        GET,    effectiveRange),
                 new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,  GET,    Range.all()),
                 new EssTimePermission(empId, TIME_RECORDS,              GET,    effectiveRange),
-                new EssTimePermission(empId, TIME_RECORDS,              POST,   effectiveRange)
+                new EssTimePermission(empId, TIME_RECORDS,              POST,   effectiveRange),
+                new EssTimePermission(empId, TIME_RECORD_NOTIFICATION,  POST,   effectiveRange)
         );
     }
 
