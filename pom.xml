@@ -4,18 +4,47 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>gov.nysenate.ess</groupId>
-  <artifactId>master</artifactId>
+  <groupId>gov.nysenate</groupId>
+  <artifactId>ess</artifactId>
   <version>1.0</version>
-  <packaging>pom</packaging>
+  <packaging>war</packaging>
 
-  <modules>
-      <module>ess-core</module>
-      <module>ess-web</module>
-      <module>ess-seta</module>
-      <module>ess-supply</module>
-  </modules>
-  
+  <build>
+    <finalName>${project.artifactId}##${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19</version>
+        <configuration>
+          <skipTests>false</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <!-- avoid possible encoding issues -->
+          <encoding>utf-8</encoding>
+          </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <properties>
       <apache.shiro.version>1.2.3</apache.shiro.version>
       <commons.io.version>2.4</commons.io.version>

@@ -1,0 +1,24 @@
+{
+  "name": "moment-range",
+  "version": "2.2.0",
+  "main": "./dist/moment-range.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "moment": ">= 1"
+  },
+  "homepage": "https://github.com/gf3/moment-range",
+  "_release": "2.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.2.0",
+    "commit": "c3018d973bbc8faccb8b173c3f0d0edaed1eb9d5"
+  },
+  "_source": "https://github.com/gf3/moment-range.git",
+  "_target": "^2.2.0",
+  "_originalSource": "moment-range",
+  "_direct": true
+}
