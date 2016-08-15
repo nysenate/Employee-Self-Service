@@ -1,8 +1,8 @@
 package gov.nysenate.ess.supply.integration.requisition;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.BaseTests;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.supply.SupplyTests;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
@@ -16,7 +16,7 @@ import java.util.EnumSet;
 
 @Transactional
 @TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
-public class SqlRequisitionDaoTests extends SupplyTests {
+public class SqlRequisitionDaoTests extends BaseTests {
 
     @Autowired private RequisitionDao requisitionDao;
 
