@@ -2,6 +2,8 @@ package gov.nysenate.ess.supply.statistics;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;
 
 @XmlRootElement
