@@ -47,6 +47,8 @@ public class CommonAttributeFilter implements Filter
     private long webCache;
     @Value("${image.url}")
     private String imageUrl;
+    @Value("${application.version}")
+    private String releaseVersion;
 
     @Autowired
     private XsrfValidator xsrfValidator;
@@ -126,7 +128,7 @@ public class CommonAttributeFilter implements Filter
     }
 
     private void setReleaseVersionAttribute(HttpServletRequest request) {
-        request.setAttribute(RELEASEVERSION_ATTRIBUTE, "1");
+        request.setAttribute(RELEASEVERSION_ATTRIBUTE, releaseVersion);
     }
 
     /** Life-cycle is maintained by Spring. The init method is not used. */
