@@ -135,7 +135,7 @@ scheduler.supply.sfms_synchronization.enabled = false
 # Determines when to run the supply SFMS synchronization process
 scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 
-# --- Timeout Configuration ------------------------------------------------
+# --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs
 timeout = 900
@@ -145,11 +145,12 @@ timeout = 900
 #absolute path prefix for images
 image.url = /assets/supply_photos
 
-# -------------------Web Cache------------------------------------------------
+# --- Web Cache ---------------------------------------------------------------
 
 # in secs, 0  = no cache
 cache.frontend.expire = 60
 
-# -------------------Project Version------------------------------------------------
+# --- Project Version ---------------------------------------------------------
 
 application.version=@project.version@
+
