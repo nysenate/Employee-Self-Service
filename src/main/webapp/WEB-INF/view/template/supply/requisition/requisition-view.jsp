@@ -29,7 +29,7 @@
           <div class="grid padding-10">
             <div class="col-4-12"
                  ns-popover ns-popover-template="customer-details" ns-popover-theme="ns-popover-tooltip-theme"
-                 ns-popover-placement="top"
+                 ns-popover-placement="bottom"
                  ns-popover-trigger="mouseenter" ns-popover-timeout=".2">
               <b>Requested By:</b> {{selectedVersion.customer.fullName}}
               <script type="text/ng-template" id="customer-details">
@@ -44,8 +44,8 @@
             </div>
             <div class="col-4-12"
                  ns-popover ns-popover-template="location-details" ns-popover-theme="ns-popover-tooltip-theme"
-                 ns-popover-placement="top"
-                 ns-popover-trigger="mouseenter" ns-popover-timeout=".2">
+                 ns-popover-placement="bottom"
+                 ns-popover-trigger="mouseenter" ns-popover-timeout="0.2">
               <b>Requesting Office:</b> {{selectedVersion.destination.locId}}
               <script type="text/ng-template" id="location-details">
                 <div class="triangle"></div>
@@ -77,7 +77,7 @@
           </div>
           <div class="grid padding-10">
             <div class="col-4-12">
-              <b>Modified By:</b> {{selectedVersion.createdBy.lastName}}
+              <b>Modified By:</b> {{selectedVersion.modifiedBy.lastName}}
             </div>
           </div>
         </div>
