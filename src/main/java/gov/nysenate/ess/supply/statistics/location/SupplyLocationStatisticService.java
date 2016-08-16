@@ -1,6 +1,7 @@
-package gov.nysenate.ess.supply.statistics;
+package gov.nysenate.ess.supply.statistics.location;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
@@ -9,29 +10,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-public class SupplyStatisticsService {
+public class SupplyLocationStatisticService {
 
     @Autowired private SupplyRequisitionService requisitionService;
 
-    public ItemStatistic getItemStatistics(String locationId, int year, int month) {
-        if (locationId == null) {
-            throw new IllegalArgumentException("Cannot calculate statistics for a null location.");
-        }
+    public List<LocationStatistic> getAllLocationStatistics(int year, int month) {
         if (month < 1 || month > 12) {
             throw new IllegalArgumentException("Month value is invalid, must be 1-12.");
         }
-
         LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime end = start.plusMonths(1);
-        List<Requisition> requisitions = requisitionService.searchRequisitions(locationId.toString(), "All",
+        List<Requisition> requisitions = requisitionService.searchRequisitions("All", "All",
                                                                                EnumSet.allOf(RequisitionStatus.class),
                                                                                Range.closed(start, end),
                                                                                "ordered_date_time",
                                                                                "All", LimitOffset.ALL, "All").getResults();
-        return new ItemStatistic(requisitions);
+        Set<Location> locations = distinctDestinationsIn(requisitions);
+        List<LocationStatistic> locationStatistics = new ArrayList<>();
+        for (Location loc : locations) {
+            locationStatistics.add(new LocationStatistic(loc, requisitions));
+        }
+        return locationStatistics;
+    }
+
+    private Set<Location> distinctDestinationsIn(List<Requisition> requisitions) {
+        return requisitions.stream().map(Requisition::getDestination).collect(Collectors.toSet());
     }
 }

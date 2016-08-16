@@ -1,8 +1,10 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
-    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', 'LocationService', supplyFulfillmentController]);
+    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval',
+    'LocationService', 'SupplyLocationStatisticsApi', supplyFulfillmentController]);
 
 function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
-                                     itemsApi, modals, $interval, locationService) {
+                                     itemsApi, modals, $interval, locationService,
+                                     locationStatisticsApi) {
 
     $scope.pendingSearch = {
         matches: [],
@@ -50,10 +52,13 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     /** Used in edit modals to assign an issuer. */
     $scope.supplyEmployees = [];
 
+    $scope.locationStatistics = {};
+
     $scope.init = function () {
         updateShipments();
         getSupplyEmployees();
         getSupplyItems();
+        getLocationStatistics();
     };
 
     $scope.init();
@@ -93,6 +98,17 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         }, function (errorResponse) {
             $scope.itemSearch.error = true;
             $scope.itemSearch.matches = [];
+        })
+    }
+    
+    function getLocationStatistics() {
+        var params = {
+            year: 2016,
+            month: 8
+        };
+        locationStatisticsApi.get(params, function(response) {
+            $scope.locationStatistics = response.result;
+            console.log($scope.locationStatistics.items);
         })
     }
 
@@ -196,7 +212,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     /** --- Modals --- */
 
     $scope.showEditingModal = function (requisition) {
-        /** Editing modal returns a promise containing the save requisition api request 
+        /** Editing modal returns a promise containing the save requisition api request
          * if the user saved their changes, undefined otherwise.*/
         $scope.saveResponse.response = modals.open('fulfillment-editing-modal', requisition)
             .then(successfulSave)

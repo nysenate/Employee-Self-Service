@@ -1,32 +1,47 @@
-package gov.nysenate.ess.supply.statistics;
+package gov.nysenate.ess.supply.statistics.location;
 
+import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
+import gov.nysenate.ess.supply.statistics.SupplyStatistic;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Returns information on the number of items in the given requisitions.
- */
-public class ItemStatistic extends SupplyStatistic {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    public ItemStatistic(List<Requisition> requisitions) {
+/**
+ * Calculates the quantity of each item ordered at this location from the supplied {@link #requisitions}.
+ */
+public class LocationStatistic extends SupplyStatistic {
+
+    private Location location;
+
+    public LocationStatistic(Location location, List<Requisition> requisitions) {
         super(requisitions);
+        this.location = checkNotNull(location);
     }
 
-    /**
-     * Returns a Map of item commodity codes to total quantity.
-     * Only items in {@link #requisitions} are included.
-     * Requisition LineItems with a quantity of 0 are ignored.
-     */
+    public Location getLocation() {
+        return location;
+    }
+
     @Override
     public Map<String, Integer> calculate() {
         Map<String, Integer> totalQuantities = new HashMap<>();
-        for (Requisition req : this.requisitions) {
+        for (Requisition req : requisitionsWithDestination(location)) {
             addRequisitionQuantitiesToTotalQuantities(requisitionQuantities(req), totalQuantities);
         }
         return totalQuantities;
+    }
+
+    private List<Requisition> requisitionsWithDestination(Location location) {
+        return this.requisitions.stream()
+                                .filter(r -> r.getDestination().getLocId() == location.getLocId())
+                                .collect(Collectors.toList());
     }
 
     private void addRequisitionQuantitiesToTotalQuantities(Map<String, Integer> requisitionQuantities, Map<String, Integer> totalQuantities) {
