@@ -31,10 +31,10 @@ public class FreemarkerConfig {
     @Bean(name = "freemarkerCfg")
     public Configuration freemarkerCfg() throws IOException {
         Configuration cfg = new Configuration(cfgVersion);
-//
-//        // Set template directory
-//        ClassPathResource templateResource = new ClassPathResource(templateDirectoryPath);
-//        cfg.setDirectoryForTemplateLoading(templateResource.getFile());
+
+        // Set template directory
+        ClassPathResource templateResource = new ClassPathResource(templateDirectoryPath);
+        cfg.setDirectoryForTemplateLoading(templateResource.getFile());
 
         // Set template encoding
         cfg.setDefaultEncoding("UTF-8");

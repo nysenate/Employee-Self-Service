@@ -20,9 +20,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +50,7 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
      */
     @PostConstruct
     public void init() throws IOException {
-//        emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
+        emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
     }
 
     /** {@inheritDoc} */
@@ -100,7 +98,11 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
      */
     private String getEmailBody(Employee employee, Collection<TimeRecord> timeRecords) {
         StringWriter out = new StringWriter();
-        Map dataModel = ImmutableMap.of("employee", employee, "timeRecords", timeRecords);
+        // Ensure the records are ordered by date
+        List<TimeRecord> sortedTimeRecords = new ArrayList<>(timeRecords);
+        Collections.sort(sortedTimeRecords,
+                (tRecA, tRecB) -> tRecA.getBeginDate().compareTo(tRecB.getBeginDate()));
+        Map dataModel = ImmutableMap.of("employee", employee, "timeRecords", sortedTimeRecords);
         try {
             emailTemplate.process(dataModel, out);
         } catch (IOException | TemplateException ex) {

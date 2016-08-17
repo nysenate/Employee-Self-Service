@@ -829,6 +829,33 @@ record-review-modal, [record-review-modal] {
   }
 }
 
+#record-reminder-prompt {
+  .input-container {
+    margin-bottom: 10px;
+    input:first-child {
+      margin-right: 20px;
+    }
+  }
+  table.reminder-records {
+    tr {
+      &.first-emp-rec {
+        &:not(:first-child) {
+          border-top: 1px solid #bbb;
+        }
+        td {
+          padding-top: 5px;
+        }
+      }
+      &.last-emp-rec td {
+          padding-bottom: 5px;
+      }
+      td:first-child {
+        padding-right: 5px;
+      }
+    }
+  }
+}
+
 /** --- Transaction History --- */
 
 .tx-effect-date {

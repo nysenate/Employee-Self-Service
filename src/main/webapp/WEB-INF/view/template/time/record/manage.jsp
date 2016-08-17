@@ -40,6 +40,30 @@
          level="info" title="No time records need action."
          message="There are currently no records that require approval."></div>
 
+    <toggle-panel open="true" ng-if="state.supRecords[state.selSupId]['DISAPPROVED']"
+                  label="T&A Records Awaiting Correction By Employee ({{state.supRecords[state.selSupId]['DISAPPROVED'].length}})">
+      <p class="content-info">The following records have been rejected and are pending correction by the employee.<br/>
+        Once the employee resubmits the record it will appear in the 'Records Needing Approval' section.</p>
+      <div class="emp-manage-actions-container" style="float:right;">
+        <input type="button" class="submit-button" value="View Selected" ng-disabled="hasSelections('DISAPPROVED') == false"
+               ng-click="review('DISAPPROVED', false)"/>
+        <input type="button" class="time-neutral-button" value="Email Selected"
+               ng-click="remindSelections('DISAPPROVED')" ng-disabled="hasSelections('DISAPPROVED') == false"/>
+      </div>
+      <ul class="horizontal" style="padding:0;margin:10px;float:left">
+        <li style="margin-right:10px;"><a ng-click="selectAll('DISAPPROVED')">Select All</a></li>
+        <li style="margin-right:10px;"><a ng-click="selectNone('DISAPPROVED')">Select None</a></li>
+      </ul>
+      <div supervisor-record-list records="state.supRecords[state.selSupId]['DISAPPROVED']"
+           selected-indices="state.selectedIndices['DISAPPROVED']"></div>
+      <div class="emp-manage-actions-container">
+        <input type="button" class="submit-button" value="View Selected"
+               ng-disabled="hasSelections('DISAPPROVED') == false" ng-click="review('DISAPPROVED', false)"/>
+        <input type="button" class="time-neutral-button" value="Email Selected"
+               ng-click="remindSelections('DISAPPROVED')" ng-disabled="hasSelections('DISAPPROVED') == false"/>
+      </div>
+    </toggle-panel>
+
     <toggle-panel open="true" ng-if="state.supRecords[state.selSupId]['NOT_SUBMITTED']"
                   label="T&A Records Not Submitted ({{state.supRecords[state.selSupId]['NOT_SUBMITTED'].length}})">
       <p class="content-info">The records have not yet been submitted by the employee.<br/></p>
@@ -47,7 +71,7 @@
         <input type="button" class="submit-button" value="View Selected" ng-disabled="hasSelections('NOT_SUBMITTED') == false"
                ng-click="review('NOT_SUBMITTED', false)"/>
         <input type="button" class="time-neutral-button" value="Email Selected"
-               ng-click="alert('Not implemented yet.')" ng-disabled="hasSelections('NOT_SUBMITTED') == false"/>
+               ng-click="remindSelections('NOT_SUBMITTED')" ng-disabled="hasSelections('NOT_SUBMITTED') == false"/>
       </div>
       <ul class="horizontal" style="padding:0;margin:10px;float:left">
         <li style="margin-right:10px;"><a ng-click="selectAll('NOT_SUBMITTED')">Select All</a></li>
@@ -56,22 +80,15 @@
       <div supervisor-record-list records="state.supRecords[state.selSupId]['NOT_SUBMITTED']"
            selected-indices="state.selectedIndices['NOT_SUBMITTED']"></div>
       <div class="emp-manage-actions-container">
-        <input type="button" class="submit-button" value="View Selected" ng-disabled="hasSelections('NOT_SUBMITTED') == false"
-               ng-click="review('NOT_SUBMITTED', false)"/>
+        <input type="button" class="submit-button" value="View Selected"
+               ng-disabled="hasSelections('NOT_SUBMITTED') == false" ng-click="review('NOT_SUBMITTED', false)"/>
         <input type="button" class="time-neutral-button" value="Email Selected"
-               ng-click="alert('Not implemented yet.')" ng-disabled="hasSelections('NOT_SUBMITTED') == false"/>
+               ng-click="remindSelections('NOT_SUBMITTED')" ng-disabled="hasSelections('NOT_SUBMITTED') == false"/>
       </div>
     </toggle-panel>
 
     <br/>
     <hr/>
-
-    <toggle-panel open="false" ng-if="state.supRecords[state.selSupId]['DISAPPROVED']"
-                  label="T&A Records Awaiting Correction By Employee ({{state.supRecords[state.selSupId]['DISAPPROVED'].length}})">
-      <p class="content-info">The following records have been rejected and are pending correction by the employee.<br/>
-        Once the employee resubmits the record it will appear in the 'Records Needing Approval' section.</p>
-      <div supervisor-record-list records="state.supRecords[state.selSupId]['DISAPPROVED']"></div>
-    </toggle-panel>
 
     <toggle-panel open="false" ng-if="state.supRecords[state.selSupId]['APPROVED']"
           label="T&A Records Pending Approval By Personnel ({{state.supRecords[state.selSupId]['APPROVED'].length}})">
@@ -98,5 +115,20 @@
          ng-class="{'background-modal': top != 'record-review'}"></div>
     <div record-review-reject-modal ng-if="isOpen('record-review-reject')"></div>
     <div record-approve-submit-modal ng-if="isOpen('record-approval-submit')"></div>
+    <div record-reminder-prompt-modal ng-if="isOpen('record-reminder-prompt')"></div>
+    <div ng-show="isOpen('record-reminder-posting')">
+      <div class="save-progress-modal">
+        <h3 class="content-info" style="margin-bottom:0;">
+          Sending reminders ...
+        </h3>
+        <div loader-indicator class="loader"></div>
+      </div>
+    </div>
+    <div ng-show="isOpen('record-reminder-posted')">
+      <div class="save-progress-modal">
+        <h3 class="content-info" style="margin-bottom:0;">Email reminders were sent successfully.</h3>
+        <input ng-click="resolveModal()" class="time-neutral-button" type="button" value="OK"/>
+      </div>
+    </div>
   </div>
 </div>

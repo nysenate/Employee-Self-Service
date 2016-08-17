@@ -1,7 +1,15 @@
+/**
+ * Modal directives that are used in the time record manage page
+ */
+
 var essApp = angular.module('ess');
 
-essApp.directive('recordReviewModal', ['appProps', 'modals', 'LocationService',
-function (appProps, modals, locationService) {
+essApp.directive('recordReviewModal', ['appProps', 'modals', 'LocationService', recordReviewModal]);
+essApp.directive('recordReviewRejectModal', ['modals', 'appProps', recordReviewRejectModal]);
+essApp.directive('recordApproveSubmitModal', ['modals', 'appProps', recordApproveSubmitModal]);
+essApp.directive('recordReminderPromptModal', ['modals', 'appProps', recordReminderPromptModal]);
+
+function recordReviewModal(appProps, modals, locationService) {
     return {
         templateUrl: appProps.ctxPath + '/template/time/record/record-review-modal',
         link: link
@@ -172,9 +180,9 @@ function (appProps, modals, locationService) {
             $scope.$digest();
         }
     }
-}]);
+}
 
-essApp.directive('recordReviewRejectModal', ['modals', 'appProps', function(modals, appProps) {
+function recordReviewRejectModal(modals, appProps) {
     return {
         templateUrl: appProps.ctxPath + '/template/time/record/record-reject-modal',
         link: function($scope, $elem, $attrs) {
@@ -189,9 +197,9 @@ essApp.directive('recordReviewRejectModal', ['modals', 'appProps', function(moda
             };
         }
     };
-}]);
+}
 
-essApp.directive('recordApproveSubmitModal', ['modals', 'appProps', function(modals, appProps) {
+function recordApproveSubmitModal(modals, appProps) {
     return {
         templateUrl: appProps.ctxPath + '/template/time/record/record-approve-submit-modal',
         link: function($scope, $elem, $attrs) {
@@ -206,4 +214,36 @@ essApp.directive('recordApproveSubmitModal', ['modals', 'appProps', function(mod
             };
         }
     }
-}]);
+}
+
+/**
+ * Modal that prompts the user to send reminders for a selection of time records
+ * @param modals - modal service
+ * @param appProps - properties
+ */
+function recordReminderPromptModal(modals, appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/time/record/record-reminder-modal',
+        link: function ($scope, $elem, $attrs) {
+            var params = modals.params();
+            $scope.records = params.records;
+            $scope.empIds = [];
+            $scope.empIdRecordMap = {};
+
+            $scope.records.forEach(function (record) {
+                var empId = record.employeeId;
+                if ($scope.empIds.indexOf(empId) === -1) {
+                    $scope.empIds.push(empId);
+                }
+                if (!$scope.empIdRecordMap.hasOwnProperty(empId)) {
+                    $scope.empIdRecordMap[empId] = [];
+                }
+                $scope.empIdRecordMap[empId].push(record);
+            });
+            
+            $scope.reject = modals.reject;
+            $scope.resolve = modals.resolve;
+        }
+    };
+}
+

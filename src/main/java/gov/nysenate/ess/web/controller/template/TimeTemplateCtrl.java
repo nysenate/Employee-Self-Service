@@ -89,6 +89,11 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         return TIME_TMPL_BASE_URL + "/record/record-approve-submit-modal";
     }
 
+    @RequestMapping(value = "/record/record-reminder-modal")
+    public String recordReminderModal() {
+        return TIME_TMPL_BASE_URL + "/record/record-reminder-modal";
+    }
+
     /** --- Accruals --- */
 
     @RequestMapping(value="/accrual/history")
