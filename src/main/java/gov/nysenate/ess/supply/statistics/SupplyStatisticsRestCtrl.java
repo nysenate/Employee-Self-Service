@@ -26,6 +26,12 @@ public class SupplyStatisticsRestCtrl extends BaseRestApiCtrl {
 
     @Autowired private SupplyLocationStatisticService locationStatisticService;
 
+    /**
+     * Return a Map of location strings to location statistics for easy
+     * look up in the front end.
+     * @param year The year to generate statistics for.
+     * @param month The month to generate statistics for.
+     */
     @RequestMapping("/locations")
     public BaseResponse allLocationStatistics(@RequestParam int year, @RequestParam int month) {
         List<LocationStatistic> locationStatistics = locationStatisticService.getAllLocationStatistics(year, month);

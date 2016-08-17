@@ -36,7 +36,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in pendingSearch.matches" ng-class="{warn: highlightRequisition(requisition)}"
+      <tr ng-repeat="requisition in pendingSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="showEditingModal(requisition)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
@@ -77,7 +77,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in processingSearch.matches" ng-class="{warn: highlightRequisition(requisition)}"
+      <tr ng-repeat="requisition in processingSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="showEditingModal(requisition)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
@@ -121,7 +121,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in completedSearch.matches" ng-class="{warn: highlightRequisition(requisition)}"
+      <tr ng-repeat="requisition in completedSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="showEditingModal(requisition)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
@@ -211,6 +211,7 @@
     <div fulfillment-editing-modal
          supply-employees='supplyEmployees'
          supply-items='itemSearch.matches'
+         location-statistics='locationStatistics'
          ng-if="isOpen('fulfillment-editing-modal')">
     </div>
 

@@ -30,11 +30,9 @@ public class SupplyLocationStatisticService {
                                                                                "ordered_date_time",
                                                                                "All", LimitOffset.ALL, "All").getResults();
         Set<Location> locations = distinctDestinationsIn(requisitions);
-        List<LocationStatistic> locationStatistics = new ArrayList<>();
-        for (Location loc : locations) {
-            locationStatistics.add(new LocationStatistic(loc, requisitions));
-        }
-        return locationStatistics;
+        return locations.stream()
+                        .map(loc -> new LocationStatistic(loc, requisitions))
+                        .collect(Collectors.toList());
     }
 
     private Set<Location> distinctDestinationsIn(List<Requisition> requisitions) {

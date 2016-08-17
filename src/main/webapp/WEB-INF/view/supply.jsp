@@ -62,8 +62,8 @@
             src="${ctxPath}/assets/js/src/supply/requisition/supply-view-ctrl.js?v=${releaseVersion}"></script>
 
     <%-- Utilities --%>
-    <script type="text/javascript"
-            src="${ctxPath}/assets/js/src/supply/util/supply-utils-service.js?v=${releaseVersion}"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/util/supply-utils-service.js"></script>
+    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-location-statistics-service.js"></script>
 
   </jsp:body>
 </ess-layout:head>
