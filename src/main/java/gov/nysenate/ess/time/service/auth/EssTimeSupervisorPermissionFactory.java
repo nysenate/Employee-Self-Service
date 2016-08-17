@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.auth.PermissionFactory;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
+import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -49,10 +51,18 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
     private List<Permission> getPermissions(int supId) {
         SupervisorEmpGroup supEmpGroup = supInfoService.getSupervisorEmpGroup(supId, Range.all());
-        return supEmpGroup.getAllEmployees().stream()
+        List<Permission> supPermissions = new ArrayList<>();
+
+        // Add permission to use manage pages
+        supPermissions.add(SimpleTimePermission.MANAGEMENT_PAGES.getPermission());
+
+        // Add permissions to view/post employee data
+        supEmpGroup.getAllEmployees().stream()
                 .map(this::getEmployeePermissions)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .forEach(supPermissions::add);
+
+        return supPermissions;
     }
 
     /**

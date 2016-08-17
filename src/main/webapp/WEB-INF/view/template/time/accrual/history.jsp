@@ -18,6 +18,10 @@
                       title="{{state.error.title}}" message="{{state.error.message}}">
     </ess-notification>
 
+    <div ng-show="state.isTe">
+        <jsp:include page="te-accruals.jsp"/>
+    </div>
+
     <div class="content-container" ng-show="state.searching === false">
         <p class="content-info" ng-hide="state.accSummaries[state.selectedYear].length > 0">
             No historical accrual records exist for this year.

@@ -1,9 +1,12 @@
 var essTime = angular.module('essTime');
 
-essTime.controller('AccrualHistoryCtrl', ['$scope', '$timeout', 'appProps', 'AccrualHistoryApi', 'EmpActiveYearsApi',
+essTime.controller('AccrualHistoryCtrl', ['$scope', '$timeout', 'appProps', 
+                                          'AccrualHistoryApi', 'EmpActiveYearsApi', 'EmpInfoApi',
                                           'modals', 'AccrualUtils', accrualHistoryCtrl]);
 
-function accrualHistoryCtrl($scope, $timeout, appProps, AccrualHistoryApi, EmpActiveYearsApi, modals, accrualUtils) {
+function accrualHistoryCtrl($scope, $timeout, appProps,
+                            AccrualHistoryApi, EmpActiveYearsApi, EmpInfoApi,
+                            modals, accrualUtils) {
 
     $scope.state = {
         empId: appProps.user.employeeId,
@@ -11,6 +14,8 @@ function accrualHistoryCtrl($scope, $timeout, appProps, AccrualHistoryApi, EmpAc
         accSummaries: {},
         activeYears: [],
         selectedYear: null,
+        empInfo: {},
+        isTe: false,
 
         // Page state
         searching: false,
@@ -21,6 +26,9 @@ function accrualHistoryCtrl($scope, $timeout, appProps, AccrualHistoryApi, EmpAc
         scrollingTop: 47,
         useAbsolutePositioning: false
     };
+
+    /** Get emp info for the selected employee id */
+    $scope.$watch('state.empId', getEmpInfo);
 
     $scope.getAccSummaries = function(year) {
         if ($scope.state.accSummaries[year]) {
@@ -70,6 +78,25 @@ function accrualHistoryCtrl($scope, $timeout, appProps, AccrualHistoryApi, EmpAc
             console.log(resp);
         });
     };
+
+    /**
+     * Retrieves employee info from the api to determine if the employee is a temporary employee
+     */
+    function getEmpInfo() {
+        if (!$scope.state.empId) {
+            return;
+        }
+        EmpInfoApi.get({empId: $scope.state.empId, detail: true},
+            function onSuccess(response) {
+                var empInfo = response.employee;
+                $scope.state.empInfo = empInfo;
+                $scope.state.isTe = empInfo.payType === 'TE';
+            },
+            function onFail(errorResponse) {
+                modals.open('500', errorResponse);
+            }
+        );
+    }
 
     /**
      * Initialize
