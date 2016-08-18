@@ -89,7 +89,7 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
     };
 
     $scope.viewShipment = function(shipment){
-        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.id);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId);
     };
 
     $scope.init = function() {

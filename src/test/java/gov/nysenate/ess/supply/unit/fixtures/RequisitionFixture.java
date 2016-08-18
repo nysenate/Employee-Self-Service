@@ -16,6 +16,21 @@ import java.util.Set;
 
 public class RequisitionFixture {
 
+    public static Requisition baseRequisition() {
+         return new Requisition.Builder()
+                .withRequisitionId(1)
+                .withRevisionId(1)
+                .withCustomer(createEmployeeWithId(1))
+                .withDestination(createStubLocation())
+                .withLineItems(new HashSet<>())
+                .withStatus(RequisitionStatus.PENDING)
+                .withIssuer(createEmployeeWithId(2))
+                .withModifiedBy(createEmployeeWithId(1))
+                .withModifiedDateTime(LocalDateTime.of(2016, 1, 1, 1, 1))
+                .withOrderedDateTime(LocalDateTime.of(2016, 1, 1, 1, 1))
+                .build();
+    }
+
     public static Requisition getPendingRequisition() {
         return new Requisition.Builder()
                 .withRequisitionId(0)

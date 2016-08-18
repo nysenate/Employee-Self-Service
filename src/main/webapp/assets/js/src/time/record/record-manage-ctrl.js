@@ -1,10 +1,11 @@
 var essApp = angular.module('ess');
 
 essApp.controller('RecordManageCtrl', ['$scope', '$q', 'appProps', 'RecordUtils', 'modals', 'badgeService',
-    'SupervisorTimeRecordsApi', 'TimeRecordApi',
+    'SupervisorTimeRecordsApi', 'TimeRecordApi', 'TimeRecordReminderApi',
     recordManageCtrl]);
 
-function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeService, supRecordsApi, timeRecordsApi) {
+function recordManageCtrl($scope, $q, appProps, recordUtils, modals,
+                          badgeService, supRecordsApi, timeRecordsApi, reminderApi) {
     $scope.state = {
         // Data
         supIds: {},
@@ -54,7 +55,7 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
         supRecordsApi.get({supId: empId, from: from, to: to}, function onSuccess(resp) {
             initializeRecords(resp.result.items);
             updateRecordsPendingBadge();
-            $scope.selectNone();
+            resetSelection();
             $scope.state.loading = false;
         }, function onFail(resp) {
             $scope.state.loading = false;
@@ -173,8 +174,7 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
     /**
      * Submits all displayed records that are awaiting supervisor approval as 'APPROVED'
      */
-    $scope.approveSelections = function () {
-        var selectedRecords = getSelectedRecords('SUBMITTED');
+    $scope.approveSelections = function () { var selectedRecords = getSelectedRecords('SUBMITTED');
         if (selectedRecords) {
             selectedRecords.forEach(function (record) {
                 record.action = "submit";
@@ -186,6 +186,39 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
                 });
         }
     };
+
+    $scope.remindSelections = function (status) {
+        var selectedRecords = getSelectedRecords(status);
+        modals.open('record-reminder-prompt', {records: selectedRecords})
+            .then(function () {
+                return postReminders(selectedRecords);
+            })
+            .then(function () {
+                modals.open('record-reminder-posted')
+            });
+    };
+
+    $scope.resolveModal = modals.resolve;
+
+    function postReminders(timeRecords) {
+        if (!timeRecords) {
+            return $q.when();
+        }
+        var empIds = [];
+        var beginDates = [];
+        timeRecords.forEach(function (record) {
+            empIds.push(record.employeeId);
+            beginDates.push(record.beginDate);
+        });
+        modals.open('record-reminder-posting');
+        return reminderApi.save({empId: empIds, beginDate: beginDates}, {}, function() {}, 
+            function(errorData) {
+                console.error('reminder post', errorData);
+                modals.rejectAll();
+                modals.open('500', errorData);
+            }).$promise
+            .finally(modals.resolve);
+    }
 
     /** --- Internal Methods --- */
 
@@ -254,6 +287,15 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals, badgeServic
         } else {
             console.log('no records to submit');
         }
+    }
+
+    /**
+     * Unselects all selected record indices
+     */
+    function resetSelection() {
+        angular.forEach($scope.state.selectedIndices, function (selections, status) {
+            $scope.selectNone(status);
+        });
     }
 
     $scope.init();

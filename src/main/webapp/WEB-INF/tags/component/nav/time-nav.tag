@@ -1,3 +1,4 @@
+<%@ tag import="gov.nysenate.ess.time.model.auth.SimpleTimePermission" %>
 <%@tag description="Left navigation menu for Time & Attendance screens" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
@@ -14,9 +15,11 @@
     <h3 class="main-topic">My Accruals</h3>
         <ul class="sub-topic-list">
             <li class="sub-topic"><a href="${ctxPath}/time/accrual/history">Accrual Summary</a></li>
-            <li class="sub-topic"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
+            <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString()%>">
+                <li class="sub-topic"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
+            </shiro:hasPermission>
         </ul>
-    <shiro:hasRole name="supervisor">
+    <shiro:hasPermission name="<%= SimpleTimePermission.MANAGEMENT_PAGES.getPermissionString() %>">
         <h3 class="main-topic">Manage Employees</h3>
         <ul class="sub-topic-list" ng-init="initializePendingRecordsBadge()">
             <li class="sub-topic">
@@ -27,5 +30,5 @@
             <li class="sub-topic"><a href="${ctxPath}/time/record/emphistory">Employee Record History</a></li>
             <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Privileges</a></li>
         </ul>
-    </shiro:hasRole>
+    </shiro:hasPermission>
 </section>

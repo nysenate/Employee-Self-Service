@@ -26,7 +26,7 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/supervisor-record-list.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/record/record-review-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/time/record/record-review-modals.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-emp-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"

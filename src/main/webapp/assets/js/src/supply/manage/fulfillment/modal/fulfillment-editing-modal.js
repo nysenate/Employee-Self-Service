@@ -4,7 +4,8 @@ var essSupply = angular.module('essSupply')
             templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/fulfillment-editing-modal',
             scope: {
                 'supplyEmployees': '=',
-                'supplyItems': '='
+                'supplyItems': '=',
+                'locationStatistics': '='
             },
             controller: 'FulfillmentEditingModal',
             controllerAs: 'ctrl'
@@ -119,6 +120,32 @@ var essSupply = angular.module('essSupply')
                 $scope.onUpdate();
             };
 
+            /** -- Highlighting --- */
+            
+            $scope.calculateHighlighting = function (lineItem) {
+                return {
+                    warn: isOverPerOrderMax(lineItem) || isOverPerMonthMax(lineItem) || containsSpecialItems(lineItem),
+                    bold: isOverPerMonthMax(lineItem)
+                }
+            };
+
+            function isOverPerOrderMax(lineItem) {
+                return lineItem.quantity > lineItem.item.maxQtyPerOrder
+            }
+
+            function containsSpecialItems(lineItem) {
+                return lineItem.item.visibility === 'SPECIAL';
+            }
+
+            function isOverPerMonthMax(lineItem) {
+                if ($scope.locationStatistics == null) {
+                    return false;
+                }
+                var monthToDateQty = $scope.locationStatistics.getQuantityForLocationAndItem($scope.requisition.destination.locId,
+                                                                                             lineItem.item.commodityCode);
+                return monthToDateQty > lineItem.item.suggestedMaxQty
+            }
+
             /** --- Add Item --- **/
 
             $scope.addItem = function () {
@@ -153,9 +180,9 @@ var essSupply = angular.module('essSupply')
                         data = $scope.addItemAutocompleteOptions.methods.filter(data, request.term);
                         if (!data.length) {
                             data.push({
-                                label: 'Not Found',
-                                value: ''
-                            })
+                                          label: 'Not Found',
+                                          value: ''
+                                      })
                         }
                         response(data);
                     },

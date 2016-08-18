@@ -11,6 +11,10 @@
                       title="{{state.error.title}}" message="{{state.error.message}}">
     </ess-notification>
 
+    <div ng-show="state.isTe" class="margin-top-10">
+        <jsp:include page="te-accruals.jsp"/>
+    </div>
+
     <div class="content-container"
          ng-show="state.searching === false">
         <p class="content-info" ng-hide="state.projections[state.selectedYear].length > 0">

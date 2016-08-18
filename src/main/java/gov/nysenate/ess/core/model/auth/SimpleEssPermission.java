@@ -9,7 +9,9 @@ public enum SimpleEssPermission {
 
     /** Granted to users belonging to departments that are granted access to the app */
     DEPARTMENT_ACCESS("core:department-access"),
-    TIMEOUT_EXEMPT("core:timeout-exempt")
+
+    /** Granted to users who should not time out when using the front end application */
+    TIMEOUT_EXEMPT("core:timeout-exempt"),
     ;
 
     private String permissionString;

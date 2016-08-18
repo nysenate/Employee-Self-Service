@@ -78,6 +78,11 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.displayAllowances = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
     }
 
+    function Reset() {
+        $scope.filter.searchTerm = "";
+        filterAllowances();
+    }
+
     function setToShoppingState() {
         $scope.state = $scope.states.SHOPPING;
     }
@@ -86,6 +91,11 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     $scope.search = function () {
         filterAllowances();
+    };
+
+    /** --- Reset --- */
+    $scope.reset = function () {
+        Reset();
     };
 
     /** --- Navigation --- */

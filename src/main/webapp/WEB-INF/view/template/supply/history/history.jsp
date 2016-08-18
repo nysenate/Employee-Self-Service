@@ -11,6 +11,7 @@
                 <div class="col-6-12 padding-10">
                     <label class="bold">Location:</label>
                     <select ng-model="selectedLocation" ng-options="location for location in locations"
+                            ng-required="true"
                             ng-change="onFilterChange()"></select>
                 </div>
                 <div class="col-6-12 padding-10">

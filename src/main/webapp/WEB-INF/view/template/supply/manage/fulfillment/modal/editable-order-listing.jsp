@@ -8,7 +8,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-class="{warn: highlightLineItem(lineItem)}"
+    <tr ng-class="calculateHighlighting(lineItem)"
         ng-repeat="lineItem in displayedVersion.lineItems | orderBy: 'item.description'">
       <td>{{lineItem.item.commodityCode}}</td>
       <td>{{lineItem.item.description}}</td>

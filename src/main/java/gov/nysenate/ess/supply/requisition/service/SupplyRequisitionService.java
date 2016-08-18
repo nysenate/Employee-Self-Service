@@ -90,12 +90,6 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
-    public PaginatedList<Requisition> searchRequisitions(Range<LocalDateTime> dateRange) {
-        return searchRequisitions("All", "All", EnumSet.allOf(RequisitionStatus.class), dateRange,
-                                  "ordered_date_time", "All", LimitOffset.ALL, "All");
-    }
-
-    @Override
     public PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
                                                          Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID) {
         return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, savedInSfms, limitOffset, issuerID);

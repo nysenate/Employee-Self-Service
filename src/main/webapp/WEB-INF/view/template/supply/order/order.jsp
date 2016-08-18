@@ -22,7 +22,9 @@
                  ui-autocomplete="getLocationAutocompleteOptions()"
                  destination-validator
                  ng-model-options="{debounce: 300}"
-                 style="width: 80px;"/>
+                 style="width: 80px;"
+                 capitalize
+          />
           <input type="button" value="Confirm" class="submit-button"
                  ng-disabled="selectDestinationForm.destination.$error.destination"
                  ng-click="confirmDestination()">
@@ -48,6 +50,7 @@
             <input type="text"
                    ng-model="filter.searchTerm">
             <input class="submit-button" ng-click="search()" type="submit" value="Search">
+            <input class="reset-button" ng-click="reset()" type="reset" value="Reset">
           </form>
         </div>
         <div style="display: inline-block;">

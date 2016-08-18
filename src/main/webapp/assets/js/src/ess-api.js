@@ -34,6 +34,10 @@ essApi.factory('SupervisorTimeRecordCountsApi', ['$resource', 'appProps', functi
     return $resource(appProps.apiPath + '/timerecords/supervisor/count');
 }]);
 
+essApi.factory('TimeRecordReminderApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/timerecords/reminder');
+}]);
+
 /** --- Attendance Record API --- */
 
 essApi.factory('AttendanceRecordApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -167,4 +171,10 @@ essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function ($r
 
 essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/employees')
+}]);
+
+/** --- Supply Statistics API --- */
+
+essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/statistics/locations.json')
 }]);

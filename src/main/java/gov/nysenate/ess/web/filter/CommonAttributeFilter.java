@@ -47,6 +47,8 @@ public class CommonAttributeFilter implements Filter
     private long webCache;
     @Value("${image.url}")
     private String imageUrl;
+    @Value("${application.version}")
+    private String releaseVersion;
 
     @Autowired
     private XsrfValidator xsrfValidator;
@@ -69,22 +71,12 @@ public class CommonAttributeFilter implements Filter
         setXsrfTokenAttribute(httpServletRequest);
         setMiscLeaveAttribute(httpServletRequest);
         setReleaseVersionAttribute(httpServletRequest);
-        setDisableCache(response);
         setImageUrl(request);
         chain.doFilter(request, response);
     }
 
     private static void setContextPathAttribute(HttpServletRequest httpServletRequest) {
         httpServletRequest.setAttribute(CONTEXT_PATH_ATTRIBUTE, httpServletRequest.getContextPath());
-    }
-
-    private void setDisableCache(ServletResponse response) {
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        long now = System.currentTimeMillis();
-        httpServletResponse.addHeader("Cache-Control", "max-age=" + webCache);
-        httpServletResponse.addHeader("Cache-Control", "must-revalidate");
-        httpServletResponse.setDateHeader("Last-Modified", now);
-        httpServletResponse.setDateHeader("Expires", now + webCache * 1000);
     }
 
     private static void setTimeoutAttribute(HttpServletRequest httpServletRequest) {
@@ -126,7 +118,7 @@ public class CommonAttributeFilter implements Filter
     }
 
     private void setReleaseVersionAttribute(HttpServletRequest request) {
-        request.setAttribute(RELEASEVERSION_ATTRIBUTE, "1");
+        request.setAttribute(RELEASEVERSION_ATTRIBUTE, releaseVersion);
     }
 
     /** Life-cycle is maintained by Spring. The init method is not used. */

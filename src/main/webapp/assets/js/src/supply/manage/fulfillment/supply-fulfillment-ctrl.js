@@ -1,8 +1,10 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
-    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval', 'LocationService', supplyFulfillmentController]);
+    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval',
+    'LocationService', 'SupplyLocationStatisticsService', supplyFulfillmentController]);
 
 function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
-                                     itemsApi, modals, $interval, locationService) {
+                                     itemsApi, modals, $interval, locationService,
+                                     locationStatisticsService) {
 
     $scope.pendingSearch = {
         matches: [],
@@ -50,10 +52,13 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     /** Used in edit modals to assign an issuer. */
     $scope.supplyEmployees = [];
 
+    $scope.locationStatistics = null;
+
     $scope.init = function () {
         updateShipments();
         getSupplyEmployees();
         getSupplyItems();
+        getLocationStatistics();
     };
 
     $scope.init();
@@ -94,6 +99,14 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.itemSearch.error = true;
             $scope.itemSearch.matches = [];
         })
+    }
+
+    function getLocationStatistics() {
+        locationStatisticsService.calculateLocationStatisticsFor(2016, 8).then(
+            function (result) {
+                $scope.locationStatistics = result;
+            }
+        );
     }
 
     /** Get all pending shipments */
@@ -183,20 +196,52 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
 
     /** --- Highlighting --- */
 
-    $scope.highlightRequisition = function (requisition) {
-        var highlight = false;
+    $scope.calculateHighlighting = function (requisition) {
+        return {
+            warn: isOverPerOrderMax(requisition) || isOverPerMonthMax(requisition) || containsSpecialItems(requisition),
+            bold: isOverPerMonthMax(requisition)
+        }
+    };
+
+    function isOverPerOrderMax(requisition) {
+        var isOverPerOrderMax = false;
         angular.forEach(requisition.lineItems, function (lineItem) {
-            if (lineItem.quantity > lineItem.item.suggestedMaxQty || lineItem.item.visibility === 'SPECIAL') {
-                highlight = true;
+            if (lineItem.quantity > lineItem.item.maxQtyPerOrder) {
+                isOverPerOrderMax = true;
             }
         });
-        return highlight;
-    };
+        return isOverPerOrderMax;
+    }
+
+    function containsSpecialItems(requisition) {
+        var containsSpecialItems = false;
+        angular.forEach(requisition.lineItems, function (lineItem) {
+            if (lineItem.item.visibility === 'SPECIAL') {
+                containsSpecialItems = true;
+            }
+        });
+        return containsSpecialItems;
+    }
+
+    function isOverPerMonthMax(requisition) {
+        if ($scope.locationStatistics == null) {
+            return false;
+        }
+        var isOverPerMonthMax = false;
+        angular.forEach(requisition.lineItems, function (lineItem) {
+            var monthToDateQty = $scope.locationStatistics.getQuantityForLocationAndItem(requisition.destination.locId,
+                                                                                         lineItem.item.commodityCode);
+            if (monthToDateQty > lineItem.item.suggestedMaxQty) {
+                isOverPerMonthMax = true;
+            }
+        });
+        return isOverPerMonthMax;
+    }
 
     /** --- Modals --- */
 
     $scope.showEditingModal = function (requisition) {
-        /** Editing modal returns a promise containing the save requisition api request 
+        /** Editing modal returns a promise containing the save requisition api request
          * if the user saved their changes, undefined otherwise.*/
         $scope.saveResponse.response = modals.open('fulfillment-editing-modal', requisition)
             .then(successfulSave)
