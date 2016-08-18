@@ -60,7 +60,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
 
     function getRequisitions(employeeInfoResponse) {
         var params = {
-            location: employeeInfoResponse.employee.empWorkLocation,
+            location: employeeInfoResponse.employee.empWorkLocation.locId,
             customerId: employeeInfoResponse.employee.employeeId,
             status: $scope.filter.status,
             from: moment().subtract(1, 'month').format(),
