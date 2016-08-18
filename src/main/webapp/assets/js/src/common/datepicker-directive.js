@@ -15,13 +15,13 @@ essApp.directive('datepicker', [function(){
 
             var blackOutDate = function (date) {
                 if (attrs.ngModel === "filter.date.from") {
-                    var d1 = moment(date).format("MM/DD/YYYY");
-                    var d2 = moment(scope.$parent.filter.date.to).format("MM/DD/YYYY");
+                    var d1 = moment(date);
+                    var d2 = moment(scope.$parent.filter.date.to);
                     return [d2 >= d1];
                 }
                 else {
-                    var d1 = moment(date).format("MM/DD/YYYY");
-                    var d2 = moment(scope.$parent.filter.date.from).format("MM/DD/YYYY");
+                    var d1 = moment(date);
+                    var d2 = moment(scope.$parent.filter.date.from);
                     return [d2 < d1];
                 }
             };
