@@ -87,6 +87,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
 
   /* Insert an item move into FD12ExpIssue. */
   PROCEDURE insert_item_move(requisition_id      NUMBER,
+                             customer_id         NUMBER,
                              nuissue             NUMBER,
                              item_id             NUMBER,
                              issue_date          VARCHAR2,
@@ -106,14 +107,15 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
                                 CDLOCTYPEFRM, CDLOCTYPETO, CDRECTYPE, CDSTATUS,
                                 CDLOCATFROM, CDLOCATTO, NAISSUEDBY, NATXNORGUSER,
                                 NATXNUPDUSER, AMQTYISSUE, AMQTYISSSTD,
-                                CDORGID, CDISSUNIT, CDRESPCTRHD, NUREQUISITIONID)
+                                CDORGID, CDISSUNIT, CDRESPCTRHD, NUREQUISITIONID, NUXREFEM)
       VALUES (nuissue, item_id, TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD'), SYSDATE, SYSDATE, SUPPLY_LOCATION_TYPE,
               to_location_type, cdrectype, cdstatus, SUPPLY_LOCATION_CODE, to_location_code, issuer_uid, USER,
-              USER, quantity, amqtyissstd, cdorgid, item_unit, responsibility_head, requisition_id);
+              USER, quantity, amqtyissstd, cdorgid, item_unit, responsibility_head, requisition_id, customer_id);
     END;
 
   /* Has all columns from the insert_item_move query plus the new amqtyohstd value for the from location. */
   PROCEDURE insert_item_move_audit(requisition_id      NUMBER,
+                                   customer_id         NUMBER,
                                    nuissue             NUMBER,
                                    item_id             NUMBER,
                                    issue_date          VARCHAR2,
@@ -134,10 +136,10 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
                                 CDLOCTYPEFRM, CDLOCTYPETO, CDRECTYPE, CDSTATUS,
                                 CDLOCATFROM, CDLOCATTO, NAISSUEDBY, NATXNORGUSER,
                                 NATXNUPDUSER, AMQTYISSUE, AMQTYISSSTD, AMQTYOHSTD,
-                                CDORGID, CDISSUNIT, CDRESPCTRHD, NUREQUISITIONID)
+                                CDORGID, CDISSUNIT, CDRESPCTRHD, NUREQUISITIONID, NUXREFEM)
       VALUES (nuissue, item_id, TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD'), SYSDATE, SYSDATE, SUPPLY_LOCATION_TYPE,
               to_location_type, cdrectype, cdstatus, SUPPLY_LOCATION_CODE, to_location_code, issuer_uid, USER, USER,
-              quantity, amqtyissstd, new_standard_quantity_on_hand, cdorgid, item_unit, responsibility_head, requisition_id);
+              quantity, amqtyissstd, new_standard_quantity_on_hand, cdorgid, item_unit, responsibility_head, requisition_id, customer_id);
     END;
 
   /* Subtracts items from supply location inventory. */
@@ -195,6 +197,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
     item_count                      NUMBER := 1;
 
     -- Requisition information.
+    customer_id                     NUMBER;
     approved_date_time              VARCHAR2(23);
     destination_code                VARCHAR2(6);
     destination_type                VARCHAR2(1);
@@ -213,6 +216,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
 
       -- Extract Requisition data
       requisition_id := requisition_xml.extract('/RequisitionView/requisitionId/text()').getNumberVal();
+      customer_id := requisition_xml.extract('/RequisitionView/customer/employeeId/text()').getNumberVal();
       approved_date_time := requisition_xml.extract('/RequisitionView/approvedDateTime/text()').getStringVal();
       destination_code := requisition_xml.extract('/RequisitionView/destination/code/text()').getStringVal();
       destination_type := requisition_xml.extract('/RequisitionView/destination/locationTypeCode/text()').getStringVal();
@@ -235,13 +239,22 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
         nuissue := get_next_nuissue(item_id, destination_code, destination_type, approved_date_time);
         standard_quantity := quantity * get_standard_unit_size(issue_unit);
 
+        -- Don't insert items with 0 quantity ordered.
+        IF quantity = 0
+          THEN
+          GOTO end_loop; -- Oracle 10g does not have CONTINUE statement.
+        END IF;
+
         -- Insert item moves.
-        insert_item_move(requisition_id, nuissue, item_id, approved_date_time, destination_code, destination_type,
+        insert_item_move(requisition_id, customer_id, nuissue, item_id, approved_date_time, destination_code, destination_type,
                          issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
         subtract_items_from_inventory(item_id, standard_quantity);
-        insert_item_move_audit(requisition_id, nuissue, item_id, approved_date_time, destination_code,
+        insert_item_move_audit(requisition_id, customer_id, nuissue, item_id, approved_date_time, destination_code,
                                destination_type,
                                issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
+
+        <<end_loop>> -- label for skipping inserts if item quantity is 0.
+        NULL; -- NEED executable statement after label!
 
         -- increment and continue looping through items.
         item_count := item_count + 1;
