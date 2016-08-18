@@ -79,8 +79,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function Reset() {
-        $scope.displayAllowances = allowanceService.filterAllowances(allowances, [], "");
-        $scope.displayAllowances = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
+        $scope.filter.searchTerm = "";
+        filterAllowances();
     }
 
     function setToShoppingState() {
