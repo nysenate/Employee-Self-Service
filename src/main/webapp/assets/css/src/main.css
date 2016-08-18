@@ -379,6 +379,9 @@ table.simple-table tbody tr td {
 .margin-10-0 {
   margin: 10px 0;
 }
+.margin-top-10 {
+  margin-top: 10px !important;
+}
 .margin-left-10 {
   margin-left: 10px;
 }
@@ -1497,6 +1500,9 @@ table.simple-table tbody tr td {
 .margin-10-0 {
   margin: 10px 0;
 }
+.margin-top-10 {
+  margin-top: 10px !important;
+}
 .margin-left-10 {
   margin-left: 10px;
 }
@@ -2501,6 +2507,9 @@ table.simple-table tbody tr td {
 }
 .margin-10-0 {
   margin: 10px 0;
+}
+.margin-top-10 {
+  margin-top: 10px !important;
 }
 .margin-left-10 {
   margin-left: 10px;
@@ -4005,6 +4014,9 @@ button.ui-button::-moz-focus-inner {
 .margin-10-0 {
   margin: 10px 0;
 }
+.margin-top-10 {
+  margin-top: 10px !important;
+}
 .margin-left-10 {
   margin-left: 10px;
 }
@@ -4467,6 +4479,9 @@ button.ui-button::-moz-focus-inner {
 }
 .margin-10-0 {
   margin: 10px 0;
+}
+.margin-top-10 {
+  margin-top: 10px !important;
 }
 .margin-left-10 {
   margin-left: 10px;
@@ -5032,6 +5047,9 @@ table.simple-table tbody tr td {
 }
 .margin-10-0 {
   margin: 10px 0;
+}
+.margin-top-10 {
+  margin-top: 10px !important;
 }
 .margin-left-10 {
   margin-left: 10px;
@@ -6094,6 +6112,9 @@ table.simple-table tbody tr td {
 }
 .margin-10-0 {
   margin: 10px 0;
+}
+.margin-top-10 {
+  margin-top: 10px !important;
 }
 .margin-left-10 {
   margin-left: 10px;
@@ -7301,6 +7322,9 @@ table.simple-table tbody tr td {
 .margin-10-0 {
   margin: 10px 0;
 }
+.margin-top-10 {
+  margin-top: 10px !important;
+}
 .margin-left-10 {
   margin-left: 10px;
 }
@@ -9119,6 +9143,9 @@ table.simple-table tbody tr td {
 .margin-10-0 {
   margin: 10px 0;
 }
+.margin-top-10 {
+  margin-top: 10px !important;
+}
 .margin-left-10 {
   margin-left: 10px;
 }
@@ -10027,6 +10054,9 @@ ul.pagination li a {
   padding: 3px 7px;
   vertical-align: initial;
 }
+.ui-datepicker-unselectable .ui-state-default {
+  color: grey;
+}
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
@@ -10367,6 +10397,9 @@ table.simple-table tbody tr td {
 }
 .margin-10-0 {
   margin: 10px 0;
+}
+.margin-top-10 {
+  margin-top: 10px !important;
 }
 .margin-left-10 {
   margin-left: 10px;
@@ -11779,6 +11812,24 @@ record-review-modal,
 .approve-submit-modal-details .acknowledged-message {
   text-align: left;
   margin: 10px 20px;
+}
+#record-reminder-prompt .input-container {
+  margin-bottom: 10px;
+}
+#record-reminder-prompt .input-container input:first-child {
+  margin-right: 20px;
+}
+#record-reminder-prompt table.reminder-records tr.first-emp-rec:not(:first-child) {
+  border-top: 1px solid #bbb;
+}
+#record-reminder-prompt table.reminder-records tr.first-emp-rec td {
+  padding-top: 5px;
+}
+#record-reminder-prompt table.reminder-records tr.last-emp-rec td {
+  padding-bottom: 5px;
+}
+#record-reminder-prompt table.reminder-records tr td:first-child {
+  padding-right: 5px;
 }
 /** --- Transaction History --- */
 .tx-effect-date {
