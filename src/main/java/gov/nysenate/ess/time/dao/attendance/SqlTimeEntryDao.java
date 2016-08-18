@@ -85,6 +85,7 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
         param.addValue("tOriginalDate", SqlBaseDao.toDate(timeEntry.getOriginalDate()));
         param.addValue("tUpdateDate", SqlBaseDao.toDate(timeEntry.getUpdateDate()));
         param.addValue("status", String.valueOf(getStatusCode(timeEntry.isActive())));
+        param.addValue("accruing", String.valueOf(getAccruingCode(timeEntry.isAccruing())));
         param.addValue("empComment", timeEntry.getEmpComment());
         param.addValue("payType", timeEntry.getPayType() != null ? timeEntry.getPayType().name() : null);
         return param;

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -304,12 +305,21 @@ public class EssTimeRecordManager implements TimeRecordManager
         boolean modifiedEntries = false;
         // Get effective pay types for the record
         RangeMap<LocalDate, PayType> payTypes = getPayTypeRangeMap(record.getEmployeeId());
+        // Get effective Accruing flag for the record
+        RangeMap<LocalDate, Boolean> acrruing = getAccrualRangeMap(record.getEmployeeId());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
         // Check the pay types for each entry
         for (TimeEntry entry : record.getTimeEntries()) {
             PayType correctPayType = payTypes.get(entry.getDate());
+            boolean correctAccruing = acrruing.get(entry.getDate()).booleanValue();
             if (!Objects.equals(entry.getPayType(), correctPayType)) {
                 modifiedEntries = true;
                 entry.setPayType(correctPayType);
+            }
+            if (entry.isAccruing() != correctAccruing) {
+                modifiedEntries = true;
+                entry.setAccruing(correctAccruing);
             }
         }
         return modifiedEntries;
@@ -322,6 +332,15 @@ public class EssTimeRecordManager implements TimeRecordManager
         return RangeUtils.toRangeMap(
                 transService.getTransHistory(empId).getEffectivePayTypes(Range.all()));
     }
+
+    /**
+     * Get a range map containing the effective pay types for all employed dates of the given employee
+     */
+    private RangeMap<LocalDate, Boolean> getAccrualRangeMap(int empId) {
+        return RangeUtils.toRangeMap(
+                transService.getTransHistory(empId).getEffectiveAccrualStatus(Range.all()));
+    }
+
 
     /**
      * Get date ranges corresponding to active record dates over a collection of pay periods

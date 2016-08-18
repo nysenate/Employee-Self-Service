@@ -33,7 +33,7 @@ public class PermittedModificationTRV implements TimeRecordValidator
             throw new TimeRecordErrorException(TimeRecordErrorCode.NO_EXISTING_RECORD);
         }
         TimeRecord prevRecord = previousState.get();
-        // Check various user-immutable fields to ensure there are no changeS
+        // Check various user-immutable fields to ensure there are no changes
         checkTimeRecordField(record, prevRecord, "recordStatus", "String", TimeRecord::getRecordStatus);
         checkTimeRecordField(record, prevRecord, "timeRecordId", "String", TimeRecord::getTimeRecordId);
         checkTimeRecordField(record, prevRecord, "employeeId", "integer", TimeRecord::getEmployeeId);
@@ -45,7 +45,7 @@ public class PermittedModificationTRV implements TimeRecordValidator
         checkTimeRecordField(record, prevRecord, "endDate", "Date", TimeRecord::getEndDate);
         checkTimeRecordField(record, prevRecord, "exceptionDetails", "String", TimeRecord::getExceptionDetails);
         checkTimeRecordField(record, prevRecord, "processedDate", "Date", TimeRecord::getProcessedDate);
-        checkTimeEntries(record, prevRecord);
+       // checkTimeEntries(record, prevRecord);  -- Commented Out 8/16/16 to test ChangeTRV
     }
 
     /** --- Internal Methods --- */
@@ -76,11 +76,13 @@ public class PermittedModificationTRV implements TimeRecordValidator
     /**
      * Checks to ensure that a saved record contains no new time entries
      *   and that no changes in pay type were made
-     */
+     **/
+
+    // Commented Out 8/16/16 to test ChangeTRV
     private static void checkTimeEntries(TimeRecord record, TimeRecord prevState) throws TimeRecordErrorException {
         for (TimeEntry entry : record.getTimeEntries()) {
             TimeEntry prevEntry = prevState.getEntry(entry.getDate());
-            if (prevEntry == null) {
+              if (prevEntry == null) {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_MODIFICATION,
                         new InvalidParameterView("timeEntries", "List<TimeEntry>", "new entries cannot be added",
                                 String.valueOf(entry.getDate())));

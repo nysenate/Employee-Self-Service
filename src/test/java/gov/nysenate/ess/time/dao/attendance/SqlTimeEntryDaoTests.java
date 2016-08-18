@@ -45,6 +45,7 @@ public class SqlTimeEntryDaoTests extends BaseTests
         testEntry.setOriginalDate(LocalDate.of(1990, 8, 14).atStartOfDay());
         testEntry.setUpdateDate(LocalDate.of(1990, 8, 14).atStartOfDay());
         testEntry.setActive(true);
+        testEntry.setAccruing(true);
         testEntry.setEmpComment("was born today");
         testEntry.setPayType(PayType.RA);
 
@@ -68,6 +69,7 @@ public class SqlTimeEntryDaoTests extends BaseTests
         otherTestEntry.setOriginalDate(LocalDate.of(1990, 8, 15).atStartOfDay());
         otherTestEntry.setUpdateDate(LocalDate.of(1990, 8, 15).atStartOfDay());
         otherTestEntry.setActive(true);
+        otherTestEntry.setAccruing(true);
         otherTestEntry.setEmpComment(null);
         otherTestEntry.setPayType(PayType.RA);
     }

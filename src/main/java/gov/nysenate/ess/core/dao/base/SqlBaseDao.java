@@ -109,4 +109,13 @@ public abstract class SqlBaseDao
     public static char getStatusCode(Boolean status) {
         return (status != null && status.equals(true)) ? 'A' : 'I';
     }
+    /**
+     * Converts true to 'Y' and false to 'N'
+     * @param accruing Boolean
+     * @return char
+     */
+    public static char getAccruingCode(Boolean accruing) {
+        return (accruing != null && accruing.equals(true)) ? 'Y' : 'N';
+    }
+
 }

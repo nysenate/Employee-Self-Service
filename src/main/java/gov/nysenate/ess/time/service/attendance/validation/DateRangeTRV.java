@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -27,7 +27,7 @@ public class DateRangeTRV implements TimeRecordValidator {
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState,TimeRecordAction action) {
-        // If the saved record contains entries where the employee was a temporary employee
+        // If the saved record contains entries in the employee scope
         return record.getScope() == TimeRecordScope.EMPLOYEE;
     }
 
@@ -43,10 +43,24 @@ public class DateRangeTRV implements TimeRecordValidator {
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
         ImmutableList<TimeEntry> entries =  record.getTimeEntries();
         LocalDate entryDate;
+        Set<LocalDate> set = new HashSet<>();
+
 
         for (TimeEntry entry : entries) {
 
             entryDate = entry.getDate();
+
+            if (entryDate == null)  {
+                throw new TimeRecordErrorException(TimeRecordErrorCode.NULL_DATE,
+                        new InvalidParameterView("dateRange", "string",
+                                " entryDate =  NULL ", "NULL"));
+            }
+
+            if (set.contains(entryDate)||!set.add(entryDate)) {
+                throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_DATE,
+                        new InvalidParameterView("dateRange", "string",
+                                " entryDate =  " + entryDate.toString(), entryDate.toString()));
+            }
 
             if (entryDate.isBefore(record.getBeginDate())||entryDate.isAfter(record.getEndDate())) {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.DATE_OUT_OF_RANGE,

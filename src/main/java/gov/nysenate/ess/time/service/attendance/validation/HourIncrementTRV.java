@@ -76,7 +76,7 @@ public class HourIncrementTRV implements TimeRecordValidator {
         if (entry.getWorkHours().orElse(BigDecimal.ZERO).remainder(divisor).compareTo(BigDecimal.ZERO) == 0) {
             return;
         }
-        throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+        throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                 new InvalidParameterView("workTime", "decimal",
                         "worktime = " + entry.getWorkHours().toString(),  entry.getWorkHours().toString()));
     }
@@ -101,36 +101,36 @@ public class HourIncrementTRV implements TimeRecordValidator {
         BigDecimal miscTime = entry.getMiscHours().orElse(BigDecimal.ZERO);
 
         if (workTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("workTime", "decimal",
                             "worktime = " + workTime.toString(),  workTime.toString()));
 
         } else if (holidayTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("holidayTime", "decimal",
                             "holidayTime = " + holidayTime.toString(), holidayTime.toString()));
         } else if (travelTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("travelTime", "decimal",
                             "travelTime = " + travelTime.toString(), travelTime.toString()));
         } else if (personalTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("personalTime", "decimal",
                             "personalTime = " + personalTime.toString(), personalTime.toString()));
         } else if (vacationTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("vacationTime", "decimal",
                             "vacationTime = " + vacationTime.toString(), vacationTime.toString()));
         } else if (sickEmpTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("sickEmpTime", "decimal",
                             "sickEmpTime = " + sickEmpTime.toString(), sickEmpTime.toString()));
         } else if (sickFamTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("sickFamTime", "decimal",
                             "sickFamTime = " + sickFamTime.toString(), sickFamTime.toString()));
         } else if (miscTime.remainder(divisor).compareTo(BigDecimal.ZERO) != 0) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HORULY_INCREMENT,
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_HOURLY_INCREMENT,
                     new InvalidParameterView("miscTime", "decimal",
                             "miscTime = " + miscTime.toString(), miscTime.toString()));
         }

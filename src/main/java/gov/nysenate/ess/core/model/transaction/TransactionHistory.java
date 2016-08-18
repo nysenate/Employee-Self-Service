@@ -125,9 +125,9 @@ public class TransactionHistory
     }
 
     public TreeMap<LocalDate, Boolean> getEffectiveAccrualStatus(Range<LocalDate> dateRange) {
-        TreeMap<LocalDate, Boolean> minHrs = new TreeMap<>();
-        getEffectiveEntriesDuring("CDACCRUE", dateRange, true).forEach((k, v) -> minHrs.put(k, v.equals("Y")));
-        return minHrs;
+        TreeMap<LocalDate, Boolean> accrual = new TreeMap<>();
+        getEffectiveEntriesDuring("CDACCRUE", dateRange, true).forEach((k, v) -> accrual.put(k, v.equals("Y")));
+        return accrual;
     }
 
     public TreeMap<LocalDate, BigDecimal> getEffectiveAllowances(Range<LocalDate> dateRange) {
