@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 
@@ -32,11 +31,33 @@ public class PaycheckRestApiCtrl extends BaseRestApiCtrl
     @Autowired
     PaycheckService paycheckService;
 
-    @RequestMapping(value = "", params = {"empId", "year"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse getPaychecksByYear(@RequestParam Integer empId, @RequestParam Integer year, WebRequest webRequest) {
+    /**
+     * Paycheck API
+     * ------------
+     * Get a list of paychecks across a year for an employee
+     *
+     * Usage:       (GET) /api/v1/paychecks
+     *
+     * Request Params:
+     * @param empId Integer - required - the requested employee id
+     * @param year Integer - required - the year for which paychecks will be retrieved
+     * @param fiscalYear boolean - default false - will interpret <code>year</code> as a fiscal year if true
+     * @return {@link ListViewResponse} of {@link PaycheckView}
+     */
+    @RequestMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse getPaychecksByYear(@RequestParam Integer empId,
+                                           @RequestParam Integer year,
+                                           @RequestParam(defaultValue = "false") boolean fiscalYear) {
         checkPermission(new EssTimePermission( empId, PAYCHECK, GET, DateUtils.yearDateRange(year)));
 
-        List<Paycheck> paychecks = paycheckService.getEmployeePaychecksForYear(empId, year);
+        List<Paycheck> paychecks;
+
+        if (fiscalYear) {
+            paychecks = paycheckService.getEmployeePaychecksForFiscalYear(empId, year);
+        } else {
+            paychecks = paycheckService.getEmployeePaychecksForYear(empId, year);
+        }
+
         return ListViewResponse.of(paychecks.stream().map(PaycheckView::new).collect(toList()), "paychecks");
     }
 
