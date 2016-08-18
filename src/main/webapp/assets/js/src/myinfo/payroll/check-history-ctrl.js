@@ -1,8 +1,8 @@
 var essMyInfo = angular.module('essMyInfo');
 
 essMyInfo.controller('EmpCheckHistoryCtrl',
-    ['$scope', '$filter', 'appProps', 'EmpCheckHistoryApi', 'modals',
-        function($scope, $filter, appProps, EmpCheckHistoryApi, modals) {
+    ['$scope', '$filter', 'appProps', 'EmpCheckHistoryApi', 'EmpActiveYearsApi','modals',
+        function($scope, $filter, appProps, EmpCheckHistoryApi, EmpActiveYearsApi, modals) {
 
             /** Map with deduction descriptions as keys.
              * Map is used instead of array for faster look ups.
@@ -29,10 +29,12 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
 
             $scope.checkHistory = {
                 searching: false,
+                useFiscalYears: false,
                 recordYears: null,
+                recordFiscalYears: null,
                 year: null
             };
-            
+
             $scope.dirDepositPresent = false;
             $scope.checkPresent = false;
 
@@ -48,6 +50,7 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                 $scope.checkHistory.recordYears = appProps.empActiveYears;
                 $scope.checkHistory.year = $scope.checkHistory.recordYears[$scope.checkHistory.recordYears.length - 1];
                 $scope.getRecords();
+                $scope.getActiveDates();
             };
 
             $scope.getRecords = function() {
@@ -56,7 +59,8 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                 var empId = appProps.user.employeeId;
                 var params = {
                     empId: empId,
-                    year: $scope.checkHistory.year.toString()
+                    year: $scope.checkHistory.year,
+                    fiscalYear: $scope.checkHistory.useFiscalYears
                 };
                 EmpCheckHistoryApi.get(params, function(response) {
                     $scope.paychecks = response.paychecks.sort(function(a, b) {return new Date(a.checkDate) - new Date(b.checkDate)});
@@ -68,8 +72,36 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                 }, function(response) {
                     $scope.checkHistory.searching = false;
                     modals.open('500', {details: response});
-                    console.log(response);
+                    console.error(response);
                 })
+            };
+
+            /**
+             * Retrieve employee active dates and use them to initialize the fiscal year list
+             */
+            $scope.getActiveDates = function () {
+                EmpActiveYearsApi.get({empId: appProps.user.employeeId, fiscalYear: true},
+                    function onSuccess(response) {
+                        console.log('got fiscal years', response);
+                        $scope.checkHistory.recordFiscalYears = response.activeYears;
+                    },
+                    function onFail(errorResponse) {
+                        modals.open('500', {details: errorResponse});
+                        console.error(response);
+                    }
+                )
+            };
+
+            /**
+             * Function that is run when the user switches from standard to fiscal year view
+             * Sets the year as the first year in the switched-to year set
+             */
+            $scope.onFiscalYearSwitch = function () {
+                var yearArray = $scope.checkHistory.useFiscalYears
+                    ? $scope.checkHistory.recordFiscalYears
+                    : $scope.checkHistory.recordYears;
+                $scope.checkHistory.year = yearArray[yearArray.length - 1];
+                $scope.getRecords();
             };
 
             function initYtdValues(paychecks) {

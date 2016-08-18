@@ -1,14 +1,8 @@
 package gov.nysenate.ess.core.util;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Date;
 import java.util.EnumSet;
 
@@ -20,6 +14,12 @@ public class DateUtils
     public static final LocalDate THE_FUTURE = LocalDate.of(2999, 12, 31);
     public static final Range<LocalDate> ALL_DATES = Range.closed(LONG_AGO, THE_FUTURE);
     public static final Range<LocalDateTime> ALL_DATE_TIMES = Range.closed(LONG_AGO.atStartOfDay(), atEndOfDay(THE_FUTURE));
+
+    /**
+     * The number of months BEFORE the standard year that the Senate Fiscal Year starts
+     * (with the Senate fiscal year being identified by the year in which the fiscal year ends)
+     */
+    public static final Period SENATE_FISCAL_YEAR_OFFSET = Period.ofMonths(9);
 
     public static final ImmutableSet<DayOfWeek> WEEKEND = ImmutableSet.copyOf(
             EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
@@ -50,6 +50,65 @@ public class DateUtils
      */
     public static Range<LocalDate> yearDateRange(int year) {
         return Range.closedOpen(LocalDate.ofYearDay(year, 1), LocalDate.ofYearDay(year + 1, 1));
+    }
+
+    /**
+     * Return a range of dates corresponding to
+     * all of the days in the Senate fiscal year that ENDS DURING the given year
+     *
+     * @param endYear int - the ending year of the requested fiscal year
+     * @return Range<LocalDate> - all dates during the requested fiscal year
+     */
+    public static Range<LocalDate> fiscalYearDateRange(int endYear) {
+        LocalDate startDate = LocalDate.ofYearDay(endYear, 1)
+                .minus(SENATE_FISCAL_YEAR_OFFSET);
+        LocalDate nextYearStartDate = LocalDate.ofYearDay(endYear + 1, 1)
+                .minus(SENATE_FISCAL_YEAR_OFFSET);
+        return Range.closedOpen(startDate, nextYearStartDate);
+    }
+
+    /**
+     * Gets the senate fiscal year of the given date
+     * @param localDate LocalDate
+     * @return int - fiscal year of given date
+     */
+    public static int getFiscalYear(LocalDate localDate) {
+        return localDate.plus(SENATE_FISCAL_YEAR_OFFSET).getYear();
+    }
+
+    /**
+     * Converts a date range to a range of years enclosing the date range
+     * @param dateRange Range<LocalDate>
+     * @param fiscalYears boolean - will return range of fiscal years if true
+     * @return Range<Integer> - a closed range containing all years covered by the date range
+     */
+    public static Range<Integer> toYearRange(Range<LocalDate> dateRange, boolean fiscalYears) {
+        Integer lowerEndpointYear = null;
+        Integer upperEndpointYear = null;
+        if (dateRange.hasLowerBound()) {
+            LocalDate lowerEndpoint = dateRange.lowerEndpoint();
+            if (dateRange.lowerBoundType() == BoundType.OPEN) {
+                lowerEndpoint = lowerEndpoint.plusDays(1);
+            }
+            lowerEndpointYear = fiscalYears ? getFiscalYear(lowerEndpoint) : lowerEndpoint.getYear();
+        }
+        if (dateRange.hasUpperBound()) {
+            LocalDate upperEndpoint = dateRange.upperEndpoint();
+            if (dateRange.upperBoundType() == BoundType.OPEN) {
+                upperEndpoint = upperEndpoint.minusDays(1);
+            }
+            upperEndpointYear = fiscalYears ? getFiscalYear(upperEndpoint) : upperEndpoint.getYear();
+        }
+        if (upperEndpointYear == null && lowerEndpointYear == null) {
+            return Range.all();
+        }
+        if (lowerEndpointYear == null) {
+            return Range.atMost(upperEndpointYear);
+        }
+        if (upperEndpointYear == null) {
+            return Range.atMost(lowerEndpointYear);
+        }
+        return Range.encloseAll(ImmutableList.of(upperEndpointYear, lowerEndpointYear));
     }
 
     /**

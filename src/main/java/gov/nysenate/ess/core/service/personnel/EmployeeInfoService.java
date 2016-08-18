@@ -38,22 +38,42 @@ public interface EmployeeInfoService
      */
     Employee getEmployee(int empId, LocalDate effectiveDate) throws EmployeeNotFoundEx;
 
+    /**
+     * Delegates {@link #getEmployee(int)}
+     * Takes multiple employee ids and returns {@link Employee} objects for each
+     * @param empIds Set<Integer> employee Ids
+     * @return {@link Map<Integer, Employee>}
+     * @throws EmployeeNotFoundEx
+     */
     default Map<Integer, Employee> getEmployees(Set<Integer> empIds) throws EmployeeNotFoundEx {
         return empIds.stream()
             .map(this::getEmployee)
             .collect(Collectors.toMap(Employee::getEmployeeId, Function.identity()));
     }
 
+    /**
+     * Get a date range set encapsulating the employee's dates of active service
+     * @param empId Integer - employee id
+     * @return RangeSet<LocalDate>
+     */
     RangeSet<LocalDate> getEmployeeActiveDatesService(int empId);
 
+    /**
+     * Get a list of years that an employee was active
+     * @param empId Integer - employee id
+     * @param fiscalYears boolean - will return active fiscal years if set true
+     * @return List<Integer> - list of years
+     */
+    List<Integer> getEmployeeActiveYearsService(int empId, boolean fiscalYears);
+
+    /**
+     * Overload of {@link #getEmployeeActiveYearsService(int, boolean)}
+     * that uses standard, as opposed to fiscal years by default
+     * @param empId Integer - employee id
+     * @return List<Integer> - list of years
+     */
     default List<Integer> getEmployeeActiveYearsService(int empId) {
-        RangeSet<LocalDate> rangeSet = getEmployeeActiveDatesService(empId);
-        return rangeSet.asRanges().stream().flatMapToInt(r -> {
-            if (r.hasLowerBound()) {
-                int upperBound = (r.hasUpperBound()) ? DateUtils.endOfDateRange(r).getYear() : LocalDate.now().getYear();
-                return IntStream.rangeClosed(r.lowerEndpoint().getYear(), upperBound);
-            }
-            return IntStream.empty();
-        }).boxed().distinct().collect(Collectors.toList());
+        return getEmployeeActiveYearsService(empId, false);
     }
+
 }
