@@ -80,6 +80,10 @@ essApi.factory('EmpInfoApi', ['$resource', 'appProps', function ($resource, appP
 }]);
 
 essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/employees/activeDates');
+}]);
+
+essApi.factory('EmpActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/employees/activeYears');
 }]);
 

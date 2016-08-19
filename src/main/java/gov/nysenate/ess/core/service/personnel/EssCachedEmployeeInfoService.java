@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.personnel;
 
+import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import com.google.common.eventbus.EventBus;
@@ -33,6 +34,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class EssCachedEmployeeInfoService implements EmployeeInfoService, CachingService<Integer>
@@ -102,6 +105,26 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
             }
         });
         return employedDates;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Integer> getEmployeeActiveYearsService(int empId, boolean fiscalYears) {
+        RangeSet<LocalDate> rangeSet = getEmployeeActiveDatesService(empId);
+        Range<LocalDate> pastAndPresent = Range.atMost(LocalDate.now());
+        return rangeSet.asRanges().stream()
+                // Only use dates from past and present
+                .filter(range -> range.isConnected(pastAndPresent))
+                .map(range -> range.intersection(pastAndPresent))
+                // Ensure that the range is bounded, no employees have been here since the dawn of time
+                .filter(range -> range.hasLowerBound() && range.hasUpperBound())
+                // Convert to a range of years
+                .map(range -> DateUtils.toYearRange(range, fiscalYears))
+                .flatMapToInt(range -> IntStream.rangeClosed(range.lowerEndpoint(), range.upperEndpoint()))
+                .boxed()
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     /** --- Caching Service Implemented Methods ---

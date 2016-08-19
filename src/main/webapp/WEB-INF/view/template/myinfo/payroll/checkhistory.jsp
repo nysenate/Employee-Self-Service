@@ -1,20 +1,44 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<div ng-controller="EmpCheckHistoryCtrl">
+<div ng-controller="EmpCheckHistoryCtrl" id="paycheck-history">
   <div class="my-info-hero">
     <h2>Paycheck History</h2>
   </div>
 
   <div class="content-container content-controls">
-    <p class="content-info">
-      Filter By Year&nbsp;
-      <select ng-model="checkHistory.year" ng-options="year for year in checkHistory.recordYears" ng-change="getRecords()"></select>
-    </p>
+    <div class="content-info">
+      <div ng-hide="checkHistory.useFiscalYears">
+        <label>
+          Filter By Year
+          <select ng-model="checkHistory.year"
+                  ng-options="year for year in checkHistory.recordYears" ng-change="getRecords()"></select>
+        </label>
+      </div>
+      <div ng-show="checkHistory.useFiscalYears">
+        <label>
+          Filter By Fiscal Year
+          <select ng-show="checkHistory.useFiscalYears" ng-model="checkHistory.year"
+                  ng-options="((year - 1) + ' - ' + year) for year in checkHistory.recordFiscalYears"
+                  ng-change="getRecords()"></select>
+        </label>
+      </div>
+      <div class="fiscal-toggle">
+        <label>
+          Show Fiscal Year
+          <input type="checkbox" ng-model="checkHistory.useFiscalYears" ng-change="onFiscalYearSwitch()">
+        </label>
+      </div>
+    </div>
   </div>
 
   <div loader-indicator class="loader" ng-show="checkHistory.searching === true"></div>
 
   <div class="content-container" ng-show="paychecks.length > 0">
-    <h1>{{checkHistory.year}} Paycheck Records</h1>
+    <h1 ng-hide="checkHistory.useFiscalYears">
+      {{checkHistory.year}} Paycheck Records
+    </h1>
+    <h1 ng-show="checkHistory.useFiscalYears">
+      {{checkHistory.year - 1}} - {{checkHistory.year}} Fiscal Year Paycheck Records
+    </h1>
     <div class="padding-10 scroll-x">
       <table id="paycheck-history-table" class="ess-table" ng-model="paychecks">
         <thead>

@@ -155,12 +155,13 @@ var essSupply = angular.module('essSupply')
                     return;
                 }
                 $scope.displayedVersion.lineItems.push({item: newItem, quantity: 1});
+                $scope.addItemFeature.newItemCommodityCode = "";
                 $scope.onUpdate();
             };
 
             function newItemIsDuplicate(newItem) {
                 var duplicateItem = false;
-                angular.forEach($scope.requisition.lineItems, function (lineItem) {
+                angular.forEach($scope.displayedVersion.lineItems, function (lineItem) {
                     if (newItem.id === lineItem.item.id) {
                         duplicateItem = true;
                     }
