@@ -14,7 +14,7 @@
     Would you like to continue?
   </p>
   <div class="text-align-center">
-    <input class="submit-button" type="button" value="Yes" ng-click="confirm()">
     <input class="neutral-button" type="button" value="Cancel" ng-click="nevermind()">
+    <input class="submit-button" type="button" value="Yes" ng-click="confirm()">
   </div>
 </div>
