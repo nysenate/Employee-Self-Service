@@ -3,9 +3,7 @@ package gov.nysenate.ess.time.service.attendance.validation;
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
-import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.model.attendance.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +14,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
-
-import static gov.nysenate.ess.time.model.auth.TimePermissionObject.TIME_RECORDS;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 
 /**
@@ -111,26 +105,7 @@ public class ChangeTRV implements TimeRecordValidator {
                         break;
                     }
                 }
-                else if (prevEntry == null) {
-                    // TESTING
 
-                    //logger.info("               checkEntries Cur Row#:"+ curRow+" (prevEntry == null)" );
-                }
-                else if  (prevEntry.getEntryId() == null) {
-                    // TESTING
-                    //logger.info("               checkEntries Cur Row#:"+ curRow+" (prevEntry.getEntryId == null)" );
-
-                }
-                else if  (entry == null ) {
-                    // TESTING
-                    //logger.info("               checkEntries Cur Row#:"+ curRow+" (entry == null)" );
-
-                }
-                else if  (entry.getEntryId() == null) {
-                    // TESTING
-                    //logger.info("               checkEntries Cur Row#:"+ curRow+" (entry.getEntryId() == null)" );
-
-                }
 
             }
 
@@ -218,7 +193,6 @@ public class ChangeTRV implements TimeRecordValidator {
      */
 
     public void checkForRemovedEntries (TimeRecord record, ImmutableList<TimeEntry> prevEntries,  ImmutableList<TimeEntry> entries) throws TimeRecordErrorException {
-        logger.info("******************************************checkForRemovedEntries");
         boolean entryRemoved = true;
         // Used old fashioned Java to check for Entry Id in both Previous and Current Lists (as opposed to using Java 1/8 Streams)
         // Check for Entries with IDs that have been removed
@@ -226,7 +200,6 @@ public class ChangeTRV implements TimeRecordValidator {
         int curRow = -1;
         for (TimeEntry prevEntry : prevEntries) {
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            //logger.info("*(REMOVED ENTRY CHECK Prev Entry:"+prevEntry.getDate().format(dateTimeFormatter)+")");
             entryRemoved = true;
             prevRow++;
             curRow = -1;
@@ -237,7 +210,6 @@ public class ChangeTRV implements TimeRecordValidator {
                 entryRemoved = false;
             }
             else {
-                //logger.info("**********************(REMOVED ENTRY CHECK:"+prevEntry.getDate().format(dateTimeFormatter)+")");
                 for (TimeEntry entry : entries) {
                     curRow++;
                     if (prevEntry != null
@@ -246,22 +218,8 @@ public class ChangeTRV implements TimeRecordValidator {
                             && entry.getEntryId() != null
                             && prevEntry.getEntryId().compareTo(entry.getEntryId()) == 0) {
                         entryRemoved = false;
-                        //logger.info("       **********************(Cur Entry:"+prevEntry.getDate().format(dateTimeFormatter)+") found ID");
 
                         break;
-                    } else {
-                        if (prevEntry == null) {
-                            //logger.info("               ********************checkForRemovedEntries Cur Row#:"+ curRow+" (prevEntry == null)" );
-
-                        } else if (entry == null) {
-                           //logger.info("                ********************checkForRemovedEntries Cur Row#:"+ curRow+" (entry == null) (" + prevEntry.getEntryId() + " != NULL)" );
-                        } else if (prevEntry.getEntryId() == null) {
-                            //logger.info("               ********************checkForRemovedEntries Cur Row#:"+ curRow + " (prevEntry.getEntryId() == null) (" + prevEntry.getEntryId() + " != " + entry.getEntryId() + ")" );
-                        } else if (entry.getEntryId() == null) {
-                            //logger.info("               ********************checkForRemovedEntries Cur Row#:"+ curRow +" (entry.getEntryId() == null) (NULL != " + entry.getEntryId() + ")");
-                        } else {
-                            //logger.info("               ********************checkForRemovedEntries Cur Row#:"+ curRow + "(does not match): (" + prevEntry.getEntryId() + " != " + entry.getEntryId() + ") ["+entry.getDate().format(dateTimeFormatter)+"]");
-                        }
                     }
                 }
             }
@@ -282,7 +240,6 @@ public class ChangeTRV implements TimeRecordValidator {
     }
 
     public void checkForDuplicates (ImmutableList<TimeEntry> entries) throws TimeRecordErrorException {
-        //logger.info("******************************************checkForDuplicates");
 
         int cnt = 0;
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -294,7 +251,6 @@ public class ChangeTRV implements TimeRecordValidator {
                 for (TimeEntry entryCheck : entries) {
                     // Check for Duplicate Entry IDs with different dates
                     if (entryCheck != null && entryCheck.getDate() != null && entryCheck.getEntryId() != null) {
-                        //logger.info("    checkForDuplicates:"+entryCheck.getDate().format(dateTimeFormatter) + " = "+entry.getDate().format(dateTimeFormatter));
                         if (entryCheck.getDate().compareTo(entry.getDate()) != 0 && entryCheck.getEntryId().compareTo(entry.getEntryId()) == 0) {
                             throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_ENTRY_ID,
                                     new InvalidParameterView("EntryId", "string",
@@ -303,7 +259,6 @@ public class ChangeTRV implements TimeRecordValidator {
 
                         // Check for Different Entry IDs with the same date
                         if (entryCheck.getDate().compareTo(entry.getDate()) == 0 && entryCheck.getEntryId().compareTo(entry.getEntryId()) != 0) {
-                            //logger.info("    checkForDuplicates:"+entryCheck.getDate().format(dateTimeFormatter) + " = "+entry.getDate().format(dateTimeFormatter)+" (DUPLICATE DATE)");
                             throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_DATE,
                                     new InvalidParameterView("EntryId", "string",
                                             " Entry Date = " + entry.getDate().format(dateTimeFormatter), entry.getEntryId().toString()));
@@ -322,10 +277,6 @@ public class ChangeTRV implements TimeRecordValidator {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_ENTRY,
                         new InvalidParameterView("EntryId", "string",
                                 " Entry Id  = " + entry.getEntryId().toString()+" Entry Date = "+entry.getDate().format(dateTimeFormatter)+" Record Count = "+cnt, entry.getEntryId().toString()));
-            }
-            else {
-                //logger.info("NO DUPLICATES FOUND");
-
             }
 
         }

@@ -44,16 +44,10 @@ public class ScopePermissionTRV implements TimeRecordValidator {
         int x = -1;
         TimeRecord previousState = prevState.orElse(null);
 
-        logger.info("checkTimeRecord start");
-
         if (record.getScope() != TimeRecordScope.EMPLOYEE) {
-            logger.info("checkTimeRecord NOT EMPLOYEE RECORD SCOPE, SO CHECKING");
             for (TimeEntry entry : entries) {
                 checkEntryFieldPermission(record, entry, getPreviousEntry(entry, previousState));
             }
-        }
-        else {
-            logger.info("checkTimeRecord EMPLOYEE RECORD SCOPE, SO DO NOTHING");
         }
     }
 
