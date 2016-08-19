@@ -65,7 +65,6 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
 
     var selectCurrentVersion = function () {
         $scope.selectedVersion = $scope.requisitionHistory.versions[0];
-        console.log($scope.selectedVersion);
     };
 
     var shipmentResourceErrorHandler = function (response) {
@@ -80,4 +79,8 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
             return supplyUtils.alphabetizeLineItems($scope.selectedVersion.lineItems);
         }
     };
+
+    $scope.displayIssuedDate = function (selectedVersion) {
+        return selectedVersion.status === 'COMPLETED' || selectedVersion.status === 'APPROVED';
+    }
 }

@@ -72,7 +72,10 @@
               <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
             </div>
             <div class="col-4-12">
-              <b>Issued Date:</b> {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+              <b>Issued Date:</b>
+              <span ng-show="displayIssuedDate(selectedVersion)">
+                {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+              </span>
             </div>
           </div>
           <div class="grid padding-10">
@@ -183,7 +186,10 @@
             <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
           </div>
           <div class="col-4-12">
-            <b>Issued Date:</b> {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+            <b>Issued Date:</b>
+            <span ng-show="displayIssuedDate(selectedVersion)">
+              {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
+            </span>
           </div>
           <div class="col-4-12">
             <b>Modified By:</b> {{selectedVersion.createdBy.lastName}}
