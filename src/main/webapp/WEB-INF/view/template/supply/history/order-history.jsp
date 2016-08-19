@@ -3,10 +3,8 @@
     <h2>Order History</h2>
   </div>
 
-  <div loader-indicator class="loader" ng-show="loading === true"></div>
-
-  <div class="content-container" ng-show="loading === false">
-    <h4 class="content-info supply-text" style="margin-bottom: 0;">Recently ordered requisitions</h4>
+  <div class="content-container">
+    <h4 class="content-info supply-text" style="margin-bottom: 0;">Search order history by date or status.</h4>
 
     <%--Filters--%>
     <div class="grid">
@@ -30,13 +28,16 @@
         </select>
       </div>
     </div>
+  </div>
+
+  <div loader-indicator class="loader" ng-show="loading === true"></div>
+
+  <div class="content-container" ng-show="loading === false">
 
     <div class="content-info" ng-show="requisitions.length == 0">
       <h2 class="dark-gray">No Recent History.</h2>
     </div>
-  </div>
 
-  <div class="content-container" ng-show="loading === false">
     <div>
       <dir-pagination-controls class="text-align-center" on-page-change="updateRequisitions()" pagination-id="order-history-pagination"
                                boundary-links="true" max-size="10"></dir-pagination-controls>
