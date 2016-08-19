@@ -12,16 +12,15 @@ function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, loc
     $scope.filter = {
         date: {
             from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
-            to: moment().format("MM/DD/YYYY"),
-            min: new Date(2016, 1, 1, 0, 0, 0),
-            max: moment().format() //TODO: max and min not working
+            to: moment().format("MM/DD/YYYY")
         }
     };
 
     $scope.init = function () {
         $scope.paginate.itemsPerPage = 12;
         getUpdatedOrders().$promise
-            .then(initFilters);
+            .then(initFilters)
+            .then(doneLoading);
     };
 
     $scope.init();
@@ -54,13 +53,15 @@ function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, loc
     $scope.onFilterChange = function () {
         $scope.loading = true;
         $scope.paginate.reset();
-        getUpdatedOrders();
+        getUpdatedOrders().$promise
+            .then(doneLoading);
     };
 
     /** Updates the displayed requisitions whenever the page is changed. */
     $scope.onPageChange = function () {
         $scope.loading = true;
-        getUpdatedOrders();
+        getUpdatedOrders().$promise
+            .then(doneLoading);
     };
 
     var setLocations = function (response) {
