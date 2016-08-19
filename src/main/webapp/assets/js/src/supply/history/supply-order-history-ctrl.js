@@ -10,6 +10,7 @@ var essSupply = angular.module('essSupply').controller('SupplyOrderHistoryCtrl',
  */
 function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, orderHistoryApi, paginationModel) {
 
+    var DATE_FORMAT = "MM/DD/YYYY";
     /** Valid Requisitions statuses */
     $scope.STATUSES = ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
     
@@ -18,8 +19,8 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.filter = {
         date: {
-            from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
-            to: moment().format("MM/DD/YYYY")
+            from: moment().subtract(1, 'month').format(DATE_FORMAT),
+            to: moment().format(DATE_FORMAT)
         },
         status: []
     };
@@ -63,8 +64,8 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
             location: employeeInfoResponse.employee.empWorkLocation.locId,
             customerId: employeeInfoResponse.employee.employeeId,
             status: $scope.filter.status,
-            from: moment($scope.filter.date.from).format(),
-            to: moment($scope.filter.date.to).format(),
+            from: moment($scope.filter.date.from, DATE_FORMAT).format(),
+            to: moment($scope.filter.date.to, DATE_FORMAT).format(),
             limit: $scope.paginate.itemsPerPage,
             offset: $scope.paginate.getOffset()
         };

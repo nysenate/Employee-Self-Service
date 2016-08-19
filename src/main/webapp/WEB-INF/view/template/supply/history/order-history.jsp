@@ -35,7 +35,7 @@
   <div class="content-container" ng-show="loading === false">
 
     <div class="content-info" ng-show="requisitions.length == 0">
-      <h2 class="dark-gray">No Recent History.</h2>
+      <h2 class="dark-gray">No results were found.</h2>
     </div>
 
     <div>
