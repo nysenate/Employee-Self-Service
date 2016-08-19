@@ -14,5 +14,12 @@
   }
   h1, h2, h3, h4, p, span {
     color: @textColor;
+    @media print {
+      color: black;
+    }
+  }
+  @media print {
+    background: white;
+    border-bottom: 1px solid black;
   }
 }

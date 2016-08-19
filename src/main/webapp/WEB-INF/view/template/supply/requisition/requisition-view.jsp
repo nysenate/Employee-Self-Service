@@ -114,7 +114,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="lineItem in sortSelectedVersionLineItems()">
+            <tr ng-repeat="lineItem in sortSelectedVersionLineItems() | orderBy: 'item.commodityCode'">
               <td>{{lineItem.item.commodityCode}}</td>
               <td>{{lineItem.item.description}}</td>
               <td>{{lineItem.quantity}}</td>
@@ -225,7 +225,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="lineItem in sortSelectedVersionLineItems()">
+          <tr ng-repeat="lineItem in sortSelectedVersionLineItems() | orderBy: 'item.commodityCode'">
             <td>{{lineItem.item.commodityCode}}</td>
             <td>{{lineItem.item.description}}</td>
             <td>{{lineItem.quantity}}</td>

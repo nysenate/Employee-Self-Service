@@ -1,0 +1,27 @@
+@import "../lesshat";
+@import "../main";
+@import "include";
+
+// Margins to use when printing
+@page {
+  margin: 25mm 25mm 25mm 25mm;
+}
+
+.large-print-font-size {
+  @media print {
+    font-size: 14pt;
+  }
+}
+
+.no-print {
+  @media print {
+    display: none;
+  }
+}
+
+.print-only {
+  display: none;
+  @media print {
+    display: block !important;
+  }
+}

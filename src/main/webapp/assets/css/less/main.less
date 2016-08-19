@@ -265,6 +265,11 @@
   width: 1150px;
   margin: auto;
   min-height: 100%;
+
+  @media print {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
 }
 
 .section-title-container {
@@ -365,6 +370,9 @@
   &.no-bottom-margin {
     margin-bottom: 0;
     border-bottom: none;
+  }
+  @media print {
+    border-bottom: 0;
   }
 }
 
