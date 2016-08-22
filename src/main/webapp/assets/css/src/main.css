@@ -117,6 +117,12 @@ table.ess-table thead tr {
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
+}
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -1238,6 +1244,12 @@ table.ess-table thead tr {
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
+}
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -1644,6 +1656,8 @@ table.simple-table tbody tr td {
 /**
 * Styles for page hero
 */
+/** JQuery UI css */
+/** Media Queries */
 /**
 * Styles for text
 */
@@ -2245,6 +2259,12 @@ table.ess-table thead tr {
 }
 table.ess-table thead tr th {
   padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
 }
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
@@ -3290,6 +3310,11 @@ input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus {
   border-color: #999;
+}
+
+input[type=checkbox],
+input[type=radio] {
+  vertical-align: middle;
 }
 /** Remove the number spinners in chrome */
 input[type=number]::-webkit-inner-spin-button,
@@ -4549,6 +4574,517 @@ button.ui-button::-moz-focus-inner {
   transform-style: preserve-3d;
 }
 
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+/*! main */
+/** --- Defaults --- */
+.horizontal-input-group label {
+  margin: 0 10px;
+}
+
+/** --- Icons --- */
+.close-red {
+  background: url('../../img/20px-e74c3c/cross.png');
+  height: 20px;
+  width: 20px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.close-red:hover {
+  background: url('../../img/20px-ff5544/cross.png');
+}
+
+/** --- Main Structure --- */
+#wrapper {
+  height: 100%;
+}
+
+.view-animate-container {
+  margin: 0 0 20px 270px;
+  width: 880px;
+}
+
+@media print {
+  .view-animate-container {
+    margin: 0 0 20px 0;
+  }
+}
+
+/** --- Error Pages --- */
+.hero-404 {
+  padding: .3em;
+  font-weight: bold;
+  background: #e64727;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.hero-404 h1 {
+  font-size: 2.5em;
+}
+
+.hero-404 h1,
+.hero-404 h2,
+.hero-404 h3,
+.hero-404 h4,
+.hero-404 p,
+.hero-404 span {
+  color: #ffffff;
+}
+
+@media print {
+  .hero-404 h1,
+  .hero-404 h2,
+  .hero-404 h3,
+  .hero-404 h4,
+  .hero-404 p,
+  .hero-404 span {
+    color: black;
+  }
+}
+
+@media print {
+  .hero-404 {
+    background: white;
+    border-bottom: 1px solid black;
+  }
+}
+
+#restricted-warning {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+}
+
+#restricted-warning .ess-notification {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+/** --- Home Page --- */
+.ess-top-header {
+  position: fixed;
+  width: 100%;
+  background: #fafafa;
+  box-shadow: 0 1px 1px #ccc;
+  height: 45px;
+  z-index: 1002;
+  color: white;
+  overflow: hidden;
+}
+
+.ess-top-header .fixed-width-header {
+  width: 1150px;
+  margin: auto;
+  position: relative;
+  top: 2px;
+}
+
+.ess-top-header .fixed-width-header .left-header-area {
+  display: inline-block;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .nysslogo {
+  background: url('../../img/nysslogo.png');
+  height: 35px;
+  width: 35px;
+  background-size: 35px;
+  background-repeat: no-repeat;
+  float: left;
+  margin-top: 2px;
+  margin-left: 10px;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .nysslogo-text-container {
+  padding: 0;
+  margin-top: 0;
+  display: inline-block;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .nysslogo-text-container .nysslogo-text {
+  font-weight: 300;
+  color: #333;
+  font-size: 1.6em;
+  line-height: 40px;
+  margin-left: 10px;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .nysslogo-text-container .nysslogo-text .highlight {
+  font-weight: 400;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list {
+  padding: 0;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0 0 20px;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li {
+  display: inline-block;
+  line-height: 40px;
+  cursor: pointer;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.active {
+  font-weight: 600;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.teal.active,
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.teal:hover {
+  border-bottom: 3px solid #4196a7;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.green.active,
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.green:hover {
+  border-bottom: 3px solid #799933;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.orange.active,
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.orange:hover {
+  border-bottom: 3px solid #d19525;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.blue-purple.active,
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.blue-purple:hover {
+  border-bottom: 3px solid #6270bd;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.gray.active,
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li.gray:hover {
+  border-bottom: 3px solid #808080;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li .nav-icon {
+  margin-right: 5px;
+  vertical-align: middle;
+  height: 16px;
+  position: relative;
+  top: -1px;
+  display: none;
+  /** Hidden for now.. */
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li a {
+  color: #425151;
+  font-size: 1.1em;
+  display: block;
+  padding: 0 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.ess-top-header .fixed-width-header .left-header-area .top-nav-list li a:hover {
+  color: teal;
+}
+
+.ess-top-header .fixed-width-header .right-header-area {
+  display: inline-block;
+  vertical-align: top;
+  position: absolute;
+  right: 0;
+}
+
+.ess-top-header .fixed-width-header .right-header-area .header-label-segment {
+  float: left;
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 11px;
+  display: block;
+  text-decoration: none !important;
+  color: #333;
+}
+
+.ess-top-header .fixed-width-header .right-header-area #logoutSection {
+  float: left;
+  font-size: 1.1em;
+}
+
+.ess-top-header .fixed-width-header .right-header-area #logoutSection:hover {
+  background: #ddd;
+}
+
+.ess-top-header .fixed-width-header .right-header-area #logoutSection:hover a .logout-icon {
+  -webkit-transform: rotateY(-40deg);
+  -moz-transform: rotateY(-40deg);
+  -o-transform: rotateY(-40deg);
+  -ms-transform: rotateY(-40deg);
+  transform: rotateY(-40deg);
+}
+
+.ess-top-header .fixed-width-header .right-header-area #logoutSection a {
+  padding: 11px;
+  display: block;
+  text-decoration: none !important;
+  color: #333;
+}
+
+/** Profile Square */
+/** --- Left Navigation ---  */
+.left-nav {
+  border: 1px solid #f1f1f1;
+  width: 250px;
+  position: fixed;
+  height: auto;
+  -webkit-border-radius: 0 0 0 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0 0 0 2px;
+  -moz-background-clip: padding;
+  border-radius: 0 0 0 2px;
+  background-clip: padding-box;
+  padding-bottom: 20px;
+  background: #fafafa;
+}
+
+@media print {
+  .left-nav {
+    display: none;
+  }
+}
+
+.left-nav .user-heading {
+  margin-left: 20px;
+  color: #666;
+}
+
+.left-nav .main-topic {
+  color: #333;
+  margin-left: 20px;
+  width: 200px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+}
+
+.left-nav ul {
+  padding: 0;
+  margin: 0;
+}
+
+.left-nav li {
+  padding: 5px 5px 5px 20px;
+}
+
+.left-nav li.sub-topic.active {
+  border-left: 4px solid teal;
+  padding-left: 16px;
+  background: #F4F4F4;
+}
+
+.left-nav li.sub-topic.active a {
+  font-weight: 600;
+  color: #004d4d;
+}
+
+.left-nav-div {
+  border: 1px solid #f1f1f1;
+  width: 250px;
+  position: fixed;
+  height: auto;
+  -webkit-border-radius: 0 0 0 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0 0 0 2px;
+  -moz-background-clip: padding;
+  border-radius: 0 0 0 2px;
+  background-clip: padding-box;
+}
+
+.left-nav-content {
+  padding-bottom: 20px;
+  background: #fafafa;
+}
+
+.left-nav-content .user-heading {
+  margin-left: 20px;
+  color: #666;
+}
+
+.left-nav-content .main-topic {
+  color: #333;
+  margin-left: 20px;
+  width: 200px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+}
+
+.left-nav-content ul {
+  padding: 0;
+  margin: 0;
+}
+
+.left-nav-content li {
+  padding: 5px 5px 5px 20px;
+}
+
+.left-nav-content li.sub-topic.active {
+  border-left: 4px solid teal;
+  padding-left: 16px;
+  background: #F4F4F4;
+}
+
+.left-nav-content li.sub-topic.active a {
+  font-weight: 600;
+  color: #004d4d;
+}
+
+.content-wrapper {
+  padding-top: 70px;
+  padding-bottom: 40px;
+  width: 1150px;
+  margin: auto;
+  min-height: 100%;
+}
+
+@media print {
+  .content-wrapper {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
+.section-title-container {
+  -webkit-border-radius: 2px 0 0 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 2px 0 0 0;
+  -moz-background-clip: padding;
+  border-radius: 2px 0 0 0;
+  background-clip: padding-box;
+  color: #eee;
+  font-size: 1.1em;
+  margin: 0;
+  padding: 10px 15px;
+  font-weight: 600;
+}
+
+.section-title-container.teal {
+  background: #005667;
+}
+
+.section-title-container.green {
+  background: #5b7326;
+}
+
+.section-title-container.orange {
+  background: #bb8621;
+}
+
+.section-title-container.blue-purple {
+  background: #5060b5;
+}
+
+.section-title-container.gray {
+  background: #737373;
+}
+
+.section-title-container span {
+  color: white;
+}
+
+.content-container {
+  background: #fefefe;
+  position: relative;
+  -webkit-box-shadow: 0px 1px 2px #aaaaaa;
+  -moz-box-shadow: 0px 1px 2px #aaaaaa;
+  box-shadow: 0px 1px 2px #aaaaaa;
+  margin-top: 20px;
+}
+
+.content-container.no-top-margin {
+  margin-top: 0;
+}
+
+.content-container h1 {
+  font-size: 1.1em;
+  margin: 0;
+  text-align: center;
+  padding: 4px 10px;
+  border-width: 1px;
+  border-style: none none solid none;
+  color: black;
+  border-color: rgba(0, 107, 128, 0.25);
+  line-height: 40px;
+  font-weight: 600;
+}
+
+.content-container h1.olive {
+  border-color: #799933;
+}
+
+.content-container h1.orange {
+  border-color: #d19525;
+}
+
+.content-container.dual {
+  overflow: hidden;
+}
+
+.content-container.dual div.left-container,
+.content-container.dual section.left-container,
+.content-container.dual div.right-container,
+.content-container.dual section.right-container {
+  float: left;
+  width: 400px;
+  padding-bottom: 10px;
+}
+
+/** --- Main content elements --- */
+.content-controls {
+  margin-top: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  text-align: center;
+}
+
+.content-controls p,
+.content-controls label {
+  font-weight: 600;
+  color: #006b80;
+}
+
+.content-controls > .content-info {
+  border-bottom: none;
+}
+
+.content-info {
+  margin-top: 0;
+  padding: 10px;
+  color: #222;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 107, 128, 0.25);
+}
+
+.content-info.no-bottom-margin {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+@media print {
+  .content-info {
+    border-bottom: 0;
+  }
+}
+
+/** --- Badge Directive --- */
+.badge {
+  background: #006b80;
+  padding: 5px;
+  color: white;
+  border-radius: 25%;
+  display: inline-block;
+  height: 20px;
+  line-height: 10px;
+  text-align: center;
+  font-weight: 600;
+  margin-left: 5px;
+}
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -4589,6 +5125,30 @@ button.ui-button::-moz-focus-inner {
 .white {
   color: #fefefe;
 }
+
+/** Loading sprites */
+.loading-colors {
+  background: url('../../img/loading.GIF');
+  background-repeat: no-repeat;
+}
+
+/** Fonts */
+.open-sans {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+.font-weight-light {
+  font-weight: 300;
+}
+
+.font-weight-normal {
+  font-weight: 400;
+}
+
+.font-weight-bold {
+  font-weight: 600;
+}
 table.ess-table {
   width: 100%;
 }
@@ -4606,6 +5166,12 @@ table.ess-table thead tr {
 }
 table.ess-table thead tr th {
   padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
 }
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
@@ -4645,6 +5211,1075 @@ table.simple-table tbody tr td {
   padding: 5px;
 }
 
+.ess-notification {
+  padding: .3em;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.ess-notification h1 {
+  font-size: 2.5em;
+}
+
+.ess-notification h1,
+.ess-notification h2,
+.ess-notification h3,
+.ess-notification h4,
+.ess-notification p,
+.ess-notification span,
+.ess-notification li {
+  color: white;
+}
+
+.ess-notification ul {
+  padding: 0;
+}
+
+.ess-notification.info {
+  background: white;
+}
+
+.ess-notification.info h1,
+.ess-notification.info h2,
+.ess-notification.info h3,
+.ess-notification.info h4,
+.ess-notification.info p,
+.ess-notification.info span {
+  color: #0e4e5a;
+}
+
+.ess-notification.warn {
+  background: #d19525;
+}
+
+.ess-notification.error {
+  background: #e64727;
+}
+
+/* Credit to http://codepen.io/desandro/pen/igHbG */
+/* change font size to change size */
+.loader {
+  font-size: 20px;
+  position: relative;
+  width: 4em;
+  height: 1em;
+  margin: 100px auto;
+}
+
+.sm-loader {
+  font-size: 20px;
+  position: relative;
+  width: 4em;
+  height: 1em;
+  margin: 40px auto;
+}
+
+.dot {
+  width: 1em;
+  height: 1em;
+  border-radius: 0.5em;
+  background: #ddd;
+  position: absolute;
+  -webkit-animation-duration: 0.5s;
+  -moz-animation-duration: 0.5s;
+  -o-animation-duration: 0.5s;
+  animation-duration: 0.5s;
+  -webkit-animation-timing-function: ease;
+  -moz-animation-timing-function: ease;
+  -o-animation-timing-function: ease;
+  animation-timing-function: ease;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-iteration-count: infinite;
+  -o-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+
+.dot1,
+.dot2 {
+  left: 0;
+}
+
+.dot3 {
+  left: 1.5em;
+}
+
+.dot4 {
+  left: 3em;
+}
+
+@-webkit-keyframes reveal {
+  from {
+    -webkit-transform: scale(0.001);
+    -moz-transform: scale(0.001);
+    -o-transform: scale(0.001);
+    -ms-transform: scale(0.001);
+    transform: scale(0.001);
+  }
+  to {
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@-webkit-keyframes slide {
+  to {
+    -webkit-transform: translateX(1.5em);
+    -moz-transform: translateX(1.5em);
+    -o-transform: translateX(1.5em);
+    -ms-transform: translateX(1.5em);
+    transform: translateX(1.5em);
+  }
+}
+
+@-moz-keyframes reveal {
+  from {
+    -webkit-transform: scale(0.001);
+    -moz-transform: scale(0.001);
+    -o-transform: scale(0.001);
+    -ms-transform: scale(0.001);
+    transform: scale(0.001);
+  }
+  to {
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@-moz-keyframes slide {
+  to {
+    -webkit-transform: translateX(1.5em);
+    -moz-transform: translateX(1.5em);
+    -o-transform: translateX(1.5em);
+    -ms-transform: translateX(1.5em);
+    transform: translateX(1.5em);
+  }
+}
+
+@-o-keyframes reveal {
+  from {
+    -webkit-transform: scale(0.001);
+    -moz-transform: scale(0.001);
+    -o-transform: scale(0.001);
+    -ms-transform: scale(0.001);
+    transform: scale(0.001);
+  }
+  to {
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@-o-keyframes slide {
+  to {
+    -webkit-transform: translateX(1.5em);
+    -moz-transform: translateX(1.5em);
+    -o-transform: translateX(1.5em);
+    -ms-transform: translateX(1.5em);
+    transform: translateX(1.5em);
+  }
+}
+
+@keyframes reveal {
+  from {
+    -webkit-transform: scale(0.001);
+    -moz-transform: scale(0.001);
+    -o-transform: scale(0.001);
+    -ms-transform: scale(0.001);
+    transform: scale(0.001);
+  }
+  to {
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes slide {
+  to {
+    -webkit-transform: translateX(1.5em);
+    -moz-transform: translateX(1.5em);
+    -o-transform: translateX(1.5em);
+    -ms-transform: translateX(1.5em);
+    transform: translateX(1.5em);
+  }
+}
+
+.dot1 {
+  -webkit-animation-name: reveal;
+  -moz-animation-name: reveal;
+  -o-animation-name: reveal;
+  animation-name: reveal;
+}
+
+.dot2,
+.dot3 {
+  -webkit-animation-name: slide;
+  -moz-animation-name: slide;
+  -o-animation-name: slide;
+  animation-name: slide;
+}
+
+.dot4 {
+  -webkit-animation-name: reveal;
+  -moz-animation-name: reveal;
+  -o-animation-name: reveal;
+  animation-name: reveal;
+  -webkit-animation-direction: reverse;
+  -moz-animation-direction: reverse;
+  -o-animation-direction: reverse;
+  animation-direction: reverse;
+  /* thx @HugoGiraudel */
+}
+
+/**
+* Utility classes used for positioning, sizing, and space related properties
+*/
+.inline-block {
+  display: inline-block;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.margin-10 {
+  margin: 10px;
+}
+
+.margin-10-0 {
+  margin: 10px 0;
+}
+
+.margin-top-10 {
+  margin-top: 10px !important;
+}
+
+.margin-left-10 {
+  margin-left: 10px;
+}
+
+.margin-left-20 {
+  margin-left: 20px;
+}
+
+.margin-top-20 {
+  margin-top: 20px !important;
+}
+
+.margin-bottom-20 {
+  margin-bottom: 20px !important;
+}
+
+.padding-10 {
+  padding: 10px;
+}
+
+.padding-top-5 {
+  padding-top: 5px;
+}
+
+.padding-top-10 {
+  padding-top: 10px;
+}
+
+.padding-left-10 {
+  padding-left: 10px;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+.scroll-x {
+  overflow-x: auto;
+}
+
+.vertical-align {
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.horizontal-align {
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+}
+
+.center-align {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.align-parent {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+#modal-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 1002;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+#modal-container > ng-transclude > *,
+#modal-container > #common-modals > * {
+  background: #fafafa;
+  display: block;
+  margin: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  z-index: 1004;
+}
+
+#modal-container > ng-transclude > *:not(.custom-fit),
+#modal-container > #common-modals > *:not(.custom-fit) {
+  max-height: 80vh;
+  overflow-y: auto;
+  max-width: 80vw;
+  overflow-x: auto;
+}
+
+#modal-container #modal-backdrop {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100vw;
+  height: 100vh;
+  z-index: 1003;
+}
+
+#modal-container .background-modal {
+  z-index: 1002;
+}
+
+.modal-max-height {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-max-width {
+  max-width: 80vw;
+  overflow-x: auto;
+}
+
+.modal-fit {
+  max-height: 80vh;
+  overflow-y: auto;
+  max-width: 80vw;
+  overflow-x: auto;
+}
+
+/** --- Error Modal --- */
+#internal-error-modal {
+  padding: 20px;
+  text-align: center;
+  z-index: 9001;
+}
+
+#internal-error-modal h1 {
+  margin-top: 0;
+  color: #e64727;
+}
+
+#internal-error-modal p.internal-error-text {
+  width: 45em;
+}
+
+#internal-error-modal pre.internal-error-details {
+  text-align: initial;
+  max-height: 45vh;
+  max-width: 45em;
+  overflow: auto;
+}
+
+/**
+* Styles for page hero
+*/
+/**
+* Styles for text
+*/
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.bold-text {
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.info-text {
+  background: #006b80;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.warning-text {
+  background: #d19525;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.error-text {
+  background: #b90504;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.success-text {
+  background: #808d0a;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+/** JQuery UI css */
+/*!
+* jQuery UI Button 1.10.4
+* http://jqueryui.com
+*
+* Copyright 2014 jQuery Foundation and other contributors
+* Released under the MIT license.
+* http://jquery.org/license
+*
+* http://api.jqueryui.com/button/#theming
+*/
+/*!
+ * Style sheet modified for ESS
+ */
+.ui-button {
+  display: inline-block;
+  position: relative;
+  padding: 0;
+  line-height: normal;
+  margin-right: .1em;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  overflow: visible;
+  /* removes extra width in IE */
+}
+
+.ui-button,
+.ui-button:link,
+.ui-button:visited,
+.ui-button:hover,
+.ui-button:active {
+  text-decoration: none;
+}
+
+/* to make room for the icon, a width needs to be set here */
+.ui-button-icon-only {
+  width: 2.2em;
+}
+
+/* button elements seem to need a little more width */
+button.ui-button-icon-only {
+  width: 2.4em;
+}
+
+.ui-button-icons-only {
+  width: 3.4em;
+}
+
+button.ui-button-icons-only {
+  width: 3.7em;
+}
+
+/* button text element */
+.ui-button .ui-button-text {
+  display: block;
+  line-height: normal;
+  color: #444;
+  font-weight: normal;
+}
+
+.ui-button-text-only .ui-button-text {
+  padding: .4em 1em;
+}
+
+.ui-button-icon-only .ui-button-text,
+.ui-button-icons-only .ui-button-text {
+  padding: .4em;
+  text-indent: -9999999px;
+}
+
+.ui-button-text-icon-primary .ui-button-text,
+.ui-button-text-icons .ui-button-text {
+  padding: .4em 1em .4em 2.1em;
+}
+
+.ui-button-text-icon-secondary .ui-button-text,
+.ui-button-text-icons .ui-button-text {
+  padding: .4em 2.1em .4em 1em;
+}
+
+.ui-button-text-icons .ui-button-text {
+  padding-left: 2.1em;
+  padding-right: 2.1em;
+}
+
+/* no icon support for input elements, provide padding by default */
+input.ui-button {
+  padding: .4em 1em;
+}
+
+/* button icon element(s) */
+.ui-button-icon-only .ui-icon,
+.ui-button-text-icon-primary .ui-icon,
+.ui-button-text-icon-secondary .ui-icon,
+.ui-button-text-icons .ui-icon,
+.ui-button-icons-only .ui-icon {
+  position: absolute;
+  top: 50%;
+  margin-top: -8px;
+}
+
+.ui-button-icon-only .ui-icon {
+  left: 50%;
+  margin-left: -8px;
+}
+
+.ui-button-text-icon-primary .ui-button-icon-primary,
+.ui-button-text-icons .ui-button-icon-primary,
+.ui-button-icons-only .ui-button-icon-primary {
+  left: .5em;
+}
+
+.ui-button-text-icon-secondary .ui-button-icon-secondary,
+.ui-button-text-icons .ui-button-icon-secondary,
+.ui-button-icons-only .ui-button-icon-secondary {
+  right: .5em;
+}
+
+/* button sets */
+.ui-buttonset {
+  margin-right: 7px;
+}
+
+.ui-buttonset .ui-button {
+  margin-left: 0;
+  margin-right: -0.3em;
+  font-weight: normal;
+  border: 1px solid #999;
+}
+
+.ui-buttonset .ui-button.ui-state-hover .ui-button-text,
+.ui-buttonset .ui-button.ui-state-active .ui-button-text {
+  color: teal;
+}
+
+.ui-buttonset .ui-button.ui-state-active {
+  background: #eee;
+}
+
+/* workarounds */
+/* reset extra padding in Firefox, see h5bp.com/l */
+input.ui-button::-moz-focus-inner,
+button.ui-button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/*!
+ * jQuery UI Datepicker 1.10.4
+ * http://jqueryui.com
+ *
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://api.jqueryui.com/datepicker/#theming
+ */
+/*
+ * Style sheet modified for ESS
+ */
+.ui-datepicker {
+  width: 17em;
+  padding: .2em .2em 0;
+  display: none;
+  background: white;
+  opacity: 0.95;
+  -webkit-box-shadow: 0 0 10px #cccccc;
+  -moz-box-shadow: 0 0 10px #cccccc;
+  box-shadow: 0 0 10px #cccccc;
+}
+
+.ui-datepicker .ui-datepicker-header {
+  position: relative;
+  padding: .2em 0;
+}
+
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next {
+  position: absolute;
+  top: 2px;
+  width: 1.8em;
+  height: 1.8em;
+}
+
+.ui-datepicker .ui-datepicker-prev-hover,
+.ui-datepicker .ui-datepicker-next-hover {
+  top: 1px;
+}
+
+.ui-datepicker .ui-datepicker-prev {
+  left: 2px;
+}
+
+.ui-datepicker .ui-datepicker-next {
+  right: 2px;
+}
+
+.ui-datepicker .ui-datepicker-prev-hover {
+  left: 1px;
+}
+
+.ui-datepicker .ui-datepicker-next-hover {
+  right: 1px;
+}
+
+.ui-datepicker .ui-datepicker-prev span,
+.ui-datepicker .ui-datepicker-next span {
+  display: block;
+  position: absolute;
+  left: 50%;
+  margin-left: -8px;
+  top: 50%;
+  margin-top: -8px;
+}
+
+.ui-datepicker .ui-datepicker-title {
+  margin: 0 2.3em;
+  line-height: 1.8em;
+  text-align: center;
+}
+
+.ui-datepicker .ui-datepicker-title select {
+  font-size: 1em;
+  margin: 1px 0;
+}
+
+.ui-datepicker select.ui-datepicker-month,
+.ui-datepicker select.ui-datepicker-year {
+  width: 49%;
+}
+
+.ui-datepicker table {
+  width: 100%;
+  font-size: .9em;
+  border-collapse: collapse;
+  margin: 0 0 .4em;
+}
+
+.ui-datepicker th {
+  padding: .7em .3em;
+  text-align: center;
+  font-weight: bold;
+  border: 0;
+}
+
+.ui-datepicker td {
+  border: 0;
+  padding: 1px;
+  text-align: center;
+}
+
+.ui-datepicker td.ui-datepicker-current-day {
+  background: #edf7a4;
+}
+
+.ui-datepicker td span,
+.ui-datepicker td a {
+  display: block;
+  padding: .2em;
+  text-decoration: none;
+  color: #006b80;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane {
+  background-image: none;
+  margin: .7em 0 0 0;
+  padding: 0 .2em;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button {
+  float: right;
+  margin: .5em .2em .4em;
+  cursor: pointer;
+  padding: .2em .6em .3em .6em;
+  width: auto;
+  overflow: visible;
+}
+
+.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+  float: left;
+}
+
+/* with multiple calendars */
+.ui-datepicker.ui-datepicker-multi {
+  width: auto;
+}
+
+.ui-datepicker-multi .ui-datepicker-group {
+  float: left;
+}
+
+.ui-datepicker-multi .ui-datepicker-group table {
+  width: 95%;
+  margin: 0 auto .4em;
+}
+
+.ui-datepicker-multi-2 .ui-datepicker-group {
+  width: 50%;
+}
+
+.ui-datepicker-multi-3 .ui-datepicker-group {
+  width: 33.3%;
+}
+
+.ui-datepicker-multi-4 .ui-datepicker-group {
+  width: 25%;
+}
+
+.ui-datepicker-multi .ui-datepicker-group-last .ui-datepicker-header,
+.ui-datepicker-multi .ui-datepicker-group-middle .ui-datepicker-header {
+  border-left-width: 0;
+}
+
+.ui-datepicker-multi .ui-datepicker-buttonpane {
+  clear: left;
+}
+
+.ui-datepicker-row-break {
+  clear: both;
+  width: 100%;
+  font-size: 0;
+}
+
+/* RTL support */
+.ui-datepicker-rtl {
+  direction: rtl;
+}
+
+.ui-datepicker-rtl .ui-datepicker-prev {
+  right: 2px;
+  left: auto;
+}
+
+.ui-datepicker-rtl .ui-datepicker-next {
+  left: 2px;
+  right: auto;
+}
+
+.ui-datepicker-rtl .ui-datepicker-prev:hover {
+  right: 1px;
+  left: auto;
+}
+
+.ui-datepicker-rtl .ui-datepicker-next:hover {
+  left: 1px;
+  right: auto;
+}
+
+.ui-datepicker-rtl .ui-datepicker-buttonpane {
+  clear: right;
+}
+
+.ui-datepicker-rtl .ui-datepicker-buttonpane button {
+  float: left;
+}
+
+.ui-datepicker-rtl .ui-datepicker-buttonpane button.ui-datepicker-current,
+.ui-datepicker-rtl .ui-datepicker-group {
+  float: right;
+}
+
+.ui-datepicker-rtl .ui-datepicker-group-last .ui-datepicker-header,
+.ui-datepicker-rtl .ui-datepicker-group-middle .ui-datepicker-header {
+  border-right-width: 0;
+  border-left-width: 1px;
+}
+
+/*!
+ * jQuery UI Dialog 1.10.4
+ * http://jqueryui.com
+ *
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://api.jqueryui.com/dialog/#theming
+ */
+.ui-dialog {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  outline: 0;
+  border: 1px solid #999;
+  background: white;
+  -webkit-box-shadow: 0 0 60px #777777;
+  -moz-box-shadow: 0 0 60px #777777;
+  box-shadow: 0 0 60px #777777;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  padding: .7em 1em;
+  position: relative;
+  text-align: center;
+  border-bottom: 1px solid teal;
+  background: #006b80;
+  color: white;
+}
+
+.ui-dialog .ui-dialog-title {
+  font-size: 1.1em;
+  margin: .1em 0;
+  white-space: nowrap;
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+  position: absolute;
+  right: .3em;
+  top: 50%;
+  margin: -10px 0 0 0;
+  padding: 1px;
+  background: url('../../img/20px-ffffff/cross.png');
+  height: 20px;
+  width: 20px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  border: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+.ui-dialog .ui-dialog-titlebar-close:hover {
+  background-color: #ff5544;
+}
+
+.ui-dialog .ui-dialog-content {
+  position: relative;
+  border: 0;
+  padding: 0;
+  background: none;
+  overflow: auto;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+  text-align: left;
+  border-width: 1px 0 0 0;
+  background-image: none;
+  padding: .3em 1em .5em .4em;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  float: right;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+  margin: .5em .4em .5em 0;
+  cursor: pointer;
+}
+
+.ui-dialog .ui-resizable-se {
+  width: 12px;
+  height: 12px;
+  right: -5px;
+  bottom: -5px;
+  background-position: 16px 16px;
+}
+
+.ui-draggable .ui-dialog-titlebar {
+  cursor: move;
+}
+
+/*!
+ * jQuery UI Resizable 1.10.4
+ * http://jqueryui.com
+ *
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+.ui-resizable {
+  position: relative;
+}
+
+.ui-resizable-handle {
+  position: absolute;
+  font-size: 0.1px;
+  display: block;
+}
+
+.ui-resizable-disabled .ui-resizable-handle,
+.ui-resizable-autohide .ui-resizable-handle {
+  display: none;
+}
+
+.ui-resizable-n {
+  cursor: n-resize;
+  height: 7px;
+  width: 100%;
+  top: -5px;
+  left: 0;
+}
+
+.ui-resizable-s {
+  cursor: s-resize;
+  height: 7px;
+  width: 100%;
+  bottom: -5px;
+  left: 0;
+}
+
+.ui-resizable-e {
+  cursor: e-resize;
+  width: 7px;
+  right: -5px;
+  top: 0;
+  height: 100%;
+}
+
+.ui-resizable-w {
+  cursor: w-resize;
+  width: 7px;
+  left: -5px;
+  top: 0;
+  height: 100%;
+}
+
+.ui-resizable-se {
+  cursor: se-resize;
+  width: 12px;
+  height: 12px;
+  right: 1px;
+  bottom: 1px;
+}
+
+.ui-resizable-sw {
+  cursor: sw-resize;
+  width: 9px;
+  height: 9px;
+  left: -5px;
+  bottom: -5px;
+}
+
+.ui-resizable-nw {
+  cursor: nw-resize;
+  width: 9px;
+  height: 9px;
+  left: -5px;
+  top: -5px;
+}
+
+.ui-resizable-ne {
+  cursor: ne-resize;
+  width: 9px;
+  height: 9px;
+  right: -5px;
+  top: -5px;
+}
+
+/** Media Queries */
+@page {
+  margin: 25mm 25mm 25mm 25mm;
+}
+
+@media print {
+  .large-print-font-size {
+    font-size: 14pt;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
+}
+
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -4682,6 +6317,135 @@ table.simple-table tbody tr td {
 .gray {
   color: #808080;
 }
+.white {
+  color: #fefefe;
+}
+
+table.ess-table {
+  width: 100%;
+}
+
+table.ess-table.center-align thead tr th,
+table.ess-table.center-align tbody tr td {
+  text-align: center;
+}
+
+table.ess-table thead {
+  background: white;
+}
+
+table.ess-table thead tr {
+  color: #333;
+  font-size: .9em;
+  border-bottom: 1px solid #155C69;
+}
+
+table.ess-table thead tr th {
+  padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
+}
+
+table.ess-table.no-focus tbody tr:hover {
+  background: #cff09e;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -o-transition: 0.5s;
+  transition: 0.5s;
+}
+
+table.ess-table tbody tr {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid #bbb;
+}
+
+table.ess-table tbody tr td {
+  text-align: left;
+}
+
+table.ess-table tbody tr td.invalid,
+table.ess-table tbody tr td input.ng-invalid {
+  background: #ffbcbc;
+}
+
+table.ess-table tbody tr.active {
+  background: #DAE5EE;
+}
+
+table.simple-table {
+  width: 100%;
+  text-align: left;
+}
+
+table.simple-table thead tr {
+  border-bottom: 1px solid #ddd;
+}
+
+table.simple-table thead tr th {
+  padding: 5px;
+}
+
+table.simple-table tbody tr:nth-child(odd) {
+  background: #fafafa;
+}
+
+table.simple-table tbody tr td {
+  padding: 5px;
+}
+
+/** Color Palette */
+.dark-red {
+  color: #b90504;
+}
+
+.light-teal {
+  color: #4196a7;
+}
+
+.teal {
+  color: #006b80;
+}
+
+.green {
+  color: #799933;
+}
+
+.navy {
+  color: #0e4e5a;
+}
+
+.orange {
+  color: #d19525;
+}
+
+.brown {
+  color: #583f0f;
+}
+
+.redorange {
+  color: #e64727;
+}
+
+.blue {
+  color: #104042;
+}
+
+.olive {
+  color: #808d0a;
+}
+
+.blue-purple {
+  color: #6270bd;
+}
+
+.gray {
+  color: #808080;
+}
+
 .white {
   color: #fefefe;
 }
@@ -4785,6 +6549,12 @@ table.ess-table thead tr {
 }
 table.ess-table thead tr th {
   padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
 }
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
@@ -5192,6 +6962,58 @@ table.simple-table tbody tr td {
 /**
 * Styles for page hero
 */
+/**
+* Styles for text
+*/
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.bold-text {
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.info-text {
+  background: #006b80;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.warning-text {
+  background: #d19525;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.error-text {
+  background: #b90504;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.success-text {
+  background: #808d0a;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -5850,6 +7672,12 @@ table.ess-table thead tr {
 }
 table.ess-table thead tr th {
   padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
 }
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
@@ -7060,6 +8888,12 @@ table.ess-table thead tr {
 table.ess-table thead tr th {
   padding: 10px 5px;
 }
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
+}
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
   -webkit-transition: 0.5s;
@@ -8037,6 +9871,24 @@ button.ui-button::-moz-focus-inner {
 .hero-404 span {
   color: #ffffff;
 }
+
+@media print {
+  .hero-404 h1,
+  .hero-404 h2,
+  .hero-404 h3,
+  .hero-404 h4,
+  .hero-404 p,
+  .hero-404 span {
+    color: black;
+  }
+}
+
+@media print {
+  .hero-404 {
+    background: white;
+    border-bottom: 1px solid black;
+  }
+}
 #restricted-warning {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
@@ -8285,6 +10137,13 @@ button.ui-button::-moz-focus-inner {
   margin: auto;
   min-height: 100%;
 }
+
+@media print {
+  .content-wrapper {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
 .section-title-container {
   -webkit-border-radius: 2px 0 0 0;
   -webkit-background-clip: padding-box;
@@ -8364,7 +10223,9 @@ button.ui-button::-moz-focus-inner {
   box-shadow: none;
   text-align: center;
 }
-.content-controls p {
+
+.content-controls p,
+.content-controls label {
   font-weight: 600;
   color: #006b80;
 }
@@ -8381,6 +10242,12 @@ button.ui-button::-moz-focus-inner {
 .content-info.no-bottom-margin {
   margin-bottom: 0;
   border-bottom: none;
+}
+
+@media print {
+  .content-info {
+    border-bottom: 0;
+  }
 }
 /** --- Badge Directive --- */
 .badge {
@@ -8446,6 +10313,24 @@ button.ui-button::-moz-focus-inner {
 .hero-404 span {
   color: #ffffff;
 }
+
+@media print {
+  .hero-404 h1,
+  .hero-404 h2,
+  .hero-404 h3,
+  .hero-404 h4,
+  .hero-404 p,
+  .hero-404 span {
+    color: black;
+  }
+}
+
+@media print {
+  .hero-404 {
+    background: white;
+    border-bottom: 1px solid black;
+  }
+}
 #restricted-warning {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
@@ -8694,6 +10579,13 @@ button.ui-button::-moz-focus-inner {
   margin: auto;
   min-height: 100%;
 }
+
+@media print {
+  .content-wrapper {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
 .section-title-container {
   -webkit-border-radius: 2px 0 0 0;
   -webkit-background-clip: padding-box;
@@ -8773,7 +10665,9 @@ button.ui-button::-moz-focus-inner {
   box-shadow: none;
   text-align: center;
 }
-.content-controls p {
+
+.content-controls p,
+.content-controls label {
   font-weight: 600;
   color: #006b80;
 }
@@ -8790,6 +10684,12 @@ button.ui-button::-moz-focus-inner {
 .content-info.no-bottom-margin {
   margin-bottom: 0;
   border-bottom: none;
+}
+
+@media print {
+  .content-info {
+    border-bottom: 0;
+  }
 }
 /** --- Badge Directive --- */
 .badge {
@@ -8880,6 +10780,12 @@ table.ess-table thead tr {
 }
 table.ess-table thead tr th {
   padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
 }
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
@@ -9811,24 +11717,6 @@ button.ui-button::-moz-focus-inner {
 }
 /** Media Queries */
 /** --- Supply --- */
-@media print {
-  .large-print-font-size {
-    font-size: 14pt;
-  }
-}
-@media print {
-  .no-print {
-    display: none;
-  }
-}
-@media print {
-  .print-only {
-    display: block !important;
-  }
-}
-.print-only {
-  display: none;
-}
 .supply-order-hero {
   padding: .3em;
   font-weight: bold;
@@ -9846,6 +11734,24 @@ button.ui-button::-moz-focus-inner {
 .supply-order-hero p,
 .supply-order-hero span {
   color: #ffffff;
+}
+
+@media print {
+  .supply-order-hero h1,
+  .supply-order-hero h2,
+  .supply-order-hero h3,
+  .supply-order-hero h4,
+  .supply-order-hero p,
+  .supply-order-hero span {
+    color: black;
+  }
+}
+
+@media print {
+  .supply-order-hero {
+    background: white;
+    border-bottom: 1px solid black;
+  }
 }
 .supply-text {
   color: #374282;
@@ -10135,6 +12041,12 @@ table.ess-table thead tr {
 }
 table.ess-table thead tr th {
   padding: 10px 5px;
+}
+
+@media print {
+  table.ess-table thead tr {
+    border-bottom: 1px solid black;
+  }
 }
 table.ess-table.no-focus tbody tr:hover {
   background: #cff09e;
@@ -11087,6 +12999,24 @@ button.ui-button::-moz-focus-inner {
 .time-attendance-hero span {
   color: #ffffff;
 }
+
+@media print {
+  .time-attendance-hero h1,
+  .time-attendance-hero h2,
+  .time-attendance-hero h3,
+  .time-attendance-hero h4,
+  .time-attendance-hero p,
+  .time-attendance-hero span {
+    color: black;
+  }
+}
+
+@media print {
+  .time-attendance-hero {
+    background: white;
+    border-bottom: 1px solid black;
+  }
+}
 table.time-record-entry-table thead {
   background: white;
 }
@@ -11747,7 +13677,34 @@ record-review-modal,
 .my-info-hero span {
   color: #ffffff;
 }
+
+@media print {
+  .my-info-hero h1,
+  .my-info-hero h2,
+  .my-info-hero h3,
+  .my-info-hero h4,
+  .my-info-hero p,
+  .my-info-hero span {
+    color: black;
+  }
+}
+
+@media print {
+  .my-info-hero {
+    background: white;
+    border-bottom: 1px solid black;
+  }
+}
 /** --- Paycheck History Page --- */
+#paycheck-history .content-info {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+
+#paycheck-history .content-info .fiscal-toggle {
+  margin-left: 20px;
+}
 #paycheck-history-table tbody tr {
   border-bottom: 1px solid #eee !important;
 }

@@ -16,7 +16,7 @@ function locationAutocompleteService(appProps, locationApi, destinationApi) {
 
     var setCodes = function () {
         angular.forEach(locations, function (loc) {
-            locationCodes.push(loc.code);
+            locationCodes.push(loc.code + "(" + loc.locationDescription + ")");
         });
         sortCodes(locationCodes);
     };
@@ -83,6 +83,10 @@ function locationAutocompleteService(appProps, locationApi, destinationApi) {
                     onlySelectValid: true,
                     outHeight: height || 300,
                     minLength: 0,
+                    select: function (event, object) {
+                        object.item.label = object.item.label.split("(")[0];
+                        object.item.value = object.item.value.split("(")[0]
+                    },
                     source: function (request, response) {
                         var data = locationCodes;
                         data = autocompleteOptions.methods.filter(data, request.term);

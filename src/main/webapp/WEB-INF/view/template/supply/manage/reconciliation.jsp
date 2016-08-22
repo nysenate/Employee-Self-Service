@@ -15,8 +15,8 @@
     <p class="content-info">
       <span id="page1" ng-click="setCurrentPage(1)" style="padding-right: 150px;    text-decoration: underline;">Page One</span>
       <span id="page2" style="padding-left:150px;" ng-click="setCurrentPage(2)">Page Two</span>
+      <a id="printPage" style="float: right" ng-click="print()">Print</a>
     </p>
-
     <%--Header--%>
     <div class="large-print-font-size">
       <div class="grid expandable-div-header">

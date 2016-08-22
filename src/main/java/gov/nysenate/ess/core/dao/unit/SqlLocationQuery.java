@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum SqlLocationQuery implements BasicSqlQuery {
 
     LOCATION_COLUMNS(
+            "loc.DELOCAT AS LOC_DELOCAT,\n" +
             "loc.CDLOCAT AS LOC_CDLOCAT, loc.CDLOCTYPE AS LOC_CDLOCTYPE,\n" +
             "loc.FFADSTREET1 AS LOC_FFADSTREET1, loc.FFADSTREET2 AS LOC_FFADSTREET2,\n" +
             "loc.FFADCITY AS LOC_FFADCITY, loc.ADSTATE AS LOC_ADSTATE,\n" +

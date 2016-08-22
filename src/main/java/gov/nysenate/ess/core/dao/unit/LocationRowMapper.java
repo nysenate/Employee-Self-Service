@@ -2,7 +2,6 @@ package gov.nysenate.ess.core.dao.unit;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.personnel.mapper.RespHeadRowMapper;
-import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
 import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.model.unit.Location;
@@ -34,6 +33,7 @@ public class LocationRowMapper extends BaseRowMapper<Location>
         addr.setState(rs.getString(pfx + "ADSTATE"));
         addr.setZip5(rs.getString(pfx + "ADZIPCODE"));
         ResponsibilityHead rspHead = respHeadRowMapper.mapRow(rs, rowNum);
-        return new Location(locId, addr, rspHead);
+        String locationDescription = rs.getString(pfx + "DELOCAT");
+        return new Location(locId, addr, rspHead, locationDescription);
     }
 }

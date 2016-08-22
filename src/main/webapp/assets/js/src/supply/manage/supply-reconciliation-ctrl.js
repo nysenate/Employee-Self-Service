@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-    ['$scope', 'SupplyReconciliationApi', 'SupplyRequisitionApi', 'LocationService', supplyReconciliationController]);
+    ['$scope', 'SupplyReconciliationApi', 'SupplyRequisitionApi', 'LocationService', '$window', '$timeout', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, supplyReconciliationApi, requisitionApi, locationService) {
+function supplyReconciliationController($scope, supplyReconciliationApi, requisitionApi, locationService, $window, $timeout) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
@@ -18,6 +18,12 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
     
     /** Map of unique item id's to array of all shipments containing that item objects. */
     $scope.reconcilableItemMap= {};
+
+
+    /** Print*/
+    $scope.print = function () {
+        $timeout($window.print, 0);
+    };
 
     function initItems() {
         //Get reconciliation page

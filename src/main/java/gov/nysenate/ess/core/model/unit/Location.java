@@ -11,6 +11,7 @@ public final class Location
     private final LocationId locId;
     private Address address;
     private ResponsibilityHead responsibilityHead;
+    private String locationDescription;
 
     public Location(LocationId locId) {
         this.locId = locId;
@@ -22,8 +23,19 @@ public final class Location
         this.responsibilityHead = responsibilityHead;
     }
 
+    public Location(LocationId locId, Address address, ResponsibilityHead responsibilityHead, String locationDescription) {
+        this.locId = locId;
+        this.address = address;
+        this.responsibilityHead = responsibilityHead;
+        this.locationDescription = locationDescription;
+    }
+
     public LocationId getLocId() {
         return locId;
+    }
+
+    public String getLocationDescription() {
+        return locationDescription;
     }
 
     public Address getAddress() {

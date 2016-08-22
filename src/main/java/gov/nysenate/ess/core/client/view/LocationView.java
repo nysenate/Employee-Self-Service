@@ -3,7 +3,6 @@ package gov.nysenate.ess.core.client.view;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.core.model.unit.LocationType;
 
 public class LocationView implements ViewObject {
 
@@ -13,6 +12,7 @@ public class LocationView implements ViewObject {
     protected char locationTypeCode;
     protected AddressView address;
     protected RespCenterHeadView respCenterHead;
+    protected String locationDescription;
 
     public LocationView() {}
 
@@ -23,6 +23,7 @@ public class LocationView implements ViewObject {
         this.locationTypeCode = loc.getLocId().getType().getCode();
         this.address = new AddressView(loc.getAddress());
         this.respCenterHead = new RespCenterHeadView(loc.getResponsibilityHead());
+        this.locationDescription = loc.getLocationDescription();
     }
 
     public Location toLocation() {
@@ -32,6 +33,10 @@ public class LocationView implements ViewObject {
 
     public String getLocId() {
         return locId;
+    }
+
+    public String getLocationDescription() {
+        return locationDescription;
     }
 
     public String getCode() {
