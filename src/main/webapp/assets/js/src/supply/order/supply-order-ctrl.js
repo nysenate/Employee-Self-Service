@@ -1,16 +1,16 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', supplyOrderController]);
+        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'LocationApi', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService, modals, supplyUtils) {
+                               allowanceService, destinationService, modals, supplyUtils, locationApi) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
         SELECTING_DESTINATION: 5,
         SHOPPING: 10
     };
-
+    var locations = [];
     $scope.paginate = angular.extend({}, paginationModel);
 
     $scope.filter = {
@@ -27,6 +27,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     // The user specified destination code. Defaults to the code of the employees work location.
     $scope.destinationCode = "";
 
+    $scope.description = "";
+
     /** --- Initialization --- */
 
     $scope.init = function () {
@@ -39,6 +41,17 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         else {
             loadShoppingState();
         }
+        locationApi.get().$promise
+            .then(setDescription)
+    };
+
+    var setDescription = function (response) {
+        response.result.forEach(function (location) {
+            if (location.code === $scope.destinationCode) {
+                $scope.description = location.locationDescription;
+
+            }
+        })
     };
 
     $scope.init();

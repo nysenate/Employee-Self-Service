@@ -43,7 +43,7 @@
       <%--Search--%>
       <div class="padding-10" style="display: flex; justify-content: space-between;">
         <div style="display: inline-block;">
-          <span class="supply-text">Destination: </span>{{destinationCode}}
+          <span class="supply-text">Destination: </span>{{destinationCode}} {{description}}
         </div>
         <div style="display: inline-block;">
           <form>
