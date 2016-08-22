@@ -94,7 +94,7 @@ var essSupply = angular.module('essSupply')
                 $scope.dirty = angular.toJson($scope.requisition) !== angular.toJson($scope.displayedVersion);
             };
 
-            $scope.close = function () {
+            $scope.closeModal = function () {
                 modals.reject();
             };
 

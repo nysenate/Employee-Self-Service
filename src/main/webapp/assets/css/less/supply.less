@@ -1,6 +1,7 @@
 @import "lesshat";
 @import "main";
 @import "./common/include";
+@import "./common/input";
 
 /** --- Supply --- */
 
@@ -254,4 +255,18 @@ ul.pagination {
 
 .ui-datepicker-unselectable .ui-state-default {
   color: grey;
+}
+
+/** Buttons **/
+
+input[type="button"].process-button {
+  .styled-button(@light-teal, white);
+}
+
+input[type="button"].complete-button {
+  .styled-button(@green, white);
+}
+
+input[type="button"].approve-button {
+  .styled-button(@blue-purple, white);
 }
