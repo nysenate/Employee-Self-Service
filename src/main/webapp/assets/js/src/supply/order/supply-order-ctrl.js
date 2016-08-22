@@ -1,9 +1,9 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderController',
     ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'LocationApi', supplyOrderController]);
+        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService, modals, supplyUtils, locationApi) {
+                               allowanceService, destinationService, modals, supplyUtils) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
@@ -27,7 +27,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     // The user specified destination code. Defaults to the code of the employees work location.
     $scope.destinationCode = "";
 
-    $scope.description = "";
+    $scope.description = destinationService.getDestination().locationDescription;
 
     /** --- Initialization --- */
 
@@ -41,18 +41,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         else {
             loadShoppingState();
         }
-        locationApi.get().$promise
-            .then(setDescription)
     };
 
-    var setDescription = function (response) {
-        response.result.forEach(function (location) {
-            if (location.code === $scope.destinationCode) {
-                $scope.description = location.locationDescription;
-
-            }
-        })
-    };
+    /** --- init --- */
 
     $scope.init();
 
