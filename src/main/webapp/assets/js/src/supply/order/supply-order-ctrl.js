@@ -1,6 +1,7 @@
-var essSupply = angular.module('essSupply').controller('SupplyOrderController',
-    ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel', 'SupplyLocationAutocompleteService',
-        'SupplyLocationAllowanceService', 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', supplyOrderController]);
+var essSupply = angular.module('essSupply')
+    .controller('SupplyOrderController', ['$scope', 'appProps', 'LocationService', 'SupplyCartService',
+        'PaginationModel', 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
+        'SupplyOrderDestinationService', 'modals', 'SupplyUtils', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
                                allowanceService, destinationService, modals, supplyUtils) {
@@ -10,7 +11,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         SELECTING_DESTINATION: 5,
         SHOPPING: 10
     };
-    var locations = [];
+
     $scope.paginate = angular.extend({}, paginationModel);
 
     $scope.filter = {
@@ -27,7 +28,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     // The user specified destination code. Defaults to the code of the employees work location.
     $scope.destinationCode = "";
 
-    $scope.description = destinationService.getDestination().locationDescription;
+    $scope.destinationDescription = "";
 
     /** --- Initialization --- */
 
@@ -42,8 +43,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             loadShoppingState();
         }
     };
-
-    /** --- init --- */
 
     $scope.init();
 
@@ -60,17 +59,22 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.destinationCode = destinationService.getDefaultCode();
     }
 
+    function setDestinationDescription() {
+        $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
+    }
+
     function setToSelectingDestinationState() {
         $scope.state = $scope.states.SELECTING_DESTINATION;
     }
 
     function loadShoppingState() {
         $scope.state = $scope.states.LOADING;
-        $scope.destinationCode = destinationService.getDestination().code;
+        $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(saveAllowances)
             .then(filterAllowances)
-            .then(setToShoppingState);
+            .then(setToShoppingState)
+            .then(setDestinationDescription);
     }
 
     function saveAllowances(allowanceResponse) {
