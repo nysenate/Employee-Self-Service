@@ -4977,7 +4977,7 @@ button.ui-button::-moz-focus-inner {
 }
 .content-info {
   margin-top: 0;
-  padding: 10px;
+  padding: 11px;
   color: #222;
   text-align: center;
   border-bottom: 1px solid rgba(0, 107, 128, 0.25);
@@ -9904,7 +9904,7 @@ button.ui-button::-moz-focus-inner {
 }
 .content-info {
   margin-top: 0;
-  padding: 10px;
+  padding: 11px;
   color: #222;
   text-align: center;
   border-bottom: 1px solid rgba(0, 107, 128, 0.25);
@@ -10341,7 +10341,7 @@ button.ui-button::-moz-focus-inner {
 }
 .content-info {
   margin-top: 0;
-  padding: 10px;
+  padding: 11px;
   color: #222;
   text-align: center;
   border-bottom: 1px solid rgba(0, 107, 128, 0.25);
@@ -11819,6 +11819,12 @@ input[type="button"].approve-button[disabled="disabled"]:hover {
 }
 input[type="button"].approve-button:hover {
   background: #4c61d3;
+}
+#page1:hover {
+  font-weight: bold;
+}
+#page2:hover {
+  font-weight: bold;
 }
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
