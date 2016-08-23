@@ -6,10 +6,10 @@
 <div class="padding-10">
   <div>
     <h3 class="content-info">
-      <span ng-if="requisition.status === 'PENDING'">Pending</span>
-      <span ng-if="requisition.status === 'PROCESSING'">Processing</span>
-      <span ng-if="requisition.status === 'COMPLETED'">Completed</span>
-      requisition requested by {{requisition.customer.fullName}}
+      <span ng-if="originalRequisition.status === 'PENDING'">Pending</span>
+      <span ng-if="originalRequisition.status === 'PROCESSING'">Processing</span>
+      <span ng-if="originalRequisition.status === 'COMPLETED'">Completed</span>
+      requisition requested by {{originalRequisition.customer.fullName}}
     </h3>
   </div>
 
@@ -25,8 +25,8 @@
       <div class="padding-10">
         <label> Add Commodity Code:
           <input type="text"
-                 ng-model="addItemFeature.newItemCommodityCode"
-                 ui-autocomplete="addItemAutocompleteOptions"
+                 ng-model="newItemCommodityCode"
+                 ui-autocomplete="getItemAutocompleteOptions()"
                  style="width: 100px; height: 20px;" capitalize>
         </label>
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
@@ -35,7 +35,7 @@
       <%-- Add Note --%>
       <div class="padding-top-10">
         <label class="col-1-12">Note:</label>
-        <textarea class="col-11-12" ng-model="displayedVersion.note"
+        <textarea class="col-11-12" ng-model="editableRequisition.note"
                   ng-change="onUpdate()"></textarea>
       </div>
     </div>
@@ -47,16 +47,16 @@
       <%--Change Location--%>
       <h4 class="content-info">Location:
         <input type="text"
-               ng-model="dirtyLocationCode"
-               ui-autocomplete="locationAutocompleteOptions"
+               ng-model="newLocationCode"
+               ui-autocomplete="getLocationAutocompleteOptions()"
                ng-change="onLocationUpdated()"
                style="width: 100px">
       </h4>
 
-      <h4 class="content-info">Ordered: {{requisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
+      <h4 class="content-info">Ordered: {{originalRequisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
         <a target="_blank"
-           href="${ctxPath}/supply/requisition/requisition-view?requisition={{requisition.requisitionId}}&print=true">
+           href="${ctxPath}/supply/requisition/requisition-view?requisition={{originalRequisition.requisitionId}}&print=true">
           Print
         </a>
       </div>
@@ -65,7 +65,7 @@
 
       <div class="text-align-center" style="padding-bottom: 20px;">
         <label>Assign to: </label>
-        <select ng-model="displayedVersion.issuer"
+        <select ng-model="editableRequisition.issuer"
                 ng-options="emp.fullName for emp in supplyEmployees track by emp.employeeId"
                 ng-change="onUpdate()">
         </select>
@@ -76,7 +76,8 @@
   <%--Action buttons--%>
   <div class="padding-top-10" style="text-align: center">
     <%--Rejection Confirmation template TODO: generalize this so it can be used elsewhere--%>
-    <script type="text/ng-template" id="confirm">
+    <script type="text/ng-template" id="confirmReject">
+      <div class="triangle"></div>
       <div class="margin-10">
         <h4 class="content-info">Are you sure?</h4>
         <div class="">
@@ -94,23 +95,24 @@
            ng-disabled="!dirty">
 
     <%--Process button. Current status must be pending.--%>
-    <input ng-show="requisition.status === 'PENDING'" ng-click="processOrder()"
+    <input ng-show="originalRequisition.status === 'PENDING'" ng-click="processOrder()"
            class="process-button" style="width: 15%" type="button" value="Process">
 
     <%--Complete button. Current status must be PENDING.--%>
-    <input ng-show="requisition.status === 'PROCESSING'" ng-click="completeOrder()"
+    <input ng-show="originalRequisition.status === 'PROCESSING'" ng-click="completeOrder()"
            class="complete-button" style="width: 15%" type="button" value="Complete">
 
     <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>
     <shiro:hasPermission name="supply:shipment:approve">
-      <input ng-show="requisition.status === 'COMPLETED'" ng-click="approveShipment()"
+      <input ng-show="originalRequisition.status === 'COMPLETED'" ng-click="approveShipment()"
              class="approve-button" style="width: 15%" type="button" value="Approve">
     </shiro:hasPermission>
 
     <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>
-    <input ns-popover ns-popover-template="confirm" ns-popover-timeout="0.5"
-           ng-show="requisition.status === 'PENDING' || requisition.status === 'PROCESSING'"
-           class="reject-button" style="width: 15%" type="button" value="Reject" ng-disabled="!displayedVersion.note">
+    <input ns-popover ns-popover-template="confirmReject" ns-popover-timeout="0.5"
+           ng-show="originalRequisition.status === 'PENDING' || originalRequisition.status === 'PROCESSING'"
+           class="reject-button" style="width: 15%; float: right;"
+           type="button" value="Reject" ng-disabled="!editableRequisition.note">
 
   </div>
 </div>

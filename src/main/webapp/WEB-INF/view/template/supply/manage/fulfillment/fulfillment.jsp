@@ -210,7 +210,6 @@
   <div modal-container>
     <div fulfillment-editing-modal
          supply-employees='supplyEmployees'
-         supply-items='itemSearch.matches'
          location-statistics='locationStatistics'
          ng-if="isOpen('fulfillment-editing-modal')">
     </div>

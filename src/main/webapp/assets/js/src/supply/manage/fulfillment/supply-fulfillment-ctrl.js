@@ -36,13 +36,6 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         error: false
     };
 
-    /** Items are sent to modals to allow adding of items to an order. */
-    $scope.itemSearch = {
-        matches: [],
-        response: {},
-        error: false
-    };
-
     /** The response received from saving a requisition in the edit modal. */
     $scope.saveResponse = {
         response: {},
@@ -57,7 +50,6 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     $scope.init = function () {
         updateShipments();
         getSupplyEmployees();
-        getSupplyItems();
         getLocationStatistics();
     };
 
@@ -88,16 +80,6 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         supplyEmployeesApi.get(function (response) {
             $scope.supplyEmployees = response.result;
         }, function (errorResponse) {
-        })
-    }
-
-    function getSupplyItems() {
-        $scope.itemSearch.response = itemsApi.get(function (response) {
-            $scope.itemSearch.matches = response.result;
-            $scope.itemSearch.error = false;
-        }, function (errorResponse) {
-            $scope.itemSearch.error = true;
-            $scope.itemSearch.matches = [];
         })
     }
 
@@ -261,6 +243,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         }
         $scope.saveResponse = response;
         $scope.saveResponse.error = true;
+        modals.open('500', {details: response});
+        console.log(response);
     }
 
     $scope.showImmutableModal = function (requisition) {

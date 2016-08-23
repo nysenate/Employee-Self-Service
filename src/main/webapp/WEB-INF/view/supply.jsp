@@ -18,6 +18,8 @@
             src="${ctxPath}/assets/js/src/supply/location/supply-location-autocomplete-service.js?v=${releaseVersion}"></script>
     <script type="text/javascript"
             src="${ctxPath}/assets/js/src/supply/service/supply-cookie-service.js?v=${releaseVersion}"></script>
+    <script type="text/javascript"
+            src="${ctxPath}/assets/js/src/supply/items/supply-item-autocomplete-service.js?v=${releaseVersion}"></script>
 
     <%-- History --%>
     <script type="text/javascript"
@@ -63,14 +65,15 @@
 
     <%-- Utilities --%>
     <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/util/supply-utils-service.js"></script>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/service/supply-location-statistics-service.js"></script>
+    <script type="text/javascript"
+            src="${ctxPath}/assets/js/src/supply/service/supply-location-statistics-service.js"></script>
 
   </jsp:body>
 </ess-layout:head>
 
 <ess-layout:body>
   <jsp:body>
-    <base href="/" />
+    <base href="/"/>
     <ess-component-nav:top-nav activeTopic="supply"/>
     <section class="content-wrapper" ng-controller="MainCtrl as main">
       <ess-component-nav:supply-nav/>
