@@ -27,7 +27,7 @@
                 <badge title="Records needing action" style="cursor: default"
                        badge-id="pendingRecordCount" hide-empty="true"></badge>
             </li>
-            <li class="sub-topic"><a href="${ctxPath}/time/record/emphistory">Employee Record History</a></li>
+            <li class="sub-topic"><a href="${ctxPath}/time/record/emphistory">Employee Attendance History</a></li>
             <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Privileges</a></li>
         </ul>
     </shiro:hasPermission>
