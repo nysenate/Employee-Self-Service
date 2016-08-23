@@ -12,8 +12,6 @@
         </p>
     </div>
 
-    <div loader-indicator class="loader" ng-show="state.searching === true"></div>
-
     <ess-notification ng-show="state.searching === false && state.error !== null" level="warn"
                       title="{{state.error.title}}" message="{{state.error.message}}">
     </ess-notification>
@@ -21,6 +19,8 @@
     <div ng-show="state.isTe">
         <jsp:include page="te-accruals.jsp"/>
     </div>
+
+    <div loader-indicator class="loader" ng-show="state.searching === true"></div>
 
     <div class="content-container" ng-show="state.searching === false">
         <p class="content-info" ng-hide="state.accSummaries[state.selectedYear].length > 0">
