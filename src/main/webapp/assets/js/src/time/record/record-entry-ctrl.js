@@ -34,6 +34,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
     }
 
+    console.log('This is a javascript change to test https://dev.nysenate.gov/issues/10238');
+
     $scope.state = null;                  // The container for all the state variables for this page
 
     // Create a new state from the values in the default state.
