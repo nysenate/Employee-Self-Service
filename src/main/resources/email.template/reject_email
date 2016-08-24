@@ -1,12 +1,12 @@
 Dear $cname$:
 
-Your Order ($requisitionId$) has been rejected
+Your supply requisition request ($requisitionId$) has been rejected
 
-Order Details:
+Requisition details:
 
 $detail$
 
-Reason -
+Reason:
 
 $note$
 
