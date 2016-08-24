@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.synchronization.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import gov.nysenate.ess.core.config.CoreConfig;
+import gov.nysenate.ess.core.config.JacksonConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import java.util.Map;
 @Repository
 public class SfmsSynchronizationProcedure extends StoredProcedure {
 
-    private static final Logger logger = LoggerFactory.getLogger(SfmsSynchronizationProcedure.class);
     private static final String PROCEDURE_NAME = "SYNCHRONIZE_SUPPLY.synchronize_with_supply";
     private static final String RESPONSE = "response";
     private static final String PARAMETER = "requisitionXml";
@@ -39,22 +39,16 @@ public class SfmsSynchronizationProcedure extends StoredProcedure {
     /**
      * Inserts a movement record into SFMS for each item in a requisition.
      * This keeps SFMS up to date with orders processed through the online supply web page.
+     * <p>
+     * Throws a DataAccessException if any errors occur while synchronizing the requisition.
+     *
      * @param requisitionXml An XML representation of a requisition.
-     *                       For expected xml format, use the {@link CoreConfig#xmlObjectMapper()}
+     *                       For expected xml format, use the {@link JacksonConfig#xmlObjectMapper()}
      *                       when serializing the requisition view.
-     * @return The requisition id if successful, 0 otherwise.
      */
-    public int synchronizeRequisition(String requisitionXml) {
+    public void synchronizeRequisition(String requisitionXml) {
         Map parameterMap = new HashMap();
         parameterMap.put(PARAMETER, requisitionXml);
-        try {
-            Map responseMap = execute(parameterMap);
-            if (!responseMap.isEmpty()) {
-                return ((BigDecimal) responseMap.get(RESPONSE)).intValue();
-            }
-        } catch (UncategorizedSQLException ex) {
-            logger.error("Error synchronizing with SFMS. Exception is : " + ex.getMessage());
-        }
-        return 0;
+        execute(parameterMap);
     }
 }
