@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -59,9 +61,12 @@ public class SfmsSynchronizationService {
                                                                                "false", LimitOffset.ALL, "All").getResults();
         logger.info("Synchronizing {} requisitions with SFMS.", requisitions.size());
         for (Requisition requisition : requisitions) {
-            int result = synchronizationProcedure.synchronizeRequisition(toXml(requisition));
-            if (result == requisition.getRequisitionId()) {
+            try {
+                synchronizationProcedure.synchronizeRequisition(toXml(requisition));
                 requisitionService.savedInSfms(requisition.getRequisitionId());
+            } catch (DataAccessException ex) {
+                logger.error("Error synchronizing requisition " + requisition.getRequisitionId()
+                             + " with SFMS. Exception is : " + ex.getMessage());
             }
         }
     }
@@ -69,9 +74,6 @@ public class SfmsSynchronizationService {
     /**
      * Serialize requisition to xml. Does not use {@link OutputUtils} because the SFMS
      * procedure expects dates to be ISO strings.
-     *
-     * @param requisition
-     * @return
      */
     private String toXml(Requisition requisition) {
         String xml = null;
