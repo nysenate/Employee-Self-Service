@@ -33,10 +33,16 @@
       </div>
 
       <%-- Add Note --%>
-      <div class="padding-top-10">
+      <div ng-show="displayRejectInstructions" style="color: #ff0000;">
+        A note must be given when rejecting a requisition.
+      </div>
+      <div class="padding-top-10" >
         <label class="col-1-12">Note:</label>
-        <textarea class="col-11-12" ng-model="editableRequisition.note"
-                  ng-change="onUpdate()"></textarea>
+        <textarea class="col-11-12"
+                  ng-model="editableRequisition.note"
+                  ng-change="onUpdate()"
+                  ng-class="{'warn-option': displayRejectInstructions}">
+        </textarea>
       </div>
     </div>
 
@@ -112,7 +118,7 @@
     <input ns-popover ns-popover-template="confirmReject" ns-popover-timeout="0.5"
            ng-show="originalRequisition.status === 'PENDING' || originalRequisition.status === 'PROCESSING'"
            class="reject-button" style="width: 15%; float: right;"
-           type="button" value="Reject" ng-disabled="!editableRequisition.note">
+           type="button" value="Reject">
 
   </div>
 </div>

@@ -27,6 +27,7 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     $scope.editableRequisition = {};
     $scope.newLocationCode = ""; // model for editing the location.
     $scope.newItemCommodityCode = ""; // model for adding an item.
+    $scope.displayRejectInstructions = false;
 
     $scope.init = function () {
         $scope.originalRequisition = modals.params();
@@ -76,10 +77,20 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         $scope.saveChanges();
     };
 
+    /**
+     * Attempts to reject the order.
+     * A note must be given when rejecting an order. If no note is given,
+     * display instructions informing the user to leave a note.
+     */
     $scope.rejectOrder = function () {
-        $scope.editableRequisition.status = 'REJECTED';
-        $scope.editableRequisition.rejectedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
-        $scope.saveChanges();
+        if ($scope.originalRequisition.note === $scope.editableRequisition.note) {
+            $scope.displayRejectInstructions = true;
+        }
+        else {
+            $scope.editableRequisition.status = 'REJECTED';
+            $scope.editableRequisition.rejectedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
+            $scope.saveChanges();
+        }
     };
 
     /**
