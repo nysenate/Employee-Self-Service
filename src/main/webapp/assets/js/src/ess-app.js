@@ -17,6 +17,19 @@ var essApp = angular.module('ess', [
 /** Transfers properties stored on the global window var into the root module. */
 essCore.constant('appProps', globalProps);
 
+/*Evict all cookies when each time pump the app version*/
+
+essCore.run(['$cookies', function ($cookies) {
+    if ($cookies.get("appVersion") === undefined || $cookies.get("appVersion") != globalProps.releaseVersion) {
+        var cookies = $cookies.getAll();
+        angular.forEach(cookies, function (v, k) {
+            $cookies.remove(k);
+        });
+    }
+    $cookies.put("appVersion", globalProps.releaseVersion);
+}]);
+
+/*Time Out*/
 essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
     return {
         request: function (request) {
