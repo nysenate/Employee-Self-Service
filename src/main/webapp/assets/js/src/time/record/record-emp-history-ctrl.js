@@ -221,7 +221,7 @@ function empRecordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, T
             return;
         }
         var params = { record: record };
-        modals.open('details', params);
+        modals.open('details', params, true );
     };
 
     $scope.init = function() {

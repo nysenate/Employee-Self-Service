@@ -25,7 +25,7 @@ essApp.directive('supervisorRecordList', ['appProps', 'modals', function (appPro
                 record: record,
                 employee: record.employee
             };
-            modals.open('record-details', params);
+            modals.open('record-details', params, true);
         };
 
         /**

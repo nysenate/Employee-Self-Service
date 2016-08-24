@@ -138,7 +138,7 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals,
      */
     $scope.showDetails = function(record) {
         var params = { record: record };
-        modals.open('record-details', params);
+        modals.open('record-details', params, true);
     };
 
     /**
@@ -152,7 +152,7 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals,
             records: selectedRecords,
             allowApproval: allowApproval
         };
-        modals.open('record-review', params)
+        modals.open('record-review', params, true)
             .then(submitReviewedRecords)
             .then($scope.selectNone);
     };
@@ -189,12 +189,12 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals,
 
     $scope.remindSelections = function (status) {
         var selectedRecords = getSelectedRecords(status);
-        modals.open('record-reminder-prompt', {records: selectedRecords})
+        modals.open('record-reminder-prompt', {records: selectedRecords}, true)
             .then(function () {
                 return postReminders(selectedRecords);
             })
             .then(function () {
-                modals.open('record-reminder-posted')
+                modals.open('record-reminder-posted', true)
             });
     };
 

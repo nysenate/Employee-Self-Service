@@ -112,7 +112,7 @@ function recordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, time
             return;
         }
         var params = {record: record};
-        modals.open('record-details', params);
+        modals.open('record-details', params, true);
     };
 
     /** --- Internal Methods --- */

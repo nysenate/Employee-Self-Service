@@ -39,13 +39,13 @@ function ($rootScope, $document, modals) {
             if (backDropEle !== event.target) {
                 return;
             }
-            $scope.$apply(modals.reject);
+            $scope.$apply(modals.softReject);
         };
 
         // Reject modal when the user presses ESC
         $document.bind('keyup', function (event) {
             if (event.keyCode === 27) {
-                $scope.$apply(modals.reject);
+                $scope.$apply(modals.softReject);
             }
         });
 

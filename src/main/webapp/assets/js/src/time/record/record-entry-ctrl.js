@@ -121,7 +121,6 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var entryErrors = $scope.selRecordHasEntryErrors();
         if (entryErrors || submit && $scope.selRecordHasRecordErrors()) {
             $scope.$broadcast('validateRecordEntries');
-            modals.open('validate-indicator', {'record': record});
         }
         // Open the modal to indicate save/submit
         else if (submit) {
@@ -130,11 +129,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             // Display any necessary dialogs prior to submit
             promiseUtils.serial(modalDialogs)
                 // Open the submit dialog
-                .then(function () { return modals.open('submit-ack', {'record': record}); })
+                .then(function () { return modals.open('submit-ack', {'record': record}, true); })
                 // Submit the record
                 .then($scope.submitRecord)
                 // Open the post save dialog
-                .then(function () { return modals.open('post-save'); })
+                .then(function () { return modals.open('post-save', {}, true); })
                 // Logout if user chooses, otherwise reinitialize page
                 .then($scope.logout, $scope.init);
 
@@ -612,16 +611,16 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var submitDialogs = [];
         if (!$scope.expectedHoursEntered()) {
             submitDialogs.push(function () {
-                return modals.open("expectedhrs-dialog");
+                return modals.open("expectedhrs-dialog", true);
             });
 
-        };
+        }
 
         if ($scope.futureEndDate()) {
             submitDialogs.push(function () {
-                return  modals.open("futureenddt-dialog");
+                return  modals.open("futureenddt-dialog", true);
             });
-        };
+        }
 
         return submitDialogs
     }

@@ -84,7 +84,7 @@ function recordReviewModal(appProps, modals, locationService) {
          */
         $scope.rejectRecord = function () {
             var record = $scope.records[$scope.iSelectedRecord];
-            modals.open('record-review-reject', {record: record})
+            modals.open('record-review-reject', {record: record}, true)
                 .then(function rejected(reasons) {
                     $scope.cancelRecord(record);
                     record.rejectionRemarks = reasons;
