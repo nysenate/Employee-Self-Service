@@ -102,11 +102,13 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     }
 
     function getLocationStatistics() {
-        locationStatisticsService.calculateLocationStatisticsFor(2016, 8).then(
-            function (result) {
-                $scope.locationStatistics = result;
-            }
-        );
+        var year = moment().year();
+        var month = moment().month() + 1; // Moment is 0 indexed, API is not.
+        locationStatisticsService.calculateLocationStatisticsFor(year, month)
+            .then(function (result) {
+                      $scope.locationStatistics = result;
+                  }
+            );
     }
 
     /** Get all pending shipments */
