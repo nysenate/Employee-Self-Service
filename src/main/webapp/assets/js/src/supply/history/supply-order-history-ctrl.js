@@ -64,8 +64,8 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
             location: employeeInfoResponse.employee.empWorkLocation.locId,
             customerId: employeeInfoResponse.employee.employeeId,
             status: $scope.filter.status,
-            from: moment($scope.filter.date.from, DATE_FORMAT).format(),
-            to: moment($scope.filter.date.to, DATE_FORMAT).format(),
+            from: moment($scope.filter.date.from, DATE_FORMAT).startOf('day').format(),
+            to: moment($scope.filter.date.to, DATE_FORMAT).endOf('day').format(),
             limit: $scope.paginate.itemsPerPage,
             offset: $scope.paginate.getOffset()
         };
