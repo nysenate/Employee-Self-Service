@@ -39,7 +39,7 @@
   color: #fefefe;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -1139,7 +1139,7 @@ a:hover {
   color: #004d4d;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Fonts */
 .open-sans {
   font-family: 'Open Sans', sans-serif;
@@ -1165,7 +1165,7 @@ a:hover {
   background-repeat: no-repeat;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -2178,7 +2178,7 @@ button.ui-button::-moz-focus-inner {
 }
 /** Media Queries */
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -4568,7 +4568,7 @@ button.ui-button::-moz-focus-inner {
   transform-style: preserve-3d;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /*! main */
 /** --- Defaults --- */
 .horizontal-input-group label {
@@ -6201,7 +6201,7 @@ table.simple-table tbody tr td {
   font-weight: 600;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -7271,7 +7271,7 @@ ul.ui-autocomplete {
 }
 
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
   color: #b90504;
@@ -8484,7 +8484,7 @@ button.ui-button::-moz-focus-inner {
   padding-left: 20px;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /*! main */
 /** Color Palette */
 .dark-red {
@@ -9932,7 +9932,7 @@ button.ui-button::-moz-focus-inner {
   margin-left: 5px;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /*! main */
 /** --- Defaults --- */
 .horizontal-input-group label {
@@ -11827,7 +11827,7 @@ input[type="button"].approve-button:hover {
   font-weight: bold;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
   color: #b90504;
