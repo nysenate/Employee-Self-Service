@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= cssSource %>/main.css': ['<%= lessSource %>/**/*.less']
+                    '<%= cssSource %>/main.css': ['<%= lessSource %>/main.less']
                 }
             }
         },

@@ -1,0 +1,405 @@
+@import "lesshat";
+@import "./common/include";
+
+/**
+ * Styles for the overall ESS App
+ * Includes headers, navs, menus etc
+ */
+
+/** --- Defaults --- */
+
+.horizontal-input-group {
+  label {
+    margin: 0 10px;
+  }
+}
+
+/** --- Icons --- */
+
+.close-red {
+  .icon-image('20px-e74c3c', 'cross.png');
+  .image-size(20px);
+  cursor: pointer;
+
+  &:hover {
+    .icon-image('20px-ff5544', 'cross.png');
+  }
+}
+
+/** --- Main Structure --- */
+
+#wrapper {
+  height: 100%;
+}
+
+.view-animate-container {
+  margin: 0 0 20px 270px;
+  width: 880px;
+
+  @media print {
+    margin: 0 0 20px 0;
+  }
+}
+
+/** --- Error Pages --- */
+
+.hero-404 {
+  .page-hero(@redorange, white);
+}
+
+#restricted-warning {
+  .align-parent;
+  width: 100%;
+  height: 100%;
+  & .ess-notification {
+    position: absolute;
+    .center-align;
+  }
+}
+
+/** --- Home Page --- */
+
+.ess-top-header {
+
+  position: fixed;
+  width: 100%;
+  background: #fafafa;
+  box-shadow: 0 1px 1px #ccc;
+  height:45px;
+  z-index: 1002;
+  color: white;
+  overflow: hidden;
+
+  .fixed-width-header {
+    width: 1150px;
+    margin: auto;
+    position: relative;
+    top: 2px;
+
+    .left-header-area {
+      display: inline-block;
+      .nysslogo {
+        .nysslogo(35px);
+        float: left;
+        margin-top: 2px;
+        margin-left: 10px;
+      }
+      .nysslogo-text-container {
+        padding: 0;
+        margin-top: 0;
+        display: inline-block;
+        .nysslogo-text {
+          .font-weight-light;
+          color: #333;
+          font-size: 1.6em;
+          line-height: 40px;
+          margin-left: 10px;
+          .highlight {
+            .font-weight-normal;
+          }
+        }
+      }
+      .top-nav-list {
+        padding: 0;
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 0 0 20px;
+        li {
+          display: inline-block;
+          line-height:40px;
+          cursor: pointer;
+          &.active {
+            font-weight: 600;
+          }
+          &.teal {
+            &.active, &:hover {
+              border-bottom: 3px solid @light-teal;
+            }
+          }
+          &.green {
+            &.active, &:hover {
+              border-bottom: 3px solid @green;
+            }
+          }
+          &.orange {
+            &.active, &:hover {
+              border-bottom: 3px solid @orange;
+            }
+          }
+          &.blue-purple {
+            &.active, &:hover {
+              border-bottom: 3px solid @blue-purple;
+            }
+          }
+          &.gray {
+            &.active, &:hover {
+              border-bottom: 3px solid @gray;
+            }
+          }
+          .nav-icon {
+            margin-right:5px;
+            vertical-align: middle;
+            height: 16px;
+            position: relative;
+            top: -1px;
+            display: none;    /** Hidden for now.. */
+          }
+          a {
+            color: rgb(66, 81, 81);
+            font-size: 1.1em;
+            display: block;
+            padding: 0 20px;
+            width: 100%;
+            height: 100%;
+            &:hover {
+              color: teal;
+            }
+          }
+        }
+      }
+    }
+
+    .right-header-area {
+      display: inline-block;
+      vertical-align: top;
+      position: absolute;
+      right: 0;
+      .header-label-segment {
+        float:left;
+        font-size: 1.1em;
+        font-weight: bold;
+        padding: 11px;
+        display: block;
+        text-decoration: none !important;
+        color: #333;
+      }
+      #logoutSection {
+        float:left;
+        font-size: 1.1em;
+        &:hover {
+          background: #ddd;
+          a .logout-icon {
+            .transform(rotateY(-40deg));
+          }
+        }
+        a {
+          padding: 11px;
+          display: block;
+          text-decoration: none !important;
+          color: #333;
+        }
+      }
+    }
+  }
+}
+
+/** Profile Square */
+.profile-square(@size:40px) {
+  width: @size;
+  height: @size;
+}
+
+/** --- Left Navigation ---  */
+
+.left-nav {
+
+  @media print {
+    display: none;
+  }
+
+  background:#fafafa;
+  border: 1px solid #f1f1f1;
+  width:250px;
+  position: fixed;
+  height: auto;
+  padding-bottom: 20px;
+  .border-radius(0 0 0 2px);
+
+  .left-nav-content;
+}
+
+.left-nav-div {
+  border: 1px solid #f1f1f1;
+  width: 250px;
+  position: fixed;
+  height: auto;
+  .border-radius(0 0 0 2px);
+}
+
+.left-nav-content {
+  padding-bottom: 20px;
+  background: #fafafa;
+
+  .user-heading {
+    margin-left: 20px;
+    color: #666;
+  }
+
+  .main-topic {
+    color: #333;
+    margin-left: 20px;
+    width: 200px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    padding: 5px 5px 5px 20px;
+    &.sub-topic.active {
+      border-left: 4px solid teal;
+      padding-left: 16px;
+      background: #F4F4F4;
+      a {
+        .font-weight-bold;
+        color: darken(teal, 10%);
+      }
+    }
+  }
+}
+
+.content-wrapper {
+  padding-top: 70px;
+  padding-bottom: 40px;
+  width: 1150px;
+  margin: auto;
+  min-height: 100%;
+
+  @media print {
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
+.section-title-container {
+  &.teal {
+    background: darken(@teal, 5%);
+  }
+  &.green {
+    background: darken(@green, 10%);
+  }
+  &.orange {
+    background: darken(@orange, 5%);
+  }
+  &.blue-purple {
+    background: darken(@blue-purple, 5%);
+  }
+  &.gray {
+    background: darken(@gray, 5%);
+  }
+
+  span {
+    color: white;
+  }
+
+  .border-radius(2px 0 0 0);
+  color: #eee;
+  font-size: 1.1em;
+  margin: 0;
+  padding: 10px 15px;
+  .font-weight-bold;
+}
+
+.content-container {
+  background: #fefefe;
+  position: relative;
+  .box-shadow(0px 1px 2px #aaa);
+  margin-top: 20px;
+
+  &.no-top-margin {
+    margin-top: 0;
+  }
+
+  h1 {
+    font-size:1.1em;
+    margin:0;
+    text-align: center;
+    padding: 4px 10px;
+    border-width: 1px;
+    border-style: none none solid none;
+    //background: rgb(89, 130, 131);
+    color: black;
+    border-color: fade(@teal, 25%);
+    line-height: 40px;
+    .font-weight-bold;
+
+    &.olive {
+      border-color: @green;
+    }
+    &.orange {
+      border-color: @orange;
+    }
+  }
+
+  &.dual {
+    overflow: hidden; //fixes 0 container height issue
+    div, section {
+      &.left-container, &.right-container {
+        float:left;
+        width: 400px;
+        padding-bottom: 10px;
+      }
+    }
+  }
+}
+
+/** --- Main content elements --- */
+
+.content-controls {
+  margin-top: 0;
+  .box-shadow(none);
+  text-align: center;
+
+  p,label {
+    .font-weight-bold;
+    color: @teal;
+  }
+
+  > .content-info {
+    border-bottom: none;
+  }
+}
+
+.content-info {
+  margin-top: 0;
+  padding: 11px;
+  color: #222;
+  text-align: center;
+  border-bottom: 1px solid fade(@teal, 25%);
+  &.no-bottom-margin {
+    margin-bottom: 0;
+    border-bottom: none;
+  }
+  @media print {
+    border-bottom: 0;
+  }
+}
+
+/** --- Badge Directive --- */
+
+.badge {
+  background: @teal;
+  padding: 5px;
+  color: white;
+  border-radius: 25%;
+  display: inline-block;
+  height: 20px;
+  line-height: 10px;
+  text-align: center;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+/** Toggle Panel Directive */
+
+.toggle-panel-label {
+  cursor: pointer;
+  &:hover {
+    color: @teal;
+  }
+}
