@@ -26,6 +26,9 @@ essApp.directive('datepicker', [function(){
                 }
             };
             element.datepicker({
+                showOn: "button",
+                buttonImage: "/assets/img/calendar.png",
+                buttonImageOnly: true,
                 inline: scope.inline || false,
                 stepMonths: scope.stepMonths || 1,
                 defaultDate: defaultDate,

@@ -754,7 +754,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -1654,6 +1654,8 @@ table.simple-table tbody tr td {
 /**
 * Styles for page hero
 */
+/** JQuery UI css */
+/** Media Queries */
 /**
 * Styles for text
 */
@@ -1880,7 +1882,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -2893,7 +2895,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -3501,7 +3503,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -5718,7 +5720,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -6690,6 +6692,58 @@ table.simple-table tbody tr td {
 /**
 * Styles for page hero
 */
+/**
+* Styles for text
+*/
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.bold-text {
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.info-text {
+  background: #006b80;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.warning-text {
+  background: #d19525;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.error-text {
+  background: #b90504;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.success-text {
+  background: #808d0a;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  font-weight: 600;
+}
 /** JQuery UI css */
 /*!
 * jQuery UI Button 1.10.4
@@ -6871,7 +6925,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -7986,7 +8040,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -9200,7 +9254,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -11082,7 +11136,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
@@ -11827,6 +11881,12 @@ input[type="button"].approve-button:hover {
   font-weight: bold;
 }
 
+img.ui-datepicker-trigger {
+  position: relative;
+  left: -22px;
+  top: 5px;
+}
+
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /** Color Palette */
 .dark-red {
@@ -12542,7 +12602,7 @@ button.ui-button::-moz-focus-inner {
   display: block;
   position: absolute;
   left: 50%;
-  margin-left: -8px;
+  margin-left: -14px;
   top: 50%;
   margin-top: -8px;
 }
