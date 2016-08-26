@@ -1,0 +1,129 @@
+@import "common/include";
+
+/*
+* Styles for ESS MyInfo
+*/
+
+/** --- My Info Page --- */
+
+.my-info-hero {
+  .page-hero(@green, white);
+}
+
+/** --- Paycheck History Page --- */
+
+#paycheck-history {
+  @media print {
+    @page {
+      size: landscape;
+    }
+    .content-controls {
+      display: none;
+    }
+    .my-info-hero {
+      display: none;
+    }
+    .content-container > div {
+      padding: 0;
+    }
+    .content-container > h1 {
+      font-size: small;
+      line-height: 1.5em;
+    }
+  }
+  .content-info {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+
+    .fiscal-toggle {
+      margin-left: 20px;
+    }
+  }
+}
+
+#paycheck-history-table {
+  @media print {
+    float: left;
+    font-size: x-small;
+
+    tr {
+      &:hover:nth-child(odd),&.yearly-totals {
+        background: inherit !important;
+      }
+      &:hover:nth-child(even):not(.yearly-totals) {
+        background: fade(#333, 5%) !important;
+      }
+    }
+
+    thead th {
+      text-align: right;
+      padding: 10px 0 !important;
+    }
+    tbody tr td {
+      padding: 0.2em !important;
+    }
+  }
+  tbody {
+    tr {
+      border-bottom: 1px solid #eee !important;
+      &:not(.yearly-totals):hover {
+        background: #e9eeff;
+      }
+      &:nth-child(even) {
+        background: fade(#333, 5%);
+        &:hover {
+          background: #e9eeff;
+        }
+      }
+      td {
+        text-align: right;
+        white-space: nowrap;
+        padding: .5em;
+        border: 0;
+      }
+      &.yearly-totals {
+        border-top: 2px solid teal;
+        td {
+          .font-weight-bold;
+        }
+      }
+    }
+  }
+}
+
+/** --- Transaction History --- */
+
+.tx-effect-date {
+  color: darken(@teal, 10%);
+}
+
+.tx-container {
+  padding: 20px;
+  background: #f7f7f7;
+  border-left: 2px dashed @olive;
+  border-bottom: 1px solid #f1f1f1;
+  margin-left: 20px;
+}
+
+.tx-container.grid {
+  margin-left: 20px;
+}
+
+.tx-data {
+  margin: 0;
+  border: 0;
+  p {
+    font-size: 1em;
+  }
+}
+
+.tx-label {
+  color: @blue;
+  font-weight: bold;
+}
+
+.tx-update-date {
+  font-size: 0.9em;
+  color: #666;
+}

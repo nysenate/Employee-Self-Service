@@ -4,7 +4,8 @@
 
 // Margins to use when printing
 @page {
-  margin: 25mm 25mm 25mm 25mm;
+  //margin: 0 0 0 0 ;
+  //margin: 25mm 25mm 25mm 25mm;
 }
 
 .large-print-font-size {
@@ -23,5 +24,21 @@
   display: none;
   @media print {
     display: block !important;
+  }
+}
+
+// Print overrides of standard styles
+
+@media print {
+  html, body {
+    background: white !important;
+    height: 98%;
+  }
+
+  .content-wrapper {
+    width: auto !important;
+  }
+  .view-animate-container {
+    width: auto !important;
   }
 }

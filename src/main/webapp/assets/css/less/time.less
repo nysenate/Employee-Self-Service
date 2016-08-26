@@ -743,55 +743,6 @@ record-review-modal, [record-review-modal] {
   }
 }
 
-/** --- My Info Page --- */
-
-.my-info-hero {
-  .page-hero(@green, white);
-}
-
-/** --- Paycheck History Page --- */
-
-#paycheck-history {
-  .content-info {
-    display: flex;
-    justify-content: center;
-    align-items: baseline;
-
-    .fiscal-toggle {
-      margin-left: 20px;
-    }
-  }
-}
-
-#paycheck-history-table {
-  tbody {
-    tr {
-      border-bottom: 1px solid #eee !important;
-      &:not(.yearly-totals):hover {
-        background: #e9eeff;
-      }
-      &:nth-child(even) {
-        background: fade(#333, 5%);
-        &:hover {
-          background: #e9eeff;
-        }
-      }
-      td {
-        text-align: center;
-        white-space: nowrap;
-        padding: .5em;
-        border: 0;
-      }
-      &.yearly-totals {
-        border-top: 2px solid teal;
-        td {
-          .font-weight-bold;
-        }
-      }
-    }
-  }
-}
-
 // Reject Modals
 
 .reject-modal-textarea {
@@ -868,56 +819,9 @@ record-review-modal, [record-review-modal] {
   }
 }
 
-/** --- Transaction History --- */
-
-.tx-effect-date {
-  color: darken(@teal, 10%);
-}
-
-.tx-container {
-  padding: 20px;
-  background: #f7f7f7;
-  border-left: 2px dashed @olive;
-  border-bottom: 1px solid #f1f1f1;
-  margin-left: 20px;
-}
-
-.tx-container.grid {
-  margin-left: 20px;
-}
-
-.tx-data {
-  margin: 0;
-  border: 0;
-  p {
-    font-size: 1em;
-  }
-}
-
-.tx-label {
-  color: @blue;
-  font-weight: bold;
-}
-
-.tx-update-date {
-  font-size: 0.9em;
-  color: #666;
-}
-
 /** --- Supervisor Grant Page --- */
 
 .success-bold-label {
   color: @green;
   font-weight: bold;
-}
-
-/** --- Directives --- */
-
-/** Toggle Panel Directive */
-
-.toggle-panel-label {
-  cursor: pointer;
-  &:hover {
-    color: @teal;
-  }
 }

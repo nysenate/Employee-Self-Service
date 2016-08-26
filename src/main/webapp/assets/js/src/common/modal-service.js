@@ -84,7 +84,7 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
      */
     function softReject(reason) {
         var modal = modals[modals.length - 1];
-        if (modal.softRejectable) {
+        if (modal && modal.softRejectable) {
             reject(reason);
         }
     }
