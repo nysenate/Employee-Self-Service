@@ -42,7 +42,8 @@
                                        ng-disabled="grantee.granted === false" type="checkbox" ng-click="setStartDate(grantee)"/>
                                 <label for="grant-start-date-{{$index}}">Set Start Date</label>
                                 <input ng-class="{'half-opacity': !grantee.granted || !grantee.grantStart}"
-                                       ng-disabled="!grantee.granted || !grantee.grantStart" ng-model="grantee.grantStart"
+                                       ng-disabled="!grantee.granted || !grantee.grantStart"
+                                       ng-model="grantee.grantStart" to-date="grantee.grantEnd"
                                        style="width:100px" type="text" datepicker/>
                             </div>
                         </td>
@@ -51,7 +52,8 @@
                                 <input id="grant-end-date-{{$index}}" ng-checked="grantee.grantEnd"
                                        ng-disabled="grantee.granted === false" type="checkbox" ng-click="setEndDate(grantee)"/>
                                 <label for="grant-end-date-{{$index}}">Set End Date</label>
-                                <input ng-disabled="!grantee.granted || !grantee.grantEnd" ng-model="grantee.grantEnd"
+                                <input ng-disabled="!grantee.granted || !grantee.grantEnd"
+                                       ng-model="grantee.grantEnd" from-date="grantee.grantStart"
                                        style="width:100px" type="text" datepicker/>
                             </div>
                         </td>

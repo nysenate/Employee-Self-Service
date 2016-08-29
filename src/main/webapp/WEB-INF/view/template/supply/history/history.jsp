@@ -21,12 +21,14 @@
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">From:</label>
-          <input datepicker readonly='true' style="margin-left: 1px;" ng-model="filter.date.from"
+          <input datepicker readonly='true' style="margin-left: 1px;"
+                 ng-model="filter.date.from" to-date="filter.date.to"
                  ng-change="onFilterChange()"/>
         </div>
         <div class="col-6-12" style="padding: 0 10px 10px 10px;">
           <label class="bold">To:</label>
-          <input datepicker readonly='true' style="margin-left: 2px;" ng-model="filter.date.to"
+          <input datepicker readonly='true' style="margin-left: 2px;"
+                 ng-model="filter.date.to" from-date="filter.date.from"
                  ng-change="onFilterChange()"/>
         </div>
       </div>

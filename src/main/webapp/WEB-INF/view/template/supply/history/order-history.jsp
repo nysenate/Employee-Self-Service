@@ -10,12 +10,14 @@
     <div class="grid">
       <div class="col-4-12 padding-10" style="padding-top: 50px">
         <label class="bold">From:</label>
-        <input datepicker readonly='true' style="margin-left: 1px;" ng-model="filter.date.from"
+        <input datepicker readonly='true' style="margin-left: 1px;"
+               ng-model="filter.date.from" to-date="filter.date.to"
                ng-change="updateRequisitions()"/>
       </div>
       <div class="col-4-12 padding-10" style="padding-top: 50px">
         <label class="bold">To:</label>
-        <input datepicker readonly='true' style="margin-left: 1px;" ng-model="filter.date.to"
+        <input datepicker readonly='true' style="margin-left: 1px;"
+               ng-model="filter.date.to" from-date="filter.date.from"
                ng-change="updateRequisitions()"/>
       </div>
       <div class="col-4-12 padding-10">
