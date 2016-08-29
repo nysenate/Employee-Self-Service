@@ -2,11 +2,16 @@ var essSupply = angular.module('essSupply').controller('SupplyNavigationControll
     ['$scope', '$location', 'appProps', 'LocationService', 'SupplyCategoryService', 'SupplyOrderDestinationService', supplyNavigationController]);
 
 function supplyNavigationController($scope, $location, appProps, locationService, categoryService, destinationService) {
-
+    var categoryNamesInUrl = locationService.getSearchParam("category") || [];
+    $scope.updateWithURL = function (e) {
+        if (categoryNamesInUrl.length == 0)
+            return;
+        if (categoryNamesInUrl.indexOf(e.name) != -1)
+            e.selected = true;
+    };
     $scope.getCategories = function () {
         return categoryService.getCategories();
     };
-
     $scope.shouldDisplayCategoryFilter = function () {
         return onRequisitionOrderPage($location.path()) && destinationIsSelected();
     };
