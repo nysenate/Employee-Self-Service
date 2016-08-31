@@ -6,11 +6,13 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
                               destinationService, appProps, modals, locationService) {
 
     $scope.destinationCode = null;
+    $scope.destinationDescription = "";
 
     $scope.init = function () {
         var destination = destinationService.getDestination();
         if (destination != null) {
             $scope.destinationCode = destination.code;
+            $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
         }
     };
 
@@ -60,7 +62,6 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         modals.resolve();
         // locationService.go("/supply/history/location-history", false);
     };
-
     $scope.resetDestination = function () {
         supplyCart.reset();
         destinationService.reset();

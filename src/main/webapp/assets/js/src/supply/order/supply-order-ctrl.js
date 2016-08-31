@@ -6,11 +6,17 @@ var essSupply = angular.module('essSupply')
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
                                allowanceService, destinationService, modals, supplyUtils) {
     $scope.state = {};
+    $scope.sorting = {
+        Name: 0,
+        Category: 10
+    };
+    $scope.sortBy = $scope.sorting.Alphabet;
     $scope.states = {
         LOADING: 0,
         SELECTING_DESTINATION: 5,
         SHOPPING: 10
     };
+    $scope.displaySorting = Object.getOwnPropertyNames($scope.sorting);
 
     $scope.paginate = angular.extend({}, paginationModel);
 
@@ -42,6 +48,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         else {
             loadShoppingState();
         }
+
     };
 
     $scope.init();
@@ -74,9 +81,13 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             .then(saveAllowances)
             .then(filterAllowances)
             .then(setToShoppingState)
-            .then(setDestinationDescription);
+            .then(setDestinationDescription)
+            .then(checkSortOrder);
     }
 
+    function checkSortOrder(allowance) {
+        $scope.updateSort();
+    }
     function saveAllowances(allowanceResponse) {
         allowances = allowanceResponse.result.itemAllowances;
     }
@@ -190,15 +201,46 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             loadShoppingState();
         }
     };
+    $scope.$on('$locationChangeStart', function (event, newUrl) {
+        $scope.updateSort();
+    });
 
     $scope.getLocationAutocompleteOptions = function () {
         return locationAutocompleteService.getLocationAutocompleteOptions();
     };
 
-    $scope.resetDestination = function () {
+    $scope.resetDestination = function (body) {
         supplyCart.reset();
         destinationService.reset();
         locationService.go("/supply/order", true);
+    };
+
+    $scope.backHidden = function () {
+        return $scope.state == $scope.states.SELECTING_DESTINATION;
+    };
+
+    /** --- Sorting  --- */
+    $scope.updateSort = function () {
+        var cur = locationService.getSearchParam("sortBy") || [];
+        if (cur.length == 0 || cur[0] != $scope.sortBy) {
+            locationService.setSearchParam("sortBy", $scope.sortBy, true, false);
+        }
+        var allowancesCopy = angular.copy($scope.displayAllowances);
+        if ($scope.sorting[$scope.sortBy] == $scope.sorting.Name) {
+            allowancesCopy.sort(function (a, b) {
+                if (a.item.description < b.item.description) return -1;
+                if (a.item.description > b.item.description) return 1;
+                return 0;
+            });
+        }
+        else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
+            allowancesCopy.sort(function (a, b) {
+                if (a.item.category.name < b.item.category.name) return -1;
+                if (a.item.category.name > b.item.category.name) return 1;
+                return 0;
+            });
+        }
+        $scope.displayAllowances = allowancesCopy;
     }
 }
 
