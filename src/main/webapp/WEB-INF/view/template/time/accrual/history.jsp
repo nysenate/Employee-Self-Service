@@ -33,7 +33,7 @@
             </p>
             <div class="padding-10">
                 <table class="detail-acc-history-table" float-thead="floatTheadOpts"
-                       float-thead-enabled="test.enabled" ng-model="state.accSummaries[state.selectedYear]">
+                       float-thead-enabled="true" ng-value="getaccSummaries()">
                     <thead>
                     <tr>
                         <th colspan="2">Pay Period</th>
@@ -61,7 +61,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="record in state.accSummaries[state.selectedYear]" ng-class="{'highlighted': record.payPeriod.current}">
+                    <tr ng-repeat="record in state.accSummaries[state.selectedYear]"
+                        ng-class="{'highlighted': record.payPeriod.current}">
                         <td>{{record.payPeriod.payPeriodNum}}</td>
                         <td >{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}</td>
                         <td class="accrual-hours personal">{{record.personalAccruedYtd}}</td>
@@ -84,6 +85,5 @@
             </div>
         </div>
     </div>
-
     <div modal-container></div>
 </section>

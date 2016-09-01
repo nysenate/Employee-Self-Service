@@ -144,6 +144,13 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
             }
         );
     }
+
+    $scope.getProjection = function () {
+        $timeout(function () {
+            $("table").floatThead('reflow');
+        }, 0);
+        return $scope.state.projections[$scope.state.selectedYear]
+    };
     
     $scope.init();
 }

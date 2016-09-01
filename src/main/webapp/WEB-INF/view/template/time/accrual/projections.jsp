@@ -26,8 +26,8 @@
                 Enter hours into the 'Use' column to view projected available hours. No changes will be saved.
             </p>
             <div class="padding-10">
-                <table class="detail-acc-history-table projections" float-thead-enabled="test.enabled"
-                       float-thead="floatTheadOpts" ng-model="state.projections[state.selectedYear]">
+                <table class="detail-acc-history-table projections" float-thead-enabled="true"
+                       float-thead="floatTheadOpts" ng-value="getProjection()">
                     <thead>
                     <tr>
                         <th colspan="3">Pay Period</th>

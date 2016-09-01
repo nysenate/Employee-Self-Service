@@ -99,6 +99,13 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
             }
         );
     }
+
+    $scope.getaccSummaries = function () {
+        $timeout(function () {
+            $("table").floatThead('reflow');
+        }, 0);
+        return $scope.state.accSummaries[$scope.state.selectedYear];
+    };
     /**
      * Initialize
      */
