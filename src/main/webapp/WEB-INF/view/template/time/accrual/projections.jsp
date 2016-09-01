@@ -26,7 +26,7 @@
                 Enter hours into the 'Use' column to view projected available hours. No changes will be saved.
             </p>
             <div class="padding-10">
-                <table class="detail-acc-history-table projections" float-thead-enabled=true
+                <table class="detail-acc-history-table projections" float-thead-enabled="test.enabled"
                        float-thead="floatTheadOpts" ng-model="state.projections[state.selectedYear]">
                     <thead>
                     <tr>

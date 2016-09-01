@@ -72,7 +72,9 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
         EmpActiveYearsApi.get({empId: $scope.state.empId}, function(resp) {
             $scope.state.activeYears = resp.activeYears.reverse();
             $scope.state.selectedYear = resp.activeYears[0];
-            if (callBack) callBack();
+            if (callBack) {
+                callBack();
+            }
         }, function(resp) {
             modals.open('500', {details: resp});
             console.log(resp);
@@ -97,7 +99,6 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
             }
         );
     }
-
     /**
      * Initialize
      */
@@ -105,13 +106,5 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
         $scope.getEmpActiveYears(function() {
             $scope.getAccSummaries($scope.state.selectedYear);
         });
-        // make sure that the table head is in position
-        $timeout(function () {
-            jQuery('.detail-acc-history-table').floatThead('reflow');
-        });
-        // make extra sure that the table head is in position
-        $timeout(function () {
-            jQuery('.detail-acc-history-table').floatThead('reflow');
-        }, 50);
     }();
 }

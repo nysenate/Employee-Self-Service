@@ -33,7 +33,7 @@
             </p>
             <div class="padding-10">
                 <table class="detail-acc-history-table" float-thead="floatTheadOpts"
-                       float-thead-enabled="true" ng-model="state.accSummaries[state.selectedYear]">
+                       float-thead-enabled="test.enabled" ng-model="state.accSummaries[state.selectedYear]">
                     <thead>
                     <tr>
                         <th colspan="2">Pay Period</th>
