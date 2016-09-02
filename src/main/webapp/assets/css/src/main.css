@@ -2252,8 +2252,10 @@ button.ui-button::-moz-focus-inner {
     background: rgba(51, 51, 51, 0.05) !important;
   }
   #paycheck-history-table thead th {
-    text-align: right;
     padding: 10px 5px !important;
+  }
+  #paycheck-history-table thead th.money-col {
+    text-align: right;
   }
   #paycheck-history-table tbody tr td {
     padding: 0.2em !important;
@@ -2272,10 +2274,13 @@ button.ui-button::-moz-focus-inner {
   background: #e9eeff;
 }
 #paycheck-history-table tbody tr td {
-  text-align: right;
+  text-align: center;
   white-space: nowrap;
   padding: .5em;
   border: 0;
+}
+#paycheck-history-table tbody tr td.money-col {
+  text-align: right;
 }
 #paycheck-history-table tbody tr.yearly-totals {
   border-top: 2px solid teal;
