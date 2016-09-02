@@ -8,8 +8,8 @@
 <![endif]-->
 
 <script type="text/javascript" src="${ctxPath}/assets/js/dest/timesheets-vendor.min.js?v=${releaseVersion}"></script>
-<c:choose>
-    <c:when test="${runtimeLevel eq 'dev'}">
+<%--<c:choose>--%>
+    <%--<c:when test="${runtimeLevel eq 'dev'}">--%>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/ess-app.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/ess-api.js?v=${releaseVersion}"></script>
 
@@ -58,11 +58,11 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/zero-pad-filter.js?v=${releaseVersion}"></script>
 
-    </c:when>
-    <c:when test="${runtimeLevel eq 'test'}">
-        <script type="text/javascript" src="${ctxPath}/assets/js/dest/timesheets.min.js?v=${releaseVersion}"></script>
-    </c:when>
-    <c:when test="${runtimeLevel eq 'prod'}">
-        <script type="text/javascript" src="${ctxPath}/assets/js/dest/timesheets.min.js?v=${releaseVersion}"></script>
-    </c:when>
-</c:choose>
+    <%--</c:when>--%>
+    <%--<c:when test="${runtimeLevel eq 'test'}">--%>
+        <%--<script type="text/javascript" src="${ctxPath}/assets/js/dest/timesheets.min.js?v=${releaseVersion}"></script>--%>
+    <%--</c:when>--%>
+    <%--<c:when test="${runtimeLevel eq 'prod'}">--%>
+        <%--<script type="text/javascript" src="${ctxPath}/assets/js/dest/timesheets.min.js?v=${releaseVersion}"></script>--%>
+    <%--</c:when>--%>
+<%--</c:choose>--%>
