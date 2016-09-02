@@ -6,7 +6,7 @@
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.0pre5</version>
+  <version>1.0rc1</version>
   <packaging>war</packaging>
 
   <build>
