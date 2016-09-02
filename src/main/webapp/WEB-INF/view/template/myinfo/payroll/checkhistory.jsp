@@ -45,39 +45,40 @@
         <tr>
           <th>Check Date</th>
           <th>Pay Period</th>
-          <th>Gross</th>
-          <th ng-repeat="col in deductionCols">{{col | formatDeductionHeader}}</th>
-          <th ng-if="dirDepositPresent">Direct Deposit</th>
-          <th ng-if="checkPresent">Check</th>
+          <th class="money-col">Gross</th>
+          <th ng-repeat="col in deductionCols" class="money-col">{{col | formatDeductionHeader}}</th>
+          <th ng-if="dirDepositPresent" class="money-col">Direct Deposit</th>
+          <th ng-if="checkPresent" class="money-col">Check</th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="paycheck in paychecks">
           <td>{{paycheck.checkDate | moment:'l'}}</td>
           <td>{{paycheck.payPeriod}}</td>
-          <td ng-class="{bold: isSignificantChange(paycheck.grossIncome, paychecks[$index - 1].grossIncome)}">
+          <td ng-class="{bold: isSignificantChange(paycheck.grossIncome, paychecks[$index - 1].grossIncome)}"
+              class="money-col">
             {{paycheck.grossIncome | currency}}
           </td>
-          <td ng-repeat="col in deductionCols"
+          <td ng-repeat="col in deductionCols" class="money-col"
               ng-class="{bold: isSignificantChange(paycheck.deductions[col].amount, paychecks[$parent.$index - 1].deductions[col].amount)}">
             {{paycheck.deductions[col].amount | currency}}
           </td>
           <td ng-class="{bold: isSignificantChange(paycheck.directDepositAmount, paychecks[$index - 1].directDepositAmount)}"
-              ng-if="dirDepositPresent">
+              ng-if="dirDepositPresent" class="money-col">
             {{paycheck.directDepositAmount | currency}}
           </td>
           <td ng-class="{bold: isSignificantChange(paycheck.checkAmount, paychecks[$index - 1].checkAmount)}"
-              ng-if="checkPresent">
+              ng-if="checkPresent" class="money-col">
             {{paycheck.checkAmount | currency}}
           </td>
         </tr>
         <tr class="yearly-totals">
           <td>Annual Totals</td>
           <td colspan="1"></td>
-          <td>{{ytd.gross | currency}}</td>
-          <td ng-repeat="col in deductionCols">{{ytd[col] || 0 | currency}}</td>
-          <td ng-if="dirDepositPresent">{{ytd.directDeposit | currency}}</td>
-          <td ng-if="checkPresent">{{ytd.check | currency}}</td>
+          <td class="money-col">{{ytd.gross | currency}}</td>
+          <td class="money-col" ng-repeat="col in deductionCols">{{ytd[col] || 0 | currency}}</td>
+          <td class="money-col" ng-if="dirDepositPresent">{{ytd.directDeposit | currency}}</td>
+          <td class="money-col" ng-if="checkPresent">{{ytd.check | currency}}</td>
         </tr>
         </tbody>
       </table>

@@ -57,7 +57,9 @@
     }
 
     thead th {
-      text-align: right;
+      &.money-col {
+        text-align: right;
+      }
       padding: 10px 5px !important;
     }
     tbody tr td {
@@ -77,7 +79,10 @@
         }
       }
       td {
-        text-align: right;
+        text-align: center;
+        &.money-col {
+          text-align: right;
+        }
         white-space: nowrap;
         padding: .5em;
         border: 0;
