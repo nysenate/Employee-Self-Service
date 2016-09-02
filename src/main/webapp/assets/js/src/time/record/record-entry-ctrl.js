@@ -139,7 +139,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
 
         }
         else {
-            modals.open('save-indicator', {'record': record});
+            modals.open('save-indicator', {'record': record})
+                .then($scope.init);
             $scope.state.request.save = true;
             recordSaveApi.save({action: 'save'}, record, function (resp) {
                 record.updateDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
@@ -149,7 +150,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 modals.reject();
                 modals.open('500', {details: resp});
                 console.log(resp);
-            }).$promise.finally(function() {
+            }).$promise
+            .finally(function() {
                 $scope.state.request.save = false;
             });
         }
