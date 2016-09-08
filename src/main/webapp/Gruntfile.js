@@ -39,12 +39,12 @@ module.exports = function(grunt) {
         uglify: {
             vendor: {
                 options: {
-                    // beautify: true,
+                    beautify: true,
                     mangle: false,
                     preserveComments: 'some'
                 },
                 files: {
-                    '<%= jsDest %>/timesheets-vendor.min.js':
+                    '<%= jsDest %>/ess-vendor.min.js':
                         ['<%= bowerRoot %>/jquery/dist/jquery.min.js',
                          '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.core.min.js',
                          '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.widget.min.js',
@@ -62,14 +62,14 @@ module.exports = function(grunt) {
                          '<%= bowerRoot %>/odometer/odometer.min.js',
                          '<%= bowerRoot %>/moment/min/moment.min.js',
                          '<%= bowerRoot %>/floatThead/dist/jquery.floatThead.min.js',
-                         '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js', 
+                            '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js',
                          '<%= bowerRoot %>/underscore/underscore-min.js',
                          '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
                          '<%= bowerRoot %>/nsPopover/src/nsPopover.js',
                          '<%= bowerRoot %>/angular-cookies/angular-cookies.js'
                          //'<%= bowerRoot %>/highcharts.com/highcharts.src.js'
                         ],
-                    '<%= jsDest %>/timesheets-vendor-ie.min.js':
+                    '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
                 }
             },
@@ -77,6 +77,8 @@ module.exports = function(grunt) {
             },
             prod: {
                 options: {
+                    beautify: true,
+                    mangle: false,
                     compress: {
                         drop_console: true
                     },
@@ -84,8 +86,109 @@ module.exports = function(grunt) {
                     banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +'<%= grunt.template.today("yyyy-mm-dd") %> */'
                 },
                 files: {
-                    '<%= jsDest %>/timesheets.min.js':
-                        ['<%= jsSource %>/common/ess-app.js', '<%= jsSource %>/auth/*.js']
+                    // main
+                    '<%= jsDest %>/ess.min.js': [
+                        '<%= jsSource %>/ess-app.js',
+                        '<%= jsSource %>/ess-api.js',
+                        //<!-- Navigation -->
+                        '<%= jsSource %>/nav/ess-nav.js',
+                        '<%= jsSource %>/nav/ess-routes.js',
+                        '<%= jsSource %>/nav/home.js',
+                        //<!-- Common Directives -->
+                        '<%= jsSource %>/common/toggle-panel-directive.js',
+                        '<%= jsSource %>/common/pagination-model.js',
+                        '<%= jsSource %>/common/ess-notifications.js',
+                        '<%= jsSource %>/common/loader-indicator-directive.js',
+                        '<%= jsSource %>/common/odometer-directive.js',
+                        '<%= jsSource %>/common/datepicker-directive.js',
+                        '<%= jsSource %>/common/moment-filter.js',
+                        '<%= jsSource %>/common/not-filter.js',
+                        '<%= jsSource %>/common/modal-service.js',
+                        '<%= jsSource %>/common/modal-directive.js',
+                        '<%= jsSource %>/common/internal-error-modal.js',
+                        '<%= jsSource %>/common/location-service.js',
+                        '<%= jsSource %>/common/badge-service.js',
+                        '<%= jsSource %>/common/badge-directive.js',
+                        '<%= jsSource %>/common/ai-filter.js',
+                        '<%= jsSource %>/common/text-auto-height-directive.js',
+                        '<%= jsSource %>/common/round-filter.js',
+                        '<%= jsSource %>/common/err-src-directive.js',
+                        '<%= jsSource %>/common/promise-utils.js',
+                        '<%= jsSource %>/common/zero-pad-filter.js'
+                    ],
+                    //help
+                    '<%= jsDest %>/ess-help.min.js': ['<%= jsSource %>/help/help.js'],
+                    //login
+                    '<%= jsDest %>/ess-login.min.js': ['<%= jsSource %>/auth/login.js'],
+                    //myinfo
+                    '<%= jsDest %>/ess-myinfo.min.js': [
+                        //        <!-- Personnel -->
+                        '<%= jsSource %>/myinfo/personnel/summary-ctrl.js',
+                        '<%= jsSource %>/myinfo/personnel/transaction-history-ctrl.js',
+                        '<%= jsSource %>/myinfo/personnel/transaction-history-filters.js',
+                        //        <!-- Payroll -->
+                        '<%= jsSource %>/myinfo/payroll/check-history-ctrl.js',
+                        '<%= jsSource %>/myinfo/payroll/check-history-filters.js'
+                    ],
+                    //supply
+                    '<%= jsDest %>/ess-supply.min.js': [
+                        //        <%-- Supply Entry --%>
+                        '<%= jsSource %>/supply/nav/supply-category-nav-ctrl.js',
+                        '<%= jsSource %>/supply/service/supply-inventory-service.js',
+                        '<%= jsSource %>/supply/service/supply-category-service.js',
+                        '<%= jsSource %>/supply/location/supply-location-autocomplete-service.js',
+                        '<%= jsSource %>/supply/service/supply-cookie-service.js',
+                        '<%= jsSource %>/supply/items/supply-item-autocomplete-service.js',
+                        //        <%-- History --%>
+                        '<%= jsSource %>/supply/history/supply-history-ctrl.js',
+                        '<%= jsSource %>/supply/history/supply-order-history-ctrl.js',
+                        //        <%-- Manage --%>
+                        '<%= jsSource %>/supply/manage/fulfillment/supply-fulfillment-ctrl.js',
+                        '<%= jsSource %>/supply/manage/supply-reconciliation-ctrl.js',
+                        '<%= jsSource %>/supply/manage/fulfillment/modal/fulfillment-editing-modal.js',
+                        '<%= jsSource %>/supply/manage/fulfillment/modal/fulfillment-immutable-modal.js',
+                        //        <%-- Order --%>
+                        '<%= jsSource %>/supply/order/supply-order-ctrl.js',
+                        '<%= jsSource %>/supply/order/location-allowance-service.js',
+                        '<%= jsSource %>/supply/order/order-destination-service.js',
+                        '<%= jsSource %>/supply/order/order-more-prompt-modal.js',
+                        '<%= jsSource %>/supply/order/order-custom-quantity-modal.js',
+                        '<%= jsSource %>/supply/order/special-order-item-modal.js',
+                        //        <%-- Cart --%>
+                        '<%= jsSource %>/supply/order/cart/supply-cart-service.js',
+                        '<%= jsSource %>/supply/order/cart/supply-cart-ctrl.js',
+                        '<%= jsSource %>/supply/order/cart/supply-cart-directives.js',
+                        //        <%-- Requisition --%>
+                        '<%= jsSource %>/supply/requisition/supply-view-ctrl.js',
+                        //        <%-- Utilities --%>
+                        '<%= jsSource %>/supply/util/supply-utils-service.js',
+                        '<%= jsSource %>/supply/service/supply-location-statistics-service.js'
+                    ],
+                    //time
+                    '<%= jsDest %>/ess-time.min.js': [
+                        //        <!-- Time Entry -->
+                        '<%= jsSource %>/time/time.js',
+                        '<%= jsSource %>/time/record/record-filters.js',
+                        '<%= jsSource %>/time/record/record-directives.js',
+                        '<%= jsSource %>/time/record/record-utils.js',
+                        '<%= jsSource %>/time/record/record-entry-ctrl.js',
+                        '<%= jsSource %>/time/record/record-history-ctrl.js',
+                        '<%= jsSource %>/time/record/record-manage-ctrl.js',
+                        '<%= jsSource %>/time/record/supervisor-record-list.js',
+                        '<%= jsSource %>/time/record/record-review-modals.js',
+                        '<%= jsSource %>/time/record/record-emp-history-ctrl.js',
+                        '<%= jsSource %>/time/record/record-validation.js',
+                        //              <!-- Time Off Requests -->
+                        '<%= jsSource %>/time/timeoff/new-request-ctrl.js',
+                        //                <!-- Pay Period Viewer -->
+                        '<%= jsSource %>/time/period/pay-period-view-ctrl.js',
+                        //        <!-- Accruals -->
+                        '<%= jsSource %>/time/accrual/accrual-history-ctrl.js',
+                        '<%= jsSource %>/time/accrual/accrual-projection-ctrl.js',
+                        '<%= jsSource %>/time/accrual/accrual-utils.js',
+                        //            <!-- Grants -->
+                        '<%= jsSource %>/time/grant/grant-ctrl.js'
+                    ]
                 }
             }
         },

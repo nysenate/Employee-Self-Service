@@ -1,3 +1,4 @@
+@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 /**
  * This file includes all LESS files for ESS
  * This file alone will be compiled into main.css
@@ -6,15 +7,14 @@
  * Includes imports for all common LESS
  */
 /** Color Palette */
-@import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
 .dark-red {
-  color: #B90504;
+  color: #b90504;
 }
 .light-teal {
-  color: #4196A7;
+  color: #4196a7;
 }
 .teal {
-  color: #006B80;
+  color: #006b80;
 }
 .green {
   color: #799933;
@@ -38,7 +38,7 @@
   color: #808d0a;
 }
 .blue-purple {
-  color: #6270BD;
+  color: #6270bd;
 }
 .gray {
   color: #808080;
@@ -102,16 +102,16 @@ hr {
 button {
   border: 1px solid #aaa;
   background: #eee;
-  -webkit-box-shadow: 0px 0px 1px #ddd;
-  -moz-box-shadow: 0px 0px 1px #ddd;
-  box-shadow: 0px 0px 1px #ddd;
+  -webkit-box-shadow: 0px 0px 1px #dddddd;
+  -moz-box-shadow: 0px 0px 1px #dddddd;
+  box-shadow: 0px 0px 1px #dddddd;
   padding: 2px;
 }
 button:hover {
   background: #f9f9f9;
-  -webkit-box-shadow: 0px 0px 2px #fff;
-  -moz-box-shadow: 0px 0px 2px #fff;
-  box-shadow: 0px 0px 2px #fff;
+  -webkit-box-shadow: 0px 0px 2px #ffffff;
+  -moz-box-shadow: 0px 0px 2px #ffffff;
+  box-shadow: 0px 0px 2px #ffffff;
   -webkit-transition-duration: 0.5s;
   -moz-transition-duration: 0.5s;
   -o-transition-duration: 0.5s;
@@ -168,7 +168,7 @@ a:hover {
 input[type="button"].submit-button {
   padding: 5px 10px;
   background: #799933;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #5b7326;
   border-bottom-style: solid;
@@ -190,7 +190,7 @@ input[type="button"].submit-button:hover {
 input[type="button"].reject-button {
   padding: 5px 10px;
   background: #e64727;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #c33417;
   border-bottom-style: solid;
@@ -212,7 +212,7 @@ input[type="button"].reject-button:hover {
 input[type="button"].neutral-button {
   padding: 5px 10px;
   background: #808080;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #676767;
   border-bottom-style: solid;
@@ -233,8 +233,8 @@ input[type="button"].neutral-button:hover {
 }
 input[type="button"].time-neutral-button {
   padding: 5px 10px;
-  background: #006B80;
-  color: white;
+  background: #006b80;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #00404d;
   border-bottom-style: solid;
@@ -264,7 +264,7 @@ input[type="number"] {
 input[type="text"].error,
 input[type="password"].error,
 input[type="number"].error {
-  border-color: #B90504;
+  border-color: #b90504;
 }
 input[type="text"]:focus,
 input[type="password"]:focus,
@@ -569,7 +569,7 @@ input[type="number"] {
   border: solid 1px #d2d2d2;
   border-radius: 3px;
   z-index: 1999;
-  background-color: #fff;
+  background-color: #ffffff;
   -webkit-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
   box-shadow: 0 0.3125rem 0.625rem rgba(0, 0, 0, 0.2);
@@ -602,7 +602,7 @@ input[type="number"] {
   box-sizing: border-box;
   border: solid 1px #d2d2d2;
   border-radius: 3px;
-  background-color: #fff;
+  background-color: #ffffff;
   padding: 0.5625rem 0.875rem;
   max-width: 20rem;
   font-size: 0.875rem;
@@ -649,7 +649,7 @@ input[type="number"] {
   position: absolute;
 }
 .ns-popover-tooltip-theme.ns-popover-bottom-placement .triangle:after {
-  border-bottom-color: #fff;
+  border-bottom-color: #ffffff;
   border-top-width: 0;
   top: 1px;
   margin-left: -10px;
@@ -677,7 +677,7 @@ input[type="number"] {
   position: absolute;
 }
 .ns-popover-tooltip-theme.ns-popover-top-placement .triangle:after {
-  border-top-color: #fff;
+  border-top-color: #ffffff;
   border-bottom-width: 0;
   bottom: 1px;
   margin-left: -10px;
@@ -705,7 +705,7 @@ input[type="number"] {
   position: absolute;
 }
 .ns-popover-tooltip-theme.ns-popover-right-placement .triangle:after {
-  border-right-color: #fff;
+  border-right-color: #ffffff;
   border-left-width: 0;
   left: 1px;
   bottom: -10px;
@@ -733,7 +733,7 @@ input[type="number"] {
   position: absolute;
 }
 .ns-popover-tooltip-theme.ns-popover-left-placement .triangle:after {
-  border-left-color: #fff;
+  border-left-color: #ffffff;
   border-right-width: 0;
   right: 1px;
   bottom: -10px;
@@ -836,6 +836,11 @@ input[type="number"] {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+
+/**
+ * This file includes all LESS files for ESS
+ * This file alone will be compiled into main.css
+ */
 @page {
 }
 @media print {
@@ -908,7 +913,7 @@ table.ess-table tbody tr td {
 }
 table.ess-table tbody tr td.invalid,
 table.ess-table tbody tr td input.ng-invalid {
-  background: #FFBCBC;
+  background: #ffbcbc;
 }
 table.ess-table tbody tr.active {
   background: #DAE5EE;
@@ -969,7 +974,7 @@ table.simple-table tbody tr td {
   font-weight: 600;
 }
 .info-text {
-  background: #006B80;
+  background: #006b80;
   color: white;
   padding: 10px;
   margin: 0;
@@ -983,7 +988,7 @@ table.simple-table tbody tr td {
   font-weight: 600;
 }
 .error-text {
-  background: #B90504;
+  background: #b90504;
   color: white;
   padding: 10px;
   margin: 0;
@@ -1196,9 +1201,9 @@ button.ui-button::-moz-focus-inner {
   display: none;
   background: white;
   opacity: 0.95;
-  -webkit-box-shadow: 0 0 10px #ccc;
-  -moz-box-shadow: 0 0 10px #ccc;
-  box-shadow: 0 0 10px #ccc;
+  -webkit-box-shadow: 0 0 10px #cccccc;
+  -moz-box-shadow: 0 0 10px #cccccc;
+  box-shadow: 0 0 10px #cccccc;
 }
 .ui-datepicker .ui-datepicker-header {
   position: relative;
@@ -1381,16 +1386,16 @@ button.ui-button::-moz-focus-inner {
   outline: 0;
   border: 1px solid #999;
   background: white;
-  -webkit-box-shadow: 0 0 60px #777;
-  -moz-box-shadow: 0 0 60px #777;
-  box-shadow: 0 0 60px #777;
+  -webkit-box-shadow: 0 0 60px #777777;
+  -moz-box-shadow: 0 0 60px #777777;
+  box-shadow: 0 0 60px #777777;
 }
 .ui-dialog .ui-dialog-titlebar {
   padding: .7em 1em;
   position: relative;
   text-align: center;
   border-bottom: 1px solid teal;
-  background: #006B80;
+  background: #006b80;
   color: white;
 }
 .ui-dialog .ui-dialog-title {
@@ -1579,7 +1584,7 @@ button.ui-button::-moz-focus-inner {
 .hero-404 h4,
 .hero-404 p,
 .hero-404 span {
-  color: white;
+  color: #ffffff;
 }
 @media print {
   .hero-404 h1,
@@ -1672,7 +1677,7 @@ button.ui-button::-moz-focus-inner {
 }
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.teal.active,
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.teal:hover {
-  border-bottom: 3px solid #4196A7;
+  border-bottom: 3px solid #4196a7;
 }
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.green.active,
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.green:hover {
@@ -1684,7 +1689,7 @@ button.ui-button::-moz-focus-inner {
 }
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.blue-purple.active,
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.blue-purple:hover {
-  border-bottom: 3px solid #6270BD;
+  border-bottom: 3px solid #6270bd;
 }
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.gray.active,
 .ess-top-header .fixed-width-header .left-header-area .top-nav-list li.gray:hover {
@@ -1885,9 +1890,9 @@ button.ui-button::-moz-focus-inner {
 .content-container {
   background: #fefefe;
   position: relative;
-  -webkit-box-shadow: 0px 1px 2px #aaa;
-  -moz-box-shadow: 0px 1px 2px #aaa;
-  box-shadow: 0px 1px 2px #aaa;
+  -webkit-box-shadow: 0px 1px 2px #aaaaaa;
+  -moz-box-shadow: 0px 1px 2px #aaaaaa;
+  box-shadow: 0px 1px 2px #aaaaaa;
   margin-top: 20px;
 }
 .content-container.no-top-margin {
@@ -1933,7 +1938,7 @@ button.ui-button::-moz-focus-inner {
 .content-controls p,
 .content-controls label {
   font-weight: 600;
-  color: #006B80;
+  color: #006b80;
 }
 .content-controls > .content-info {
   border-bottom: none;
@@ -1956,7 +1961,7 @@ button.ui-button::-moz-focus-inner {
 }
 /** --- Badge Directive --- */
 .badge {
-  background: #006B80;
+  background: #006b80;
   padding: 5px;
   color: white;
   border-radius: 25%;
@@ -1972,7 +1977,7 @@ button.ui-button::-moz-focus-inner {
   cursor: pointer;
 }
 .toggle-panel-label:hover {
-  color: #006B80;
+  color: #006b80;
 }
 /** Login Page
 ----------------*/
@@ -2006,7 +2011,7 @@ button.ui-button::-moz-focus-inner {
   height: 322px;
   margin: auto;
   background: #fdfdfd;
-  border-bottom: 4px solid #006B80;
+  border-bottom: 4px solid #006b80;
   -webkit-box-shadow: 0px 0px 20px #d1d1d1;
   -moz-box-shadow: 0px 0px 20px #d1d1d1;
   box-shadow: 0px 0px 20px #d1d1d1;
@@ -2018,7 +2023,7 @@ button.ui-button::-moz-focus-inner {
   background-clip: padding-box;
 }
 .login-container #loginHeader {
-  background: #006B80;
+  background: #006b80;
   color: white;
   font-size: 1.2em;
   text-align: center;
@@ -2156,7 +2161,7 @@ button.ui-button::-moz-focus-inner {
 .login-container .login-form-container .additional-view ul li .heading-span {
   font-weight: 400;
   font-size: 1.2em;
-  color: #006B80;
+  color: #006b80;
 }
 .login-container .login-form-container form ul li hr,
 .login-container .login-form-container .additional-view ul li hr {
@@ -2171,7 +2176,7 @@ button.ui-button::-moz-focus-inner {
   background-position-y: 2px;
 }
 .login-container .login-form-container .login-loader span {
-  color: #006B80;
+  color: #006b80;
   padding-left: 20px;
 }
 /*
@@ -2194,7 +2199,7 @@ button.ui-button::-moz-focus-inner {
 .my-info-hero h4,
 .my-info-hero p,
 .my-info-hero span {
-  color: white;
+  color: #ffffff;
 }
 @media print {
   .my-info-hero h1,
@@ -2321,7 +2326,7 @@ button.ui-button::-moz-focus-inner {
 .supply-order-hero {
   padding: .3em;
   font-weight: bold;
-  background: #6270BD;
+  background: #6270bd;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
@@ -2334,7 +2339,7 @@ button.ui-button::-moz-focus-inner {
 .supply-order-hero h4,
 .supply-order-hero p,
 .supply-order-hero span {
-  color: white;
+  color: #ffffff;
 }
 @media print {
   .supply-order-hero h1,
@@ -2391,7 +2396,7 @@ button.ui-button::-moz-focus-inner {
   -webkit-box-shadow: 0 0 10px 50px #ffbcbc inset;
 }
 .supply-title {
-  color: #6270BD;
+  color: #6270bd;
   font-weight: bold;
 }
 .supply-special-item {
@@ -2544,7 +2549,7 @@ ul.pagination li {
 }
 ul.pagination li.active a {
   font-weight: 600;
-  color: #6270BD;
+  color: #6270bd;
 }
 ul.pagination li:hover {
   background: #eee;
@@ -2565,8 +2570,8 @@ ul.pagination li a {
 /** Buttons **/
 input[type="button"].process-button {
   padding: 5px 10px;
-  background: #4196A7;
-  color: white;
+  background: #4196a7;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #337582;
   border-bottom-style: solid;
@@ -2588,7 +2593,7 @@ input[type="button"].process-button:hover {
 input[type="button"].complete-button {
   padding: 5px 10px;
   background: #799933;
-  color: white;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #5b7326;
   border-bottom-style: solid;
@@ -2609,8 +2614,8 @@ input[type="button"].complete-button:hover {
 }
 input[type="button"].approve-button {
   padding: 5px 10px;
-  background: #6270BD;
-  color: white;
+  background: #6270bd;
+  color: #ffffff;
   font-weight: 600;
   border: 2px none #4655a6;
   border-bottom-style: solid;
@@ -2647,7 +2652,7 @@ img.ui-datepicker-trigger {
 .time-attendance-hero {
   padding: .3em;
   font-weight: bold;
-  background: #006B80;
+  background: #006b80;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
@@ -2660,7 +2665,7 @@ img.ui-datepicker-trigger {
 .time-attendance-hero h4,
 .time-attendance-hero p,
 .time-attendance-hero span {
-  color: white;
+  color: #ffffff;
 }
 @media print {
   .time-attendance-hero h1,
@@ -2712,8 +2717,8 @@ table.time-record-entry-table tbody tr.time-totals-row td:last-child {
   font-weight: 600;
 }
 table.time-record-entry-table tbody tr.active.highlight-first td:nth-child(1) {
-  border-color: #006B80;
-  background: #006B80;
+  border-color: #006b80;
+  background: #006b80;
   color: white;
 }
 table.time-record-entry-table tbody tr.weekend {
@@ -2821,8 +2826,8 @@ table.time-record-entry-table tbody tr td.today {
   border-color: #d19525;
 }
 .personal {
-  background: #4196A7;
-  border-color: #4196A7;
+  background: #4196a7;
+  border-color: #4196a7;
 }
 .vacation {
   background: #799933;
@@ -2885,7 +2890,7 @@ table.time-record-entry-table tbody tr td.today {
   border-color: #d19525;
 }
 .accrual-component .captioned-hour-square .hours-display.personal {
-  border-color: #006B80;
+  border-color: #006b80;
 }
 .accrual-component .captioned-hour-square .hours-display.vacation {
   border-color: #799933;
@@ -3111,17 +3116,17 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .pay-period-cal-container .pay-period-cal .pay-period-month .ui-datepicker .holiday-date.pay-period-end-date span {
   background: #d4ff60;
   /* Old browsers */
-  background: -moz-linear-gradient(45deg, #d4ff60 49%, #B8E3EB 52%);
+  background: -moz-linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
   /* FF3.6+ */
-  background: -webkit-gradient(linear, left bottom, right top, color-stop(49%, #d4ff60), color-stop(52%, #B8E3EB));
+  background: -webkit-gradient(linear, left bottom, right top, color-stop(49%, #d4ff60), color-stop(52%, #b8e3eb));
   /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(45deg, #d4ff60 49%, #B8E3EB 52%);
+  background: -webkit-linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
   /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(45deg, #d4ff60 49%, #B8E3EB 52%);
+  background: -o-linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
   /* Opera 11.10+ */
-  background: -ms-linear-gradient(45deg, #d4ff60 49%, #B8E3EB 52%);
+  background: -ms-linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
   /* IE10+ */
-  background: linear-gradient(45deg, #d4ff60 49%, #B8E3EB 52%);
+  background: linear-gradient(45deg, #d4ff60 49%, #b8e3eb 52%);
   /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d4ff60', endColorstr='#B8E3EB', GradientType=1);
   /* IE6-9 fallback on horizontal gradient */
@@ -3151,7 +3156,7 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .accruals-table thead tr:last-of-type,
 .detail-acc-history-table thead tr:last-of-type,
 #accrual-usage-details-table thead tr:last-of-type {
-  border-bottom: 1px solid #006B80;
+  border-bottom: 1px solid #006b80;
 }
 .accruals-table tbody tr:nth-child(even),
 .detail-acc-history-table tbody tr:nth-child(even),
@@ -3161,7 +3166,7 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .accruals-table tbody tr.highlighted,
 .detail-acc-history-table tbody tr.highlighted,
 #accrual-usage-details-table tbody tr.highlighted {
-  border: 1px solid #006B80;
+  border: 1px solid #006b80;
   border-left-width: 3px;
 }
 .accruals-table tbody tr td,
@@ -3230,7 +3235,7 @@ table.approve-attendance-rec-table tbody tr {
   cursor: pointer;
 }
 table.approve-attendance-rec-table tbody tr.name-row {
-  border-top: 2px solid #4196A7;
+  border-top: 2px solid #4196a7;
 }
 table.approve-attendance-rec-table tbody tr.active:hover td {
   background: #EEF4F9;
@@ -3335,7 +3340,7 @@ record-review-modal,
 .reject-modal-error {
   margin: 0;
   text-align: center;
-  color: #B90504;
+  color: #b90504;
 }
 .approve-submit-modal-details {
   text-align: center;

@@ -6,8 +6,8 @@
 <ess-layout:head>
     <jsp:attribute name="pageTitle">ESS Login</jsp:attribute>
     <jsp:body>
-        <ess:ts-assets/>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/auth/login.js"></script>
+        <ess:ess-assets/>
+        <ess:login-assets/>
     </jsp:body>
 </ess-layout:head>
 <ess-layout:body>

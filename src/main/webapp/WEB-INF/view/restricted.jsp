@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>ESS: Application Access Restricted</title>
-    <link rel="stylesheet" type="text/css" href="${ctxPath}/assets/css/dest/app.min.css"/>
+    <link rel="stylesheet" type="text/css" href="${ctxPath}/assets/css/dest/app.min.css?v=${releaseVersion}"/>
 </head>
 <body>
     <div id="restricted-warning">

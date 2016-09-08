@@ -7,8 +7,8 @@
 <ess-layout:head>
   <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
   <jsp:body>
-    <ess:ts-assets/>
-    <script type="text/javascript" src="${ctxPath}/assets/js/src/help/help.js"></script>
+    <ess:ess-assets/>
+    <ess:help-assets/>
   </jsp:body>
 </ess-layout:head>
 
