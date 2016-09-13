@@ -11,6 +11,9 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
     $scope.shipemnt = {};
 
     $scope.init = function () {
+        // because this page is loaded from order history, we need to highlight the page where it is from
+        var fromPage = locationService.getSearchParam('fromPage');
+        highlightMenu(fromPage);
         var id = locationService.getSearchParam('requisition');
         $scope.requisitionResponse = historyApi.get({id: id});
         $scope.requisitionResponse.$promise
@@ -21,6 +24,14 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
             .catch(shipmentResourceErrorHandler);
     };
 
+    var highlightMenu = function (fromPage) {
+        $(".sub-topic").removeClass("active");
+        $(".sub-topic").toArray().forEach(function (t) {
+            if (t.textContent.toLowerCase().replace(/\s/g, '').indexOf(fromPage) != -1) {
+                t.classList.add("active");
+            }
+        });
+    };
     var extractShipment = function (response) {
         $scope.shipment = response.result;
     };

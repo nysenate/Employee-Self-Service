@@ -106,6 +106,6 @@ function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, loc
     }
 
     $scope.viewRequisition = function (shipment) {
-        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId + "&fromPage=requisitionhistory");
     };
 }

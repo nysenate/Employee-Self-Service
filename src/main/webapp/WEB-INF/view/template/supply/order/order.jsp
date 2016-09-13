@@ -96,6 +96,9 @@
           <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
             &#x2713; Added to cart.
           </div>
+          <div ng-class="{'visibility-hidden': !isDuplicated(allowance.item)}" class="yellow padding-top-5 bold">
+            &#x2713; Duplicated Item in Cart
+          </div>
         </div>
       </div>
     </div>

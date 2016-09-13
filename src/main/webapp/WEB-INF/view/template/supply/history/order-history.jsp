@@ -22,7 +22,8 @@
       </div>
       <div class="col-4-12 padding-10">
         <label class="bold" style="display: inline-block; vertical-align: middle;">Status:</label>
-        <select style="display: inline-block; vertical-align: middle;"
+        <select style="display: inline-block; vertical-align: middle;height: 125px;
+    overflow: hidden;"
                 ng-model="filter.status"
                 ng-change="updateRequisitions()"
                 ng-model-options='{ debounce: 1000 }'

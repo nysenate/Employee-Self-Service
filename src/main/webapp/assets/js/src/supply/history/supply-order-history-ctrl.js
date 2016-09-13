@@ -12,7 +12,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
 
     var DATE_FORMAT = "MM/DD/YYYY";
     /** Valid Requisitions statuses */
-    $scope.STATUSES = ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
+    $scope.STATUSES = ['ALL', 'PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED', 'REJECTED'];
     
     /** All requisitions in the logged in users order history. */
     $scope.requisitions = [];
@@ -28,7 +28,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
 
     $scope.init = function () {
         $scope.paginate.itemsPerPage = 12;
-        $scope.filter.status = angular.copy($scope.STATUSES);
+        $scope.filter.status = angular.copy($scope.STATUSES.slice(1));
         queryOrderHistory()
     };
 
@@ -60,6 +60,9 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
     }
 
     function getRequisitions(employeeInfoResponse) {
+        if ($scope.filter.status.indexOf('ALL') != -1) {
+            $scope.filter.status = angular.copy($scope.STATUSES.slice(1));
+        }
         var params = {
             location: employeeInfoResponse.employee.empWorkLocation.locId,
             customerId: employeeInfoResponse.employee.employeeId,
@@ -84,6 +87,6 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
     }
 
     $scope.viewRequisition = function (requisition) {
-        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + requisition.requisitionId);
+        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + requisition.requisitionId + "&fromPage=orderhistory");
     }
 }

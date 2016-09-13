@@ -173,7 +173,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.isInCart = function (item) {
-        return supplyCart.isItemInCart(item.id)
+        return supplyCart.isItemInCart(item.id) && supplyCart.getCartLineItem(item.id).quantity == 1;
+    };
+    $scope.isDuplicated = function (item) {
+        return supplyCart.isItemInCart(item.id) && supplyCart.getCartLineItem(item.id).quantity > 1;
     };
 
     $scope.getAllowedQuantities = function (item) {
