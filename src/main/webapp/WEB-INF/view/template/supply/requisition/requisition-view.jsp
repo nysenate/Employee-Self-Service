@@ -134,35 +134,20 @@
 
   <div class="print-only">
     <div class="supply-order-hero">
-      <h2>Requisition Order</h2>
+      <h2>Requisition Order: {{selectedVersion.requisitionId}}</h2>
     </div>
 
     <%--General information--%>
     <div class="content-container large-print-font-size">
-      <div class="content-info">
-        <div class="grid padding-10">
-          <div class="col-6-12">
-            <b>Requisition Id:</b> {{selectedVersion.requisitionId}}
-          </div>
-          <div class="col-6-12">
-            <b>Version:</b> {{selectedVersion.name}}
-          </div>
-        </div>
-      </div>
 
       <div class="content-info">
         <div class="grid padding-10">
-          <div class="col-4-12">
-            <b>Location Code:</b> {{selectedVersion.destination.locId}}
-          </div>
-          <div class="col-4-12">
-            <b>Office:</b> {{selectedVersion.destination.respCenterHead.name}}
-          </div>
-          <div class="col-4-12">
-            <b>Address:</b> {{selectedVersion.destination.address.addr1}}
-            {{selectedVersion.destination.address.city}} {{selectedVersion.destination.address.state}}
+          <b>Requisition Office:</b>
+          <span style="padding-left: 10px;">{{selectedVersion.destination.locId}} </span>
+          <span style="padding-left: 10px;">{{selectedVersion.destination.respCenterHead.shortName}}</span>
+          <span style="padding-left: 10px;">{{selectedVersion.destination.address.addr1}}{{selectedVersion.destination.address.city}} {{selectedVersion.destination.address.state}}
             {{selectedVersion.destination.address.zip5}}
-          </div>
+           </span>
         </div>
       </div>
 
@@ -192,7 +177,7 @@
             </span>
           </div>
           <div class="col-4-12">
-            <b>Modified By:</b> {{selectedVersion.createdBy.lastName}}
+            <b>Modified By:</b> {{selectedVersion.modifiedBy.lastName}}
           </div>
         </div>
       </div>

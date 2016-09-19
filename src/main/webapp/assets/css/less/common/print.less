@@ -19,12 +19,17 @@
     display: none;
   }
 }
-
 .print-only {
   display: none;
   @media print {
+    @page {
+      size: portrait
+    }
+
+  ;
     display: block !important;
   }
+;
 }
 
 // Print overrides of standard styles

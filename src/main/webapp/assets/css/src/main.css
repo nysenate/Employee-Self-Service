@@ -859,6 +859,9 @@ input[type="number"] {
   .print-only {
     display: block !important;
   }
+  @page {
+    size: portrait;
+  }
 }
 @media print {
   html,
