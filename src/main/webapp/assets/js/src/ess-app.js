@@ -63,7 +63,7 @@ essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
                 return request;
             var myvar = '<div id="timeout-confirm" title="Inactive Session Timeout">' +
                 '  <p style="padding-left: 35px;padding-top: 10px;"><span class="ui-icon ui-icon-alert" >' +
-                '</span><span style="font-size: large; align-content: center;">Due to inactive, this session is about to timeout in <span id="tick">60</span>  seconds, do you want to continues your work?</span></p>' +
+                '</span><span style="font-size: large; align-content: center;">Due to inactivity, this session will timeout in <span id="tick">60</span> seconds. Do you want to continue your work?</span></p>' +
                 '</div>';
             if ($("#timeout-confirm").length <= 0) {
                 $("body").append(myvar);
