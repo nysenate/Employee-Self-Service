@@ -840,8 +840,6 @@ input[type="number"] {
  * This file includes all LESS files for ESS
  * This file alone will be compiled into main.css
  */
-@page {
-}
 @media print {
   .large-print-font-size {
     font-size: 14pt;
@@ -850,17 +848,6 @@ input[type="number"] {
 @media print {
   .no-print {
     display: none;
-  }
-}
-.print-only {
-  display: none;
-}
-@media print {
-  .print-only {
-    display: block !important;
-  }
-  @page {
-    size: portrait;
   }
 }
 @media print {
@@ -2221,9 +2208,6 @@ button.ui-button::-moz-focus-inner {
 }
 /** --- Paycheck History Page --- */
 @media print {
-  @page {
-    size: landscape;
-  }
   #paycheck-history .content-controls {
     display: none;
   }

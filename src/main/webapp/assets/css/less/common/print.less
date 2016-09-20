@@ -3,11 +3,6 @@
 @import "include";
 
 // Margins to use when printing
-@page {
-  //margin: 0 0 0 0 ;
-  //margin: 25mm 25mm 25mm 25mm;
-}
-
 .large-print-font-size {
   @media print {
     font-size: 14pt;
@@ -19,17 +14,9 @@
     display: none;
   }
 }
-.print-only {
-  display: none;
-  @media print {
-    @page {
-      size: portrait
-    }
 
-  ;
-    display: block !important;
-  }
-;
+.print-only {
+
 }
 
 // Print overrides of standard styles

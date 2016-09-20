@@ -131,8 +131,8 @@
   <%----------------------------------------------%>
 
   <%--The following is a custom representation of the above page to be displayed when printing.--%>
-
-  <div class="print-only">
+    <style type="text/css" media="print"></style>
+    <div class="print-only" style="">
     <div class="supply-order-hero">
       <h2>Requisition Order: {{selectedVersion.requisitionId}}</h2>
     </div>
@@ -142,7 +142,7 @@
 
       <div class="content-info">
         <div class="grid padding-10">
-          <b>Requisition Office:</b>
+          <b>Requesting Office:</b>
           <span style="padding-left: 10px;">{{selectedVersion.destination.locId}} </span>
           <span style="padding-left: 10px;">{{selectedVersion.destination.respCenterHead.shortName}}</span>
           <span style="padding-left: 10px;">{{selectedVersion.destination.address.addr1}}{{selectedVersion.destination.address.city}} {{selectedVersion.destination.address.state}}
