@@ -222,6 +222,11 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     }
 
     @Override
+    public boolean hasActiveEmployeeRecord(int supId) {
+        return timeRecordDao.hasActiveEmployeeRecord(supId);
+    }
+
+    @Override
     @Transactional(value = "remoteTxManager")
     @WorkInProgress(author = "ash", desc = "Need to test this a bit better...")
     public synchronized boolean saveRecord(TimeRecord record) {

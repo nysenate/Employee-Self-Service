@@ -10,20 +10,39 @@ import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Provides methods that query for data pertaining to time and attendance supervisors
+ */
 public interface SupervisorInfoService
 {
     /**
      * Determines if the given employee is a supervisor at any point during the given date range.
      *
-     * @param supId int
+     * @param empId int
      * @param dateRange Range<LocalDate>
      * @return boolean - true if employee was a supervisor during this range.
      */
-    boolean isSupervisorDuring(int supId, Range<LocalDate> dateRange);
+    boolean isSupervisorDuring(int empId, Range<LocalDate> dateRange);
 
-    default boolean isSupervisorDuring(int supId) {
+    /**
+     * Overload of {@link #isSupervisorDuring(int, Range)}
+     * that indicates if the given employee was a supervisor in the past year
+     * @param empId int
+     * @return boolean - true if employee was a supervisor during the past year
+     */
+    default boolean isSupervisorDuringPastYear(int empId) {
         LocalDate now = LocalDate.now();
-        return isSupervisorDuring(supId, Range.closed(DateUtils.firstDayOfPreviousYear(now), now));
+        return isSupervisorDuring(empId, Range.closed(DateUtils.firstDayOfPreviousYear(now), now));
+    }
+
+    /**
+     * Overload of {@link #isSupervisorDuring(int, Range)}
+     * that indicates if the given employee is currently a supervisor
+     * @param empId int
+     * @return boolean - true if employee is currently a supervisor
+     */
+    default boolean isSupervisor(int empId) {
+        return isSupervisorDuring(empId, Range.singleton(LocalDate.now()));
     }
 
     /**

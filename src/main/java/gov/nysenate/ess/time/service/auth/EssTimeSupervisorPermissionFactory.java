@@ -3,7 +3,6 @@ package gov.nysenate.ess.time.service.auth;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.auth.PermissionFactory;
@@ -12,6 +11,7 @@ import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
+import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.apache.shiro.authz.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -36,20 +35,21 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
     @Autowired SupervisorInfoService supInfoService;
     @Autowired EmployeeInfoService empInfoService;
+    @Autowired TimeRecordService timeRecordService;
 
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
         int empId = employee.getEmployeeId();
-        RangeSet<LocalDate> activeServiceDates = empInfoService.getEmployeeActiveDatesService(empId);
-        if (!supInfoService.isSupervisorDuring(empId, activeServiceDates.span())) {
-            return ImmutableList.of();
+        if (supInfoService.isSupervisor(empId) ||
+                timeRecordService.hasActiveEmployeeRecord(empId)) {
+            return ImmutableList.copyOf(getSupervisorPermissions(empId));
         }
-        return ImmutableList.copyOf(getPermissions(empId));
+        return ImmutableList.of();
     }
 
     /** --- Internal Methods --- */
 
-    private List<Permission> getPermissions(int supId) {
+    private List<Permission> getSupervisorPermissions(int supId) {
         SupervisorEmpGroup supEmpGroup = supInfoService.getSupervisorEmpGroup(supId, Range.all());
         List<Permission> supPermissions = new ArrayList<>();
 

@@ -67,6 +67,13 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "WHERE NUXREFEM = :empId\n"
     ),
 
+    GET_SUP_TREC_COUNT(
+        "SELECT COUNT(*) AS record_count\n" +
+        "FROM ${tsSchema}.PM23TIMESHEET\n" +
+        "WHERE NUXREFSV = :supId\n" +
+        "   AND CDTSSTAT != 'AP'"
+    ),
+
     INSERT_TIME_REC(
         "INSERT \n" +
         "INTO ${tsSchema}.PM23TIMESHEET \n" +

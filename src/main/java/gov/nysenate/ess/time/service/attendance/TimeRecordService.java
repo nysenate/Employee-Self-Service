@@ -126,6 +126,13 @@ public interface TimeRecordService
     }
 
     /**
+     * Returns true if the given employee has an in progress time record under their superviion
+     * @param supId int - supervisor id
+     * @return boolean
+     */
+    boolean hasActiveEmployeeRecord(int supId);
+
+    /**
      * Saves the given record
      * This method is intended for internal use, when saving records from user input:
      * @see #saveRecord(TimeRecord, TimeRecordAction)

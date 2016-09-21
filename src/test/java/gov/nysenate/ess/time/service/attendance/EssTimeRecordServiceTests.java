@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.service.attendance;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.BaseTests;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class EssTimeRecordServiceTests extends BaseTests{
@@ -36,9 +38,20 @@ public class EssTimeRecordServiceTests extends BaseTests{
         LocalDate now = LocalDate.now();
         Stopwatch sw = Stopwatch.createStarted();
         ListMultimap<Integer, TimeRecord> supRecords =
-                timeRecordService.getSupervisorRecords(9896, Range.closed(LocalDate.of(now.getYear(), 1, 1), now));
+                timeRecordService.getSupervisorRecords(9896, Range.all());
         logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
-        supRecords.keySet().forEach(supId -> logger.info("supId {}: {} records", supId, supRecords.get(supId).size()));
+        supRecords.keySet().forEach(supId -> logger.info("empId {}: {} records", supId, supRecords.get(supId).size()));
+    }
+
+    @Test
+    public void testGetSupervisorRecordsTest2() throws Exception {
+        LocalDate now = LocalDate.now();
+        Stopwatch sw = Stopwatch.createStarted();
+        Set<TimeRecordStatus> statusSet = Sets.union(TimeRecordStatus.unlockedForEmployee(), TimeRecordStatus.unlockedForSupervisor());
+        ListMultimap<Integer, TimeRecord> supRecords =
+                timeRecordService.getSupervisorRecords(3117, Range.all(), statusSet);
+        logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
+        supRecords.keySet().forEach(supId -> logger.info("empId {}: {} records", supId, supRecords.get(supId).size()));
     }
 
     @Test

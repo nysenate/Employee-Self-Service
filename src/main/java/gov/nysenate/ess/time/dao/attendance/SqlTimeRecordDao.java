@@ -134,6 +134,15 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return false;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasActiveEmployeeRecord(int supId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("supId", supId);
+        Integer activeRecordCount = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_SUP_TREC_COUNT.getSql(schemaMap()),
+                params, Integer.class);
+        return activeRecordCount > 0;
+    }
+
     /** --- Helper Classes --- */
 
     private static class TimeRecordRowCallbackHandler implements RowCallbackHandler

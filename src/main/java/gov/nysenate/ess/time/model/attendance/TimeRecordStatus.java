@@ -1,9 +1,8 @@
 package gov.nysenate.ess.time.model.attendance;
 
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.TreeMultimap;
+import com.google.common.collect.*;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -81,13 +80,13 @@ public enum TimeRecordStatus
 
     /** --- Static Variables --- */
 
-    /** Mapping of unlockedFor values (E,S,P) to a set of corresponding time record statuses. */
-    private static SetMultimap<TimeRecordScope, TimeRecordStatus> unlockedForMap = TreeMultimap.create();
-    static {
-        for (TimeRecordStatus trs : TimeRecordStatus.values()) {
-            unlockedForMap.put(trs.scope, trs);
-        }
-    }
+    /**
+     * Mapping of unlockedFor values (E,S,P) to a set of corresponding time record statuses.
+     */
+    private static final ImmutableSetMultimap<TimeRecordScope, TimeRecordStatus> unlockedForMap =
+            ImmutableSetMultimap.<TimeRecordScope, TimeRecordStatus>builder()
+                    .putAll(Multimaps.index(Arrays.asList(TimeRecordStatus.values()), TimeRecordStatus::getScope))
+                    .build();
 
     /**
      * A table that describes how a time record can change statuses within this app

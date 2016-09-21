@@ -1,6 +1,8 @@
 package gov.nysenate.ess.web.controller.template;
 
+import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TimeTemplateCtrl extends BaseTemplateCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(TimeTemplateCtrl.class);
-    protected static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
+    static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
+
+    private static final Permission MANAGE_PAGE_PERMISSION =
+            SimpleTimePermission.MANAGEMENT_PAGES.getPermission();
 
     private static final String NOT_A_SUPERVISOR_PAGE = TIME_TMPL_BASE_URL + "/error/not-supervisor";
 
@@ -41,30 +46,21 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
     /** --- Supervisor Pages ---
      *
      * For these pages, if the requester is not a supervisor, they are served an error page
-     * */
+     */
 
     @RequestMapping(value="/record/manage")
     public String manage() {
-        if (!isSupervisor()) {
-            return NOT_A_SUPERVISOR_PAGE;
-        }
-        return TIME_TMPL_BASE_URL + "/record/manage";
+        return getManagementPage(TIME_TMPL_BASE_URL + "/record/manage");
     }
 
     @RequestMapping(value="/record/emphistory")
     public String employeeHistory() {
-        if (!isSupervisor()) {
-            return NOT_A_SUPERVISOR_PAGE;
-        }
-        return TIME_TMPL_BASE_URL + "/record/emp-history";
+        return getManagementPage(TIME_TMPL_BASE_URL + "/record/emp-history");
     }
 
     @RequestMapping(value="/record/grant")
     public String grant() {
-        if (!isSupervisor()) {
-            return NOT_A_SUPERVISOR_PAGE;
-        }
-        return TIME_TMPL_BASE_URL + "/record/grant";
+        return getManagementPage(TIME_TMPL_BASE_URL + "/record/grant");
     }
 
     /** --- Supervisor Templates --- */
@@ -115,7 +111,16 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
 
     /** --- Internal Methods --- */
 
-    private boolean isSupervisor() {
-        return SecurityUtils.getSubject().hasRole("supervisor");
+    /**
+     * Returns the given page if the currently authenticated user is permitted to view management pages
+     * Otherwise return an error page indicating that the user does not have required permission
+     * @param pageName String - name of the requested management page
+     * @return String - passed in <code>pageName</code> or error page depending on permissions
+     */
+    private String getManagementPage(String pageName) {
+        if (SecurityUtils.getSubject().isPermitted(MANAGE_PAGE_PERMISSION)) {
+            return pageName;
+        }
+        return NOT_A_SUPERVISOR_PAGE;
     }
 }

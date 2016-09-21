@@ -60,9 +60,9 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
     /** --- Supervisor Info Service Implemented Methods --- */
 
     @Override
-    public boolean isSupervisorDuring(int supId, Range<LocalDate> dateRange) {
+    public boolean isSupervisorDuring(int empId, Range<LocalDate> dateRange) {
         try {
-            return getSupervisorEmpGroup(supId, dateRange).hasEmployees();
+            return getSupervisorEmpGroup(empId, dateRange).hasEmployees();
         }
         catch (SupervisorException e) {
             return false;

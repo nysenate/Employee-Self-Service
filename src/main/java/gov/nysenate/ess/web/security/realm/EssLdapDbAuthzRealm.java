@@ -92,14 +92,7 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         SimpleAuthorizationInfo authInfo = new SimpleAuthorizationInfo();
         SenatePerson user = (SenatePerson) principals.getPrimaryPrincipal();
-        if (supervisorInfoService.isSupervisorDuring(user.getEmployeeId())) {
-            authInfo.addRole("supervisor");
-        }
         authInfo.addObjectPermissions(essPermissionService.getPermissions(user));
         return authInfo;
-    }
-
-    protected String getUsername(PrincipalCollection principals) {
-        return getAvailablePrincipal(principals).toString();
     }
 }
