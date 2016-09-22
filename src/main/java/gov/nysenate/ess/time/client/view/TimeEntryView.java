@@ -30,7 +30,6 @@ public class TimeEntryView extends AttendanceHoursView
     protected String txUpdateUserId;
     protected LocalDateTime txOriginalDate;
     protected LocalDateTime txUpdateDate;
-    protected boolean accruing;
 
     protected TimeEntryView() {}
 
@@ -44,7 +43,6 @@ public class TimeEntryView extends AttendanceHoursView
             this.date = entry.getDate();
             this.miscType = entry.getMiscType() != null ? entry.getMiscType().name() : null;
             this.active = entry.isActive();
-            this.accruing = entry.isAccruing();
             this.empComment = entry.getEmpComment();
             this.payType = entry.getPayType() != null ? entry.getPayType().name() : null;
             this.txOriginalUserId = entry.getOriginalUserId();
@@ -72,10 +70,8 @@ public class TimeEntryView extends AttendanceHoursView
         entry.setMiscHours(miscHours);
         entry.setMiscType(miscType != null ? MiscLeaveType.valueOf(miscType) : null);
         entry.setActive(active);
-        entry.setAccruing(accruing);
         entry.setEmpComment(empComment);
         entry.setPayType(payType != null ? PayType.valueOf(payType) : null);
-        entry.setAccruing(accruing);
         entry.setOriginalUserId(txOriginalUserId);
         entry.setUpdateUserId(txUpdateUserId);
         entry.setOriginalDate(txOriginalDate);
@@ -111,11 +107,6 @@ public class TimeEntryView extends AttendanceHoursView
     @XmlElement
     public String getMiscType() {
         return miscType;
-    }
-
-    @XmlElement
-    public boolean isAccruing() {
-        return accruing;
     }
 
     @XmlElement

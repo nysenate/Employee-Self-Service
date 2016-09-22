@@ -328,10 +328,6 @@ public class EssTimeRecordManager implements TimeRecordManager
                 modifiedEntries = true;
                 entry.setPayType(correctPayType);
             }
-            if (entry.isAccruing() != correctAccruing) {
-                modifiedEntries = true;
-                entry.setAccruing(correctAccruing);
-            }
         }
         return modifiedEntries;
     }
