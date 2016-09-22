@@ -161,7 +161,7 @@ public class EssTimeRecordManager implements TimeRecordManager
         // Split any records that span multiple ranges
         //  also ensure that existing records and entries contain up to date information
         // Remove ranges that are covered by existing records
-        List<TimeRecord> patchedRecords = patchExistingRecords(empId, recordRanges, existingRecords);
+        List<TimeRecord> patchedRecords = patchExistingRecords(existingRecords, recordRanges);
         recordsToSave.addAll(patchedRecords);
         long patchedRecordsSaved = patchedRecords.size();
 
@@ -196,33 +196,46 @@ public class EssTimeRecordManager implements TimeRecordManager
      * @return List<TimeRecord> - a list of existing records that were modified
      */
     private List<TimeRecord> patchExistingRecords(
-            int empId, LinkedHashSet<Range<LocalDate>> recordRanges, Collection<TimeRecord> existingRecords) {
-        List<TimeRecord> recordsToSave = new LinkedList<>();
-        existingRecords.stream()
+            Collection<TimeRecord> existingRecords, LinkedHashSet<Range<LocalDate>> recordRanges) {
+        return existingRecords.stream()
                 .filter(record -> TimeRecordStatus.inProgress().contains(record.getRecordStatus()))
-                .forEach(record -> {
-                    List<Range<LocalDate>> rangesUnderRecord = recordRanges.stream()
-                            .filter(range -> range.isConnected(record.getDateRange()) &&
-                                    !range.intersection(record.getDateRange()).isEmpty())
-                            .collect(Collectors.toList());
-                    // If there are no active record dates for the record, set it as inactive
-                    if (rangesUnderRecord.isEmpty()) {
-                        logger.info("deactivating record empid: {}  dates: {}", record.getEmployeeId(), record.getDateRange());
-                        record.setActive(false);
-                        recordsToSave.add(record);
-                    }
-                    // If there are multiple active record date ranges for the record, split it
-                    else if (rangesUnderRecord.size() != 1 ||
-                            !rangesUnderRecord.get(0).equals(record.getDateRange())) {
-                        recordsToSave.addAll(splitRecord(rangesUnderRecord, record, empId));
-                    }
-                    // otherwise, check the record for inconsistencies and patch it if necessary
-                    else if (patchRecord(record)) {
-                        recordsToSave.add(record);
-                    }
-                    recordRanges.removeAll(rangesUnderRecord);
-                });
-        return recordsToSave;
+                .map(record -> patchRecord(record, recordRanges))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks the given record and patches it if necessary
+     * @param record {@link TimeRecord} - Time record to be patched
+     * @param recordRanges LinkedHashSet<Range<LocalDate>> - Set of date ranges for which there should be records
+     *                     The date ranges corresponding to the passed in time record are removed
+     * @return List<TimeRecord> - List of new or existing time records that have been modified
+     *                            and need to be saved
+     */
+    private List<TimeRecord> patchRecord(TimeRecord record, LinkedHashSet<Range<LocalDate>> recordRanges) {
+        // Get list of record ranges that cover the given record
+        List<Range<LocalDate>> rangesUnderRecord = recordRanges.stream()
+                .filter(range -> range.isConnected(record.getDateRange()) &&
+                        !range.intersection(record.getDateRange()).isEmpty())
+                .collect(Collectors.toList());
+        // Remove these ranges from the range set to indicate that they are covered
+        recordRanges.removeAll(rangesUnderRecord);
+        // If there are no active record dates for the record, set it as inactive
+        if (rangesUnderRecord.isEmpty()) {
+            logger.info("deactivating record empid: {}  dates: {}", record.getEmployeeId(), record.getDateRange());
+            record.setActive(false);
+            return Collections.singletonList(record);
+        }
+        // If there are multiple active record date ranges for the record, split it
+        else if (rangesUnderRecord.size() != 1 ||
+                !rangesUnderRecord.get(0).equals(record.getDateRange())) {
+            return splitRecord(record, rangesUnderRecord);
+        }
+        // otherwise, check the record for inconsistencies and patch it if necessary
+        else if (patchRecordData(record)) {
+            return Collections.singletonList(record);
+        }
+        return Collections.emptyList();
     }
 
     /**
@@ -238,13 +251,12 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /**
      * Splits an existing time record according to the given date ranges
+     * @param record TimeRecord
      * @param ranges List<Range<LocalDate>> - ranges corresponding to dates for which there should be distinct time records
      *               These ranges should all intersect with the existing time record
-     * @param record TimeRecord
-     * @param empId int
      * @return List<TimeRecord> - the records resulting from the split
      */
-    private List<TimeRecord> splitRecord(List<Range<LocalDate>> ranges, TimeRecord record, int empId) {
+    private List<TimeRecord> splitRecord(TimeRecord record, List<Range<LocalDate>> ranges) {
         if (ranges.stream().anyMatch(range -> !RangeUtils.intersects(range, record.getDateRange()))) {
             throw new IllegalArgumentException("split ranges should all intersect with the record to be split");
         }
@@ -256,7 +268,7 @@ public class EssTimeRecordManager implements TimeRecordManager
             // Adjust the begin and end dates of the existing record to match the first range
             // patch the existing record + entries, ensuring correct supervisor and pay types
             record.setDateRange(rangeIterator.next());
-            patchRecord(record);
+            patchRecordData(record);
 
             // Prune any existing entries with dates outside of the first range,
             // saving them to be added to any appropriate new records that are created
@@ -271,7 +283,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
             // Generate time records for the remaining ranges, adding the existing time records as appropriate
             rangeIterator.forEachRemaining(range -> {
-                TimeRecord newRecord = createTimeRecord(empId, range);
+                TimeRecord newRecord = createTimeRecord(record.getEmployeeId(), range);
                 existingEntryMap.subMap(newRecord.getBeginDate(), true, newRecord.getEndDate(), true)
                         .values().forEach(newRecord::addTimeEntry);
                 splitResult.add(newRecord);
@@ -286,7 +298,7 @@ public class EssTimeRecordManager implements TimeRecordManager
      * If not the record will be patched
      * @return true iff the record was patched
      */
-    private boolean patchRecord(TimeRecord record) {
+    private boolean patchRecordData(TimeRecord record) {
         boolean modifiedRecord = false;
         Employee empInfo = empInfoService.getEmployee(record.getEmployeeId(), record.getBeginDate());
         if (!record.checkEmployeeInfo(empInfo)) {
@@ -306,13 +318,12 @@ public class EssTimeRecordManager implements TimeRecordManager
         // Get effective pay types for the record
         RangeMap<LocalDate, PayType> payTypes = getPayTypeRangeMap(record.getEmployeeId());
         // Get effective Accruing flag for the record
-        RangeMap<LocalDate, Boolean> acrruing = getAccrualRangeMap(record.getEmployeeId());
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        RangeMap<LocalDate, Boolean> accrualStatuses = getAccrualRangeMap(record.getEmployeeId());
 
         // Check the pay types for each entry
         for (TimeEntry entry : record.getTimeEntries()) {
             PayType correctPayType = payTypes.get(entry.getDate());
-            boolean correctAccruing = acrruing.get(entry.getDate()).booleanValue();
+            boolean correctAccruing = accrualStatuses.get(entry.getDate());
             if (!Objects.equals(entry.getPayType(), correctPayType)) {
                 modifiedEntries = true;
                 entry.setPayType(correctPayType);

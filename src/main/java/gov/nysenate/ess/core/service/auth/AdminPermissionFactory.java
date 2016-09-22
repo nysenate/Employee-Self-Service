@@ -17,7 +17,7 @@ public class AdminPermissionFactory implements PermissionFactory {
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
         return roles.contains(EssRole.ADMIN)
-                ? ImmutableList.of(new WildcardPermission("*"))
+                ? ImmutableList.of(new WildcardPermission("admin"))
                 : ImmutableList.of();
     }
 }
