@@ -38,7 +38,6 @@ public enum TimeRecordErrorCode {
     DUPLICATE_ENTRY_ID (40, "A duplicate Entry ID was found."),
     DUPLICATE_ENTRY (41, "A duplicate Entry was found."),
     PAYTYPE_CHANGED (42, "Paytype has changed."),
-    ACCRUE_CHANGED (43, "Accrue flag has changed."),
     ORIGIN_DATE_CHANGED (44, "Origin Date has changed."),
     SUPERVISORS_OWN_TIMESHEET (45, "Supervisor cannot approve/disapprove his/her own Timesheet.")
     ;

@@ -161,12 +161,6 @@ public class ChangeTRV implements TimeRecordValidator {
 
                 }
 
-                if (entry.isAccruing() != prevEntryHold.isAccruing()) {
-                    throw new TimeRecordErrorException(TimeRecordErrorCode.ACCRUE_CHANGED,
-                            new InvalidParameterView("PayType", "string",
-                                    " Date =  " + entry.getDate().format(dateTimeFormatter) + " Accrue Flag =  " + String.valueOf(entry.isAccruing()) + " (Should be: " + String.valueOf(prevEntryHold.isAccruing()) + ")", entry.getPayType().toString()));
-                }
-
                 if (entry.getPayType().compareTo(prevEntryHold.getPayType()) != 0) {
                     throw new TimeRecordErrorException(TimeRecordErrorCode.PAYTYPE_CHANGED,
                             new InvalidParameterView("PayType", "string",

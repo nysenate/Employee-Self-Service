@@ -23,7 +23,6 @@ public class TimeEntry extends AttendanceHours
     protected boolean active;
     protected String empComment;
     protected PayType payType;
-    protected boolean accruing;
     protected String originalUserId;
     protected String updateUserId;
     protected LocalDateTime originalDate;
@@ -44,7 +43,6 @@ public class TimeEntry extends AttendanceHours
         this.employeeName = record.getLastUpdater();
         this.date = date;
         this.active = true;
-        this.accruing = true;
         this.payType = payType;
         this.originalUserId = record.getOriginalUserId();
         this.updateUserId = this.originalUserId;
@@ -61,7 +59,6 @@ public class TimeEntry extends AttendanceHours
         this.date = other.date;
         this.miscType = other.miscType;
         this.active = other.active;
-        this.accruing = other.accruing;
         this.empComment = other.empComment;
         this.payType = other.payType;
         this.originalUserId = other.originalUserId;
@@ -89,26 +86,27 @@ public class TimeEntry extends AttendanceHours
         if (this == o) return true;
         if (!(o instanceof TimeEntry)) return false;
         if (!super.equals(o)) return false;
-        TimeEntry entry = (TimeEntry) o;
-        return Objects.equal(empId, entry.empId) &&
-                Objects.equal(active, entry.active) &&
-                Objects.equal(entryId, entry.entryId) &&
-                Objects.equal(timeRecordId, entry.timeRecordId) &&
-                Objects.equal(employeeName, entry.employeeName) &&
-                Objects.equal(date, entry.date) &&
-                Objects.equal(miscType, entry.miscType) &&
-                Objects.equal(empComment, entry.empComment) &&
-                Objects.equal(payType, entry.payType) &&
-                Objects.equal(originalUserId, entry.originalUserId) &&
-                Objects.equal(updateUserId, entry.updateUserId) &&
-                Objects.equal(originalDate, entry.originalDate) &&
-                Objects.equal(updateDate, entry.updateDate);
+        TimeEntry timeEntry = (TimeEntry) o;
+        return empId == timeEntry.empId &&
+                active == timeEntry.active &&
+                Objects.equal(entryId, timeEntry.entryId) &&
+                Objects.equal(timeRecordId, timeEntry.timeRecordId) &&
+                Objects.equal(employeeName, timeEntry.employeeName) &&
+                Objects.equal(date, timeEntry.date) &&
+                miscType == timeEntry.miscType &&
+                Objects.equal(empComment, timeEntry.empComment) &&
+                payType == timeEntry.payType &&
+                Objects.equal(originalUserId, timeEntry.originalUserId) &&
+                Objects.equal(updateUserId, timeEntry.updateUserId) &&
+                Objects.equal(originalDate, timeEntry.originalDate) &&
+                Objects.equal(updateDate, timeEntry.updateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), entryId, timeRecordId, empId, employeeName, date, miscType, active,
-                empComment, payType, originalUserId, updateUserId, originalDate, updateDate);
+        return Objects.hashCode(super.hashCode(), entryId, timeRecordId, empId,
+                employeeName, date, miscType, active, empComment, payType,
+                originalUserId, updateUserId, originalDate, updateDate);
     }
 
     /** --- Basic Getters/Setters --- */
@@ -164,12 +162,6 @@ public class TimeEntry extends AttendanceHours
     public boolean isActive() {
         return active;
     }
-
-    public boolean isAccruing() {
-        return accruing;
-    }
-
-    public void setAccruing(boolean accruing) { this.accruing = accruing; };
 
     public void setActive(boolean active) {
         this.active = active;
