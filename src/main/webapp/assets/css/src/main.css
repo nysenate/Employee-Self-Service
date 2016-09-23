@@ -2343,6 +2343,16 @@ button.ui-button::-moz-focus-inner {
     border-bottom: 1px solid black;
   }
 }
+
+.itemtable {
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+.itemtable td {
+  padding-left: 5px;
+  padding-right: 5px;
+}
 .supply-text {
   color: #374282;
   font-weight: bold;

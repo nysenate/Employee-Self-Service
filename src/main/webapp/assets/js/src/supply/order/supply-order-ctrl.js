@@ -80,6 +80,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(saveAllowances)
             .then(filterAllowances)
+            .then(setAllowances)
             .then(setToShoppingState)
             .then(setDestinationDescription)
             .then(checkSortOrder);
@@ -95,6 +96,18 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     function filterAllowances() {
         $scope.displayAllowances = allowanceService.filterAllowances(allowances, $scope.filter.categories, $scope.filter.searchTerm);
         $scope.displayAllowances = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
+    }
+
+    function setAllowances() {
+        if (supplyCart.getCart().length > 0) {
+            supplyCart.getCart().forEach(function (item) {
+                $scope.displayAllowances.forEach(function (allowance) {
+                    if (item.item.id == allowance.item.id)
+                        if (item.quantity > allowance.item.maxQtyPerOrder)
+                            allowance.selectedQuantity = "more";
+                })
+            })
+        }
     }
 
     function Reset() {
@@ -152,7 +165,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     $scope.addToCart = function (allowance) {
         // If more is selected, display
-        if (allowance.selectedQuantity === "more") {
+        if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
             $scope.quantityChanged(allowance);
             return;
         }
@@ -171,13 +184,32 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             supplyCart.addToCart(allowance.item, allowance.selectedQuantity);
         }
     };
-
     $scope.isInCart = function (item) {
-        return supplyCart.isItemInCart(item.id) && supplyCart.getCartLineItem(item.id).quantity == 1;
+        return supplyCart.isItemInCart(item.id);
     };
-    $scope.isDuplicated = function (item) {
-        return supplyCart.isItemInCart(item.id) && supplyCart.getCartLineItem(item.id).quantity > 1;
+
+    $scope.getItemQuantity = function (item) {
+        if (supplyCart.isItemInCart(item.id))
+            return supplyCart.getCartLineItem(item.id).quantity;
+        else
+            return 0;
     };
+    $scope.getItemAllowedQuantities = function (item) {
+        return allowanceService.getAllowedQuantities(item).slice(-1)[0];
+    };
+    $scope.getItemTestSpecialOrder = function (item) {
+        if ($scope.getItemAllowedQuantities(item) < $scope.getItemQuantity(item))
+            return "Yes";
+        else
+            return "No"
+    };
+    $scope.getItemRemainQuantities = function (item) {
+        if ($scope.getItemAllowedQuantities(item) - $scope.getItemQuantity(item) >= 0 || item.visibility === 'SPECIAL')
+            return $scope.getItemAllowedQuantities(item) - $scope.getItemQuantity(item);
+        else
+            return 0;
+    };
+
 
     $scope.getAllowedQuantities = function (item) {
         var allowedQuantities = allowanceService.getAllowedQuantities(item);
@@ -188,7 +220,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** This is called whenever an items quantity is changed.
      * Used to determine when "more" is selected. */
     $scope.quantityChanged = function (allowance) {
-        if (allowance.selectedQuantity === "more") {
+        if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
             modals.open('order-more-prompt-modal', {allowance: allowance})
                 .then(function (allowance) {
                     modals.open('order-custom-quantity-modal', {item: allowance.item});

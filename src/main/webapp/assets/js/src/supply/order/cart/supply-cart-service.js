@@ -22,7 +22,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return false;
         },
 
-        addToCart: function (item, quantity) {
+        addToCart: function (item, quantity, special) {
             if (this.isItemInCart(item.id)) {
                 this.getCartLineItem(item.id).quantity += quantity;
             }

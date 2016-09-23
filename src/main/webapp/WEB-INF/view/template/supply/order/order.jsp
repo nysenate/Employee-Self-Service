@@ -92,12 +92,19 @@
             </label>
             <input class="submit-button add-to-cart-btn" ng-click="addToCart(allowance)"
                    type="button" value="Add to Cart" style="padding: 0px 5px;">
-          </div>
-          <div ng-class="{'visibility-hidden': !isInCart(allowance.item)}" class="green padding-top-5 bold">
-            &#x2713; Added to cart.
-          </div>
-          <div ng-class="{'visibility-hidden': !isDuplicated(allowance.item)}" class="yellow padding-top-5 bold">
-            &#x2713; Duplicated Item in Cart
+            <table class="itemtable text-align-center">
+              <tr>
+                <th class="teal bold" style="font-weight: 600;">{{getItemQuantity(allowance.item)}}</th>
+                <th class="orange  bold" style="font-weight: 600;"> {{getItemRemainQuantities(allowance.item)}}</th>
+                <th class="redorange  bold" style="font-weight: 600;">{{getItemTestSpecialOrder(allowance.item)}}</th>
+              </tr>
+              <tr>
+                <td class="teal bold" style="font-weight: 600;">Ordered</td>
+                <td class="orange  bold" style="font-weight: 600;">Remain</td>
+                <td class="redorange  bold" style="font-weight: 600;">Special</td>
+              </tr>
+              <tr>
+            </table>
           </div>
         </div>
       </div>
