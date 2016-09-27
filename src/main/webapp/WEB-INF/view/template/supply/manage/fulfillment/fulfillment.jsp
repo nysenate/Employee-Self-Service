@@ -33,6 +33,7 @@
         <th>Employee</th>
         <th>Item Count</th>
         <th>Order Date</th>
+        <th>Assign To</th>
       </tr>
       </thead>
       <tbody>
@@ -43,6 +44,7 @@
         <td>{{requisition.customer.lastName}}</td>
         <td>{{getOrderQuantity(requisition)}}</td>
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td>{{requisition.issuer.lastName || "-"}}</td>
       </tr>
       </tbody>
     </table>

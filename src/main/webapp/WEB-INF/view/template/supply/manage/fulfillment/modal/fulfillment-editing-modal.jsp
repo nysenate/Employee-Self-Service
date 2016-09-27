@@ -9,7 +9,7 @@
       <span ng-if="originalRequisition.status === 'PENDING'">Pending</span>
       <span ng-if="originalRequisition.status === 'PROCESSING'">Processing</span>
       <span ng-if="originalRequisition.status === 'COMPLETED'">Completed</span>
-      requisition requested by {{originalRequisition.customer.fullName}}
+      Requisition {{originalRequisition.requisitionId}} Requested By {{originalRequisition.customer.fullName}}
     </h3>
   </div>
 
@@ -30,6 +30,7 @@
                  style="width: 100px; height: 20px;" capitalize>
         </label>
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
+        <p class="redorange" ng-show="warnning">Item is current in cart, please use Quantity</p>
       </div>
 
       <%-- Add Note --%>
@@ -112,6 +113,7 @@
     <shiro:hasPermission name="supply:shipment:approve">
       <input ng-show="originalRequisition.status === 'COMPLETED'" ng-click="approveShipment()"
              class="approve-button" style="width: 15%" type="button" value="Approve">
+      <p class="redorange" ng-show="selfApprove">You cannot approve order made by yourself</p>
     </shiro:hasPermission>
 
     <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>

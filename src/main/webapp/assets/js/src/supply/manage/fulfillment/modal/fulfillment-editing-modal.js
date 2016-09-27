@@ -36,7 +36,6 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         $scope.newLocationCode = $scope.editableRequisition.destination.code;
         itemAutocompleteService.initWithAllItems();
     };
-
     $scope.init();
 
     /** Close the modal and return the promise resulting from calling the save requisition api. */
@@ -71,7 +70,17 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         $scope.saveChanges();
     };
 
+    $scope.selfApprove = false;
+    
     $scope.approveShipment = function () {
+        if (appProps.user.employeeId === $scope.originalRequisition.issuer.employeeId) {
+            // can not approve the order made by current user self
+            $scope.selfApprove = true;
+            return;
+        }
+        else {
+            $scope.selfApprove = false;
+        }
         $scope.editableRequisition.status = 'APPROVED';
         $scope.editableRequisition.approvedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
         $scope.saveChanges();
@@ -154,13 +163,14 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     };
 
     /** --- Add Item --- **/
-
+    $scope.warnning = false;
     $scope.addItem = function () {
         var newItem = itemAutocompleteService.getItemFromCommodityCode($scope.newItemCommodityCode);
         if (!newItem || isItemADuplicate(newItem)) {
-            // Trying to add invalid item, don't do anything.
+            $scope.warnning = true;
             return;
         }
+        $scope.warnning = false;
         $scope.editableRequisition.lineItems.push({item: newItem, quantity: 1});
         $scope.newItemCommodityCode = "";
         $scope.onUpdate();

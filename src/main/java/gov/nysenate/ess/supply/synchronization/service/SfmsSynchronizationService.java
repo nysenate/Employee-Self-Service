@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -63,11 +62,12 @@ public class SfmsSynchronizationService {
         for (Requisition requisition : requisitions) {
             try {
                 synchronizationProcedure.synchronizeRequisition(toXml(requisition));
-                requisitionService.savedInSfms(requisition.getRequisitionId());
             } catch (DataAccessException ex) {
                 logger.error("Error synchronizing requisition " + requisition.getRequisitionId()
                              + " with SFMS. Exception is : " + ex.getMessage());
+                return;// if error do not save it
             }
+            requisitionService.savedInSfms(requisition.getRequisitionId());
         }
     }
 
