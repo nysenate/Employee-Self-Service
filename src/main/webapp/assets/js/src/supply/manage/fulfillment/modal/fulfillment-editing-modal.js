@@ -73,7 +73,7 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     $scope.selfApprove = false;
     
     $scope.approveShipment = function () {
-        if (appProps.user.employeeId === $scope.originalRequisition.issuer.employeeId) {
+        if (appProps.user.employeeId === $scope.originalRequisition.customer.employeeId) {
             // can not approve the order made by current user self
             $scope.selfApprove = true;
             return;

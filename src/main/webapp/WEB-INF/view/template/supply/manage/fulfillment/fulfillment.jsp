@@ -165,6 +165,7 @@
         <th>Order Date</th>
         <th>Approved Date</th>
         <th>Issuing Employee</th>
+        <th>Saved in SFMS</th>
       </tr>
       </thead>
       <tbody>
@@ -176,6 +177,7 @@
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
+        <td>{{requisition.savedInSfms}}</td>
       </tr>
       </tbody>
     </table>
