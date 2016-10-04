@@ -35,5 +35,5 @@ public interface RequisitionDao {
     /**
      * Marks a requisition as saved in SFMS.
      */
-    void savedInSfms(int requisitionId);
+    void savedInSfms(int requisitionId, boolean succeed);
 }

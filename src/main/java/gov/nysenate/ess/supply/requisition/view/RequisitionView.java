@@ -8,7 +8,6 @@ import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
@@ -33,6 +32,8 @@ public class RequisitionView implements ViewObject {
     protected LocalDateTime completedDateTime;
     protected LocalDateTime approvedDateTime;
     protected LocalDateTime rejectedDateTime;
+    protected LocalDateTime lastSfmsSyncDateTime;
+
     protected boolean savedInSfms;
 
     public RequisitionView() {}
@@ -55,6 +56,7 @@ public class RequisitionView implements ViewObject {
         this.completedDateTime = requisition.getCompletedDateTime().orElse(null);
         this.approvedDateTime = requisition.getApprovedDateTime().orElse(null);
         this.rejectedDateTime = requisition.getRejectedDateTime().orElse(null);
+        this.lastSfmsSyncDateTime = requisition.getLastSfmsSyncDateTime().orElse(null);
         this.savedInSfms = requisition.getSavedInSfms();
     }
 
@@ -76,6 +78,7 @@ public class RequisitionView implements ViewObject {
                 .withCompletedDateTime(completedDateTime)
                 .withApprovedDateTime(approvedDateTime)
                 .withRejectedDateTime(rejectedDateTime)
+                .withLastSfmsSyncDateTimeDateTime(lastSfmsSyncDateTime)
                 .withSavedInSfms(savedInSfms)
                 .build();
     }
@@ -215,6 +218,14 @@ public class RequisitionView implements ViewObject {
         this.rejectedDateTime = rejectedDateTime;
     }
 
+    @XmlElement
+    public LocalDateTime getLastSfmsSyncDateTime() {
+        return lastSfmsSyncDateTime;
+    }
+
+    public void setLastSfmsSyncDateTime(LocalDateTime lastSfmsSyncDateTime) {
+        this.lastSfmsSyncDateTime = lastSfmsSyncDateTime;
+    }
     @XmlElement
     public boolean isSavedInSfms() {
         return savedInSfms;

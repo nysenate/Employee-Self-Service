@@ -27,6 +27,7 @@ public final class Requisition {
     private final LocalDateTime completedDateTime;
     private final LocalDateTime approvedDateTime;
     private final LocalDateTime rejectedDateTime;
+    private final LocalDateTime lastSfmsSyncDateTime;
     private final boolean savedInSfms;
 
     private Requisition(Builder builder) {
@@ -45,6 +46,7 @@ public final class Requisition {
         this.completedDateTime = builder.completedDateTime;
         this.approvedDateTime = builder.approvedDateTime;
         this.rejectedDateTime = builder.rejectedDateTime;
+        this.lastSfmsSyncDateTime = builder.lastSfmsSyncDateTime;
         this.savedInSfms = builder.savedInSfms;
     }
 
@@ -70,6 +72,7 @@ public final class Requisition {
                 .withCompletedDateTime(this.completedDateTime)
                 .withApprovedDateTime(this.approvedDateTime)
                 .withRejectedDateTime(this.rejectedDateTime)
+                .withLastSfmsSyncDateTimeDateTime(this.lastSfmsSyncDateTime)
                 .withSavedInSfms(this.savedInSfms);
     }
 
@@ -111,6 +114,7 @@ public final class Requisition {
         return copy().withModifiedBy(modifiedBy).build();
     }
 
+
     /** Modified date time should only be set by the dao layer before saving. */
     public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
         return copy().withModifiedDateTime(modifiedDateTime).build();
@@ -135,6 +139,11 @@ public final class Requisition {
     public Requisition setRejectedDateTime(LocalDateTime rejectedDateTime) {
         return copy().withRejectedDateTime(rejectedDateTime).build();
     }
+
+    public Requisition setLastSfmsSyncDateTimeDateTime(LocalDateTime lastSfmsSyncDateTime) {
+        return copy().withLastSfmsSyncDateTimeDateTime(lastSfmsSyncDateTime).build();
+    }
+
 
     public Requisition setSavedInSfms(boolean savedInSfms) {
         return copy().withSavedInSfms(savedInSfms).build();
@@ -202,6 +211,11 @@ public final class Requisition {
         return Optional.ofNullable(rejectedDateTime);
     }
 
+    public Optional<LocalDateTime> getLastSfmsSyncDateTime() {
+        return Optional.ofNullable(lastSfmsSyncDateTime);
+    }
+
+
     public boolean getSavedInSfms() {
         return savedInSfms;
     }
@@ -232,7 +246,8 @@ public final class Requisition {
                ", completedDateTime=" + completedDateTime +
                ", approvedDateTime=" + approvedDateTime +
                ", rejectedDateTime=" + rejectedDateTime +
-               ", savedInSfms=" + savedInSfms +
+                ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
+                ", savedInSfms=" + savedInSfms +
                '}';
     }
 
@@ -261,6 +276,8 @@ public final class Requisition {
             return false;
         if (approvedDateTime != null ? !approvedDateTime.equals(that.approvedDateTime) : that.approvedDateTime != null)
             return false;
+        if (lastSfmsSyncDateTime != null ? !lastSfmsSyncDateTime.equals(that.lastSfmsSyncDateTime) : that.lastSfmsSyncDateTime != null)
+            return false;
         return rejectedDateTime != null ? rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime == null;
     }
 
@@ -281,6 +298,7 @@ public final class Requisition {
         result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
         result = 31 * result + (approvedDateTime != null ? approvedDateTime.hashCode() : 0);
         result = 31 * result + (rejectedDateTime != null ? rejectedDateTime.hashCode() : 0);
+        result = 31 * result + (lastSfmsSyncDateTime != null ? lastSfmsSyncDateTime.hashCode() : 0);
         result = 31 * result + (savedInSfms ? 1 : 0);
         return result;
     }
@@ -301,6 +319,7 @@ public final class Requisition {
         private LocalDateTime completedDateTime;
         private LocalDateTime approvedDateTime;
         private LocalDateTime rejectedDateTime;
+        private LocalDateTime lastSfmsSyncDateTime;
         private boolean savedInSfms;
 
         public Builder withRequisitionId(int requisitionId) {
@@ -370,6 +389,11 @@ public final class Requisition {
 
         public Builder withApprovedDateTime(LocalDateTime approvedDateTime) {
             this.approvedDateTime = approvedDateTime;
+            return this;
+        }
+
+        public Builder withLastSfmsSyncDateTimeDateTime(LocalDateTime lastSfmsSyncDateTime) {
+            this.lastSfmsSyncDateTime = lastSfmsSyncDateTime;
             return this;
         }
 

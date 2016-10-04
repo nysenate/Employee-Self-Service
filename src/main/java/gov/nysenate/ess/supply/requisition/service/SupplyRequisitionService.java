@@ -2,10 +2,6 @@ package gov.nysenate.ess.supply.requisition.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailContent;
-import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
-import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailTemplate;
-import gov.nysenate.ess.core.service.notification.email.simple.header.SimpleEmailHeader;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.notification.SupplyEmailService;
@@ -13,14 +9,10 @@ import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
-import gov.nysenate.ess.supply.util.mail.SendSimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Optional;
 
@@ -84,7 +76,7 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
-    public void savedInSfms(int requisitionId) {
-        requisitionDao.savedInSfms(requisitionId);
+    public void savedInSfms(int requisitionId, boolean succeed) {
+        requisitionDao.savedInSfms(requisitionId, succeed);
     }
 }

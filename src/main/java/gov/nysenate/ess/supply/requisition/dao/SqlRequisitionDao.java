@@ -154,8 +154,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public void savedInSfms(int requisitionId) {
+    public void savedInSfms(int requisitionId, boolean succeed) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
+        params.addValue("succeed", succeed);
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -176,6 +177,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("completedDateTime", requisition.getCompletedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
+                .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms());
     }
 
@@ -259,7 +261,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         ),
         SET_SAVED_IN_SFMS(
                 "UPDATE ${supplySchema}.requisition \n" +
-                "SET saved_in_sfms = TRUE \n" +
+                        "SET saved_in_sfms = :succeed, last_sfms_sync_date_time =  CURRENT_TIMESTAMP" + "\n" +
                 "WHERE requisition_id = :requisitionId"
         )
         ;
@@ -312,6 +314,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withCompletedDateTime(getLocalDateTimeFromRs(rs, "completed_date_time"))
                     .withApprovedDateTime(getLocalDateTimeFromRs(rs, "approved_date_time"))
                     .withRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"))
+                    .withLastSfmsSyncDateTimeDateTime(getLocalDateTimeFromRs(rs, "last_sfms_sync_date_time"))
                     .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
                     .build();
         }

@@ -160,6 +160,7 @@ CREATE TABLE requisition (
   completed_date_time timestamp without time zone,
   approved_date_time timestamp without time zone,
   rejected_date_time timestamp without time zone,
+  last_sfms_sync_date_time timestamp without time zone,
   saved_in_sfms boolean NOT NULL
 );
 

@@ -62,12 +62,12 @@ public class SfmsSynchronizationService {
         for (Requisition requisition : requisitions) {
             try {
                 synchronizationProcedure.synchronizeRequisition(toXml(requisition));
+                requisitionService.savedInSfms(requisition.getRequisitionId(), true); // try to sync
             } catch (DataAccessException ex) {
                 logger.error("Error synchronizing requisition " + requisition.getRequisitionId()
                              + " with SFMS. Exception is : " + ex.getMessage());
-                return;// if error do not save it
+                requisitionService.savedInSfms(requisition.getRequisitionId(), false); // fail to sync
             }
-            requisitionService.savedInSfms(requisition.getRequisitionId());
         }
     }
 

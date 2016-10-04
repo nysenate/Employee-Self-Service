@@ -30,6 +30,12 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         error: false
     };
 
+    $scope.syncFailedSearch = {
+        matches: [],
+        response: {},
+        error: false
+    };
+
     $scope.canceledSearch = {
         matches: [],
         response: {},
@@ -60,6 +66,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         getProcessingShipments();
         getCompletedShipments();
         getApprovedShipments();
+        getSyncFailedShipments();
         getCanceledShipments();
     }
 
@@ -151,6 +158,30 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         })
     }
 
+    function getSyncFailedShipments() {
+        var params = {
+            status: "APPROVED",
+            savedInSfms: false
+        };
+        $scope.syncFailedSearch.response = requisitionApi.get(params, function (response) {
+            $scope.syncFailedSearch.matches = response.result;
+            $scope.syncFailedSearch.matches = removeNewPlaceReq($scope.syncFailedSearch.matches);
+            $scope.syncFailedSearch.error = false;
+        }, function (errorResponse) {
+            $scope.syncFailedSearch.matches = [];
+            $scope.syncFailedSearch.error = true;
+        });
+    }
+
+    /*remove new place req from failed sync*/
+    function removeNewPlaceReq(input) {
+        var result = [];
+        input.forEach(function (ele) {
+            if (ele.lastSfmsSyncDateTime != null) // if current req have not been sync , then it is a new one
+                result.push(ele);
+        });
+        return result;
+    }
     /** Get shipments that have been canceled today. A shipment is canceled when its order is rejected. */
     function getCanceledShipments() {
         var params = {
