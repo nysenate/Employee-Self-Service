@@ -23,7 +23,7 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     @Autowired private TimeRecordService timeRecordService;
     @Autowired private TimeRecordDao timeRecordDao;
 
-    @Autowired private PermittedModificationTRV permittedModificationTRV;
+    @Autowired private RecordPermittedModificationTRV recordPermittedModificationTRV;
     @Autowired private AllowanceTRV allowanceTRV;
     @Autowired private AccrualTRV accrualTRV;
     @Autowired private HourIncrementTRV hourIncrementTRV;
@@ -31,7 +31,7 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     @Autowired private TotalTRV totalTRV;
     @Autowired private FieldRangeTRV fieldMaxMinTRV;
     @Autowired private DateRangeTRV dateRangeTRV;
-    @Autowired private ChangeTRV changeTRV;
+    @Autowired private EntryPermittedModificationTRV entryPermittedModificationTRV;
     @Autowired private PermittedUserScopeTRV permittedUserScopeTRV;
     @Autowired private ScopePermissionTRV scopePermissionTRV;
     @Autowired private ScopeActionTRV recordScopeTRV;
@@ -41,8 +41,8 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
     @PostConstruct
     public void init() {
         timeRecordValidators = ImmutableList.<TimeRecordValidator>builder()
-                .add(changeTRV)
-                .add(permittedModificationTRV)
+                .add(recordPermittedModificationTRV)
+                .add(entryPermittedModificationTRV)
                 .add(allowanceTRV)
                 .add(accrualTRV)
                 .add(hourIncrementTRV)

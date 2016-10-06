@@ -6,14 +6,14 @@ public class InvalidParameterView implements ViewObject
 {
 
     protected ConstrainedParameterView parameterConstraint;
-    protected String receivedValue;
+    protected Object receivedValue;
 
-    public InvalidParameterView(ConstrainedParameterView parameterConstraint, String receivedValue) {
+    public InvalidParameterView(ConstrainedParameterView parameterConstraint, Object receivedValue) {
         this.parameterConstraint = parameterConstraint;
         this.receivedValue = receivedValue;
     }
 
-    public InvalidParameterView(String paramName, String paramType, String constraint, String receivedValue) {
+    public InvalidParameterView(String paramName, String paramType, String constraint, Object receivedValue) {
         this(new ConstrainedParameterView(paramName, paramType, constraint), receivedValue);
     }
 
@@ -30,7 +30,7 @@ public class InvalidParameterView implements ViewObject
         return parameterConstraint;
     }
 
-    public String getReceivedValue() {
+    public Object getReceivedValue() {
         return receivedValue;
     }
 }

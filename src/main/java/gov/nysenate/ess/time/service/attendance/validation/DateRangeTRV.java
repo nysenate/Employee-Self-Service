@@ -56,11 +56,11 @@ public class DateRangeTRV implements TimeRecordValidator {
                                 " entryDate =  NULL ", "NULL"));
             }
 
-            if (set.contains(entryDate)||!set.add(entryDate)) {
-                throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_DATE,
-                        new InvalidParameterView("dateRange", "string",
-                                " entryDate =  " + entryDate.toString(), entryDate.toString()));
-            }
+//            if (set.contains(entryDate)||!set.add(entryDate)) {
+//                throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_DATE,
+//                        new InvalidParameterView("dateRange", "string",
+//                                " entryDate =  " + entryDate.toString(), entryDate.toString()));
+//            }
 
             if (entryDate.isBefore(record.getBeginDate())||entryDate.isAfter(record.getEndDate())) {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.DATE_OUT_OF_RANGE,

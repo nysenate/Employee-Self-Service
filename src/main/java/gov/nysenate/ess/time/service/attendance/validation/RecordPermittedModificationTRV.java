@@ -17,9 +17,9 @@ import java.util.function.Function;
  * and that saved time records do not contain illegal modifications
  */
 @Service
-public class PermittedModificationTRV implements TimeRecordValidator
+public class RecordPermittedModificationTRV implements TimeRecordValidator
 {
-    private static final Logger logger = LoggerFactory.getLogger(PermittedModificationTRV.class);
+    private static final Logger logger = LoggerFactory.getLogger(RecordPermittedModificationTRV.class);
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
@@ -71,23 +71,5 @@ public class PermittedModificationTRV implements TimeRecordValidator
                                              String fieldName, String fieldType, Function<TimeRecord, ?> fieldGetter)
             throws TimeRecordErrorException {
         checkField(fieldGetter.apply(newRecord), fieldGetter.apply(prevRecord), fieldName, fieldType);
-    }
-
-    /**
-     * Checks to ensure that a saved record contains no new time entries
-     *   and that no changes in pay type were made
-     **/
-
-    // Commented Out 8/16/16 to test ChangeTRV
-    private static void checkTimeEntries(TimeRecord record, TimeRecord prevState) throws TimeRecordErrorException {
-        for (TimeEntry entry : record.getTimeEntries()) {
-            TimeEntry prevEntry = prevState.getEntry(entry.getDate());
-              if (prevEntry == null) {
-                throw new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_MODIFICATION,
-                        new InvalidParameterView("timeEntries", "List<TimeEntry>", "new entries cannot be added",
-                                String.valueOf(entry.getDate())));
-            }
-            checkField(entry.getPayType(), prevEntry.getPayType(), "payType", "PayType");
-        }
     }
 }

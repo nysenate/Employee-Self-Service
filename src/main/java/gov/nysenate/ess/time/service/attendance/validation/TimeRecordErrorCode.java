@@ -13,11 +13,16 @@ public enum TimeRecordErrorCode {
     PREVIOUS_UNSUBMITTED_RECORD(4, "Attempt to submit record with prior unsubmitted salaried record"),
     ENTRY_CANNOT_CHANGE_IN_SCOPE (5, "Attempt to modify Time Entry in scope without needed permissions."),
     INVALID_TIME_RECORD_SCOPE (6, "Attempt to modify Time Record with an inappropriate user scope."),
+    UNAUTHORIZED_ENTRY_MODIFICATION(7, "Attempt to modify time entry fields that are not open for modification by users"),
+    DATE_OUT_OF_RANGE(8, "The saved record contains an entry date out of range of the electronic T&A record."),
+    NULL_DATE(9, "The saved record contains a blank entry date."),
+    TIME_ENTRY_DATE_DISCREPANCY(10, "Time entry dates do not match up"),
 
-
-    /** Time Entry errors */
+    /** Accrual errors */
     RECORD_EXCEEDS_ALLOWANCE(20, "The saved record contains time entries that exceed the employees yearly allowance"),
     RECORD_EXCEEDS_ACCRUAL(21, "The saved record contains time entries that exceed the employees accrual"),
+
+    /** Time Entry errors */
     INVALID_HOURLY_INCREMENT(22, "The saved record contains time entries with invalid increments."),
     MISSING_MISC_TYPE(23, "The saved record contains misc hours without comments."),
     MISSING_MISC_HOURS(24, "The saved record contains misc comments without misc hours."),
@@ -25,20 +30,6 @@ public enum TimeRecordErrorCode {
     TOTAL_GREATER_THAN_TWENTYFOUR(26, "The saved record contains daily totals greater than 24."),
     FIELD_LESS_THAN_ZERO(27, "The saved record contains a field with a value less than 0."),
     FIELD_GREATER_THAN_MAX(28, "The saved record contains a field with a value greater than the max value."),
-    DATE_OUT_OF_RANGE(29, "The saved record contains an entry date out of range of the electronic T&A record."),
-    NULL_DATE(30, "The saved record contains a blank entry date."),
-    DUPLICATE_DATE(31, "The saved record contains a duplicate entry date."),
-    TIME_REC_ID_CHANGED(32, "The Time Record ID cannot be changed."),
-    INACTIVE_TIME_RECORD(33, "The Time Record cannot be inactivated."),
-    EMP_REC_ID_CHANGED(34, "The Employee ID cannot be changed."),
-    ENTRY_ID_CHANGED (35, "The Entry ID cannot be changed."),
-    ENTRY_ID_REMOVED (36, "The Entry ID cannot be removed."),
-    ENTRY_ID_ADDED (37, "A new Entry ID cannot be added."),
-    ENTRY_CHANGED (38, "The Entry cannot be changed."),
-    DUPLICATE_ENTRY_ID (40, "A duplicate Entry ID was found."),
-    DUPLICATE_ENTRY (41, "A duplicate Entry was found."),
-    PAYTYPE_CHANGED (42, "Paytype has changed."),
-    ORIGIN_DATE_CHANGED (44, "Origin Date has changed."),
     ;
 
     private int code;

@@ -8,12 +8,7 @@ public class TimeRecordErrorException extends RuntimeException implements Serial
 
     private static final long serialVersionUID = -3297982830752113617L;
 
-    private static final ViewObject defaultErrorData = new ViewObject() {
-        @Override
-        public String getViewType() {
-            return "empty-error-data";
-        }
-    };
+    private static final ViewObject defaultErrorData = () -> "empty-error-data";
 
     private TimeRecordErrorCode code;
     private ViewObject errorData;

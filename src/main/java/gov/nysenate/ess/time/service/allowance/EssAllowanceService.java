@@ -52,7 +52,9 @@ public class EssAllowanceService implements AllowanceService {
 
         // Set Allowance usage, getting dates not covered by hourly work payments
         RangeSet<LocalDate> unpaidDates = getBaseAllowanceUsage(allowanceUsage, transHistory);
-        getTimesheetAllowanceUsage(allowanceUsage, unpaidDates);
+        if (!unpaidDates.isEmpty()) {
+            getTimesheetAllowanceUsage(allowanceUsage, unpaidDates);
+        }
         return allowanceUsage;
     }
 
