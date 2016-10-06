@@ -52,7 +52,7 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
                 .add(dateRangeTRV)
                 .add(recordScopeTRV)
                 .add(scopePermissionTRV)
-//                .add(permittedUserScopeTRV)
+                .add(permittedUserScopeTRV)
                 // TODO: ADD SOME more VALIDATORS
                 .build();
     }

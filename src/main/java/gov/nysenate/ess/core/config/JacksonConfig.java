@@ -38,6 +38,7 @@ public class JacksonConfig {
     private void configureMapper(ObjectMapper objectMapper) {
         objectMapper.disable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.registerModule(new GuavaModule());
         objectMapper.registerModule(new JSR310Module());

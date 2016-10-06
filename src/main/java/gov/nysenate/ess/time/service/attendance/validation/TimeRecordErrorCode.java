@@ -12,7 +12,7 @@ public enum TimeRecordErrorCode {
     INVALID_STATUS_CHANGE(3, "Attempt to change time record status in violation of time record life cycle"),
     PREVIOUS_UNSUBMITTED_RECORD(4, "Attempt to submit record with prior unsubmitted salaried record"),
     ENTRY_CANNOT_CHANGE_IN_SCOPE (5, "Attempt to modify Time Entry in scope without needed permissions."),
-    INVALID_TIME_RECORD_SCOPE (5, "Attempt to modify Time Entry with an invalid scope."),
+    INVALID_TIME_RECORD_SCOPE (6, "Attempt to modify Time Record with an inappropriate user scope."),
 
 
     /** Time Entry errors */
@@ -39,7 +39,6 @@ public enum TimeRecordErrorCode {
     DUPLICATE_ENTRY (41, "A duplicate Entry was found."),
     PAYTYPE_CHANGED (42, "Paytype has changed."),
     ORIGIN_DATE_CHANGED (44, "Origin Date has changed."),
-    SUPERVISORS_OWN_TIMESHEET (45, "Supervisor cannot approve/disapprove his/her own Timesheet.")
     ;
 
     private int code;
