@@ -43,8 +43,6 @@ public class CommonAttributeFilter implements Filter
     public static String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
     @Value("${runtime.level}") private String runtimeLevel;
     @Value("${login.url}") private String loginUrl;
-    @Value("${cache.frontend.expire}")
-    private long webCache;
     @Value("${image.url}")
     private String imageUrl;
     @Value("${application.version}")

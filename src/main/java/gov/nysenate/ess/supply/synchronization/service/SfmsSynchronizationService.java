@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.synchronization.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.requisition.Requisition;
@@ -19,7 +20,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -34,6 +38,8 @@ public class SfmsSynchronizationService {
     @Autowired private SfmsSynchronizationProcedure synchronizationProcedure;
     @Autowired private ObjectMapper xmlObjectMapper;
     @Autowired private DateTimeFactory dateTimeFactory;
+    @Autowired
+    private SlackChatService slackChatService;
 
     /**
      * Inserts supply requisitions into SFMS for all requisitions where savedInSfms = <code>false</code>
@@ -53,6 +59,7 @@ public class SfmsSynchronizationService {
         // Get all requisitions not saved in sfms since app release in 2016.
         LocalDateTime start = LocalDateTime.of(2016, 1, 1, 0, 0);
         LocalDateTime end = dateTimeFactory.now();
+        StringBuffer sb = new StringBuffer();
         Range<LocalDateTime> dateRange = Range.closed(start, end);
         List<Requisition> requisitions = requisitionService.searchRequisitions("All", "All",
                                                                                EnumSet.of(RequisitionStatus.APPROVED),
@@ -64,11 +71,27 @@ public class SfmsSynchronizationService {
                 synchronizationProcedure.synchronizeRequisition(toXml(requisition));
                 requisitionService.savedInSfms(requisition.getRequisitionId(), true); // try to sync
             } catch (DataAccessException ex) {
-                logger.error("Error synchronizing requisition " + requisition.getRequisitionId()
-                             + " with SFMS. Exception is : " + ex.getMessage());
+                String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
+                        + " with SFMS. Exception is : " + ex.getMessage();
+                logger.error(msg);
+                sb.append(msg + "\n");
                 requisitionService.savedInSfms(requisition.getRequisitionId(), false); // fail to sync
             }
         }
+        if (sb.length() > 0)
+            sendMessageToSlack(sb.toString());
+    }
+
+    /**
+     * Send error message to slack channel
+     *
+     * @param s msg
+     */
+    private void sendMessageToSlack(String s) {
+        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Date dateobj = new Date();
+        slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: \n");
+        slackChatService.sendMessage(s);
     }
 
     /**
