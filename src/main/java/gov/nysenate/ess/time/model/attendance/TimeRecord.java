@@ -81,21 +81,36 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.timeEntryMap = other.timeEntryMap;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TimeRecord)) return false;
-        TimeRecord record = (TimeRecord) o;
-        return Objects.equal(employeeId, record.employeeId) &&
-                Objects.equal(beginDate, record.beginDate) &&
-                Objects.equal(endDate, record.endDate) &&
-                Objects.equal(payPeriod, record.payPeriod);
+        TimeRecord that = (TimeRecord) o;
+        return active == that.active &&
+                Objects.equal(timeRecordId, that.timeRecordId) &&
+                Objects.equal(employeeId, that.employeeId) &&
+                Objects.equal(supervisorId, that.supervisorId) &&
+                Objects.equal(lastUpdater, that.lastUpdater) &&
+                Objects.equal(respHeadCode, that.respHeadCode) &&
+                Objects.equal(beginDate, that.beginDate) &&
+                Objects.equal(endDate, that.endDate) &&
+                Objects.equal(payPeriod, that.payPeriod) &&
+                Objects.equal(remarks, that.remarks) &&
+                Objects.equal(exceptionDetails, that.exceptionDetails) &&
+                Objects.equal(processedDate, that.processedDate) &&
+                recordStatus == that.recordStatus &&
+                Objects.equal(originalUserId, that.originalUserId) &&
+                Objects.equal(updateUserId, that.updateUserId) &&
+                Objects.equal(createdDate, that.createdDate) &&
+                Objects.equal(updateDate, that.updateDate) &&
+                Objects.equal(timeEntryMap, that.timeEntryMap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(employeeId, beginDate, endDate, payPeriod);
+        return Objects.hashCode(timeRecordId, employeeId, supervisorId, lastUpdater, respHeadCode, active, beginDate,
+                endDate, payPeriod, remarks, exceptionDetails, processedDate, recordStatus, originalUserId,
+                updateUserId, createdDate, updateDate, timeEntryMap);
     }
 
     @Override
