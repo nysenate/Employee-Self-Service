@@ -1,13 +1,9 @@
 package gov.nysenate.ess.time.service.attendance.validation;
 
-import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
-import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.util.ShiroUtils;
-import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
+import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -56,7 +52,7 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
                 testSupervisorScope(prevRecord, empId);
                 break;
             case PERSONNEL:
-                testPersonnelScope(prevRecord, empId);
+//                testPersonnelScope(prevRecord, empId);
                 break;
             default:
                 throw new IllegalStateException("Time record (id: " + record.getTimeRecordId() +
