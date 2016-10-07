@@ -94,8 +94,7 @@ public class SfmsSynchronizationService {
     private void sendMessageToSlack(String s) {
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Date dateobj = new Date();
-        slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: \n");
-        slackChatService.sendMessage(s);
+        slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: " + s + "\n");
     }
 
     /**
