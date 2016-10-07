@@ -22,8 +22,6 @@ public class SupplyItemDaoTests extends BaseTests {
     @Autowired
     private OracleSupplyItemDao itemDao;
 
-    private static final int TEST_ITEM_ID = 111;
-
     @Test
     public void canGetItems() {
         PaginatedList<SupplyItem> items = itemDao.getSupplyItems(LimitOffset.ALL);
@@ -38,15 +36,11 @@ public class SupplyItemDaoTests extends BaseTests {
         assertTrue(paginatedItems.getTotal() > 25);
     }
 
-    /**
-     * NOTE: expected item with id 111 is randomly taken from database. May not exist in the future.
-     */
     @Test
     public void canGetItemById() {
-        // TODO: item name and suggested max qty will have to be adjusted when those values get added to the database.
-        SupplyItem expected = new SupplyItem(111, "K1", "KO-REC-TYPE TAPE/1 LINE SIZE GR-23031",
-                                             "1", new Category("KORECTYPE"), 1, 1, 1, ItemVisibility.VISIBLE);
-        SupplyItem actual = itemDao.getItemById(TEST_ITEM_ID);
+        SupplyItem expected = new SupplyItem(111, "K1", "LABELING AND COVER UP TAPE",
+                                             "1", new Category("KORECTYPE"), 2, 4, 1, ItemVisibility.VISIBLE, true);
+        SupplyItem actual = itemDao.getItemById(111);
         assertThat(actual, equalTo(expected));
     }
 
@@ -57,5 +51,16 @@ public class SupplyItemDaoTests extends BaseTests {
         categories.add(new Category("CLIPS"));
         PaginatedList<SupplyItem> items = itemDao.getSupplyItemsByCategories(categories, LimitOffset.ALL);
         items.getResults().forEach(item -> assertTrue(categories.contains(item.getCategory())));
+    }
+
+    /**
+     * A few items inventory counts are not tracked in SFMS.
+     * For these items, the field cdsensuppieditem = 'Y' and cdstockitem = 'N'.
+     * These are still supply items and they should show up will all other supply items.
+     */
+    @Test
+    public void getsExceptionalStockItems() {
+        SupplyItem actual = itemDao.getItemById(2973);
+        assertThat(actual.isInventoryTracked(), is(false));
     }
 }

@@ -6,6 +6,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
@@ -26,6 +27,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SfmsSynchronizationService {
@@ -67,15 +70,16 @@ public class SfmsSynchronizationService {
                                                                                "false", LimitOffset.ALL, "All").getResults();
         logger.info("Synchronizing {} requisitions with SFMS.", requisitions.size());
         for (Requisition requisition : requisitions) {
+            Requisition sfmsRequisition = filterRequisitionForSfms(requisition);
             try {
-                synchronizationProcedure.synchronizeRequisition(toXml(requisition));
-                requisitionService.savedInSfms(requisition.getRequisitionId(), true); // try to sync
+                synchronizationProcedure.synchronizeRequisition(toXml(sfmsRequisition));
+                requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), true); // try to sync
             } catch (DataAccessException ex) {
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
                 logger.error(msg);
                 sb.append(msg + "\n");
-                requisitionService.savedInSfms(requisition.getRequisitionId(), false); // fail to sync
+                requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), false); // fail to sync
             }
         }
         if (sb.length() > 0)
@@ -92,6 +96,17 @@ public class SfmsSynchronizationService {
         Date dateobj = new Date();
         slackChatService.sendMessage(df.format(dateobj) + " Sfms Synchronization Errors: \n");
         slackChatService.sendMessage(s);
+    }
+
+    /**
+     * Removes line items of 0 quantity and items that are not tracked in inventory from a requisition.
+     * This is done because these items should not be synchronized with SFMS.
+     */
+    private Requisition filterRequisitionForSfms(Requisition requisition) {
+        Set<LineItem> filteredLineItems = requisition.getLineItems().stream()
+                                                     .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().isInventoryTracked())
+                                                     .collect(Collectors.toSet());
+        return requisition.setLineItems(filteredLineItems);
     }
 
     /**

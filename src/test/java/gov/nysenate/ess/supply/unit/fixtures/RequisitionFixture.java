@@ -47,7 +47,7 @@ public class RequisitionFixture {
     }
 
     public static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(2, "AA", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
+        SupplyItem stubItem = new SupplyItem(2, "AA", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE, true);
         Set<LineItem> stubLineItems = new HashSet<>();
         stubLineItems.add(new LineItem(stubItem, 1));
         return stubLineItems;

@@ -15,6 +15,7 @@ public class SupplyItemView implements ViewObject {
     protected int suggestedMaxQty;
     protected int standardQuantity;
     protected String visibility;
+    protected boolean isInventoryTracked;
 
     public SupplyItemView() {
     }
@@ -29,11 +30,13 @@ public class SupplyItemView implements ViewObject {
         this.suggestedMaxQty = item.getMaxQtyPerMonth();
         this.standardQuantity = item.getUnitStandardQuantity();
         this.visibility = item.getVisibility().toString();
+        this.isInventoryTracked = item.isInventoryTracked();
     }
 
     public SupplyItem toSupplyItem() {
         return new SupplyItem(id, commodityCode, description, unit, category.toCategory(),
-                              maxQtyPerOrder, suggestedMaxQty, standardQuantity, ItemVisibility.valueOf(visibility));
+                              maxQtyPerOrder, suggestedMaxQty, standardQuantity,
+                              ItemVisibility.valueOf(visibility), isInventoryTracked);
     }
 
     public int getId() {
@@ -70,6 +73,10 @@ public class SupplyItemView implements ViewObject {
 
     public String getVisibility() {
         return visibility;
+    }
+
+    public boolean isInventoryTracked() {
+        return isInventoryTracked;
     }
 
     @Override

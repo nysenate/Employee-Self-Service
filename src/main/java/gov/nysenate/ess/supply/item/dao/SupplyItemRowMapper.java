@@ -34,7 +34,8 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
                 rs.getInt("numaxunitord"),
                 rs.getInt("numaxunitmon"),
                 rs.getInt("AmStdUnit"),
-                visibility
+                visibility,
+                !rs.getString("cdsensuppieditem").equals("Y")
         );
     }
 }

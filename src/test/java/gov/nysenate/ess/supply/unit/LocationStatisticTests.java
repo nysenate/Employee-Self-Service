@@ -115,7 +115,7 @@ public class LocationStatisticTests {
     }
 
     private LineItem createLineItem(String commodityCode, int quantity) {
-        SupplyItem stubItem = new SupplyItem(1, commodityCode, "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
+        SupplyItem stubItem = new SupplyItem(1, commodityCode, "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE, true);
         return new LineItem(stubItem, quantity);
     }
 }
