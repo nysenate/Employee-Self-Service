@@ -120,8 +120,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     // TODO: PUT?
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
-        requisitionView.setModifiedBy(getSubjectEmployeeView());
-        requisitionService.saveRequisition(requisitionView.toRequisition());
+        Requisition requisition = requisitionView.toRequisition();
+        requisition = requisition.setModifiedBy(getSubjectEmployeeView().toEmployee());
+        requisitionService.saveRequisition(requisition);
     }
 
     @RequestMapping(value = "/history/{id}")

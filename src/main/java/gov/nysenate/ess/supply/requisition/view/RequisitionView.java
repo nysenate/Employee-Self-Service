@@ -88,17 +88,9 @@ public class RequisitionView implements ViewObject {
         return requisitionId;
     }
 
-    public void setRequisitionId(int requisitionId) {
-        this.requisitionId = requisitionId;
-    }
-
     @XmlElement
     public int getRevisionId() {
         return revisionId;
-    }
-
-    public void setRevisionId(int revisionId) {
-        this.revisionId = revisionId;
     }
 
     @XmlElement
@@ -106,17 +98,9 @@ public class RequisitionView implements ViewObject {
         return customer;
     }
 
-    public void setCustomer(EmployeeView customer) {
-        this.customer = customer;
-    }
-
     @XmlElement
     public LocationView getDestination() {
         return destination;
-    }
-
-    public void setDestination(LocationView destination) {
-        this.destination = destination;
     }
 
     @XmlElement
@@ -124,8 +108,6 @@ public class RequisitionView implements ViewObject {
         return lineItems;
     }
 
-    public void setLineItems(Set<LineItemView> lineItems) {
-        this.lineItems = lineItems;
     }
 
     @XmlElement
@@ -133,17 +115,9 @@ public class RequisitionView implements ViewObject {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     @XmlElement
     public EmployeeView getIssuer() {
         return issuer;
-    }
-
-    public void setIssuer(EmployeeView issuer) {
-        this.issuer = issuer;
     }
 
     @XmlElement
@@ -151,17 +125,9 @@ public class RequisitionView implements ViewObject {
         return note;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     @XmlElement
     public EmployeeView getModifiedBy() {
         return modifiedBy;
-    }
-
-    public void setModifiedBy(EmployeeView modifiedBy) {
-        this.modifiedBy = modifiedBy;
     }
 
     @XmlElement
@@ -169,17 +135,9 @@ public class RequisitionView implements ViewObject {
         return modifiedDateTime;
     }
 
-    public void setModifiedDateTime(LocalDateTime modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
-    }
-
     @XmlElement
     public LocalDateTime getOrderedDateTime() {
         return orderedDateTime;
-    }
-
-    public void setOrderedDateTime(LocalDateTime orderedDateTime) {
-        this.orderedDateTime = orderedDateTime;
     }
 
     @XmlElement
@@ -187,17 +145,9 @@ public class RequisitionView implements ViewObject {
         return processedDateTime;
     }
 
-    public void setProcessedDateTime(LocalDateTime processedDateTime) {
-        this.processedDateTime = processedDateTime;
-    }
-
     @XmlElement
     public LocalDateTime getCompletedDateTime() {
         return completedDateTime;
-    }
-
-    public void setCompletedDateTime(LocalDateTime completedDateTime) {
-        this.completedDateTime = completedDateTime;
     }
 
     @XmlElement
@@ -205,17 +155,9 @@ public class RequisitionView implements ViewObject {
         return approvedDateTime;
     }
 
-    public void setApprovedDateTime(LocalDateTime approvedDateTime) {
-        this.approvedDateTime = approvedDateTime;
-    }
-
     @XmlElement
     public LocalDateTime getRejectedDateTime() {
         return rejectedDateTime;
-    }
-
-    public void setRejectedDateTime(LocalDateTime rejectedDateTime) {
-        this.rejectedDateTime = rejectedDateTime;
     }
 
     @XmlElement
@@ -223,16 +165,9 @@ public class RequisitionView implements ViewObject {
         return lastSfmsSyncDateTime;
     }
 
-    public void setLastSfmsSyncDateTime(LocalDateTime lastSfmsSyncDateTime) {
-        this.lastSfmsSyncDateTime = lastSfmsSyncDateTime;
-    }
     @XmlElement
     public boolean isSavedInSfms() {
         return savedInSfms;
-    }
-
-    public void setSavedInSfms(boolean savedInSfms) {
-        this.savedInSfms = savedInSfms;
     }
 
     @Override
