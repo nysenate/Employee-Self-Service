@@ -59,7 +59,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         locationAutocompleteService.initWithResponsibilityHeadLocations()
             .then(destinationService.queryDefaultDestination)
             .then(setDestinationCode)
-            .then(setToSelectingDestinationState);
+            .then(setToSelectingDestinationState)
+            .catch(loadDestinationsError);
     }
 
     function setDestinationCode() {
@@ -74,6 +75,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.state = $scope.states.SELECTING_DESTINATION;
     }
 
+    function loadDestinationsError(response) {
+        modals.open('500', {action: 'get valid order destinations', details: response});
+    }
+
     function loadShoppingState() {
         $scope.state = $scope.states.LOADING;
         $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
@@ -83,12 +88,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             .then(setAllowances)
             .then(setToShoppingState)
             .then(setDestinationDescription)
-            .then(checkSortOrder);
+            .then(checkSortOrder)
+            .catch(loadItemsError);
     }
 
-    function checkSortOrder(allowance) {
-        $scope.updateSort();
-    }
     function saveAllowances(allowanceResponse) {
         allowances = allowanceResponse.result.itemAllowances;
     }
@@ -110,13 +113,21 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         }
     }
 
+    function setToShoppingState() {
+        $scope.state = $scope.states.SHOPPING;
+    }
+
+    function checkSortOrder(allowance) {
+        $scope.updateSort();
+    }
+
+    function loadItemsError(response) {
+        modals.open('500', {action: 'get supply items', details: response});
+    }
+
     function Reset() {
         $scope.filter.searchTerm = "";
         filterAllowances();
-    }
-
-    function setToShoppingState() {
-        $scope.state = $scope.states.SHOPPING;
     }
 
     /** --- Search --- */
