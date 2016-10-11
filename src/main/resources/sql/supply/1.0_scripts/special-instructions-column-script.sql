@@ -1,1 +1,1 @@
-alter table requisition_content add column special_instructions text
+alter table supply.requisition_content add column special_instructions text
