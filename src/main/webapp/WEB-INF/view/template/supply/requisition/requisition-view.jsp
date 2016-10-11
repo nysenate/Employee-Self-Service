@@ -69,7 +69,9 @@
               <b>Status:</b> {{selectedVersion.status}}
             </div>
             <div class="col-4-12">
-              <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
+              <b ng-if="selectedVersion.status === 'PENDING' || selectedVersion.status === 'PROCESSING'">Issuer: </b>
+              <b ng-if="selectedVersion.status !== 'PENDING' && selectedVersion.status !== 'PROCESSING'">Issued By:</b>
+              {{selectedVersion.issuer.lastName}}
             </div>
             <div class="col-4-12">
               <b>Issued Date:</b>
@@ -177,7 +179,9 @@
       <div class="content-info">
         <div class="grid padding-10">
           <div class="col-4-12">
-            <b>Issued By:</b> {{selectedVersion.issuer.lastName}}
+            <b ng-if="selectedVersion.status === 'PENDING' || selectedVersion.status === 'PROCESSING'">Issuer: </b>
+            <b ng-if="selectedVersion.status !== 'PENDING' && selectedVersion.status !== 'PROCESSING'">Issued By:</b>
+            {{selectedVersion.issuer.lastName}}
           </div>
           <div class="col-4-12">
             <b>Issued Date:</b>
