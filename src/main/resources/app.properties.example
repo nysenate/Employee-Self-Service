@@ -154,3 +154,10 @@ cache.frontend.expire = 60
 
 application.version=@project.version@
 
+# --- Slack Configuration -----------------------------------------------------
+
+# The webhook url used to send slack messages.  See Setup Instructions at https://nysstech.slack.com/services/3391217030
+slack.webhook.url =
+
+# Limit the number of lines output for slack notifications (default 5)
+slack.notification.line.limit = 5
