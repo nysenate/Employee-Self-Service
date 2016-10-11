@@ -22,6 +22,7 @@ public class RequisitionView implements ViewObject {
     protected EmployeeView customer;
     protected LocationView destination;
     protected Set<LineItemView> lineItems;
+    protected String specialInstructions;
     protected String status;
     protected EmployeeView issuer;
     protected String note;
@@ -46,6 +47,7 @@ public class RequisitionView implements ViewObject {
         this.lineItems = requisition.getLineItems().stream()
                                     .map(LineItemView::new)
                                     .collect(Collectors.toSet());
+        this.specialInstructions = requisition.getSpecialInstructions().orElse(null);
         this.status = requisition.getStatus().toString();
         this.issuer = requisition.getIssuer().map(EmployeeView::new).orElse(null);
         this.note = requisition.getNote().orElse(null);
@@ -68,6 +70,7 @@ public class RequisitionView implements ViewObject {
                 .withCustomer(customer.toEmployee())
                 .withDestination(destination.toLocation())
                 .withLineItems(lineItems.stream().map(LineItemView::toLineItem).collect(Collectors.toSet()))
+                .withSpecialInstructions(specialInstructions)
                 .withStatus(RequisitionStatus.valueOf(status))
                 .withIssuer(issuer == null ? null : issuer.toEmployee())
                 .withNote(note)
@@ -108,6 +111,9 @@ public class RequisitionView implements ViewObject {
         return lineItems;
     }
 
+    @XmlElement
+    public String getSpecialInstructions() {
+        return specialInstructions;
     }
 
     @XmlElement

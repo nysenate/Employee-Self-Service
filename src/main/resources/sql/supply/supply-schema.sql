@@ -175,6 +175,7 @@ CREATE TABLE requisition_content (
   requisition_id integer NOT NULL,
   revision_id integer NOT NULL,
   destination text NOT NULL,
+  special_instructions text,
   status requisition_status NOT NULL,
   issuing_emp_id smallint,
   note text,

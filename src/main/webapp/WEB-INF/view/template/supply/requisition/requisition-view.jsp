@@ -87,16 +87,25 @@
       </div>
 
 
-      <%--Note--%>
-      <div class="content-container"
-           ng-show="selectedVersion.note">
+      <%--Notes--%>
+      <div class="content-container" ng-show="selectedVersion.note || selectedVersion.specialInstructions">
         <div class="content-info">
-          <div class="grid padding-10">
-            <div class="col-2-12 bold">
-              Note:
+          <div class="grid padding-10" ng-show="selectedVersion.note">
+            <div class="col-4-12 bold">
+              Supply Note:
             </div>
-            <div class="col-10-12">
+            <div class="col-8-12">
               {{selectedVersion.note}}
+            </div>
+          </div>
+          <div ng-show="selectedVersion.note && selectedVersion.specialInstructions"
+               style="border-bottom: black 1px solid;"></div>
+          <div class="grid padding-10" ng-show="selectedVersion.specialInstructions">
+            <div class="col-4-12 bold">
+              Special Instructions:
+            </div>
+            <div class="col-8-12">
+              {{selectedVersion.specialInstructions}}
             </div>
           </div>
         </div>
@@ -131,8 +140,8 @@
   <%----------------------------------------------%>
 
   <%--The following is a custom representation of the above page to be displayed when printing.--%>
+  <div class="print-only">
     <style type="text/css" media="print"></style>
-    <div class="print-only" style="">
     <div class="supply-order-hero">
       <h2>Requisition Order: {{selectedVersion.requisitionId}}</h2>
     </div>
@@ -183,16 +192,24 @@
       </div>
     </div>
 
-    <%--Note--%>
+    <%--Notes--%>
     <div class="content-container large-print-font-size"
-         ng-show="selectedVersion.note">
+         ng-show="selectedVersion.note || selectedVersion.specialInstructions">
       <div class="content-info">
-        <div class="grid padding-10">
+        <div class="grid padding-10" ng-show="selectedVersion.note">
           <div class="col-2-12 bold">
-            Note:
+            Supply Note:
           </div>
           <div class="col-10-12">
             {{selectedVersion.note}}
+          </div>
+        </div>
+        <div class="grid padding-10" ng-show="selectedVersion.specialInstructions">
+          <div class="col-4-12 bold">
+            Special Instructions:
+          </div>
+          <div class="col-8-12">
+            {{selectedVersion.specialInstructions}}
           </div>
         </div>
       </div>
@@ -224,5 +241,4 @@
       Received By: ________________________________
     </div>
   </div>
-</div>
 </div>

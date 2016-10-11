@@ -56,6 +56,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withCustomer(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withDestination(locationService.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
                 .withLineItems(lineItems)
+                .withSpecialInstructions(submitRequisitionView.getSpecialInstructions())
                 .withStatus(RequisitionStatus.PENDING)
                 .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withOrderedDateTime(LocalDateTime.now())

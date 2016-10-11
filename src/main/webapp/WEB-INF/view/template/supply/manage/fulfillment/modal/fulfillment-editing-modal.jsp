@@ -37,7 +37,7 @@
       <div ng-show="displayRejectInstructions" style="color: #ff0000;">
         A note must be given when rejecting a requisition.
       </div>
-      <div class="padding-top-10" >
+      <div class="padding-top-10">
         <label class="col-1-12">Note:</label>
         <textarea class="col-11-12"
                   ng-model="editableRequisition.note"
@@ -49,22 +49,35 @@
 
     <%--Right Margin--%>
 
-    <div class="col-4-12">
+    <div class="col-4-12 requisition-modal-right-margin">
 
       <%--Change Location--%>
-      <h4 class="content-info">Location:
-        <input type="text"
-               ng-model="newLocationCode"
-               ui-autocomplete="getLocationAutocompleteOptions()"
-               ng-change="onLocationUpdated()"
-               style="width: 100px">
-      </h4>
+      <h4>Location</h4>
+      <input type="text"
+             ng-model="newLocationCode"
+             ui-autocomplete="getLocationAutocompleteOptions()"
+             ng-change="onLocationUpdated()"
+             style="width: 100px;">
 
-      <h4 class="content-info">Ordered: {{originalRequisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
+      <h4>Special Instructions</h4>
+      <div
+          ng-if="originalRequisition.specialInstructions === null || originalRequisition.specialInstructions.length === 0">
+        No instructions provided for this requisition.
+      </div>
+      <div
+          ng-if="originalRequisition.specialInstructions !== null || originalRequisition.specialInstructions.length > 0"
+          class="fulfillment-modal-special-instructions">
+        {{originalRequisition.specialInstructions}}
+      </div>
+
+      <h4>Ordered Date Time </h4>
+      <div>{{originalRequisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</div>
+
+      <h4>Actions</h4>
       <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
         <a target="_blank"
            href="${ctxPath}/supply/requisition/requisition-view?requisition={{originalRequisition.requisitionId}}&print=true">
-          Print
+          Print Requisition
         </a>
       </div>
 

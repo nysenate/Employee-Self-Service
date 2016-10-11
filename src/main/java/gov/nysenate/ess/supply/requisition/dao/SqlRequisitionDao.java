@@ -167,6 +167,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("revisionId", requisition.getRevisionId())
                 .addValue("customerId", requisition.getCustomer().getEmployeeId())
                 .addValue("destination", requisition.getDestination().getLocId().toString())
+                .addValue("specialInstructions", requisition.getSpecialInstructions().orElse(null))
                 .addValue("status", requisition.getStatus().toString())
                 .addValue("issuerId", requisition.getIssuer().map(Employee::getEmployeeId).orElse(null))
                 .addValue("note", requisition.getNote().orElse(null))
@@ -217,9 +218,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         /** Never insert the revision id, let it auto increment. */
         INSERT_REQUISITION_CONTENT(
                 "INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status, \n" +
-                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time) \n" +
+                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions) \n" +
                 "VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status, \n" +
-                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime)"
+                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions)"
         ),
 
         GET_REQUISITION_BY_ID(
@@ -244,7 +245,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                         "WHERE c.destination LIKE :destination AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId  AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
                         "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
         ),
-
 
         /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
          * to complete this query. */
@@ -304,6 +304,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withCustomer(employeeInfoService.getEmployee(rs.getInt("customer_id")))
                     .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("revision_id")))
+                    .withSpecialInstructions(rs.getString("special_instructions"))
                     .withStatus(RequisitionStatus.valueOf(rs.getString("status")))
                     .withIssuer(rs.getInt("issuing_emp_id") == 0 ? null : employeeInfoService.getEmployee(rs.getInt("issuing_emp_id")))
                     .withNote(rs.getString("note"))

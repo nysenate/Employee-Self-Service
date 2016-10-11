@@ -21,8 +21,8 @@
     </div>
   </div>
 
-  <div class="content-container">
-    <div class="content-info" ng-show="cartHasItems()">
+  <div class="content-container" ng-show="cartHasItems()">
+    <div class="content-info">
       <div class="padding-10" style="display: flex; justify-content: space-between;">
         <div style="display: inline-block;">
           <span class="supply-text">Destination: </span>{{destinationCode}} ({{destinationDescription}})
@@ -63,18 +63,23 @@
         </div>
       </div>
     </div>
+    <hr/>
 
-    <div ng-show="cartHasItems()" class="grid">
-      <hr/>
-      <div class="col-8-12 force-min-height"></div>
-      <div class="col-2-12">
+    <div class="cart-checkout-container">
+      <div class="special-instructions-container">
+        <label for="special-instructions-area">Special Instructions</label>
+        <textarea id="special-instructions-area" class="special-instructions-text-area"
+                  ng-model="specialInstructions">
+        </textarea>
+      </div>
+      <%--<div class="col-8-12 force-min-height"></div>--%>
+      <div class="float-right">
         <a href="${ctxPath}/supply/order">
-          <input class="submit-button margin-10" type="button" value="Continue Browsing">
+          <input class="submit-button" type="button" value="Continue Browsing">
         </a>
+        <input ng-click="submitOrder()" class="submit-button" type="button" value="Checkout">
       </div>
-      <div class="col-2-12">
-        <input ng-click="submitOrder()" class="submit-button margin-10" type="button" value="Checkout">
-      </div>
+      <div class="clearfix"></div>
     </div>
   </div>
 

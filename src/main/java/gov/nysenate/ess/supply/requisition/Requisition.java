@@ -17,9 +17,10 @@ public final class Requisition {
     private final Employee customer;
     private final Location destination;
     private final ImmutableSet<LineItem> lineItems;
+    private final String specialInstructions; // instructions left by the customer.
     private final RequisitionStatus status;
     private final Employee issuer;
-    private final String note;
+    private final String note; // Note/comment made by supply on a requisition.
     private final Employee modifiedBy;
     private final LocalDateTime modifiedDateTime;
     private final LocalDateTime orderedDateTime;
@@ -36,6 +37,7 @@ public final class Requisition {
         this.customer = checkNotNull(builder.customer, "Requisition requires non null customer.");
         this.destination = checkNotNull(builder.destination, "Requisition requires non null destination.");
         this.lineItems = ImmutableSet.copyOf(builder.lineItems);
+        this.specialInstructions = builder.specialInstructions;
         this.status = checkNotNull(builder.status, "Requisition requires non null status.");
         this.issuer = builder.issuer;
         this.note = builder.note;
@@ -62,6 +64,7 @@ public final class Requisition {
                 .withCustomer(this.customer)
                 .withDestination(this.destination)
                 .withLineItems(this.lineItems)
+                .withSpecialInstructions(this.specialInstructions)
                 .withStatus(this.status)
                 .withIssuer(this.issuer)
                 .withNote(this.note)
@@ -171,6 +174,10 @@ public final class Requisition {
         return lineItems;
     }
 
+    public Optional<String> getSpecialInstructions() {
+        return Optional.ofNullable(specialInstructions);
+    }
+
     public RequisitionStatus getStatus() {
         return status;
     }
@@ -215,7 +222,6 @@ public final class Requisition {
         return Optional.ofNullable(lastSfmsSyncDateTime);
     }
 
-
     public boolean getSavedInSfms() {
         return savedInSfms;
     }
@@ -239,6 +245,7 @@ public final class Requisition {
                ", status=" + status +
                ", issuer=" + issuer +
                ", note='" + note + '\'' +
+               ", specialInstructions='" + specialInstructions + '\'' +
                ", modifiedBy=" + modifiedBy +
                ", modifiedDateTime=" + modifiedDateTime +
                ", orderedDateTime=" + orderedDateTime +
@@ -246,8 +253,8 @@ public final class Requisition {
                ", completedDateTime=" + completedDateTime +
                ", approvedDateTime=" + approvedDateTime +
                ", rejectedDateTime=" + rejectedDateTime +
-                ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
-                ", savedInSfms=" + savedInSfms +
+               ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
+               ", savedInSfms=" + savedInSfms +
                '}';
     }
 
@@ -265,6 +272,8 @@ public final class Requisition {
         if (status != that.status) return false;
         if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
         if (note != null ? !note.equals(that.note) : that.note != null) return false;
+        if (specialInstructions != null ? !specialInstructions.equals(that.specialInstructions) : that.specialInstructions != null)
+            return false;
         if (modifiedBy != null ? !modifiedBy.equals(that.modifiedBy) : that.modifiedBy != null) return false;
         if (modifiedDateTime != null ? !modifiedDateTime.equals(that.modifiedDateTime) : that.modifiedDateTime != null)
             return false;
@@ -276,9 +285,9 @@ public final class Requisition {
             return false;
         if (approvedDateTime != null ? !approvedDateTime.equals(that.approvedDateTime) : that.approvedDateTime != null)
             return false;
-        if (lastSfmsSyncDateTime != null ? !lastSfmsSyncDateTime.equals(that.lastSfmsSyncDateTime) : that.lastSfmsSyncDateTime != null)
+        if (rejectedDateTime != null ? !rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime != null)
             return false;
-        return rejectedDateTime != null ? rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime == null;
+        return lastSfmsSyncDateTime != null ? lastSfmsSyncDateTime.equals(that.lastSfmsSyncDateTime) : that.lastSfmsSyncDateTime == null;
     }
 
     @Override
@@ -291,6 +300,7 @@ public final class Requisition {
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (issuer != null ? issuer.hashCode() : 0);
         result = 31 * result + (note != null ? note.hashCode() : 0);
+        result = 31 * result + (specialInstructions != null ? specialInstructions.hashCode() : 0);
         result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
         result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
         result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
@@ -312,6 +322,7 @@ public final class Requisition {
         private RequisitionStatus status;
         private Employee issuer;
         private String note;
+        private String specialInstructions;
         private Employee modifiedBy;
         private LocalDateTime modifiedDateTime;
         private LocalDateTime orderedDateTime;
@@ -359,6 +370,11 @@ public final class Requisition {
 
         public Builder withNote(String note) {
             this.note = note;
+            return this;
+        }
+
+        public Builder withSpecialInstructions(String specialInstructions) {
+            this.specialInstructions = specialInstructions;
             return this;
         }
 

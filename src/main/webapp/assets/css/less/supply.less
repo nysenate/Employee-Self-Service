@@ -64,7 +64,7 @@
 
 .warn-select {
   box-shadow: 0 0 10px 50px #ffbcbc inset;
-  -webkit-box-shadow : 0 0 10px 50px #ffbcbc inset;
+  -webkit-box-shadow: 0 0 10px 50px #ffbcbc inset;
 }
 
 .supply-title {
@@ -74,6 +74,48 @@
 
 .supply-special-item {
   background-color: lighten(@redorange, 35%);
+}
+
+.special-instructions-container {
+  float: left;
+  label {
+    .font-weight-bold;
+    margin: 0 10px 0 10px;
+    line-height: 55px;
+  }
+  .special-instructions-text-area {
+    margin: 5px 0;
+    height: 45px;
+    width: 375px;
+    border: 1px solid #ccc;
+    resize: vertical;
+  }
+}
+
+.cart-checkout-container {
+  padding: 10px;
+  background: #f9f9f9;
+  input[type="button"] {
+    margin-top: 10px;
+    width: 12em;
+  }
+}
+
+.requisition-modal-right-margin {
+  h4 {
+    .content-info;
+  }
+  input {
+    margin-bottom: 10px;
+  }
+  div {
+    margin-bottom: 10px;
+  }
+  .fulfillment-modal-special-instructions {
+    font-weight: 600;
+    color: @blue-purple;
+    margin-bottom: 10px;
+  }
 }
 
 .expandable-div-header {
@@ -144,7 +186,6 @@
   padding-top: 0;
 }
 
-
 /* --- Custom Select --- */
 
 label.custom-select {
@@ -158,11 +199,11 @@ label.custom-select {
   padding: 2px 25px 3px 5px;
   margin: 0;
   font: inherit;
-  outline:none; /* remove focus ring from Webkit */
+  outline: none; /* remove focus ring from Webkit */
   line-height: 1.2;
   background: #f8f8f8;
 
-  -webkit-appearance:none; /* remove the strong OSX influence from Webkit */
+  -webkit-appearance: none; /* remove the strong OSX influence from Webkit */
 
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
@@ -194,12 +235,13 @@ label.custom-select {
   background: #81ad1f;
   color: white;
 
-  pointer-events:none;
+  pointer-events: none;
 
   -webkit-border-radius: 0 6px 6px 0;
   -moz-border-radius: 0 6px 6px 0;
   border-radius: 0 6px 6px 0;
 }
+
 .no-pointer-events .custom-select:after {
   content: none;
 }

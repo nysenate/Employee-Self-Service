@@ -7,6 +7,7 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
 
     $scope.destinationCode = null;
     $scope.destinationDescription = "";
+    $scope.specialInstructions = null;
 
     $scope.init = function () {
         var destination = destinationService.getDestination();
@@ -38,7 +39,8 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         var params = {
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getCart(),
-            destinationId: cookies.getDestination().locId
+            destinationId: cookies.getDestination().locId,
+            specialInstructions: $scope.specialInstructions
         };
         requisitionApi.save(params, function (response) {
             supplyCart.reset();

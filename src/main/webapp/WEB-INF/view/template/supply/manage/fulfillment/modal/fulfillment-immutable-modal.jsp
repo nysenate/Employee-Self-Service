@@ -10,7 +10,7 @@
 
   <%--Immutable Order content--%>
 
-  <div class="grid grid-padding">
+  <div class="grid grid-padding content-info">
     <div class="col-8-12">
       <div class="content-container" style="overflow-y: auto; max-height: 300px;">
         <table class="ess-table supply-listing-table">
@@ -44,19 +44,28 @@
 
     <%--Right Margin--%>
 
-    <div class="col-4-12">
-      <h4 class="content-info">Location: {{requisition.destination.locId}}</h4>
-      <h4 class="content-info">Ordered: {{requisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
-      <h4 class="content-info">Issued By: {{requisition.issuer.lastName}}</h4>
-      <h4 class="content-info" ng-show="requisition.status !== 'CANCELED'" >Approved: {{requisition.approvedDateTime | date:'MM/dd/yy h:mm a'}}</h4>
+    <div class="col-4-12 requisition-modal-right-margin">
+      <h4 class="content-info">Location</h4>
+      <div>{{requisition.destination.locId}}</div>
 
-      <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
-        <a target="_blank" href="${ctxPath}/supply/requisition/requisition-view?requisition={{requisition.requisitionId}}&print=true">
-          Print
+      <h4 class="content-info">Ordered Date Time</h4>
+      <div>{{requisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</div>
+
+      <h4 class="content-info">Issued By</h4>
+      <div>{{requisition.issuer.lastName}}</div>
+
+      <h4 class="content-info" ng-show="requisition.status !== 'CANCELED'">Approved Date Time</h4>
+      <div>{{requisition.approvedDateTime | date:'MM/dd/yy h:mm a'}}</div>
+
+      <h4>Actions</h4>
+      <div>
+        <a target="_blank"
+           href="${ctxPath}/supply/requisition/requisition-view?requisition={{requisition.requisitionId}}&print=true">
+          Print Requisition
         </a>
-        <a target="#" ng-click="close()" style="padding-left: 30px">
-          Exit
-        </a>
+      </div>
+      <div>
+        <a target="#" ng-click="close()">Exit</a>
       </div>
 
       <div class="text-align-center" ng-show="requisition.status === 'CANCELED'">
