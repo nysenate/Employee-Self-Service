@@ -303,7 +303,7 @@ essSupply.directive('wholeNumberValidator', [function () {
         require: 'ngModel',
         link: function (scope, elm, attrs, ctrl) {
             ctrl.$validators.wholeNumber = function (modelValue, viewValue) {
-                return modelValue % 1 === 0 && modelValue !== null;
+                return modelValue % 1 === 0 && modelValue !== null && modelValue < 30000;
             };
         }
     }
