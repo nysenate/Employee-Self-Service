@@ -48,7 +48,7 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
             cookies.resetDestination();
             modals.open('supply-cart-checkout-modal', response);
         }, function (response) {
-            console.log(response)
+            modals.open('500', {action: 'checkout cart', details: response});
         });
     };
 
