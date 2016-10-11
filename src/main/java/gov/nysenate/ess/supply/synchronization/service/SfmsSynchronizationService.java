@@ -74,6 +74,8 @@ public class SfmsSynchronizationService {
             try {
                 synchronizationProcedure.synchronizeRequisition(toXml(sfmsRequisition));
                 requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), true); // try to sync
+//                String msg = "Successful synchronizing requisition " + requisition.getRequisitionId();
+//                sb.append(msg + "\n");
             } catch (DataAccessException ex) {
                 String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
                         + " with SFMS. Exception is : " + ex.getMessage();
