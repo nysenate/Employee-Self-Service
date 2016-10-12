@@ -1,5 +1,6 @@
 package gov.nysenate.ess.web.controller.template;
 
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,12 +13,7 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     private static final Logger logger = LoggerFactory.getLogger(SupplyTemplateCtrl.class);
     protected static final String SUPPLY_TMPL_BASE_URL = TMPL_BASE_URL + "/supply";
 
-    /** --- History --- */
-
-    @RequestMapping(value="/history/history")
-    public String requisitionHistory() {
-        return SUPPLY_TMPL_BASE_URL + "/history/history";
-    }
+    private static final String NOT_SUPPLY_EMPLOYEE_PAGE = SUPPLY_TMPL_BASE_URL + "/error/not-supply-employee";
 
     @RequestMapping(value="/order-history")
     public String orderHistory() {
@@ -28,27 +24,34 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
 
     @RequestMapping(value="/manage/fulfillment")
     public String manageOrder() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/fulfillment";
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/fulfillment");
+    }
+
+    /** --- History --- */
+
+    @RequestMapping(value="/history/history")
+    public String requisitionHistory() {
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/history/history");
     }
 
     @RequestMapping(value="/manage/reconciliation")
     public String reconciliation() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/reconciliation";
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/manage/reconciliation");
     }
 
     @RequestMapping(value="/manage/fulfillment/modal/fulfillment-editing-modal")
     public String managePendingModal() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/fulfillment-editing-modal";
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/fulfillment-editing-modal");
     }
 
     @RequestMapping(value="/manage/fulfillment/modal/fulfillment-immutable-modal")
     public String manageCompletedModal() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/fulfillment-immutable-modal";
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/fulfillment-immutable-modal");
     }
 
     @RequestMapping(value="/manage/fulfillment/modal/editable-order-listing")
     public String editableOrderListing() {
-        return SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/editable-order-listing";
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/manage/fulfillment/modal/editable-order-listing");
     }
 
     /** --- Order --- */
@@ -95,6 +98,13 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     @RequestMapping(value="/requisition/requisition-view")
     public String viewOrder() {
         return SUPPLY_TMPL_BASE_URL + "/requisition/requisition-view";
+    }
+
+    private String getSupplyEmployeePage(String pageName) {
+        if (SecurityUtils.getSubject().isPermitted("supply:employee")) {
+            return pageName;
+        }
+        return NOT_SUPPLY_EMPLOYEE_PAGE;
     }
 
 }

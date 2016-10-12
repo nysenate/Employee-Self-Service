@@ -12,7 +12,7 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/order/cart">Cart</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/order-history">Order History</a></li>
     </ul>
-    <shiro:hasPermission name="supply:shipment:manage">
+    <shiro:hasPermission name="supply:employee">
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
