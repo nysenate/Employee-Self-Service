@@ -18,7 +18,6 @@ var essApp = angular.module('ess', [
 essCore.constant('appProps', globalProps);
 
 /*Evict all cookies when each time pump the app version*/
-
 essCore.run(['$cookies', function ($cookies) {
     if ($cookies.get("appVersion") === undefined || $cookies.get("appVersion") != globalProps.releaseVersion) {
         var cookies = $cookies.getAll();
@@ -54,99 +53,6 @@ essCore.run(['$cookies', function ($cookies) {
         }
     });
 }]);
-
-/*Time Out*/
-essCore.factory('httpTimeoutChecker', ['appProps', function (appProps) {
-    return {
-        request: function (request) {
-            if (globalProps.timeoutExempt == "true") //timeout exempt 
-                return request;
-            var myvar = '<div id="timeout-confirm" title="Inactive Session Timeout">' +
-                '  <p style="padding-left: 35px;padding-top: 10px;"><span class="ui-icon ui-icon-alert" >' +
-                '</span><span style="font-size: large; align-content: center;">Due to inactivity, this session will timeout in <span id="tick">60</span> seconds. Do you want to continue your work?</span></p>' +
-                '</div>';
-            if ($("#timeout-confirm").length <= 0) {
-                $("body").append(myvar);
-            }
-            $("#timeout-confirm").hide();
-            $("#timeout-confirm").dialog();
-            $("#timeout-confirm").dialog("close");
-            var heartBeatingRate = 5; // in sec
-            var idelTime = 0; // in sec.window.location.pathname
-            localStorage.setItem("alerted", "false");
-            if (localStorage.getItem("hb") == null || window.location.pathname.split("/")[1] != localStorage.getItem("hb").split("/")[1]) {
-                localStorage.setItem("hb", window.location.pathname);
-                var hb = setInterval(function () {
-                    idelTime += heartBeatingRate;
-                    $.ajax({
-                        type: "GET",
-                        url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + idelTime,
-                        success: function (data) {
-                            if (data["message"] > 0 && localStorage.getItem("alerted") == "false") {
-                                //timeout in data["message"]  time
-                                localStorage.setItem("alerted", "true");
-                                var tick = 60;
-                                var ticking = setInterval(function () {
-                                    if (tick >= 0) {
-                                        $("#tick").text(tick);
-                                        tick = tick - 1;
-                                    }
-                                    else {
-                                        $.ajax({
-                                            type: "GET",
-                                            url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + -1,
-                                            success: function (data) {
-                                                window.location.replace(appProps.loginUrl);
-                                                window.location.reload(true);
-                                            }
-                                        });
-                                    }
-                                }, 1000);
-                                $("#timeout-confirm").dialog({
-                                    resizable: false,
-                                    height: 240,
-                                    width: 400,
-                                    modal: true,
-                                    closeOnEscape: false,
-                                    open: function (event, ui) {
-                                        $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-                                        $(".ui-widget-overlay").attr('style', 'position: fixed;top: 0;left: 0; width: 100%;height: 100%; background: #666666 url(ui-bg_diagonals-thick_20_666666_40x40.png) 50% 50% repeat;opacity: .50;filter:Alpha(Opacity=50); ');
-                                    },
-                                    close: function () {
-                                    },
-                                    buttons: {
-                                        "Continue": function () {
-                                            $.ajax({
-                                                type: "GET",
-                                                url: appProps.apiPath + '/timeout/ping.json?sessionId=' + window.globalProps.sessionId + "&idelTime=" + idelTime
-                                            });
-                                            $(this).dialog("close");
-                                            idelTime = 0;
-                                            localStorage.setItem("alerted", "false");
-                                            tick = 60;
-                                            clearInterval(ticking);
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }, heartBeatingRate * 1000);
-
-                $(document).on('change click keydown keypress keyup load  resize scroll select submit', function () {
-                    idelTime = 0;
-                });
-
-                window.onbeforeunload = function (e) {
-                    localStorage.removeItem("hb");
-                    clearInterval(hb);
-                }
-            }
-            return request;
-        }
-    };
-}])
-;
 
 essCore.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.interceptors.push('httpTimeoutChecker');

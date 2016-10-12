@@ -21,9 +21,10 @@ import java.io.IOException;
 public class TimeOutApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private SessionDao sessionDao;
+
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
-    public SimpleResponse ping(@RequestParam String sessionId, @RequestParam String idelTime, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        SimpleResponse simpleResponse = new SimpleResponse(true, sessionDao.ping(idelTime, request, response) + "", "GET");
+    public SimpleResponse ping(@RequestParam String idleTime, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SimpleResponse simpleResponse = new SimpleResponse(true, sessionDao.ping(idleTime, request, response) + "", "GET");
         return simpleResponse;
     }
 }

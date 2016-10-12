@@ -182,3 +182,10 @@ essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function ($resour
 essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/statistics/locations.json')
 }]);
+
+/** --- Timeout API --- */
+
+essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/timeout/ping.json')
+}]);
+

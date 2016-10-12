@@ -30,8 +30,8 @@ public class SessionDao {
         WARNING = TIMEOUT - COUNT_DOWN;
     }
 
-    public Integer ping(String idelTime, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int idle = Integer.valueOf(idelTime);
+    public Integer ping(String idleTime, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int idle = Integer.valueOf(idleTime);
         if (idle == -1) {
             WebUtils.saveRequest(request);
             SecurityUtils.getSubject().logout(); // timeout user's session

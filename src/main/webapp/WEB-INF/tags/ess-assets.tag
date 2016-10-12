@@ -42,6 +42,10 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/internal-error-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/timeout-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/timeout-checker.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/location-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/badge-service.js?v=${releaseVersion}"></script>

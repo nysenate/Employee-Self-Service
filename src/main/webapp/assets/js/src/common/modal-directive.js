@@ -14,6 +14,7 @@ function ($rootScope, $document, modals) {
             '  <div id="modal-backdrop"></div>' +
             '  <div id="common-modals">' +
             '    <div internal-error-modal ng-if="isOpen(\'500\')"></div>' +
+            '    <div timeout-modal ng-if="isOpen(\'timeout\')"></div>' +
             '  </div>' +
             '  <ng-transclude></ng-transclude>' +
             '</div>',
