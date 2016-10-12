@@ -68,5 +68,9 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         supplyCart.reset();
         destinationService.reset();
         locationService.go("/supply/order", true);
-    }
+    };
+    
+    $scope.logout = function () {
+        locationService.go('/logout', true);
+    };
 }
