@@ -166,7 +166,9 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     $scope.warnning = false;
     $scope.addItem = function () {
         var newItem = itemAutocompleteService.getItemFromCommodityCode($scope.newItemCommodityCode);
-        if (!newItem || isItemADuplicate(newItem)) {
+        if (!newItem)
+            return false;
+        if (isItemADuplicate(newItem)) {
             $scope.warnning = true;
             return;
         }
