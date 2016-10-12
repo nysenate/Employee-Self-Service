@@ -74,10 +74,16 @@
       <div>{{originalRequisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</div>
 
       <h4>Actions</h4>
-      <div class="text-align-center" style="padding-bottom: 25px; padding-top: 10px">
+      <div class="text-align-center">
         <a target="_blank"
            href="${ctxPath}/supply/requisition/requisition-view?requisition={{originalRequisition.requisitionId}}&print=true">
           Print Requisition
+        </a>
+      </div>
+      <div ng-if="originalRequisition.status === 'COMPLETED'" class="text-align-center">
+        <a target="_blank"
+           href="${ctxPath}/supply/requisition/requisition-view?requisition={{originalRequisition.requisitionId}}">
+          View History
         </a>
       </div>
 
