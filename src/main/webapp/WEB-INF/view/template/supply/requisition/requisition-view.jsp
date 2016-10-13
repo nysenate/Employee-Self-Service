@@ -163,7 +163,7 @@
       </div>
 
       <div class="content-info">
-        <div class="grid padding-10">
+        <div class="grid padding-5">
           <div class="col-4-12">
             <b>Requested By:</b> {{selectedVersion.customer.fullName}}
           </div>
@@ -177,7 +177,7 @@
       </div>
 
       <div class="content-info">
-        <div class="grid padding-10">
+        <div class="grid padding-5">
           <div class="col-4-12">
             <b ng-if="selectedVersion.status === 'PENDING' || selectedVersion.status === 'PROCESSING'">Issuer: </b>
             <b ng-if="selectedVersion.status !== 'PENDING' && selectedVersion.status !== 'PROCESSING'">Issued By:</b>
@@ -200,7 +200,7 @@
     <div class="content-container large-print-font-size"
          ng-show="selectedVersion.note || selectedVersion.specialInstructions">
       <div class="content-info">
-        <div class="grid padding-10" ng-show="selectedVersion.note">
+        <div class="grid padding-5" ng-show="selectedVersion.note">
           <div class="col-2-12 bold">
             Supply Note:
           </div>
@@ -208,7 +208,7 @@
             {{selectedVersion.note}}
           </div>
         </div>
-        <div class="grid padding-10" ng-show="selectedVersion.specialInstructions">
+        <div class="grid padding-5" ng-show="selectedVersion.specialInstructions">
           <div class="col-4-12 bold">
             Special Instructions:
           </div>
@@ -220,11 +220,11 @@
     </div>
 
     <%--Order Items--%>
-    <div class="content-container large-print-font-size padding-top-10">
-      <div class="padding-10">
-        <table class="ess-table supply-listing-table">
+    <div class="content-container padding-top-10 closeTo">
+      <div class="padding-5">
+        <table class="ess-table supply-listing-table-printonly">
           <thead>
-          <tr>
+          <tr style="page-break-inside : avoid">
             <th>Commodity Code</th>
             <th>Item</th>
             <th>Quantity</th>

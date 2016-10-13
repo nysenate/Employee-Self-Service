@@ -186,6 +186,46 @@
   padding-top: 0;
 }
 
+.supply-listing-table-printonly {
+  tbody {
+    tr {
+      cursor: pointer;
+      &:hover {
+        background: #e9eeff;
+      }
+      &:nth-child(even) {
+        background: fade(#333, 5%);
+        &:hover {
+          background: #e9eeff;
+        }
+      }
+      &.warn {
+        background: #ffbcbc;
+        border-bottom: 0px solid #ffbcbc !important;
+        &:hover {
+          background: darken(#ffbcbc, 10%);
+        }
+        &:nth-child(even) {
+          background: fade(#ffbcbc, 60%);
+          border-bottom: 0px solid fade(#ffbcbc, 60%) !important;
+          &:hover {
+            background: darken(#ffbcbc, 10%);
+          }
+        }
+      }
+      td {
+        padding: .5em;
+        border: 0;
+        text-align: center !important;
+        .action-link {
+          font-size: .9em;
+        }
+      }
+    }
+  }
+  padding-top: 0;
+}
+
 /* --- Custom Select --- */
 
 label.custom-select {
