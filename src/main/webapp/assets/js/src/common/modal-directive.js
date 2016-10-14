@@ -29,9 +29,9 @@ function ($rootScope, $document, modals) {
         // The name of the modal most recently opened
         $scope.top = null;
 
-        // Returns true if the given view name exists in the open modals stack
+        // Returns true if the given modal should be displayed.
         $scope.isOpen = function(viewName) {
-            return $scope.openModals.indexOf(viewName) >= 0;
+            return $scope.top === viewName;
         };
 
         var backDropEle = $element.find('#modal-backdrop')[0];
