@@ -220,7 +220,7 @@
     </div>
 
     <%--Order Items--%>
-    <div class="content-container padding-top-10 closeTo">
+    <div class="content-container closeTo">
       <div class="padding-5">
         <table class="ess-table supply-listing-table-printonly">
           <thead>

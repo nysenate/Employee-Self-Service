@@ -759,10 +759,9 @@ input[type="number"] {
 .float-right {
   float: right;
 }
-
 .closeTo {
-    line-height: 10px;
-    padding: 0;
+  line-height: 10px;
+  padding: 0;
 }
 .float-left {
   float: left;
@@ -847,7 +846,7 @@ input[type="number"] {
  */
 @media print {
   .large-print-font-size {
-      font-size: 12pt;
+    font-size: 12pt;
   }
 }
 @media print {
@@ -858,7 +857,7 @@ input[type="number"] {
 @media screen {
   .print-only {
     display: none;
-      visibility: hidden;
+    visibility: hidden;
   }
 }
 @media print {
@@ -873,15 +872,6 @@ input[type="number"] {
   .view-animate-container {
     width: auto !important;
   }
-
-    table {
-        page-break-after: auto;
-    }
-
-    div {
-        page-break-inside: avoid;
-        page-break-after: auto;
-    }
 }
 table.ess-table {
   width: 100%;
@@ -2526,53 +2516,42 @@ button.ui-button::-moz-focus-inner {
   text-align: center !important;
 }
 .supply-listing-table tbody tr td .action-link {
-    font-size: .9em;
+  font-size: .9em;
 }
-
 .supply-listing-table-printonly {
-    padding-top: 0;
+  padding-top: 0;
 }
-
 .supply-listing-table-printonly tbody tr {
-    cursor: pointer;
+  cursor: pointer;
 }
-
 .supply-listing-table-printonly tbody tr:hover {
-    background: #e9eeff;
+  background: #e9eeff;
 }
-
 .supply-listing-table-printonly tbody tr:nth-child(even) {
-    background: rgba(51, 51, 51, 0.05);
+  background: rgba(51, 51, 51, 0.05);
 }
-
 .supply-listing-table-printonly tbody tr:nth-child(even):hover {
-    background: #e9eeff;
+  background: #e9eeff;
 }
-
 .supply-listing-table-printonly tbody tr.warn {
-    background: #ffbcbc;
-    border-bottom: 0px solid #ffbcbc !important;
+  background: #ffbcbc;
+  border-bottom: 0px solid #ffbcbc !important;
 }
-
 .supply-listing-table-printonly tbody tr.warn:hover {
-    background: #ff8989;
+  background: #ff8989;
 }
-
 .supply-listing-table-printonly tbody tr.warn:nth-child(even) {
-    background: rgba(255, 188, 188, 0.6);
-    border-bottom: 0px solid rgba(255, 188, 188, 0.6) !important;
+  background: rgba(255, 188, 188, 0.6);
+  border-bottom: 0px solid rgba(255, 188, 188, 0.6) !important;
 }
-
 .supply-listing-table-printonly tbody tr.warn:nth-child(even):hover {
-    background: #ff8989;
+  background: #ff8989;
 }
-
 .supply-listing-table-printonly tbody tr td {
-    padding: .5em;
-    border: 0;
-    text-align: center !important;
+  padding: .5em;
+  border: 0;
+  text-align: center !important;
 }
-
 .supply-listing-table-printonly tbody tr td .action-link {
   font-size: .9em;
 }
