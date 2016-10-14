@@ -1,7 +1,7 @@
 essCore.factory('httpTimeoutChecker', ['appProps', 'modals', '$rootScope', function (appProps, modals, $rootScope) {
     var isPingInitialized = false;
     var isTimeoutModalOpen = false;
-    var pingRate = 5;
+    var pingRate = 30;
     var idleTime = 0;
 
     /**
