@@ -122,8 +122,8 @@
       </table>
     </div>
 
-    <div modal-container>
-      <div record-detail-modal ng-if="isOpen('record-details')"></div>
-    </div>
+  </div>
+  <div modal-container>
+    <div record-detail-modal ng-if="isOpen('record-details')"></div>
   </div>
 </div>

@@ -115,10 +115,10 @@
                                boundary-links="true" max-size="10"></dir-pagination-controls>
     </div>
 
-    <div modal-container>
-      <div order-more-prompt-modal ng-if="isOpen('order-more-prompt-modal')"></div>
-      <div order-custom-quantity-modal ng-if="isOpen('order-custom-quantity-modal')"></div>
-      <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
-    </div>
+  </div>
+  <div modal-container>
+    <div order-more-prompt-modal ng-if="isOpen('order-more-prompt-modal')"></div>
+    <div order-custom-quantity-modal ng-if="isOpen('order-custom-quantity-modal')"></div>
+    <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
   </div>
 </div>

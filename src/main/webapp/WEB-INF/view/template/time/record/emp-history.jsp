@@ -90,10 +90,10 @@
                 </div>
             </div>
 
-            <div modal-container ng-show="top" ng-switch="top">
-                <div record-detail-modal ng-if="isOpen('details')"></div>
-            </div>
         </div>
     </section>
+    <div modal-container ng-show="top" ng-switch="top">
+        <div record-detail-modal ng-if="isOpen('details')"></div>
+    </div>
 </section>
 

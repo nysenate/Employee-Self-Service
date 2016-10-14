@@ -6,3 +6,4 @@
         This time cannot be used until the employee returns to Regular or Sepecial Annual employment.
     </p>
 </ess-notification>
+<div modal-container></div>
