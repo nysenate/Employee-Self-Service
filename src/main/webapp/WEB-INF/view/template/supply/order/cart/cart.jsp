@@ -49,7 +49,7 @@
         <div class="content">
           <p class="dark-gray bold cart-unit-size">{{cartItem.item.standardQuantity}}/Pack</p>
 
-          <div ng-show="!orderedOverRecommended(cartItem)">
+          <div ng-show="!orderedOverPerOrderMax(cartItem)">
             <label class="custom-select">Qty:
               <select ng-model="cartItem.quantity"
                       ng-options="qty for qty in orderQuantityRange(cartItem.item)"></select>

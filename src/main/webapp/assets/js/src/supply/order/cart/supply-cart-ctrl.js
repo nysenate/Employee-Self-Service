@@ -13,7 +13,7 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         var destination = destinationService.getDestination();
         if (destination != null) {
             $scope.destinationCode = destination.code;
-            $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
+            $scope.destinationDescription = destination.locationDescription || "";
         }
     };
 
@@ -52,7 +52,7 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         });
     };
 
-    $scope.orderedOverRecommended = function (cartItem) {
+    $scope.orderedOverPerOrderMax = function (cartItem) {
         return cartItem.quantity > cartItem.item.maxQtyPerOrder;
     };
 
