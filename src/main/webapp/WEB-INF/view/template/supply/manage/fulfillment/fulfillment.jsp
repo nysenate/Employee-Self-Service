@@ -42,7 +42,7 @@
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
-        <td>{{getOrderQuantity(requisition)}}</td>
+        <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName || "-"}}</td>
       </tr>
@@ -84,7 +84,7 @@
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
-        <td>{{getOrderQuantity(requisition)}}</td>
+        <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
       </tr>
@@ -128,7 +128,7 @@
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
-        <td>{{getOrderQuantity(requisition)}}</td>
+        <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
@@ -172,7 +172,7 @@
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
-        <td>{{getOrderQuantity(requisition)}}</td>
+        <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
@@ -229,7 +229,7 @@
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
-        <td>{{getOrderQuantity(requisition)}}</td>
+        <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
       </tr>
       </tbody>

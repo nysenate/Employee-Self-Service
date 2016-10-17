@@ -18,6 +18,16 @@ essSupply.service('SupplyUtils', [function () {
                 return 0;
             });
             return allowancesCopy;
+        },
+
+        countDistinctItemsInRequisition: function (requisition) {
+            var count = 0;
+            if (requisition.lineItems) {
+                angular.forEach(requisition.lineItems, function (item) {
+                    count++;
+                });
+            }
+            return count;
         }
     }
 }]);

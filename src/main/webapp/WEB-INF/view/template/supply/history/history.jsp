@@ -54,7 +54,7 @@
             <th>Id</th>
             <th>Location</th>
             <th>Ordered By</th>
-            <th>Quantity</th>
+            <th>Item Count</th>
             <th>Order Date</th>
             <th>Complete Date</th>
             <th>Issued By</th>
@@ -69,7 +69,7 @@
             <td>{{shipment.requisitionId}}</td>
             <td>{{shipment.destination.locId}}</td>
             <td>{{shipment.customer.lastName}}</td>
-            <td>{{getOrderQuantity(shipment)}}</td>
+            <td>{{distinctItemQuantity(shipment)}}</td>
             <td>{{shipment.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
             <td>{{shipment.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
             <td>{{shipment.issuer.lastName}}</td>

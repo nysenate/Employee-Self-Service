@@ -1,7 +1,9 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-    ['$scope', 'SupplyEmployeesApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi', 'PaginationModel', supplyHistoryController]);
+    ['$scope', 'SupplyEmployeesApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi',
+        'PaginationModel', 'SupplyUtils', supplyHistoryController]);
 
-function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, locationService, locationApi, paginationModel) {
+function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, locationService, locationApi,
+                                 paginationModel, supplyUtils) {
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.loading = true;
     $scope.shipments = null;
@@ -92,13 +94,8 @@ function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, loc
 
     /** --- Util methods --- */
 
-    // TODO: do we want quantity of items ordered or number of distinct items ordered?
-    $scope.getOrderQuantity = function (shipment) {
-        var size = 0;
-        angular.forEach(shipment.lineItems, function (lineItem) {
-            size += lineItem.quantity;
-        });
-        return size;
+    $scope.distinctItemQuantity = function (requisition) {
+        return supplyUtils.countDistinctItemsInRequisition(requisition);
     };
 
     function doneLoading() {

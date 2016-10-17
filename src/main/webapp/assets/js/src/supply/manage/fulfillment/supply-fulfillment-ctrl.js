@@ -1,10 +1,10 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
     'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval',
-    'LocationService', 'SupplyLocationStatisticsService', supplyFulfillmentController]);
+    'LocationService', 'SupplyLocationStatisticsService', 'SupplyUtils', supplyFulfillmentController]);
 
 function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                                      itemsApi, modals, $interval, locationService,
-                                     locationStatisticsService) {
+                                     locationStatisticsService, supplyUtils) {
 
     $scope.pendingSearch = {
         matches: [],
@@ -201,12 +201,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     /** --- Util methods --- */
 
     /* Return the number of distinct items ordered in a requisition */
-    $scope.getOrderQuantity = function (requisition) {
-        var size = 0;
-        angular.forEach(requisition.lineItems, function (item) {
-            size++;
-        });
-        return size;
+    $scope.distinctItemQuantity = function (requisition) {
+        return supplyUtils.countDistinctItemsInRequisition(requisition);
     };
 
     /** --- Highlighting --- */
