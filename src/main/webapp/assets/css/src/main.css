@@ -507,7 +507,8 @@ input[type="number"] {
   max-width: 80vw;
   overflow-x: auto;
 }
-/** --- Error Modal --- */
+
+/** --- Common Modals --- */
 #internal-error-modal {
   padding: 20px;
   text-align: center;
@@ -525,6 +526,28 @@ input[type="number"] {
   max-height: 45vh;
   max-width: 45em;
   overflow: auto;
+}
+
+#timeout-modal {
+    padding: 20px;
+    text-align: center;
+    z-index: 9001;
+}
+
+#timeout-modal h1 {
+    margin-top: 0;
+    color: #e64727;
+    font-weight: 600;
+    font-size: 1.3em;
+    padding-bottom: 10px;
+    border: 1px none rgba(0, 107, 128, 0.25);
+    border-bottom-style: solid;
+}
+
+#timeout-modal p.timeout-text {
+    font-size: 1.1em;
+    width: 45em;
+    margin-bottom: 2em;
 }
 .ess-notification {
   padding: .3em;

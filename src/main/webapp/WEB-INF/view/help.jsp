@@ -16,10 +16,13 @@
   <jsp:body>
     <base href="/" />
     <ess-component-nav:top-nav activeTopic="help"/>
-    <section class="content-wrapper" ng-controller="HelpMainCtrl">
+    <section class="content-wrapper">
       <ess-component-nav:help-nav/>
       <div class="view-animate-container">
-        <div ng-view class="view-animate"></div>
+        <div class="view-animate">
+          <iframe width="100%" height="700"
+                  src="https://docs.google.com/document/d/1lJLSfVzWtAXPFcq0_xE-7ISVC7ylpq_mTEaeydPfXRU/pub?embedded=true"></iframe>
+        </div>
       </div>
     </section>
   </jsp:body>

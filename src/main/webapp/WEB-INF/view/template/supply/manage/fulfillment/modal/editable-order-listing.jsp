@@ -12,7 +12,8 @@
         ng-repeat="lineItem in editableRequisition.lineItems | orderBy: 'item.commodityCode'">
       <td>{{lineItem.item.commodityCode}}</td>
       <td>{{lineItem.item.description}}</td>
-      <td><input type="number" ng-change="onUpdate()" ng-model="lineItem.quantity" min="0" max="100" step="1" style="width: 40px;"></td>
+        <td><input type="number" ng-change="onUpdate()" ng-model="lineItem.quantity" min="0" max="20000" step="1"
+                   style="width: 40px;"></td>
     </tr>
     </tbody>
   </table>
