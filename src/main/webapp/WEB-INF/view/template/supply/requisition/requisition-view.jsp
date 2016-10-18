@@ -244,6 +244,9 @@
     <div class="large-print-font-size" style="margin-top: 60px; padding: 20px;">
       Received By: ________________________________
     </div>
+    <div class="large-print-font-size" style="margin-top: 60px; padding: 20px;">
+      Received Date: ________________________________
+    </div>
   </div>
   <div modal-container></div>
 </div>
