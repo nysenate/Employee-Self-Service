@@ -305,16 +305,27 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
 }]);
 
 /**
- * Validator for the special order quantity form.
- * Note: The form considers 'e' valid input. I would like to use this validator to mark 'e' as invalid, however
- * this validator is not being called when 'e' characters are entered...
+ * Validator for entering custom item order quantities.
+ * Limits key input to number keys and navigation keys.
+ * Maximum order quantity is 1000.
+ * See order-custom-quantity-modal.jsp for an example of usage.
  */
-essSupply.directive('wholeNumberValidator', [function () {
+essSupply.directive('customOrderQuantityValidator', [function () {
     return {
         require: 'ngModel',
         link: function (scope, elm, attrs, ctrl) {
-            ctrl.$validators.wholeNumber = function (modelValue, viewValue) {
-                return modelValue % 1 === 0 && modelValue !== null && modelValue < 30000;
+            elm.bind("keydown", function (event) {
+                // Allow backspace, tab, F5 keys to be pressed.
+                if (event.keyCode === 8 || event.keyCode === 9 || event.keyCode === 116) {
+                    return;
+                }
+                // Only allow 0-9 keys to be pressed.
+                if (event.keyCode < 48 || event.keyCode > 57) {
+                    event.preventDefault();
+                }
+            });
+            ctrl.$validators.customOrderQuantity = function (modelValue, viewValue) {
+                return !isNaN(modelValue) && modelValue <= 1000;
             };
         }
     }

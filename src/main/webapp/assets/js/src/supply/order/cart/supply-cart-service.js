@@ -22,7 +22,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return false;
         },
 
-        addToCart: function (item, quantity, special) {
+        addToCart: function (item, quantity) {
             if (this.isItemInCart(item.id)) {
                 this.getCartLineItem(item.id).quantity += quantity;
             }
@@ -58,7 +58,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
         getTotalItems: function () {
             var size = 0;
             angular.forEach(cart, function (lineItem) {
-                size += lineItem.quantity;
+                size += lineItem.quantity || 0;
             });
             return size;
         },

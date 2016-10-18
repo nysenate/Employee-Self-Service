@@ -56,8 +56,12 @@
             </label>
           </div>
 
-          <div ng-show="orderedOverRecommended(cartItem)">
-            <label>Qty:</label> {{cartItem.quantity}}
+          <div ng-show="orderedOverPerOrderMax(cartItem)">
+            <input name="specialOrderQuantity"
+                   whole-number-validator
+                   ng-model="cartItem.quantity"
+                   type="number" min="1" step="1"
+                   style="width: 80px">
           </div>
 
         </div>
