@@ -17,13 +17,13 @@
     <base href="/" />
     <ess-component-nav:top-nav activeTopic="help"/>
     <section class="content-wrapper">
-      <ess-component-nav:help-nav/>
-      <div class="view-animate-container">
-        <div class="view-animate">
-          <iframe width="100%" height="700"
+      <%--<ess-component-nav:help-nav/>--%>
+      <%--<div class="view-animate-container">--%>
+        <%--<div class="view-animate">--%>
+          <iframe width="850" height="700" style="margin: auto; display: block;"
                   src="https://docs.google.com/document/d/1lJLSfVzWtAXPFcq0_xE-7ISVC7ylpq_mTEaeydPfXRU/pub?embedded=true"></iframe>
-        </div>
-      </div>
+        <%--</div>--%>
+      <%--</div>--%>
     </section>
   </jsp:body>
 </ess-layout:body>
