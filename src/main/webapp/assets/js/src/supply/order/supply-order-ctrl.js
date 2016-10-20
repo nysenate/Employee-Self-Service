@@ -305,28 +305,34 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
 }]);
 
 /**
- * Validator for entering custom item order quantities.
+ * Validator for entering custom order quantities.
  * Limits key input to number keys and navigation keys.
- * Maximum order quantity is 1000.
+ * Sets maximum input length to 4 digits.
  * See order-custom-quantity-modal.jsp for an example of usage.
  */
-essSupply.directive('customOrderQuantityValidator', [function () {
+essSupply.directive('orderQuantityValidator', [function () {
     return {
         require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
+        link: function (scope, elm, attrs, ngModel) {
+
+            // Only allow numbers, backspace, tab, and F5 keys to be pressed.
             elm.bind("keydown", function (event) {
-                // Allow backspace, tab, F5 keys to be pressed.
                 if (event.keyCode === 8 || event.keyCode === 9 || event.keyCode === 116) {
                     return;
                 }
-                // Only allow 0-9 keys to be pressed.
                 if (event.keyCode < 48 || event.keyCode > 57) {
                     event.preventDefault();
                 }
             });
-            ctrl.$validators.customOrderQuantity = function (modelValue, viewValue) {
-                return !isNaN(modelValue) && modelValue <= 1000;
-            };
+
+            // Limit the max length of input.
+            var maxLength = 4;
+            scope.$watch(attrs.ngModel, function (newValue) {
+                if (ngModel.$viewValue.length > maxLength) {
+                    ngModel.$setViewValue(ngModel.$viewValue.substring(0, maxLength));
+                    ngModel.$render();
+                }
+            });
         }
     }
 }]);

@@ -9,7 +9,7 @@
     <form name="orderCustomQuantityForm" novalidate>
       <label>Requesting quantity: </label>
       <input name="requestedQuantity"
-             custom-order-quantity-validator
+             order-quantity-validator
              ng-class="{'warn-important':orderCustomQuantityForm.requestedQuantity.$error.customOrderQuantity}"
              ng-model="quantity"
              type="number" min="1" step="1"
