@@ -5,27 +5,32 @@
     "**/.txt"
   ],
   "dependencies": {
-    "normalize-css": "2.1.3",
-    "angular": "1.4.2",
-    "angular-route": "1.4.2",
-    "angular-animate": "1.4.2",
-    "angular-resource": "1.4.2",
-    "jquery": "2.1.0",
-    "moment": "latest",
-    "modernizr": "2.7.2",
-    "underscore": "1.5.2",
-    "lesshat": "2.0.15",
+    "normalize-css": "^5.0.0",
+    "angular": "^1.5.8",
+    "angular-route": "^1.5.8",
+    "angular-animate": "^1.5.8",
+    "angular-resource": "^1.5.8",
+    "jquery": "^3.1.1",
+    "moment": "^2.15.1",
+    "modernizr": "^3.3.1",
+    "underscore": "^1.8.3",
+    "lesshat": "^4.1.0",
     "highcharts.com": "~3.0.9",
-    "jquery-ui": "1.10.4",
-    "odometer": "0.4.6",
+    "jquery-ui": "~1.10.4",
+    "odometer": "^0.4.7",
     "floatThead": "~1.2.13",
     "angular-float-thead": "~0.1.1",
     "angular-utils-pagination": "0.9.3",
-    "ui-autocomplete": "~0.6.1",
-    "nsPopover": "~0.6.8",
-    "angular-cookies":"1.4.2"
+    "ui-autocomplete": "^0.6.1",
+    "nsPopover": "^0.6.8",
+    "angular-cookies": "^1.5.8",
+    "json2": "*",
+    "highcharts": "highcharts.com#^5.0.0",
+    "jquery.floatThead": "floatThead#^1.4.4",
+    "angular-floatThead": "angular-float-thead#^0.1.2",
+    "angularUtils-pagination": "angular-utils-pagination#^0.11.1"
   },
-  "devDependencies": {
-    "json2": "*"
+  "resolutions": {
+    "angular": "1.5.8"
   }
 }

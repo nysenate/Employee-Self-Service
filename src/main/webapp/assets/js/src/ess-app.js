@@ -1,4 +1,4 @@
-var essCore = angular.module('essCore', []);
+var essCore = angular.module('essCore', ['ngCookies']);
 var essApi = angular.module('essApi', ['essCore']);
 
 var essMyInfo = angular.module('essMyInfo', ['essApi']);
@@ -26,7 +26,10 @@ essCore.run(['$cookies', function ($cookies) {
         });
     }
     $cookies.put("appVersion", globalProps.releaseVersion);
-    // disable backspace key from nav
+}]);
+
+// disable backspace key from nav
+essCore.run(function unbindBackspace() {
     $(document).unbind('keydown').bind('keydown', function (event) {
         var doPrevent = false;
         if (event.keyCode === 8) {
@@ -52,7 +55,7 @@ essCore.run(['$cookies', function ($cookies) {
             event.preventDefault();
         }
     });
-}]);
+});
 
 essCore.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.interceptors.push('httpTimeoutChecker');

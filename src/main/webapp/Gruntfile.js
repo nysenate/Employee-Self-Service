@@ -21,6 +21,9 @@ module.exports = function(grunt) {
         /** Compile LESS into css and place it into the css source directory */
         less: {
             dev: {
+                options: {
+                    sourceMap: true,
+                },
                 files: {
                     '<%= cssSource %>/main.css': ['<%= lessSource %>/main.less']
                 }
@@ -29,6 +32,9 @@ module.exports = function(grunt) {
 
         /** Minify all css into one file */
         cssmin: {
+            options: {
+                sourceMap: true
+            },
             combine: {
                 src: ['<%= cssSource %>/*.css', '<%= cssVendor %>/*.css'],
                 dest: '<%= cssDest %>/app.min.css'
@@ -41,40 +47,42 @@ module.exports = function(grunt) {
                 options: {
                     beautify: true,
                     mangle: false,
-                    preserveComments: 'some'
+                    preserveComments: 'some',
+                    sourceMap: true
                 },
                 files: {
-                    '<%= jsDest %>/ess-vendor.min.js':
-                        ['<%= bowerRoot %>/jquery/dist/jquery.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.core.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.widget.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.button.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.position.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.dialog.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.datepicker.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.menu.min.js',
-                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.autocomplete.min.js',
-                         '<%= bowerRoot %>/angular/angular.min.js',
-                         '<%= bowerRoot %>/angular-route/angular-route.min.js',
-                         '<%= bowerRoot %>/angular-resource/angular-resource.min.js',
-                         '<%= bowerRoot %>/angular-animate/angular-animate.min.js',
-                         '<%= bowerRoot %>/angular-utils-pagination/dirPagination.js',
-                         '<%= bowerRoot %>/odometer/odometer.min.js',
-                         '<%= bowerRoot %>/moment/min/moment.min.js',
-                         '<%= bowerRoot %>/floatThead/dist/jquery.floatThead.min.js',
-                            '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js',
-                         '<%= bowerRoot %>/underscore/underscore-min.js',
-                         '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
-                         '<%= bowerRoot %>/nsPopover/src/nsPopover.js',
-                         '<%= bowerRoot %>/angular-cookies/angular-cookies.js'
-                         //'<%= bowerRoot %>/highcharts.com/highcharts.src.js'
+                    '<%= jsDest %>/ess-vendor.min.js': [
+                        // JQuery
+                        '<%= bowerRoot %>/jquery/dist/jquery.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.core.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.widget.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.button.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.position.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.dialog.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.datepicker.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.menu.min.js',
+                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.autocomplete.min.js',
+                        // AngularJs
+                        '<%= bowerRoot %>/angular/angular.min.js',
+                        '<%= bowerRoot %>/angular-route/angular-route.min.js',
+                        '<%= bowerRoot %>/angular-resource/angular-resource.min.js',
+                        '<%= bowerRoot %>/angular-animate/angular-animate.min.js',
+                        '<%= bowerRoot %>/angular-utils-pagination/dirPagination.js',
+                        '<%= bowerRoot %>/angular-cookies/angular-cookies.min.js',
+
+                        '<%= bowerRoot %>/odometer/odometer.min.js',
+                        '<%= bowerRoot %>/moment/min/moment.min.js',
+                        '<%= bowerRoot %>/floatThead/dist/jquery.floatThead.min.js',
+                        '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js',
+                        '<%= bowerRoot %>/underscore/underscore-min.js',
+                        '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
+                        '<%= bowerRoot %>/nsPopover/src/nsPopover.js'
                         ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
                 }
             },
-            dev: {
-            },
+            dev: {},
             prod: {
                 options: {
                     beautify: true,
@@ -83,7 +91,8 @@ module.exports = function(grunt) {
                         drop_console: true
                     },
                     preserveComments: 'some', /** Preserve licensing comments */
-                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +'<%= grunt.template.today("yyyy-mm-dd") %> */'
+                    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +'<%= grunt.template.today("yyyy-mm-dd") %> */',
+                    sourceMap: true
                 },
                 files: {
                     // main
@@ -95,27 +104,29 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/nav/ess-routes.js',
                         '<%= jsSource %>/nav/home.js',
                         //<!-- Common Directives -->
-                        '<%= jsSource %>/common/toggle-panel-directive.js',
-                        '<%= jsSource %>/common/pagination-model.js',
-                        '<%= jsSource %>/common/ess-notifications.js',
-                        '<%= jsSource %>/common/loader-indicator-directive.js',
-                        '<%= jsSource %>/common/odometer-directive.js',
+                        '<%= jsSource %>/common/ai-filter.js',
+                        '<%= jsSource %>/common/badge-directive.js',
+                        '<%= jsSource %>/common/badge-service.js',
                         '<%= jsSource %>/common/datepicker-directive.js',
+                        '<%= jsSource %>/common/debounce-function.js',
+                        '<%= jsSource %>/common/err-src-directive.js',
+                        '<%= jsSource %>/common/ess-notifications.js',
+                        '<%= jsSource %>/common/internal-error-modal.js',
+                        '<%= jsSource %>/common/loader-indicator-directive.js',
+                        '<%= jsSource %>/common/location-service.js',
+                        '<%= jsSource %>/common/modal-directive.js',
+                        '<%= jsSource %>/common/modal-service.js',
                         '<%= jsSource %>/common/moment-filter.js',
                         '<%= jsSource %>/common/not-filter.js',
-                        '<%= jsSource %>/common/modal-service.js',
-                        '<%= jsSource %>/common/modal-directive.js',
-                        '<%= jsSource %>/common/internal-error-modal.js',
-                        '<%= jsSource %>/common/timeout-modal.js',
-                        '<%= jsSource %>/common/timeout-checker.js',
-                        '<%= jsSource %>/common/location-service.js',
-                        '<%= jsSource %>/common/badge-service.js',
-                        '<%= jsSource %>/common/badge-directive.js',
-                        '<%= jsSource %>/common/ai-filter.js',
-                        '<%= jsSource %>/common/text-auto-height-directive.js',
-                        '<%= jsSource %>/common/round-filter.js',
-                        '<%= jsSource %>/common/err-src-directive.js',
+                        '<%= jsSource %>/common/odometer-directive.js',
+                        '<%= jsSource %>/common/pagination-model.js',
                         '<%= jsSource %>/common/promise-utils.js',
+                        '<%= jsSource %>/common/round-filter.js',
+                        '<%= jsSource %>/common/text-auto-height-directive.js',
+                        '<%= jsSource %>/common/throttle-function.js',
+                        '<%= jsSource %>/common/timeout-checker.js',
+                        '<%= jsSource %>/common/timeout-modal.js',
+                        '<%= jsSource %>/common/toggle-panel-directive.js',
                         '<%= jsSource %>/common/zero-pad-filter.js'
                     ],
                     //help
