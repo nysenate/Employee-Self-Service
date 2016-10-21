@@ -1,9 +1,14 @@
-var essTime = angular.module('essTime');
-var binding = 0;
+angular.module('essTime')
+    .directive('recordValidator',
+        ['$timeout', '$rootScope', 'debounce', 'activeTimeEntryRow', recordValidatorDirective])
+    .directive('entryValidator', ['$timeout', '$rootScope', entryValidatorDirective])
+    .service('activeTimeEntryRow', activeTimeEntryRowService);
 
-/** Validate the record entry when changing rows.
- * attrs: method for validating record. */
-essTime.directive('recordValidator', ['$timeout', '$rootScope', 'activeTimeEntryRow', function($timeout, $rootScope, activeRow) {
+/**
+ * Validate the record entry when changing rows.
+ * attrs: method for validating record.
+ */
+function recordValidatorDirective ($timeout, $rootScope, debounce, activeRow) {
     return {
         restrict: 'A',
         scope: {
@@ -11,33 +16,23 @@ essTime.directive('recordValidator', ['$timeout', '$rootScope', 'activeTimeEntry
             record: '='
         },
         link: function($scope, $elem, $attrs) {
+            function validate () {
+                $scope.validateRecord();
+                $rootScope.$emit('validateRecordEntries');
+            }
+            var debounceDelay = 350;
+            var debouncedValidate = debounce(validate, debounceDelay);
             // Every time a new record is selected, set validation functions to hook on entry focus
             $scope.$watch('record.timeRecordId', function() {
                 $timeout(function () { // timeout makes this directive execute after table has been generated.
-                    var validatePending = false;  // Set to true if a validation is pending
                     $elem.children().each(function (index) {
                         function focusInCallBack (event) {
                             activeRow.setActiveRow(index);
-                            validate();
+                            debouncedValidate();
                         }
                         function focusOutCallback (event) {
                             activeRow.setActiveRow(null);
-                            validate();
-                        }
-                        function validate () {
-                            // Set a flag to indicate that validation was triggered
-                            // If validate was invoked by a focus in and focus out
-                            //  then the validations will only be performed once on the next digest
-                            validatePending = true;
-                            $timeout(function () {
-                                if (validatePending) {
-                                    // Timeout so that the record scope validation is performed on 
-                                    //  the same digest as the entry validation
-                                    $scope.validateRecord();
-                                    $rootScope.$emit('validateRecordEntries');
-                                    validatePending = false;
-                                }
-                            });
+                            debouncedValidate();
                         }
                         var element = angular.element($elem.children()[index]);
                         element.on('focusin', focusInCallBack);
@@ -47,11 +42,13 @@ essTime.directive('recordValidator', ['$timeout', '$rootScope', 'activeTimeEntry
             });
         }
     }
-}]);
+}
 
-/** Adds invalid class to a input if its invalid. Only run when 'validateRecordEntries' event is broadcast. */
-essTime.directive('entryValidator', ['$timeout', '$rootScope',
-function($timeout, $rootScope) {
+/**
+ * Adds invalid class to a input if its invalid.
+ * Only run when 'validateRecordEntries' event is broadcast.
+ */
+function entryValidatorDirective($timeout, $rootScope) {
     return {
         restrict: 'A',
         scope: {
@@ -65,15 +62,15 @@ function($timeout, $rootScope) {
                 else {
                     $element.removeClass('invalid');
                 }
-                $rootScope.$digest();
+                // $rootScope.$digest();
             }
             var deregisterValidateEntry = $rootScope.$on('validateRecordEntries', validateEntry);
             $scope.$on('$destroy', deregisterValidateEntry);
         }
     }
-}]);
+}
 
-essTime.service('activeTimeEntryRow', function () {
+function activeTimeEntryRowService() {
     var activeRow = null;
     return {
         getActiveRow: function() {
@@ -83,4 +80,4 @@ essTime.service('activeTimeEntryRow', function () {
             activeRow = row;
         }
     }
-});
+}

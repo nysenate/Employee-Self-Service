@@ -63,6 +63,10 @@
                 src="${ctxPath}/assets/js/src/common/promise-utils.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/zero-pad-filter.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/debounce-function.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/throttle-function.js?v=${releaseVersion}"></script>
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/dest/ess.min.js?v=${releaseVersion}"></script>

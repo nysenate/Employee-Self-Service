@@ -26,5 +26,9 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
         $scope.logout = function() {
             locationService.go('/logout', true);
         };
+
+        $scope.log = function(stuff) {
+            console.log(stuff);
+        };
     }
 ]);

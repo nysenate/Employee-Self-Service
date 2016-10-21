@@ -385,21 +385,37 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
     };
 
     /**
+     * Set the selected record as having been focused when an entry validate event is caught
+     */
+    $rootScope.$on('validateRecordEntries', function() {
+        var record = $scope.getSelectedRecord();
+        console.log('record validated', record.beginDate);
+        record.focused = true;
+    });
+
+    $scope.isFieldSelected = function (entry, fieldName) {
+        var fieldIdSelector = '#' + entry.date + '-' + fieldName;
+        return angular.element(fieldIdSelector).is(':focus');
+    };
+
+    /**
      * Functions that determine the tab index for accrual hours
      */
     $scope.accrualTabIndex = {
-        vacation: getAccrualTabIndexFn('vacationHours', 2),
-        personal: getAccrualTabIndexFn('personalHours', 2),
-        sickEmp: getAccrualTabIndexFn('sickEmpHours', 2),
-        sickFam: getAccrualTabIndexFn('sickFamHours', 2),
-        misc: getAccrualTabIndexFn('miscHours', 2)
+        holiday: getAccrualTabIndexFn('holidayHours'),
+        vacation: getAccrualTabIndexFn('vacationHours'),
+        personal: getAccrualTabIndexFn('personalHours'),
+        sickEmp: getAccrualTabIndexFn('sickEmpHours'),
+        sickFam: getAccrualTabIndexFn('sickFamHours'),
+        misc: getAccrualTabIndexFn('miscHours')
     };
 
-    function getAccrualTabIndexFn (propName, defaultIndex) {
+    function getAccrualTabIndexFn (propName) {
         return function (entry) {
-            if (entry[propName] != null && $scope.getSelectedRecord().dirty) return 1;
+            if (entry[propName] != null && $scope.getSelectedRecord().focused) return 1;
             if (entry.total < 7 && !$scope.isWeekend(entry.date)) return 1;
-            return defaultIndex;
+            if ($scope.isFieldSelected(entry, propName)) return 1;
+            return -1;
         }
     }
 

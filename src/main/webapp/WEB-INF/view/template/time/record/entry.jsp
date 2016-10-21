@@ -16,32 +16,32 @@
     <% /** Record selection table for cases when there are a few active records to display. */ %>
     <table class="simple-table" ng-if="state.records.length <= 5">
       <thead>
-        <tr>
-          <th>Select</th>
-          <th>Pay Period</th>
-          <th>Supervisor</th>
-          <th>Period End</th>
-          <th>Status</th>
-          <th>Last Updated</th>
-        </tr>
+      <tr>
+        <th>Select</th>
+        <th>Pay Period</th>
+        <th>Supervisor</th>
+        <th>Period End</th>
+        <th>Status</th>
+        <th>Last Updated</th>
+      </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="record in state.records" ng-click="$parent.state.iSelectedRecord = $index">
-          <td>
-            <input type="radio" name="recordSelect" ng-value="$index"
-                   ng-model="$parent.state.iSelectedRecord"/>
-          </td>
-          <td>{{record.payPeriod.startDate | moment:'l'}} - {{record.payPeriod.endDate | moment:'l'}}</td>
-          <td>{{record.supervisor.fullName}}</td>
-          <td ng-class="{'dark-red': record.isDue === true}">{{record.dueFromNowStr}}</td>
-          <td ng-bind-html="record.recordStatus | timeRecordStatus:true"></td>
-          <td>
+      <tr ng-repeat="record in state.records" ng-click="$parent.state.iSelectedRecord = $index">
+        <td>
+          <input type="radio" name="recordSelect" ng-value="$index"
+                 ng-model="$parent.state.iSelectedRecord"/>
+        </td>
+        <td>{{record.payPeriod.startDate | moment:'l'}} - {{record.payPeriod.endDate | moment:'l'}}</td>
+        <td>{{record.supervisor.fullName}}</td>
+        <td ng-class="{'dark-red': record.isDue === true}">{{record.dueFromNowStr}}</td>
+        <td ng-bind-html="record.recordStatus | timeRecordStatus:true"></td>
+        <td>
             <span ng-show="record.updateDate | momentCmp:'=':record.originalDate:'second' | not">
               {{record.updateDate | moment: 'lll'}}
             </span>
-            <span ng-show="record.updateDate | momentCmp:'=':record.originalDate:'second'">New</span>
-          </td>
-        </tr>
+          <span ng-show="record.updateDate | momentCmp:'=':record.originalDate:'second'">New</span>
+        </td>
+      </tr>
       </tbody>
     </table>
     <% /** Record selection menu for cases when there are many active records (i.e. temporary employees). */ %>
@@ -54,10 +54,12 @@
         <span><span class="bold">Supervisor: </span>{{state.records[state.iSelectedRecord].supervisor.fullName}}</span>
         <span><span class="margin-left-10 bold">Status: </span>{{state.records[state.iSelectedRecord].recordStatus | timeRecordStatus}}</span>
         <span class="margin-left-10 bold">Last Updated: </span>
-      <span ng-show="state.records[state.iSelectedRecord].updateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second' | not">
+        <span
+            ng-show="state.records[state.iSelectedRecord].updateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second' | not">
             {{state.records[state.iSelectedRecord].updateDate | moment: 'lll'}}
       </span>
-        <span ng-show="state.records[state.iSelectedRecord].updateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second'">New</span>
+        <span
+            ng-show="state.records[state.iSelectedRecord].updateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second'">New</span>
       </div>
     </div>
   </div>
@@ -89,7 +91,8 @@
          ng-if="state.annualEntries && state.tempEntries">
       <p>
         There was a change in pay type during the time covered by this record.<br>
-        Record days have been split into two seperate entry tables, one for Regular/Special Annual pay, another for Temporary pay
+        Record days have been split into two seperate entry tables, one for Regular/Special Annual pay, another for
+        Temporary pay
       </p>
     </div>
     <form id="timeRecordForm" method="post" action="">
@@ -132,7 +135,8 @@
                 <div class="ytd-hours">Actual: {{state.accrual.serviceYtd}}</div>
                 <div class="ytd-hours" style="border-right:none;">
                   Difference:
-                  <span ng-bind-html="(state.accrual.serviceYtd - state.accrual.serviceYtdExpected) | hoursDiffHighlighter"></span>
+                  <span
+                      ng-bind-html="(state.accrual.serviceYtd - state.accrual.serviceYtdExpected) | hoursDiffHighlighter"></span>
                 </div>
               </div>
             </div>
@@ -159,76 +163,88 @@
             <li ng-show="errorTypes.raSa.notEnoughPersonalTime">Personal hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.notEnoughSickTime">Sick hours recorded exceeds hours available.</li>
             <li ng-show="errorTypes.raSa.noMiscTypeGiven">A Misc type must be given when using Miscellaneous hours.</li>
-            <li ng-show="errorTypes.raSa.noMiscHoursGiven">Miscellaneous hours must be present when a Misc type is selected.</li>
+            <li ng-show="errorTypes.raSa.noMiscHoursGiven">Miscellaneous hours must be present when a Misc type is
+              selected.
+            </li>
             <li ng-show="errorTypes.raSa.halfHourIncrements">Hours must be in increments of 0.5</li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="ra-sa-time-record-table"
                ng-model="state.records[state.iSelectedRecord].timeEntries">
           <thead>
-            <tr>
-              <th>Date</th>
-              <th>Work</th>
-              <th>Holiday</th>
-              <th>Vacation</th>
-              <th>Personal</th>
-              <th>Sick Emp</th>
-              <th>Sick Fam</th>
-              <th>Misc</th>
-              <th>Misc Type</th>
-              <th>Total</th>
-            </tr>
+          <tr>
+            <th>Date</th>
+            <th>Work</th>
+            <th>Holiday</th>
+            <th>Vacation</th>
+            <th>Personal</th>
+            <th>Sick Emp</th>
+            <th>Sick Fam</th>
+            <th>Misc</th>
+            <th>Misc Type</th>
+            <th>Total</th>
+          </tr>
           </thead>
           <tbody record-validator validate="preValidation()" record="state.records[state.iSelectedRecord]">
           <tr class="time-record-row highlight-first"
               ng-repeat="(i,entry) in regRecords = (state.records[state.iSelectedRecord].timeEntries | filter:{payType: '!TE'})"
               ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}"
-              ng-init="numRecs = regRecords.length">
+              ng-init="numRecs = regRecords.length"
+              >
             <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
             <td entry-validator validate="entryValidators.raSa.workHours(entry)">
               <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
-                     ng-model="entry.workHours" tabindex="{{entry.total < 7 || getSelectedRecord().dirty ? 1 : 2}}" name="numWorkHours"/>
+                     ng-model="entry.workHours" tabindex="{{(entry.total < 7 || getSelectedRecord().focused) ? 1 : -1}}"
+                     name="numWorkHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.holidayHours(entry)">
-              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                     ng-readonly="!isHoliday(entry)" placeholder="{{isHoliday(entry) ? '--' : ''}}"
-                     step=".5" min="0" max="{{getHolidayHours(entry)}}" ng-model="entry.holidayHours" name="numHolidayHours"/>
+              <input id="{{entry.date + '-holidayHours'}}"
+                  type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+                  ng-readonly="!isHoliday(entry)" placeholder="{{isHoliday(entry) ? '--' : ''}}"
+                  step=".5" min="0" max="{{getHolidayHours(entry)}}" ng-model="entry.holidayHours"
+                  name="numHolidayHours"
+                  tabindex="{{isHoliday(entry) ? accrualTabIndex.holiday(entry) : -1}}"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.vacationHours(entry)">
-              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+              <input id="{{entry.date + '-vacationHours'}}"
+                     type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="12"
                      ng-model="entry.vacationHours" name="numVacationHours"
                      tabindex="{{accrualTabIndex.vacation(entry)}}"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.personalHours(entry)">
-              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+              <input id="{{entry.date + '-personalHours'}}"
+                     type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.personal(entry)}}"
                      ng-model="entry.personalHours" name="numPersonalHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.sickEmpHours(entry)">
-              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+              <input id="{{entry.date + '-sickEmpHours'}}"
+                     type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.sickEmp(entry)}}"
                      ng-model="entry.sickEmpHours" name="numSickEmpHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.sickFamHours(entry)">
-              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+              <input id="{{entry.date + '-sickFamHours'}}"
+                     type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.sickFam(entry)}}"
                      ng-model="entry.sickFamHours" name="numSickFamHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.miscHours(entry)">
-              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+              <input id="{{entry.date + '-miscHours'}}"
+                     type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
                      placeholder="--" step=".5" min="0" max="12"
                      tabindex="{{accrualTabIndex.misc(entry)}}"
                      ng-model="entry.miscHours" name="numMiscHours"/>
             </td>
             <td entry-validator validate="entryValidators.raSa.miscType(entry)">
-              <select style="font-size:.9em;" name="miscHourType"
+              <select id="{{entry.date + '-miscType'}}" style="font-size:.9em;" name="miscHourType"
                       ng-model="entry.miscType" ng-change="setDirty(entry)"
-                      tabindex="{{!entry.miscHours ? 2 : 1}}"
+                      tabindex="{{isFieldSelected(entry, 'miscType') || entry.miscHours ? 1 : -1}}"
                       ng-options="miscLeave.type as miscLeave.shortName for miscLeave in state.miscLeaves | filter:getMiscLeavePredicate(entry.date)">
                 <option value="">No Misc Hours</option>
               </select>
@@ -299,53 +315,57 @@
             <li ng-show="errorTypes.te.noComment">
               Must enter start and end work times for all work blocks during the entered work hours.
             </li>
-            <li ng-show="errorTypes.te.noWorkHoursForComment">Commented entries must accompany 0 or more work hours entered</li>
+            <li ng-show="errorTypes.te.noWorkHoursForComment">Commented entries must accompany 0 or more work hours
+              entered
+            </li>
           </ul>
         </div>
         <table class="ess-table time-record-entry-table" id="te-time-record-table">
           <thead>
-            <tr>
-              <th>Date</th>
-              <th>Work</th>
-              <th>Work Time Description / Comments</th>
-            </tr>
+          <tr>
+            <th>Date</th>
+            <th>Work</th>
+            <th>Work Time Description / Comments</th>
+          </tr>
           </thead>
           <tbody record-validator validate="preValidation()" record="state.records[state.iSelectedRecord]">
-            <tr class="time-record-row highlight-first"
-                ng-repeat="(i,entry) in state.records[state.iSelectedRecord].timeEntries | filter:{payType: 'TE'}"
-                ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}">
-              <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
-              <td entry-validator validate="entryValidators.te.workHours(entry)">
-                <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
-                       placeholder="--" step="0.25" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
-                       ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
-              </td>
-              <td entry-validator validate="entryValidators.te.comment(entry)" class="entry-comment-col">
-                <textarea maxlength="150" ng-change="setDirty(entry)" class="entry-comment" text-auto-height text="entry.empComment"
-                       ng-model="entry.empComment" name="entryComment" tabindex="{{entry.workHours ? 1 : 2}}"></textarea>
-              </td>
-            </tr>
-            <tr class="time-totals-row">
-              <td><span ng-if="state.annualEntries">TE</span> Record Totals</td>
-              <td>{{state.totals.tempWorkHours}}</td>
-              <td></td>
-            </tr>
+          <tr class="time-record-row highlight-first"
+              ng-repeat="(i,entry) in state.records[state.iSelectedRecord].timeEntries | filter:{payType: 'TE'}"
+              ng-class="{'weekend': isWeekend(entry.date), 'dummy-entry': entry.dummyEntry}">
+            <td class="date-column">{{entry.date | moment:'ddd M/D/YYYY'}}</td>
+            <td entry-validator validate="entryValidators.te.workHours(entry)">
+              <input type="number" ng-change="setDirty(entry)" time-record-input class="hours-input"
+                     placeholder="--" step="0.25" min="0" max="24" ng-disabled="entry.date | momentCmp:'>':'now':'day'"
+                     ng-model="entry.workHours" name="numWorkHours" tabindex="1"/>
+            </td>
+            <td entry-validator validate="entryValidators.te.comment(entry)" class="entry-comment-col">
+                <textarea maxlength="150" ng-change="setDirty(entry)" class="entry-comment" text-auto-height
+                          text="entry.empComment"
+                          ng-model="entry.empComment" name="entryComment"
+                          tabindex="{{entry.workHours ? 1 : -1}}"></textarea>
+            </td>
+          </tr>
+          <tr class="time-totals-row">
+            <td><span ng-if="state.annualEntries">TE</span> Record Totals</td>
+            <td>{{state.totals.tempWorkHours}}</td>
+            <td></td>
+          </tr>
           </tbody>
         </table>
       </div>
       <div class="save-record-container">
         <div class="record-remarks-container">
           <label for="remarks-text-area">Notes / Remarks</label>
-        <textarea id="remarks-text-area" class="record-remarks-text-area"
-                  ng-model="state.records[state.iSelectedRecord].remarks" ng-change="setDirty()">
+          <textarea id="remarks-text-area" class="record-remarks-text-area" tabindex="1"
+                    ng-model="state.records[state.iSelectedRecord].remarks" ng-change="setDirty()">
         </textarea>
         </div>
         <div class="float-right">
           <input ng-click="saveRecord(false)" class="submit-button" type="button" value="Save Record"
                  ng-disabled="!state.records[state.iSelectedRecord].dirty || !recordValid()"
-                 tabindex="2"/>
+                 tabindex="{{(state.records[state.iSelectedRecord].dirty && recordValid()) ? 1 : -1}}"/>
           <input ng-click="saveRecord(true)" class="submit-button" type="button" value="Submit Record"
-                 ng-disabled="!recordSubmittable()" tabindex="2"/>
+                 ng-disabled="!recordSubmittable()" tabindex="{{recordSubmittable() ? 1 : -1}}"/>
         </div>
         <div class="clearfix"></div>
       </div>
@@ -376,12 +396,14 @@
           Before submitting, you must acknowledge the following:
         </h3>
         <div style="padding:20px;text-align:left;">
-          <p>1. For purposes of submitting a timesheet, the username and password is the electronic signature of the employee.
+          <p>1. For purposes of submitting a timesheet, the username and password is the electronic signature of the
+            employee.
             As liability attaches to each timesheet, the employee should ensure that his or her username and password is
             securely kept and used.
           </p>
           <hr/>
-          <p>2. The hours recorded on the Submitted Time and Attendance Record accurately reflect time actually spent by me
+          <p>2. The hours recorded on the Submitted Time and Attendance Record accurately reflect time actually spent by
+            me
             in the performance of my assigned duties.
           </p>
           <hr/>
@@ -391,7 +413,8 @@
           </p>
           <hr/>
           <div style="text-align: center;">
-            <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;" type="button" value="I agree"/>
+            <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;" type="button"
+                   value="I agree"/>
             <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
           </div>
         </div>
@@ -413,37 +436,38 @@
         <input ng-click="rejectModal()" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
     </div>
-  <div ng-if="isOpen('expectedhrs-dialog')" class="save-progress-modal">
-    <div ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
+    <div ng-if="isOpen('expectedhrs-dialog')" class="save-progress-modal">
+      <div ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
               expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
-      <h3 class="content-info" style="margin-bottom:0;">
-        Hours entered are less than pay period requirement
-      </h3>
-      <div style="padding: 20px; text-align: left;">
-        <p ng-show="serviceSurplus >= expectedDifference">
-          Warning: You are attempting to use {{expectedDifference}}
-          excess hours.
-        </p>
-        <div ng-show="serviceSurplus < expectedDifference">
-          <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
-          <div style="display: flex; justify-content: space-around">
-            <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
-            <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
-            <span class="bold">Year To Date {{ serviceSurplus < 0 ? "Deficit" : "Excess" }}: {{serviceSurplus}} hrs.</span>
+        <h3 class="content-info" style="margin-bottom:0;">
+          Hours entered are less than pay period requirement
+        </h3>
+        <div style="padding: 20px; text-align: left;">
+          <p ng-show="serviceSurplus >= expectedDifference">
+            Warning: You are attempting to use {{expectedDifference}}
+            excess hours.
+          </p>
+          <div ng-show="serviceSurplus < expectedDifference">
+            <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
+            <div style="display: flex; justify-content: space-around">
+              <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
+              <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
+              <span
+                  class="bold">Year To Date {{ serviceSurplus < 0 ? "Deficit" : "Excess" }}: {{serviceSurplus}} hrs.</span>
+            </div>
           </div>
-        </div>
-        <hr/>
-        <div style="text-align: center;">
-          <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;"
-                 type="button" value="Proceed"/>
-          <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
+          <hr/>
+          <div style="text-align: center;">
+            <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;"
+                   type="button" value="Proceed"/>
+            <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
+          </div>
         </div>
       </div>
     </div>
-   </div>
-   <div ng-if="isOpen('futureenddt-dialog')" class="save-progress-modal">
+    <div ng-if="isOpen('futureenddt-dialog')" class="save-progress-modal">
       <h3 class="content-info" style="margin-bottom:0;">
-       Timesheet with a Future End Date
+        Timesheet with a Future End Date
       </h3>
       <div style="padding: 20px; text-align: left;">
         <div>
@@ -456,6 +480,7 @@
                  type="button" value="Yes"/>
           <input ng-click="rejectModal()" class="reject-button" type="button" value="No"/>
         </div>
+      </div>
     </div>
   </div>
 </div>
