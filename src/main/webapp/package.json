@@ -1,6 +1,7 @@
 {
   "name": "ess",
   "dependencies": {
+    "bower": "^1.7.9",
     "grunt": "^1.0.1",
     "grunt-beep": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
