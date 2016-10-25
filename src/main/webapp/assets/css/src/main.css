@@ -463,8 +463,8 @@ input[type="number"] {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-#modal-container > ng-transclude > *,
-#modal-container > #common-modals > * {
+#modal-container > ng-transclude > modal > *,
+#modal-container > #common-modals > modal > * {
   background: #fafafa;
   display: block;
   margin: auto;
@@ -476,12 +476,16 @@ input[type="number"] {
   transform: translate(-50%, -50%);
   z-index: 1004;
 }
-#modal-container > ng-transclude > *:not(.custom-fit),
-#modal-container > #common-modals > *:not(.custom-fit) {
+#modal-container > ng-transclude > modal > *:not(.custom-fit),
+#modal-container > #common-modals > modal > *:not(.custom-fit) {
   max-height: 80vh;
   overflow-y: auto;
   max-width: 80vw;
   overflow-x: auto;
+}
+#modal-container > ng-transclude > modal > *.background-modal,
+#modal-container > #common-modals > modal > *.background-modal {
+  z-index: 1002;
 }
 #modal-container #modal-backdrop {
   position: fixed;
@@ -489,9 +493,6 @@ input[type="number"] {
   width: 100vw;
   height: 100vh;
   z-index: 1003;
-}
-#modal-container .background-modal {
-  z-index: 1002;
 }
 .modal-max-height {
   max-height: 80vh;
