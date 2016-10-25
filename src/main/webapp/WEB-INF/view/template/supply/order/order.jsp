@@ -117,8 +117,14 @@
 
   </div>
   <div modal-container>
-    <div order-more-prompt-modal ng-if="isOpen('order-more-prompt-modal')"></div>
-    <div order-custom-quantity-modal ng-if="isOpen('order-custom-quantity-modal')"></div>
-    <div special-order-item-modal ng-if="isOpen('special-order-item-modal')"></div>
+    <modal modal-id="order-more-prompt-modal">
+      <div order-more-prompt-modal></div>
+    </modal>
+    <modal modal-id="order-custom-quantity-modal">
+      <div order-custom-quantity-modal></div>
+    </modal>
+    <modal modal-id="special-order-item-modal">
+      <div special-order-item-modal></div>
+    </modal>
   </div>
 </div>

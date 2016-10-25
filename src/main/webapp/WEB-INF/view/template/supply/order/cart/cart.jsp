@@ -88,8 +88,9 @@
   </div>
 
   <div modal-container>
-    <cart-checkout-modal ng-if="isOpen('supply-cart-checkout-modal')">
-    </cart-checkout-modal>
+    <modal modal-id="supply-cart-checkout-modal">
+      <cart-checkout-modal></cart-checkout-modal>
+    </modal>
   </div>
 
 </div>

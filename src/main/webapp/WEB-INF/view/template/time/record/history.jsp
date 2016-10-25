@@ -124,6 +124,8 @@
 
   </div>
   <div modal-container>
-    <div record-detail-modal ng-if="isOpen('record-details')"></div>
+    <modal modal-id="record-details">
+      <div record-detail-modal></div>
+    </modal>
   </div>
 </div>

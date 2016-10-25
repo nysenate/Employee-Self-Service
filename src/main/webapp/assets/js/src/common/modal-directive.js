@@ -10,29 +10,20 @@ function ($rootScope, $document, modals) {
 
     return {
         template:
-            '<div id="modal-container" ng-show="top">' +
+            '<div id="modal-container" ng-show="isOpen()">' +
             '  <div id="modal-backdrop"></div>' +
             '  <div id="common-modals">' +
-            '    <div internal-error-modal ng-if="isOpen(\'500\')"></div>' +
-            '    <div timeout-modal ng-if="isOpen(\'timeout\')"></div>' +
+            '    <modal modal-id="500"><div internal-error-modal></div></modal>' +
+            '    <modal modal-id="timeout"><div timeout-modal></div></modal>' +
             '  </div>' +
-            '  <ng-transclude></ng-transclude>' +
+            '  <ng-transclude id="custom-modals"></ng-transclude>' +
+            '  <div id="modal-display"></div>' +
             '</div>',
         transclude: true,
         link: link
     };
 
-    function link($scope, $element) {
-        // A stack of modal names in order of opening
-        $scope.openModals = [];
-
-        // The name of the modal most recently opened
-        $scope.top = null;
-
-        // Returns true if the given modal should be displayed.
-        $scope.isOpen = function(viewName) {
-            return $scope.top === viewName;
-        };
+    function link($scope, $element, $attrs, $ctrl, $transclude) {
 
         var backDropEle = $element.find('#modal-backdrop')[0];
         // Reject modal when the user clicks the backdrop
@@ -51,21 +42,22 @@ function ($rootScope, $document, modals) {
         });
 
         // Set subview upon modal open event
-        $rootScope.$on('modals.open', function (event, modalType) {
-            console.log('showing modal of type', modalType);
-            $scope.openModals.push(modalType);
-            updateTop();
+        $rootScope.$on('modals.open', function (event, modalId) {
+            console.log('showing modal ', modalId);
+            onModalUpdate();
         });
 
         // Remove subview upon modal close event
         $rootScope.$on('modals.close', function(event) {
-            $scope.openModals.pop();
-            updateTop();
+            onModalUpdate();
         });
 
-        function updateTop() {
-            $scope.top = $scope.openModals[$scope.openModals.length - 1];
-            if ($scope.top) {
+        $scope.isOpen = function () {
+            return modals.isOpen();
+        };
+
+        function onModalUpdate() {
+            if ($scope.isOpen()) {
                 lockScrollbar();
             } else {
                 unlockScrollbar();
@@ -84,16 +76,23 @@ function ($rootScope, $document, modals) {
     }
 }]);
 
-essApp.directive('modal', function() {
+essApp.directive('modal', ['modals', modalDirective]);
+function modalDirective(modals) {
     return {
-        scope: {viewName: '@', isOpen: '&'},
+        scope: {modalId: '@'},
         transclude: true,
         template:
-            '<div class="modal" ng-if="isOpen(\'record-details\')" ng-class="{\'background-modal\': top !== viewName}">' +
+            '<div class="modal" ng-if="isOpen()" ng-class="{\'background-modal\': !isTop()}">' +
             '  <ng-transclude></ng-transclude>' +
             '</div>',
         link: function($scope) {
-            console.log($scope.isOpen, $scope.$parent.$parent, $scope.viewName);
+            $scope.isOpen = function () {
+                return modals.isOpen($scope.modalId);
+            };
+
+            $scope.isTop = function () {
+                return modals.isTop($scope.modalId);
+            };
         }
     };
-});
+}

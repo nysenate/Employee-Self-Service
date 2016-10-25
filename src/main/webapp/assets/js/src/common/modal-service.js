@@ -12,6 +12,8 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
 
     return { // exposed methods
         open: open,
+        isOpen: isOpen,
+        isTop: isTop,
         params: params,
         reject: reject,
         rejectAll: rejectAll,
@@ -24,28 +26,46 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
     /**
      * Opens a new modal
      * 
-     * @param type - specifies which modal will open
+     * @param modalId - specifies which modal will open
      * @param params - object containing passed parameters
      * @param softRejectable - if true, the modal is easily closable via esc key, click on backdrop etc..
      * @returns {Promise}
      */
-    function open(type, params, softRejectable) {
+    function open(modalId, params, softRejectable) {
         var modal = {
+            modalId: modalId,
             deferred: $q.defer(),
             params: params,
             softRejectable: softRejectable === true
         };
 
-        $rootScope.$emit("modals.open", type);
-        modals.push(modal);
+        modals.unshift(modal);
+        $rootScope.$emit("modals.open", modalId);
         return modal.deferred.promise;
+    }
+
+    function isOpen(modalId) {
+        if (modalId === undefined) {
+            return modals.length > 0;
+        }
+        var found = false;
+        angular.forEach(modals, function(modal) {
+            if (modal.modalId === modalId) {
+                found = true;
+            }
+        });
+        return found;
+    }
+
+    function isTop(modalId) {
+        return modals.length > 0 && modals[0].modalId === modalId;
     }
 
     /**
      * @returns {*} - the parameters of the currently active modal
      */
     function params() {
-        var modal = modals[modals.length - 1];
+        var modal = modals[0];
         if (modal) {
             return modal.params || {};
         }
@@ -57,7 +77,7 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
      * @param reason - data associated with rejection
      */
     function reject(reason) {
-        var modal = modals.pop();
+        var modal = modals.shift();
         if (!modal) {
             return;
         }
@@ -83,7 +103,7 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
      * @param reason
      */
     function softReject(reason) {
-        var modal = modals[modals.length - 1];
+        var modal = modals[0];
         if (modal && modal.softRejectable) {
             reject(reason);
         }
@@ -94,7 +114,7 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
      * @param response - resolution data
      */
     function resolve(response) {
-        var modal = modals.pop();
+        var modal = modals.shift();
         if (!modal) {
             return;
         }

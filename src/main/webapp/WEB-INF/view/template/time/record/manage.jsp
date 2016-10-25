@@ -110,25 +110,34 @@
 
   </div>
   <div modal-container>
-    <div record-detail-modal ng-if="isOpen('record-details')"></div>
-    <div record-review-modal ng-if="isOpen('record-review')"
-         ng-class="{'background-modal': top != 'record-review'}"></div>
-    <div record-review-reject-modal ng-if="isOpen('record-review-reject')"></div>
-    <div record-approve-submit-modal ng-if="isOpen('record-approval-submit')"></div>
-    <div record-reminder-prompt-modal ng-if="isOpen('record-reminder-prompt')"></div>
-    <div ng-show="isOpen('record-reminder-posting')">
+    <modal modal-id="record-details">
+      <div record-detail-modal></div>
+    </modal>
+    <modal modal-id="record-review">
+      <div record-review-modal></div>
+    </modal>
+    <modal modal-id="record-review-reject">
+      <div record-review-reject-modal></div>
+    </modal>
+    <modal modal-id="record-approval-submit">
+      <div record-approve-submit-modal></div>
+    </modal>
+    <modal modal-id="record-reminder-prompt">
+      <div record-reminder-prompt-modal></div>
+    </modal>
+    <modal modal-id="record-reminder-posting">
       <div class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">
           Sending reminders ...
         </h3>
         <div loader-indicator class="loader"></div>
       </div>
-    </div>
-    <div ng-show="isOpen('record-reminder-posted')">
+    </modal>
+    <modal modal-id="record-reminder-posted">
       <div class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">Email reminders were sent successfully.</h3>
         <input ng-click="resolveModal()" class="time-neutral-button" type="button" value="OK"/>
       </div>
-    </div>
+    </modal>
   </div>
 </div>

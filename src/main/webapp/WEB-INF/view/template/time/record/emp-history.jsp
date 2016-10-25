@@ -92,8 +92,10 @@
 
         </div>
     </section>
-    <div modal-container ng-show="top" ng-switch="top">
-        <div record-detail-modal ng-if="isOpen('details')"></div>
+    <div modal-container>
+      <modal modal-id="record-details">
+        <div record-detail-modal></div>
+      </modal>
     </div>
 </section>
 

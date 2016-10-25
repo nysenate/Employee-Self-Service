@@ -238,13 +238,16 @@
 
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <div fulfillment-editing-modal
-         supply-employees='supplyEmployees'
-         location-statistics='locationStatistics'
-         ng-if="isOpen('fulfillment-editing-modal')">
-    </div>
+    <modal modal-id="fulfillment-editing-modal">
+      <div fulfillment-editing-modal
+           supply-employees='supplyEmployees'
+           location-statistics='locationStatistics'>
+      </div>
+    </modal>
 
-    <div fulfillment-immutable-modal ng-if="isOpen('fulfillment-immutable-modal')"></div>
+    <modal modal-id="fulfillment-immutable-modal">
+      <div fulfillment-immutable-modal></div>
+    </modal>
   </div>
 
 </div>

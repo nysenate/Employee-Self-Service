@@ -375,7 +375,7 @@
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
     <% /** Modals for record save. */ %>
-    <div ng-if="isOpen('save-indicator')" class="save-progress-modal">
+    <modal modal-id="save-indicator" class="save-progress-modal">
       <div ng-show="state.request.save">
         <h3 class="content-info" style="margin-bottom:0;">
           Saving time record...
@@ -388,9 +388,9 @@
         <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
         <input ng-click="resolveModal()" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
-    </div>
+    </modal>
     <% /** Modals for record submission. */ %>
-    <div ng-if="isOpen('submit-ack')">
+    <modal modal-id="submit-ack">
       <div>
         <h3 class="content-info" style="margin-bottom:0;">
           Before submitting, you must acknowledge the following:
@@ -419,24 +419,24 @@
           </div>
         </div>
       </div>
-    </div>
-    <div ng-if="isOpen('submit-progress')">
+    </modal>
+    <modal modal-id="submit-progress">
       <div class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">
           Saving and submitting time record...
         </h3>
         <div loader-indicator class="loader"></div>
       </div>
-    </div>
-    <div ng-if="isOpen('post-save')">
+    </modal>
+    <modal modal-id="post-save">
       <div class="save-progress-modal">
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been submitted.</h3>
         <h4>What would you like to do next?</h4>
         <input ng-click="resolveModal()" class="reject-button" type="button" value="Log out of ESS"/>
         <input ng-click="rejectModal()" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
-    </div>
-    <div ng-if="isOpen('expectedhrs-dialog')" class="save-progress-modal">
+    </modal>
+    <modal modal-id="expectedhrs-dialog" class="save-progress-modal">
       <div ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
               expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
         <h3 class="content-info" style="margin-bottom:0;">
@@ -464,8 +464,8 @@
           </div>
         </div>
       </div>
-    </div>
-    <div ng-if="isOpen('futureenddt-dialog')" class="save-progress-modal">
+    </modal>
+    <modal modal-id="futureenddt-dialog" class="save-progress-modal">
       <h3 class="content-info" style="margin-bottom:0;">
         Timesheet with a Future End Date
       </h3>
@@ -481,6 +481,6 @@
           <input ng-click="rejectModal()" class="reject-button" type="button" value="No"/>
         </div>
       </div>
-    </div>
+    </modal>
   </div>
 </div>
