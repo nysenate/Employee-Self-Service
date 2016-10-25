@@ -314,7 +314,6 @@ essSupply.directive('orderQuantityValidator', [function () {
     return {
         require: 'ngModel',
         link: function (scope, elm, attrs, ngModel) {
-
             // Only allow numbers, backspace, tab, and F5 keys to be pressed.
             elm.bind("keydown", function (event) {
                 if (event.keyCode === 8 || event.keyCode === 9 || event.keyCode === 116) {
@@ -325,11 +324,17 @@ essSupply.directive('orderQuantityValidator', [function () {
                 }
             });
 
-            // Limit the max length of input.
             var maxLength = 4;
             scope.$watch(attrs.ngModel, function (newValue) {
-                if (ngModel.$viewValue.length > maxLength) {
-                    ngModel.$setViewValue(ngModel.$viewValue.substring(0, maxLength));
+                var value = ngModel.$viewValue;
+                // Limit the max length of input.
+                if (value.length > maxLength) {
+                    ngModel.$setViewValue(value.substring(0, maxLength));
+                    ngModel.$render();
+                }
+                // Trim the leading zeros out of numbers.
+                if (value.indexOf(0) == 0 && value.length > 1) {
+                    ngModel.$setViewValue(value.substring(1, value.length));
                     ngModel.$render();
                 }
             });
