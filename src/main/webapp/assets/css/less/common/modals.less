@@ -10,16 +10,22 @@
   z-index: 1002;
   .align-parent;
 
-  & > ng-transclude > *, & > #common-modals > * {
-    &:not(.custom-fit) {
-      .modal-fit;
+  & > ng-transclude, & > #common-modals{
+    & > modal > * {
+      &:not(.custom-fit) {
+        .modal-fit;
+      }
+      background: #fafafa;
+      display: block;
+      margin: auto;
+      position: fixed;
+      .center-align;
+      z-index: 1004;
+
+      &.background-modal {
+        z-index: 1002;
+      }
     }
-    background: #fafafa;
-    display: block;
-    margin: auto;
-    position: fixed;
-    .center-align;
-    z-index: 1004;
   }
 
   & #modal-backdrop {
@@ -28,10 +34,6 @@
     width: 100vw;
     height: 100vh;
     z-index: 1003;
-  }
-
-  & .background-modal {
-    z-index: 1002;
   }
 }
 
