@@ -163,16 +163,16 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     };
 
     /** --- Add Item --- **/
-    $scope.warnning = false;
+    $scope.warning = false;
     $scope.addItem = function () {
         var newItem = itemAutocompleteService.getItemFromCommodityCode($scope.newItemCommodityCode);
         if (!newItem)
             return false;
         if (isItemADuplicate(newItem)) {
-            $scope.warnning = true;
+            $scope.warning = true;
             return;
         }
-        $scope.warnning = false;
+        $scope.warning = false;
         $scope.editableRequisition.lineItems.push({item: newItem, quantity: 1});
         $scope.newItemCommodityCode = "";
         $scope.onUpdate();
