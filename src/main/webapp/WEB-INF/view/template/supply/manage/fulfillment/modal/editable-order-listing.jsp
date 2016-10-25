@@ -14,7 +14,7 @@
       <td>{{lineItem.item.description}}</td>
       <form>
         <td><input order-quantity-validator
-                   type="number"
+                   type="text"
                    ng-change="onUpdate()"
                    ng-model="lineItem.quantity"
                    min="0"
