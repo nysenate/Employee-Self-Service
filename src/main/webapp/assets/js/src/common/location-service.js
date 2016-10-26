@@ -55,7 +55,12 @@ function locationService($location, $window, $anchorScroll, appProps) {
      */
     function go(path, reload, params) {
         $location.path(appProps.ctxPath + path).search((params) ? params : {});
-        if (reload === true) $window.location.reload();
+        if (reload === true) {
+            // Timeout is required for firefox to reload properly.
+            setTimeout(function () {
+                $window.location.reload()
+            }, 0);
+        }
     }
 
 }
