@@ -2398,6 +2398,7 @@ button.ui-button::-moz-focus-inner {
 .add-to-cart-btn {
   padding-top: 7px !important;
   padding-bottom: 6px !important;
+  margin-left: 5px;
 }
 .cart-unit-size {
   padding-left: 25px;
@@ -2595,6 +2596,7 @@ label.custom-select {
   -moz-border-radius: 0;
   border-radius: 0;
   height: 30px;
+  width: 65px;
 }
 .custom-select select.warn-select {
   -webkit-box-shadow: 0 0 10px 100px #ffbcbc inset;
