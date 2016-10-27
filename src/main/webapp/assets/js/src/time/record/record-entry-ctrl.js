@@ -410,7 +410,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
 
     function getAccrualTabIndexFn (propName) {
         return function (entry) {
-            if (entry[propName] != null && $scope.getSelectedRecord().focused) return 1;
+            if (entry[propName] !== null && $scope.getSelectedRecord().focused) return 1;
             if (entry.total < 7 && !$scope.isWeekend(entry.date)) return 1;
             if ($scope.isFieldSelected(entry, propName)) return 1;
             return -1;
