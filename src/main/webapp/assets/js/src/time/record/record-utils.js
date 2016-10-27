@@ -3,7 +3,8 @@ var essTime = angular.module('essTime');
 /**
  * Contains common time record functions that are used across several different controllers
  */
-essTime.service('RecordUtils', [function () {
+essTime.service('RecordUtils', recordUtils);
+function recordUtils() {
 
     // Contains the field names for each hour field in a time entry
     var timeEntryFields = [
@@ -36,7 +37,8 @@ essTime.service('RecordUtils', [function () {
     function getDailyTotal(entry) {
         return timeEntryFields
             .map(function (timeField) {
-                return +entry[timeField];
+                var fieldValue = entry[timeField];
+                return isNaN(fieldValue) ? 0 : +fieldValue;
             }).reduce(function (a, b) {
                 return a + b;
             });
@@ -121,5 +123,5 @@ essTime.service('RecordUtils', [function () {
 
         return 0;
     }
-}]);
+}
 
