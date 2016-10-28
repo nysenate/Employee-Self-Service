@@ -1,6 +1,6 @@
 *.iml
-.idea/
+.idea/*
+!.idea/codeStyleSettings.xml
 **/target/
-target/
 **.properties
 grunt.properties.json
