@@ -36,6 +36,12 @@ public class EmployeeSupInfo
     /** --- Functional Getters/Setters --- */
 
     public Range<LocalDate> getEffectiveDateRange() {
+        if (supStartDate == null && supEndDate == null) {
+            return Range.all();
+        }
+        if (supStartDate == null) {
+            return Range.lessThan(supEndDate.plusDays(1));
+        }
         if (supEndDate == null) {
             return Range.atLeast(supStartDate);
         }
