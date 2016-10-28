@@ -43,10 +43,9 @@
             <%--Search--%>
             <div class="padding-10" style="display: flex; justify-content: space-between;">
                 <div style="display: inline-block;">
-          <span class="supply-text">Destination
+          <span class="supply-text">Destination:
             <div style="display: inline;
     font-size: small;">
-          <a class="supply-text " ng-click="resetDestination()">(change):</a>
         </div>
           </span>
                 </div>
@@ -64,9 +63,8 @@
                 </div>
             </div>
             <div class="padding-10" style="margin-top: -30px;    margin-bottom: -10px;">
-                {{destinationCode}} ({{destinationDescription}})
+                {{destinationCode}} ({{destinationDescription}}) <a ng-click="resetDestination()">[edit]</a>
             </div>
-
             <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()"
                                      pagination-id="item-pagination"
                                      boundary-links="true" max-size="10"></dir-pagination-controls>
