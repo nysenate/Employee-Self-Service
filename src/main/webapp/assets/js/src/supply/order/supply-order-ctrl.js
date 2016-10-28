@@ -6,34 +6,33 @@ var essSupply = angular.module('essSupply')
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
                                allowanceService, destinationService, modals, supplyUtils) {
     $scope.state = {};
-    $scope.sorting = {
-        Name: 0,
-        Category: 10
-    };
-    $scope.sortBy = $scope.sorting.Alphabet;
     $scope.states = {
         LOADING: 0,
         SELECTING_DESTINATION: 5,
         SHOPPING: 10
     };
+    $scope.sorting = {
+        Name: 0,
+        Category: 10
+    };
+    $scope.sortBy = $scope.sorting.Alphabet;
     $scope.displaySorting = Object.getOwnPropertyNames($scope.sorting);
-
     $scope.paginate = angular.extend({}, paginationModel);
-
     $scope.filter = {
         searchTerm: "",
         categories: []
     };
-
-    // All allowances for the selected destination.
+    /**
+     * The complete, unfiltered array of allowances.
+     */
     var allowances = [];
-
-    // An array of allowances which match the current filters.
+    /**
+     * A filtered set of allowances which are displayed to the user.
+     * These allowances are adjusted by user filters.
+     */
     $scope.displayAllowances = [];
-
     // The user specified destination code. Defaults to the code of the employees work location.
     $scope.destinationCode = "";
-
     $scope.destinationDescription = "";
 
     /** --- Initialization --- */
@@ -85,10 +84,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(saveAllowances)
             .then(filterAllowances)
-            .then(setAllowances)
             .then(setToShoppingState)
             .then(setDestinationDescription)
-            .then(checkSortOrder)
+            .then($scope.updateSort)
             .catch(loadItemsError);
     }
 
@@ -101,24 +99,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.displayAllowances = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
     }
 
-    function setAllowances() {
-        if (supplyCart.getCart().length > 0) {
-            supplyCart.getCart().forEach(function (item) {
-                $scope.displayAllowances.forEach(function (allowance) {
-                    if (item.item.id == allowance.item.id)
-                        if (item.quantity > allowance.item.maxQtyPerOrder)
-                            allowance.selectedQuantity = "more";
-                })
-            })
-        }
-    }
-
     function setToShoppingState() {
         $scope.state = $scope.states.SHOPPING;
-    }
-
-    function checkSortOrder(allowance) {
-        $scope.updateSort();
     }
 
     function loadItemsError(response) {
@@ -197,12 +179,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.decrementQuantity = function (item) {
-        console.log("decrementing");
         supplyCart.decrementQuantity(item);
     };
 
     $scope.incrementQuantity = function (item) {
-        console.log("Incrementing");
         supplyCart.incrementQuantity(item);
     };
 
