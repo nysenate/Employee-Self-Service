@@ -66,6 +66,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/order-more-prompt-modal";
     }
 
+    @RequestMapping(value = "/order/order-canceling-modal")
+    public String orderCancelingModal() {
+        return SUPPLY_TMPL_BASE_URL + "/order/order-canceling-modal";
+    }
+
     @RequestMapping(value="/order/order-custom-quantity-modal")
     public String orderCustomQuantityModal() {
         return SUPPLY_TMPL_BASE_URL + "/order/order-custom-quantity-modal";

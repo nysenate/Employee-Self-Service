@@ -64,12 +64,14 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         modals.resolve();
         // locationService.go("/supply/history/location-history", false);
     };
+
+    // removed
     $scope.resetDestination = function () {
         supplyCart.reset();
         destinationService.reset();
-        locationService.go("/supply/order", true);
+        locationService.go("/supply/order", false);
     };
-    
+
     $scope.logout = function () {
         locationService.go('/logout', true);
     };

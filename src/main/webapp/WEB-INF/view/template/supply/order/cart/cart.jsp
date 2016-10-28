@@ -3,12 +3,6 @@
 
 <div ng-controller="SupplyCartController">
   <div class="supply-order-hero inline-block width-100">
-    <a style="margin-top: 10px;margin-left: 10px;" class="float-left" ng-click="resetDestination(this)"
-       ng-hide="backHidden()">
-      <img width="30px" height="30px" src="/assets/img/cancel.png">
-    </a>
-    <small class="float-left" style="color: white;margin-top: 42px;margin-left: -33px;" ng-hide="backHidden()">Cancel
-    </small>
     <h2 class="requisition-title">Shopping Cart</h2>
     <a href="${ctxPath}/supply/order/cart">
       <cart-summary class="cart-widget"></cart-summary>
