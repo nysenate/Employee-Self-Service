@@ -3,7 +3,7 @@
 
 <div ng-controller="SupplyCartController">
   <div class="supply-order-hero inline-block width-100">
-    <h2 class="requisition-title">Shopping Cart</h2>
+    <h2>Shopping Cart</h2>
   </div>
   <%--Empty cart--%>
   <div class="content-container" ng-show="!cartHasItems()">

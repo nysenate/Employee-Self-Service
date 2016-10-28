@@ -43,7 +43,7 @@
             <%--Search--%>
             <div class="padding-10" style="display: flex; justify-content: space-between;">
                 <div style="display: inline-block;">
-          <span class="supply-text">Destination:
+          <span class="supply-text">Destination  <a ng-click="resetDestination()">[change]</a>:
             <div style="display: inline;
     font-size: small;">
         </div>
@@ -63,7 +63,7 @@
                 </div>
             </div>
             <div class="padding-10" style="margin-top: -30px;    margin-bottom: -10px;">
-                {{destinationCode}} ({{destinationDescription}}) <a ng-click="resetDestination()">[edit]</a>
+                {{destinationCode}} ({{destinationDescription}})
             </div>
             <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()"
                                      pagination-id="item-pagination"

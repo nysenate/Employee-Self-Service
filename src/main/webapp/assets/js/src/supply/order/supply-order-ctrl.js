@@ -256,7 +256,12 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.resetDestination = function (body) {
-        modals.open('order-canceling-modal');
+        if (supplyCart.getCart().length > 0)
+            modals.open('order-canceling-modal');
+        else {
+            destinationService.reset();
+            locationService.go("/supply/order", true);
+        }
     };
 
     $scope.backHidden = function () {
