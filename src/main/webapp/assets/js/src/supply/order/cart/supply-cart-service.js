@@ -22,15 +22,46 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return false;
         },
 
-        addToCart: function (item, quantity) {
+        /**
+         * Add a new item to the cart.
+         * Does nothing if item is already in the cart.
+         */
+        addToCart: function (item) {
             if (this.isItemInCart(item.id)) {
-                this.getCartLineItem(item.id).quantity += quantity;
+                return;
             }
-            else {
-                cart.push(new LineItem(item, quantity));
-            }
-            cookies.addCart(cart);
+            cart.push(new LineItem(item, 1));
+            cookies.saveCartCookie(cart);
             return true;
+        },
+
+        /**
+         * Reduces the quantity of item by one.
+         * Removes from cart if the new quantity is < 1.
+         */
+        decrementQuantity: function (item) {
+            var lineItem = this.getCartLineItem(item.id);
+            if (lineItem) {
+                lineItem.quantity--;
+                if (lineItem.quantity < 1) {
+                    this.removeFromCart(item.id)
+                }
+            }
+            cookies.saveCartCookie(cart);
+        },
+
+        /**
+         * Increments the quantity of the given item in the cart by one.
+         * Max item quantity is 9999.
+         */
+        incrementQuantity: function (item) {
+            var lineItem = this.getCartLineItem(item.id);
+            if (lineItem) {
+                if (lineItem.quantity < 9999) {
+                    lineItem.quantity++;
+                }
+            }
+            cookies.saveCartCookie(cart);
         },
 
         getCart: function () {
@@ -69,12 +100,12 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
                     cart.splice(index, 1);
                 }
             });
-            cookies.addCart(cart);
+            cookies.saveCartCookie(cart);
         },
 
         reset: function () {
             cart = [];
-            cookies.addCart(cart);
+            cookies.saveCartCookie(cart);
         }
     }
 }]);

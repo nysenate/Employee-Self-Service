@@ -25,8 +25,11 @@ function supplyCookieService($cookies,appProps) {
     }
     
     return {
-        /*() ->add user Cart*/
-        addCart: function (cart) {
+        /**
+         * Saves the give cart object to a cookie.
+         * Removes the current cart cookie if it already exists.
+         */
+        saveCartCookie: function (cart) {
             var code = encodeCart(serializatize(cart));
             var cur = $cookies.get(userId);
             if (cur != null || cur != undefined)

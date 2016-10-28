@@ -175,26 +175,37 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Shopping --- */
 
     $scope.addToCart = function (allowance) {
-        // If more is selected, display
-        if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
-            $scope.quantityChanged(allowance);
-            return;
-        }
-        if (isNaN(allowance.selectedQuantity)) {
-            return;
-        }
+        // if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
+        //     $scope.quantityChanged(allowance);
+        //     return;
+        // }
+        // if (isNaN(allowance.selectedQuantity)) {
+        //     return;
+        // }
         // Cant add more than is allowed per order.
-        if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
-            return;
-        }
+        // if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
+        //     return;
+        // }
+
         // first time adding special item, display modal.
         if (!supplyCart.isItemInCart(allowance.item.id) && allowance.visibility === 'SPECIAL') {
             modals.open('special-order-item-modal', {allowance: allowance});
         }
         else {
-            supplyCart.addToCart(allowance.item, allowance.selectedQuantity);
+            supplyCart.addToCart(allowance.item);
         }
     };
+
+    $scope.decrementQuantity = function (item) {
+        console.log("decrementing");
+        supplyCart.decrementQuantity(item);
+    };
+
+    $scope.incrementQuantity = function (item) {
+        console.log("Incrementing");
+        supplyCart.incrementQuantity(item);
+    };
+
     $scope.isInCart = function (item) {
         return supplyCart.isItemInCart(item.id);
     };
@@ -205,22 +216,17 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         else
             return 0;
     };
+
     $scope.getItemAllowedQuantities = function (item) {
         return allowanceService.getAllowedQuantities(item).slice(-1)[0];
     };
-    $scope.getItemTestSpecialOrder = function (item) {
-        if ($scope.getItemAllowedQuantities(item) < $scope.getItemQuantity(item))
-            return "Yes";
-        else
-            return "No"
-    };
+
     $scope.getItemRemainQuantities = function (item) {
         if ($scope.getItemAllowedQuantities(item) - $scope.getItemQuantity(item) >= 0 || item.visibility === 'SPECIAL')
             return $scope.getItemAllowedQuantities(item) - $scope.getItemQuantity(item);
         else
             return 0;
     };
-
 
     $scope.getAllowedQuantities = function (item) {
         var allowedQuantities = allowanceService.getAllowedQuantities(item);
