@@ -4,14 +4,19 @@
 <div ng-controller="SupplyCartController">
   <div class="supply-order-hero inline-block width-100">
     <h2 class="requisition-title">Shopping Cart</h2>
-    <a href="${ctxPath}/supply/order/cart">
-      <cart-summary class="cart-widget"></cart-summary>
-    </a>
   </div>
   <%--Empty cart--%>
   <div class="content-container" ng-show="!cartHasItems()">
     <div class="content-info">
       <h2 class="dark-gray">Your cart is empty.</h2>
+    </div>
+    <div class="cart-checkout-container">
+      <div class="float-right">
+        <a href="${ctxPath}/supply/order">
+          <input class="submit-button" type="button" value="Continue Browsing">
+        </a>
+      </div>
+      <div class="clearfix"></div>
     </div>
   </div>
 
