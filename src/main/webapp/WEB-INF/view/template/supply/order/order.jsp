@@ -43,7 +43,7 @@
             <%--Search--%>
             <div class="padding-10" style="display: flex; justify-content: space-between;">
                 <div style="display: inline-block;">
-          <span class="supply-text">Destination  <a ng-click="resetDestination()">[change]</a>:
+          <span class="supply-text">Destination: &nbsp;&nbsp; <a ng-click="resetDestination()">[change]</a>
             <div style="display: inline;
     font-size: small;">
         </div>
