@@ -1,10 +1,10 @@
 var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController', ['$scope', 'appProps', 'LocationService', 'SupplyCartService',
         'PaginationModel', 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
-        'SupplyOrderDestinationService', 'modals', 'SupplyUtils', supplyOrderController]);
+        'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService, modals, supplyUtils) {
+                               allowanceService, destinationService, modals, supplyUtils, lineItemService) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
@@ -22,15 +22,19 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         searchTerm: "",
         categories: []
     };
+
     /**
-     * The complete, unfiltered array of allowances.
+     * All line items for a selected destination.
      */
-    var allowances = [];
+    var lineItems = [];
+
     /**
-     * A filtered set of allowances which are displayed to the user.
-     * These allowances are adjusted by user filters.
+     * The line items currently visible to the user.
+     * The same as all line items but adjusted for you selected filters.
+     * These use the same references as lineItems.
      */
-    $scope.displayAllowances = [];
+    $scope.displayedLineItems = [];
+
     // The user specified destination code. Defaults to the code of the employees work location.
     $scope.destinationCode = "";
     $scope.destinationDescription = "";
@@ -82,21 +86,25 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.state = $scope.states.LOADING;
         $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
         allowanceService.queryLocationAllowance(destinationService.getDestination())
-            .then(saveAllowances)
-            .then(filterAllowances)
+            .then(extractLineItems)
+            .then(filterLineItems)
             .then(setToShoppingState)
             .then(setDestinationDescription)
             .then($scope.updateSort)
             .catch(loadItemsError);
     }
 
-    function saveAllowances(allowanceResponse) {
-        allowances = allowanceResponse.result.itemAllowances;
+    function extractLineItems(allowanceResponse) {
+        var items = [];
+        angular.forEach(allowanceResponse.result.itemAllowances, function (allowance) {
+            items.push(allowance.item);
+        });
+        lineItems = lineItemService.generateLineItems(items);
     }
 
-    function filterAllowances() {
-        $scope.displayAllowances = allowanceService.filterAllowances(allowances, $scope.filter.categories, $scope.filter.searchTerm);
-        $scope.displayAllowances = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
+    function filterLineItems() {
+        $scope.displayedLineItems = allowanceService.filterLineItems(lineItems, $scope.filter.categories, $scope.filter.searchTerm);
+        $scope.displayedLineItems = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
     }
 
     function setToShoppingState() {

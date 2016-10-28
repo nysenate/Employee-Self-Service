@@ -167,6 +167,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/order/order-more-prompt-modal.js',
                         '<%= jsSource %>/supply/order/order-custom-quantity-modal.js',
                         '<%= jsSource %>/supply/order/special-order-item-modal.js',
+                        '<%= jsSource %>/supply/order/supply-line-item-service.js',
                         //        <%-- Cart --%>
                         '<%= jsSource %>/supply/order/cart/supply-cart-service.js',
                         '<%= jsSource %>/supply/order/cart/supply-cart-ctrl.js',
