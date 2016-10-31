@@ -123,6 +123,11 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/help/ta/plan'
     });
 
+    /** Logout */
+    $routeProvider.when(ctxPath + '/logout', {
+        // Don't need to do anything, just prevent /logout from hitting 404.
+    });
+
     /** 404 */
     $routeProvider.otherwise({
         templateUrl: ctxPath + '/template/404'
