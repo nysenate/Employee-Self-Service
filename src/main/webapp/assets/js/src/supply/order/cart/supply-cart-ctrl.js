@@ -44,8 +44,6 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         };
         requisitionApi.save(params, function (response) {
             supplyCart.reset();
-            destinationService.reset();
-            cookies.resetDestination();
             modals.open('supply-cart-checkout-modal', response);
         }, function (response) {
             modals.open('500', {action: 'checkout cart', details: response});
@@ -60,9 +58,9 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         modals.resolve();
     };
 
-    $scope.viewOrder = function () {
+    $scope.returnToSupply = function () {
         modals.resolve();
-        // locationService.go("/supply/history/location-history", false);
+        locationService.go("/supply/order", false);
     };
 
     // removed
