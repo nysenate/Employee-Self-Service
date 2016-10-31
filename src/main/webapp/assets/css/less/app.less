@@ -199,14 +199,28 @@
   height: @size;
 }
 
+/** --- Flex functionality --- */
+
+.flex-column-box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.flex-header {
+  flex: 0 1 auto;
+}
+
+.flex-content {
+  flex: 1 1 auto;
+}
+
 /** --- Left Navigation ---  */
 
 .left-nav {
-
   @media print {
     display: none;
   }
-
   background:#fafafa;
   border: 1px solid #f1f1f1;
   width:250px;
@@ -219,10 +233,13 @@
 }
 
 .left-nav-div {
+  @media print {
+    display: none;
+  }
   border: 1px solid #f1f1f1;
   width: 250px;
   position: fixed;
-  height: auto;
+  height: 100%;
   .border-radius(0 0 0 2px);
 }
 

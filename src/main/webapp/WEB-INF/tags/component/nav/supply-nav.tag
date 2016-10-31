@@ -3,8 +3,8 @@
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
-<div class="left-nav-div">
-  <section class="left-nav-content no-print" ess-navigation>
+<div class="left-nav-div flex-column-box">
+  <section class="left-nav-content flex-header" ess-navigation>
     <ess-component-nav:nav-header topicTitle="Supply Menu" colorClass="blue-purple"/>
     <h3 class="main-topic">My Supply</h3>
     <ul class="sub-topic-list">
@@ -21,16 +21,16 @@
     </ul>
     </shiro:hasPermission>
   </section>
-  <section class="left-nav-content margin-top-20 no-print" ng-controller="SupplyNavigationController"
+  <section class="left-nav-content flex-content flex-column-box margin-top-20" style="margin-bottom: 100px;" ng-controller="SupplyNavigationController"
            ng-show="shouldDisplayCategoryFilter()" data-ng-init="init()">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
-    <div class="padding-10">
+    <div class="flex-header padding-10">
       <a style="padding-left: 10px;" ng-click="clearSelections()">
         Clear All
       </a>
     </div>
-    <div style="height: 300px; overflow-y: auto">
-      <ul class="sub-topic-list">
+    <div class="flex-content" style="overflow-y: auto">
+      <ul class="">
         <li ng-repeat="cat in getCategories()">
           <input type="checkbox" ng-model="cat.selected" ng-change="onCategorySelected()"
                  data-ng-init="updateWithURL(cat)">
