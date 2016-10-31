@@ -13,7 +13,7 @@
     <div class="cart-checkout-container">
       <div class="float-right">
         <a href="${ctxPath}/supply/order">
-          <input class="submit-button" type="button" value="Continue Browsing">
+          <input class="neutral-button" type="button" value="Continue Browsing">
         </a>
       </div>
       <div class="clearfix"></div>
@@ -77,8 +77,9 @@
       </div>
       <%--<div class="col-8-12 force-min-height"></div>--%>
       <div class="float-right">
+        <input class="neutral-button" type="button" value="Empty Cart" ng-click="emptyCart()">
         <a href="${ctxPath}/supply/order">
-          <input class="submit-button" type="button" value="Continue Browsing">
+          <input class="neutral-button" type="button" value="Continue Browsing">
         </a>
         <input ng-click="submitOrder()" class="submit-button" type="button" value="Checkout">
       </div>

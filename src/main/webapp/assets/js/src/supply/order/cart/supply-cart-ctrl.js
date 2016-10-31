@@ -70,6 +70,10 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         locationService.go("/supply/order", false);
     };
 
+    $scope.emptyCart = function () {
+        supplyCart.reset();
+    };
+
     $scope.logout = function () {
         locationService.go('/logout', true);
     };
