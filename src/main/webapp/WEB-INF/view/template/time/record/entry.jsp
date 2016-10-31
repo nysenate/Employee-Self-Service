@@ -433,7 +433,7 @@
         <h3 class="content-info" style="margin-bottom:0;">Your time record has been submitted.</h3>
         <h4>What would you like to do next?</h4>
         <input ng-click="resolveModal()" class="reject-button" type="button" value="Log out of ESS"/>
-        <input ng-click="rejectModal()" class="submit-button" type="button" value="Go back to ESS"/>
+        <input ng-click="rejectModal({reinit: true})" class="submit-button" type="button" value="Go back to ESS"/>
       </div>
     </modal>
     <modal modal-id="expectedhrs-dialog" class="save-progress-modal">

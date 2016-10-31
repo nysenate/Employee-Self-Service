@@ -126,14 +126,24 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
 
             // Display any necessary dialogs prior to submit
             promiseUtils.serial(modalDialogs)
-                // Open the submit dialog
-                .then(function () { return modals.open('submit-ack', {'record': record}, true); })
+            // Open the submit dialog
+                .then(function () {
+                    return modals.open('submit-ack', {'record': record}, true);
+                })
                 // Submit the record
                 .then($scope.submitRecord)
                 // Open the post save dialog
-                .then(function () { return modals.open('post-save', {}, true); })
+                .then(function () {
+                    return modals.open('post-save', {}, true);
+                })
                 // Logout if user chooses, otherwise reinitialize page
-                .then($scope.logout, $scope.init);
+                .then($scope.logout)
+                .catch(function (args) {
+                    if (args && args.reinit) {
+                        $scope.init();
+                    }
+                });
+
 
         }
         else {
