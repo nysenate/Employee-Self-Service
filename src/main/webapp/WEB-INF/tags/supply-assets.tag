@@ -48,8 +48,10 @@
                 src="${ctxPath}/assets/js/src/supply/order/order-custom-quantity-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/special-order-item-modal.js?v=${releaseVersion}"></script>
-         <script type="text/javascript"
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/supply-line-item-service.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/supply-item-filter-service.js?v=${releaseVersion}"></script>
 
         <%-- Cart --%>
         <script type="text/javascript"

@@ -2,66 +2,44 @@ var essSupply = angular.module('essSupply');
 
 essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'SupplyCookieService', function (allowanceService, cookies) {
 
-    function LineItem(item, quantity) {
-        this.item = item;
-        this.quantity = quantity;
-    }
-
-    /** The cart is an array of LineItem's, saved in the users cookies. */
-    var cart = cookies.getCart();
+    /** The cart is map of item id's to line items, saved in the users cookies. */
+    var cart = cookies.getCart() || new Map();
 
     function newQuantity(quantity, lineItem) {
         return lineItem ? lineItem.quantity + quantity : quantity;
     }
 
     return {
-        isOverOrderAllowance: function (item, quantity) {
-            if (newQuantity(quantity, this.getCartLineItem(item.id)) > item.maxQtyPerOrder) {
-                return true;
-            }
-            return false;
-        },
-
         /**
-         * Add a new item to the cart.
-         * Does nothing if item is already in the cart.
+         * Add a line item to the cart.
+         * The added line item is a copy so changes to the original don't effect the cart.
+         * If this item is already in the cart, do nothing.
+         * Returns the updated cart.
          */
-        addToCart: function (item) {
-            if (this.isItemInCart(item.id)) {
+        addToCart: function (lineItem) {
+            if (this.isItemInCart(lineItem.item.id)) {
                 return;
             }
-            cart.push(new LineItem(item, 1));
-            cookies.saveCartCookie(cart);
-            return true;
+            var li = angular.copy(lineItem);
+            cart.set(li.item.id, li);
+            return cart;
         },
 
         /**
-         * Reduces the quantity of item by one.
-         * Removes from cart if the new quantity is < 1.
+         * Add or remove a line item from the cart.
+         * Any added line item is copied first so changes to the original don't effect the cart.
+         * If the line item's quantity is zero remove it, otherwise add it.
+         * Return the updated cart object.
          */
-        decrementQuantity: function (item) {
-            var lineItem = this.getCartLineItem(item.id);
-            if (lineItem) {
-                lineItem.quantity--;
-                if (lineItem.quantity < 1) {
-                    this.removeFromCart(item.id)
-                }
+        updateCartLineItem: function(lineItem) {
+            var li = angular.copy(lineItem);
+            if (li.quantity === 0) {
+                cart.delete(li.item.id);
             }
-            cookies.saveCartCookie(cart);
-        },
-
-        /**
-         * Increments the quantity of the given item in the cart by one.
-         * Max item quantity is 9999.
-         */
-        incrementQuantity: function (item) {
-            var lineItem = this.getCartLineItem(item.id);
-            if (lineItem) {
-                if (lineItem.quantity < 9999) {
-                    lineItem.quantity++;
-                }
+            else {
+                cart.set(li.item.id, li);
             }
-            cookies.saveCartCookie(cart);
+            return cart;
         },
 
         getCart: function () {
@@ -69,21 +47,16 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
         },
 
         isItemInCart: function (itemId) {
-            var results = $.grep(cart, function (lineItem) {
-                return lineItem.item.id === itemId
-            });
-            return results.length > 0;
+            var item = cart.get(itemId);
+            return item != undefined;
         },
 
         /** Get an item in the cart by its id. returns null if no match is found. */
         getCartLineItem: function (itemId) {
-            var search = $.grep(cart, function (lineItem) {
-                return lineItem.item.id === itemId
-            });
-            if (search.length > 0) {
-                return search[0];
+            if (!this.isItemInCart(itemId)) {
+                return null;
             }
-            return null;
+            return cart.get(itemId);
         },
 
         getTotalItems: function () {
@@ -106,6 +79,11 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
         reset: function () {
             cart = [];
             cookies.saveCartCookie(cart);
+        },
+
+        save: function () {
+            // cookies.saveCartCookie(cart);
+            // TODO:
         }
     }
 }]);

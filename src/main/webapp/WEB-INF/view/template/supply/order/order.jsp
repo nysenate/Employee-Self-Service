@@ -71,33 +71,34 @@
 
     <div class="grid">
       <div class="col-3-12 text-align-center"
-           dir-paginate="allowance in displayAllowances | itemsPerPage: paginate.itemsPerPage"
+           dir-paginate="lineItem in displayedLineItems | itemsPerPage: paginate.itemsPerPage"
            current-page="paginate.currPage"
            pagination-id="item-pagination">
         <div class="content-container"
-             ng-class="{'supply-special-item': allowance.visibility === 'SPECIAL'}">
+             ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
           <img class="supply-item-image"
-               ng-src="${imageUrl}/{{allowance.item.commodityCode}}.jpg"
+               ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
                err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
-          <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">{{allowance.item.description}}</p>
-
+          <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
+            {{lineItem.item.description}}
+          </p>
           <div>
-            <p class="dark-gray margin-0">{{allowance.item.standardQuantity}}/Pack</p>
-            <div ng-show="!isInCart(allowance.item)">
-              <input class="add-to-cart-btn" ng-click="addToCart(allowance)"
+            <p class="dark-gray margin-0">{{lineItem.item.standardQuantity}}/Pack</p>
+            <div ng-show="!isInCart(lineItem.item)">
+              <input class="add-to-cart-btn" ng-click="addToCart(lineItem)"
                      type="button" value="Add to Cart">
             </div>
-            <div ng-show="isInCart(allowance.item)">
-              <input class="qty-adjust-button" ng-click="decrementQuantity(allowance.item)"
+            <div ng-show="isInCart(lineItem.item)">
+              <input class="qty-adjust-button" ng-click="decrementQuantity(lineItem)"
                      type="button" value="-">
               <input order-quantity-validator
                      class="qty-input"
                      type="text"
                      ng-change="onUpdate()"
-                     ng-model="SOMETHING"
+                     ng-model="lineItem.quantity"
                      min="0"
                      step="1">
-              <input class="qty-adjust-button" ng-click="incrementQuantity(allowance.item)"
+              <input class="qty-adjust-button" ng-click="incrementQuantity(lineItem)"
                      type="button" value="+">
             </div>
           </div>

@@ -1,10 +1,11 @@
 var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController', ['$scope', 'appProps', 'LocationService', 'SupplyCartService',
         'PaginationModel', 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
-        'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService', supplyOrderController]);
+        'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService',
+        'SupplyItemFilterService', supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService, modals, supplyUtils, lineItemService) {
+                               allowanceService, destinationService, modals, supplyUtils, lineItemService, itemFilterService) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
@@ -103,8 +104,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function filterLineItems() {
-        $scope.displayedLineItems = allowanceService.filterLineItems(lineItems, $scope.filter.categories, $scope.filter.searchTerm);
-        $scope.displayedLineItems = supplyUtils.alphabetizeAllowances($scope.displayAllowances);
+        $scope.displayedLineItems = itemFilterService.filterLineItems(lineItems, $scope.filter.categories, $scope.filter.searchTerm);
+        $scope.displayedLineItems = supplyUtils.alphabetizeLineItems($scope.displayedLineItems);
     }
 
     function setToShoppingState() {
@@ -115,20 +116,16 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         modals.open('500', {action: 'get supply items', details: response});
     }
 
-    function Reset() {
-        $scope.filter.searchTerm = "";
-        filterAllowances();
-    }
-
     /** --- Search --- */
 
     $scope.search = function () {
-        filterAllowances();
+        filterLineItems();
     };
 
     /** --- Reset --- */
     $scope.reset = function () {
-        Reset();
+        $scope.filter.searchTerm = "";
+        filterLineItems();
     };
 
     /** --- Navigation --- */
@@ -158,80 +155,50 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.$on('$locationChangeStart', function (event, newUrl) {
         if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
             updateFiltersFromUrlParams();
-            filterAllowances();
+            filterLineItems();
         }
     });
 
     /** --- Shopping --- */
 
-    $scope.addToCart = function (allowance) {
-        // if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
-        //     $scope.quantityChanged(allowance);
-        //     return;
-        // }
-        // if (isNaN(allowance.selectedQuantity)) {
-        //     return;
-        // }
-        // Cant add more than is allowed per order.
-        // if (supplyCart.isOverOrderAllowance(allowance.item, allowance.selectedQuantity)) {
-        //     return;
-        // }
-
+    $scope.addToCart = function (lineItem) {
+        lineItem.increment();
         // first time adding special item, display modal.
-        if (!supplyCart.isItemInCart(allowance.item.id) && allowance.visibility === 'SPECIAL') {
-            modals.open('special-order-item-modal', {allowance: allowance});
+        if (!supplyCart.isItemInCart(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
+            modals.open('special-order-item-modal', {allowance: lineItem}); // TODO refactor modal
         }
         else {
-            supplyCart.addToCart(allowance.item);
+            supplyCart.addToCart(lineItem);
         }
+        supplyCart.save();
     };
 
-    $scope.decrementQuantity = function (item) {
-        supplyCart.decrementQuantity(item);
+    $scope.decrementQuantity = function (lineItem) {
+        lineItem.decrement();
+        supplyCart.updateCartLineItem(lineItem);
+        supplyCart.save();
     };
 
-    $scope.incrementQuantity = function (item) {
-        supplyCart.incrementQuantity(item);
+    $scope.incrementQuantity = function (lineItem) {
+        lineItem.increment();
+        supplyCart.updateCartLineItem(lineItem);
+        supplyCart.save();
     };
 
     $scope.isInCart = function (item) {
         return supplyCart.isItemInCart(item.id);
     };
 
-    $scope.getItemQuantity = function (item) {
-        if (supplyCart.isItemInCart(item.id))
-            return supplyCart.getCartLineItem(item.id).quantity;
-        else
-            return 0;
-    };
-
-    $scope.getItemAllowedQuantities = function (item) {
-        return allowanceService.getAllowedQuantities(item).slice(-1)[0];
-    };
-
-    $scope.getItemRemainQuantities = function (item) {
-        if ($scope.getItemAllowedQuantities(item) - $scope.getItemQuantity(item) >= 0 || item.visibility === 'SPECIAL')
-            return $scope.getItemAllowedQuantities(item) - $scope.getItemQuantity(item);
-        else
-            return 0;
-    };
-
-    $scope.getAllowedQuantities = function (item) {
-        var allowedQuantities = allowanceService.getAllowedQuantities(item);
-        allowedQuantities.push("more");
-        return allowedQuantities;
-    };
-
-    /** This is called whenever an items quantity is changed.
-     * Used to determine when "more" is selected. */
-    $scope.quantityChanged = function (allowance) {
-        if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
-            modals.open('order-more-prompt-modal', {allowance: allowance})
-                .then(function (allowance) {
-                    modals.open('order-custom-quantity-modal', {item: allowance.item});
-                });
-        }
-    };
+    // /** This is called whenever an items quantity is changed.
+    //  * Used to determine when "more" is selected. */
+    // $scope.quantityChanged = function (allowance) {
+    //     if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
+    //         modals.open('order-more-prompt-modal', {allowance: allowance})
+    //             .then(function (allowance) {
+    //                 modals.open('order-custom-quantity-modal', {item: allowance.item});
+    //             });
+    //     }
+    // };
 
     /** --- Location selection --- */
 
@@ -249,7 +216,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         return locationAutocompleteService.getLocationAutocompleteOptions();
     };
 
-    $scope.resetDestination = function (body) {
+    $scope.resetDestination = function () {
         if (supplyCart.getCart().length > 0)
             modals.open('order-canceling-modal');
         else {
@@ -258,32 +225,28 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         }
     };
 
-    $scope.backHidden = function () {
-        return $scope.state == $scope.states.SELECTING_DESTINATION;
-    };
-
     /** --- Sorting  --- */
     $scope.updateSort = function () {
         var cur = locationService.getSearchParam("sortBy") || [];
         if (cur.length == 0 || cur[0] != $scope.sortBy) {
             locationService.setSearchParam("sortBy", $scope.sortBy, true, false);
         }
-        var allowancesCopy = angular.copy($scope.displayAllowances);
+        var lineItemsCopy = angular.copy($scope.displayedLineItems);
         if ($scope.sorting[$scope.sortBy] == $scope.sorting.Name) {
-            allowancesCopy.sort(function (a, b) {
+            lineItemsCopy.sort(function (a, b) {
                 if (a.item.description < b.item.description) return -1;
                 if (a.item.description > b.item.description) return 1;
                 return 0;
             });
         }
         else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
-            allowancesCopy.sort(function (a, b) {
+            lineItemsCopy.sort(function (a, b) {
                 if (a.item.category.name < b.item.category.name) return -1;
                 if (a.item.category.name > b.item.category.name) return 1;
                 return 0;
             });
         }
-        $scope.displayAllowances = allowancesCopy;
+        $scope.displayAllowances = lineItemsCopy;
     }
 }
 

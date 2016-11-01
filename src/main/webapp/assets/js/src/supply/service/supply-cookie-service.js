@@ -41,7 +41,7 @@ function supplyCookieService($cookies,appProps) {
         getCart: function () {
             var cur = $cookies.get(userId);
             if (cur == null || cur == undefined)
-                return [];
+                return undefined;
             else
                 return deserialize(decodeCart(cur));
         },

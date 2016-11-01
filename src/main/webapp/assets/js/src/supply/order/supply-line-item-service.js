@@ -9,18 +9,18 @@ essSupply.service('SupplyLineItemService', [function () {
     /**
      * A LineItem is a SupplyItem with an order quantity.
      */
-    function LineItem(item, quantity) {
+    function LineItem(item) {
         this.MAX_QTY = 9999;
         this.item = item;
-        this.quantity = quantity;
+        this.quantity = 0;
 
-        this.increment = function () {
+        this.increment = function() {
             if (this.quantity < this.MAX_QTY) {
                 this.quantity++;
             }
         };
 
-        this.decrement = function () {
+        this.decrement = function() {
             if (this.quantity > 0) {
                 this.quantity--;
             }
@@ -30,10 +30,14 @@ essSupply.service('SupplyLineItemService', [function () {
     return {
         /**
          * Generates a array of line items from an array of items.
-         * Returns the generated line itemm array.
+         * Returns the generated line item array.
          */
-        generateLineItems: function (items) {
-
+        generateLineItems: function(items) {
+            var lineItems = [];
+            angular.forEach(items, function(item) {
+                lineItems.push(new LineItem(item));
+            });
+            return lineItems;
         }
     }
 }]);
