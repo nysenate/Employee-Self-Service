@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -115,5 +116,22 @@ public class TimeRecordDaoTests extends BaseTests
         Stopwatch sw = Stopwatch.createStarted();
         timeRecordDao.getTimeRecord(new BigInteger("39555288913054012606969560863737970844"));
         logger.info("record retrieval time: {}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void getUpdatedTRecsTest() {
+        logger.info("Getting updated time records");
+        LocalDateTime endDateTime = LocalDateTime.now();
+        LocalDateTime startDateTime = endDateTime.minusDays(2);
+        Range<LocalDateTime> dateTimeRange = Range.closed(startDateTime, endDateTime);
+        List<TimeRecord> tRecs = timeRecordDao.getUpdatedRecords(dateTimeRange);
+        logger.info("{}", tRecs.size());
+    }
+
+    @Test
+    public void getLastUpdateTimeTest() {
+        logger.info("Getting latest update timestamp...");
+        LocalDateTime lastUpdate = timeRecordDao.getLatestUpdateTime();
+        logger.info("last update was {}", lastUpdate);
     }
 }

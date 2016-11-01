@@ -233,6 +233,18 @@ public class TimeRecord implements Comparable<TimeRecord>
                 .orElse(null);
     }
 
+    /**
+     * Get the greatest update between the record and all of its entries
+     * @return LocalDateTime
+     */
+    public LocalDateTime getUpdateDate() {
+        return timeEntryMap.values().stream()
+                .map(TimeEntry::getUpdateDate)
+                .filter(this.updateDate::isBefore)
+                .max(LocalDateTime::compareTo)
+                .orElse(this.updateDate);
+    }
+
     /** --- Basic Getters/Setters --- */
 
     public BigInteger getTimeRecordId() {
@@ -349,10 +361,6 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getUpdateDate() {
-        return updateDate;
     }
 
     public void setUpdateDate(LocalDateTime updateDate) {

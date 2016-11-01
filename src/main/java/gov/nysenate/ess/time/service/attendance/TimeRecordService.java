@@ -166,4 +166,9 @@ public interface TimeRecordService
     default boolean deleteRecord(TimeRecord timeRecord) {
         return timeRecord.getTimeRecordId() != null && deleteRecord(timeRecord.getTimeRecordId());
     }
+
+    /**
+     * Synchronize time record cache
+     */
+    public void syncTimeRecords();
 }

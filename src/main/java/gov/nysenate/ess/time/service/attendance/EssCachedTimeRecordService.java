@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,10 +67,13 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     @Autowired protected SupervisorInfoService supervisorInfoService;
     @Autowired protected HolidayService holidayService;
 
+    private LocalDateTime lastUpdateTime;
+
     @PostConstruct
     public void init() {
         this.eventBus.register(this);
         this.activeRecordCache = this.cacheManageService.registerEternalCache(getCacheType().name());
+        this.lastUpdateTime = timeRecordDao.getLatestUpdateTime();
     }
 
     /** Helper class to store a collection of time records in a cache. */
@@ -292,7 +297,26 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         // No warming for this cache
     }
 
-    /** --- Internal Methods --- */
+
+    /**
+     * Check for updated time records in the data store
+     * If time records are updated, update the cache
+     */
+    @Scheduled(fixedDelayString = "${cache.poll.delay.timerecords:60000}")
+    @Override
+    public void syncTimeRecords() {
+        logger.info("Checking for time record updates since {}", lastUpdateTime);
+        Range<LocalDateTime> updateRange = Range.openClosed(lastUpdateTime, LocalDateTime.now());
+        List<TimeRecord> updatedTRecs = timeRecordDao.getUpdatedRecords(updateRange);
+        lastUpdateTime = updatedTRecs.stream()
+                .peek(this::updateCache)
+                .map(TimeRecord::getUpdateDate)
+                .max(LocalDateTime::compareTo)
+                .orElse(lastUpdateTime);
+        logger.info("Refreshed cache with {} updated time records", updatedTRecs.size());
+    }
+
+    /* --- Internal Methods --- */
 
     /**
      * Updates the active time record cache with the given record

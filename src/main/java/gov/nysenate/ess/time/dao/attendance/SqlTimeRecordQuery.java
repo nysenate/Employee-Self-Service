@@ -61,6 +61,42 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "    AND (att.NUXREFEM IN (:empIds))\n"
     ),
 
+    GET_LAST_UPDATE_DATE_TIME (
+        "SELECT GREATEST(\n" +
+        "   CAST (MAX(rec.DTTXNUPDATE) AS TIMESTAMP),\n" +
+        "   CAST (MAX(ent.DTTXNUPDATE) AS TIMESTAMP)\n" +
+        ") AS MAX_DTTXNUPDATE\n" +
+        "FROM ${tsSchema}.PM23TIMESHEET rec\n" +
+        "JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+        "  ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n"
+    ),
+
+    GET_UPDATED_TIME_RECS(
+        "WITH updated_ids AS (\n" +
+        "  SELECT rec.NUXRTIMESHEET\n" +
+        "  FROM ${tsSchema}.PM23TIMESHEET rec\n" +
+        "  JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+        "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
+        "  WHERE rec.DTTXNUPDATE BETWEEN :startDateTime AND :endDateTime\n" +
+        "    OR ent.DTTXNUPDATE BETWEEN :startDateTime AND :endDateTime\n" +
+        "  GROUP BY rec.NUXRTIMESHEET\n" +
+        ")\n" +
+        "SELECT\n" +
+        TIME_RECORD_COLUMNS.getSql() + "\n" +
+        "FROM ${masterSchema}.PM23ATTEND att\n" +
+        "JOIN ${masterSchema}.SL16PERIOD per\n" +
+        "    ON att.DTPERIODYEAR = per.DTPERIODYEAR\n" +
+        "       AND per.CDPERIOD = 'AF'\n" +
+        "JOIN ${tsSchema}.PM23TIMESHEET rec\n" +
+        "    ON rec.NUXREFEM = att.NUXREFEM\n" +
+        "JOIN updated_ids\n" +
+        "    on rec.NUXRTIMESHEET = updated_ids.NUXRTIMESHEET\n" +
+        "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+        "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'" +
+        "WHERE att.CDSTATUS = 'A'\n" +
+        "   AND per.CDSTATUS = 'A'\n"
+    ),
+
     GET_TREC_DISTINCT_YEARS(
         "SELECT DISTINCT EXTRACT(YEAR FROM DTEND) AS year\n" +
         "FROM ${tsSchema}.PM23TIMESHEET\n" +

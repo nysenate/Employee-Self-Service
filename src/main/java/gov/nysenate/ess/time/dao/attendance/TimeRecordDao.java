@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -79,6 +80,19 @@ public interface TimeRecordDao extends BaseDao
     default List<TimeRecord> getRecordsDuring(int empId, Range<LocalDate> dateRange) {
         return getRecordsDuring(empId, dateRange, TimeRecordStatus.getAll());
     }
+
+    /**
+     * Get a timestamp of the latest time record update
+     * @return LocalDateTime
+     */
+    LocalDateTime getLatestUpdateTime();
+
+    /**
+     * Get a list of time records that that were updated in the given datetime range
+     * @param dateTimeRange Range<LocalDateTime> range encompassing update window
+     * @return List<TimeRecord>
+     */
+    List<TimeRecord> getUpdatedRecords(Range<LocalDateTime> dateTimeRange);
 
     /**
      * Returns true if the given employee has an in progress time record under their superviion

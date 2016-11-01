@@ -29,7 +29,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,6 +74,26 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         remoteNamedJdbc.query(
                 SqlTimeRecordQuery.GET_TIME_REC_BY_DATES_EMP_ID.getSql(schemaMap(), timeRecordOrder), params, handler);
         return handler.getRecordMap();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LocalDateTime getLatestUpdateTime() {
+        return DateUtils.getLocalDateTime(
+                remoteJdbc.queryForObject(SqlTimeRecordQuery.GET_LAST_UPDATE_DATE_TIME.getSql(schemaMap()),
+                        null, Timestamp.class));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<TimeRecord> getUpdatedRecords(Range<LocalDateTime> dateTimeRange) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("startDateTime", toDate(DateUtils.startOfDateTimeRange(dateTimeRange)));
+        params.addValue("endDateTime", toDate(DateUtils.endOfDateTimeRange(dateTimeRange)));
+        TimeRecordRowCallbackHandler handler = new TimeRecordRowCallbackHandler();
+        remoteNamedJdbc.query(
+                SqlTimeRecordQuery.GET_UPDATED_TIME_RECS.getSql(schemaMap(), timeRecordOrder), params, handler);
+        return handler.getRecordList();
     }
 
     /** {@inheritDoc} */
