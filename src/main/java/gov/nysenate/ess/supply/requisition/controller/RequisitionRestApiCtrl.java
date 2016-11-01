@@ -47,7 +47,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private EmployeeInfoService employeeService;
     @Autowired private LocationService locationService;
 
-    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
         //permission check
@@ -74,7 +73,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new RequisitionView(savedRequisition));
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping("/{id}")
     public BaseResponse getRequisitionById(@PathVariable int id) {
         Requisition requisition = requisitionService.getRequisitionById(id).orElse(null);
@@ -88,7 +86,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new RequisitionView(requisition));
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping("")
     public BaseResponse searchRequisitions(@RequestParam(defaultValue = "All", required = false) String location,
                                            @RequestParam(defaultValue = "All", required = false) String customerId,
@@ -122,7 +119,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping("/orderHistory")
     public BaseResponse orderHistory(@RequestParam String location,
                                      @RequestParam int customerId,
@@ -153,7 +149,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
 
@@ -168,7 +163,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         requisitionService.saveRequisition(requisition);
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping(value = "/history/{id}")
     public BaseResponse requisitionHistory(@PathVariable int id) {
         ImmutableList<Requisition> requisitions = requisitionService.getRequisitionHistory(id);
