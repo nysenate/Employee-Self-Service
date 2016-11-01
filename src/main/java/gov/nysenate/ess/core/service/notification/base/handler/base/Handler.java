@@ -16,7 +16,6 @@ public interface Handler<T> {
      * @throws UnsupportedMessageException throw if the message can not be handled by this handler
      * @throws ClassNotFoundException    throw if the message can not be casted into specific type
      */
-    @Subscribe
     void handle(T message) throws UnsupportedMessageException, ClassNotFoundException;
 
 }

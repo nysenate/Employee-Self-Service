@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.notification.email.simple.message;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.service.notification.base.handler.base.Handler;
 import gov.nysenate.ess.core.service.notification.base.handler.exception.UnsupportedMessageException;
 import gov.nysenate.ess.core.service.notification.email.simple.service.SimpleEmailService;
@@ -26,6 +27,7 @@ public class SimpleEmailHandler implements Handler<SimpleEmailMessage> {
         eventBus.register(this);
     }
 
+    @Subscribe
     @Override
     public void handle(SimpleEmailMessage message) throws UnsupportedMessageException, ClassNotFoundException {
         simpleEmailService.delivery(message);
