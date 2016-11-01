@@ -1,4 +1,4 @@
-var essApp = angular.module('ess')
+var essApp = angular.module('essTime')
         .controller('RecordEntryController', ['$scope', '$rootScope', '$filter', '$q', '$timeout', 'appProps',
                                               'ActiveTimeRecordsApi', 'TimeRecordApi', 'AccrualPeriodApi',
                                               'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi',
@@ -119,69 +119,57 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var entryErrors = $scope.selRecordHasEntryErrors();
         if (entryErrors || submit && $scope.selRecordHasRecordErrors()) {
             $scope.$broadcast('validateRecordEntries');
+            return;
         }
-        // Open the modal to indicate save/submit
-        else if (submit) {
-            var modalDialogs = getSubmitDialogs();
 
-            // Display any necessary dialogs prior to submit
-            promiseUtils.serial(modalDialogs)
-            // Open the submit dialog
+        // Promise that encompasses any pre-save confirmations
+        var confirmPromise = $q.when();
+
+        // Perform some additional checks and confirmations if submitting
+        if (submit) {
+            confirmPromise =
+                promiseUtils.serial(getSubmitDialogs())
                 .then(function () {
                     return modals.open('submit-ack', {'record': record}, true);
                 })
-                // Submit the record
-                .then($scope.submitRecord)
-                // Open the post save dialog
-                .then(function () {
-                    return modals.open('post-save', {}, true);
-                })
-                // Logout if user chooses, otherwise reinitialize page
-                .then($scope.logout)
-                .catch(function (args) {
-                    if (args && args.reinit) {
-                        $scope.init();
-                    }
-                });
-
-
         }
-        else {
-            modals.open('save-indicator', {'record': record})
-                .then($scope.init);
-            $scope.state.request.save = true;
-            recordSaveApi.save({action: 'save'}, record, function (resp) {
-                record.updateDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
-                record.savedDate = record.updateDate;
-                record.dirty = false;
-            }, function (resp) {
-                modals.reject();
-                modals.open('500', {details: resp});
-                console.log(resp);
-            }).$promise
-            .finally(function() {
-                $scope.state.request.save = false;
+
+        var saveSuccess = false;
+
+        // Chain saving promises after the confirm promise
+        confirmPromise
+            .then(function () { return saveRecord(submit) })
+            .then(function () { saveSuccess = true; return $q.when();})
+            .then(function () { return modals.open('post-save', {submit: submit}, true);})
+            .then($scope.logout, function () {
+                // Only reinitialize if there was a successful save
+                if (saveSuccess) {
+                    $scope.init();
+                }
             });
-        }
     };
 
     /**
-     * Submits the currently selected record. This assumes any necessary validation has already been
+     * Saves or submits the currently selected record.
+     * This assumes any necessary validation has already been
      * made on this record.
+     * @param submit - true if the record is to be submitted
      */
-    $scope.submitRecord = function() {
+    function saveRecord (submit) {
         var record = $scope.state.records[$scope.state.iSelectedRecord];
-        modals.open('submit-progress');
-        return recordSaveApi.save({action: 'submit'}, record, function (resp) {
-            modals.resolve();
-        }, function (resp) {
-            modals.reject();
-            modals.open('500', {details: resp});
-            console.error(resp);
-        }).$promise.finally(function () {
-            $scope.state.request.save = false;
+        $scope.state.request.save = true;
+        modals.open('save-indicator', {submit: submit});
+        return recordSaveApi.save({action: submit ? 'submit' : 'save'}, record,
+            function (resp) {
+                modals.resolve();
+            }, function (resp) {
+                modals.reject();
+                modals.open('500', {details: resp});
+                console.error(resp);
+            }).$promise.finally(function () {
+                $scope.state.request.save = false;
         });
-    };
+    }
 
     /**
      * Fetches the accruals for the currently selected time record from the server.
@@ -397,7 +385,6 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
      */
     $rootScope.$on('validateRecordEntries', function() {
         var record = $scope.getSelectedRecord();
-        console.log('record validated', record.beginDate);
         record.focused = true;
     });
 
@@ -632,14 +619,19 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var submitDialogs = [];
         if (!$scope.expectedHoursEntered()) {
             submitDialogs.push(function () {
-                return modals.open("expectedhrs-dialog", true);
+                return modals.open("expectedhrs-dialog", {
+                    serviceYtd: $scope.state.accrual.serviceYtd,
+                    serviceYtdExpected: $scope.state.accrual.serviceYtdExpected,
+                    biWeekHrsExpected: $scope.state.accrual.biWeekHrsExpected,
+                    raSaTotal: $scope.state.totals.raSaTotal
+                }, true);
             });
 
         }
 
         if ($scope.futureEndDate()) {
             submitDialogs.push(function () {
-                return  modals.open("futureenddt-dialog", true);
+                return  modals.open("futureenddt-dialog", {}, true);
             });
         }
 

@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Handles requests for front-end templates associated with time/attendance functionality.
  */
@@ -23,25 +25,10 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
 
     private static final String NOT_A_SUPERVISOR_PAGE = TIME_TMPL_BASE_URL + "/error/not-supervisor";
 
-    /** --- Record Pages --- */
-
-    @RequestMapping(value="/record/entry")
-    public String entry() {
-        return TIME_TMPL_BASE_URL + "/record/entry";
+    @RequestMapping(value = "/**")
+    public String getTimePage(HttpServletRequest request) {
+        return request.getRequestURI();
     }
-
-    @RequestMapping(value="/record/history")
-    public String history() {
-        return TIME_TMPL_BASE_URL + "/record/history";
-    }
-
-    /** --- Record Templates --- */
-
-    @RequestMapping(value="/record/details")
-    public String recordDetails() {
-        return TIME_TMPL_BASE_URL + "/record/details";
-    }
-
 
     /** --- Supervisor Pages ---
      *
@@ -53,7 +40,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         return getManagementPage(TIME_TMPL_BASE_URL + "/record/manage");
     }
 
-    @RequestMapping(value="/record/emphistory")
+    @RequestMapping(value="/record/emp-history")
     public String employeeHistory() {
         return getManagementPage(TIME_TMPL_BASE_URL + "/record/emp-history");
     }
@@ -61,52 +48,6 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
     @RequestMapping(value="/record/grant")
     public String grant() {
         return getManagementPage(TIME_TMPL_BASE_URL + "/record/grant");
-    }
-
-    /** --- Supervisor Templates --- */
-
-    @RequestMapping(value = "/record/supervisor-record-list")
-    public String recordList() {
-        return TIME_TMPL_BASE_URL + "/record/supervisor-record-list";
-    }
-
-    @RequestMapping(value = "/record/record-review-modal")
-    public String recordReviewModal() {
-        return TIME_TMPL_BASE_URL + "/record/record-review-modal";
-    }
-
-    @RequestMapping(value = "/record/record-reject-modal")
-    public String recordRejectModal() {
-        return TIME_TMPL_BASE_URL + "/record/record-reject-modal";
-    }
-
-    @RequestMapping(value = "/record/record-approve-submit-modal")
-    public String recordApproveSubmitModal() {
-        return TIME_TMPL_BASE_URL + "/record/record-approve-submit-modal";
-    }
-
-    @RequestMapping(value = "/record/record-reminder-modal")
-    public String recordReminderModal() {
-        return TIME_TMPL_BASE_URL + "/record/record-reminder-modal";
-    }
-
-    /** --- Accruals --- */
-
-    @RequestMapping(value="/accrual/history")
-    public String accrualHistory() {
-        return TIME_TMPL_BASE_URL + "/accrual/history";
-    }
-
-    @RequestMapping(value="/accrual/projections")
-    public String accrualProjections() {
-        return TIME_TMPL_BASE_URL + "/accrual/projections";
-    }
-
-    /** --- Calendar --- */
-
-    @RequestMapping(value="/period/calendar")
-    public String payPeriodView() {
-        return TIME_TMPL_BASE_URL + "/period/calendar";
     }
 
     /** --- Internal Methods --- */

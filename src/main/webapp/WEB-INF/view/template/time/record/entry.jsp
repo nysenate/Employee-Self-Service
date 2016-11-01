@@ -375,112 +375,21 @@
   <% /** Container for all modal dialogs */ %>
   <div modal-container>
     <% /** Modals for record save. */ %>
-    <modal modal-id="save-indicator" class="save-progress-modal">
-      <div ng-show="state.request.save">
-        <h3 class="content-info" style="margin-bottom:0;">
-          Saving time record...
-        </h3>
-        <div loader-indicator class="loader"></div>
-      </div>
-      <div ng-hide="state.request.save">
-        <h3 class="content-info" style="margin-bottom:0;">Your time record has been saved.</h3>
-        <h4>What would you like to do next?</h4>
-        <input ng-click="logout()" class="reject-button" type="button" value="Log out of ESS"/>
-        <input ng-click="resolveModal()" class="submit-button" type="button" value="Go back to ESS"/>
-      </div>
+    <modal modal-id="save-indicator">
+      <record-saving-modal></record-saving-modal>
+    </modal>
+    <modal modal-id="post-save">
+      <record-post-save-modal></record-post-save-modal>
     </modal>
     <% /** Modals for record submission. */ %>
     <modal modal-id="submit-ack">
-      <div>
-        <h3 class="content-info" style="margin-bottom:0;">
-          Before submitting, you must acknowledge the following:
-        </h3>
-        <div style="padding:20px;text-align:left;">
-          <p>1. For purposes of submitting a timesheet, the username and password is the electronic signature of the
-            employee.
-            As liability attaches to each timesheet, the employee should ensure that his or her username and password is
-            securely kept and used.
-          </p>
-          <hr/>
-          <p>2. The hours recorded on the Submitted Time and Attendance Record accurately reflect time actually spent by
-            me
-            in the performance of my assigned duties.
-          </p>
-          <hr/>
-          <p>3. You will be saving and submitting this Time and Attendance Record to your T&A Supervisor.
-            Once submitted, you will no longer have the ability to edit this Record unless your supervisor or Personnel
-            disapproves the record.
-          </p>
-          <hr/>
-          <div style="text-align: center;">
-            <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;" type="button"
-                   value="I agree"/>
-            <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
-          </div>
-        </div>
-      </div>
+      <record-submit-ack-modal></record-submit-ack-modal>
     </modal>
-    <modal modal-id="submit-progress">
-      <div class="save-progress-modal">
-        <h3 class="content-info" style="margin-bottom:0;">
-          Saving and submitting time record...
-        </h3>
-        <div loader-indicator class="loader"></div>
-      </div>
+    <modal modal-id="expectedhrs-dialog">
+      <record-expected-hours-modal></record-expected-hours-modal>
     </modal>
-    <modal modal-id="post-save">
-      <div class="save-progress-modal">
-        <h3 class="content-info" style="margin-bottom:0;">Your time record has been submitted.</h3>
-        <h4>What would you like to do next?</h4>
-        <input ng-click="resolveModal()" class="reject-button" type="button" value="Log out of ESS"/>
-        <input ng-click="rejectModal({reinit: true})" class="submit-button" type="button" value="Go back to ESS"/>
-      </div>
-    </modal>
-    <modal modal-id="expectedhrs-dialog" class="save-progress-modal">
-      <div ng-init="serviceSurplus = state.accrual.serviceYtd - state.accrual.serviceYtdExpected;
-              expectedDifference = state.accrual.biWeekHrsExpected - state.totals.raSaTotal;">
-        <h3 class="content-info" style="margin-bottom:0;">
-          Hours entered are less than pay period requirement
-        </h3>
-        <div style="padding: 20px; text-align: left;">
-          <p ng-show="serviceSurplus >= expectedDifference">
-            Warning: You are attempting to use {{expectedDifference}}
-            excess hours.
-          </p>
-          <div ng-show="serviceSurplus < expectedDifference">
-            <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
-            <div style="display: flex; justify-content: space-around">
-              <span class="bold">Required: {{state.accrual.biWeekHrsExpected}} hrs.</span>
-              <span class="bold">Entered: {{state.totals.raSaTotal}} hrs.</span>
-              <span
-                  class="bold">Year To Date {{ serviceSurplus < 0 ? "Deficit" : "Excess" }}: {{serviceSurplus}} hrs.</span>
-            </div>
-          </div>
-          <hr/>
-          <div style="text-align: center;">
-            <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;"
-                   type="button" value="Proceed"/>
-            <input ng-click="rejectModal()" class="reject-button" type="button" value="Cancel"/>
-          </div>
-        </div>
-      </div>
-    </modal>
-    <modal modal-id="futureenddt-dialog" class="save-progress-modal">
-      <h3 class="content-info" style="margin-bottom:0;">
-        Timesheet with a Future End Date
-      </h3>
-      <div style="padding: 20px; text-align: left;">
-        <div>
-          <p>Warning: You are attempting to submit a timesheet with a Future End Date.</p>
-          <p>Do you want to continue?</p>
-        </div>
-        <hr/>
-        <div style="text-align: center;">
-          <input ng-click="resolveModal()" class="submit-button" style="margin-right: 20px;"
-                 type="button" value="Yes"/>
-          <input ng-click="rejectModal()" class="reject-button" type="button" value="No"/>
-        </div>
-      </div>
+    <modal modal-id="futureenddt-dialog">
+      <record-future-end-conf-modal></record-future-end-conf-modal>
     </modal>
   </div>
 </div>

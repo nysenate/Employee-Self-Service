@@ -25,6 +25,8 @@
                 src="${ctxPath}/assets/js/src/time/record/record-emp-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-validation.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/record/record-entry-modals.js?v=${releaseVersion}"></script>
 
         <!-- Time Off Requests -->
         <script type="text/javascript"

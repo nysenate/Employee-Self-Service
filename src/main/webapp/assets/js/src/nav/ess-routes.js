@@ -44,7 +44,7 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/time/record/emphistory', {
-        templateUrl: ctxPath + '/template/time/record/emphistory'
+        templateUrl: ctxPath + '/template/time/record/emp-history'
     });
 
     $routeProvider.when(ctxPath + '/time/record/manage', {
