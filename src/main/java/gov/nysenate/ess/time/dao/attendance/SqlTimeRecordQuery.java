@@ -89,6 +89,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "       AND per.CDPERIOD = 'AF'\n" +
         "JOIN ${tsSchema}.PM23TIMESHEET rec\n" +
         "    ON rec.NUXREFEM = att.NUXREFEM\n" +
+        "      AND rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
         "JOIN updated_ids\n" +
         "    on rec.NUXRTIMESHEET = updated_ids.NUXRTIMESHEET\n" +
         "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
