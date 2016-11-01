@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.service.notification.base.handler.base;
 
-import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.service.notification.base.handler.exception.UnsupportedMessageException;
 
 /**
