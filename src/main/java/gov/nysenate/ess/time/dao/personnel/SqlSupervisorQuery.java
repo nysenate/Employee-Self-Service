@@ -50,16 +50,16 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "  (ptx.CDTRANS IN ('APP', 'RTP', 'SUP', 'EMP')\n" +
         /** If the employee has no supervisor assigning transactions, allow their first personnel transaction */
         "    OR (per.NUXREFEM NOT IN (\n" +
-        "        SELECT DISTINCT NUXREFEM FROM ESS_MASTER.PD21PTXNCODE\n" +
+        "        SELECT DISTINCT NUXREFEM FROM ${masterSchema}.PD21PTXNCODE\n" +
         "          WHERE CDTRANS IN ('APP', 'RTP', 'SUP')\n" +
         "      )\n" +
         "      AND per.NUCHANGE IN (\n" +
         "        SELECT code.NUCHANGE\n" +
-        "        FROM ESS_MASTER.PD21PTXNCODE code\n" +
+        "        FROM ${masterSchema}.PD21PTXNCODE code\n" +
         "        JOIN (\n" +
         "            SELECT NUXREFEM, NUCHANGE, DTTXNUPDATE,\n" +
         "              ROW_NUMBER() OVER (PARTITION BY NUXREFEM ORDER BY DTEFFECT ASC) AS rn\n" +
-        "            FROM ESS_MASTER.PD21PTXNCODE\n" +
+        "            FROM ${masterSchema}.PD21PTXNCODE\n" +
         "            WHERE CDSTATUS = 'A'\n" +
         "              AND CDTRANSTYP = 'PER'\n" +
         "        ) ot\n" +
