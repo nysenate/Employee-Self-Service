@@ -24,6 +24,7 @@ import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdate
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
+import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,16 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private EmployeeInfoService employeeService;
     @Autowired private LocationService locationService;
 
+    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
+        //permission check
+        if (!getSubject().isPermitted("supply:employee") &&
+                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(submitRequisitionView.getDestinationId())
+                )
+            throw new UnauthorizedException();
+        //permission check
+
         Set<LineItem> lineItems = new HashSet<>();
         for (LineItemView lineItemView : submitRequisitionView.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
@@ -65,12 +74,21 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(new RequisitionView(savedRequisition));
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping("/{id}")
     public BaseResponse getRequisitionById(@PathVariable int id) {
         Requisition requisition = requisitionService.getRequisitionById(id).orElse(null);
+        //permission check
+        if (!getSubject().isPermitted("supply:employee") &&
+                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(requisition.getDestination().getLocId().getCode())
+                )
+            throw new UnauthorizedException();
+        //permission check
+
         return new ViewObjectResponse<>(new RequisitionView(requisition));
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping("")
     public BaseResponse searchRequisitions(@RequestParam(defaultValue = "All", required = false) String location,
                                            @RequestParam(defaultValue = "All", required = false) String customerId,
@@ -81,6 +99,14 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String dateField,
                                            @RequestParam(defaultValue = "All", required = false) String savedInSfms,
                                            WebRequest webRequest) {
+
+        //permission check
+        if (!getSubject().isPermitted("supply:employee") &&
+                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(location)
+                )
+            throw new UnauthorizedException();
+        //permission check
+
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
         EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
@@ -96,6 +122,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping("/orderHistory")
     public BaseResponse orderHistory(@RequestParam String location,
                                      @RequestParam int customerId,
@@ -104,6 +131,14 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                      @RequestParam(required = false) String to,
                                      @RequestParam(required = false) String dateField,
                                      WebRequest webRequest) {
+        //permission check
+        if (!getSubject().isPermitted("supply:employee") &&
+                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(location)
+                ) {
+            throw new UnauthorizedException();
+        }
+        //permission check
+
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
         EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
@@ -118,17 +153,36 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
-    // TODO: PUT?
+    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+
+        //permission check
+        getSubject().checkPermission("supply:employee");
+        if (requisitionView.getStatus().equals(RequisitionStatus.APPROVED) && !getSubject().isPermitted("supply:shipment:approve"))
+            throw new UnauthorizedException();
+        //permission check
+
         Requisition requisition = requisitionView.toRequisition();
         requisition = requisition.setModifiedBy(getSubjectEmployeeView().toEmployee());
         requisitionService.saveRequisition(requisition);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
     @RequestMapping(value = "/history/{id}")
     public BaseResponse requisitionHistory(@PathVariable int id) {
         ImmutableList<Requisition> requisitions = requisitionService.getRequisitionHistory(id);
+
+        //permission check
+        for (Requisition r : requisitions) {
+            if (!getSubject().isPermitted("supply:employee") &&
+                    !employeeService.getEmployee(id).getWorkLocation().getLocId().getCode().equals(r.getDestination().getLocId().getCode())
+                    ) {
+                throw new UnauthorizedException();
+            }
+        }
+        //permission check
+
         return ListViewResponse.of(requisitions.stream().map(RequisitionView::new).collect(Collectors.toList()));
     }
 

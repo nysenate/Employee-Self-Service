@@ -24,6 +24,7 @@ public class SupplyRequisitionService implements RequisitionService {
 
     @Override
     public synchronized Requisition saveRequisition(Requisition requisition) {
+
         checkPessimisticLocking(requisition);
         requisition = requisitionDao.saveRequisition(requisition);
         if (requisition.getStatus() == RequisitionStatus.REJECTED) {

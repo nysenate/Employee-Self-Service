@@ -14,6 +14,7 @@ public enum ErrorCode
 
     /** Supply Errors */
     REQUISITION_UPDATE_CONFLICT(201, "The provided requisition was out of date."),
+    SUPPLY_PERMISSON_DENIED(550, "Permission Denied"),
     ;
 
     /** Unique ID for error code */
