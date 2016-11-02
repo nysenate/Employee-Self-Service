@@ -240,6 +240,7 @@ public class TimeRecord implements Comparable<TimeRecord>
     public LocalDateTime getUpdateDate() {
         return timeEntryMap.values().stream()
                 .map(TimeEntry::getUpdateDate)
+                .filter(i -> i != null)
                 .filter(this.updateDate::isBefore)
                 .max(LocalDateTime::compareTo)
                 .orElse(this.updateDate);

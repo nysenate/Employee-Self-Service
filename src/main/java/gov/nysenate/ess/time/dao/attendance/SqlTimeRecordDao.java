@@ -136,6 +136,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
                 return false;
             }
             record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get("NUXRTIMESHEET")).toBigInteger());
+            record.setUpdateDate(LocalDateTime.now());
         }
         // Insert each entry from the time record
         final Optional<TimeRecord> oldRecord = isUpdate ? Optional.of(getTimeRecord(record.getTimeRecordId())) : Optional.empty();

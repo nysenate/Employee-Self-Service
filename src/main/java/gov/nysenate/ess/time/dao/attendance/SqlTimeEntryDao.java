@@ -18,7 +18,11 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeEntryQuery.*;
 
 @Repository
 public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
@@ -56,11 +60,14 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
     @Override
     public void updateTimeEntry(TimeEntry timeEntry) {
         MapSqlParameterSource params = getTimeEntryParams(timeEntry);
-        if (remoteNamedJdbc.update(SqlTimeEntryQuery.UPDATE_TIME_ENTRY.getSql(schemaMap()), params) == 0) {
-            KeyHolder entryIdHolder = new GeneratedKeyHolder();
-            remoteNamedJdbc.update(SqlTimeEntryQuery.INSERT_TIME_ENTRY.getSql(schemaMap()), params, entryIdHolder, new String[]{"NUXRDAY"});
+        KeyHolder entryIdHolder = new GeneratedKeyHolder();
+        String[] updFields = new String[]{"NUXRDAY"};
+        if (remoteNamedJdbc.update(UPDATE_TIME_ENTRY.getSql(schemaMap()), params) == 0) {
+            remoteNamedJdbc.update(INSERT_TIME_ENTRY.getSql(schemaMap()), params, entryIdHolder, updFields);
             timeEntry.setEntryId(((BigDecimal) entryIdHolder.getKeys().get("NUXRDAY")).toBigInteger());
+            timeEntry.setOriginalDate(LocalDateTime.now());
         }
+        timeEntry.setUpdateDate(LocalDateTime.now());
     }
 
     private static MapSqlParameterSource getTimeEntryParams(TimeEntry timeEntry) {

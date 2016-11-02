@@ -90,7 +90,6 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
         checkEntryField(newEntry, prevEntry, "empId", "BigInteger", TimeEntry::getEmpId);
         checkEntryField(newEntry, prevEntry, "active", "boolean", TimeEntry::isActive);
         checkEntryField(newEntry, prevEntry, "payType", "String", TimeEntry::getPayType);
-        checkEntryField(newEntry, prevEntry, "originalDate", "Date", TimeEntry::getOriginalDate);
     }
 
     /**
