@@ -93,7 +93,7 @@
                      type="button" value="-">
               <input order-quantity-validator
                      class="qty-input"
-                     type="text"
+                     type="number"
                      ng-change="onCustomQtyEntered(lineItem)"
                      ng-model="lineItem.quantity"
                      ng-model-options="{updateOn: 'blur'}"
@@ -119,9 +119,6 @@
     </modal>
     <modal modal-id="order-canceling-modal">
       <div order-canceling-modal></div>
-    </modal>
-    <modal modal-id="order-custom-quantity-modal">
-      <div order-custom-quantity-modal></div>
     </modal>
     <modal modal-id="special-order-item-modal">
       <div special-order-item-modal></div>

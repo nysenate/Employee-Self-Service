@@ -31,21 +31,6 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
         },
 
         /**
-         * Add a line item to the cart.
-         * The added line item is a copy so changes to the original don't effect the cart.
-         * If this item is already in the cart, do nothing.
-         * Returns the updated cart.
-         */
-        addToCart: function (lineItem) {
-            if (this.isItemIdOrdered(lineItem.item.id)) {
-                return;
-            }
-            var li = angular.copy(lineItem);
-            cart.set(li.item.id, li);
-            return cart;
-        },
-
-        /**
          * Add or remove a line item from the cart.
          * Any added line item is copied first so changes to the original don't effect the cart.
          * If the line item's quantity is zero remove it, otherwise add it.

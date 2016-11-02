@@ -157,35 +157,48 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Shopping --- */
 
     $scope.addToCart = function (lineItem) {
-        lineItem.increment();
         // first time adding special item, display modal.
         if (!supplyCart.isItemIdOrdered(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
-            modals.open('special-order-item-modal', {lineItem: lineItem});
+            modals.open('special-order-item-modal', {lineItem: lineItem})
+                .then(function() {
+                    lineItem.increment();
+                    updateAndSaveCart(lineItem);
+                })
         }
         else {
-            supplyCart.addToCart(lineItem);
+            lineItem.increment();
+            updateAndSaveCart(lineItem);
         }
-        supplyCart.save();
     };
 
     $scope.decrementQuantity = function (lineItem) {
         lineItem.decrement();
-        supplyCart.updateCartLineItem(lineItem);
-        supplyCart.save();
+        updateAndSaveCart(lineItem)
     };
 
     $scope.incrementQuantity = function (lineItem) {
         lineItem.increment();
-        supplyCart.updateCartLineItem(lineItem);
-        supplyCart.save();
+        updateAndSaveCart(lineItem)
     };
 
     $scope.onCustomQtyEntered = function (lineItem) {
-        // Convert entered quantity to integer.
-        lineItem.quantity = Number(lineItem.quantity);
+        if (lineItem.quantity > lineItem.item.maxQtyPerOrder) {
+            modals.open('order-more-prompt-modal', {lineItem: lineItem})
+                .then(updateAndSaveCart)
+                .catch(function() {
+                    // Reset displayedLineItem quantity to the old value.
+                    lineItem.quantity = supplyCart.getCartLineItem(lineItem.item.id).quantity;
+                })
+        }
+        else {
+            updateAndSaveCart(lineItem);
+        }
+    };
+
+    function updateAndSaveCart(lineItem) {
         supplyCart.updateCartLineItem(lineItem);
         supplyCart.save();
-    };
+    }
 
     $scope.isInCart = function (item) {
         return supplyCart.isItemIdOrdered(item.id);

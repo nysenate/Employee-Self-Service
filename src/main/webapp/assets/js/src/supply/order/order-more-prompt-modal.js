@@ -12,7 +12,7 @@ angular.module('essSupply').directive('orderMorePromptModal', ['appProps', funct
     .controller('OrderMorePromptModalCtrl', ['$scope', 'modals', function ($scope, modals) {
 
         $scope.confirm = function () {
-            modals.resolve(modals.params().allowance);
+            modals.resolve(modals.params().lineItem);
         };
 
         $scope.nevermind = function () {
