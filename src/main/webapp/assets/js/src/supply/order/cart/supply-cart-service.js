@@ -2,8 +2,10 @@ var essSupply = angular.module('essSupply');
 
 essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'SupplyCookieService', function (allowanceService, cookies) {
 
-    /** The cart is map of item id's to line items, saved in the users cookies. */
-    var cart = cookies.getCart() || new Map();
+    /**
+     * A Map of itemId's to LineItems.
+     */
+    var cart = undefined;
 
     function newQuantity(quantity, lineItem) {
         return lineItem ? lineItem.quantity + quantity : quantity;
@@ -11,13 +13,31 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
 
     return {
         /**
+         * Initializes the cart with the given line items plus saved line items.
+         * @param lineItems LineItems to initialize the cart with.
+         * Typically a array of zero quantity line items to show on the order form.
+         */
+        initializeCart: function (lineItems) {
+            cart = new Map();
+            var addToCart = function (lineItem) {
+                cart.set(lineItem.item.id, lineItem);
+            };
+
+            if (lineItems) {
+                lineItems.forEach(addToCart)
+            }
+            cookies.getCart().forEach(addToCart);
+            return cart;
+        },
+
+        /**
          * Add a line item to the cart.
          * The added line item is a copy so changes to the original don't effect the cart.
          * If this item is already in the cart, do nothing.
          * Returns the updated cart.
          */
         addToCart: function (lineItem) {
-            if (this.isItemInCart(lineItem.item.id)) {
+            if (this.isItemIdOrdered(lineItem.item.id)) {
                 return;
             }
             var li = angular.copy(lineItem);
@@ -31,7 +51,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
          * If the line item's quantity is zero remove it, otherwise add it.
          * Return the updated cart object.
          */
-        updateCartLineItem: function(lineItem) {
+        updateCartLineItem: function (lineItem) {
             var li = angular.copy(lineItem);
             if (li.quantity === 0) {
                 cart.delete(li.item.id);
@@ -46,14 +66,22 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return cart;
         },
 
-        isItemInCart: function (itemId) {
-            var item = cart.get(itemId);
-            return item != undefined;
+        getLineItems: function () {
+            var lineItems = [];
+            cart.forEach(function (lineItem, itemId) {
+                lineItems.push(lineItem);
+            });
+            return lineItems;
+        },
+
+        isItemIdOrdered: function (itemId) {
+            var lineItem = cart.get(itemId);
+            return lineItem != undefined && lineItem.quantity > 0;
         },
 
         /** Get an item in the cart by its id. returns null if no match is found. */
         getCartLineItem: function (itemId) {
-            if (!this.isItemInCart(itemId)) {
+            if (!this.isItemIdOrdered(itemId)) {
                 return null;
             }
             return cart.get(itemId);
@@ -67,6 +95,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return size;
         },
 
+        // TODO this might not be needed anymore
         removeFromCart: function (itemId) {
             $.grep(cart, function (lineItem, index) {
                 if (lineItem && lineItem.item.id === itemId) {
@@ -82,8 +111,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
         },
 
         save: function () {
-            // cookies.saveCartCookie(cart);
-            // TODO:
+            cookies.saveCartCookie(cart);
         }
     }
 }]);

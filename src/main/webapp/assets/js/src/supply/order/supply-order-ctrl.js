@@ -25,14 +25,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     /**
-     * All line items for a selected destination.
-     */
-    var lineItems = [];
-
-    /**
      * The line items currently visible to the user.
-     * The same as all line items but adjusted for you selected filters.
-     * These use the same references as lineItems.
+     * Contains all the items allowed to be ordered at the selected destination
+     * minus any items not matching the user defined filters.
      */
     $scope.displayedLineItems = [];
 
@@ -71,10 +66,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.destinationCode = destinationService.getDefaultCode();
     }
 
-    function setDestinationDescription() {
-        $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
-    }
-
     function setToSelectingDestinationState() {
         $scope.state = $scope.states.SELECTING_DESTINATION;
     }
@@ -87,7 +78,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.state = $scope.states.LOADING;
         $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
         allowanceService.queryLocationAllowance(destinationService.getDestination())
-            .then(extractLineItems)
+            .then(initializeCart)
             .then(filterLineItems)
             .then(setToShoppingState)
             .then(setDestinationDescription)
@@ -95,21 +86,25 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             .catch(loadItemsError);
     }
 
-    function extractLineItems(allowanceResponse) {
+    function initializeCart(allowanceResponse) {
         var items = [];
         angular.forEach(allowanceResponse.result.itemAllowances, function (allowance) {
             items.push(allowance.item);
         });
-        lineItems = lineItemService.generateLineItems(items);
+        supplyCart.initializeCart(lineItemService.generateLineItems(items));
     }
 
     function filterLineItems() {
-        $scope.displayedLineItems = itemFilterService.filterLineItems(lineItems, $scope.filter.categories, $scope.filter.searchTerm);
+        $scope.displayedLineItems = itemFilterService.filterLineItems(supplyCart.getLineItems(), $scope.filter.categories, $scope.filter.searchTerm);
         $scope.displayedLineItems = supplyUtils.alphabetizeLineItems($scope.displayedLineItems);
     }
 
     function setToShoppingState() {
         $scope.state = $scope.states.SHOPPING;
+    }
+
+    function setDestinationDescription() {
+        $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
     }
 
     function loadItemsError(response) {
@@ -164,8 +159,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.addToCart = function (lineItem) {
         lineItem.increment();
         // first time adding special item, display modal.
-        if (!supplyCart.isItemInCart(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
-            modals.open('special-order-item-modal', {allowance: lineItem}); // TODO refactor modal
+        if (!supplyCart.isItemIdOrdered(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
+            modals.open('special-order-item-modal', {lineItem: lineItem});
         }
         else {
             supplyCart.addToCart(lineItem);
@@ -186,7 +181,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.isInCart = function (item) {
-        return supplyCart.isItemInCart(item.id);
+        return supplyCart.isItemIdOrdered(item.id);
     };
 
     // /** This is called whenever an items quantity is changed.

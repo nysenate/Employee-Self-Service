@@ -1,8 +1,8 @@
 var essSupply = angular.module('essSupply');
-essSupply.service('SupplyCookieService', ['$cookies', 'appProps', supplyCookieService]);
+essSupply.service('SupplyCookieService', ['$cookies', 'appProps', 'SupplyLineItemService', supplyCookieService]);
 
 
-function supplyCookieService($cookies,appProps) {
+function supplyCookieService($cookies, appProps, lineItemService) {
     var userId = appProps.user.employeeId;
     /* Cart -> String*/
     function serializatize (cart) {
@@ -30,7 +30,13 @@ function supplyCookieService($cookies,appProps) {
          * Removes the current cart cookie if it already exists.
          */
         saveCartCookie: function (cart) {
-            var code = encodeCart(serializatize(cart));
+            var lineItems = [];
+            cart.forEach(function(lineItem, itemId) {
+                if (lineItem.quantity > 0) {
+                    lineItems.push(lineItem);
+                }
+            });
+            var code = encodeCart(serializatize(lineItems));
             var cur = $cookies.get(userId);
             if (cur != null || cur != undefined)
                $cookies.remove(userId);
@@ -41,9 +47,17 @@ function supplyCookieService($cookies,appProps) {
         getCart: function () {
             var cur = $cookies.get(userId);
             if (cur == null || cur == undefined)
-                return undefined;
-            else
-                return deserialize(decodeCart(cur));
+                return [];
+            else {
+                // De serialized line items don't have any functionality.
+                // Re create LineItem objects our of them so they have methods.
+                var functionalLineItems = [];
+                var lineItems = deserialize(decodeCart(cur));
+                lineItems.forEach(function(lineItem) {
+                    functionalLineItems.push(lineItemService.createLineItem(lineItem.item, lineItem.quantity));
+                });
+                return functionalLineItems;
+            }
         },
         resetCart:function () {
             var cur = $cookies.get(userId);
