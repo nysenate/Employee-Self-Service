@@ -217,12 +217,11 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
         SupervisorEmpGroup empGroup = supervisorInfoService.getSupervisorEmpGroup(supId, dateRange);
         ListMultimap<Integer, TimeRecord> records = ArrayListMultimap.create();
-        empGroup.getAllEmployees().forEach(emp -> {
-            records.putAll(emp.getEmpId(), getActiveTimeRecords(emp.getEmpId()).stream()
-                    .filter(tr -> statuses.contains(tr.getRecordStatus()) &&
-                            dateRange.contains(tr.getBeginDate()))
-                    .collect(toList()));
-        });
+        empGroup.getAllEmployees().forEach(emp ->
+                records.putAll(emp.getEmpId(), getActiveTimeRecords(emp.getEmpId()).stream()
+                        .filter(tr -> statuses.contains(tr.getRecordStatus()))
+                        .filter(tr -> empGroup.hasEmployeeAtDate(tr.getEmployeeId(), tr.getBeginDate()))
+                        .collect(toList())));
         return records;
     }
 

@@ -5,10 +5,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.Table;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,6 +68,14 @@ public class SupervisorEmpGroup
         return (primaryEmployees != null && !primaryEmployees.isEmpty()) ||
                (overrideEmployees != null && !overrideEmployees.isEmpty()) ||
                (supOverrideEmployees != null && !supOverrideEmployees.isEmpty());
+    }
+
+    public boolean hasEmployeeAtDate(int empId, LocalDate date) {
+        Optional<EmployeeSupInfo> supInfoOpt = getAllEmployees().stream()
+                .filter(supInfo -> empId == supInfo.getEmpId())
+                .filter(employeeSupInfo -> employeeSupInfo.getEffectiveDateRange().contains(date))
+                .findAny();
+        return supInfoOpt.isPresent();
     }
 
     /**
