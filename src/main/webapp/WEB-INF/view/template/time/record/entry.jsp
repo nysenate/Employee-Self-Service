@@ -36,10 +36,10 @@
         <td ng-class="{'dark-red': record.isDue === true}">{{record.dueFromNowStr}}</td>
         <td ng-bind-html="record.recordStatus | timeRecordStatus:true"></td>
         <td>
-            <span ng-show="record.updateDate | momentCmp:'=':record.originalDate:'second' | not">
-              {{record.updateDate | moment: 'lll'}}
+            <span ng-show="record.overallUpdateDate | momentCmp:'=':record.originalDate:'second' | not">
+              {{record.overallUpdateDate | moment: 'lll'}}
             </span>
-          <span ng-show="record.updateDate | momentCmp:'=':record.originalDate:'second'">New</span>
+          <span ng-show="record.overallUpdateDate | momentCmp:'=':record.originalDate:'second'">New</span>
         </td>
       </tr>
       </tbody>
@@ -55,11 +55,11 @@
         <span><span class="margin-left-10 bold">Status: </span>{{state.records[state.iSelectedRecord].recordStatus | timeRecordStatus}}</span>
         <span class="margin-left-10 bold">Last Updated: </span>
         <span
-            ng-show="state.records[state.iSelectedRecord].updateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second' | not">
-            {{state.records[state.iSelectedRecord].updateDate | moment: 'lll'}}
+            ng-show="state.records[state.iSelectedRecord].overallUpdateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second' | not">
+            {{state.records[state.iSelectedRecord].overallUpdateDate | moment: 'lll'}}
       </span>
         <span
-            ng-show="state.records[state.iSelectedRecord].updateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second'">New</span>
+            ng-show="state.records[state.iSelectedRecord].overallUpdateDate | momentCmp:'=':state.records[state.iSelectedRecord].originalDate:'second'">New</span>
       </div>
     </div>
   </div>

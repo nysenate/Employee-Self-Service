@@ -35,6 +35,7 @@ public class SimpleTimeRecordView implements ViewObject {
     protected String updateUserId;
     protected LocalDateTime originalDate;
     protected LocalDateTime updateDate;
+    protected LocalDateTime overallUpdateDate;
 
     protected SimpleTimeRecordView() {}
 
@@ -58,6 +59,7 @@ public class SimpleTimeRecordView implements ViewObject {
             this.updateUserId = record.getUpdateUserId();
             this.originalDate = record.getCreatedDate();
             this.updateDate = record.getUpdateDate();
+            this.overallUpdateDate = record.getOverallUpdateDate();
         }
     }
 
@@ -162,6 +164,11 @@ public class SimpleTimeRecordView implements ViewObject {
     @XmlElement
     public LocalDateTime getUpdateDate() {
         return updateDate;
+    }
+
+    @XmlElement
+    public LocalDateTime getOverallUpdateDate() {
+        return overallUpdateDate;
     }
 
     @XmlElement

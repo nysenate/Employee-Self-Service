@@ -237,7 +237,7 @@ public class TimeRecord implements Comparable<TimeRecord>
      * Get the greatest update between the record and all of its entries
      * @return LocalDateTime
      */
-    public LocalDateTime getUpdateDate() {
+    public LocalDateTime getOverallUpdateDate() {
         return timeEntryMap.values().stream()
                 .map(TimeEntry::getUpdateDate)
                 .filter(i -> i != null)
@@ -362,6 +362,10 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 
     public void setUpdateDate(LocalDateTime updateDate) {

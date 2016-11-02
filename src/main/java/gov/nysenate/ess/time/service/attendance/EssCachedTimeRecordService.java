@@ -309,7 +309,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         List<TimeRecord> updatedTRecs = timeRecordDao.getUpdatedRecords(updateRange);
         lastUpdateTime = updatedTRecs.stream()
                 .peek(this::updateCache)
-                .map(TimeRecord::getUpdateDate)
+                .map(TimeRecord::getOverallUpdateDate)
                 .max(LocalDateTime::compareTo)
                 .orElse(lastUpdateTime);
         logger.info("Refreshed cache with {} updated time records", updatedTRecs.size());
