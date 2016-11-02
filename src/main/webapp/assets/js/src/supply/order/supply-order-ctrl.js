@@ -180,6 +180,13 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         supplyCart.save();
     };
 
+    $scope.onCustomQtyEntered = function (lineItem) {
+        // Convert entered quantity to integer.
+        lineItem.quantity = Number(lineItem.quantity);
+        supplyCart.updateCartLineItem(lineItem);
+        supplyCart.save();
+    };
+
     $scope.isInCart = function (item) {
         return supplyCart.isItemIdOrdered(item.id);
     };
@@ -262,8 +269,6 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
 /**
  * Validator for entering custom order quantities.
  * Limits key input to number keys and navigation keys.
- * Sets maximum input length to 4 digits.
- * See order-custom-quantity-modal.jsp for an example of usage.
  */
 essSupply.directive('orderQuantityValidator', [function () {
     return {
@@ -276,21 +281,6 @@ essSupply.directive('orderQuantityValidator', [function () {
                 }
                 if (event.keyCode < 48 || event.keyCode > 57) {
                     event.preventDefault();
-                }
-            });
-
-            var maxLength = 4;
-            scope.$watch(attrs.ngModel, function (newValue) {
-                var value = ngModel.$viewValue;
-                // Limit the max length of input.
-                if (value.length > maxLength) {
-                    ngModel.$setViewValue(value.substring(0, maxLength));
-                    ngModel.$render();
-                }
-                // Trim the leading zeros out of numbers.
-                if (value.indexOf(0) == 0 && value.length > 1) {
-                    ngModel.$setViewValue(value.substring(1, value.length));
-                    ngModel.$render();
                 }
             });
         }

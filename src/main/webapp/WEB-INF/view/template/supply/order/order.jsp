@@ -94,10 +94,12 @@
               <input order-quantity-validator
                      class="qty-input"
                      type="text"
-                     ng-change="onUpdate()"
+                     ng-change="onCustomQtyEntered(lineItem)"
                      ng-model="lineItem.quantity"
+                     ng-model-options="{updateOn: 'blur'}"
                      min="0"
-                     step="1">
+                     step="1"
+                     maxlength="4">
               <input class="qty-adjust-button" ng-click="incrementQuantity(lineItem)"
                      type="button" value="+">
             </div>
