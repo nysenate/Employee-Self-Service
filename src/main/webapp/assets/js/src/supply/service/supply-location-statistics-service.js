@@ -19,7 +19,8 @@ function supplyLocationStatisticsService($q, locationStatisticsApi) {
          * Get the total quantity of an item ordered at a given location.
          */
         this.getQuantityForLocationAndItem = function (location, item) {
-            return locationStatistcsMap[location].itemQuantities[item];
+            if (locationStatistcsMap[location])
+                return locationStatistcsMap[location].itemQuantities[item];
         }
     }
 
