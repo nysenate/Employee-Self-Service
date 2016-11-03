@@ -61,6 +61,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/order";
     }
 
+    @RequestMapping(value="/order/supply-quantity-selector")
+    public String supplyQuantitySelector() {
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/order/supply-quantity-selector");
+    }
+
     @RequestMapping(value="/order/order-more-prompt-modal")
     public String orderMorePromptModal() {
         return SUPPLY_TMPL_BASE_URL + "/order/order-more-prompt-modal";

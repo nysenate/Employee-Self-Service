@@ -37,6 +37,10 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/supply-quantity-selector.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/order-quantity-validator.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/order-destination-service.js?v=${releaseVersion}"></script>

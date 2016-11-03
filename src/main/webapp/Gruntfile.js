@@ -162,6 +162,8 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/manage/fulfillment/modal/fulfillment-immutable-modal.js',
                         //        <%-- Order --%>
                         '<%= jsSource %>/supply/order/supply-order-ctrl.js',
+                        '<%= jsSource %>/supply/order/supply-quantity-selector.js',
+                        '<%= jsSource %>/supply/order/order-quantity-validator.js',
                         '<%= jsSource %>/supply/order/location-allowance-service.js',
                         '<%= jsSource %>/supply/order/order-destination-service.js',
                         '<%= jsSource %>/supply/order/order-more-prompt-modal.js',

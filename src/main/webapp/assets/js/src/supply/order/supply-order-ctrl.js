@@ -149,89 +149,11 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.$on('$locationChangeStart', function (event, newUrl) {
         if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
             updateFiltersFromUrlParams();
-            filterLineItems();
+            if ($scope.state == $scope.states.SHOPPING) {
+                filterLineItems();
+            }
         }
     });
-
-    /** --- Shopping --- */
-
-    $scope.addToCart = function (lineItem) {
-        // first time adding special item, display modal.
-        if (!supplyCart.isItemIdOrdered(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
-            modals.open('special-order-item-modal', {lineItem: lineItem})
-                .then(function () {
-                    lineItem.increment();
-                    updateAndSaveCart(lineItem);
-                })
-        }
-        else {
-            lineItem.increment();
-            updateAndSaveCart(lineItem);
-        }
-    };
-
-    $scope.decrementQuantity = function (lineItem) {
-        lineItem.decrement();
-        updateAndSaveCart(lineItem)
-    };
-
-    $scope.incrementQuantity = function (lineItem) {
-        if ($scope.isAtMaxQty(lineItem)) {
-            lineItem.increment();
-            displayOrderMoreModal(lineItem);
-        }
-        else {
-            lineItem.increment();
-            updateAndSaveCart(lineItem);
-        }
-    };
-
-    $scope.onCustomQtyEntered = function (lineItem) {
-        if ($scope.isOverMaxQty(lineItem) && !previousValueOverMaxQty(lineItem)) {
-            displayOrderMoreModal(lineItem);
-        }
-        else {
-            updateAndSaveCart(lineItem);
-        }
-    };
-
-    /**
-     * Displays the order more prompt modal warning users they are about to order
-     * over the recommended maximum.
-     * If the user accepts the modal, any updates made to lineItem are saved.
-     * If the user cancels the modal, the lineItem is reset to its previous state.
-     */
-    function displayOrderMoreModal(lineItem) {
-        modals.open('order-more-prompt-modal', {lineItem: lineItem})
-            .then(updateAndSaveCart)
-            .catch(resetToOriginalQuantity)
-    }
-
-    function updateAndSaveCart(lineItem) {
-        supplyCart.updateCartLineItem(lineItem);
-        supplyCart.save();
-    }
-
-    function resetToOriginalQuantity(lineItem) {
-        lineItem.quantity = supplyCart.getCartLineItem(lineItem.item.id).quantity;
-    }
-
-    $scope.isInCart = function (item) {
-        return supplyCart.isItemIdOrdered(item.id);
-    };
-
-    $scope.isAtMaxQty = function (lineItem) {
-        return lineItem.quantity === lineItem.item.maxQtyPerOrder;
-    };
-
-    $scope.isOverMaxQty = function (lineItem) {
-        return lineItem.quantity > lineItem.item.maxQtyPerOrder
-    };
-
-    function previousValueOverMaxQty(lineItem) {
-        var savedLineItem = supplyCart.getCartLineItem(lineItem.item.id);
-        return savedLineItem.quantity > savedLineItem.item.maxQtyPerOrder;
-    }
 
     /** --- Location selection --- */
 
@@ -297,23 +219,3 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
     }
 }]);
 
-/**
- * Validator for entering custom order quantities.
- * Limits key input to number keys and navigation keys.
- */
-essSupply.directive('orderQuantityValidator', [function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, elm, attrs, ngModel) {
-            // Only allow numbers, backspace, tab, and F5 keys to be pressed.
-            elm.bind("keydown", function (event) {
-                if (event.keyCode === 8 || event.keyCode === 9 || event.keyCode === 116) {
-                    return;
-                }
-                if (event.keyCode < 48 || event.keyCode > 57) {
-                    event.preventDefault();
-                }
-            });
-        }
-    }
-}]);
