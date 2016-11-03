@@ -100,7 +100,9 @@
                      min="0"
                      step="1"
                      maxlength="4">
-              <input class="qty-adjust-button" ng-click="incrementQuantity(lineItem)"
+              <input class="qty-adjust-button"
+                     ng-class="{'dark-warn': isAtMaxQty(lineItem) || isOverMaxQty(lineItem)}"
+                     ng-click="incrementQuantity(lineItem)"
                      type="button" value="+">
             </div>
           </div>
