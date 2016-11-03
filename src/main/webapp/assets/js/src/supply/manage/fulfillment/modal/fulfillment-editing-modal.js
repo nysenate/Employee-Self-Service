@@ -40,8 +40,14 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
 
     /** Close the modal and return the promise resulting from calling the save requisition api. */
     $scope.saveChanges = function () {
-        modals.resolve(requisitionApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
-    };
+        requisitionApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise.then(function(){
+            modals.resolve();
+        },(
+            function (errorResponse) {
+                modals.open('500', {details: errorResponse});
+                console.error(errorResponse);
+            }
+            ))};
 
     $scope.closeModal = function () {
         modals.reject();

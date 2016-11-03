@@ -87,6 +87,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         supplyEmployeesApi.get(function (response) {
             $scope.supplyEmployees = response.result;
         }, function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 
@@ -97,7 +99,10 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             .then(function (result) {
                       $scope.locationStatistics = result;
                   }
-            );
+            ).catch(function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
+        });
     }
 
     /** Get all pending shipments */
@@ -110,8 +115,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.pendingSearch.matches = response.result;
             $scope.pendingSearch.error = false;
         }, function (errorResponse) {
-            $scope.pendingSearch.matches = [];
-            $scope.pendingSearch.error = true;
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 
@@ -124,8 +129,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.processingSearch.matches = response.result;
             $scope.processingSearch.error = false;
         }, function (errorResponse) {
-            $scope.processingSearch.matches = [];
-            $scope.processingSearch.error = true;
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 
@@ -138,8 +143,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.completedSearch.matches = response.result;
             $scope.completedSearch.error = false;
         }, function (errorResponse) {
-            $scope.completedSearch.matches = [];
-            $scope.completedSearch.error = true;
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 
@@ -153,8 +158,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.approvedSearch.matches = response.result;
             $scope.approvedSearch.error = false;
         }, function (errorResponse) {
-            $scope.approvedSearch.matches = [];
-            $scope.approvedSearch.error = true;
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 
@@ -168,8 +173,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.syncFailedSearch.matches = removeNewPlaceReq($scope.syncFailedSearch.matches);
             $scope.syncFailedSearch.error = false;
         }, function (errorResponse) {
-            $scope.syncFailedSearch.matches = [];
-            $scope.syncFailedSearch.error = true;
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         });
     }
 
@@ -193,8 +198,8 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             $scope.canceledSearch.matches = response.result;
             $scope.canceledSearch.error = false;
         }, function (errorResponse) {
-            $scope.canceledSearch.matches = [];
-            $scope.canceledSearch.error = true;
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 

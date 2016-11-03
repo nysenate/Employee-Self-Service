@@ -59,6 +59,8 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
             $scope.reconcilableSearch.matches = [];
             $scope.reconcilableSearch.items = [];
             $scope.reconcilableSearch.error = true;
+            modals.open('500', {details: response});
+            console.error(response);
         });
         });
     }

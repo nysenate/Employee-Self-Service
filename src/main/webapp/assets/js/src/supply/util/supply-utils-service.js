@@ -39,6 +39,10 @@ essSupply.directive('capitalize', function ($parse) {
                     if (inputValue === undefined) {
                         inputValue = "";
                     }
+                    if(inputValue.indexOf("(") != -1){
+                        inputValue = inputValue.substring(0,inputValue.indexOf("(")-1);
+                        modelCtrl.$setViewValue(inputValue);
+                    }
                     var capitalized = inputValue.toUpperCase();
                     if (capitalized !== inputValue) {
                         modelCtrl.$setViewValue(capitalized);

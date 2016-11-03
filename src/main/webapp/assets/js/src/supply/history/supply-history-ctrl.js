@@ -41,6 +41,9 @@ function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, loc
         return requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
             $scope.paginate.setTotalItems(response.total);
+        },function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         })
     }
 
@@ -56,14 +59,23 @@ function supplyHistoryController($scope, supplyEmployeesApi, requisitionApi, loc
         $scope.loading = true;
         $scope.paginate.reset();
         getUpdatedOrders().$promise
-            .then(doneLoading);
+            .then(doneLoading).catch(
+                function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
+        });
     };
 
     /** Updates the displayed requisitions whenever the page is changed. */
     $scope.onPageChange = function () {
         $scope.loading = true;
         getUpdatedOrders().$promise
-            .then(doneLoading);
+            .then(doneLoading).catch(
+            function (errorResponse) {
+                modals.open('500', {details: errorResponse});
+                console.error(errorResponse);
+            }
+        );
     };
 
     var setLocations = function (response) {

@@ -48,7 +48,12 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
         return getLoggedInEmployeeInfo()
             .then(getRequisitions)
             .then(setRequisitions)
-            .finally(doneLoading);
+            .finally(doneLoading).catch(
+                function (errorResponse) {
+                    modals.open('500', {details: errorResponse});
+                    console.error(errorResponse);
+                }
+            );
     }
 
     function getLoggedInEmployeeInfo() {
@@ -56,7 +61,10 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
             empId: appProps.user.employeeId,
             detail: true
         };
-        return empInfoApi.get(params).$promise;
+        return empInfoApi.get(params).$promise.catch(function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
+        });
     }
 
     function getRequisitions(employeeInfoResponse) {
@@ -74,6 +82,9 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
         };
         return orderHistoryApi.get(params, function (response) {
             $scope.paginate.setTotalItems(response.total);
+        },function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
         }).$promise;
     }
 
