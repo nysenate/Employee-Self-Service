@@ -18,7 +18,6 @@ import java.util.Optional;
 /**
  * Checks time records to make sure that no time record contains partially entered miscellaneous values
  */
-
 @Service
 public class MiscTRV implements TimeRecordValidator {
 
@@ -26,7 +25,7 @@ public class MiscTRV implements TimeRecordValidator {
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
-        // If the saved record contains entries where the employee was a temporary employee
+        // If the saved record contains entries where the employee was not a temporary employee
         return record.getScope() == TimeRecordScope.EMPLOYEE
                 &&
                 record.getTimeEntries().stream()
@@ -38,39 +37,42 @@ public class MiscTRV implements TimeRecordValidator {
      *
      * @param record TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
-     * @throws TimeRecordErrorException
+     * @throws TimeRecordErrorException if the record contains any errors relating to misc hours
      */
-
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
         ImmutableList<TimeEntry> entries =  record.getTimeEntries();
 
-        for (TimeEntry entry : entries) {
-            checkMisc(entry);
-        }
-
+        entries.forEach(this::checkMisc);
     }
 
     /**
      * checkMisc:  check misc field values
      *
-     * @param entry
-     * @throws TimeRecordErrorException
+     * @param entry {@link TimeEntry}
+     * @throws TimeRecordErrorException if misc type doesn't accompany misc hours and vice versa
      */
-
     private void checkMisc(TimeEntry entry)  throws TimeRecordErrorException {
 
-        if (entry.getMiscHours().isPresent() && entry.getMiscType() == null) {
-                throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_TYPE,
-                        new InvalidParameterView("miscType", "decimal",
-                                "miscTime = " +entry.getMiscHours().orElse(new BigDecimal(0)).toString(),  entry.getMiscHours().orElse(new BigDecimal(0)).toString()));
+        // True if misc hours are not null and greater than 0
+        boolean miscHoursPresent = entry.getMiscHours().orElse(BigDecimal.ZERO).compareTo(BigDecimal.ZERO) > 0;
+        // True if there is a misc type on the entry
+        boolean miscTypePresent = entry.getMiscType() != null;
 
-            }
-        else if (entry.getMiscType() != null && !entry.getMiscHours().isPresent()) {
-                throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_HOURS,
-                        new InvalidParameterView("miscType", "decimal",
-                                "miscTime = " +entry.getMiscHours().orElse(new BigDecimal(0)).toString(),  entry.getMiscHours().orElse(new BigDecimal(0)).toString()));
-            }
+        if (miscHoursPresent && !miscTypePresent) {
+            throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_TYPE,
+                    new InvalidParameterView("miscType", "decimal",
+                            "A misc type must be specified for misc hours",
+                            entry.getMiscHours().orElse(null)));
+
+        }
+
+        if (!miscHoursPresent && miscTypePresent) {
+            throw new TimeRecordErrorException(TimeRecordErrorCode.MISSING_MISC_HOURS,
+                    new InvalidParameterView("miscType", "decimal",
+                            "Misc hours must be present when a misc type is specified",
+                            entry.getMiscType()));
+        }
     }
 
 }
