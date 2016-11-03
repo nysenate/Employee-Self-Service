@@ -1,18 +1,18 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <div ng-controller="SupplyOrderController">
-  <div class="supply-order-hero inline-block width-100">
-    <h2 class="requisition-title">Supply Requisition Form</h2>
-    <a href="${ctxPath}/supply/order/cart">
-      <cart-summary class="cart-widget"></cart-summary>
-    </a>
-  </div>
+  <div class="content-container">
+    <div class="supply-order-hero inline-block width-100">
+      <h2 class="requisition-title">Supply Requisition Form</h2>
+      <a href="${ctxPath}/supply/order/cart">
+        <cart-summary class="cart-widget"></cart-summary>
+      </a>
+    </div>
 
-  <div loader-indicator class="loader" ng-show="state === states.LOADING"></div>
+    <div loader-indicator class="loader" ng-show="state === states.LOADING"></div>
 
-  <%--Location Selection--%>
-  <div ng-show="state === states.SELECTING_DESTINATION">
-    <div class="content-container">
+    <%--Location Selection--%>
+    <div ng-show="state === states.SELECTING_DESTINATION">
       <div class="content-info">
         <form name="selectDestinationForm" novalidate>
           <h4 style="display: inline-block;">Please select a destination: </h4>
@@ -35,11 +35,9 @@
         </form>
       </div>
     </div>
-  </div>
 
-  <%--Ordering--%>
-  <div ng-show="state === states.SHOPPING">
-    <div class="content-container">
+    <%--Ordering--%>
+    <div ng-show="state === states.SHOPPING">
       <%--Search--%>
       <div class="padding-10" style="display: flex; justify-content: space-between;">
         <div style="display: inline-block;">
@@ -61,38 +59,38 @@
                            ng-options="o as o for o in displaySorting" style="width: 100px;"></select>
         </div>
       </div>
-        <div class="padding-10" style="margin-top: -30px;    margin-bottom: -10px;">
-          {{destinationCode}} ({{destinationDescription}}) <a ng-click="resetDestination()">[edit]</a>
-        </div>
-        <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()"
-                                 pagination-id="item-pagination"
-                                 boundary-links="true" max-size="10"></dir-pagination-controls>
-    </div>
-
-    <div class="grid">
-      <div class="col-3-12 text-align-center"
-           dir-paginate="lineItem in displayedLineItems | itemsPerPage: paginate.itemsPerPage"
-           current-page="paginate.currPage"
-           pagination-id="item-pagination">
-        <div class="content-container"
-             ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
-          <img class="supply-item-image"
-               ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-               err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
-          <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
-            {{lineItem.item.description}}
-          </p>
-          <supply-quantity-selector line-item="lineItem">
-          </supply-quantity-selector>
-        </div>
+      <div class="padding-10" style="margin-top: -30px;    margin-bottom: -10px;">
+        {{destinationCode}} ({{destinationDescription}}) <a ng-click="resetDestination()">[edit]</a>
       </div>
-    </div>
-    <div class="content-container">
-      <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
+      <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()"
+                               pagination-id="item-pagination"
                                boundary-links="true" max-size="10"></dir-pagination-controls>
     </div>
-
   </div>
+
+  <div class="grid">
+    <div class="col-3-12 text-align-center"
+         dir-paginate="lineItem in displayedLineItems | itemsPerPage: paginate.itemsPerPage"
+         current-page="paginate.currPage"
+         pagination-id="item-pagination">
+      <div class="content-container"
+           ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
+        <img class="supply-item-image"
+             ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
+             err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
+        <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
+          {{lineItem.item.description}}
+        </p>
+        <supply-quantity-selector line-item="lineItem">
+        </supply-quantity-selector>
+      </div>
+    </div>
+  </div>
+  <div class="content-container">
+    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
+                             boundary-links="true" max-size="10"></dir-pagination-controls>
+  </div>
+
   <div modal-container>
     <modal modal-id="order-more-prompt-modal">
       <div order-more-prompt-modal></div>

@@ -1,9 +1,9 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
     '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyRequisitionApi',
-    'SupplyOrderDestinationService', 'appProps', 'modals', 'LocationService', supplyCartController]);
+    'SupplyOrderDestinationService', 'appProps', 'modals', 'LocationService', 'SupplyUtils', supplyCartController]);
 
 function supplyCartController($scope, cookies, supplyCart, requisitionApi,
-                              destinationService, appProps, modals, locationService) {
+                              destinationService, appProps, modals, locationService, supplyUtils) {
 
     /**
      * An array of line items in the cart with positive order quantities.
@@ -21,6 +21,7 @@ function supplyCartController($scope, cookies, supplyCart, requisitionApi,
         }
         supplyCart.initializeCart();
         displayedLineItems = angular.copy(supplyCart.getLineItems());
+        displayedLineItems = supplyUtils.alphabetizeLineItems(displayedLineItems);
     };
 
     $scope.init();

@@ -14,7 +14,7 @@
 				C25.395,21.21,25.027,21.575,24.576,21.575L24.576,21.575z"/>
 </svg>
   </div>
-  <div class="col-6-12" style="color:white">{{getTotalItems()}}
-    <ng-pluralize count="getTotalItems()" when="{1: 'item', 'other':'items'}"></ng-pluralize>
+  <div class="col-6-12" style="color:white">{{getSize()}}
+    <ng-pluralize count="getSize()" when="{1: 'item', 'other':'items'}"></ng-pluralize>
   </div>
 </div>

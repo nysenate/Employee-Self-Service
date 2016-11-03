@@ -1,5 +1,14 @@
 var essSupply = angular.module('essSupply');
 
+/**
+ * When ordering, this cart contains a line item of zero quantity for all supply items.
+ * Items that are 'really' in the cart will have a positive quantity.
+ * This was done to reduce the layers between the model on view.
+ * When saving, only line items with positive quantities are saved.
+ *
+ * On the cart page, this cart is only initialized with persisted line items, which should
+ * all have a positive quantity.
+ */
 essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'SupplyCookieService', function (allowanceService, cookies) {
 
     /**
@@ -72,22 +81,12 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return cart.get(itemId);
         },
 
-        getTotalItems: function () {
+        getSize: function () {
             var size = 0;
             angular.forEach(cart, function (lineItem) {
                 size += lineItem.quantity || 0;
             });
             return size;
-        },
-
-        // TODO this might not be needed anymore
-        removeFromCart: function (itemId) {
-            $.grep(cart, function (lineItem, index) {
-                if (lineItem && lineItem.item.id === itemId) {
-                    cart.splice(index, 1);
-                }
-            });
-            cookies.saveCartCookie(cart);
         },
 
         reset: function () {

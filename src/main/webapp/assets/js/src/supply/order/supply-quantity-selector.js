@@ -1,3 +1,10 @@
+/**
+ * Supply Quantity Selector is collection of HTML elements which allow
+ * users to add items to their cart and adjust quantities by pressing buttons
+ * or editing in an input box.
+ *
+ * Used on the Order and Cart pages.
+ */
 var essSupply = angular.module('essSupply')
     .directive('supplyQuantitySelector', ['appProps', function (appProps) {
         return {
