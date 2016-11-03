@@ -16,6 +16,6 @@ angular.module('essSupply').directive('orderMorePromptModal', ['appProps', funct
         };
 
         $scope.nevermind = function () {
-            modals.reject();
+            modals.reject(modals.params().lineItem);
         }
     }]);

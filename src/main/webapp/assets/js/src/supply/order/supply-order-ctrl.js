@@ -117,7 +117,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         filterLineItems();
     };
 
-    /** --- Reset --- */
     $scope.reset = function () {
         $scope.filter.searchTerm = "";
         filterLineItems();
@@ -160,7 +159,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         // first time adding special item, display modal.
         if (!supplyCart.isItemIdOrdered(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
             modals.open('special-order-item-modal', {lineItem: lineItem})
-                .then(function() {
+                .then(function () {
                     lineItem.increment();
                     updateAndSaveCart(lineItem);
                 })
@@ -177,43 +176,62 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.incrementQuantity = function (lineItem) {
-        lineItem.increment();
-        updateAndSaveCart(lineItem)
+        if ($scope.isAtMaxQty(lineItem)) {
+            lineItem.increment();
+            displayOrderMoreModal(lineItem);
+        }
+        else {
+            lineItem.increment();
+            updateAndSaveCart(lineItem);
+        }
     };
 
     $scope.onCustomQtyEntered = function (lineItem) {
-        if (lineItem.quantity > lineItem.item.maxQtyPerOrder) {
-            modals.open('order-more-prompt-modal', {lineItem: lineItem})
-                .then(updateAndSaveCart)
-                .catch(function() {
-                    // Reset displayedLineItem quantity to the old value.
-                    lineItem.quantity = supplyCart.getCartLineItem(lineItem.item.id).quantity;
-                })
+        if ($scope.isOverMaxQty(lineItem) && !previousValueOverMaxQty(lineItem)) {
+            displayOrderMoreModal(lineItem);
         }
         else {
             updateAndSaveCart(lineItem);
         }
     };
 
+    /**
+     * Displays the order more prompt modal warning users they are about to order
+     * over the recommended maximum.
+     * If the user accepts the modal, any updates made to lineItem are saved.
+     * If the user cancels the modal, the lineItem is reset to its previous state.
+     */
+    function displayOrderMoreModal(lineItem) {
+        modals.open('order-more-prompt-modal', {lineItem: lineItem})
+            .then(updateAndSaveCart)
+            .catch(resetToOriginalQuantity)
+    }
+
     function updateAndSaveCart(lineItem) {
         supplyCart.updateCartLineItem(lineItem);
         supplyCart.save();
+    }
+
+    function resetToOriginalQuantity(lineItem) {
+        lineItem.quantity = supplyCart.getCartLineItem(lineItem.item.id).quantity;
     }
 
     $scope.isInCart = function (item) {
         return supplyCart.isItemIdOrdered(item.id);
     };
 
-    // /** This is called whenever an items quantity is changed.
-    //  * Used to determine when "more" is selected. */
-    // $scope.quantityChanged = function (allowance) {
-    //     if (allowance.selectedQuantity === "more" || $scope.getItemRemainQuantities(allowance.item) == 0) {
-    //         modals.open('order-more-prompt-modal', {allowance: allowance})
-    //             .then(function (allowance) {
-    //                 modals.open('order-custom-quantity-modal', {item: allowance.item});
-    //             });
-    //     }
-    // };
+    $scope.isAtMaxQty = function (lineItem) {
+        return lineItem.quantity === lineItem.item.maxQtyPerOrder;
+    };
+
+    $scope.isOverMaxQty = function (lineItem) {
+        return lineItem.quantity > lineItem.item.maxQtyPerOrder
+    };
+
+    function previousValueOverMaxQty(lineItem) {
+        var savedLineItem = supplyCart.getCartLineItem(lineItem.item.id);
+        return savedLineItem.quantity > savedLineItem.item.maxQtyPerOrder;
+    }
 
     /** --- Location selection --- */
 
