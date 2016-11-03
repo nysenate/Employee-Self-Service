@@ -91,7 +91,7 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
         },
 
         reset: function () {
-            cart = [];
+            cart = new Map();
             cookies.saveCartCookie(cart);
         },
 

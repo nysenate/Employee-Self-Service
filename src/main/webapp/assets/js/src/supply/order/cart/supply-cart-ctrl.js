@@ -1,10 +1,14 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-    '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyLocationAllowanceService', 'SupplyRequisitionApi',
+    '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyRequisitionApi',
     'SupplyOrderDestinationService', 'appProps', 'modals', 'LocationService', supplyCartController]);
 
-function supplyCartController($scope, cookies, supplyCart, allowanceService, requisitionApi,
+function supplyCartController($scope, cookies, supplyCart, requisitionApi,
                               destinationService, appProps, modals, locationService) {
 
+    /**
+     * An array of line items in the cart with positive order quantities.
+     */
+    var displayedLineItems = [];
     $scope.destinationCode = null;
     $scope.destinationDescription = "";
     $scope.specialInstructions = null;
@@ -15,30 +19,31 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
             $scope.destinationCode = destination.code;
             $scope.destinationDescription = destination.locationDescription || "";
         }
+        supplyCart.initializeCart();
+        displayedLineItems = angular.copy(supplyCart.getLineItems());
     };
 
     $scope.init();
 
-    $scope.myCartItems = function () {
-        return supplyCart.getCart();
+    /**
+     * Returns all line items with positive quantities.
+     */
+    $scope.getLineItems = function() {
+        var lineItems = [];
+        displayedLineItems.forEach(function(li) {
+            if (li.quantity > 0) {
+                lineItems.push(li);
+            }
+        });
+        return lineItems;
     };
 
-    $scope.orderQuantityRange = function (item) {
-        return allowanceService.getAllowedQuantities(item)
-    };
-
-    $scope.cartHasItems = function () {
-        return supplyCart.getCart().length > 0
-    };
-
-    $scope.removeFromCart = function (item) {
-        supplyCart.removeFromCart(item.id);
-    };
+    /** --- Button's --- */
 
     $scope.submitOrder = function () {
         var params = {
             customerId: appProps.user.employeeId,
-            lineItems: supplyCart.getCart(),
+            lineItems: supplyCart.getLineItems(),
             destinationId: cookies.getDestination().locId,
             specialInstructions: $scope.specialInstructions
         };
@@ -50,9 +55,12 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
         });
     };
 
-    $scope.orderedOverPerOrderMax = function (cartItem) {
-        return cartItem.quantity > cartItem.item.maxQtyPerOrder;
+    $scope.emptyCart = function () {
+        displayedLineItems = [];
+        supplyCart.reset();
     };
+
+    /** --- Modal methods --- */
 
     $scope.closeModal = function () {
         modals.resolve();
@@ -61,17 +69,6 @@ function supplyCartController($scope, cookies, supplyCart, allowanceService, req
     $scope.returnToSupply = function () {
         modals.resolve();
         locationService.go("/supply/order", false);
-    };
-
-    // removed
-    $scope.resetDestination = function () {
-        supplyCart.reset();
-        destinationService.reset();
-        locationService.go("/supply/order", false);
-    };
-
-    $scope.emptyCart = function () {
-        supplyCart.reset();
     };
 
     $scope.logout = function () {

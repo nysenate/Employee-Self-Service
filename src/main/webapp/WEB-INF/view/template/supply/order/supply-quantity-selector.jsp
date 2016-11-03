@@ -1,4 +1,4 @@
-<div>
+<div class="text-align-center">
   <p class="dark-gray margin-0">{{lineItem.item.standardQuantity}}/Pack</p>
   <div ng-show="!isInCart(lineItem.item)">
     <input class="add-to-cart-btn" ng-click="addToCart(lineItem)"
