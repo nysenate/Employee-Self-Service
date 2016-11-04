@@ -1,10 +1,10 @@
 <div class="text-align-center">
   <p class="dark-gray margin-0">{{lineItem.item.standardQuantity}}/Pack</p>
-  <div ng-show="!isInCart(lineItem.item)">
+  <div ng-if="!isInCart(lineItem.item)">
     <input class="add-to-cart-btn" ng-click="addToCart(lineItem)"
            type="button" value="Add to Cart">
   </div>
-  <div ng-show="isInCart(lineItem.item)">
+  <div ng-if="isInCart(lineItem.item)">
     <input class="qty-adjust-button"
            ng-click="decrementQuantity(lineItem)"
            type="button" value="-">
