@@ -45,7 +45,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         var params = {
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getLineItems(),
-            destinationId: storageService.getDestination().locId,
+            destinationId: $scope.destinationCode + "-W",
             specialInstructions: $scope.specialInstructions
         };
         requisitionApi.save(params, function (response) {
