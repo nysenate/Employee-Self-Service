@@ -2432,6 +2432,7 @@ button.ui-button::-moz-focus-inner {
   color: #fefefe;
   font-weight: 600;
   border: none;
+  border-radius: 2px;
 }
 .qty-adjust-button {
   margin: 5px 10px 10px 10px;
@@ -2443,6 +2444,7 @@ button.ui-button::-moz-focus-inner {
   color: #fefefe;
   font-weight: 600;
   border: none;
+  border-radius: 2px;
 }
 .qty-input {
   margin: 0;
