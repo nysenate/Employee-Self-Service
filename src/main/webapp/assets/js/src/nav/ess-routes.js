@@ -81,15 +81,7 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/supply/order/cart', {
-        templateUrl: ctxPath + '/template/supply/order/cart',
-        resolve: {
-            locAutocomplete: ['SupplyLocationAllowanceService', 'SupplyCookieService',
-                function (supplyLocationAllowanceService, supplyCookieService) {
-                    if (supplyCookieService.getDestination() !== null) {
-                        return supplyLocationAllowanceService.queryLocationAllowance(supplyCookieService.getDestination());
-                    }
-            }]
-        }
+        templateUrl: ctxPath + '/template/supply/order/cart'
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/fulfillment', {

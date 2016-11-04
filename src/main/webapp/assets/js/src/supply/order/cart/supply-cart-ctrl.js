@@ -1,8 +1,8 @@
 essSupply = angular.module('essSupply').controller('SupplyCartController', [
-    '$scope', 'SupplyCookieService', 'SupplyCartService', 'SupplyRequisitionApi',
+    '$scope', 'EssStorageService', 'SupplyCartService', 'SupplyRequisitionApi',
     'SupplyOrderDestinationService', 'appProps', 'modals', 'LocationService', 'SupplyUtils', supplyCartController]);
 
-function supplyCartController($scope, cookies, supplyCart, requisitionApi,
+function supplyCartController($scope, storageService, supplyCart, requisitionApi,
                               destinationService, appProps, modals, locationService, supplyUtils) {
 
     /**
@@ -45,7 +45,7 @@ function supplyCartController($scope, cookies, supplyCart, requisitionApi,
         var params = {
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getLineItems(),
-            destinationId: cookies.getDestination().locId,
+            destinationId: storageService.getDestination().locId,
             specialInstructions: $scope.specialInstructions
         };
         requisitionApi.save(params, function (response) {

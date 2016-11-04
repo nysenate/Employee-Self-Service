@@ -127,7 +127,8 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/common/timeout-checker.js',
                         '<%= jsSource %>/common/timeout-modal.js',
                         '<%= jsSource %>/common/toggle-panel-directive.js',
-                        '<%= jsSource %>/common/zero-pad-filter.js'
+                        '<%= jsSource %>/common/zero-pad-filter.js',
+                        '<%= jsSource %>/common/ess-storage-service.js'
                     ],
                     //help
                     '<%= jsDest %>/ess-help.min.js': ['<%= jsSource %>/help/help.js'],
@@ -150,7 +151,6 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/service/supply-inventory-service.js',
                         '<%= jsSource %>/supply/service/supply-category-service.js',
                         '<%= jsSource %>/supply/location/supply-location-autocomplete-service.js',
-                        '<%= jsSource %>/supply/service/supply-cookie-service.js',
                         '<%= jsSource %>/supply/items/supply-item-autocomplete-service.js',
                         //        <%-- History --%>
                         '<%= jsSource %>/supply/history/supply-history-ctrl.js',

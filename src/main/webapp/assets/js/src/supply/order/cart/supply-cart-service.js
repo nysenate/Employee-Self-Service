@@ -9,15 +9,28 @@ var essSupply = angular.module('essSupply');
  * On the cart page, this cart is only initialized with persisted line items, which should
  * all have a positive quantity.
  */
-essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'SupplyCookieService', function (allowanceService, cookies) {
+essSupply.service('SupplyCartService', ['EssStorageService', 'SupplyLineItemService',
+    cartService]);
+
+function cartService(storageService, lineItemService) {
+    /**
+     * A ESS wide unique key used for saving
+     * this object into local storage.
+     */
+    var KEY = "supply-cart";
 
     /**
      * A Map of itemId's to LineItems.
      */
     var cart = undefined;
 
-    function newQuantity(quantity, lineItem) {
-        return lineItem ? lineItem.quantity + quantity : quantity;
+    /**
+     * Adds a new item to the cart.
+     * Should only be used internally by the cart service during initialization.
+     * Once initalized, all updates should go through the updateCartLineItem(lineItem) method.
+     */
+    function addToCart(lineItem) {
+        cart.set(lineItem.item.id, lineItem);
     }
 
     return {
@@ -28,14 +41,10 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
          */
         initializeCart: function (lineItems) {
             cart = new Map();
-            var addToCart = function (lineItem) {
-                cart.set(lineItem.item.id, lineItem);
-            };
-
             if (lineItems) {
                 lineItems.forEach(addToCart)
             }
-            cookies.getCart().forEach(addToCart);
+            this.load();
             return cart;
         },
 
@@ -91,11 +100,37 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
 
         reset: function () {
             cart = new Map();
-            cookies.saveCartCookie(cart);
+            storageService.saveCartCookie(cart);
         },
 
+        /**
+         * Save an array of the line items with positive quantities.
+         */
         save: function () {
-            cookies.saveCartCookie(cart);
+            var lineItems = [];
+            cart.forEach(function (lineItem, itemId) {
+                if (lineItem.quantity > 0) {
+                    lineItems.push(lineItem);
+                }
+            });
+            storageService.save(KEY, lineItems);
+        },
+
+        /**
+         * Get all saved line items and add them to the cart.
+         * Also need to re create line item functionality that was lost
+         * in the serialization process.
+         */
+        load: function () {
+            var lineItems = storageService.load(KEY);
+            if (lineItems != null) {
+                var functionalLineItems = [];
+                lineItems.forEach(function (lineItem) {
+                    functionalLineItems.push(lineItemService.createLineItem(lineItem.item, lineItem.quantity));
+                });
+
+                functionalLineItems.forEach(addToCart);
+            }
         }
     }
-}]);
+}
