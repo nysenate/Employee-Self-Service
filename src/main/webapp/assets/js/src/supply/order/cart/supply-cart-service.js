@@ -50,18 +50,13 @@ function cartService(storageService, lineItemService) {
 
         /**
          * Add or remove a line item from the cart.
+         * This method should be called whenever you want to update the quantity of a line item.
          * Any added line item is copied first so changes to the original don't effect the cart.
-         * If the line item's quantity is zero remove it, otherwise add it.
          * Return the updated cart object.
          */
         updateCartLineItem: function (lineItem) {
             var li = angular.copy(lineItem);
-            if (li.quantity === 0) {
-                cart.delete(li.item.id);
-            }
-            else {
-                cart.set(li.item.id, li);
-            }
+            cart.set(li.item.id, li);
             return cart;
         },
 
