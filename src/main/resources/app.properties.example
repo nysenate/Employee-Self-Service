@@ -164,3 +164,6 @@ slack.webhook.url =
 
 # Limit the number of lines output for slack notifications (default 5)
 slack.notification.line.limit = 5
+
+# --- Error Report EmailConfiguration -----------------------------------------------------
+report.email =

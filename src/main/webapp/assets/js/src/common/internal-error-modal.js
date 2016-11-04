@@ -1,7 +1,7 @@
 var essApp = angular.module('ess');
 
-essApp.directive('internalErrorModal', ['modals',
-function (modals) {
+essApp.directive('internalErrorModal', ['modals','ErrorReportApi','appProps',
+function (modals,errorReportApi,appProps) {
     return {
         template:
         '<section id="internal-error-modal" title="Internal Error">' +
@@ -13,13 +13,25 @@ function (modals) {
             '<pre class="internal-error-details" ng-show="showDetails">{{details | json}}</pre>' +
             '<div class="button-container">' +
                 '<input type="button" class="reject-button" ng-click="showDetails = !showDetails" value="{{showDetails ? \'Hide\' : \'Show\'}} Details"/>' +
+                '<input type="button" class="reject-button" ng-click="report()" value="Report Error"/>' +
                 '<input type="button" class="reject-button" ng-click="close()" value="OK"/>' +
             '</div>' +
         '</section>',
         link: function ($scope, $element, $attrs) {
             $scope.showDetails = false;
             $scope.details = modals.params().details;
-
+            $scope.report = function () {
+                var params = {
+                    user:appProps.user.employeeId,
+                    url:window.location.href,
+                    details: $scope.details
+                };
+                errorReportApi.get(params,function (resp) {
+                    modals.resolve();
+                },function (resp) {
+                    modals.resolve();
+                });
+            };
             $scope.close = modals.reject;
         }
     };
