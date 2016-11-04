@@ -75,14 +75,16 @@
          pagination-id="item-pagination">
       <div class="content-container"
            ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
-        <img class="supply-item-image"
-             ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-             err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
-        <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
-          {{lineItem.item.description}}
-        </p>
-        <supply-quantity-selector line-item="lineItem">
-        </supply-quantity-selector>
+        <div class="padding-top-5">
+          <img class="supply-item-image"
+               ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
+               err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
+          <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
+            {{lineItem.item.description}}
+          </p>
+          <supply-quantity-selector line-item="lineItem">
+          </supply-quantity-selector>
+        </div>
       </div>
     </div>
   </div>
