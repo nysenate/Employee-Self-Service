@@ -60,10 +60,6 @@ function cartService(storageService, lineItemService) {
             return cart;
         },
 
-        getCart: function () {
-            return cart;
-        },
-
         getLineItems: function () {
             var lineItems = [];
             cart.forEach(function (lineItem, itemId) {
@@ -93,9 +89,13 @@ function cartService(storageService, lineItemService) {
             return size;
         },
 
+        isEmpty: function () {
+            return this.getSize() === 0;
+        },
+
         reset: function () {
             cart = new Map();
-            storageService.saveCartCookie(cart);
+            this.save();
         },
 
         /**
