@@ -79,10 +79,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(initializeCart)
-            .then(filterLineItems)
+            .then(sortAndFilterLineItems)
             .then(setToShoppingState)
             .then(setDestinationDescription)
-            .then($scope.updateSort)
             .catch(loadItemsError);
     }
 
@@ -94,9 +93,11 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         supplyCart.initializeCart(lineItemService.generateLineItems(items));
     }
 
-    function filterLineItems() {
+    function sortAndFilterLineItems() {
         $scope.displayedLineItems = itemFilterService.filterLineItems(supplyCart.getLineItems(), $scope.filter.categories, $scope.filter.searchTerm);
         $scope.displayedLineItems = supplyUtils.alphabetizeLineItems($scope.displayedLineItems);
+        // Sort must take place after alphabetizing.
+        $scope.displayedLineItems = updateSort($scope.displayedLineItems);
     }
 
     function setToShoppingState() {
@@ -114,12 +115,12 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Search --- */
 
     $scope.search = function () {
-        filterLineItems();
+        sortAndFilterLineItems();
     };
 
     $scope.reset = function () {
         $scope.filter.searchTerm = "";
-        filterLineItems();
+        sortAndFilterLineItems();
     };
 
     /** --- Navigation --- */
@@ -150,7 +151,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
             updateFiltersFromUrlParams();
             if ($scope.state == $scope.states.SHOPPING) {
-                filterLineItems();
+                sortAndFilterLineItems();
             }
         }
     });
@@ -163,9 +164,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             loadShoppingState();
         }
     };
-    $scope.$on('$locationChangeStart', function (event, newUrl) {
-        $scope.updateSort();
-    });
 
     $scope.getLocationAutocompleteOptions = function () {
         return locationAutocompleteService.getLocationAutocompleteOptions();
@@ -187,27 +185,30 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     /** --- Sorting  --- */
-    $scope.updateSort = function () {
+
+    /**
+     * Sort the given line items by the selected value.
+     */
+    function updateSort (lineItems) {
         var cur = locationService.getSearchParam("sortBy") || [];
         if (cur.length == 0 || cur[0] != $scope.sortBy) {
             locationService.setSearchParam("sortBy", $scope.sortBy, true, false);
         }
-        var lineItemsCopy = angular.copy($scope.displayedLineItems);
         if ($scope.sorting[$scope.sortBy] == $scope.sorting.Name) {
-            lineItemsCopy.sort(function (a, b) {
+            lineItems.sort(function (a, b) {
                 if (a.item.description < b.item.description) return -1;
                 if (a.item.description > b.item.description) return 1;
                 return 0;
             });
         }
         else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
-            lineItemsCopy.sort(function (a, b) {
+            lineItems.sort(function (a, b) {
                 if (a.item.category.name < b.item.category.name) return -1;
                 if (a.item.category.name > b.item.category.name) return 1;
                 return 0;
             });
         }
-        $scope.displayAllowances = lineItemsCopy;
+        return lineItems;
     }
 }
 

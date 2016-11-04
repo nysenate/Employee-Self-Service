@@ -55,7 +55,7 @@
           </form>
         </div>
         <div style="display: inline-block;">
-          Sort By: <select ng-init="sortBy = displaySorting[0]" ng-model="sortBy" ng-change="updateSort()"
+          Sort By: <select ng-init="sortBy = displaySorting[0]" ng-model="sortBy" ng-change="search()"
                            ng-options="o as o for o in displaySorting" style="width: 100px;"></select>
         </div>
       </div>
