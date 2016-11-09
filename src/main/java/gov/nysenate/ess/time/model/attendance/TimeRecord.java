@@ -27,7 +27,7 @@ public class TimeRecord implements Comparable<TimeRecord>
     protected BigInteger timeRecordId;
     protected Integer employeeId;
     protected Integer supervisorId;
-    protected String lastUpdater;
+    protected String lastUser;
     protected String respHeadCode;
     protected boolean active;
     protected LocalDate beginDate;
@@ -54,8 +54,8 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.endDate = DateUtils.endOfDateRange(dateRange);
         this.payPeriod = payPeriod;
         this.recordStatus = TimeRecordStatus.NOT_SUBMITTED;
-        this.originalUserId = this.lastUpdater;
-        this.updateUserId = this.lastUpdater;
+        this.originalUserId = this.lastUser;
+        this.updateUserId = this.lastUser;
         this.createdDate = LocalDateTime.now();
         this.updateDate = createdDate;
     }
@@ -64,7 +64,7 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.timeRecordId = other.timeRecordId;
         this.employeeId = other.employeeId;
         this.supervisorId = other.supervisorId;
-        this.lastUpdater = other.lastUpdater;
+        this.lastUser = other.lastUser;
         this.respHeadCode = other.respHeadCode;
         this.active = other.active;
         this.beginDate = other.beginDate;
@@ -90,7 +90,7 @@ public class TimeRecord implements Comparable<TimeRecord>
                 Objects.equal(timeRecordId, that.timeRecordId) &&
                 Objects.equal(employeeId, that.employeeId) &&
                 Objects.equal(supervisorId, that.supervisorId) &&
-                Objects.equal(lastUpdater, that.lastUpdater) &&
+                Objects.equal(lastUser, that.lastUser) &&
                 Objects.equal(respHeadCode, that.respHeadCode) &&
                 Objects.equal(beginDate, that.beginDate) &&
                 Objects.equal(endDate, that.endDate) &&
@@ -108,7 +108,7 @@ public class TimeRecord implements Comparable<TimeRecord>
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(timeRecordId, employeeId, supervisorId, lastUpdater, respHeadCode, active, beginDate,
+        return Objects.hashCode(timeRecordId, employeeId, supervisorId, lastUser, respHeadCode, active, beginDate,
                 endDate, payPeriod, remarks, exceptionDetails, processedDate, recordStatus, originalUserId,
                 updateUserId, createdDate, updateDate, timeEntryMap);
     }
@@ -178,7 +178,7 @@ public class TimeRecord implements Comparable<TimeRecord>
     public void setEmpInfo(Employee employee) {
         this.employeeId = employee.getEmployeeId();
         this.supervisorId = employee.getSupervisorId();
-        this.lastUpdater = employee.getUid() != null ? employee.getUid().toUpperCase() : null;
+        this.lastUser = employee.getUid() != null ? employee.getUid().toUpperCase() : null;
         this.respHeadCode = employee.getRespCenter().getHead().getCode();
     }
 
@@ -268,12 +268,12 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.supervisorId = supervisorId;
     }
 
-    public String getLastUpdater() {
-        return lastUpdater;
+    public String getLastUser() {
+        return lastUser;
     }
 
-    public void setLastUpdater(String lastUpdater) {
-        this.lastUpdater = lastUpdater;
+    public void setLastUser(String lastUser) {
+        this.lastUser = lastUser;
     }
 
     public boolean isActive() {

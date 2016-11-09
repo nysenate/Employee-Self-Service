@@ -40,7 +40,7 @@ public class TimeEntry extends AttendanceHours
     public TimeEntry(TimeRecord record, PayType payType, LocalDate date) {
         this.timeRecordId = record.getTimeRecordId();
         this.empId = record.getEmployeeId();
-        this.employeeName = record.getLastUpdater();
+        this.employeeName = record.getLastUser();
         this.date = date;
         this.active = true;
         this.payType = payType;

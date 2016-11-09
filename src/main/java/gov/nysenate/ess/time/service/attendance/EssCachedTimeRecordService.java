@@ -1,11 +1,13 @@
 package gov.nysenate.ess.time.service.attendance;
 
+import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.util.RangeUtils;
+import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.time.dao.attendance.TimeRecordAuditDao;
@@ -40,6 +42,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -255,11 +258,19 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         TimeRecordStatus currentStatus = record.getRecordStatus();
         TimeRecordStatus nextStatus = currentStatus.getResultingStatus(action);
         record.setRecordStatus(nextStatus);
+        String updateUser = Optional.ofNullable(ShiroUtils.getAuthenticatedUid()).orElse("TS_OWNER").toUpperCase();
+        record.setLastUser(updateUser);
+        record.setUpdateUserId(updateUser);
+        record.getTimeEntries().forEach(e -> {
+            e.setUpdateUserId(updateUser);
+            e.setEmployeeName(updateUser);
+        });
         boolean result = saveRecord(record);
         // Generate an audit record for the time record if a significant action was made on the time record.
         if (action != TimeRecordAction.SAVE) {
             auditDao.auditTimeRecord(record.getTimeRecordId());
         }
+
         return result;
     }
 

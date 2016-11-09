@@ -39,7 +39,7 @@ public class TimeRecordDaoTests extends BaseTests
         testRecord = new TimeRecord();
 
         testRecord.setEmployeeId(11423);
-        testRecord.setLastUpdater("STOUFFER");
+        testRecord.setLastUser("STOUFFER");
         testRecord.setActive(true);
         testRecord.setRecordStatus(TimeRecordStatus.SUBMITTED);
         testRecord.setRemarks("Hello world");

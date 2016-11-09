@@ -124,7 +124,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "SET \n" +
         "  NUXREFEM = :empId, CDSTATUS = :status, CDTSSTAT = :tSStatusId,\n" +
         "  DTBEGIN = :beginDate, DTEND = :endDate, DEREMARKS = :remarks, NUXREFSV = :supervisorId,\n" +
-        "  DEEXCEPTION = :excDetails, DTPROCESS = :procDate, NAUSER = :lastUpdater, CDRESPCTRHD = :respCtr\n" +
+        "  DEEXCEPTION = :excDetails, DTPROCESS = :procDate, NAUSER = :lastUser, CDRESPCTRHD = :respCtr\n" +
         "WHERE NUXRTIMESHEET = :timesheetId"
     ),
 

@@ -30,4 +30,6 @@ public abstract class ShiroUtils {
     public static int getAuthenticatedEmpId() {
         return getAuthenticatedUser().getEmployeeId();
     }
+
+    public static String getAuthenticatedUid(){return getAuthenticatedUser().getUid();};
 }

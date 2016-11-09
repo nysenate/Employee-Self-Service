@@ -62,6 +62,7 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
         MapSqlParameterSource params = getTimeEntryParams(timeEntry);
         KeyHolder entryIdHolder = new GeneratedKeyHolder();
         String[] updFields = new String[]{"NUXRDAY"};
+
         if (remoteNamedJdbc.update(UPDATE_TIME_ENTRY.getSql(schemaMap()), params) == 0) {
             remoteNamedJdbc.update(INSERT_TIME_ENTRY.getSql(schemaMap()), params, entryIdHolder, updFields);
             timeEntry.setEntryId(((BigDecimal) entryIdHolder.getKeys().get("NUXRDAY")).toBigInteger());
@@ -75,7 +76,8 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
         param.addValue("tSDayId", timeEntry.getEntryId() != null ? new BigDecimal(timeEntry.getEntryId()) : null);
         param.addValue("timesheetId", new BigDecimal(timeEntry.getTimeRecordId()));
         param.addValue("empId", timeEntry.getEmpId());
-        param.addValue("lastUpdater", timeEntry.getEmployeeName());
+        param.addValue("lastUpdater", timeEntry.getEmployeeName());   //Get Employee Name not updated
+        param.addValue("lastUser", timeEntry.getEmployeeName());
         param.addValue("dayDate", SqlBaseDao.toDate(timeEntry.getDate()));
         param.addValue("workHR", timeEntry.getWorkHours().orElse(null));
         param.addValue("travelHR", timeEntry.getTravelHours().orElse(null));

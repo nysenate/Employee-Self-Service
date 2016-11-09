@@ -16,16 +16,19 @@ public enum SqlTimeEntryQuery implements BasicSqlQuery
     INSERT_TIME_ENTRY(
         "INSERT INTO ${tsSchema}.PD23TIMESHEET\n" +
         " (NUXRTIMESHEET, NUXREFEM, DTDAY, NUWORK, NUTRAVEL, NUHOLIDAY, NUSICKEMP, NUSICKFAM,\n" +
-        "       NUMISC, NUXRMISC, CDSTATUS, DECOMMENTS, CDPAYTYPE, NUVACATION, NUPERSONAL)\n" +
+        "       NUMISC, NUXRMISC, CDSTATUS, DECOMMENTS, CDPAYTYPE, NUVACATION, NUPERSONAL\n" +
+        "       NATXNORGUSER, NATXNUPDUSER, NAUSER)\n" +
         "VALUES (:timesheetId, :empId, :dayDate, :workHR, :travelHR, :holidayHR, :sickEmpHR, :sickFamilyHR, \n" +
-        "        :miscHR, :miscTypeId, :status, :empComment, :payType, :vacationHR, :personalHR )"
+        "        :miscHR, :miscTypeId, :status, :empComment, :payType, :vacationHR, :personalHR, \n" +
+        "        :lastUser, :lastUser, :lastUser )"
     ),
     UPDATE_TIME_ENTRY(
         "UPDATE ${tsSchema}.PD23TIMESHEET " + "\n" +
         "SET NUXRTIMESHEET = :timesheetId, NUWORK = :workHR, NUTRAVEL = :travelHR,\n" +
         "   NUHOLIDAY = :holidayHR, NUSICKEMP = :sickEmpHR, NUSICKFAM = :sickFamilyHR, NUMISC = :miscHR,\n" +
         "   NUXRMISC = :miscTypeId, CDSTATUS = :status, DECOMMENTS = :empComment,\n" +
-        "   CDPAYTYPE = :payType, NUVACATION = :vacationHR, NUPERSONAL = :personalHR\n" +
+        "   CDPAYTYPE = :payType, NUVACATION = :vacationHR, NUPERSONAL = :personalHR,\n" +
+        "   NATXNUPDUSER = :lastUser, NAUSER = :lastUser\n" +
         "WHERE NUXREFEM = :empId AND NUXRDAY = :tSDayId"
     );
 

@@ -44,7 +44,7 @@ public class SimpleTimeRecordView implements ViewObject {
             this.timeRecordId = String.valueOf(record.getTimeRecordId());
             this.employeeId = record.getEmployeeId();
             this.supervisorId = record.getSupervisorId();
-            this.lastUpdater = record.getLastUpdater();
+            this.lastUpdater = record.getLastUser();
             this.respHeadCode = record.getRespHeadCode();
             this.scope = (record.getRecordStatus() != null) ? record.getRecordStatus().getScope().getCode() : null;
             this.active = record.isActive();
@@ -69,7 +69,7 @@ public class SimpleTimeRecordView implements ViewObject {
         record.setTimeRecordId(timeRecordId != null && timeRecordId.matches("\\d+") ? new BigInteger(timeRecordId) : null);
         record.setEmployeeId(employeeId);
         record.setSupervisorId(supervisorId);
-        record.setLastUpdater(lastUpdater);
+        record.setLastUser(lastUpdater);
         record.setRespHeadCode(respHeadCode);
         record.setActive(active);
         record.setPayPeriod(payPeriod.toPayPeriod());
