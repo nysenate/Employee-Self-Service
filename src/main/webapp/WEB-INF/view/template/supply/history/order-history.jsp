@@ -1,11 +1,10 @@
 <div ng-controller="SupplyOrderHistoryCtrl">
+  <div class="content-container">
   <div class="supply-order-hero">
     <h2>Order History</h2>
   </div>
 
-  <div class="content-container">
     <h4 class="content-info supply-text" style="margin-bottom: 0;">Search order history by date or status.</h4>
-
     <%--Filters--%>
     <div class="grid">
       <div class="col-4-12 padding-10" style="padding-top: 50px">

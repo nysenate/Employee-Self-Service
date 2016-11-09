@@ -61,6 +61,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/order";
     }
 
+    @RequestMapping(value="/order/supply-quantity-selector")
+    public String supplyQuantitySelector() {
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/order/supply-quantity-selector");
+    }
+
     @RequestMapping(value="/order/order-more-prompt-modal")
     public String orderMorePromptModal() {
         return SUPPLY_TMPL_BASE_URL + "/order/order-more-prompt-modal";
@@ -69,11 +74,6 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     @RequestMapping(value = "/order/order-canceling-modal")
     public String orderCancelingModal() {
         return SUPPLY_TMPL_BASE_URL + "/order/order-canceling-modal";
-    }
-
-    @RequestMapping(value="/order/order-custom-quantity-modal")
-    public String orderCustomQuantityModal() {
-        return SUPPLY_TMPL_BASE_URL + "/order/order-custom-quantity-modal";
     }
 
     @RequestMapping(value="/order/special-order-item-modal")

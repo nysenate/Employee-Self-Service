@@ -34,17 +34,44 @@
 }
 
 .supply-item-image {
+  display: block;
+  margin: 10px auto;
   height: 120px;
 }
 
-.supply-item-image-big {
-  height: 140px;
+.add-to-cart-btn {
+  width: 90%;
+  margin: 5px 10px 10px 10px;
+  height: 28px;
+
+  background: @green;
+  color: @white;
+  .font-weight-bold;
+  border: none;
+  border-radius: 2px;
 }
 
-.add-to-cart-btn {
-  padding-top: 7px !important;
-  padding-bottom: 6px !important;
-  margin-left: 5px;
+.qty-adjust-button {
+  margin: 5px 10px 10px 10px;
+  font-size: 1.25em;
+  width: 34px;
+  height: 28px;
+
+  padding: 0;
+  background: @green;
+  color: @white;
+  .font-weight-bold;
+  border: none;
+  border-radius: 2px;
+}
+
+.qty-input {
+  .margin-0;
+  width: 50px;
+  padding: 0px;
+  height: 28px;
+  text-align: center;
+  font-size: 120%;
 }
 
 .cart-unit-size {
@@ -70,6 +97,10 @@
 .warn-select {
   box-shadow: 0 0 10px 50px #ffbcbc inset;
   -webkit-box-shadow: 0 0 10px 50px #ffbcbc inset;
+}
+
+.dark-warn {
+  background-color: @redorange;
 }
 
 .supply-title {
@@ -231,69 +262,7 @@
   padding-top: 0;
 }
 
-/* --- Custom Select --- */
-
-label.custom-select {
-  position: relative;
-  display: inline-block;
-}
-
-.custom-select select {
-  display: inline-block;
-  border: 2px solid #81ad1f;
-  padding: 2px 25px 3px 5px;
-  margin: 0;
-  font: inherit;
-  outline: none; /* remove focus ring from Webkit */
-  line-height: 1.2;
-  background: #f8f8f8;
-
-  -webkit-appearance: none; /* remove the strong OSX influence from Webkit */
-
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  height: 30px;
-  width: 65px;
-
-  &.warn-select {
-    -webkit-box-shadow: 0 0 10px 100px #ffbcbc inset;
-    -moz-box-shadow: 0 0 10px 100px #ffbcbc inset;
-    box-shadow: 0 0 10px 100px #ffbcbc inset;
-  }
-
-  // Hide ie drop down arrow
-  &::-ms-expand {
-    display: none;
-  }
-}
-
-/* Select arrow styling */
-.custom-select:after {
-  content: "▼";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  font-size: 60%;
-  line-height: 30px;
-  padding: 0 7px;
-  background: #81ad1f;
-  color: white;
-
-  pointer-events: none;
-
-  -webkit-border-radius: 0 6px 6px 0;
-  -moz-border-radius: 0 6px 6px 0;
-  border-radius: 0 6px 6px 0;
-}
-
-.no-pointer-events .custom-select:after {
-  content: none;
-}
-
 /* Custom Rows */
-
 .pending-cell {
   background: @orange;
   color: @white;

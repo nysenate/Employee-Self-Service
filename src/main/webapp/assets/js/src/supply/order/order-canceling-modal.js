@@ -12,9 +12,7 @@ angular.module('essSupply').directive('orderCancelingModal', ['appProps', functi
     .controller('OrderCancelingCtrl', ['$scope', 'modals', 'SupplyOrderDestinationService', 'SupplyCartService', 'LocationService', function ($scope, modals, destinationService, supplyCart, locationService) {
 
         $scope.confirm = function () {
-            supplyCart.reset();
-            destinationService.reset();
-            locationService.go("/supply/order", true);
+            modals.resolve();
         };
 
         $scope.nevermind = function () {

@@ -5,16 +5,13 @@ angular.module('essSupply').directive('specialOrderItemModal', ['appProps', func
         controllerAs: 'ctrl'
     }
 }])
-    .controller('SpecialOrderItemCtrl', ['$scope', 'modals', 'SupplyCartService', function ($scope, modals, supplyCart) {
-
-        var allowance = modals.params().allowance;
+    .controller('SpecialOrderItemCtrl', ['$scope', 'modals', function ($scope, modals) {
 
         $scope.cancel = function () {
-            modals.resolve();
+            modals.reject();
         };
 
         $scope.addToCart = function () {
-            supplyCart.addToCart(allowance.item, allowance.selectedQuantity);
-            modals.resolve();
+            modals.resolve(modals.params().lineItem);
         }
     }]);

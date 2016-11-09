@@ -1,61 +1,87 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'SupplyCookieService', function (allowanceService, cookies) {
+/**
+ * When ordering, this cart contains a line item of zero quantity for all supply items.
+ * Items that are 'really' in the cart will have a positive quantity.
+ * This was done to reduce the layers between the model on view.
+ * When saving, only line items with positive quantities are saved.
+ *
+ * On the cart page, this cart is only initialized with persisted line items, which should
+ * all have a positive quantity.
+ */
+essSupply.service('SupplyCartService', ['EssStorageService', 'SupplyLineItemService',
+    cartService]);
 
-    function LineItem(item, quantity) {
-        this.item = item;
-        this.quantity = quantity;
-    }
+function cartService(storageService, lineItemService) {
+    /**
+     * A ESS wide unique key used for saving
+     * this object into local storage.
+     */
+    var KEY = "supply-cart";
 
-    /** The cart is an array of LineItem's, saved in the users cookies. */
-    var cart = cookies.getCart();
+    /**
+     * A Map of itemId's to LineItems.
+     */
+    var cart = undefined;
 
-    function newQuantity(quantity, lineItem) {
-        return lineItem ? lineItem.quantity + quantity : quantity;
+    /**
+     * Adds a new item to the cart.
+     * Should only be used internally by the cart service during initialization.
+     * Once initalized, all updates should go through the updateCartLineItem(lineItem) method.
+     */
+    function addToCart(lineItem) {
+        cart.set(lineItem.item.id, lineItem);
     }
 
     return {
-        isOverOrderAllowance: function (item, quantity) {
-            if (newQuantity(quantity, this.getCartLineItem(item.id)) > item.maxQtyPerOrder) {
-                return true;
+        /**
+         * Initializes the cart with the given line items plus saved line items.
+         * @param lineItems LineItems to initialize the cart with.
+         * Typically a array of zero quantity line items to show on the order form.
+         */
+        initializeCart: function (lineItems) {
+            cart = new Map();
+            if (lineItems) {
+                lineItems.forEach(addToCart)
             }
-            return false;
-        },
-
-        addToCart: function (item, quantity) {
-            if (this.isItemInCart(item.id)) {
-                this.getCartLineItem(item.id).quantity += quantity;
-            }
-            else {
-                cart.push(new LineItem(item, quantity));
-            }
-            cookies.addCart(cart);
-            return true;
-        },
-
-        getCart: function () {
+            this.load();
             return cart;
         },
 
-        isItemInCart: function (itemId) {
-            var results = $.grep(cart, function (lineItem) {
-                return lineItem.item.id === itemId
+        /**
+         * Add or remove a line item from the cart.
+         * This method should be called whenever you want to update the quantity of a line item.
+         * Any added line item is copied first so changes to the original don't effect the cart.
+         * Return the updated cart object.
+         */
+        updateCartLineItem: function (lineItem) {
+            var li = angular.copy(lineItem);
+            cart.set(li.item.id, li);
+            return cart;
+        },
+
+        getLineItems: function () {
+            var lineItems = [];
+            cart.forEach(function (lineItem, itemId) {
+                lineItems.push(lineItem);
             });
-            return results.length > 0;
+            return lineItems;
+        },
+
+        isItemIdOrdered: function (itemId) {
+            var lineItem = cart.get(itemId);
+            return lineItem != undefined && lineItem.quantity > 0;
         },
 
         /** Get an item in the cart by its id. returns null if no match is found. */
         getCartLineItem: function (itemId) {
-            var search = $.grep(cart, function (lineItem) {
-                return lineItem.item.id === itemId
-            });
-            if (search.length > 0) {
-                return search[0];
+            if (!this.isItemIdOrdered(itemId)) {
+                return null;
             }
-            return null;
+            return cart.get(itemId);
         },
 
-        getTotalItems: function () {
+        getSize: function () {
             var size = 0;
             angular.forEach(cart, function (lineItem) {
                 size += lineItem.quantity || 0;
@@ -63,18 +89,43 @@ essSupply.service('SupplyCartService', ['SupplyLocationAllowanceService', 'Suppl
             return size;
         },
 
-        removeFromCart: function (itemId) {
-            $.grep(cart, function (lineItem, index) {
-                if (lineItem && lineItem.item.id === itemId) {
-                    cart.splice(index, 1);
-                }
-            });
-            cookies.addCart(cart);
+        isEmpty: function () {
+            return this.getSize() === 0;
         },
 
         reset: function () {
-            cart = [];
-            cookies.addCart(cart);
+            cart = new Map();
+            this.save();
+        },
+
+        /**
+         * Save an array of the line items with positive quantities.
+         */
+        save: function () {
+            var lineItems = [];
+            cart.forEach(function (lineItem, itemId) {
+                if (lineItem.quantity > 0) {
+                    lineItems.push(lineItem);
+                }
+            });
+            storageService.save(KEY, lineItems);
+        },
+
+        /**
+         * Get all saved line items and add them to the cart.
+         * Also need to re create line item functionality that was lost
+         * in the serialization process.
+         */
+        load: function () {
+            var lineItems = storageService.load(KEY);
+            if (lineItems != null) {
+                var functionalLineItems = [];
+                lineItems.forEach(function (lineItem) {
+                    functionalLineItems.push(lineItemService.createLineItem(lineItem.item, lineItem.quantity));
+                });
+
+                functionalLineItems.forEach(addToCart);
+            }
         }
     }
-}]);
+}

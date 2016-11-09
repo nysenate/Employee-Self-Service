@@ -13,8 +13,6 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/location/supply-location-autocomplete-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/service/supply-cookie-service.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/items/supply-item-autocomplete-service.js?v=${releaseVersion}"></script>
 
         <%-- History --%>
@@ -37,6 +35,10 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/supply-quantity-selector.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/order-quantity-validator.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/location-allowance-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/order-destination-service.js?v=${releaseVersion}"></script>
@@ -45,9 +47,11 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/order-canceling-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/order-custom-quantity-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/special-order-item-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/supply-line-item-service.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/supply-item-filter-service.js?v=${releaseVersion}"></script>
 
         <%-- Cart --%>
         <script type="text/javascript"

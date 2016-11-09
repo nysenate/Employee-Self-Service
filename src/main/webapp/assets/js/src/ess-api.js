@@ -189,3 +189,8 @@ essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appP
     return $resource(appProps.apiPath + '/timeout/ping.json')
 }]);
 
+/** --- Error Report API --- */
+
+essApi.factory('ErrorReportApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/report/error.json')
+}]);

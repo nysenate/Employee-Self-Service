@@ -19,6 +19,7 @@
                    ng-model="lineItem.quantity"
                    min="0"
                    step="1"
+                   maxlength="4"
                    style="width: 50px;"></td>
       </form>
     </tr>

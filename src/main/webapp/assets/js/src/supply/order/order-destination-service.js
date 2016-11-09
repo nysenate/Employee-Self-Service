@@ -1,8 +1,13 @@
 /**
  * OrderDestinationService is responsible for storing and changing the user selected destination.
  */
-essSupply.service('SupplyOrderDestinationService', ['appProps', 'SupplyCookieService', 'EmpInfoApi', 'SupplyLocationAutocompleteService', orderDestinationService]);
-function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompleteService) {
+essSupply.service('SupplyOrderDestinationService', ['appProps', 'EssStorageService', 'EmpInfoApi', 'SupplyLocationAutocompleteService', orderDestinationService]);
+function orderDestinationService(appProps, storageService, empInfoApi, locationAutocompleteService) {
+
+    /**
+     * A unique key used for persisting and loading saved destination information.
+     */
+    var KEY = "supply-destination";
 
     var defaultCode = undefined;
 
@@ -16,7 +21,7 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
         },
 
         isDestinationConfirmed: function () {
-            return cookies.getDestination() !== null && cookies.getDestination() !== undefined;
+            return storageService.load(KEY) != null;
         },
 
         /**
@@ -25,7 +30,7 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
          */
         setDestination: function (code) {
             if (locationAutocompleteService.isValidCode(code)) {
-                cookies.addDestination(locationAutocompleteService.getLocationFromCode(code));
+                storageService.save(KEY, locationAutocompleteService.getLocationFromCode(code));
                 return true;
             }
             return false;
@@ -33,7 +38,7 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
 
         reset: function () {
             defaultCode = undefined;
-            cookies.resetDestination();
+            storageService.remove(KEY);
         },
 
         getDefaultCode: function () {
@@ -41,7 +46,7 @@ function orderDestinationService(appProps,cookies, empInfoApi, locationAutocompl
         },
 
         getDestination: function () {
-            return cookies.getDestination();
+            return storageService.load(KEY);
         }
     }
 }

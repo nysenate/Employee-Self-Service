@@ -127,7 +127,8 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/common/timeout-checker.js',
                         '<%= jsSource %>/common/timeout-modal.js',
                         '<%= jsSource %>/common/toggle-panel-directive.js',
-                        '<%= jsSource %>/common/zero-pad-filter.js'
+                        '<%= jsSource %>/common/zero-pad-filter.js',
+                        '<%= jsSource %>/common/ess-storage-service.js'
                     ],
                     //help
                     '<%= jsDest %>/ess-help.min.js': ['<%= jsSource %>/help/help.js'],
@@ -150,7 +151,6 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/service/supply-inventory-service.js',
                         '<%= jsSource %>/supply/service/supply-category-service.js',
                         '<%= jsSource %>/supply/location/supply-location-autocomplete-service.js',
-                        '<%= jsSource %>/supply/service/supply-cookie-service.js',
                         '<%= jsSource %>/supply/items/supply-item-autocomplete-service.js',
                         //        <%-- History --%>
                         '<%= jsSource %>/supply/history/supply-history-ctrl.js',
@@ -162,11 +162,14 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/manage/fulfillment/modal/fulfillment-immutable-modal.js',
                         //        <%-- Order --%>
                         '<%= jsSource %>/supply/order/supply-order-ctrl.js',
+                        '<%= jsSource %>/supply/order/supply-quantity-selector.js',
+                        '<%= jsSource %>/supply/order/order-quantity-validator.js',
                         '<%= jsSource %>/supply/order/location-allowance-service.js',
                         '<%= jsSource %>/supply/order/order-destination-service.js',
                         '<%= jsSource %>/supply/order/order-more-prompt-modal.js',
-                        '<%= jsSource %>/supply/order/order-custom-quantity-modal.js',
                         '<%= jsSource %>/supply/order/special-order-item-modal.js',
+                        '<%= jsSource %>/supply/order/supply-line-item-service.js',
+                        '<%= jsSource %>/supply/order/supply-item-filter-service.js',
                         //        <%-- Cart --%>
                         '<%= jsSource %>/supply/order/cart/supply-cart-service.js',
                         '<%= jsSource %>/supply/order/cart/supply-cart-ctrl.js',
