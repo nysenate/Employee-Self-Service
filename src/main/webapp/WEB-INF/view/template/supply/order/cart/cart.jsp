@@ -36,10 +36,10 @@
     <div class="grid" ng-class="{'padding-top-10': $first}" ng-repeat="lineItem in getLineItems()">
       <hr ng-if="!$first"/>
       <div class="col-3-12 text-align-center">
-        <div class="content">
-          <img ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-               err-src="${ctxPath}/assets/img/supply/no_photo_available.png"
-               class="supply-item-image-big">
+        <div class="content" style="padding-left: 5px">
+          <img class="supply-item-image"
+               ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
+               err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
         </div>
       </div>
       <div class="col-6-12">
