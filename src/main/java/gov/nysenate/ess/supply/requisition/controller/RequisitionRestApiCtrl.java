@@ -25,6 +25,7 @@ import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
 import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +50,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
-        //permission check
-        if (!getSubject().isPermitted("supply:employee") &&
-                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(submitRequisitionView.getDestinationId())
-                )
-            throw new UnauthorizedException();
-        //permission check
-
         Set<LineItem> lineItems = new HashSet<>();
         for (LineItemView lineItemView : submitRequisitionView.getLineItems()) {
             lineItems.add(lineItemView.toLineItem());
@@ -76,14 +70,14 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping("/{id}")
     public BaseResponse getRequisitionById(@PathVariable int id) {
         Requisition requisition = requisitionService.getRequisitionById(id).orElse(null);
-        //permission check
-        if (!getSubject().isPermitted("supply:employee") &&
-                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(requisition.getDestination().getLocId().getCode())
-                )
-            throw new UnauthorizedException();
-        //permission check
 
-        return new ViewObjectResponse<>(new RequisitionView(requisition));
+        if (getSubject().isPermitted("supply:order:view:customer:" + String.valueOf(requisition.getCustomer().getEmployeeId()))
+            || getSubject().isPermitted("supply:order:view:destination:" + requisition.getDestination().getLocId().toString())) {
+            return new ViewObjectResponse<>(new RequisitionView(requisition));
+        }
+        else {
+            throw new UnauthorizedException();
+        }
     }
 
     @RequestMapping("")

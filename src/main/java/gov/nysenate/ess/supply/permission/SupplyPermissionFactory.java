@@ -50,8 +50,8 @@ public class SupplyPermissionFactory implements PermissionFactory {
      */
     private Collection<Permission> senateEmployeePermissions(Employee employee, Location location) {
         List<Permission> permissions = new ArrayList<>();
-        permissions.add(new WildcardPermission("supply:order:view:" + String.valueOf(employee.getEmployeeId())));
-        permissions.add(new WildcardPermission("supply:order:view:" + location.getLocId().toString()));
+        permissions.add(new WildcardPermission("supply:order:view:customer:" + String.valueOf(employee.getEmployeeId())));
+        permissions.add(new WildcardPermission("supply:order:view:destination:" + location.getLocId().toString()));
         return permissions;
     }
 
