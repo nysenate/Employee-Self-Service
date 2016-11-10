@@ -16,7 +16,7 @@ public enum SqlTimeEntryQuery implements BasicSqlQuery
     INSERT_TIME_ENTRY(
         "INSERT INTO ${tsSchema}.PD23TIMESHEET\n" +
         " (NUXRTIMESHEET, NUXREFEM, DTDAY, NUWORK, NUTRAVEL, NUHOLIDAY, NUSICKEMP, NUSICKFAM,\n" +
-        "       NUMISC, NUXRMISC, CDSTATUS, DECOMMENTS, CDPAYTYPE, NUVACATION, NUPERSONAL\n" +
+        "       NUMISC, NUXRMISC, CDSTATUS, DECOMMENTS, CDPAYTYPE, NUVACATION, NUPERSONAL,\n" +
         "       NATXNORGUSER, NATXNUPDUSER, NAUSER)\n" +
         "VALUES (:timesheetId, :empId, :dayDate, :workHR, :travelHR, :holidayHR, :sickEmpHR, :sickFamilyHR, \n" +
         "        :miscHR, :miscTypeId, :status, :empComment, :payType, :vacationHR, :personalHR, \n" +
