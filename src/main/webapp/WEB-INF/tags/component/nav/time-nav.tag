@@ -14,7 +14,7 @@
     </ul>
     <h3 class="main-topic">My Accruals</h3>
         <ul class="sub-topic-list">
-            <li class="sub-topic"><a href="${ctxPath}/time/accrual/history">Accrual Summary</a></li>
+            <li class="sub-topic"><a href="${ctxPath}/time/accrual/history">Accrual History</a></li>
             <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString()%>">
                 <li class="sub-topic"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
             </shiro:hasPermission>
