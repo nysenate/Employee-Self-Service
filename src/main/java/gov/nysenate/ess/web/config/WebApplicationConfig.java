@@ -56,7 +56,9 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
         }
         else {
             logger.info("Registering resource path {} for files under {}", resourcePath, resourceLocation);
-            registry.addResourceHandler(resourcePath).addResourceLocations(resourceLocation);
+            registry.addResourceHandler(resourcePath, "/favicon.ico")
+                    .addResourceLocations(resourceLocation);
+//            registry.addResourceHandler("/favicon.ico").addResourceLocations("/assets/favicon.ico");
         }
     }
 
