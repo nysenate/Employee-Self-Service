@@ -33,7 +33,7 @@ import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationS
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-import gov.nysenate.ess.time.service.notification.TimeRecordEmailService;
+import gov.nysenate.ess.time.service.notification.RecordReminderEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
     @Autowired TimeRecordValidationService validationService;
 
-    @Autowired TimeRecordEmailService emailService;
+    @Autowired
+    RecordReminderEmailService emailService;
 
     /**
      * Get Time Record API

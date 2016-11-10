@@ -25,6 +25,7 @@ import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.time.service.notification.DisapprovalEmailService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -45,6 +46,7 @@ import java.util.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.DISAPPROVED;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -69,6 +71,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     @Autowired protected AccrualInfoService accrualInfoService;
     @Autowired protected SupervisorInfoService supervisorInfoService;
     @Autowired protected HolidayService holidayService;
+    @Autowired protected DisapprovalEmailService disapprovalEmailService;
 
     private LocalDateTime lastUpdateTime;
 
@@ -255,20 +258,24 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     @Override
     public boolean saveRecord(TimeRecord record, TimeRecordAction action) {
+        // Set resulting status according to action
         TimeRecordStatus currentStatus = record.getRecordStatus();
         TimeRecordStatus nextStatus = currentStatus.getResultingStatus(action);
         record.setRecordStatus(nextStatus);
-        String updateUser = Optional.ofNullable(ShiroUtils.getAuthenticatedUid()).orElse("TS_OWNER").toUpperCase();
-        record.setLastUser(updateUser);
-        record.setUpdateUserId(updateUser);
-        record.getTimeEntries().forEach(e -> {
-            e.setUpdateUserId(updateUser);
-            e.setEmployeeName(updateUser);
-        });
+
+        // Set update user fields for time record and entries based on authenticated user
+        String updateUser = Optional.ofNullable(ShiroUtils.getAuthenticatedUid())
+                .orElse("TS_OWNER")
+                .toUpperCase();
+        record.setOverallUpdateUser(updateUser);
+
         boolean result = saveRecord(record);
         // Generate an audit record for the time record if a significant action was made on the time record.
         if (action != TimeRecordAction.SAVE) {
             auditDao.auditTimeRecord(record.getTimeRecordId());
+        }
+        if (result && nextStatus == DISAPPROVED) {
+            disapprovalEmailService.sendRejectionMessage(record, ShiroUtils.getAuthenticatedEmpId());
         }
 
         return result;

@@ -246,6 +246,19 @@ public class TimeRecord implements Comparable<TimeRecord>
                 .orElse(this.updateDate);
     }
 
+    /**
+     * Set all update user fields for this time record and its entries to the given user id
+     * @param updateUser String - user id
+     */
+    public void setOverallUpdateUser(String updateUser) {
+        this.setLastUser(updateUser);
+        this.setUpdateUserId(updateUser);
+        this.getTimeEntries().forEach(e -> {
+            e.setUpdateUserId(updateUser);
+            e.setEmployeeName(updateUser);
+        });
+    }
+
     /** --- Basic Getters/Setters --- */
 
     public BigInteger getTimeRecordId() {

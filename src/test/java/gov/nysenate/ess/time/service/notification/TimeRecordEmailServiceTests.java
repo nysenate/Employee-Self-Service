@@ -1,14 +1,11 @@
 package gov.nysenate.ess.time.service.notification;
 
 import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Collection;
 
 public class TimeRecordEmailServiceTests extends BaseTests {
 
@@ -16,7 +13,8 @@ public class TimeRecordEmailServiceTests extends BaseTests {
 
 
     @Autowired TimeRecordService timeRecordService;
-    @Autowired TimeRecordEmailService timeRecordEmailService;
+    @Autowired
+    RecordReminderEmailService recordReminderEmailService;
 
     @Test
     public void timeRecordNotificationTest() {

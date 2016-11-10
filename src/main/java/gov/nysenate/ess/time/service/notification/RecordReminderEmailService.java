@@ -10,7 +10,7 @@ import java.util.Collection;
  * A service responsible for sending email reminders from a supervisor to an employee
  * indicating that the employee needs to submit a time record
  */
-public interface TimeRecordEmailService {
+public interface RecordReminderEmailService {
 
     /**
      * Sends an email to each employee with a time record on the given list.

@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 /**
  * {@inheritDoc}
  * Uses Freemarker {@link Template templates} and {@link SendMailService}
- * to implement functionality of {@link TimeRecordEmailService}
+ * to implement functionality of {@link RecordReminderEmailService}
  */
 @Service
-public class EssTimeRecordEmailService implements TimeRecordEmailService {
+public class EssRecordReminderEmailService implements RecordReminderEmailService {
 
     @Autowired private SendMailService sendMailService;
     @Autowired private Configuration freemarkerCfg;
@@ -42,7 +42,6 @@ public class EssTimeRecordEmailService implements TimeRecordEmailService {
     private static final String reminderEmailSubject = "Time and Attendance records need to be submitted.";
 
     private Template emailTemplate;
-
 
     /**
      * Initializes the time record email template
