@@ -21,7 +21,9 @@
     </ul>
     </shiro:hasPermission>
   </section>
-  <section class="left-nav-content flex-content flex-column-box margin-top-20" style="margin-bottom: 100px;" ng-controller="SupplyNavigationController"
+  <section class="left-nav-content flex-content flex-column-box margin-top-20"
+           style="margin-bottom: 100px; min-height: 0px; min-width: 0px;"
+           ng-controller="SupplyNavigationController"
            ng-show="shouldDisplayCategoryFilter()" data-ng-init="init()">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
     <div class="flex-header padding-10">
