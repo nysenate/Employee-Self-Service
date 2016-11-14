@@ -163,9 +163,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
         //permission check
         for (Requisition r : requisitions) {
-            if (!getSubject().isPermitted("supply:employee") &&
-                    !employeeService.getEmployee(id).getWorkLocation().getLocId().getCode().equals(r.getDestination().getLocId().getCode())
-                    ) {
+            if (!getSubject().isPermitted("supply:order:view:customer:" + String.valueOf(r.getCustomer().getEmployeeId()))
+                  &&
+                    !getSubject().isPermitted("supply:order:view:destination:" + r.getDestination().getLocId().toString())) {
                 throw new UnauthorizedException();
             }
         }
