@@ -1,5 +1,5 @@
 var essSupply = angular.module('essSupply').controller('SupplyOrderHistoryCtrl', [
-    '$scope', 'appProps', 'LocationService', 'EmpInfoApi', 'SupplyRequisitionOrderHistoryApi', 'PaginationModel', supplyOrderHistoryCtrl]);
+    '$scope', 'appProps', 'LocationService', 'EmpInfoApi', 'SupplyRequisitionOrderHistoryApi', 'PaginationModel','modals', supplyOrderHistoryCtrl]);
 
 /**
  * The Order History is a collection of all requisitions submitted by the logged in user
@@ -8,7 +8,7 @@ var essSupply = angular.module('essSupply').controller('SupplyOrderHistoryCtrl',
  * Therefore, in the order history page a user should be able to see all requisitions for their work location
  * plus all of their requisitions that went to a different location.
  */
-function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, orderHistoryApi, paginationModel) {
+function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, orderHistoryApi, paginationModel,modals) {
 
     var DATE_FORMAT = "MM/DD/YYYY";
     /** Valid Requisitions statuses */
@@ -48,12 +48,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
         return getLoggedInEmployeeInfo()
             .then(getRequisitions)
             .then(setRequisitions)
-            .finally(doneLoading).catch(
-                function (errorResponse) {
-                    modals.open('500', {details: errorResponse});
-                    console.error(errorResponse);
-                }
-            );
+            .finally(doneLoading);
     }
 
     function getLoggedInEmployeeInfo() {
@@ -61,10 +56,12 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
             empId: appProps.user.employeeId,
             detail: true
         };
-        return empInfoApi.get(params).$promise.catch(function (errorResponse) {
+        return empInfoApi.get(params,function () {
+            
+        },function (errorResponse) {
             modals.open('500', {details: errorResponse});
             console.error(errorResponse);
-        });
+        }).$promise;
     }
 
     function getRequisitions(employeeInfoResponse) {
