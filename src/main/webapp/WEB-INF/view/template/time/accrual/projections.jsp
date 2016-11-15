@@ -45,7 +45,7 @@
                         <th class="vacation used-hours">Use</th>
                         <th class="vacation available-hours">Avail</th>
                         <th class="sick rate">Rate</th>
-                        <th class="sick used-hours">Used</th>
+                        <th class="sick used-hours">Use</th>
                         <th class="sick available-hours">Avail</th>
                     </tr>
                     </thead>
