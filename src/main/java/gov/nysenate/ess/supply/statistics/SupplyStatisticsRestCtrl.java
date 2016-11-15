@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
 import gov.nysenate.ess.supply.statistics.location.LocationStatisticView;
 import gov.nysenate.ess.supply.statistics.location.SupplyLocationStatisticService;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,7 @@ public class SupplyStatisticsRestCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/locations")
     public BaseResponse allLocationStatistics(@RequestParam int year, @RequestParam int month) {
+        checkPermission(new WildcardPermission("supply:employee"));
         List<LocationStatistic> locationStatistics = locationStatisticService.getAllLocationStatistics(year, month);
         Map<String, LocationStatisticView> locToStatsMap = new HashMap<>();
         for (LocationStatistic stat : locationStatistics) {
