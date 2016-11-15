@@ -70,14 +70,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping("/{id}")
     public BaseResponse getRequisitionById(@PathVariable int id) {
         Requisition requisition = requisitionService.getRequisitionById(id).orElse(null);
-
-        if (getSubject().isPermitted("supply:order:view:customer:" + String.valueOf(requisition.getCustomer().getEmployeeId()))
-            || getSubject().isPermitted("supply:order:view:destination:" + requisition.getDestination().getLocId().toString())) {
-            return new ViewObjectResponse<>(new RequisitionView(requisition));
-        }
-        else {
-            throw new UnauthorizedException();
-        }
+        checkViewRequisitionPermissions(requisition);
+        return new ViewObjectResponse<>(new RequisitionView(requisition));
     }
 
     @RequestMapping("")
@@ -90,14 +84,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String dateField,
                                            @RequestParam(defaultValue = "All", required = false) String savedInSfms,
                                            WebRequest webRequest) {
-
-        //permission check
-        if (!getSubject().isPermitted("supply:employee") &&
-                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(location)
-                )
-            throw new UnauthorizedException();
-        //permission check
-
+        checkPermission(new WildcardPermission("supply:employee"));
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
         EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
@@ -121,13 +108,10 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                      @RequestParam(required = false) String to,
                                      @RequestParam(required = false) String dateField,
                                      WebRequest webRequest) {
-        //permission check
-        if (!getSubject().isPermitted("supply:employee") &&
-                !employeeService.getEmployee(getSubjectEmployeeId()).getWorkLocation().getLocId().toString().equals(location)
-                ) {
+        if (!getSubject().isPermitted("supply:requisition:view:customer:" + String.valueOf(customerId))
+                || !getSubject().isPermitted("supply:requisition:view:destination:" + location)) {
             throw new UnauthorizedException();
         }
-        //permission check
 
         LocalDateTime fromDateTime = getFromDateTime(from);
         LocalDateTime toDateTime = getToDateTime(to);
@@ -146,32 +130,39 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
 
-        //permission check
-        getSubject().checkPermission("supply:employee");
-        if (requisitionView.getStatus().equals(RequisitionStatus.APPROVED) && !getSubject().isPermitted("supply:shipment:approve"))
-            throw new UnauthorizedException();
-        //permission check
+        checkPermission(new WildcardPermission("supply:requisition:edit"));
+        if (RequisitionStatus.valueOf(requisitionView.getStatus()) == RequisitionStatus.APPROVED) {
+            checkPermission(new WildcardPermission("supply:requisition:approve"));
+        }
 
         Requisition requisition = requisitionView.toRequisition();
         requisition = requisition.setModifiedBy(getSubjectEmployeeView().toEmployee());
         requisitionService.saveRequisition(requisition);
     }
 
+    /**
+     * Returns a set of requisition objects which represent the history of a requisition.
+     * Each change made to the requisition is contained in a separate requisition object.
+     */
     @RequestMapping(value = "/history/{id}")
     public BaseResponse requisitionHistory(@PathVariable int id) {
         ImmutableList<Requisition> requisitions = requisitionService.getRequisitionHistory(id);
-
-        //permission check
-        for (Requisition r : requisitions) {
-            if (!getSubject().isPermitted("supply:order:view:customer:" + String.valueOf(r.getCustomer().getEmployeeId()))
-                  &&
-                    !getSubject().isPermitted("supply:order:view:destination:" + r.getDestination().getLocId().toString())) {
-                throw new UnauthorizedException();
-            }
-        }
-        //permission check
-
+        // Only check permissions for the current version/revision.
+        checkViewRequisitionPermissions(requisitions.get(requisitions.size() - 1));
         return ListViewResponse.of(requisitions.stream().map(RequisitionView::new).collect(Collectors.toList()));
+    }
+
+    /**
+     * Checks that a user can view an individual requisition.
+     * User can view if they are the customer or the requisition destination
+     * is the user's work location.
+     * @param requisition The requisition being requested.
+     */
+    private void checkViewRequisitionPermissions(Requisition requisition) {
+        if (!getSubject().isPermitted("supply:requisition:view:customer:" + String.valueOf(requisition.getCustomer().getEmployeeId()))
+                && !getSubject().isPermitted("supply:requisition:view:destination:" + requisition.getDestination().getLocId().toString())) {
+            throw new UnauthorizedException();
+        }
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)

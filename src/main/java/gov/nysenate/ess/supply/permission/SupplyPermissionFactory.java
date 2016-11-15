@@ -50,23 +50,22 @@ public class SupplyPermissionFactory implements PermissionFactory {
      */
     private Collection<Permission> senateEmployeePermissions(Employee employee, Location location) {
         List<Permission> permissions = new ArrayList<>();
-        permissions.add(new WildcardPermission("supply:order:view:customer:" + String.valueOf(employee.getEmployeeId())));
-        permissions.add(new WildcardPermission("supply:order:view:destination:" + location.getLocId().toString()));
+        permissions.add(new WildcardPermission("supply:requisition:view:customer:" + String.valueOf(employee.getEmployeeId())));
+        permissions.add(new WildcardPermission("supply:requisition:view:destination:" + location.getLocId().toString()));
         return permissions;
     }
 
     private Collection<Permission> supplyEmployeePermissions() {
         List<Permission> permissions = new ArrayList<>();
         permissions.add(new WildcardPermission("supply:employee")); // Generic supply employee permissions.
-        permissions.add(new WildcardPermission("supply:order:view")); // Can view all orders.
-        permissions.add(new WildcardPermission("supply:order:edit")); // Can edit all orders.
-        permissions.add(new WildcardPermission("supply:shipment:manage")); // Can view manage page's
+        permissions.add(new WildcardPermission("supply:requisition:view")); // Can view all orders.
+        permissions.add(new WildcardPermission("supply:requisition:edit")); // Can edit all orders.
         return permissions;
     }
 
     private Collection<Permission> supplyManagerPermissions() {
         List<Permission> permissions = new ArrayList<>();
-        permissions.add(new WildcardPermission("supply:shipment:approve"));
+        permissions.add(new WildcardPermission("supply:requisition:approve"));
         return permissions;
     }
 }

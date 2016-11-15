@@ -129,7 +129,7 @@
            class="complete-button" style="width: 15%" type="button" value="Complete">
 
     <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>
-    <shiro:hasPermission name="supply:shipment:approve">
+    <shiro:hasPermission name="supply:requisition:approve">
       <input ng-show="originalRequisition.status === 'COMPLETED'" ng-click="approveShipment()"
              class="approve-button" style="width: 15%" type="button" value="Approve">
       <p class="redorange" ng-show="selfApprove">You cannot approve order made by yourself</p>
