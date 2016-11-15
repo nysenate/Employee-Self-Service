@@ -1,6 +1,5 @@
 package gov.nysenate.ess.web.security.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
 import gov.nysenate.ess.core.client.response.auth.AuthorizationResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
@@ -17,10 +16,8 @@ import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
@@ -29,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Map;
 
 import static gov.nysenate.ess.core.model.auth.AuthorizationStatus.UNAUTHENTICATED;
 
@@ -59,28 +57,17 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         if (isLoginRequest(request, response)) {
-            if (isLoginSubmission(request, response)) {
-                return executeLogin(request, response);
-            }
-            else {
-                if (isAuthenticated(request, response)) {
-                    /** User is already authenticated and should be sent back to where they were before. */
-                    issueSuccessRedirect(request, response);
-                    return false;
-                }
-                else {
-                    /** User is not authenticated and should be able to view the login page. */
-                    return true;
-                }
-            }
+            return isLoginSubmission(request, response)
+                    ? executeLogin(request, response)
+                    : handleLoginPageRequest(request, response);
         }
-        /** If the unauthenticated request was an API request,
+        /* If the unauthenticated request was an API request,
          * send an appropriately formatted response instead of redirecting to login */
         if (((HttpServletRequest) request).getRequestURI().startsWith(BaseRestApiCtrl.REST_PATH)) {
             writeApiUnauthenticatedResponse(request, response);
             return false;
         }
-        /** User should be redirected to the login page since they do not have access. */
+        /* User should be redirected to the login page since they do not have access. */
         saveRequestAndRedirectToLogin(request, response);
         return false;
     }
@@ -110,7 +97,6 @@ public class EssAuthenticationFilter extends AuthenticationFilter
      * @return
      */
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws IOException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String username = getUsernameFromRequest(request);
         String password = getPasswordFromRequest(request);
         boolean rememberMe = getRememberMeFromRequest(request);
@@ -146,6 +132,32 @@ public class EssAuthenticationFilter extends AuthenticationFilter
             authStatus = AuthenticationStatus.FAILURE;
         }
         return onLoginFailure(authToken, authStatus, subject, request, response);
+    }
+
+    /**
+     * Deals with GET requests for the login page
+     */
+    protected boolean handleLoginPageRequest(ServletRequest request, ServletResponse response) throws Exception {
+        Subject subject = getSubject(request, response);
+        if (isAuthenticated(request, response)) {
+            /* User is already authenticated and should be sent back to where they were before. */
+            issueSuccessRedirect(request, response);
+            return false;
+        }
+        if (subject.getSession(false) == null) {
+            /** FIXME
+             * In this case, the user doesn't have a session (went straight to /login without a cookie).
+             * For some reason this causes the response to be written as an empty string
+             * instead of a rendering of login.jsp
+             * This occurs here: {@link org.springframework.web.servlet.view.InternalResourceView#renderMergedOutputModel(Map, HttpServletRequest, HttpServletResponse)}
+             * Creating a new session and redirecting seems to work.
+             */
+            subject.getSession(true);
+            redirectToLogin(request, response);
+            return false;
+        }
+        /* User is not authenticated and should be able to view the login page. */
+        return true;
     }
 
     /**
