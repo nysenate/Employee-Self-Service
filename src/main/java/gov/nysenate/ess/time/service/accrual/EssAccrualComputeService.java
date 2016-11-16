@@ -237,7 +237,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         }
 
         // As long as this is a valid accrual period, increment the accruals.
-        if (!gapPeriod.isEndOfYearSplit()) {
+        if (!gapPeriod.isStartOfYearSplit()) {
             accrualState.incrementPayPeriodCount();
             accrualState.computeRates();
             accrualState.incrementAccrualsEarned();
