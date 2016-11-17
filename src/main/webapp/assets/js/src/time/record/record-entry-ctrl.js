@@ -140,11 +140,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         confirmPromise
             .then(function () { return saveRecord(submit) })
             .then(function () { saveSuccess = true; return $q.when();})
-            .then(function () { return modals.open('post-save', {submit: submit}, true);})
-            .then($scope.logout, function () {
-                // Only reinitialize if there was a successful save
+            .then(function () { return modals.open(submit ? 'post-save' : 'post-submit');})
+            .then($scope.init, function () {
+                // Only logout if there was a successful save
                 if (saveSuccess) {
-                    $scope.init();
+                    $scope.logout();
                 }
             });
     };
@@ -158,7 +158,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
     function saveRecord (submit) {
         var record = $scope.state.records[$scope.state.iSelectedRecord];
         $scope.state.request.save = true;
-        modals.open('save-indicator', {submit: submit});
+        modals.open(submit ? 'submit-progress' : 'save-progress');
         return recordSaveApi.save({action: submit ? 'submit' : 'save'}, record,
             function (resp) {
                 modals.resolve();

@@ -1,4 +1,4 @@
-<div class="record-confirmation-modal">
+<div class="confirm-modal">
   <h3 class="content-info">
     Before submitting, you must acknowledge the following:
   </h3>
@@ -22,8 +22,7 @@
     </p>
     <hr/>
     <div class="input-container">
-      <input ng-click="resolve()" class="submit-button" type="button"
-             value="I agree"/>
+      <input ng-click="resolve()" class="submit-button" type="button" value="I agree"/>
       <input ng-click="reject()" class="reject-button" type="button" value="Cancel"/>
     </div>
   </div>

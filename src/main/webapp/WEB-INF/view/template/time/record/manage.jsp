@@ -126,18 +126,10 @@
       <div record-reminder-prompt-modal></div>
     </modal>
     <modal modal-id="record-reminder-posting">
-      <div class="save-progress-modal">
-        <h3 class="content-info" style="margin-bottom:0;">
-          Sending reminders ...
-        </h3>
-        <div loader-indicator class="loader"></div>
-      </div>
+      <div progress-modal title="Sending Email Reminders"></div>
     </modal>
     <modal modal-id="record-reminder-posted">
-      <div class="save-progress-modal">
-        <h3 class="content-info" style="margin-bottom:0;">Email reminders were sent successfully.</h3>
-        <input ng-click="resolveModal()" class="time-neutral-button" type="button" value="OK"/>
-      </div>
+      <div confirm-modal title="Email reminders were sent successfully."></div>
     </modal>
   </div>
 </div>

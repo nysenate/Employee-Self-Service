@@ -39,6 +39,11 @@ essApp.config(function($routeProvider, $locationProvider) {
         reloadOnSearch: false
     });
 
+    $routeProvider.when(ctxPath + '/time/record/entry/papertimesheet', {
+        templateUrl: ctxPath + '/template/time/record/record-paper-entry',
+        reloadOnSearch: false
+    });
+
     $routeProvider.when(ctxPath + '/time/record/history', {
         templateUrl: ctxPath + '/template/time/record/history'
     });

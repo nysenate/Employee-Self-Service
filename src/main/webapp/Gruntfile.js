@@ -107,6 +107,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/common/ai-filter.js',
                         '<%= jsSource %>/common/badge-directive.js',
                         '<%= jsSource %>/common/badge-service.js',
+                        '<%= jsSource %>/common/common-modals.js',
                         '<%= jsSource %>/common/datepicker-directive.js',
                         '<%= jsSource %>/common/debounce-function.js',
                         '<%= jsSource %>/common/err-src-directive.js',

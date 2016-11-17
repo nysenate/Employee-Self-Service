@@ -1,21 +1,9 @@
 angular.module('essTime')
-    .directive('recordSavingModal', ['appProps', 'modals', savingModal])
     .directive('recordPostSaveModal', ['appProps', 'modals', postSaveModal])
     .directive('recordSubmitAckModal', ['appProps', 'modals', submitAckModal])
     .directive('recordFutureEndConfModal', ['appProps', 'modals', futureEndDateConfModal])
     .directive('recordExpectedHoursModal', ['appProps', 'modals', expectedHoursModal])
 ;
-
-function savingModal (appProps, modals) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/time/record/record-saving-modal',
-        link: link
-    };
-    function link ($scope, $elem, $attrs) {
-        var params = modals.params();
-        $scope.submit = params.submit;
-    }
-}
 
 function postSaveModal (appProps, modals) {
     return {

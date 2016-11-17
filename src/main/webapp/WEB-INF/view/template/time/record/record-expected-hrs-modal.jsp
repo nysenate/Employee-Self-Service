@@ -1,4 +1,4 @@
-<div class="record-confirmation-modal">
+<div class="confirm-modal">
   <h3 class="content-info">
     Hours entered are less than pay period requirement
   </h3>

@@ -372,24 +372,39 @@
     </form>
   </div>
 
-  <% /** Container for all modal dialogs */ %>
   <div modal-container>
-    <% /** Modals for record save. */ %>
-    <modal modal-id="save-indicator">
-      <record-saving-modal></record-saving-modal>
+    <modal modal-id="save-progress">
+      <div progress-modal title="Saving time record..."></div>
+    </modal>
+    <modal modal-id="submit-progress">
+      <div progress-modal title="Saving and submitting time record..."></div>
     </modal>
     <modal modal-id="post-save">
-      <record-post-save-modal></record-post-save-modal>
+      <div confirm-modal rejectable="true"
+           title="Your time record has been saved."
+           confirm-message="What would you like to do next?"
+           resolve-button="Go back to ESS" reject-button="Log out of ESS">
+      </div>
     </modal>
-    <% /** Modals for record submission. */ %>
+    <modal modal-id="post-submit">
+      <div confirm-modal rejectable="true"
+           title="Your time record has been submitted."
+           confirm-message="What would you like to do next?"
+           resolve-button="Go back to ESS" reject-button="Log out of ESS">
+      </div>
+    </modal>
     <modal modal-id="submit-ack">
-      <record-submit-ack-modal></record-submit-ack-modal>
+      <div record-submit-ack-modal></div>
     </modal>
     <modal modal-id="expectedhrs-dialog">
-      <record-expected-hours-modal></record-expected-hours-modal>
+      <div record-expected-hours-modal></div>
     </modal>
     <modal modal-id="futureenddt-dialog">
-      <record-future-end-conf-modal></record-future-end-conf-modal>
+      <div confirm-modal rejectable="true"
+           title="Timesheet with a future end date"
+           confirm-message="Warning: You are attempting to submit a timesheet with a future end date"
+           resolve-button="Proceed" reject-button="Cancel">
+      </div>
     </modal>
   </div>
 </div>
