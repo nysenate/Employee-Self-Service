@@ -1,1 +1,0 @@
-alter table supply.requisition_content add column special_instructions text
