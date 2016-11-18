@@ -25,11 +25,14 @@ function confirmModal (modals) {
           '<div class="confirmation-message">' +
             '<h4 ng-show="confirmMessage" ng-bind="confirmMessage"></h4>' +
             '<div ng-hide="rejectable" class="input-container">' +
-              '<input type="button" ng-click="resolve()" class="time-neutral-button" value="{{resolveButton || \'OK\'}}"/>' +
+              '<input type="button" ng-click="resolve()" class="time-neutral-button"' +
+                     'value="{{resolveButton || \'OK\'}}" tabindex="1"/>' +
             '</div>' +
             '<div ng-show="rejectable" class="input-container">' +
-              '<input type="button" ng-click="resolve()" class="submit-button" value="{{resolveButton || \'Yes\'}}"/>' +
-              '<input type="button" ng-click="reject()" class="reject-button" value="{{rejectButton || \'No\'}}"/>' +
+              '<input type="button" ng-click="resolve()" class="submit-button"' +
+                     'value="{{resolveButton || \'Yes\'}}" tabindex="1"/>' +
+              '<input type="button" ng-click="reject()" class="reject-button"' +
+                     'value="{{rejectButton || \'No\'}}" tabindex="1"/>' +
             '</div>' +
           '</div>' +
         '</div>',
