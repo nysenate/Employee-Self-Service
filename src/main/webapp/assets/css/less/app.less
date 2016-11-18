@@ -71,7 +71,7 @@
   overflow: hidden;
 
   .fixed-width-header {
-    width: 1150px;
+    max-width: 1150px;
     margin: auto;
     position: relative;
     top: 2px;
@@ -164,6 +164,7 @@
       vertical-align: top;
       position: absolute;
       right: 0;
+      top: 0;
       .header-label-segment {
         float:left;
         font-size: 1.1em;
@@ -229,6 +230,7 @@
   width:250px;
   position: fixed;
   height: auto;
+  z-index: 1000;
   padding-bottom: 20px;
   .border-radius(0 0 0 2px);
 
