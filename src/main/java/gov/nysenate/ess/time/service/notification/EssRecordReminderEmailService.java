@@ -39,7 +39,7 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
     @Value("${freemarker.time.templates.time_record_reminder:time_record_reminder.ftlh}")
     private String emailTemplateName;
 
-    private static final String reminderEmailSubject = "Time and Attendance records need to be submitted.";
+    private static final String reminderEmailSubject = "Time and Attendance records need to be submitted";
 
     private Template emailTemplate;
 
