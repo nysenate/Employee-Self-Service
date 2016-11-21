@@ -140,7 +140,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         confirmPromise
             .then(function () { return saveRecord(submit) })
             .then(function () { saveSuccess = true; return $q.when();})
-            .then(function () { return modals.open(submit ? 'post-save' : 'post-submit');})
+            .then(function () { return modals.open(submit ? 'post-submit' : 'post-save');})
             .then($scope.init, function () {
                 // Only logout if there was a successful save
                 if (saveSuccess) {
