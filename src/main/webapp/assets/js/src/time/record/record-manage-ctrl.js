@@ -1,10 +1,10 @@
 var essApp = angular.module('ess');
 
-essApp.controller('RecordManageCtrl', ['$scope', '$q', 'appProps', 'RecordUtils', 'modals', 'badgeService',
+essApp.controller('RecordManageCtrl', ['$scope', '$q', '$filter', 'appProps', 'RecordUtils', 'modals', 'badgeService',
     'SupervisorTimeRecordsApi', 'TimeRecordApi', 'TimeRecordReminderApi',
     recordManageCtrl]);
 
-function recordManageCtrl($scope, $q, appProps, recordUtils, modals,
+function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
                           badgeService, supRecordsApi, timeRecordsApi, reminderApi) {
     $scope.state = {
         // Data
@@ -249,6 +249,12 @@ function recordManageCtrl($scope, $q, appProps, recordUtils, modals,
                 allStatusList.push(record);     // Store under all
             });
         });
+
+        angular.forEach($scope.state.supRecords, function (statusRecordMap) {
+            angular.forEach(statusRecordMap, function (recordList, index) {
+                statusRecordMap[index] = $filter('orderBy')(recordList, ['employee.lastName', 'employee.firstName', 'beginDate']);
+            })
+        })
     }
 
     /**
