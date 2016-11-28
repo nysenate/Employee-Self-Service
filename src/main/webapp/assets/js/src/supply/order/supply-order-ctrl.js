@@ -123,6 +123,13 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         sortAndFilterLineItems();
     };
 
+    /** --- Filters --- */
+
+    $scope.resetAllFilters = function () {
+        $scope.reset(); // Reset Search
+        // TODO: reset categories.
+    };
+
     /** --- Navigation --- */
 
     /**

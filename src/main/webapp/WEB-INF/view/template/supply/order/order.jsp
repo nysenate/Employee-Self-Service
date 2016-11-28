@@ -37,6 +37,7 @@
     </div>
 
     <%--Ordering--%>
+
     <div ng-show="state === states.SHOPPING">
       <%--Search--%>
       <div class="padding-10" style="display: flex; justify-content: space-between;">
@@ -65,6 +66,13 @@
       <dir-pagination-controls class="text-align-center" on-page-change="onPageChange()"
                                pagination-id="item-pagination"
                                boundary-links="true" max-size="10"></dir-pagination-controls>
+    </div>
+  </div>
+
+  <div class="content-container"
+       ng-show="state === states.SHOPPING && displayedLineItems.length === 0">
+    <div class="content-info">
+      <h2 class="dark-gray">No results were found. Try a different search term or <button class="link-button" ng-click="resetAllFilters()">reset your filters.</button></h2>
     </div>
   </div>
 
