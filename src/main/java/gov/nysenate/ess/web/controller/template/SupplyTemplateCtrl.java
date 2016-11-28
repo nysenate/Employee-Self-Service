@@ -76,6 +76,8 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return SUPPLY_TMPL_BASE_URL + "/order/order-canceling-modal";
     }
 
+
+
     @RequestMapping(value="/order/special-order-item-modal")
     public String specialOrderItemModal() {
         return SUPPLY_TMPL_BASE_URL + "/order/special-order-item-modal";
@@ -96,6 +98,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     @RequestMapping(value="/order/cart/cart-checkout-modal")
     public String cartCheckoutModal() {
         return SUPPLY_TMPL_BASE_URL + "/order/cart/cart-checkout-modal";
+    }
+
+    @RequestMapping(value = "/order/cart/cart-empty-modal")
+    public String cartEmptyModal() {
+        return SUPPLY_TMPL_BASE_URL + "/order/cart/cart-empty-modal";
     }
 
     /** --- Requisition --- */

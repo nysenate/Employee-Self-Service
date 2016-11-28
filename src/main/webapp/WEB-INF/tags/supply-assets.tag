@@ -46,6 +46,7 @@
                 src="${ctxPath}/assets/js/src/supply/order/order-more-prompt-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/order-canceling-modal.js?v=${releaseVersion}"></script>
+
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/special-order-item-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
@@ -60,6 +61,8 @@
                 src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-directives.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-empty-modal.js?v=${releaseVersion}"></script>
 
         <%-- Requisition --%>
         <script type="text/javascript"

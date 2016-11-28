@@ -57,8 +57,12 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
     };
 
     $scope.emptyCart = function () {
-        displayedLineItems = [];
-        supplyCart.reset();
+        modals.open('supply-cart-empty-modal').then(reset);
+
+        function reset() {
+            supplyCart.reset();
+            locationService.go("/supply/order", false);
+        }
     };
 
     /** --- Modal methods --- */

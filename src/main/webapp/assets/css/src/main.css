@@ -891,6 +891,10 @@ input[type="number"] {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+/**
+ * This file includes all LESS files for ESS
+ * This file alone will be compiled into main.css
+ */
 @media print {
   .large-print-font-size {
     font-size: 12pt;
@@ -1674,7 +1678,7 @@ button.ui-button::-moz-focus-inner {
   overflow: hidden;
 }
 .ess-top-header .fixed-width-header {
-  width: 1150px;
+  max-width: 1150px;
   margin: auto;
   position: relative;
   top: 2px;
@@ -1766,6 +1770,8 @@ button.ui-button::-moz-focus-inner {
   vertical-align: top;
   position: absolute;
   right: 0;
+  top: 0;
+  background: #fafafa;
 }
 .ess-top-header .fixed-width-header .right-header-area .header-label-segment {
   float: left;
@@ -1793,8 +1799,10 @@ button.ui-button::-moz-focus-inner {
 .ess-top-header .fixed-width-header .right-header-area #logoutSection a {
   padding: 11px;
   display: block;
-  text-decoration: none !important;
   color: #333;
+}
+.ess-top-header .fixed-width-header a:focus {
+  text-decoration: underline;
 }
 /** Profile Square */
 /** --- Flex functionality --- */
@@ -1815,6 +1823,7 @@ button.ui-button::-moz-focus-inner {
   width: 250px;
   position: fixed;
   height: auto;
+  z-index: 1000;
   -webkit-border-radius: 0 0 0 2px;
   -webkit-background-clip: padding-box;
   -moz-border-radius: 0 0 0 2px;
@@ -1856,6 +1865,9 @@ button.ui-button::-moz-focus-inner {
 .left-nav li.sub-topic.active a {
   font-weight: 600;
   color: #004d4d;
+}
+.left-nav li a:focus {
+  text-decoration: underline;
 }
 .left-nav-div {
   border: 1px solid #f1f1f1;
@@ -1905,6 +1917,9 @@ button.ui-button::-moz-focus-inner {
 .left-nav-content li.sub-topic.active a {
   font-weight: 600;
   color: #004d4d;
+}
+.left-nav-content li a:focus {
+  text-decoration: underline;
 }
 .content-wrapper {
   padding-top: 70px;
@@ -2780,6 +2795,19 @@ img.ui-datepicker-trigger {
   position: relative;
   left: -22px;
   top: 5px;
+}
+.link-button {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  cursor: pointer;
+}
+.link-button:hover {
+  text-decoration: underline;
 }
 /**
 * Styles for ESS Time

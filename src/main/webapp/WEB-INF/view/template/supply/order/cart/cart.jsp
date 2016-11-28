@@ -77,6 +77,9 @@
     <modal modal-id="supply-cart-checkout-modal">
       <cart-checkout-modal></cart-checkout-modal>
     </modal>
+    <modal modal-id="supply-cart-empty-modal">
+      <supply-cart-empty-modal></supply-cart-empty-modal>
+    </modal>
     <modal modal-id="order-more-prompt-modal">
       <div order-more-prompt-modal></div>
     </modal>

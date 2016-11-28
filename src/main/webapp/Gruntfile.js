@@ -175,6 +175,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/order/cart/supply-cart-service.js',
                         '<%= jsSource %>/supply/order/cart/supply-cart-ctrl.js',
                         '<%= jsSource %>/supply/order/cart/supply-cart-directives.js',
+                        '<%= jsSource %>/supply/order/cart/supply-empty-modal.js',
                         //        <%-- Requisition --%>
                         '<%= jsSource %>/supply/requisition/supply-view-ctrl.js',
                         //        <%-- Utilities --%>
