@@ -83,7 +83,8 @@
          pagination-id="item-pagination">
       <div class="content-container"
            ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
-        <div class="padding-top-5">
+        <div class="padding-top-5" style="overflow: auto;position: relative">
+          <div ng-class="{'corner-ribbon': lineItem.item.visibility === 'SPECIAL'}" ng-hide="lineItem.item.visibility != 'SPECIAL'"><span>Special</span></div>
           <img class="supply-item-image"
                ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
                err-src="${ctxPath}/assets/img/supply/no_photo_available.png">

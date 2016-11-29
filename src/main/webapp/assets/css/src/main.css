@@ -7,6 +7,7 @@
  */
 /** Color Palette */
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
+@import url('http://fonts.googleapis.com/css?family=Noto+Sans:400,700');
 .dark-red {
   color: #B90504;
 }
@@ -2515,6 +2516,26 @@ button.ui-button::-moz-focus-inner {
 }
 .supply-special-item {
   background-color: #f9cfc7;
+}
+.corner-ribbon {
+  left: -27px;
+  top: 15px;
+  width: 100px;
+  background: #e43;
+  position: absolute;
+  text-align: center;
+  letter-spacing: 1px;
+  color: #f0f0f0;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-box-shadow: 0 0 10px #888;
+  -moz-box-shadow: 0 0 10px #888;
+  box-shadow: 0 0 10px #888;
+  overflow: visible;
+  white-space: nowrap;
 }
 .special-instructions-container {
   float: left;
