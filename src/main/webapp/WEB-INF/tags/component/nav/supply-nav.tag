@@ -34,7 +34,7 @@
     <div class="flex-content" style="overflow-y: auto">
       <ul class="">
         <li ng-repeat="cat in getCategories()">
-          <input type="checkbox" ng-model="cat.selected" ng-change="onCategorySelected()"
+          <input type="checkbox" ng-model="cat.selected" ng-change="onCategoryUpdated()"
                  data-ng-init="updateWithURL(cat)">
           <label>{{cat.name}}</label>
         </li>

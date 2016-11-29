@@ -72,7 +72,7 @@
   <div class="content-container"
        ng-show="state === states.SHOPPING && displayedLineItems.length === 0">
     <div class="content-info">
-      <h2 class="dark-gray">No results were found. Try a different search term or <button class="link-button" ng-click="resetAllFilters()">reset your filters.</button></h2>
+      <h2 class="dark-gray">No results were found. <p>Try a different search term or <button class="link-button" ng-click="resetAllFilters()">reset your filters.</button></h2>
     </div>
   </div>
 

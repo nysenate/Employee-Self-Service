@@ -1,6 +1,9 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'SupplyOrderDestinationService', function (locationAllowanceService, destinationService) {
+essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'SupplyOrderDestinationService',
+supplyCategoryService]);
+
+function supplyCategoryService (locationAllowanceService, destinationService) {
 
     function Category(name) {
         this.name = name;
@@ -8,14 +11,6 @@ essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'S
     }
 
     var categories = [];
-
-    /** Returns true if a category is not yet in the category array, false otherwise. */
-    function isDistinctCategory(name) {
-        var cats = $.grep(categories, function (cat) {
-            return cat.name === name;
-        });
-        return !cats.length > 0;
-    }
 
     var initCategories = function () {
         // Get allowances that should be made into categories.
@@ -29,7 +24,6 @@ essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'S
                 categories.push(new Category(allowance.item.category.name));
             }
         });
-
         // Alphabetize the categories.
         categories.sort(function (a, b) {
             if (a.name < b.name) {
@@ -42,6 +36,14 @@ essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'S
         });
     };
 
+    /** Returns true if a category is not yet in the category array, false otherwise. */
+    function isDistinctCategory(name) {
+        var cats = $.grep(categories, function (cat) {
+            return cat.name === name;
+        });
+        return !cats.length > 0;
+    }
+
     return {
         getCategories: function () {
             if (categories === null || categories.length === 0) {
@@ -50,14 +52,32 @@ essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'S
             return categories;
         },
 
-        getSelectedCategoryNames: function () {
+        getSelectedCategories: function () {
             var selected = [];
-            angular.forEach(categories, function (cat) {
+            angular.forEach(this.getCategories(), function (cat) {
                 if (cat.selected === true) {
-                    selected.push(cat.name);
+                    selected.push(cat);
                 }
             });
             return selected;
+        },
+
+        getSelectedCategoryNames: function () {
+            var names = [];
+            this.getSelectedCategories().forEach(function (category) {
+                names.push(category.name)
+            });
+            return names;
+        },
+
+        setSelectedCategories: function (names) {
+            this.getCategories().forEach(function (category) {
+                category.selected = names.indexOf(category.name) !== -1;
+            });
+        },
+
+        clearSelections: function () {
+            this.setSelectedCategories("");
         }
     }
-}]);
+}
