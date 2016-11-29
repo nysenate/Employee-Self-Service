@@ -21,16 +21,13 @@ var essSupply = angular.module('essSupply').controller('SupplyNavigationControll
  */
 function supplyNavigationController($scope, $location, appProps, locationService, categoryService, destinationService) {
 
-    var categoryNamesInUrl = locationService.getSearchParam("category") || [];
-
-    $scope.updateWithURL = function (e) {
-        if (categoryNamesInUrl.length == 0)
-            return;
-        if (categoryNamesInUrl.indexOf(e.name) != -1)
-            e.selected = true;
-    };
-
-    $scope.getCategories = function () {
+    /**
+     * Initializes category objects when the page is refreshed.
+     * Gets all categories and sets selected = true if they are in
+     * the 'category' url search param.
+     */
+    $scope.getInitializedCategories = function () {
+        categoryService.setSelectedCategories(locationService.getSearchParam("category") || []);
         return categoryService.getCategories();
     };
 
