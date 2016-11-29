@@ -2,13 +2,14 @@
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 
 <div ng-controller="SupplyCartController">
-  <div class="content-container">
     <div class="supply-order-hero inline-block width-100">
       <h2>Shopping Cart</h2>
     </div>
+
+  <div class="content-container content-controls">
     <%--Empty cart--%>
-    <div class="content-container" ng-show="getLineItems().length == 0">
-      <div class="content-info">
+    <div ng-show="getLineItems().length == 0">
+      <div class="content-info" style="border-bottom: none;">
         <h2 class="dark-gray">Your cart is empty.</h2>
       </div>
       <div class="cart-checkout-container">
@@ -21,8 +22,9 @@
       </div>
     </div>
 
+    <%--Non empty cart--%>
     <div ng-show="getLineItems().length > 0">
-      <div class="content-info">
+      <div class="content-info" style="border-bottom: none;">
         <div class="padding-10" style="display: flex; justify-content: space-between;">
           <div style="display: inline-block;">
             <span class="supply-text">Destination: </span>{{destinationCode}} ({{destinationDescription}})

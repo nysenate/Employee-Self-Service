@@ -1,9 +1,9 @@
 <div ng-controller="SupplyOrderHistoryCtrl">
-  <div class="content-container">
   <div class="supply-order-hero">
     <h2>Order History</h2>
   </div>
 
+  <div class="content-container content-controls">
     <h4 class="content-info supply-text" style="margin-bottom: 0;">Search order history by date or status.</h4>
     <%--Filters--%>
     <div class="grid">
@@ -21,8 +21,7 @@
       </div>
       <div class="col-4-12 padding-10">
         <label class="bold" style="display: inline-block; vertical-align: middle;">Status:</label>
-        <select style="display: inline-block; vertical-align: middle;height: 125px;
-    overflow: hidden;"
+        <select style="display: inline-block; vertical-align: middle;height: 125px; overflow: hidden;"
                 ng-model="filter.status"
                 ng-change="updateRequisitions()"
                 ng-model-options='{ debounce: 1000 }'
@@ -37,16 +36,14 @@
   <div loader-indicator class="loader" ng-show="loading === true"></div>
 
   <div class="content-container" ng-show="loading === false">
-
     <div class="content-info" ng-show="requisitions.length == 0">
       <h2 class="dark-gray">No results were found.</h2>
     </div>
-
     <div>
-      <dir-pagination-controls class="text-align-center" on-page-change="updateRequisitions()" pagination-id="order-history-pagination"
+      <dir-pagination-controls class="text-align-center" on-page-change="updateRequisitions()"
+                               pagination-id="order-history-pagination"
                                boundary-links="true" max-size="10"></dir-pagination-controls>
     </div>
-
     <div class="padding-10" ng-show="requisitions.length > 0">
       <table class="ess-table supply-listing-table">
         <thead>

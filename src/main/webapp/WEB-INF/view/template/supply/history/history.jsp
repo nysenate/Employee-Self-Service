@@ -1,36 +1,34 @@
 <div ng-controller="SupplyHistoryController">
-  <div class="content-container">
-    <div class="supply-order-hero">
-      <h2>Requisition History</h2>
-    </div>
+  <div class="supply-order-hero">
+    <h2>Requisition History</h2>
+  </div>
 
-    <div>
-      <p class="content-info supply-text large-print-font-size" style="margin-bottom: 0px;">
-        Search approved and rejected requisitions.</p>
-      <div class="grid text-align-center">
-        <div class="col-6-12 padding-10">
-          <label class="bold">Location:</label>
-          <select ng-model="selectedLocation" ng-options="location for location in locations"
-                  ng-required="true"
-                  ng-change="onFilterChange()"></select>
-        </div>
-        <div class="col-6-12 padding-10">
-          <label class="bold">Issuer:</label>
-          <select ng-model="selectedIssuer" ng-options="emp for emp in issuers"
-                  ng-change="onFilterChange()"></select>
-        </div>
-        <div class="col-6-12" style="padding: 0 10px 10px 10px;">
-          <label class="bold">From:</label>
-          <input datepicker readonly='true' style="margin-left: 1px;"
-                 ng-model="filter.date.from" to-date="filter.date.to"
-                 ng-change="onFilterChange()"/>
-        </div>
-        <div class="col-6-12" style="padding: 0 10px 10px 10px;">
-          <label class="bold">To:</label>
-          <input datepicker readonly='true' style="margin-left: 2px;"
-                 ng-model="filter.date.to" from-date="filter.date.from"
-                 ng-change="onFilterChange()"/>
-        </div>
+  <div class="content-container content-controls">
+    <h4 class="content-info supply-text" style="margin-bottom: 0px;">
+      Search approved and rejected requisitions.</h4>
+    <div class="grid text-align-center">
+      <div class="col-6-12 padding-10">
+        <label class="supply-text">Location:</label>
+        <select ng-model="selectedLocation" ng-options="location for location in locations"
+                ng-required="true"
+                ng-change="onFilterChange()"></select>
+      </div>
+      <div class="col-6-12 padding-10">
+        <label class="supply-text">Issuer:</label>
+        <select ng-model="selectedIssuer" ng-options="emp for emp in issuers"
+                ng-change="onFilterChange()"></select>
+      </div>
+      <div class="col-6-12" style="padding: 0 10px 10px 10px;">
+        <label class="supply-text">From:</label>
+        <input datepicker readonly='true' style="margin-left: 1px;"
+               ng-model="filter.date.from" to-date="filter.date.to"
+               ng-change="onFilterChange()"/>
+      </div>
+      <div class="col-6-12" style="padding: 0 10px 10px 10px;">
+        <label class="supply-text">To:</label>
+        <input datepicker readonly='true' style="margin-left: 2px;"
+               ng-model="filter.date.to" from-date="filter.date.from"
+               ng-change="onFilterChange()"/>
       </div>
     </div>
   </div>
