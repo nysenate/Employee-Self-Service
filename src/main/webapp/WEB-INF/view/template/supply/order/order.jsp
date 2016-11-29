@@ -9,8 +9,6 @@
       </a>
     </div>
 
-    <div loader-indicator class="loader" ng-show="state === states.LOADING"></div>
-
     <%--Location Selection--%>
     <div ng-show="state === states.SELECTING_DESTINATION">
       <div class="content-info">
@@ -37,7 +35,6 @@
     </div>
 
     <%--Ordering--%>
-
     <div ng-show="state === states.SHOPPING">
       <%--Search--%>
       <div class="padding-10" style="display: flex; justify-content: space-between;">
@@ -69,38 +66,47 @@
     </div>
   </div>
 
-  <div class="content-container"
-       ng-show="state === states.SHOPPING && displayedLineItems.length === 0">
-    <div class="content-info">
-      <h2 class="dark-gray">No results were found.
-        <p>Try a different search term or <button class="link-button" ng-click="resetAllFilters()">reset your filters.</button></h2>
-    </div>
-  </div>
+  <div loader-indicator class="loader" ng-show="state === states.LOADING"></div>
 
-  <div class="grid">
-    <div class="col-3-12 text-align-center"
-         dir-paginate="lineItem in displayedLineItems | itemsPerPage: paginate.itemsPerPage"
-         current-page="paginate.currPage"
-         pagination-id="item-pagination">
-      <div class="content-container"
-           ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
-        <div class="padding-top-5" style="overflow: auto;position: relative">
-          <div ng-class="{'corner-ribbon': lineItem.item.visibility === 'SPECIAL'}" ng-hide="lineItem.item.visibility != 'SPECIAL'"><span>Special</span></div>
-          <img class="supply-item-image"
-               ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-               err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
-          <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
-            {{lineItem.item.description}}
-          </p>
-          <supply-quantity-selector line-item="lineItem">
-          </supply-quantity-selector>
+  <div ng-show="state === states.SHOPPING">
+    <div class="content-container"
+         ng-show="displayedLineItems.length === 0">
+      <div class="content-info">
+        <h2 class="dark-gray">No results were found.
+          <p>Try a different search term or
+            <button class="link-button" ng-click="resetAllFilters()">reset your filters.</button>
+        </h2>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col-3-12 text-align-center"
+           dir-paginate="lineItem in displayedLineItems | itemsPerPage: paginate.itemsPerPage"
+           current-page="paginate.currPage"
+           pagination-id="item-pagination">
+        <div class="content-container"
+             ng-class="{'supply-special-item': lineItem.item.visibility === 'SPECIAL'}">
+          <div class="padding-top-5" style="overflow: auto;position: relative">
+            <div ng-class="{'corner-ribbon': lineItem.item.visibility === 'SPECIAL'}"
+                 ng-hide="lineItem.item.visibility != 'SPECIAL'"><span>Special</span></div>
+
+            <img class="supply-item-image"
+                 ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
+                 err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
+            <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
+              {{lineItem.item.description}}
+            </p>
+            <supply-quantity-selector line-item="lineItem">
+            </supply-quantity-selector>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="content-container">
-    <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
-                             boundary-links="true" max-size="10"></dir-pagination-controls>
+
+    <div class="content-container">
+      <dir-pagination-controls class="text-align-center" pagination-id="item-pagination"
+                               boundary-links="true" max-size="10"></dir-pagination-controls>
+    </div>
   </div>
 
   <div modal-container>

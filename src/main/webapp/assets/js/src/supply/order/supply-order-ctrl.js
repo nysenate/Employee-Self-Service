@@ -188,6 +188,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         }
 
         function reset() {
+            $scope.state = $scope.states.LOADING;
             supplyCart.reset();
             destinationService.reset();
             locationService.go("/supply/order", true);
