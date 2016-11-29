@@ -1,9 +1,15 @@
 var essSupply = angular.module('essSupply');
 
-essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', 'SupplyOrderDestinationService',
-supplyCategoryService]);
+/**
+ * The SupplyCategoryService contains all distinct categories of items
+ * that are available to be ordered in the supply app.
+ *
+ * When filtering the order page by categories, any category selected
+ * on the navigation will have its 'selected' field set to true.
+ */
+essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', supplyCategoryService]);
 
-function supplyCategoryService (locationAllowanceService, destinationService) {
+function supplyCategoryService (locationAllowanceService) {
 
     function Category(name) {
         this.name = name;

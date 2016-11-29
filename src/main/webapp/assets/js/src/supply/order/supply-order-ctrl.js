@@ -2,10 +2,12 @@ var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController', ['$scope', 'appProps', 'LocationService', 'SupplyCartService',
         'PaginationModel', 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
         'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService',
-        'SupplyItemFilterService', supplyOrderController]);
+        'SupplyItemFilterService', 'SupplyCategoryService', supplyOrderController]);
 
-function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel, locationAutocompleteService,
-                               allowanceService, destinationService, modals, supplyUtils, lineItemService, itemFilterService) {
+function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel,
+                               locationAutocompleteService, allowanceService, destinationService,
+                               modals, supplyUtils, lineItemService, itemFilterService,
+                               categoryService) {
     $scope.state = {};
     $scope.states = {
         LOADING: 0,
@@ -20,8 +22,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     $scope.displaySorting = Object.getOwnPropertyNames($scope.sorting);
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.filter = {
-        searchTerm: "",
-        categories: []
+        searchTerm: ""
     };
 
     /**
@@ -94,7 +95,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function sortAndFilterLineItems() {
-        $scope.displayedLineItems = itemFilterService.filterLineItems(supplyCart.getLineItems(), $scope.filter.categories, $scope.filter.searchTerm);
+        $scope.displayedLineItems = itemFilterService.filterLineItems(supplyCart.getLineItems(),
+                                                                      categoryService.getSelectedCategoryNames(),
+                                                                      $scope.filter.searchTerm);
         $scope.displayedLineItems = supplyUtils.alphabetizeLineItems($scope.displayedLineItems);
         // Sort must take place after alphabetizing.
         $scope.displayedLineItems = updateSort($scope.displayedLineItems);
@@ -125,9 +128,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     /** --- Filters --- */
 
+    /** Reset the category and search filters. */
     $scope.resetAllFilters = function () {
-        $scope.reset(); // Reset Search
-        // TODO: reset categories.
+        categoryService.clearSelections();
+        $scope.reset();
     };
 
     /** --- Navigation --- */
@@ -136,7 +140,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
      * Synchronizes the categories and currPage objects with the values in the url.
      */
     function updateFiltersFromUrlParams() {
-        $scope.filter.categories = locationService.getSearchParam("category") || [];
         $scope.paginate.currPage = locationService.getSearchParam("page") || 1;
         // Set page param. This ensures it gets set to 1 if it was never previously set.
         locationService.setSearchParam("page", $scope.paginate.currPage, true, true);
@@ -196,7 +199,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /**
      * Sort the given line items by the selected value.
      */
-    function updateSort (lineItems) {
+    function updateSort(lineItems) {
         var cur = locationService.getSearchParam("sortBy") || [];
         if (cur.length == 0 || cur[0] != $scope.sortBy) {
             locationService.setSearchParam("sortBy", $scope.sortBy, true, false);
