@@ -8,10 +8,10 @@
     </a>
   </div>
 
-  <div loader-indicator class="loader" ng-show="state === states.LOADING"></div>
+  <div loader-indicator class="loader" ng-show="state.isLoading()"></div>
 
   <div class="content-container content-controls"
-       ng-show="state === states.SELECTING_DESTINATION">
+       ng-show="state.isSelectingDestination()">
     <%--Location Selection--%>
     <div class="content-info">
       <form name="selectDestinationForm" novalidate>
@@ -36,7 +36,7 @@
   </div>
 
   <%-- Ordering/Shopping --%>
-  <div ng-show="state === states.SHOPPING">
+  <div ng-show="state.isShopping()">
     <div class="content-container content-controls">
       <%--Search--%>
       <div class="padding-10" style="display: flex; justify-content: space-between;">

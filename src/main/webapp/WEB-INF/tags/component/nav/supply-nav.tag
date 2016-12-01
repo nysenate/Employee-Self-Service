@@ -24,7 +24,7 @@
   <section class="left-nav-content flex-content flex-column-box margin-top-20"
            style="margin-bottom: 100px; min-height: 0px; min-width: 0px;"
            ng-controller="SupplyNavigationController"
-           ng-show="shouldDisplayCategoryFilter()" data-ng-init="init()">
+           ng-show="state.isShopping()">
     <ess-component-nav:nav-header topicTitle="Categories" colorClass="blue-purple"/>
     <div class="flex-header padding-10">
       <a style="padding-left: 10px;" ng-click="clearSelections()">
@@ -33,7 +33,7 @@
     </div>
     <div class="flex-content" style="overflow-y: auto">
       <ul class="">
-        <li ng-repeat="cat in getInitializedCategories()">
+        <li ng-repeat="cat in categories">
           <input type="checkbox" ng-model="cat.selected" ng-change="onCategoryUpdated()">
           <label>{{cat.name}}</label>
         </li>

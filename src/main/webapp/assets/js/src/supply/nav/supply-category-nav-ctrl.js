@@ -1,71 +1,61 @@
-var essSupply = angular.module('essSupply').controller('SupplyNavigationController',
-    ['$scope', '$location', 'appProps', 'LocationService', 'SupplyCategoryService', 'SupplyOrderDestinationService', supplyNavigationController]);
+var essSupply = angular.module('essSupply')
+    .controller('SupplyNavigationController',
+                ['$scope', 'LocationService', 'SupplyCategoryService', 'SupplyOrderPageStateService',
+                 supplyNavigationController]);
 
-/**
- * This controls the category filter on the Supply app's navigation.
- * Categories use the same references that are in the SupplyCategoryService,
- * so anytime a category is selected or deselected, the SupplyCategoryService
- * is automatically updated with that change. Other controllers use the
- * SupplyCategoryService to determine which categories are selected.
- *
- * This controller also controls the 'category' url search param. This parameter
- * contains an array of category names which should always match the currently
- * selected categories on the navigation.
- * Whenever a change to the url occurs, the selected categories are updated
- * to match those in the 'category' url param. This allows forward and back browser navigation.
- * Whenever a category is selected or deselected, the 'category' url param
- * is updated to reflect those changes.
- *
- * Note: The category filter and most of this controllers functionality
- * is only active when on the order page.
- */
-function supplyNavigationController($scope, $location, appProps, locationService, categoryService, destinationService) {
+function supplyNavigationController($scope, locationService, categoryService, stateService) {
+
+    // Attach the stateService to the scope object for access in jsp.
+    $scope.state = stateService;
+    $scope.categories = [];
 
     /**
-     * Initializes category objects when the page is refreshed.
-     * Gets all categories and sets selected = true if they are in
-     * the 'category' url search param.
+     * On every state change, call the stateChangeCallback function.
      */
-    $scope.getInitializedCategories = function () {
-        categoryService.setSelectedCategories(locationService.getSearchParam("category") || []);
-        return categoryService.getCategories();
-    };
+    function init() {
+        $scope.state.subscribe($scope, stateChangeCallback);
+    }
 
-    $scope.shouldDisplayCategoryFilter = function () {
-        return onRequisitionOrderPage($location.path()) && destinationIsSelected();
-
-        function onRequisitionOrderPage(path) {
-            return path === appProps.ctxPath + "/supply/order"
-        }
-
-        function destinationIsSelected() {
-            return destinationService.isDestinationConfirmed();
-        }
-    };
+    init();
 
     /**
-     * When url is changed, if on the order page, update the selected
-     * categories to match those in the url search parameters.
-     * This keeps the categories selected in the navigation bar
-     * and those in url search params synchronized.
-     * Also allows forward/back button navigation.
+     * Callback function passed to the SupplyOrderPageStateService.
+     * When the state transitions to shopping, initialize categories.
+     * Otherwise reset categories.
+     *
+     * Categories are not initialized until just before the
+     * transition to shopping state.
      */
-    $scope.$on('$locationChangeStart', function (event, newUrl) {
-        if ($scope.shouldDisplayCategoryFilter) {
+    function stateChangeCallback() {
+        if ($scope.state.isShopping()) {
+            $scope.categories = categoryService.getCategories();
+        }
+        else {
+            $scope.categories = [];
+        }
+    }
+
+    /**
+     * Handles forward/back browser navigation by updating the selected categories.
+     *
+     * Note: There is some coupling between this function and the '$locationChangeSuccess'
+     * in supply-order-ctrl. That function initializes displayed items using the
+     * categories set by this function.
+     */
+    $scope.$on('$locationChangeStart', function (event, newUrl, oldUrl) {
+        if ($scope.state.isShopping()) {
             categoryService.setSelectedCategories(locationService.getSearchParam("category") || []);
         }
     });
 
     /**
-     * Updates the 'category' url search parameter whenever a user
-     * selects or deselects a category filter.
+     * Called when user selects or deselects a category.
      */
     $scope.onCategoryUpdated = function () {
-        locationService.setSearchParam("category", categoryService.getSelectedCategoryNames(), true, false);
+        categoryService.updateUrlParam();
     };
 
     $scope.clearSelections = function () {
         categoryService.clearSelections();
-        $scope.onCategoryUpdated();
     };
 }

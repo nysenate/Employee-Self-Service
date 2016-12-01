@@ -6,10 +6,14 @@ var essSupply = angular.module('essSupply');
  *
  * When filtering the order page by categories, any category selected
  * on the navigation will have its 'selected' field set to true.
+ *
+ * Users of this service should call updateUrlParam after making changes
+ * directly to a category so the url search param can be updated accordingly.
  */
-essSupply.service('SupplyCategoryService', ['SupplyLocationAllowanceService', supplyCategoryService]);
+essSupply.factory('SupplyCategoryService',
+                  ['SupplyLocationAllowanceService', 'LocationService', supplyCategoryService]);
 
-function supplyCategoryService (locationAllowanceService) {
+function supplyCategoryService(locationAllowanceService, locationService) {
 
     function Category(name) {
         this.name = name;
@@ -18,7 +22,53 @@ function supplyCategoryService (locationAllowanceService) {
 
     var categories = [];
 
-    var initCategories = function () {
+    /** --- Public Methods --- */
+
+    function getCategories() {
+        if (categories === null || categories.length === 0) {
+            initCategories();
+            console.log("Categories init");
+        }
+        return categories;
+    }
+
+    function getSelectedCategories() {
+        var selected = [];
+        angular.forEach(getCategories(), function (cat) {
+            if (cat.selected === true) {
+                selected.push(cat);
+            }
+        });
+        return selected;
+    }
+
+    function getSelectedCategoryNames() {
+        var names = [];
+        getSelectedCategories().forEach(function (category) {
+            names.push(category.name)
+        });
+        return names;
+    }
+
+    function setSelectedCategories(names) {
+        getCategories().forEach(function (category) {
+            category.selected = names.indexOf(category.name) !== -1;
+        });
+        updateUrlParam();
+    }
+
+    function clearSelections() {
+        setSelectedCategories("");
+        updateUrlParam();
+    }
+
+    function updateUrlParam() {
+        locationService.setSearchParam("category", getSelectedCategoryNames(), true, false);
+    }
+
+    /** --- Private Methods --- */
+
+    function initCategories() {
         // Get allowances that should be made into categories.
         var allowances = locationAllowanceService.getAllowances();
         if (allowances === null) {
@@ -40,7 +90,10 @@ function supplyCategoryService (locationAllowanceService) {
             }
             return 0;
         });
-    };
+
+        // Initialize any categories set in url
+        setSelectedCategories(locationService.getSearchParam("category") || []);
+    }
 
     /** Returns true if a category is not yet in the category array, false otherwise. */
     function isDistinctCategory(name) {
@@ -51,39 +104,11 @@ function supplyCategoryService (locationAllowanceService) {
     }
 
     return {
-        getCategories: function () {
-            if (categories === null || categories.length === 0) {
-                initCategories();
-            }
-            return categories;
-        },
-
-        getSelectedCategories: function () {
-            var selected = [];
-            angular.forEach(this.getCategories(), function (cat) {
-                if (cat.selected === true) {
-                    selected.push(cat);
-                }
-            });
-            return selected;
-        },
-
-        getSelectedCategoryNames: function () {
-            var names = [];
-            this.getSelectedCategories().forEach(function (category) {
-                names.push(category.name)
-            });
-            return names;
-        },
-
-        setSelectedCategories: function (names) {
-            this.getCategories().forEach(function (category) {
-                category.selected = names.indexOf(category.name) !== -1;
-            });
-        },
-
-        clearSelections: function () {
-            this.setSelectedCategories("");
-        }
+        getCategories: getCategories,
+        getSelectedCategories: getSelectedCategories,
+        getSelectedCategoryNames: getSelectedCategoryNames,
+        setSelectedCategories: setSelectedCategories,
+        clearSelections: clearSelections,
+        updateUrlParam: updateUrlParam
     }
 }

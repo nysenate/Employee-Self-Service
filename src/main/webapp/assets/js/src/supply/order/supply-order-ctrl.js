@@ -1,19 +1,18 @@
 var essSupply = angular.module('essSupply')
-    .controller('SupplyOrderController', ['$scope', 'appProps', 'LocationService', 'SupplyCartService',
-        'PaginationModel', 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
-        'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService',
-        'SupplyItemFilterService', 'SupplyCategoryService', supplyOrderController]);
+    .controller('SupplyOrderController',
+                ['$scope', 'LocationService', 'SupplyCartService', 'PaginationModel',
+                 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
+                 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService',
+                 'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService',
+                 supplyOrderController]);
 
-function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel,
+function supplyOrderController($scope, locationService, supplyCart, paginationModel,
                                locationAutocompleteService, allowanceService, destinationService,
                                modals, supplyUtils, lineItemService, itemFilterService,
-                               categoryService) {
-    $scope.state = {};
-    $scope.states = {
-        LOADING: 0,
-        SELECTING_DESTINATION: 5,
-        SHOPPING: 10
-    };
+                               categoryService, stateService) {
+
+    // A reference to the stateService on the scope for checking the state in jsp.
+    $scope.state = stateService;
     $scope.sorting = {
         Name: 0,
         Category: 10
@@ -39,7 +38,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Initialization --- */
 
     $scope.init = function () {
-        $scope.state = $scope.states.LOADING;
+        $scope.state.toLoading();
         $scope.paginate.itemsPerPage = 16;
         updateFiltersFromUrlParams();
         if (!destinationService.isDestinationConfirmed()) {
@@ -52,6 +51,11 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     };
 
     $scope.init();
+
+    // Set state to invalid when leaving the order page.
+    $scope.$on('$destroy', function () {
+        $scope.state.toInvalid();
+    });
 
     /** --- State --- */
 
@@ -68,7 +72,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function setToSelectingDestinationState() {
-        $scope.state = $scope.states.SELECTING_DESTINATION;
+        $scope.state.toSelectingDestination();
     }
 
     function loadDestinationsError(response) {
@@ -76,13 +80,13 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function loadShoppingState() {
-        $scope.state = $scope.states.LOADING;
+        $scope.state.toLoading();
         $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
         allowanceService.queryLocationAllowance(destinationService.getDestination())
             .then(initializeCart)
             .then(sortAndFilterLineItems)
-            .then(setToShoppingState)
             .then(setDestinationDescription)
+            .then(setToShoppingState)
             .catch(loadItemsError);
     }
 
@@ -104,7 +108,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     }
 
     function setToShoppingState() {
-        $scope.state = $scope.states.SHOPPING;
+        $scope.state.toShopping();
     }
 
     function setDestinationDescription() {
@@ -156,13 +160,14 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /**
      * Detect url param changes due to category side bar selections, page change, or back/forward browser navigation.
      * Update local $scope params to match the new url params and filter allowances for any categories specified.
+     *
+     * Note: Depends on '$locationChangeStart' in supply-category-nav-ctrl to
+     * initialize the categories before this runs.
      */
-    $scope.$on('$locationChangeStart', function (event, newUrl) {
-        if (newUrl.indexOf(appProps.ctxPath + "/supply/order") > -1) { // If still on order page.
+    $scope.$on('$locationChangeSuccess', function (event, newUrl) {
+        if ($scope.state.isShopping()) {
             updateFiltersFromUrlParams();
-            if ($scope.state == $scope.states.SHOPPING) {
-                sortAndFilterLineItems();
-            }
+            sortAndFilterLineItems();
         }
     });
 
@@ -188,7 +193,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         }
 
         function reset() {
-            $scope.state = $scope.states.LOADING;
+            $scope.state.toLoading();
             supplyCart.reset();
             destinationService.reset();
             locationService.go("/supply/order", true);
@@ -236,4 +241,3 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
         }
     }
 }]);
-
