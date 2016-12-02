@@ -165,6 +165,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
 
     function getSyncFailedShipments() {
         var params = {
+            from: moment.unix(1).format(),
             status: "APPROVED",
             savedInSfms: false
         };
