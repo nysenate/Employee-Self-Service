@@ -68,8 +68,9 @@
          ng-show="displayedLineItems.length === 0">
       <div class="content-info">
         <h2 class="dark-gray">No results were found.
-          <p>Try a different search term or
-            <button class="link-button" ng-click="resetAllFilters()">reset your filters.</button>
+          <p>Enter new search criteria or click
+            <button class="link-button" ng-click="resetAllFilters()">reset</button>
+            to clear your filters.
         </h2>
       </div>
     </div>
