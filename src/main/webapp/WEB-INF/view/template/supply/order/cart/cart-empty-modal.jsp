@@ -1,16 +1,11 @@
 <div class="padding-10">
   <div>
-    <h3 class="content-info">Empty Cart</h3>
+    <h3 class="content-info">Confirm Empty Cart</h3>
   </div>
 
   <div>
     <p class="padding-10">
-      You are about to empty your cart.
-      <br/><br/>
-      Please note that your shopping cart will be emptied
-      as a result of this operation.
-      <br/><br/>
-      Would you like to continue?
+      Are you sure you want to empty your cart?
     </p>
   </div>
   <div class="text-align-center">
