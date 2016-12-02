@@ -9,7 +9,7 @@ public enum TimeRecordErrorCode {
     // These will indicate either a problem with the server/front end code, or someone up to no good
     NO_EXISTING_RECORD(1, "Attempt to save a record with no existing record."),
     UNAUTHORIZED_MODIFICATION(2, "Attempt to modify time record fields that are not open for modification by users"),
-    INVALID_STATUS_CHANGE(3, "Attempt to change time record status in violation of time record life cycle"),
+    INVALID_SCOPE_ACTION(3, "Attempt to perform an action that is invalid for a time record's current scope"),
     PREVIOUS_UNSUBMITTED_RECORD(4, "Attempt to submit record with prior unsubmitted salaried record"),
     NON_EMPLOYEE_MODIFICATION(6, "Attempt to modify the record of an employee as a supervisor or personnel"),
     INVALID_TIME_RECORD_SCOPE (6, "Attempt to modify Time Record with an inappropriate user scope."),

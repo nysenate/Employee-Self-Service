@@ -64,6 +64,13 @@ public enum TimeRecordStatus
         return stateTable.get(scope, action);
     }
 
+    /**
+     * @return {@link ImmutableSet<TimeRecordAction>} actions that are valid for this status
+     */
+    public ImmutableSet<TimeRecordAction> getValidActions() {
+        return stateTable.row(this.scope).keySet();
+    }
+
     /** --- Getters --- */
 
     public String getCode() {

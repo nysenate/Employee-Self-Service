@@ -10,9 +10,8 @@ import java.util.Optional;
 
 
 /**
- * Checks time records to make sure that no time record contains partially entered miscellaneous values
+ * Checks action of submitted time record to ensure that it is valid for the time record's current status
  */
-
 @Service
 public class ScopeActionTRV implements TimeRecordValidator {
 
@@ -25,27 +24,26 @@ public class ScopeActionTRV implements TimeRecordValidator {
     }
 
     /**
-     *  checkTimeRecord check hourly increments for all of the daily records
+     * Checks action of submitted time record to ensure that it is valid for the time record's current status
      *
      * @param record TimeRecord - A posted time record in the process of validation
      * @param prevState Optional<TimeRecord> - The most recently saved version of the posted time record
-     * @throws TimeRecordErrorException
+     * @throws TimeRecordErrorException If the submitted action is invalid
      */
-
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> prevState, TimeRecordAction action) throws TimeRecordErrorException {
            if (prevState.isPresent()) {
                TimeRecord previousState = prevState.get();
                TimeRecordStatus timeRecordStatus = previousState.getRecordStatus();
-               TimeRecordStatus nextTimeRecordStatus = null;
                try {
-                   nextTimeRecordStatus = timeRecordStatus.getResultingStatus(action);
+                   timeRecordStatus.getResultingStatus(action);
                }
                catch (InvalidTimeRecordActionEx ex) {
-
-                   throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_STATUS_CHANGE,
-                           new InvalidParameterView(timeRecordStatus.getName(), "string",
-                                  " Record Status = " + timeRecordStatus.name() + ", Invalid Action = " + action.name() , action.name()));
+                   throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_SCOPE_ACTION,
+                           new InvalidParameterView("action", "TimeRecordAction",
+                                  "action should be valid for current time record status: " +
+                                   timeRecordStatus + ". Valid actions include: " + timeRecordStatus.getValidActions(),
+                                   action));
                }
            }
     }
