@@ -11,7 +11,7 @@ public enum TimeRecordErrorCode {
     UNAUTHORIZED_MODIFICATION(2, "Attempt to modify time record fields that are not open for modification by users"),
     INVALID_SCOPE_ACTION(3, "Attempt to perform an action that is invalid for a time record's current scope"),
     PREVIOUS_UNSUBMITTED_RECORD(4, "Attempt to submit record with prior unsubmitted salaried record"),
-    NON_EMPLOYEE_MODIFICATION(6, "Attempt to modify the record of an employee as a supervisor or personnel"),
+    NON_EMPLOYEE_MODIFICATION(5, "Attempt to modify the record of an employee as a supervisor or personnel"),
     INVALID_TIME_RECORD_SCOPE (6, "Attempt to modify Time Record with an inappropriate user scope."),
     UNAUTHORIZED_ENTRY_MODIFICATION(7, "Attempt to modify time entry fields that are not open for modification by users"),
     DATE_OUT_OF_RANGE(8, "The saved record contains an entry date out of range of the electronic T&A record."),
@@ -53,4 +53,5 @@ public enum TimeRecordErrorCode {
     public String getMessage() {
         return message;
     }
+
 }
