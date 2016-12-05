@@ -26,8 +26,10 @@
         <label> Add Commodity Code:
           <input type="text"
                  ng-model="newItemCommodityCode"
+                 ng-change="resetCode()"
                  ui-autocomplete="getItemAutocompleteOptions()"
                  style="width: 100px; height: 20px;" capitalize>
+
         </label>
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
         <p class="redorange" ng-show="warning">Item: {{newItemCommodityCode}} already exists in this order. Please adjust the quantity if it's not correct.</p>

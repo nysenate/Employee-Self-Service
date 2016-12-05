@@ -146,6 +146,7 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         }
     };
 
+
     function isOverPerOrderMax(lineItem) {
         return lineItem.quantity > lineItem.item.maxQtyPerOrder
     }
@@ -167,10 +168,10 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     $scope.highlightLineItem = function (lineItem) {
         return lineItem.quantity > lineItem.item.suggestedMaxQty || lineItem.item.visibility === 'SPECIAL';
     };
-
-    /** --- Add Item --- **/
     $scope.warning = false;
+    /** --- Add Item --- **/
     $scope.addItem = function () {
+        $scope.warning = false;
         var newItem = itemAutocompleteService.getItemFromCommodityCode($scope.newItemCommodityCode);
         if (!newItem)
             return false;
@@ -183,6 +184,12 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         $scope.newItemCommodityCode = "";
         $scope.onUpdate();
     };
+    /**
+     * reset warning message
+     */
+    $scope.resetCode = function () {
+        $scope.warning = false;
+    }
 
     function isItemADuplicate(newItem) {
         var duplicateItem = false;
