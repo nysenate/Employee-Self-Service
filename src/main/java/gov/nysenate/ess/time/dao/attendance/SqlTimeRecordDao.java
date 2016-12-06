@@ -226,6 +226,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         params.addValue("excDetails", timeRecord.getExceptionDetails());
         params.addValue("procDate", SqlBaseDao.toDate(timeRecord.getProcessedDate()));
         params.addValue("respCtr", timeRecord.getRespHeadCode());
+        params.addValue("approvalEmpId", timeRecord.getApprovalEmpId());
 
         return params;
     }

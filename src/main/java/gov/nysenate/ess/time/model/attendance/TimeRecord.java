@@ -41,6 +41,7 @@ public class TimeRecord implements Comparable<TimeRecord>
     protected String updateUserId;
     protected LocalDateTime createdDate;
     protected LocalDateTime updateDate;
+    protected Integer approvalEmpId;
     protected TreeMap<LocalDate, TimeEntry> timeEntryMap = new TreeMap<>();
 
     /** --- Constructors --- */
@@ -392,4 +393,8 @@ public class TimeRecord implements Comparable<TimeRecord>
     public void setRespHeadCode(String respHeadCode) {
         this.respHeadCode = respHeadCode;
     }
+
+    public void setApprovalEmpId(Integer approvalEmpId) { this.approvalEmpId = approvalEmpId; }
+
+    public Integer getApprovalEmpId() { return approvalEmpId; };
 }

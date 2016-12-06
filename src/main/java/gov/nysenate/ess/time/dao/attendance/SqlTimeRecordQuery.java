@@ -9,7 +9,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         /**   PM23TIMESHEET columns (no alias needed) */
         "    rec.NUXRTIMESHEET, rec.NUXREFEM, rec.NATXNORGUSER, rec.NATXNUPDUSER, rec.NAUSER, rec.DTTXNORIGIN, rec.DTTXNUPDATE,\n" +
         "    rec.CDSTATUS, rec.CDTSSTAT, rec.DTBEGIN, rec.DTEND, rec.DEREMARKS, rec.NUXREFSV, rec.DEEXCEPTION,\n" +
-        "    rec.DTPROCESS, rec.CDRESPCTRHD, rec.CDPAYTYPE,\n" +
+        "    rec.DTPROCESS, rec.CDRESPCTRHD, rec.CDPAYTYPE, rec.NUXREFAPR,\n" +
         /**   SL16PERIOD columns (aliased with PER_) */
         "    per.DTBEGIN AS PER_DTBEGIN, per.DTEND AS PER_DTEND, per.CDSTATUS AS PER_CDSTATUS, per.CDPERIOD AS PER_CDPERIOD,\n" +
         "    per.NUPERIOD AS PER_NUPERIOD, per.DTPERIODYEAR AS PER_DTPERIODYEAR,\n" +
@@ -114,8 +114,8 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
     INSERT_TIME_REC(
         "INSERT \n" +
         "INTO ${tsSchema}.PM23TIMESHEET \n" +
-        "(NUXREFEM, CDSTATUS, CDTSSTAT, DTBEGIN, DTEND, DEREMARKS, NUXREFSV, DEEXCEPTION, DTPROCESS, CDRESPCTRHD) \n" +
-        "VALUES (:empId, :status, :tSStatusId, :beginDate, :endDate, :remarks, :supervisorId, :excDetails, :procDate, :respCtr) \n"
+        "(NUXREFEM, CDSTATUS, CDTSSTAT, DTBEGIN, DTEND, DEREMARKS, NUXREFSV, DEEXCEPTION, DTPROCESS, CDRESPCTRHD, nuxrefapr) \n" +
+        "VALUES (:empId, :status, :tSStatusId, :beginDate, :endDate, :remarks, :supervisorId, :excDetails, :procDate, :respCtr, :approvalEmpId) \n"
     ),
 
 
@@ -124,7 +124,8 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "SET \n" +
         "  NUXREFEM = :empId, CDSTATUS = :status, CDTSSTAT = :tSStatusId,\n" +
         "  DTBEGIN = :beginDate, DTEND = :endDate, DEREMARKS = :remarks, NUXREFSV = :supervisorId,\n" +
-        "  DEEXCEPTION = :excDetails, DTPROCESS = :procDate, NAUSER = :lastUser, CDRESPCTRHD = :respCtr\n" +
+        "  DEEXCEPTION = :excDetails, DTPROCESS = :procDate, NAUSER = :lastUser, CDRESPCTRHD = :respCtr,\n" +
+        "  NUXREFAPR = :approvalEmpId\n" +
         "WHERE NUXRTIMESHEET = :timesheetId"
     ),
 

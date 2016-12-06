@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.DISAPPROVED;
 import static java.util.stream.Collectors.toList;
 
@@ -268,6 +269,11 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
                 .orElse("TS_OWNER")
                 .toUpperCase();
         record.setOverallUpdateUser(updateUser);
+
+        // If record is being approved, then we need to set the Approval Xref#
+        if (nextStatus == APPROVED && currentStatus != APPROVED) {
+            record.setApprovalEmpId(ShiroUtils.getAuthenticatedEmpId());
+        }
 
         boolean result = saveRecord(record);
         // Generate an audit record for the time record if a significant action was made on the time record.
