@@ -15,5 +15,5 @@ import org.springframework.test.context.web.WebAppConfiguration;
         @ContextConfiguration(classes = {WebApplicationConfig.class})
 })
 @ActiveProfiles("test")
-public abstract class BaseTests {
+public abstract class BaseTest {
 }

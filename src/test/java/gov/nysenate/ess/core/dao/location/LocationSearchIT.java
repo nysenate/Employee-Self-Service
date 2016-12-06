@@ -1,8 +1,7 @@
 package gov.nysenate.ess.core.dao.location;
 
 import com.google.common.collect.ImmutableCollection;
-import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.core.DaoTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class LocationSearchIT extends BaseTests {
+public class LocationSearchIT extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LocationSearchIT.class);
 

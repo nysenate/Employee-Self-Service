@@ -1,6 +1,6 @@
 package gov.nysenate.ess.time.service.payroll;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.time.model.payroll.Paycheck;
@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class PaycheckServiceIT extends BaseTests
+public class PaycheckServiceIT extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(PaycheckServiceIT.class);
 

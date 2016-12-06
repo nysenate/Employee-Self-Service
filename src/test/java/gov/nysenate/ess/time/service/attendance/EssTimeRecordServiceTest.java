@@ -4,7 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Category(SillyTest.class)
-public class EssTimeRecordServiceTest extends BaseTests{
+public class EssTimeRecordServiceTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordServiceTest.class);
 
     @Autowired private TimeRecordService timeRecordService;

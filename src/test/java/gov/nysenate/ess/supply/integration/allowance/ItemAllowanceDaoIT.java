@@ -2,10 +2,9 @@ package gov.nysenate.ess.supply.integration.allowance;
 
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
 import gov.nysenate.ess.supply.allowance.dao.ItemAllowanceDao;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 @Category(IntegrationTest.class)
-public class ItemAllowanceDaoIT extends BaseTests {
+public class ItemAllowanceDaoIT extends BaseTest {
 
     @Autowired private ItemAllowanceDao allowanceDao;
 

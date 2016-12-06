@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Category(SillyTest.class)
-public class EssAccrualComputeServiceTest extends BaseTests
+public class EssAccrualComputeServiceTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(EssAccrualComputeServiceTest.class);
 

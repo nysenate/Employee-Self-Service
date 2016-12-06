@@ -1,7 +1,7 @@
 package gov.nysenate.ess.time.dao.attendance;
 
 import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
-public class SqlTimeEntryDaoTest extends BaseTests
+public class SqlTimeEntryDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeEntryDaoTest.class);
 

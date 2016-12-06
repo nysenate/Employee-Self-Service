@@ -5,7 +5,7 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.dao.transaction.EmpTransDaoOption;
 import gov.nysenate.ess.core.dao.transaction.EmpTransactionDao;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Category(SillyTest.class)
-public class CachedTransactionServiceTest extends BaseTests {
+public class CachedTransactionServiceTest extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(CachedTransactionServiceTest.class);
 

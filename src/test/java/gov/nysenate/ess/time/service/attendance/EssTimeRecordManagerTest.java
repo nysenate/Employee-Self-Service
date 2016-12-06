@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Category(SillyTest.class)
-public class EssTimeRecordManagerTest extends BaseTests
+public class EssTimeRecordManagerTest extends BaseTest
 {
 
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordManagerTest.class);

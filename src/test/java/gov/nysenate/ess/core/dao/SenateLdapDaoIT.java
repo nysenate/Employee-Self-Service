@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.dao;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.dao.personnel.LdapAuthDao;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class SenateLdapDaoIT extends BaseTests
+public class SenateLdapDaoIT extends BaseTest
 {
     @Autowired
     LdapAuthDao ldapAuthDao;

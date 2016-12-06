@@ -11,7 +11,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @Category(IntegrationTest.class)
-public class AppIT extends WebTests
+public class AppIT extends WebTest
 {
     @Test
     public void simple() throws Exception {

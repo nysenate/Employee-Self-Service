@@ -5,19 +5,18 @@ import gov.nysenate.ess.core.dao.period.PayPeriodDao;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.time.client.view.AccrualsView;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Category(SillyTest.class)
-public class SqlAccrualServiceTest extends BaseTests
+public class SqlAccrualServiceTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlAccrualServiceTest.class);
 

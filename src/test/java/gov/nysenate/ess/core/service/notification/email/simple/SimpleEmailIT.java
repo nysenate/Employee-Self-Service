@@ -1,8 +1,7 @@
 package gov.nysenate.ess.core.service.notification.email.simple;
 
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.core.annotation.IntegrationTest;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.personnel.Person;
 import gov.nysenate.ess.core.service.notification.base.message.base.Component;
@@ -28,7 +27,7 @@ import java.util.List;
  */
 
 @Category(SillyTest.class)
-public class SimpleEmailIT extends BaseTests {
+public class SimpleEmailIT extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(SimpleEmailIT.class);
     @Autowired
     EventBus eventBus;

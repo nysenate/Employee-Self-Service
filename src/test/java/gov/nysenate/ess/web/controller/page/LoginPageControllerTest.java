@@ -1,7 +1,7 @@
 package gov.nysenate.ess.web.controller.page;
 
 import gov.nysenate.ess.core.annotation.SillyTest;
-import gov.nysenate.ess.web.WebTests;
+import gov.nysenate.ess.web.WebTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @Category(SillyTest.class)
-public class LoginPageControllerTest extends WebTests
+public class LoginPageControllerTest extends WebTest
 {
     @Test
     public void getReturnsLoginView() throws Exception {

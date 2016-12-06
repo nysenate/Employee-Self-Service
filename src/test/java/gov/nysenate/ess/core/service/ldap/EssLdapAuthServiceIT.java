@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.ldap;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class EssLdapAuthServiceIT extends BaseTests
+public class EssLdapAuthServiceIT extends BaseTest
 {
     @Value("${test.ldap.valid.uid}") private String validUid;
     @Value("${test.ldap.valid.dn}") private String validDn;

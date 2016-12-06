@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.dao.transaction;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.util.OutputUtils;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Category(SillyTest.class)
-public class SqlEmpTransactionDaoTest extends BaseTests
+public class SqlEmpTransactionDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlEmpTransactionDaoTest.class);
 

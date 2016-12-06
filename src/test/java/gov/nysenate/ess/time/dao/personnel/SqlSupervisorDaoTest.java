@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.time.model.personnel.SupGrantType;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Category(SillyTest.class)
-public class SqlSupervisorDaoTest extends BaseTests
+public class SqlSupervisorDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlSupervisorDaoTest.class);
 

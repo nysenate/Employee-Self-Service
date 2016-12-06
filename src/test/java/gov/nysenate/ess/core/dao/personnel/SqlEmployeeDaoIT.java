@@ -1,13 +1,12 @@
 package gov.nysenate.ess.core.dao.personnel;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class SqlEmployeeDaoIT extends BaseTests
+public class SqlEmployeeDaoIT extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlEmployeeDaoIT.class);
 

@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.config;
 
-import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.core.DaoTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -19,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DatabaseConfigIT extends BaseTests
+public class DatabaseConfigIT extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfigIT.class);
 

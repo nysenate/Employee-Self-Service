@@ -1,8 +1,7 @@
 package gov.nysenate.ess.core.dao.period;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.core.DaoTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.model.period.Holiday;
@@ -23,7 +22,7 @@ import static java.time.LocalDate.of;
 import static org.junit.Assert.*;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class SqlHolidayDaoIT extends BaseTests
+public class SqlHolidayDaoIT extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlHolidayDaoIT.class);
 

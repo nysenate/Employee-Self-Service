@@ -1,7 +1,7 @@
 package gov.nysenate.ess.web.security.xsrf;
 
 import gov.nysenate.ess.core.annotation.IntegrationTest;
-import gov.nysenate.ess.web.WebTests;
+import gov.nysenate.ess.web.WebTest;
 import org.apache.shiro.codec.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import java.util.Random;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class XsrfTokenValidatorIT extends WebTests
+public class XsrfTokenValidatorIT extends WebTest
 {
     private static final Logger logger = LoggerFactory.getLogger(XsrfTokenValidatorIT.class);
     private MockServletContext mockServletContext = new MockServletContext();

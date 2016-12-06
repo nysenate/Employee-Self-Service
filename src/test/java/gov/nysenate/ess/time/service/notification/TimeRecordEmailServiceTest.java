@@ -1,6 +1,6 @@
 package gov.nysenate.ess.time.service.notification;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Category(SillyTest.class)
-public class TimeRecordEmailServiceTest extends BaseTests {
+public class TimeRecordEmailServiceTest extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordEmailServiceTest.class);
 

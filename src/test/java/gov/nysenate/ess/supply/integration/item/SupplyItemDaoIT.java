@@ -3,7 +3,7 @@ package gov.nysenate.ess.supply.integration.item;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.SupplyItem;
@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 @org.junit.experimental.categories.Category(IntegrationTest.class)
-public class SupplyItemDaoIT extends BaseTests {
+public class SupplyItemDaoIT extends BaseTest {
 
     @Autowired
     private OracleSupplyItemDao itemDao;

@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.personnel;
 
 import com.google.common.collect.RangeSet;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.OutputUtils;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 
 @Category(SillyTest.class)
-public class EmployeeInfoServiceTest extends BaseTests
+public class EmployeeInfoServiceTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeInfoServiceTest.class);
 

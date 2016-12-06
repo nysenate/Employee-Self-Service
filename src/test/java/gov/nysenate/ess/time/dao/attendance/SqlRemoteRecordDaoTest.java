@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.dao.attendance;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 import java.time.LocalDate;
 
 @Category(SillyTest.class)
-public class SqlRemoteRecordDaoTest extends BaseTests
+public class SqlRemoteRecordDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlRemoteRecordDaoTest.class);
 

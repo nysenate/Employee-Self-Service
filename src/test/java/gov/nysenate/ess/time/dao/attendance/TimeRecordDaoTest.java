@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Category(SillyTest.class)
-public class TimeRecordDaoTest extends BaseTests
+public class TimeRecordDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordDaoTest.class);
 

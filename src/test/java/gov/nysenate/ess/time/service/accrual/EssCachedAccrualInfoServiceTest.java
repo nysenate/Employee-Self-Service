@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.service.accrual;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 
 @Category(SillyTest.class)
-public class EssCachedAccrualInfoServiceTest extends BaseTests
+public class EssCachedAccrualInfoServiceTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(EssCachedAccrualInfoServiceTest.class);
 

@@ -1,8 +1,7 @@
 package gov.nysenate.ess.core.dao.period;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.BaseTests;
-import gov.nysenate.ess.core.DaoTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.model.period.PayPeriod;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
-public class SqlPayPeriodDaoIT extends BaseTests
+public class SqlPayPeriodDaoIT extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlPayPeriodDaoIT.class);
 

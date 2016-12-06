@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.dao.payroll;
 
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.time.client.view.MiscLeaveGrantView;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveGrant;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Category(SillyTest.class)
-public class MiscLeaveDaoTest extends BaseTests {
+public class MiscLeaveDaoTest extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MiscLeaveDaoTest.class);
 
