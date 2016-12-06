@@ -69,7 +69,7 @@
       <div class="content-info">
         <h2 class="dark-gray">No results were found.
           <p>Enter new search criteria or click
-            <button class="link-button" ng-click="resetAllFilters()">reset</button>
+            <button class="link-button" ng-click="resetAllFilters()">here</button>
             to clear your filters.
         </h2>
       </div>
