@@ -151,11 +151,11 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getApprovedShipments() {
         var params = {
             status: "APPROVED",
-            from: moment().startOf('day').format(),
             dateField: "approved_date_time"
         };
         $scope.approvedSearch.response = requisitionApi.get(params, function (response) {
             $scope.approvedSearch.matches = response.result;
+            $scope.approvedSearch.matches = keepNewPlaceReq($scope.approvedSearch.matches);
             $scope.approvedSearch.error = false;
         }, function (errorResponse) {
             modals.open('500', {details: errorResponse});
@@ -184,6 +184,14 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         var result = [];
         input.forEach(function (ele) {
             if (ele.lastSfmsSyncDateTime != null) // if current req have not been sync , then it is a new one
+                result.push(ele);
+        });
+        return result;
+    }
+    function keepNewPlaceReq(input) {
+        var result = [];
+        input.forEach(function (ele) {
+            if (ele.lastSfmsSyncDateTime == null) // if current req have not  been sync , then it is a new one
                 result.push(ele);
         });
         return result;
