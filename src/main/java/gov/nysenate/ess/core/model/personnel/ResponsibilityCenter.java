@@ -1,6 +1,9 @@
 package gov.nysenate.ess.core.model.personnel;
 
+import com.google.common.base.Objects;
+
 import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * A responsibility center is basically an organizational unit that is headed by a manager.
@@ -25,8 +28,33 @@ public class ResponsibilityCenter
         this.name = other.name;
         this.effectiveDateBegin = other.effectiveDateBegin;
         this.effectiveDateEnd = other.effectiveDateEnd;
-        this.agency = new Agency(other.agency);
-        this.head = new ResponsibilityHead(other.head);
+        this.agency = Optional.ofNullable(other.agency)
+                .map(Agency::new)
+                .orElse(null);
+        this.head = Optional.ofNullable(other.head)
+                .map(ResponsibilityHead::new)
+                .orElse(null);
+    }
+
+    /* --- Overridden Methods --- */
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ResponsibilityCenter)) return false;
+        ResponsibilityCenter that = (ResponsibilityCenter) o;
+        return active == that.active &&
+                code == that.code &&
+                Objects.equal(name, that.name) &&
+                Objects.equal(effectiveDateBegin, that.effectiveDateBegin) &&
+                Objects.equal(effectiveDateEnd, that.effectiveDateEnd) &&
+                Objects.equal(agency, that.agency) &&
+                Objects.equal(head, that.head);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(active, code, name, effectiveDateBegin, effectiveDateEnd, agency, head);
     }
 
     public boolean isActive() {

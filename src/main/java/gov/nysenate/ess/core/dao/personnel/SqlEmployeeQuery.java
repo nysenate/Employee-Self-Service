@@ -38,7 +38,7 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16RESPCTR WHERE CDSTATUS = 'A') rctr ON per.CDRESPCTR = rctr.CDRESPCTR AND per.CDAGENCY = rctr.CDAGENCY\n" +
         "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16RSPCTRHD WHERE CDSTATUS = 'A') rctrhd ON rctr.CDRESPCTRHD = rctrhd.CDRESPCTRHD\n" +
         "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16AGENCY WHERE CDSTATUS = 'A') agcy ON rctr.CDAGENCY = agcy.CDAGENCY\n" +
-        "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16LOCATION WHERE CDSTATUS = 'A') loc ON per.CDLOCAT = loc.CDLOCAT\n"
+        "LEFT JOIN ${masterSchema}.SL16LOCATION loc ON per.CDLOCAT = loc.CDLOCAT\n"
     ),
 
     GET_EMP_BY_ID_SQL(

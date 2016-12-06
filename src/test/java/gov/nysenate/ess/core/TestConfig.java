@@ -21,6 +21,7 @@ public class TestConfig
 
     public static final String TEST_PROPERTY_FILENAME = "test.app.properties";
     public static final String TEST_DATA_PROPERTY_FILENAME = "test.data.properties";
+    public static final String SHIRO_PROPERTY_FILENAME = "shiro.ini";
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
@@ -28,10 +29,14 @@ public class TestConfig
         PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
         Resource[] resources = new ClassPathResource[]{
                 new ClassPathResource(TEST_PROPERTY_FILENAME),
-                new ClassPathResource(TEST_DATA_PROPERTY_FILENAME)
+                new ClassPathResource(TEST_DATA_PROPERTY_FILENAME),
+                new ClassPathResource(SHIRO_PROPERTY_FILENAME)
         };
+
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         return pspc;
     }
+
+
 }

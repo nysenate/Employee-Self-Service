@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.unit.Location;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Represents information that identifies an employee in the NYS Senate
@@ -36,7 +37,9 @@ public class Employee extends Person
         this.jobTitle = other.jobTitle;
         this.payType = other.payType;
         this.nid = other.nid;
-        this.respCenter = new ResponsibilityCenter(other.respCenter);
+        this.respCenter = Optional.ofNullable(other.respCenter)
+                .map(ResponsibilityCenter::new)
+                .orElse(null);
         this.workLocation = other.workLocation;
         this.updateDateTime = other.updateDateTime;
     }

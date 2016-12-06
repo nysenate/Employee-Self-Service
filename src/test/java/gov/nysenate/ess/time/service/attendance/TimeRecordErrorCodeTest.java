@@ -1,8 +1,9 @@
 package gov.nysenate.ess.time.service.attendance;
 
-import gov.nysenate.ess.core.BaseTests;
+import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,8 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link TimeRecordErrorCode} class
  */
-public class TimeRecordErrorCodeTest extends BaseTests {
+@Category(UnitTest.class)
+public class TimeRecordErrorCodeTest {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordErrorCodeTest.class);
 

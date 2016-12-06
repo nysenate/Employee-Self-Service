@@ -2,6 +2,7 @@ package gov.nysenate.ess.web;
 
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
+@Category(gov.nysenate.ess.core.annotation.SillyTest.class)
 public class SpringLdapTest extends WebTests
 {
     private static final Logger logger = LoggerFactory.getLogger(SpringLdapTest.class);
