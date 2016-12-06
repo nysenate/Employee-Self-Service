@@ -7,7 +7,7 @@
  */
 /** Color Palette */
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,600,300);
-@import url('http://fonts.googleapis.com/css?family=Noto+Sans:400,700');
+@import url(//fonts.googleapis.com/css?family=Noto+Sans:400,700);
 .dark-red {
   color: #B90504;
 }
@@ -892,10 +892,6 @@ input[type="number"] {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-/**
- * This file includes all LESS files for ESS
- * This file alone will be compiled into main.css
- */
 @media print {
   .large-print-font-size {
     font-size: 12pt;
