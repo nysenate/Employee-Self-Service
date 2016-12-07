@@ -34,6 +34,9 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     // The user specified destination code. Defaults to the code of the employees work location.
     $scope.destinationCode = "";
     $scope.destinationDescription = "";
+    $scope.trig = function () {
+        console.log("abc");
+    }
 
     /** --- Initialization --- */
 
@@ -238,6 +241,14 @@ essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService'
             ctrl.$validators.destination = function (modelValue, viewValue) {
                 return locationAutocompleteService.isValidCode(modelValue) || modelValue.length === 0;
             }
+            /**
+             * THIS IS A HACKY WAY TO SOLVE   #10625
+             */
+            elm.on('autocompleteselect', function (a,object,e,c){
+                angular.element("form[name=selectDestinationForm]").scope().selectDestinationForm.destination.$error.destination = false;
+                if (!angular.element("form[name=selectDestinationForm]").scope().destinationCode)
+                    angular.element("form[name=selectDestinationForm]").scope().destinationCode = object.item.label.split("(")[0].trim()
+            });
         }
     }
 }]);
