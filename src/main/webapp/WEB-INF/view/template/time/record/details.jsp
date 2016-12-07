@@ -97,10 +97,11 @@
     </div>
     <h3 class="content-info">Actions</h3>
     <div class="record-details-section">
-      <a target="_blank" ng-href="http://nysasprd.senate.state.ny.us:7778/reports/rwservlet?report=PRTIMESHEET23&cmdkey=tsuser&p_stamp=N&p_nuxrtimesheet={{record.timeRecordId}}">Print Record</a>
+      <a target="_blank" title="Open a Printable View for this Record"
+         ng-href="http://nysasprd.senate.state.ny.us:7778/reports/rwservlet?report=PRTIMESHEET23&cmdkey=tsuser&p_stamp=N&p_nuxrtimesheet={{record.timeRecordId}}">Print Record</a>
       <br/>
       <br/>
-      <a ng-click="close()">Exit</a>
+      <a ng-click="close()" title="Close this window">Exit</a>
     </div>
   </div>
 </div>

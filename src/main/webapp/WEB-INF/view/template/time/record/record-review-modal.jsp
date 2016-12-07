@@ -23,7 +23,7 @@
         <tr ng-repeat='record in records' ng-class="{'active': iSelectedRecord === $index,
                                                      'approved': getApprovalStatus(record) === 'approved',
                                                      'disapproved': getApprovalStatus(record) === 'disapproved'}"
-            ng-click="selectRecord($index)" id="{{record.timeRecordId}}">
+            ng-click="selectRecord($index)" id="{{record.timeRecordId}}" title="Select Record for Review">
           <td class="name-column">
             {{record.employee.lastName}}
           </td>
@@ -42,20 +42,27 @@
       <hr/>
       <div id="action-container" ng-if="allowApproval === true">
         <div ng-switch="getApprovalStatus(records[iSelectedRecord])" class="record-approval-buttons">
-          <input type="button" value="Undo Approval" class="reject-button"
+          <input type="button" class="reject-button"
+                 value="Undo Approval" title="Undo Approval of Record"
                  ng-switch-when="approved" ng-click="cancelRecord()"/>
-          <input type="button" value="Undo Disapproval" class="time-neutral-button"
+          <input type="button" class="time-neutral-button"
+                 value="Undo Disapproval of Record"
                  ng-switch-when="disapproved" ng-click="cancelRecord()"/>
-          <input type="button" value="Approve Record" class="submit-button"
+          <input type="button" class="submit-button"
+                 value="Approve Record" title="Approve Record"
                  ng-switch-default ng-click="approveRecord()"/>
-          <input type="button" value="Disapprove Record" class="reject-button"
+          <input type="button" class="reject-button"
+                 value="Disapprove Record" title="Disapprove Record"
                  ng-switch-default ng-click="rejectRecord()"/>
 
         </div>
         <div>
           <input type="button" class="submit-button" value="Submit Changes"
+                 title="Submit Approved and Disapproved Records"
                  ng-click="submitChanges()" ng-disabled="submissionEmpty()"/>
-          <input type="button" class="time-neutral-button" value="Cancel" ng-click="close()"/>
+          <input type="button" class="time-neutral-button" value="Cancel"
+                 title="Cancel Record Review (All changes will be lost)"
+                 ng-click="close()"/>
         </div>
       </div>
     </div>
