@@ -28,7 +28,7 @@
                        badge-id="pendingRecordCount" hide-empty="true"></badge>
             </li>
             <li class="sub-topic"><a href="${ctxPath}/time/record/emphistory">Employee Attendance History</a></li>
-            <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Privileges</a></li>
+            <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>
         </ul>
     </shiro:hasPermission>
 </section>
