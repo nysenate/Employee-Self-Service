@@ -248,10 +248,11 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
         -- Insert item moves.
         insert_item_move(requisition_id, customer_id, nuissue, item_id, approved_date_time, destination_code, destination_type,
                          issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
-        subtract_items_from_inventory(item_id, standard_quantity);
+        -- Insert into move audit BEFORE updating inventory counts!
+        -- The audit table entry contains the inventory count from before this move occurred.
         insert_item_move_audit(requisition_id, customer_id, nuissue, item_id, approved_date_time, destination_code,
-                               destination_type,
-                               issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
+                               destination_type, issuer_uid, quantity, standard_quantity, issue_unit, responsibility_head);
+        subtract_items_from_inventory(item_id, standard_quantity);
 
         <<end_loop>> -- label for skipping inserts if item quantity is 0.
         NULL; -- NEED executable statement after label!
