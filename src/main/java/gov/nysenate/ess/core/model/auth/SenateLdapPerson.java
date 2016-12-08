@@ -2,7 +2,6 @@ package gov.nysenate.ess.core.model.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.ldap.odm.annotations.Attribute;
-import org.springframework.ldap.odm.annotations.DnAttribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
 
@@ -16,7 +15,7 @@ import java.io.Serializable;
  * called by {@link org.springframework.ldap.core.LdapTemplate} can map the resulting context
  * directly into this object.
  */
-@Entry(objectClasses = {"person", "top"}, base = "O=senate")
+@Entry(objectClasses = {"person", "top"})
 public final class SenateLdapPerson implements Serializable, SenatePerson
 {
     private static final long serialVersionUID = 3289890768256266928L;
@@ -25,10 +24,9 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
     private Name dn;
 
     @Attribute(name = "cn")
-    @DnAttribute(value = "cn", index = 1)
-    private String fullName;
+    private String commonName;
 
-    @DnAttribute(value = "ou", index = 0)
+    @Attribute(name = "ou")
     private String organization;
 
     @Attribute(name = "employeeid")
@@ -47,7 +45,7 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
     private String middleInitial;
 
     @Attribute(name = "sn")
-    private String sn;
+    private String lastName;
 
     @Attribute(name = "title")
     private String title;
@@ -77,14 +75,14 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
 
     public SenateLdapPerson(Attributes attrs) throws NamingException {
         if (attrs != null) {
-            this.fullName = (attrs.get("cn") != null) ? attrs.get("cn").get().toString() : null;
+            this.commonName = (attrs.get("cn") != null) ? attrs.get("cn").get().toString() : null;
             this.organization = (attrs.get("ou") != null) ? attrs.get("ou").get().toString() : null;
             this.employeeId = (attrs.get("employeeid") != null) ? attrs.get("employeeid").get().toString() : null;
             this.email = (attrs.get("mail") != null) ? attrs.get("mail").get().toString() : null;
             this.uid = (attrs.get("uid") != null) ? attrs.get("uid").get().toString() : null;
             this.firstName = (attrs.get("givenname") != null) ? attrs.get("givenname").get().toString() : null;
             this.middleInitial = (attrs.get("middleinitial") != null) ? attrs.get("middleinitial").get().toString() : null;
-            this.sn = (attrs.get("sn") != null) ? attrs.get("sn").get().toString() : null;
+            this.lastName = (attrs.get("sn") != null) ? attrs.get("sn").get().toString() : null;
             this.title = (attrs.get("title") != null) ? attrs.get("title").get().toString() : null;
             this.postalAddress = (attrs.get("postaladdress") != null) ? attrs.get("postaladdress").get().toString() : null;
             this.officeAddress = (attrs.get("officestreetaddress") != null) ? attrs.get("officestreetaddress").get().toString() : null;
@@ -107,6 +105,11 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
         return Integer.parseInt(employeeId);
     }
 
+    @Override
+    public String getFullName() {
+        return this.getFirstName() + " " + this.getLastName();
+    }
+
     /** --- Basic Getters/Setters --- */
 
     @JsonIgnore
@@ -118,12 +121,12 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
         this.dn = dn;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getCommonName() {
+        return commonName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
     }
 
     public String getOrganization() {
@@ -154,12 +157,12 @@ public final class SenateLdapPerson implements Serializable, SenatePerson
         this.uid = uid;
     }
 
-    public String getSn() {
-        return sn;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSn(String sn) {
-        this.sn = sn;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getTitle() {

@@ -7,10 +7,15 @@ import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.service.auth.EssLdapAuthService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import javax.naming.InvalidNameException;
+import javax.naming.Name;
+import javax.naming.ldap.LdapName;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,11 +24,19 @@ import static org.junit.Assert.assertNotNull;
 public class EssLdapAuthServiceIT extends BaseTest
 {
     @Value("${test.ldap.valid.uid}") private String validUid;
-    @Value("${test.ldap.valid.dn}") private String validDn;
+    @Value("${test.ldap.valid.dn}") private String validRelDn;
     @Value("${test.ldap.valid.password}") private String validPassword;
+
+    @Value("${ldap.base:}") private String ldapBase;
+    private LdapName ldapBaseDn;
 
     @Autowired
     private EssLdapAuthService senateLdapService;
+
+    @Before
+    public void setUp() throws InvalidNameException {
+        ldapBaseDn = new LdapName(ldapBase);
+    }
 
     @Test
     public void testAutowiredSucceeds() throws Exception {
@@ -40,7 +53,10 @@ public class EssLdapAuthServiceIT extends BaseTest
         assertNotNull(authResult);
         Assert.assertEquals(LdapAuthStatus.AUTHENTICATED, authResult.getAuthStatus());
         assertEquals(validUid, authResult.getUid());
-        assertEquals(validDn.toLowerCase(), authResult.getName().toString().toLowerCase());
+
+        Name name = authResult.getName();
+        assertEquals(new LdapName(validRelDn), name.getSuffix(ldapBaseDn.size()));
+        assertEquals(ldapBaseDn, name.getPrefix(ldapBaseDn.size()));
     }
 
     @Test
@@ -64,10 +80,5 @@ public class EssLdapAuthServiceIT extends BaseTest
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(invalidUser, "invalidPassword");
         assertEquals(LdapAuthStatus.AUTHENTICATION_EXCEPTION, authResult.getAuthStatus());
         assertEquals(invalidUser, authResult.getUid());
-    }
-
-    @Test
-    public void testGetPerson() throws Exception {
-
     }
 }

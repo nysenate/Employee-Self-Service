@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.dao.personnel.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -16,6 +17,7 @@ import org.springframework.ldap.NameNotFoundException;
 
 import javax.naming.Name;
 import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,12 +25,14 @@ import static org.junit.Assert.assertNotNull;
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
 public class SenateLdapDaoIT extends BaseTest
 {
-    @Autowired
-    LdapAuthDao ldapAuthDao;
+    @Autowired LdapAuthDao ldapAuthDao;
 
     @Value("${test.ldap.valid.uid}") private String validUid;
-    @Value("${test.ldap.valid.dn}") private String validDn;
+    @Value("${test.ldap.valid.dn}") private String validRelDn;
     @Value("${test.ldap.valid.password}") private String validPassword;
+
+    @Value("${ldap.base:}") private String ldapBase;
+    private LdapName ldapBaseDn;
 
     private SenateLdapPerson validSenateLdapPerson = new SenateLdapPerson();
     private LdapName invalidLdapName;
@@ -36,9 +40,13 @@ public class SenateLdapDaoIT extends BaseTest
 
     @Before
     public void setUp() throws Exception {
+        ldapBaseDn = new LdapName(ldapBase);
+
         validSenateLdapPerson.setUid(validUid);
-        invalidLdapName = new LdapName("CN=moosekitten,O=senate");
+
         invalidUid = "moosekitten";
+        invalidLdapName = (LdapName) ((LdapName)ldapBaseDn.clone())
+                .add(new Rdn("cn", invalidUid));
     }
 
     @Test
@@ -46,12 +54,12 @@ public class SenateLdapDaoIT extends BaseTest
         assertNotNull(ldapAuthDao);
     }
 
-    /** {@link LdapAuthDao#getPerson(javax.naming.Name)} (String)} tests
+    /** {@link LdapAuthDao#getPerson(javax.naming.ldap.LdapName)} (String)} tests
      * -------------------------------------------------------------------- */
 
     @Test
     public void testGetPerson() throws Exception {
-        Name name = new LdapName(validDn);
+        LdapName name = new LdapName(validRelDn);
         SenateLdapPerson person = ldapAuthDao.getPerson(name);
         assertNotNull(person);
         assertEquals(validSenateLdapPerson.getUid(), person.getUid());
@@ -69,7 +77,8 @@ public class SenateLdapDaoIT extends BaseTest
     public void testAuthenticateByUidSucceeds() throws Exception {
         Name name = ldapAuthDao.authenticateByUid(validUid, validPassword);
         assertNotNull(name);
-        assertEquals(validDn.toLowerCase(), name.toString().toLowerCase());
+        assertEquals(new LdapName(validRelDn), name.getSuffix(ldapBaseDn.size()));
+        assertEquals(ldapBaseDn, name.getPrefix(ldapBaseDn.size()));
     }
 
     @Test(expected = AuthenticationException.class)

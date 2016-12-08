@@ -75,6 +75,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
         return Arrays.asList(
                 new EssTimePermission(empId, ATTENDANCE_RECORDS,        GET,    effectiveRange),
+                new EssTimePermission(empId, ACCRUAL,                   GET,    effectiveRange),
                 new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,  GET,    Range.all()),
                 new EssTimePermission(empId, TIME_RECORDS,              GET,    effectiveRange),
                 new EssTimePermission(empId, TIME_RECORDS,              POST,   effectiveRange),

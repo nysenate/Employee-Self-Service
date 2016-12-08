@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.core.support.*;
 
 @Configuration
 public class LdapConfig
@@ -15,7 +15,10 @@ public class LdapConfig
     private static final Logger logger = LoggerFactory.getLogger(LdapConfig.class);
 
     @Value("${ldap.url}") private String ldapUrl;
-    @Value("${ldap.dn.template}") private String ldapDnTemplate;
+
+    @Value("${ldap.user.dn}") private String ldapUserDn;
+    @Value("${ldap.user.pass}") private String ldapUserPass;
+    @Value("${ldap.base}") private String ldapBase;
 
     /**
      * Provides a configured LdapTemplate instance that can be used to perform any ldap based operations
@@ -29,8 +32,11 @@ public class LdapConfig
         logger.info("Configuring ldap template with url {}", ldapUrl);
         LdapContextSource ldapContextSource = new LdapContextSource();
         ldapContextSource.setUrl(ldapUrl);
+        ldapContextSource.setBase(ldapBase);
+        ldapContextSource.setUserDn(ldapUserDn);
+        ldapContextSource.setPassword(ldapUserPass);
+//        ldapContextSource.setAnonymousReadOnly(true);
         ldapContextSource.afterPropertiesSet();
-        ldapContextSource.setAnonymousReadOnly(true);
         return new LdapTemplate(ldapContextSource);
     }
 }

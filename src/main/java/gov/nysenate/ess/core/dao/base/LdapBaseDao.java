@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.ldap.NamingException;
@@ -12,7 +13,12 @@ import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.LdapTemplate;
 
+import javax.annotation.PostConstruct;
+import javax.naming.InvalidNameException;
 import javax.naming.Name;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -21,14 +27,15 @@ public abstract class LdapBaseDao
 {
     private static final Logger logger = LoggerFactory.getLogger(LdapBaseDao.class);
 
-    @Autowired
-    protected LdapTemplate ldapTemplate;
+    @Autowired protected LdapTemplate ldapTemplate;
 
-    public static class DistinguishedNameMapper implements ContextMapper<Name> {
-        @Override
-        public Name mapFromContext(Object ctx) throws NamingException {
-            return (ctx != null) ? ((DirContextAdapter) ctx).getDn() : null;
-        }
+    @Value("${ldap.base}") private String ldapBase;
+
+    private LdapName baseDn;
+
+    @PostConstruct
+    public void init() throws InvalidNameException {
+        this.baseDn = new LdapName(ldapBase);
     }
 
     /**
@@ -37,8 +44,8 @@ public abstract class LdapBaseDao
      * @return SenateLdapPerson that matched the dn
      * @throws NamingException if name is not found
      */
-    public SenateLdapPerson getPerson(Name dn) throws NamingException {
-        return ldapTemplate.findByDn(dn, SenateLdapPerson.class);
+    public SenateLdapPerson getPerson(LdapName dn) throws NamingException {
+        return ldapTemplate.findByDn(relativeToBase(dn), SenateLdapPerson.class);
     }
 
     /**
@@ -77,5 +84,19 @@ public abstract class LdapBaseDao
             }
         }
         throw new EmptyResultDataAccessException("Failed to retrieve match based on uid. No results.", 1);
+    }
+
+    /* --- Internal Methods --- */
+
+    /**
+     * Get the given name relative to the base dn
+     * @param dn Name
+     * @return LdapName
+     */
+    private LdapName relativeToBase(LdapName dn) {
+        if (!dn.startsWith(baseDn)) {
+            return dn;
+        }
+        return (LdapName) dn.getSuffix(baseDn.size());
     }
 }

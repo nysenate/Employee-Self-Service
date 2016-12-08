@@ -14,6 +14,7 @@ import org.springframework.ldap.NamingException;
 import org.springframework.stereotype.Service;
 
 import javax.naming.Name;
+import javax.naming.ldap.LdapName;
 
 /**
  * LdapAuthService implementation that serves as the point of access for any service that requires
@@ -39,7 +40,7 @@ public class EssLdapAuthService implements LdapAuthService
         logger.debug("Trying to authenticate user {} with password {}", uid, credentials);
         LdapAuthStatus authStatus = LdapAuthStatus.UNKNOWN_EXCEPTION;
         try {
-            Name name = ldapAuthDao.authenticateByUid(uid, credentials);
+            LdapName name = ldapAuthDao.authenticateByUid(uid, credentials);
             if (name != null) {
                 SenateLdapPerson person = ldapAuthDao.getPerson(name);
                 return new LdapAuthResult(LdapAuthStatus.AUTHENTICATED, uid, name, person);

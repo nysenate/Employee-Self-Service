@@ -1,9 +1,9 @@
 
 # --- LDAP Authentication Test Data -------------------------------------------
 
-# A valid ldap uid
+# A valid ldap distinguished name relative to the base dn (ldap.base)
+test.ldap.valid.dn=
+# A valid ldap uid corresponding to the above dn
 test.ldap.valid.uid =
-# A valid ldap password corresponding to the above uid
+# A valid ldap password corresponding to the above dn
 test.ldap.valid.password =
-# A valid ldap domain name (ex. 'CN={user's full name},O=senate')
-test.ldap.valid.dn =

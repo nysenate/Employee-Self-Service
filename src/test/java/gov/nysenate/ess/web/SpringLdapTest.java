@@ -44,10 +44,10 @@ public class SpringLdapTest extends WebTest
             logger.debug("Emp ID: " + person.getEmployeeId());
             logger.debug("Department: " + person.getDepartment());
             logger.debug("DN: " + person.getDn());
-            logger.debug("SN: " + person.getSn());
+            logger.debug("SN: " + person.getLastName());
             logger.debug("UID: " + person.getUid());
             logger.debug("Email: " + person.getEmail());
-            logger.debug("Full Name: " + person.getFullName());
+            logger.debug("OU: " + person.getOrganization());
             logger.debug("Organization: " + person.getOrganization());
             logger.debug("Title: " + person.getTitle());
             logger.debug("State: " + person.getState());

@@ -15,8 +15,15 @@ auth.enabled = true
 auth.master.pass =
 
 # LDAP Configuration
-ldap.url = ldap://webmail.senate.state.ny.us:389
-ldap.dn.template = CN={0},O=senate
+# Ldap server url.  Include protocol(typically ldap://) and port(typically :389).
+ldap.url =
+# Ldap search base that includes all users
+ldap.base =
+# Distinguished name of an ldap user.  This dn will be used to make queries across all users
+ldap.user.dn =
+# Ldap password for the app's ldap user
+ldap.user.pass =
+
 
 # Number of bytes generated for XSRF token
 xsrf.token.bytes = 128
