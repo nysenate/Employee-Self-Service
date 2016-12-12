@@ -82,26 +82,56 @@
     </div>
   </div>
   <div class="col-2-12">
+
     <h3 class="content-info">Notes</h3>
     <div class="record-details-section">
-      <label ng-show="!record.remarks">This time record has no notes associated with it.</label>
+      <label ng-show="!record.remarks">This time record has no notes.</label>
       <span ng-bind="record.remarks"></span>
     </div>
+
     <h3 class="content-info">Supervisor</h3>
     <div class="record-details-section">
       <span>{{record.supervisor.fullName}}</span>
     </div>
+
     <h3 class="content-info">Status</h3>
     <div class="record-details-section">
       <span>{{record.recordStatus | timeRecordStatus}}</span>
     </div>
+
+    <h3 class="content-info">Accruals</h3>
+    <div class="record-details-section accrual-display" ng-show="loadingAccruals">
+      <span>Loading...</span>
+      <div loader-indicator class="sm-loader"></div>
+    </div>
+    <div class="record-details-section accrual-display" ng-hide="loadingAccruals">
+      <table><tbody>
+        <tr class="personal-text">
+          <td>Personal</td>
+          <td>{{accrual.personalAvailable}}</td>
+        </tr>
+        <tr class="vacation-text">
+          <td>Vacation</td>
+          <td>{{accrual.vacationAvailable}}</td>
+        </tr>
+        <tr class="sick-text">
+          <td>Sick</td>
+          <td>{{accrual.sickAvailable}}</td>
+        </tr>
+      </tbody></table>
+    </div>
+
     <h3 class="content-info">Actions</h3>
     <div class="record-details-section">
       <a target="_blank" title="Open a Printable View for this Record"
-         ng-href="http://nysasprd.senate.state.ny.us:7778/reports/rwservlet?report=PRTIMESHEET23&cmdkey=tsuser&p_stamp=N&p_nuxrtimesheet={{record.timeRecordId}}">Print Record</a>
-      <br/>
-      <br/>
-      <a ng-click="close()" title="Close this window">Exit</a>
+         ng-href="http://nysasprd.senate.state.ny.us:7778/reports/rwservlet?report=PRTIMESHEET23&cmdkey=tsuser&p_stamp=N&p_nuxrtimesheet={{record.timeRecordId}}">
+        Print Record
+      </a>
+      <div ng-if="showExitBtn">
+        <br/>
+        <br/>
+        <a ng-click="close()" title="Close this window">Exit</a>
+      </div>
     </div>
   </div>
 </div>

@@ -19,25 +19,55 @@ essTime.directive('timeRecordInput', [function(){
 /**
  * A table that displays details for a specific time record
  */
-essTime.directive('recordDetails', ['appProps', 'modals', function (appProps, modals) {
+essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', function (appProps, modals, accrualApi) {
     return {
         scope: {
             record: '='
         },
         templateUrl: appProps.ctxPath + '/template/time/record/details',
-        link: function($scope, $elem, attrs) {
+        link: function($scope, $elem, $attrs) {
             $scope.close = modals.reject;
             $scope.tempEntries = $scope.annualEntries = false;
-            var recordInitialized = false;
-            $scope.$watch('record', function () {
-                if (!recordInitialized) {
-                    angular.forEach($scope.record.timeEntries, function (entry) {
-                        $scope.tempEntries = $scope.tempEntries || entry.payType === 'TE';
-                        $scope.annualEntries = $scope.annualEntries || ['RA', 'SA'].indexOf(entry.payType) > -1;
-                    });
-                    recordInitialized = true;
+            $scope.showExitBtn = $attrs['exitBtn'] !== "false";
+            $scope.loadingAccruals = true;
+
+            $scope.$watch('record', function (record) {
+                if (record) {
+                    detectPayTypes();
+                    loadAccruals();
                 }
             });
+
+            function detectPayTypes() {
+                angular.forEach($scope.record.timeEntries, function (entry) {
+                    $scope.tempEntries = $scope.tempEntries || entry.payType === 'TE';
+                    $scope.annualEntries = $scope.annualEntries || ['RA', 'SA'].indexOf(entry.payType) > -1;
+                });
+            }
+
+            function loadAccruals() {
+                var record = $scope.record;
+                console.log(record);
+                var empId = record.employeeId;
+                var periodStartMoment = moment(record.payPeriod.startDate);
+                var params = {
+                    empId: empId,
+                    beforeDate: periodStartMoment.format('YYYY-MM-DD')
+                };
+                $scope.loadingAccruals = true;
+                return accrualApi.get(params,
+                    function (resp) {
+                        if (resp.success) {
+                            $scope.accrual = resp.result;
+                            console.log($scope.accrual);
+                        }
+                    }, function (resp) {
+                        modals.open('500', {details: resp});
+                        console.error(resp);
+                    }).$promise.finally(function() {
+                        $scope.loadingAccruals = false;
+                    });
+            }
         }
     };
 }]);

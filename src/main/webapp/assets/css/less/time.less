@@ -164,28 +164,44 @@ table.time-record-entry-table {
 
 /** --- Accruals --- */
 
+@sick-color: #d19525;
+@personal-color: @light-teal;
+@vacation-color: #799933;
+@misc-color: #e64727;
+
 .sick, .personal, .vacation, .misc {
   color: white;
 }
-
 .sick {
-  background: #d19525;
-  border-color: #d19525;
+  background: @sick-color;
+  border-color: @sick-color;
 }
 
 .personal {
-  background: @light-teal;
-  border-color: @light-teal;
+  background: @personal-color;
+  border-color: @personal-color;
 }
 
 .vacation {
-  background: #799933;
-  border-color: #799933;
+  background: @vacation-color;
+  border-color: @vacation-color;
+}
+
+.sick-text {
+  color: @sick-color;
+}
+
+.personal-text {
+  color: @personal-color;
+}
+
+.vacation-text {
+  color: @vacation-color;
 }
 
 .misc {
-  background: #e64727;
-  border-color: #e64727;
+  background: @misc-color;
+  border-color: @misc-color;
 }
 
 .captioned-hour-square {
@@ -240,7 +256,7 @@ table.time-record-entry-table {
       .font-weight-bold;
 
       &.sick {
-        border-color: #d19525;
+        border-color: @sick-color;
       }
 
       &.personal {
@@ -248,7 +264,7 @@ table.time-record-entry-table {
       }
 
       &.vacation {
-        border-color: #799933;
+        border-color: @vacation-color;
       }
     }
   }
@@ -353,8 +369,21 @@ record-detail-modal, [record-detail-modal] {
 }
 
 .record-details-section {
-  padding: .3em;
+  padding: 0.3em;
   text-align: center;
+}
+
+.record-details-section.accrual-display {
+  height: 5em;
+  [loader-indicator] {
+    margin: 1em auto;
+  }
+  table {
+    margin-left: 1em;
+    tr td {
+      padding: 0.1em;
+    }
+  }
 }
 
 h1.attendance-entry-sub-table-title {
@@ -582,13 +611,13 @@ table.attendance-entry-sub-table {
           border: 0;
           color: #333;
           &.personal {
-            background: fade(@light-teal, 10%);
+            background: fade(@personal-color, 10%);
           }
           &.sick {
-            background: fade(#d19525, 10%);
+            background: fade(@sick-color, 10%);
           }
           &.vacation {
-            background: fade(#799933, 10%);
+            background: fade(@vacation-color, 10%);
           }
         }
 
@@ -598,10 +627,10 @@ table.attendance-entry-sub-table {
             background: fade(@light-teal, 20%);
           }
           &.sick {
-            background: fade(#d19525, 20%);
+            background: fade(@sick-color, 20%);
           }
           &.vacation {
-            background: fade(#799933, 20%);
+            background: fade(@vacation-color, 20%);
           }
         }
 
@@ -656,8 +685,6 @@ table.approve-attendance-rec-table {
 }
 
 record-review-modal, [record-review-modal] {
-  max-width: 90vw;
-  overflow-x: auto;
   padding: 0.4em;
 }
 
@@ -703,7 +730,6 @@ record-review-modal, [record-review-modal] {
   }
 
   #record-details-view {
-    .modal-max-height;
     display: inline-block;
     width: 830px;
     margin: 0;
