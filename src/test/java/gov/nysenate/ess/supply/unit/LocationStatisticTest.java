@@ -116,8 +116,16 @@ public class LocationStatisticTest {
     }
 
     private LineItem createLineItem(int itemId, String commodityCode, int quantity) {
-        SupplyItem stubItem = new SupplyItem(itemId, commodityCode, "", new ItemStatus(true, true)
-                , new Category(""), new ItemAllowance(1, 1), new ItemUnit("1", 1), ItemVisibility.VISIBLE);
+        SupplyItem stubItem = new SupplyItem.Builder()
+                .withId(itemId)
+                .withCommodityCode(commodityCode)
+                .withDescription("")
+                .withStatus(new ItemStatus(true, true))
+                .withCategory(new Category(""))
+                .withAllowance(new ItemAllowance(1, 1))
+                .withUnit(new ItemUnit("1", 1))
+                .withVisibility(ItemVisibility.VISIBLE)
+                .build();
         return new LineItem(stubItem, quantity);
     }
 }

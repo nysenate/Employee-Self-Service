@@ -2,10 +2,7 @@ package gov.nysenate.ess.supply.item.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
-import gov.nysenate.ess.supply.item.model.ItemAllowance;
-import gov.nysenate.ess.supply.item.model.ItemStatus;
-import gov.nysenate.ess.supply.item.model.ItemUnit;
-import gov.nysenate.ess.supply.item.model.SupplyItem;
+import gov.nysenate.ess.supply.item.model.*;
 
 public class SupplyItemView implements ViewObject {
 
@@ -39,9 +36,16 @@ public class SupplyItemView implements ViewObject {
     }
 
     public SupplyItem toSupplyItem() {
-        return new SupplyItem(id, commodityCode, description, new ItemStatus(isExpendable, isInventoryTracked), category.toCategory(),
-                              new ItemAllowance(maxQtyPerOrder, suggestedMaxQty), new ItemUnit(unit, standardQuantity),
-                              ItemVisibility.valueOf(visibility));
+        return new SupplyItem.Builder()
+                .withId(id)
+                .withCommodityCode(commodityCode)
+                .withDescription(description)
+                .withStatus(new ItemStatus(isExpendable, isInventoryTracked))
+                .withCategory(category.toCategory())
+                .withAllowance(new ItemAllowance(maxQtyPerOrder, suggestedMaxQty))
+                .withUnit(new ItemUnit(unit, standardQuantity))
+                .withVisibility(ItemVisibility.valueOf(visibility))
+                .build();
     }
 
     public int getId() {

@@ -23,16 +23,15 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
             }
         }
 
-        return new SupplyItem(
-                rs.getInt("Nuxrefco"),
-                rs.getString("CdCommodity"),
-                // Use the supply app specific description. If not available fall back to the default description.
-                rs.getString("DeCommdtyEssSupply") == null ? rs.getString("DeCommodityf") : rs.getString("DeCommdtyEssSupply"),
-                new ItemStatus(rs.getString("cdstockitem").equals("Y"), !rs.getString("cdsensuppieditem").equals("Y")),
-                new Category(rs.getString("CdCategory")),
-                new ItemAllowance(rs.getInt("numaxunitord"), rs.getInt("numaxunitmon")),
-                new ItemUnit(rs.getString("CdIssUnit"),rs.getInt("AmStdUnit")),
-                visibility
-        );
+        return new SupplyItem.Builder()
+                .withId(rs.getInt("Nuxrefco"))
+                .withCommodityCode(rs.getString("CdCommodity"))
+                .withDescription(rs.getString("DeCommdtyEssSupply") == null ? rs.getString("DeCommodityf") : rs.getString("DeCommdtyEssSupply"))
+                .withStatus(new ItemStatus(rs.getString("cdstockitem").equals("Y"), !rs.getString("cdsensuppieditem").equals("Y")))
+                .withCategory(new Category(rs.getString("CdCategory")))
+                .withAllowance(new ItemAllowance(rs.getInt("numaxunitord"), rs.getInt("numaxunitmon")))
+                .withUnit(new ItemUnit(rs.getString("CdIssUnit"),rs.getInt("AmStdUnit")))
+                .withVisibility(visibility)
+                .build();
     }
 }

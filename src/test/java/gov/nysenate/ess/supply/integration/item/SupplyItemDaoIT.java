@@ -28,8 +28,16 @@ public class SupplyItemDaoIT extends BaseTest {
 
     @Test
     public void canGetExpendableItemById() {
-        SupplyItem expected = new SupplyItem(111, "K1",  "LABELING AND COVER UP TAPE", new ItemStatus(true, true),
-                                             new Category("KORECTYPE"), new ItemAllowance(2, 4), new ItemUnit("1", 1), ItemVisibility.VISIBLE);
+        SupplyItem expected = new SupplyItem.Builder()
+                .withId(111)
+                .withCommodityCode("K1")
+                .withDescription("LABELING AND COVER UP TAPE")
+                .withStatus(new ItemStatus(true, true))
+                .withCategory(new Category("KORECTYPE"))
+                .withAllowance(new ItemAllowance(2, 4))
+                .withUnit(new ItemUnit("1", 1))
+                .withVisibility(ItemVisibility.VISIBLE)
+                .build();
         SupplyItem actual = itemDao.getItemById(111);
         assertThat(actual, equalTo(expected));
     }

@@ -18,14 +18,14 @@ public final class ItemStatus {
         this.orderedBySupply = orderedBySupply;
     }
 
-    public boolean isExpendable() {
+    boolean isExpendable() {
         return isExpendable;
     }
 
     /**
      * Should this item be synchronized in SFMS.
      */
-    public boolean requiresSynchronization() {
+    boolean requiresSynchronization() {
         return isExpendable && orderedBySupply;
     }
 

@@ -2,6 +2,8 @@ package gov.nysenate.ess.supply.item.model;
 
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public final class SupplyItem {
 
     private final int id;
@@ -11,20 +13,17 @@ public final class SupplyItem {
     private final Category category;
     private final ItemAllowance allowance;
     private final ItemUnit unit;
-    /** Number of items per unit. eg. 12/PKG would equal 12 */
     private final ItemVisibility visibility;
 
-    public SupplyItem(int id, String commodityCode, String description, ItemStatus status,
-                      Category category, ItemAllowance allowance,
-                      ItemUnit unit, ItemVisibility visibility) {
-        this.id = id;
-        this.commodityCode = commodityCode;
-        this.description = description;
-        this.status = status;
-        this.category = category;
-        this.allowance = allowance;
-        this.unit = unit;
-        this.visibility = visibility;
+    public SupplyItem(Builder builder) {
+        this.id = builder.id;
+        this.commodityCode = checkNotNull(builder.commodityCode, "SupplyItem cannot have null commodityCode.");
+        this.description = checkNotNull(builder.description, "SupplyItem cannot have null description.");
+        this.status = checkNotNull(builder.status, "SupplyItem cannot have null ItemStatus.");
+        this.category = checkNotNull(builder.category, "SupplyItem cannot have null Category.");
+        this.allowance = checkNotNull(builder.allowance, "SupplyItem cannot have null ItemAllowance.");
+        this.unit = checkNotNull(builder.unit, "SupplyItem cannot have null ItemUnit.");
+        this.visibility = checkNotNull(builder.visibility, "SupplyItem cannot have null ItemVisibility.");
     }
 
     public int getId() {
@@ -69,6 +68,62 @@ public final class SupplyItem {
 
     public boolean isExpendable() {
         return status.isExpendable();
+    }
+
+    public static class Builder {
+        private int id;
+        private String commodityCode;
+        private String description;
+        private ItemStatus status;
+        private Category category;
+        private ItemAllowance allowance;
+        private ItemUnit unit;
+        /** Number of items per unit. eg. 12/PKG would equal 12 */
+        private ItemVisibility visibility;
+
+        public Builder withId(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder withCommodityCode(String commodityCode) {
+            this.commodityCode = commodityCode;
+            return this;
+        }
+
+        public Builder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder withStatus(ItemStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder withCategory(Category category) {
+            this.category = category;
+            return this;
+        }
+
+        public Builder withAllowance(ItemAllowance allowance) {
+            this.allowance = allowance;
+            return this;
+        }
+
+        public Builder withUnit(ItemUnit unit) {
+            this.unit = unit;
+            return this;
+        }
+
+        public Builder withVisibility(ItemVisibility visibility) {
+            this.visibility = visibility;
+            return this;
+        }
+
+        public SupplyItem build() {
+            return new SupplyItem(this);
+        }
     }
 
     @Override
