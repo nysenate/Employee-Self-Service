@@ -34,12 +34,11 @@ public interface SendMailService extends JavaMailSender
      * Constructs a new HTML {@link MimeMessage} using some common message parameters
      *
      * @param to String - receiver (uses TO field)
-     * @param from String - sender
      * @param subject String - subject
      * @param html String - html body content
      * @return
      */
-    MimeMessage newHtmlMessage(String to, String from, String subject, String html);
+    MimeMessage newHtmlMessage(String to, String subject, String html);
 
     /**
      * Sends all email messages from the given collection of simple email messages

@@ -75,12 +75,24 @@ supply.schema = supply
 # --- Mail Configuration ------------------------------------------------------
 
 # Connection information for sending emails
-mail.smtp.host = imap.gmail.com
-mail.smtp.port = 587
+# Hostname and port
+mail.smtp.host =
+mail.smtp.port =
+
+# Enables AUTH command
 mail.smtp.auth = true
+# Enables connection attempts using STARTTLS authentication
 mail.smtp.starttls.enable = true
-mail.smtp.user = nysenatedev
+# Enables connection attempts using SSL authentication
+mail.smtp.ssl.enable = true
+
+# Username
+mail.smtp.user =
+# Password
 mail.smtp.password =
+# Email address that will appear in the from header
+mail.smtp.from =
+
 mail.debug = false
 
 # --- Eh Cache Configuration --------------------------------------------------

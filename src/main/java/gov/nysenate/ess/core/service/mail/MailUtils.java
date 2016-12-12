@@ -22,19 +22,27 @@ public class MailUtils
     @Value("${mail.smtp.user:}") private String smtpUser;
     @Value("${mail.smtp.password:}") private String smtpPass;
     @Value("${mail.debug:false}") private boolean debug;
-    @Value("${mail.smtp.starttls.enable:}") private boolean stlsEnable;
+    @Value("${mail.smtp.from:noreply@nysenate.gov}") private String smtpFrom;
+    @Value("${mail.smtp.starttls.enable:false}") private boolean stlsEnable;
+    @Value("${mail.smtp.ssl.enable:false}") private boolean sslEnable;
 
     private Properties mailProperties;
+    private Authenticator authenticator;
 
     @PostConstruct
     public void init() {
+        authenticator = new EssPasswordAuthenticator(
+                new PasswordAuthentication(smtpUser, smtpPass));
+
         mailProperties = new Properties();
         mailProperties.put("mail.smtp.host", host);
         mailProperties.put("mail.smtp.port", port);
         mailProperties.put("mail.smtp.auth", auth);
         mailProperties.put("mail.smtp.starttls.enable", stlsEnable);
+        mailProperties.put("mail.smtp.ssl.enable", sslEnable);
         mailProperties.put("mail.smtp.user", smtpUser);
         mailProperties.put("mail.smtp.pass", smtpPass);
+        mailProperties.put("mail.smtp.from", smtpFrom);
         mailProperties.put("mail.debug", debug);
     }
 
@@ -43,7 +51,7 @@ public class MailUtils
      * @return Session
      */
     public Session getSmtpSession() {
-        return Session.getInstance(mailProperties, getSmtpAuthenticator());
+        return Session.getInstance(mailProperties, authenticator);
     }
 
     /**
@@ -61,16 +69,19 @@ public class MailUtils
     /** --- Internal Methods --- */
 
     /**
-     * Generates an authenticator from the smtp properties
+     * Password authenticator based on smtp credentials
      */
-    private Authenticator getSmtpAuthenticator() {
-        return new Authenticator() {
-            private PasswordAuthentication pa = new PasswordAuthentication(smtpUser, smtpPass);
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return pa;
-            }
-        };
+    private static class EssPasswordAuthenticator extends Authenticator {
+        private PasswordAuthentication pa;
+
+        public EssPasswordAuthenticator(PasswordAuthentication pa) {
+            this.pa = pa;
+        }
+
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+            return pa;
+        }
     }
 
 }
