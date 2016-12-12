@@ -1,5 +1,7 @@
 package gov.nysenate.ess.core.util;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 /**
@@ -11,14 +13,14 @@ public class PaginatedList<T>
 {
     protected int total;
     protected LimitOffset limOff;
-    protected List<T> results;
+    protected ImmutableList<T> results;
 
     /** --- Constructors --- */
 
     public PaginatedList(int total, LimitOffset limOff, List<T> results) {
         this.total = total;
         this.limOff = limOff;
-        this.results = results;
+        this.results = ImmutableList.copyOf(results);
     }
 
     /** --- Basic Getters --- */
