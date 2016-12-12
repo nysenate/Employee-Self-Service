@@ -3,10 +3,7 @@ package gov.nysenate.ess.supply.integration.item;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
-import gov.nysenate.ess.supply.item.model.Category;
-import gov.nysenate.ess.supply.item.model.ItemStatus;
-import gov.nysenate.ess.supply.item.model.ItemUnit;
-import gov.nysenate.ess.supply.item.model.SupplyItem;
+import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.dao.OracleSupplyItemDao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,7 @@ public class SupplyItemDaoIT extends BaseTest {
     @Test
     public void canGetExpendableItemById() {
         SupplyItem expected = new SupplyItem(111, "K1",  "LABELING AND COVER UP TAPE", new ItemStatus(true, true),
-                                             new Category("KORECTYPE"), 2, 4, new ItemUnit("1", 1), ItemVisibility.VISIBLE);
+                                             new Category("KORECTYPE"), new ItemAllowance(2, 4), new ItemUnit("1", 1), ItemVisibility.VISIBLE);
         SupplyItem actual = itemDao.getItemById(111);
         assertThat(actual, equalTo(expected));
     }

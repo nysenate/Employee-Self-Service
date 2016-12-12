@@ -4,31 +4,25 @@ import gov.nysenate.ess.supply.allowance.ItemVisibility;
 
 public final class SupplyItem {
 
-    /*
-
-     */
-
     private final int id;
     private final String commodityCode;
     private final String description;
     private final ItemStatus status;
     private final Category category;
-    private final int maxQtyPerOrder;
-    private final int maxQtyPerMonth;
+    private final ItemAllowance allowance;
     private final ItemUnit unit;
     /** Number of items per unit. eg. 12/PKG would equal 12 */
     private final ItemVisibility visibility;
 
     public SupplyItem(int id, String commodityCode, String description, ItemStatus status,
-                      Category category, int maxQtyPerOrder, int maxQtyPerMonth,
+                      Category category, ItemAllowance allowance,
                       ItemUnit unit, ItemVisibility visibility) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.description = description;
         this.status = status;
         this.category = category;
-        this.maxQtyPerOrder = maxQtyPerOrder;
-        this.maxQtyPerMonth = maxQtyPerMonth;
+        this.allowance = allowance;
         this.unit = unit;
         this.visibility = visibility;
     }
@@ -53,12 +47,12 @@ public final class SupplyItem {
         return category;
     }
 
-    public int getMaxQtyPerOrder() {
-        return maxQtyPerOrder;
+    public int getOrderMaxQty() {
+        return allowance.getPerOrderAllowance();
     }
 
-    public int getMaxQtyPerMonth() {
-        return maxQtyPerMonth;
+    public int getMonthlyMaxQty() {
+        return allowance.getPerMonthAllowance();
     }
 
     public int getUnitQuantity() {
@@ -85,8 +79,7 @@ public final class SupplyItem {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", category=" + category +
-                ", maxQtyPerOrder=" + maxQtyPerOrder +
-                ", maxQtyPerMonth=" + maxQtyPerMonth +
+                ", allowance=" + allowance +
                 ", unit=" + unit +
                 ", visibility=" + visibility +
                 '}';

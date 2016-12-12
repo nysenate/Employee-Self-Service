@@ -13,6 +13,6 @@ import static org.hamcrest.core.Is.is;
 @org.junit.experimental.categories.Category(UnitTest.class)
 public class SupplyItemTest {
 
-
+    // TODO: test all constructors dont take null/empty values
 
 }

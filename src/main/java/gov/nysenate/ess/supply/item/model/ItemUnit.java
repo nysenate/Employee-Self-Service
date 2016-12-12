@@ -18,11 +18,11 @@ public final class ItemUnit {
         this.quantity = quantity;
     }
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
-    public int getQuantity() {
+    int getQuantity() {
         return quantity;
     }
 
