@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.SupplyItem;
@@ -24,7 +23,7 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
 
     @Override
     public Set<ItemAllowance> getItemAllowances(LocationId locationId) {
-        List<SupplyItem> items = itemService.getSupplyItems(LimitOffset.ALL).getResults();
+        Set<SupplyItem> items = itemService.getSupplyItems();
         Set<ItemAllowance> itemAllowances = items.stream()
                                                  .map(i -> createAllowanceFromItemAndLoc(i, locationId))
                                                  .collect(Collectors.toSet());

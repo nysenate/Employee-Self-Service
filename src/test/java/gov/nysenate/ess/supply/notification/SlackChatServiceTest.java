@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class SlackChatServiceTest extends BaseTest {
     private static final ImmutableList<String> slackers =
             ImmutableList.of("readman");
 
+    @Ignore
     @Test
     public void sendMessageTest() {
         slackChatService.sendMessage(testMessageText);

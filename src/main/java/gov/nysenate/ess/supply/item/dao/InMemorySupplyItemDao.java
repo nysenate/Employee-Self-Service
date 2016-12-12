@@ -1,18 +1,10 @@
 package gov.nysenate.ess.supply.item.dao;
 
-import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.SupplyItem;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Used for testing across SFMS boundries.
@@ -40,17 +32,8 @@ public class InMemorySupplyItemDao implements SupplyItemDao {
     }
 
     @Override
-    public PaginatedList<SupplyItem> getSupplyItems(LimitOffset limOff) {
-        return new PaginatedList<SupplyItem>(items.size(), limOff, (ArrayList)items.values());
-    }
-
-    @Override
-    public PaginatedList<SupplyItem> getSupplyItemsByCategories(List<Category> categories, LimitOffset limOff) {
-        List<SupplyItem> matchingItems = new ArrayList<>();
-        this.items.values().forEach(item -> {
-            if (categories.contains(item.getCategory())) matchingItems.add(item);
-        });
-        return new PaginatedList<>(matchingItems.size(), limOff, matchingItems);
+    public Set<SupplyItem> getSupplyItems() {
+        return new HashSet<>(items.values());
     }
 
     @Override

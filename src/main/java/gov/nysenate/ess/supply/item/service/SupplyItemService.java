@@ -6,16 +6,11 @@ import gov.nysenate.ess.supply.item.Category;
 import gov.nysenate.ess.supply.item.SupplyItem;
 
 import java.util.List;
+import java.util.Set;
 
 public interface SupplyItemService {
 
-    PaginatedList<SupplyItem> getSupplyItems(LimitOffset limOff);
-
-    /**
-     * Search for supply items by categories.
-     * @return A PaginatedList containing all SupplyItems belonging to any category given in <code>categories</code>.
-     */
-    PaginatedList<SupplyItem> getSupplyItemsByCategorys(List<Category> categories, LimitOffset limOff);
+    Set<SupplyItem> getSupplyItems();
 
     SupplyItem getItemById(Integer id);
 }

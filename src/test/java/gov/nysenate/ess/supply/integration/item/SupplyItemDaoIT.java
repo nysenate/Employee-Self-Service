@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -26,16 +27,8 @@ public class SupplyItemDaoIT extends BaseTest {
 
     @Test
     public void canGetItems() {
-        PaginatedList<SupplyItem> items = itemDao.getSupplyItems(LimitOffset.ALL);
-        assertTrue(items.getTotal() > 0);
-        assertTrue(items.getResults().size() > 0);
-    }
-
-    @Test
-    public void canLimitResults() {
-        PaginatedList<SupplyItem> paginatedItems = itemDao.getSupplyItems(LimitOffset.TWENTY_FIVE);
-        assertTrue(paginatedItems.getResults().size() == 25);
-        assertTrue(paginatedItems.getTotal() > 25);
+        Set<SupplyItem> items = itemDao.getSupplyItems();
+        assertTrue(items.size() > 0);
     }
 
     @Test
@@ -46,23 +39,7 @@ public class SupplyItemDaoIT extends BaseTest {
         assertThat(actual, equalTo(expected));
     }
 
-    @Test
-    public void canGetItemsByCategory() {
-        List<Category> categories = new ArrayList<>();
-        categories.add(new Category("BATTERIES"));
-        categories.add(new Category("CLIPS"));
-        PaginatedList<SupplyItem> items = itemDao.getSupplyItemsByCategories(categories, LimitOffset.ALL);
-        items.getResults().forEach(item -> assertTrue(categories.contains(item.getCategory())));
-    }
-
-    /**
-     * A few items inventory counts are not tracked in SFMS.
-     * For these items, the field cdsensuppieditem = 'Y' and cdstockitem = 'N'.
-     * These are still supply items and they should show up will all other supply items.
-     */
-    @Test
-    public void getsExceptionalStockItems() {
-        SupplyItem actual = itemDao.getItemById(2973);
-        assertThat(actual.isInventoryTracked(), is(false));
-    }
+    // TODO: getting items should get senate supplied items, both stock item and senatesupplied items.
+    // TODO: can get inactive item by id
+    // TODO: can get non expendable items by id
 }
