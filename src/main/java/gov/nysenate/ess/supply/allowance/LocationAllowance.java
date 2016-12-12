@@ -1,7 +1,7 @@
 package gov.nysenate.ess.supply.allowance;
 
 import gov.nysenate.ess.core.model.unit.Location;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 
 import java.util.Set;
 

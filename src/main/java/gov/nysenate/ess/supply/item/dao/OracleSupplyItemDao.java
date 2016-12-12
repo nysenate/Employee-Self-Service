@@ -3,7 +3,7 @@ package gov.nysenate.ess.supply.item.dao;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 

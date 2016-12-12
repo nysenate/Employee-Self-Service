@@ -1,12 +1,28 @@
-package gov.nysenate.ess.supply.item;
+package gov.nysenate.ess.supply.item.model;
 
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 
 public final class SupplyItem {
 
+    /*
+    ItemUnit
+        unit
+        unitStandardQuantity
+
+    ItemStatus
+        Expendable?
+        Synchable?
+
+
+
+     shouldBeSynched()
+     isExpendable()
+     */
+
     private final int id;
     private final String commodityCode;
     private final String description;
+    private final ItemStatus status;
     private final String unit;
     private final Category category;
     private final int maxQtyPerOrder;
@@ -14,21 +30,20 @@ public final class SupplyItem {
     /** Number of items per unit. eg. 12/PKG would equal 12 */
     private final int unitStandardQuantity;
     private final ItemVisibility visibility;
-    private final boolean isInventoryTracked; // Is the inventory count for this item tracked in SFMS.
 
-    public SupplyItem(int id, String commodityCode, String description, String unit,
+    public SupplyItem(int id, String commodityCode, String description, ItemStatus status, String unit,
                       Category category, int maxQtyPerOrder, int maxQtyPerMonth,
-                      int unitStandardQuantity, ItemVisibility visibility, boolean isInventoryTracked) {
+                      int unitStandardQuantity, ItemVisibility visibility) {
         this.id = id;
         this.commodityCode = commodityCode;
         this.description = description;
+        this.status = status;
         this.unit = unit;
         this.category = category;
         this.maxQtyPerOrder = maxQtyPerOrder;
         this.maxQtyPerMonth = maxQtyPerMonth;
         this.unitStandardQuantity = unitStandardQuantity;
         this.visibility = visibility;
-        this.isInventoryTracked = isInventoryTracked;
     }
 
     public int getId() {
@@ -67,8 +82,12 @@ public final class SupplyItem {
         return visibility;
     }
 
-    public boolean isInventoryTracked() {
-        return isInventoryTracked;
+    public boolean requiresSynchronization() {
+        return status.requiresSynchronization();
+    }
+
+    public boolean isExpendable() {
+        return status.isExpendable();
     }
 
     @Override
@@ -83,7 +102,6 @@ public final class SupplyItem {
                ", maxQtyPerMonth=" + maxQtyPerMonth +
                ", unitStandardQuantity=" + unitStandardQuantity +
                ", visibility=" + visibility +
-               ", isInventoryTracked=" + isInventoryTracked +
                '}';
     }
 
@@ -96,7 +114,6 @@ public final class SupplyItem {
         if (maxQtyPerOrder != that.maxQtyPerOrder) return false;
         if (maxQtyPerMonth != that.maxQtyPerMonth) return false;
         if (unitStandardQuantity != that.unitStandardQuantity) return false;
-        if (isInventoryTracked != that.isInventoryTracked) return false;
         if (commodityCode != null ? !commodityCode.equals(that.commodityCode) : that.commodityCode != null)
             return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
@@ -116,7 +133,6 @@ public final class SupplyItem {
         result = 31 * result + maxQtyPerMonth;
         result = 31 * result + unitStandardQuantity;
         result = 31 * result + (visibility != null ? visibility.hashCode() : 0);
-        result = 31 * result + (isInventoryTracked ? 1 : 0);
         return result;
     }
 }

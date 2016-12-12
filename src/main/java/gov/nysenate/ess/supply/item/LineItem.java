@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.item;
 
+import gov.nysenate.ess.supply.item.model.SupplyItem;
+
 /** A Line item represents an item in an order.
  * It contains the an item id and the quantity ordered. */
 public final class LineItem {

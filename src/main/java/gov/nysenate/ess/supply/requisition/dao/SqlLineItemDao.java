@@ -9,7 +9,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;

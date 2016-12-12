@@ -105,7 +105,7 @@ public class SfmsSynchronizationService {
      */
     private Requisition filterRequisitionForSfms(Requisition requisition) {
         Set<LineItem> filteredLineItems = requisition.getLineItems().stream()
-                                                     .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().isInventoryTracked())
+                                                     .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().requiresSynchronization())
                                                      .collect(Collectors.toSet());
         return requisition.setLineItems(filteredLineItems);
     }

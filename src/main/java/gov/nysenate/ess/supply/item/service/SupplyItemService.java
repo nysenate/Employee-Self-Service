@@ -1,11 +1,7 @@
 package gov.nysenate.ess.supply.item.service;
 
-import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.supply.item.Category;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 
-import java.util.List;
 import java.util.Set;
 
 public interface SupplyItemService {

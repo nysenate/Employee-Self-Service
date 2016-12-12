@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum OracleSupplyItemQuery implements BasicSqlQuery {
 
     SUPPLY_ITEM_QUERY(
-            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdIssUnit, com.DeCommodityf, \n"
+            "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdStockItem, com.CdIssUnit, com.DeCommodityf, \n"
                     + "com.DeCommdtyEssSupply, com.CdSpecPerMReq, com.CdSpecPerMVisible, unit.AmStdUnit, \n"
                     + "com.numaxunitord, com.numaxunitmon, com.cdsensuppieditem \n"
                     + "From ${masterSchema}.FM12COMMODTY com \n"

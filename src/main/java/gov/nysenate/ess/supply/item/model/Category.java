@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.item;
+package gov.nysenate.ess.supply.item.model;
 
 /**
  * Simple class to represent a Supply Item Category.

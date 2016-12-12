@@ -5,9 +5,9 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
-import gov.nysenate.ess.supply.item.Category;
+import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
@@ -49,9 +49,9 @@ public class RequisitionFixtureTest {
     }
 
     public static Set<LineItem> createStubLineItem() {
-        SupplyItem stubItem = new SupplyItem(2, "AA", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE, true);
+//        SupplyItem stubItem = new SupplyItem(2, "AA", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE, true);
         Set<LineItem> stubLineItems = new HashSet<>();
-        stubLineItems.add(new LineItem(stubItem, 1));
+//        stubLineItems.add(new LineItem(stubItem, 1));
         return stubLineItems;
     }
 

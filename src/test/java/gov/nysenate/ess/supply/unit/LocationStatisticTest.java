@@ -4,9 +4,10 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
-import gov.nysenate.ess.supply.item.Category;
+import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.ItemStatus;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixtureTest;
@@ -117,7 +118,7 @@ public class LocationStatisticTest {
     }
 
     private LineItem createLineItem(String commodityCode, int quantity) {
-        SupplyItem stubItem = new SupplyItem(1, commodityCode, "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE, true);
+        SupplyItem stubItem = new SupplyItem(1, commodityCode, "", new ItemStatus(true, true),"", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
         return new LineItem(stubItem, quantity);
     }
 }

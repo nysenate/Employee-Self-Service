@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

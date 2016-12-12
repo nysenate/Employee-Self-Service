@@ -1,7 +1,7 @@
 package gov.nysenate.ess.supply.item.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.supply.item.Category;
+import gov.nysenate.ess.supply.item.model.Category;
 
 public class CategoryView implements ViewObject {
 

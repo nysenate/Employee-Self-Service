@@ -1,6 +1,6 @@
 package gov.nysenate.ess.supply.item.service;
 
-import gov.nysenate.ess.supply.item.SupplyItem;
+import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
