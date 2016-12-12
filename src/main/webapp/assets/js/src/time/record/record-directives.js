@@ -29,7 +29,8 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
             $scope.close = modals.reject;
             $scope.tempEntries = $scope.annualEntries = false;
             $scope.showExitBtn = $attrs['exitBtn'] !== "false";
-            $scope.loadingAccruals = true;
+            $scope.showAccruals = $attrs['showAccruals'] === "true";
+            $scope.loadingAccruals = false;
 
             $scope.$watch('record', function (record) {
                 if (record) {
@@ -46,6 +47,9 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
             }
 
             function loadAccruals() {
+                if (!$scope.showAccruals) {
+                    return;
+                }
                 var record = $scope.record;
                 console.log(record);
                 var empId = record.employeeId;
