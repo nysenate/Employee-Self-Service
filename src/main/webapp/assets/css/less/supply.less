@@ -3,7 +3,6 @@
 @import "./common/include";
 @import "./common/input";
 @import url(//fonts.googleapis.com/css?family=Noto+Sans:400,700);
-
 /** --- Supply --- */
 
 .supply-order-hero {
@@ -387,4 +386,15 @@ img.ui-datepicker-trigger {
   &:hover {
     text-decoration:underline;
   }
+}
+// tick and cross for Approved Requisition Requests
+.tick:before {
+  content: "\2713";
+  color: green;
+  font-weight: bold;
+}
+.cross:before {
+  content: "\2717";
+  color: crimson;
+  font-weight: bold;
 }
