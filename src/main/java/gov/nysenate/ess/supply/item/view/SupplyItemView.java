@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.item.view;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.ItemStatus;
+import gov.nysenate.ess.supply.item.model.ItemUnit;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 
 public class SupplyItemView implements ViewObject {
@@ -26,19 +27,19 @@ public class SupplyItemView implements ViewObject {
         this.id = item.getId();
         this.commodityCode = item.getCommodityCode();
         this.description = item.getDescription();
-        this.unit = item.getUnit();
+        this.unit = item.getUnitDescription();
         this.category = new CategoryView(item.getCategory());
         this.maxQtyPerOrder = item.getMaxQtyPerOrder();
         this.suggestedMaxQty = item.getMaxQtyPerMonth();
-        this.standardQuantity = item.getUnitStandardQuantity();
+        this.standardQuantity = item.getUnitQuantity();
         this.visibility = item.getVisibility().toString();
         this.isInventoryTracked = item.requiresSynchronization();
         this.isExpendable = item.isExpendable();
     }
 
     public SupplyItem toSupplyItem() {
-        return new SupplyItem(id, commodityCode, description, new ItemStatus(isExpendable, isInventoryTracked), unit, category.toCategory(),
-                              maxQtyPerOrder, suggestedMaxQty, standardQuantity,
+        return new SupplyItem(id, commodityCode, description, new ItemStatus(isExpendable, isInventoryTracked), category.toCategory(),
+                              maxQtyPerOrder, suggestedMaxQty, new ItemUnit(unit, standardQuantity),
                               ItemVisibility.valueOf(visibility));
     }
 

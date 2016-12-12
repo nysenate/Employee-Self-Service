@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.model.ItemStatus;
+import gov.nysenate.ess.supply.item.model.ItemUnit;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 
 import java.sql.ResultSet;
@@ -31,11 +32,10 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
                 // Use the supply app specific description. If not available fall back to the default description.
                 rs.getString("DeCommdtyEssSupply") == null ? rs.getString("DeCommodityf") : rs.getString("DeCommdtyEssSupply"),
                 new ItemStatus(rs.getString("cdstockitem").equals("Y"), !rs.getString("cdsensuppieditem").equals("Y")),
-                rs.getString("CdIssUnit"),
                 new Category(rs.getString("CdCategory")),
                 rs.getInt("numaxunitord"),
                 rs.getInt("numaxunitmon"),
-                rs.getInt("AmStdUnit"),
+                new ItemUnit(rs.getString("CdIssUnit"),rs.getInt("AmStdUnit")),
                 visibility
         );
     }

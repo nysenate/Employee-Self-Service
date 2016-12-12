@@ -28,4 +28,28 @@ public final class ItemStatus {
     public boolean requiresSynchronization() {
         return isExpendable && orderedBySupply;
     }
+
+    @Override
+    public String toString() {
+        return "ItemStatus{" +
+                "isExpendable=" + isExpendable +
+                ", orderedBySupply=" + orderedBySupply +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemStatus that = (ItemStatus) o;
+        if (isExpendable != that.isExpendable) return false;
+        return orderedBySupply == that.orderedBySupply;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isExpendable ? 1 : 0);
+        result = 31 * result + (orderedBySupply ? 1 : 0);
+        return result;
+    }
 }

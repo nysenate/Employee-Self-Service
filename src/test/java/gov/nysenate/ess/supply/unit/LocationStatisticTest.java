@@ -7,6 +7,7 @@ import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.ItemStatus;
+import gov.nysenate.ess.supply.item.model.ItemUnit;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
@@ -55,14 +56,14 @@ public class LocationStatisticTest {
 
     @Test
     public void ignoresLineItemsWithZeroQuantity() {
-        requisition = addLineItem(requisition, "ABC", 0);
+        requisition = addLineItem(1, requisition, "ABC", 0);
         LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(requisition));
         assertThat(locationStatistic.calculate().size(), is(0));
     }
 
     @Test
     public void giveSingleItem_calculatesStatistics() {
-        requisition = addLineItem(requisition, "AA", 1);
+        requisition = addLineItem(1, requisition, "AA", 1);
         LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(requisition));
         assertThat(locationStatistic.calculate().size(), is(1));
         assertThat(locationStatistic.calculate().get("AA"), is(1));
@@ -71,9 +72,9 @@ public class LocationStatisticTest {
     @Test
     public void givenMultipleRequisitionsWithSameItem_SumsTheTotalQuantity() {
         Requisition first = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
-        first = addLineItem(first, "AA", 1);
+        first = addLineItem(1, first, "AA", 1);
         Requisition second = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
-        second = addLineItem(second, "AA", 3);
+        second = addLineItem(1, second, "AA", 3);
         LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(first, second));
         assertThat(locationStatistic.calculate().size(), is(1));
         assertThat(locationStatistic.calculate().get("AA"), is(4));
@@ -82,18 +83,18 @@ public class LocationStatisticTest {
     @Test
     public void onlyRequisitionsForGivenLocationAreUsedInCalculation() {
         Requisition first = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
-        first = addLineItem(first, "AA", 1);
-        first = addLineItem(first, "BB", 0);
-        first = addLineItem(first, "CC", 2);
-        first = addLineItem(first, "DD", 5);
+        first = addLineItem(1, first, "AA", 1);
+        first = addLineItem(2, first, "BB", 0);
+        first = addLineItem(3, first, "CC", 2);
+        first = addLineItem(4, first, "DD", 5);
         Requisition second = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
-        second = addLineItem(second, "BB", 3);
-        second = addLineItem(second, "CC", 1);
-        second = addLineItem(second, "ZZ", 1);
+        second = addLineItem(2, second, "BB", 3);
+        second = addLineItem(3, second, "CC", 1);
+        second = addLineItem(5, second, "ZZ", 1);
         Requisition third = RequisitionFixtureTest.baseRequisition().setDestination(new Location(new LocationId("ZZZ-Z")));
-        third = addLineItem(third, "AA", 0);
-        third = addLineItem(third, "CC", 1);
-        third = addLineItem(third, "DD", 3);
+        third = addLineItem(1, third, "AA", 0);
+        third = addLineItem(3, third, "CC", 1);
+        third = addLineItem(4, third, "DD", 3);
         LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(first, second, third));
         assertThat(locationStatistic.calculate().size(), is(5));
         assertThat(locationStatistic.calculate().get("AA"), is(1));
@@ -103,10 +104,10 @@ public class LocationStatisticTest {
         assertThat(locationStatistic.calculate().get("ZZ"), is(1));
     }
 
-    private Requisition addLineItem(Requisition simple, String commodityCode, int quantity) {
-        Set<LineItem> lineItems = copyLineItems(simple);
-        lineItems.add(createLineItem(commodityCode, quantity));
-        return simple.setLineItems(lineItems);
+    private Requisition addLineItem(int itemId, Requisition req, String commodityCode, int quantity) {
+        Set<LineItem> lineItems = copyLineItems(req);
+        lineItems.add(createLineItem(itemId, commodityCode, quantity));
+        return req.setLineItems(lineItems);
     }
 
     private Set<LineItem> copyLineItems(Requisition simple) {
@@ -117,8 +118,9 @@ public class LocationStatisticTest {
         return lineItems;
     }
 
-    private LineItem createLineItem(String commodityCode, int quantity) {
-        SupplyItem stubItem = new SupplyItem(1, commodityCode, "", new ItemStatus(true, true),"", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE);
+    private LineItem createLineItem(int itemId, String commodityCode, int quantity) {
+        SupplyItem stubItem = new SupplyItem(itemId, commodityCode, "", new ItemStatus(true, true)
+                , new Category(""), 1, 1, new ItemUnit("1", 1), ItemVisibility.VISIBLE);
         return new LineItem(stubItem, quantity);
     }
 }
