@@ -51,7 +51,7 @@ public class EssLdapAuthServiceIT extends BaseTest
     public void testAuthenticateUserByUid_Succeeds() throws Exception {
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(validUid, validPassword);
         assertNotNull(authResult);
-        Assert.assertEquals(LdapAuthStatus.AUTHENTICATED, authResult.getAuthStatus());
+        assertEquals(LdapAuthStatus.AUTHENTICATED, authResult.getAuthStatus());
         assertEquals(validUid, authResult.getUid());
 
         Name name = authResult.getName();

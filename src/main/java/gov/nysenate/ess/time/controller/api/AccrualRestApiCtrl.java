@@ -41,8 +41,7 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String beforeDate) {
         LocalDate beforeLocalDate = parseISODate(beforeDate, "pay period");
 
-        checkPermission(new EssTimePermission( empId, ACCRUAL, GET,
-                Range.closedOpen(LocalDate.ofYearDay(beforeLocalDate.getYear(), 1), beforeLocalDate)));
+        checkPermission(new EssTimePermission( empId, ACCRUAL, GET, Range.singleton(beforeLocalDate)));
 
         PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, beforeLocalDate.minusDays(1));
         PeriodAccSummary periodAccSummary = accrualService.getAccruals(empId, payPeriod);
