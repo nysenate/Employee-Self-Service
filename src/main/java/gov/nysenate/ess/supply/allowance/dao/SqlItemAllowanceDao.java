@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.service.SupplyItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
                                                  .collect(Collectors.toSet());
         // TODO: entire functionality needs to be refactored. for now remove items that are hidden from return set.
         return itemAllowances.stream()
-                             .filter(a -> a.getVisibility() != ItemVisibility.HIDDEN)
+//                             .filter(a -> a.getVisibility() != ItemVisibility.HIDDEN)
                              .collect(Collectors.toSet());
     }
 
@@ -48,12 +47,12 @@ public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao 
             if (canLocationOrderItem(locationId, item)) {
 //                // TODO: Item visibility and Special vs not special needs to be separated!
 //                // Location specific items are not guaranteed to be special items.
-                allowance.setVisibility(ItemVisibility.SPECIAL);
+//                allowance.setVisibility(ItemVisibility.SPECIAL);
             } else {
-                allowance.setVisibility(ItemVisibility.HIDDEN);
+//                allowance.setVisibility(ItemVisibility.HIDDEN);
             }
         } else {
-            allowance.setVisibility(item.getVisibility());
+//            allowance.setVisibility(item.isVisible());
         }
         allowance.setPerOrderAllowance(item.getOrderMaxQty());
         allowance.setPerMonthAllowance(item.getMonthlyMaxQty());

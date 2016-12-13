@@ -2,7 +2,7 @@ package gov.nysenate.ess.supply.allowance.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
+//import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
 
 public class ItemAllowanceView implements ViewObject {
@@ -22,7 +22,7 @@ public class ItemAllowanceView implements ViewObject {
 
     public ItemAllowanceView(ItemAllowance itemAllowance) {
         this.item = new SupplyItemView(itemAllowance.getSupplyItem());
-        this.visibility = itemAllowance.getVisibility().toString();
+//        this.visibility = itemAllowance.getVisibility().toString();
         this.perOrderAllowance = itemAllowance.getPerOrderAllowance();
         this.perMonthAllowance = itemAllowance.getPerMonthAllowance();
         this.qtyOrderedMonthToDate = itemAllowance.getQtyOrderedMonthToDate();
@@ -33,7 +33,7 @@ public class ItemAllowanceView implements ViewObject {
     public ItemAllowance toItemAllowance() {
         ItemAllowance allowance = new ItemAllowance();
         allowance.setSupplyItem(item.toSupplyItem());
-        allowance.setVisibility(ItemVisibility.valueOf(visibility));
+//        allowance.setVisibility(ItemVisibility.valueOf(visibility));
         allowance.setPerOrderAllowance(perOrderAllowance);
         allowance.setPerMonthAllowance(perMonthAllowance);
         allowance.setQtyOrderedMonthToDate(qtyOrderedMonthToDate);

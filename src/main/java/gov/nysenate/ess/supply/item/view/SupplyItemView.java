@@ -1,7 +1,6 @@
 package gov.nysenate.ess.supply.item.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.*;
 
 public class SupplyItemView implements ViewObject {
@@ -14,7 +13,8 @@ public class SupplyItemView implements ViewObject {
     protected int maxQtyPerOrder;
     protected int suggestedMaxQty;
     protected int standardQuantity;
-    protected String visibility;
+    protected boolean isVisible;
+    protected boolean isSpecialRequest;
     protected boolean isInventoryTracked;
     protected boolean isExpendable;
 
@@ -30,7 +30,8 @@ public class SupplyItemView implements ViewObject {
         this.maxQtyPerOrder = item.getOrderMaxQty();
         this.suggestedMaxQty = item.getMonthlyMaxQty();
         this.standardQuantity = item.getUnitQuantity();
-        this.visibility = item.getVisibility().toString();
+        this.isVisible = item.isVisible();
+        this.isSpecialRequest = item.isSpecialRequest();
         this.isInventoryTracked = item.requiresSynchronization();
         this.isExpendable = item.isExpendable();
     }
@@ -40,11 +41,10 @@ public class SupplyItemView implements ViewObject {
                 .withId(id)
                 .withCommodityCode(commodityCode)
                 .withDescription(description)
-                .withStatus(new ItemStatus(isExpendable, isInventoryTracked))
+                .withStatus(new ItemStatus(isExpendable, isInventoryTracked, isVisible, isSpecialRequest))
                 .withCategory(category.toCategory())
                 .withAllowance(new ItemAllowance(maxQtyPerOrder, suggestedMaxQty))
                 .withUnit(new ItemUnit(unit, standardQuantity))
-                .withVisibility(ItemVisibility.valueOf(visibility))
                 .build();
     }
 
@@ -80,8 +80,16 @@ public class SupplyItemView implements ViewObject {
         return standardQuantity;
     }
 
-    public String getVisibility() {
-        return visibility;
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    public boolean isSpecialRequest() {
+        return isSpecialRequest;
+    }
+
+    public boolean isExpendable() {
+        return isExpendable;
     }
 
     public boolean isInventoryTracked() {

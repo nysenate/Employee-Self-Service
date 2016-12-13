@@ -3,7 +3,6 @@ package gov.nysenate.ess.supply.unit;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
@@ -120,11 +119,10 @@ public class LocationStatisticTest {
                 .withId(itemId)
                 .withCommodityCode(commodityCode)
                 .withDescription("")
-                .withStatus(new ItemStatus(true, true))
+                .withStatus(new ItemStatus(true, true, true, false))
                 .withCategory(new Category(""))
                 .withAllowance(new ItemAllowance(1, 1))
                 .withUnit(new ItemUnit("1", 1))
-                .withVisibility(ItemVisibility.VISIBLE)
                 .build();
         return new LineItem(stubItem, quantity);
     }

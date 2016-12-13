@@ -1,7 +1,6 @@
 package gov.nysenate.ess.supply.unit;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.*;
 import org.junit.Test;
 
@@ -48,11 +47,10 @@ public class SupplyItemTest {
                 .withId(1)
                 .withCommodityCode("A")
                 .withDescription("desc")
-                .withStatus(new ItemStatus(isExpenable, orderedBySupply))
+                .withStatus(new ItemStatus(isExpenable, orderedBySupply, true, false))
                 .withCategory(new Category(""))
                 .withAllowance(new ItemAllowance(2, 4))
                 .withUnit(new ItemUnit("1", 1))
-                .withVisibility(ItemVisibility.VISIBLE)
                 .build();
     }
 }

@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.SupplyItem;

@@ -11,7 +11,7 @@ import gov.nysenate.ess.supply.item.model.SupplyItem;
 public class ItemAllowance {
 
     private SupplyItem supplyItem;
-    private ItemVisibility visibility;
+//    private ItemVisibility visibility;
     private int perOrderAllowance;
     private int perMonthAllowance;
     private int qtyOrderedMonthToDate;
@@ -33,13 +33,13 @@ public class ItemAllowance {
         this.supplyItem = supplyItem;
     }
 
-    public ItemVisibility getVisibility() {
-        return visibility;
-    }
+//    public ItemVisibility getVisibility() {
+//        return visibility;
+//    }
 
-    public void setVisibility(ItemVisibility visibility) {
-        this.visibility = visibility;
-    }
+//    public void setVisibility(ItemVisibility visibility) {
+//        this.visibility = visibility;
+//    }
 
     public int getPerOrderAllowance() {
         return perOrderAllowance;

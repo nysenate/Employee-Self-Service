@@ -1,6 +1,5 @@
 package gov.nysenate.ess.supply.item.dao;
 
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
 import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 

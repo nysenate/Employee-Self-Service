@@ -2,20 +2,27 @@ package gov.nysenate.ess.supply.item.model;
 
 public final class ItemStatus {
 
-    /**
-     * All items issued by supply are Expendable.
-     */
+    /** All items issued by supply are Expendable. */
     private final boolean isExpendable;
 
     /**
      * Is this item ordered by the supply department (Maintenance and Operations).
      * Items supply does not order do not have their inventories tracked in SFMS.
      */
-    private final boolean orderedBySupply;
+    private final boolean isOrderedBySupply;
 
-    public ItemStatus(boolean isExpendable, boolean orderedBySupply) {
+    /** Are non supply staff able to view and order this item. */
+    private final boolean isVisible;
+
+    /** Does this item require manager approval to be ordered. */
+    private final boolean isSpecialRequest;
+
+    public ItemStatus(boolean isExpendable, boolean isOrderedBySupply,
+                      boolean isVisible, boolean isSpecialRequest) {
         this.isExpendable = isExpendable;
-        this.orderedBySupply = orderedBySupply;
+        this.isOrderedBySupply = isOrderedBySupply;
+        this.isVisible = isVisible;
+        this.isSpecialRequest = isSpecialRequest;
     }
 
     boolean isExpendable() {
@@ -26,14 +33,24 @@ public final class ItemStatus {
      * Should this item be synchronized in SFMS.
      */
     boolean requiresSynchronization() {
-        return isExpendable && orderedBySupply;
+        return isExpendable && isOrderedBySupply;
+    }
+
+    boolean isVisible() {
+        return isVisible;
+    }
+
+    boolean isSpecialRequest() {
+        return isSpecialRequest;
     }
 
     @Override
     public String toString() {
         return "ItemStatus{" +
                 "isExpendable=" + isExpendable +
-                ", orderedBySupply=" + orderedBySupply +
+                ", orderedBySupply=" + isOrderedBySupply +
+                ", isVisible=" + isVisible +
+                ", isSpecialRequest=" + isSpecialRequest +
                 '}';
     }
 
@@ -43,13 +60,17 @@ public final class ItemStatus {
         if (o == null || getClass() != o.getClass()) return false;
         ItemStatus that = (ItemStatus) o;
         if (isExpendable != that.isExpendable) return false;
-        return orderedBySupply == that.orderedBySupply;
+        if (isOrderedBySupply != that.isOrderedBySupply) return false;
+        if (isVisible != that.isVisible) return false;
+        return isSpecialRequest == that.isSpecialRequest;
     }
 
     @Override
     public int hashCode() {
         int result = (isExpendable ? 1 : 0);
-        result = 31 * result + (orderedBySupply ? 1 : 0);
+        result = 31 * result + (isOrderedBySupply ? 1 : 0);
+        result = 31 * result + (isVisible ? 1 : 0);
+        result = 31 * result + (isSpecialRequest ? 1 : 0);
         return result;
     }
 }

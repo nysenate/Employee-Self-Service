@@ -1,7 +1,5 @@
 package gov.nysenate.ess.supply.item.model;
 
-import gov.nysenate.ess.supply.allowance.ItemVisibility;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class SupplyItem {
@@ -13,7 +11,6 @@ public final class SupplyItem {
     private final Category category;
     private final ItemAllowance allowance;
     private final ItemUnit unit;
-    private final ItemVisibility visibility;
 
     public SupplyItem(Builder builder) {
         this.id = builder.id;
@@ -23,7 +20,6 @@ public final class SupplyItem {
         this.category = checkNotNull(builder.category, "SupplyItem cannot have null Category.");
         this.allowance = checkNotNull(builder.allowance, "SupplyItem cannot have null ItemAllowance.");
         this.unit = checkNotNull(builder.unit, "SupplyItem cannot have null ItemUnit.");
-        this.visibility = checkNotNull(builder.visibility, "SupplyItem cannot have null ItemVisibility.");
     }
 
     public int getId() {
@@ -58,8 +54,12 @@ public final class SupplyItem {
         return unit.getQuantity();
     }
 
-    public ItemVisibility getVisibility() {
-        return visibility;
+    public boolean isVisible() {
+        return status.isVisible();
+    }
+
+    public boolean isSpecialRequest() {
+        return status.isSpecialRequest();
     }
 
     public boolean requiresSynchronization() {
@@ -78,8 +78,6 @@ public final class SupplyItem {
         private Category category;
         private ItemAllowance allowance;
         private ItemUnit unit;
-        /** Number of items per unit. eg. 12/PKG would equal 12 */
-        private ItemVisibility visibility;
 
         public Builder withId(int id) {
             this.id = id;
@@ -116,11 +114,6 @@ public final class SupplyItem {
             return this;
         }
 
-        public Builder withVisibility(ItemVisibility visibility) {
-            this.visibility = visibility;
-            return this;
-        }
-
         public SupplyItem build() {
             return new SupplyItem(this);
         }
@@ -136,7 +129,6 @@ public final class SupplyItem {
                 ", category=" + category +
                 ", allowance=" + allowance +
                 ", unit=" + unit +
-                ", visibility=" + visibility +
                 '}';
     }
 
