@@ -1,6 +1,6 @@
 <div ng-controller="SupplyFulfillmentController">
   <div class="supply-order-hero">
-    <h2>Manage Requisitions</h2>
+    <h2>Fulfillment</h2>
   </div>
 
   <%--Error saving requisition notification--%>

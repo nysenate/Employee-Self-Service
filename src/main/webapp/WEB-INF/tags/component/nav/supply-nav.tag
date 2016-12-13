@@ -9,7 +9,7 @@
     <h3 class="main-topic">My Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/order">Requisition Form</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/order/cart">Cart</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/order/cart">Shopping Cart</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/order-history">Order History</a></li>
     </ul>
     <shiro:hasPermission name="supply:employee">
