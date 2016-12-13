@@ -13,14 +13,18 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
         return new SupplyItem.Builder()
                 .withId(rs.getInt("Nuxrefco"))
                 .withCommodityCode(rs.getString("CdCommodity"))
-                .withDescription(rs.getString("DeCommdtyEssSupply") == null
-                        ? rs.getString("DeCommodityf")
-                        : rs.getString("DeCommdtyEssSupply"))
+                .withDescription(getDescription(rs))
                 .withStatus(getItemStatus(rs))
                 .withCategory(new Category(rs.getString("CdCategory")))
                 .withAllowance(new ItemAllowance(rs.getInt("numaxunitord"), rs.getInt("numaxunitmon")))
                 .withUnit(new ItemUnit(rs.getString("CdIssUnit"), rs.getInt("AmStdUnit")))
                 .build();
+    }
+
+    private String getDescription(ResultSet rs) throws SQLException {
+        return rs.getString("DeCommdtyEssSupply") == null
+                ? rs.getString("DeCommodityf")
+                : rs.getString("DeCommdtyEssSupply");
     }
 
     private ItemStatus getItemStatus(ResultSet rs) throws SQLException {

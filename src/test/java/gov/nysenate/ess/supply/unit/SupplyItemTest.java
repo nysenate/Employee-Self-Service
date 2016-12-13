@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.unit;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.supply.item.model.*;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,27 +11,40 @@ import static org.hamcrest.core.Is.is;
 @org.junit.experimental.categories.Category(UnitTest.class)
 public class SupplyItemTest {
 
+    private SupplyItem.Builder builder;
+
+    @Before
+    public void setup() {
+        builder = new SupplyItem.Builder().withId(1)
+                .withCommodityCode("A")
+                .withDescription("desc")
+                .withStatus(new ItemStatus(true, true, true, false))
+                .withCategory(new Category(""))
+                .withAllowance(new ItemAllowance(2, 4))
+                .withUnit(new ItemUnit("1", 1));
+    }
+
     @Test
     public void itemNotOrderedBySupply_DoesNotRequireSynchronization() {
-        SupplyItem item = createItemWithStatus(true, false);
+        SupplyItem item = builder.withStatus(new ItemStatus(true, false, true, false)).build();
         assertSynchronizationNotRequired(item);
 
-        item = createItemWithStatus(false, false);
+        item = builder.withStatus(new ItemStatus(false, false, true, false)).build();
         assertSynchronizationNotRequired(item);
     }
 
     @Test
     public void nonExpendableItem_DoesNotRequireSynchronization() {
-        SupplyItem item = createItemWithStatus(false, true);
+        SupplyItem item = builder.withStatus(new ItemStatus(false, true, true, false)).build();
         assertSynchronizationNotRequired(item);
 
-        item = createItemWithStatus(false, false);
+        item = builder.withStatus(new ItemStatus(false, false, true, false)).build();
         assertSynchronizationNotRequired(item);
     }
 
     @Test
     public void expendableItemsOrderedBySupply_RequireSynchronization() {
-        SupplyItem item = createItemWithStatus(true, true);
+        SupplyItem item = builder.withStatus(new ItemStatus(true, true, true, false)).build();
         assertSynchronizationRequired(item);
     }
 
@@ -42,15 +56,4 @@ public class SupplyItemTest {
         assertThat(item.requiresSynchronization(), is(true));
     }
 
-    private SupplyItem createItemWithStatus(boolean isExpenable, boolean orderedBySupply) {
-        return new SupplyItem.Builder()
-                .withId(1)
-                .withCommodityCode("A")
-                .withDescription("desc")
-                .withStatus(new ItemStatus(isExpenable, orderedBySupply, true, false))
-                .withCategory(new Category(""))
-                .withAllowance(new ItemAllowance(2, 4))
-                .withUnit(new ItemUnit("1", 1))
-                .build();
-    }
 }
