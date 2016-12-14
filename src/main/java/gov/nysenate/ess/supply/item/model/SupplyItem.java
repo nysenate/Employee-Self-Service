@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.item.model;
 
+import com.google.common.collect.ImmutableSet;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class SupplyItem {
@@ -11,6 +13,7 @@ public final class SupplyItem {
     private final Category category;
     private final ItemAllowance allowance;
     private final ItemUnit unit;
+    private ItemRestriction restriction;
 
     public SupplyItem(Builder builder) {
         this.id = builder.id;
@@ -20,6 +23,7 @@ public final class SupplyItem {
         this.category = checkNotNull(builder.category, "SupplyItem cannot have null Category.");
         this.allowance = checkNotNull(builder.allowance, "SupplyItem cannot have null ItemAllowance.");
         this.unit = checkNotNull(builder.unit, "SupplyItem cannot have null ItemUnit.");
+        this.restriction = new ItemRestriction(ImmutableSet.of());
     }
 
     public int getId() {
@@ -68,6 +72,14 @@ public final class SupplyItem {
 
     public boolean isExpendable() {
         return status.isExpendable();
+    }
+
+    public void setRestriction(ItemRestriction restriction) {
+        this.restriction = restriction == null ? new ItemRestriction(ImmutableSet.of()) : restriction;
+    }
+
+    public boolean isRestricted() {
+        return this.restriction.isRestricted();
     }
 
     public static class Builder {

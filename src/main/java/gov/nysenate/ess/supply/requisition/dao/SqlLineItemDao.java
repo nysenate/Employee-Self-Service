@@ -10,7 +10,7 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
-import gov.nysenate.ess.supply.item.service.SupplyItemService;
+import gov.nysenate.ess.supply.item.SupplyItemService;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
