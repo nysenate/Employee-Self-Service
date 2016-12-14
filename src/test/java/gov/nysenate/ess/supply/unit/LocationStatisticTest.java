@@ -7,7 +7,7 @@ import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
-import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixtureTest;
+import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class LocationStatisticTest {
 
     @Before
     public void setup() {
-        requisition = RequisitionFixtureTest.baseRequisition();
+        requisition = RequisitionFixture.baseRequisition();
         requisition = requisition.setDestination(LOCATION);
     }
 
@@ -67,9 +67,9 @@ public class LocationStatisticTest {
 
     @Test
     public void givenMultipleRequisitionsWithSameItem_SumsTheTotalQuantity() {
-        Requisition first = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
+        Requisition first = RequisitionFixture.baseRequisition().setDestination(LOCATION);
         first = addLineItem(1, first, "AA", 1);
-        Requisition second = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
+        Requisition second = RequisitionFixture.baseRequisition().setDestination(LOCATION);
         second = addLineItem(1, second, "AA", 3);
         LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(first, second));
         assertThat(locationStatistic.calculate().size(), is(1));
@@ -78,16 +78,16 @@ public class LocationStatisticTest {
 
     @Test
     public void onlyRequisitionsForGivenLocationAreUsedInCalculation() {
-        Requisition first = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
+        Requisition first = RequisitionFixture.baseRequisition().setDestination(LOCATION);
         first = addLineItem(1, first, "AA", 1);
         first = addLineItem(2, first, "BB", 0);
         first = addLineItem(3, first, "CC", 2);
         first = addLineItem(4, first, "DD", 5);
-        Requisition second = RequisitionFixtureTest.baseRequisition().setDestination(LOCATION);
+        Requisition second = RequisitionFixture.baseRequisition().setDestination(LOCATION);
         second = addLineItem(2, second, "BB", 3);
         second = addLineItem(3, second, "CC", 1);
         second = addLineItem(5, second, "ZZ", 1);
-        Requisition third = RequisitionFixtureTest.baseRequisition().setDestination(new Location(new LocationId("ZZZ-Z")));
+        Requisition third = RequisitionFixture.baseRequisition().setDestination(new Location(new LocationId("ZZZ-Z")));
         third = addLineItem(1, third, "AA", 0);
         third = addLineItem(3, third, "CC", 1);
         third = addLineItem(4, third, "DD", 3);

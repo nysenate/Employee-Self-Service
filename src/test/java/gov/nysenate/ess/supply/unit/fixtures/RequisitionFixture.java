@@ -1,12 +1,9 @@
 package gov.nysenate.ess.supply.unit.fixtures;
 
-import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
-import gov.nysenate.ess.supply.item.model.Category;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 
@@ -14,8 +11,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@org.junit.experimental.categories.Category(UnitTest.class)
-public class RequisitionFixtureTest {
+public class RequisitionFixture {
 
     public static Requisition baseRequisition() {
          return new Requisition.Builder()

@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.unit;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.supply.item.model.*;
+import gov.nysenate.ess.supply.unit.fixtures.SupplyItemFixture;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,13 +16,7 @@ public class SupplyItemTest {
 
     @Before
     public void setup() {
-        builder = new SupplyItem.Builder().withId(1)
-                .withCommodityCode("A")
-                .withDescription("desc")
-                .withStatus(new ItemStatus(true, true, true, false))
-                .withCategory(new Category(""))
-                .withAllowance(new ItemAllowance(2, 4))
-                .withUnit(new ItemUnit("1", 1));
+        builder = SupplyItemFixture.getDefaultBuilder();
     }
 
     @Test

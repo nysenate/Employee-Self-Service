@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.requisition.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
-import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixtureTest;
+import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class SqlRequisitionDaoIT extends BaseTest {
 
     @Test
     public void canInsertRequisition() {
-        requisitionDao.saveRequisition(RequisitionFixtureTest.getPendingRequisition());
+        requisitionDao.saveRequisition(RequisitionFixture.getPendingRequisition());
     }
 
     @Test
