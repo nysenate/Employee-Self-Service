@@ -9,8 +9,8 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
-import gov.nysenate.ess.supply.item.SupplyItemService;
 import gov.nysenate.ess.supply.requisition.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,7 +25,7 @@ import java.util.*;
 @Repository
 public class SqlLineItemDao extends SqlBaseDao {
 
-    @Autowired private SupplyItemService itemService;
+    @Autowired private SupplyItemDao itemDao;
 
     /**
      * Does a batch insert of all line items for a requisition.
@@ -49,7 +49,7 @@ public class SqlLineItemDao extends SqlBaseDao {
     protected Set<LineItem> getLineItems(int revisionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("revisionId", revisionId);
         String sql = SqlReqLineItemQuery.GET_LINE_ITEMS.getSql(schemaMap());
-        ReqLineItemHandler handler = new ReqLineItemHandler(itemService);
+        ReqLineItemHandler handler = new ReqLineItemHandler(itemDao);
         localNamedJdbc.query(sql, params, handler);
         return handler.getLineItems();
     }
@@ -60,7 +60,7 @@ public class SqlLineItemDao extends SqlBaseDao {
                 .addValue("from", toDate(DateUtils.startOfDateTimeRange(dateRange)))
                 .addValue("to", toDate(DateUtils.endOfDateTimeRange(dateRange)));
         String sql = SqlReqLineItemQuery.LOCATION_AGGREGATE_LINE_ITEMS.getSql(schemaMap());
-        ReqLineItemHandler handler = new ReqLineItemHandler(itemService);
+        ReqLineItemHandler handler = new ReqLineItemHandler(itemDao);
         localNamedJdbc.query(sql, params, handler);
         // TODO not going to work, need to sum all items
         return handler.getLineItems();
@@ -110,7 +110,7 @@ public class SqlLineItemDao extends SqlBaseDao {
      */
     private class ReqLineItemHandler extends BaseHandler {
 
-        private SupplyItemService itemService;
+        private SupplyItemDao itemDao;
         private Set<LineItem> lineItems;
         private Comparator alphabeticalItemDesc = new Comparator<LineItem>() {
             @Override
@@ -119,14 +119,14 @@ public class SqlLineItemDao extends SqlBaseDao {
             }
         };
 
-        ReqLineItemHandler(SupplyItemService itemService) {
-            this.itemService = itemService;
+        ReqLineItemHandler(SupplyItemDao itemDao) {
+            this.itemDao = itemDao;
             lineItems = new TreeSet<>(alphabeticalItemDesc);
         }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            SupplyItem item = itemService.getItemById(rs.getInt("item_id"));
+            SupplyItem item = itemDao.getItemById(rs.getInt("item_id"));
             int quantity = rs.getInt("quantity");
             lineItems.add(new LineItem(item, quantity));
         }

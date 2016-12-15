@@ -5,8 +5,8 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.allowance.ItemAllowance;
+import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
-import gov.nysenate.ess.supply.item.SupplyItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 @Repository
 public class SqlItemAllowanceDao extends SqlBaseDao implements ItemAllowanceDao {
 
-    @Autowired private SupplyItemService itemService;
+    @Autowired private SupplyItemDao itemDao;
 
     @Override
     public Set<ItemAllowance> getItemAllowances(LocationId locationId) {
-        Set<SupplyItem> items = itemService.getSupplyItems();
+        Set<SupplyItem> items = itemDao.getSupplyItems();
         Set<ItemAllowance> itemAllowances = items.stream()
                                                  .map(i -> createAllowanceFromItemAndLoc(i, locationId))
                                                  .collect(Collectors.toSet());

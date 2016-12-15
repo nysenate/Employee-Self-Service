@@ -3,8 +3,8 @@ package gov.nysenate.ess.supply.item.controller;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
-import gov.nysenate.ess.supply.item.SupplyItemService;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(SupplyItemRestApiCtrl.class);
 
     @Autowired
-    private SupplyItemService supplyItemService;
+    private SupplyItemDao supplyItemDao;
 
     /**
      * Supply Items API.
      */
     @RequestMapping("")
     public BaseResponse getSupplyItems() {
-        Set<SupplyItem> items = supplyItemService.getSupplyItems();
+        Set<SupplyItem> items = supplyItemDao.getSupplyItems();
         return ListViewResponse.of(items.stream().map(SupplyItemView::new).collect(Collectors.toList()));
     }
 }
