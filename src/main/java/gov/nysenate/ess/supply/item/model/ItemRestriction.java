@@ -18,4 +18,15 @@ public class ItemRestriction {
     boolean isRestricted() {
         return !allowedLocations.isEmpty();
     }
+
+    boolean isAllowed(LocationId locId) {
+        return allowedLocations.contains(locId);
+    }
+
+    @Override
+    public String toString() {
+        return "ItemRestriction{" +
+                "allowedLocations=" + allowedLocations +
+                '}';
+    }
 }

@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.item.model;
 
 import com.google.common.collect.ImmutableSet;
+import gov.nysenate.ess.core.model.unit.LocationId;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -82,6 +83,10 @@ public final class SupplyItem {
         return this.restriction.isRestricted();
     }
 
+    public boolean isAllowed(LocationId locId) {
+        return restriction.isAllowed(locId);
+    }
+
     public static class Builder {
         private int id;
         private String commodityCode;
@@ -141,6 +146,7 @@ public final class SupplyItem {
                 ", category=" + category +
                 ", allowance=" + allowance +
                 ", unit=" + unit +
+                ", restriction=" + restriction +
                 '}';
     }
 
