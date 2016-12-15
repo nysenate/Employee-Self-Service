@@ -19,15 +19,20 @@ public final class LocationId {
     }
 
     public LocationId(String locationId) {
-        String[] parts = locationId.split("-");
-        this.code = parts[0];
-        this.type = LocationType.valueOfCode(parts[1].charAt(0));
+        if (locationId == null || !locationId.contains("-")) {
+            this.code = null;
+            this.type = null;
+        }
+        else {
+            String[] parts = locationId.split("-");
+            this.code = parts[0];
+            this.type = LocationType.valueOfCode(parts[1].charAt(0));
+        }
     }
 
     /** Creates a location Id from its toString() output. */
     public static LocationId ofString(String locString) {
-        String[] parts = locString.split("\\-");
-        return new LocationId(parts[0].trim(), parts[1].trim().charAt(0));
+        return new LocationId(locString);
     }
 
     public String getCode() {
@@ -40,6 +45,20 @@ public final class LocationId {
 
     public String getTypeAsString() {
         return String.valueOf(type.getCode());
+    }
+
+    /**
+     * Was this locationId constructed with valid syntax.
+     * ie. locCode and locType not null, locType is a valid type,
+     * not missing '-' if constructing from string.
+     *
+     * May want to replace with NullObjectPattern.
+     */
+    public boolean isSyntacticallyValid() {
+        if (code == null || type == null || code.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     @Override
