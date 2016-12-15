@@ -3,20 +3,21 @@ package gov.nysenate.ess.supply.item.view;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.model.*;
 
-public class SupplyItemView implements ViewObject {
+public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
 
     protected int id;
     protected String commodityCode;
     protected String description;
-    protected String unit;
-    protected CategoryView category;
-    protected int maxQtyPerOrder;
-    protected int suggestedMaxQty;
-    protected int standardQuantity;
+    protected String unit; // * Oracle-Synchronization depends on this field name.
+    protected String category;
+    protected int perOrderAllowance;
+    protected int perMonthAllowance;
+    protected int unitQuantity;
     protected boolean isVisible;
     protected boolean isSpecialRequest;
     protected boolean isInventoryTracked;
     protected boolean isExpendable;
+    protected boolean isRestricted;
 
     public SupplyItemView() {
     }
@@ -26,14 +27,15 @@ public class SupplyItemView implements ViewObject {
         this.commodityCode = item.getCommodityCode();
         this.description = item.getDescription();
         this.unit = item.getUnitDescription();
-        this.category = new CategoryView(item.getCategory());
-        this.maxQtyPerOrder = item.getOrderMaxQty();
-        this.suggestedMaxQty = item.getMonthlyMaxQty();
-        this.standardQuantity = item.getUnitQuantity();
+        this.category = item.getCategory().getName();
+        this.perOrderAllowance = item.getOrderMaxQty();
+        this.perMonthAllowance = item.getMonthlyMaxQty();
+        this.unitQuantity = item.getUnitQuantity();
         this.isVisible = item.isVisible();
         this.isSpecialRequest = item.isSpecialRequest();
         this.isInventoryTracked = item.requiresSynchronization();
         this.isExpendable = item.isExpendable();
+        this.isRestricted = item.isRestricted();
     }
 
     public SupplyItem toSupplyItem() {
@@ -42,9 +44,9 @@ public class SupplyItemView implements ViewObject {
                 .withCommodityCode(commodityCode)
                 .withDescription(description)
                 .withStatus(new ItemStatus(isExpendable, isInventoryTracked, isVisible, isSpecialRequest))
-                .withCategory(category.toCategory())
-                .withAllowance(new ItemAllowance(maxQtyPerOrder, suggestedMaxQty))
-                .withUnit(new ItemUnit(unit, standardQuantity))
+                .withCategory(new Category(category))
+                .withAllowance(new ItemAllowance(perOrderAllowance, perMonthAllowance))
+                .withUnit(new ItemUnit(unit, unitQuantity))
                 .build();
     }
 
@@ -64,20 +66,20 @@ public class SupplyItemView implements ViewObject {
         return unit;
     }
 
-    public CategoryView getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public int getMaxQtyPerOrder() {
-        return maxQtyPerOrder;
+    public int getPerOrderAllowance() {
+        return perOrderAllowance;
     }
 
-    public int getSuggestedMaxQty() {
-        return suggestedMaxQty;
+    public int getPerMonthAllowance() {
+        return perMonthAllowance;
     }
 
-    public int getStandardQuantity() {
-        return standardQuantity;
+    public int getUnitQuantity() {
+        return unitQuantity;
     }
 
     public boolean isVisible() {
@@ -96,8 +98,17 @@ public class SupplyItemView implements ViewObject {
         return isInventoryTracked;
     }
 
+    public boolean isRestricted() {
+        return isRestricted;
+    }
+
     @Override
     public String getViewType() {
         return "Supply Item";
+    }
+
+    @Override
+    public int compareTo(SupplyItemView o) {
+        return this.description.compareTo(o.description);
     }
 }

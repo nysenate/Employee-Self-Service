@@ -45,7 +45,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
     public BaseResponse allSupplyItems() {
         checkPermission(new WildcardPermission("supply:employee"));
         Set<SupplyItem> items = supplyItemDao.getSupplyItems();
-        return ListViewResponse.of(items.stream().map(SupplyItemView::new).collect(Collectors.toList()));
+        return sortedItemViews(items);
     }
 
     /**
@@ -53,7 +53,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
      * <p>
      * Returns a List of items which are allowed to be ordered at a given location.
      * This removes hidden items and location restricted items from the response.
-     *
+     * <p>
      * PathVariables: locId - A location id represented by a location code - location type. e.g. A42FB-W
      */
     @RequestMapping("/{locId}")
@@ -63,7 +63,13 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
             throw new InvalidRequestParamEx(locId, "locId", "String", "locId must represent a valid location with the format: locCode-locType. e.g. A42FB-W");
         }
         Set<SupplyItem> items = supplyItemDao.getSupplyItems();
-        items = OrderableItems.forItemsAndLoc(items, locationId);
-        return ListViewResponse.of(items.stream().map(SupplyItemView::new).collect(Collectors.toList()));
+        return sortedItemViews(OrderableItems.forItemsAndLoc(items, locationId));
+    }
+
+    private ListViewResponse<SupplyItemView> sortedItemViews(Set<SupplyItem> items) {
+        return ListViewResponse.of(items.stream()
+                .map(SupplyItemView::new)
+                .sorted()
+                .collect(Collectors.toList()));
     }
 }

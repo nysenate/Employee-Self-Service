@@ -71,6 +71,14 @@ public class OrderableItemsTest {
     }
 
     @Test
+    public void givenNullLocationAndRestrictedItems_returnList() {
+        SupplyItem item = SupplyItemFixture.getDefaultBuilder().build();
+        item.setRestriction(new ItemRestriction(ImmutableSet.of(new LocationId("A42FB-W"))));
+        ImmutableSet<SupplyItem> items = ImmutableSet.of(item);
+        assertFalse(OrderableItems.forItemsAndLoc(items, null).isEmpty());
+    }
+
+    @Test
     public void filterOutRestrictedItems() {
         SupplyItem item = SupplyItemFixture.getDefaultBuilder().build();
         item.setRestriction(new ItemRestriction(ImmutableSet.of(new LocationId("A42FB-W"))));
