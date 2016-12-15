@@ -11,6 +11,10 @@ import java.util.List;
  */
 public interface LocationService {
 
+    /**
+     * @param locId A location id.
+     * @return A {@link Location} object, or <code>null</code> if no location is found.
+     */
     Location getLocation(LocationId locId);
 
     List<Location> getLocations();

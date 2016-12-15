@@ -19,6 +19,7 @@ public final class LocationId {
     }
 
     public LocationId(String locationId) {
+        // Don't throw IllegalArgumentException if missing '-'
         if (locationId == null || !locationId.contains("-")) {
             this.code = null;
             this.type = null;
@@ -49,10 +50,11 @@ public final class LocationId {
 
     /**
      * Was this locationId constructed with valid syntax.
-     * ie. locCode and locType not null, locType is a valid type,
-     * not missing '-' if constructing from string.
      *
      * May want to replace with NullObjectPattern.
+     *
+     * @return <code>false</code> if its impossible for this to represent a {@link Location}.
+     * <code>true</code> otherwise.
      */
     public boolean isSyntacticallyValid() {
         if (code == null || type == null || code.isEmpty()) {
