@@ -1,6 +1,6 @@
 <div ng-controller="SupplyFulfillmentController">
   <div class="supply-order-hero">
-    <h2>Manage Requisitions</h2>
+    <h2>Fulfillment</h2>
   </div>
 
   <%--Error saving requisition notification--%>
@@ -165,6 +165,7 @@
         <th>Order Date</th>
         <th>Approved Date</th>
         <th>Issuing Employee</th>
+        <th>Sync Status</th>
       </tr>
       </thead>
       <tbody>
@@ -176,6 +177,7 @@
         <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
+        <td><span class="tick" ng-show="requisition.lastSfmsSyncDateTime && requisition.savedInSfms"></span><span class="cross"  ng-show="requisition.lastSfmsSyncDateTime && !requisition.savedInSfms"></span></td>
       </tr>
       </tbody>
     </table>

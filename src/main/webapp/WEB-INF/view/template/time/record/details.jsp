@@ -99,12 +99,12 @@
       <span>{{record.recordStatus | timeRecordStatus}}</span>
     </div>
 
-    <h3 class="content-info">Accruals</h3>
+    <h3 class="content-info" ng-if="showAccruals">Accruals</h3>
     <div class="record-details-section accrual-display" ng-show="loadingAccruals">
       <span>Loading...</span>
       <div loader-indicator class="sm-loader"></div>
     </div>
-    <div class="record-details-section accrual-display" ng-hide="loadingAccruals">
+    <div class="record-details-section accrual-display" ng-hide="!showAccruals || loadingAccruals">
       <table><tbody>
         <tr class="personal-text">
           <td>Personal</td>

@@ -27,7 +27,6 @@ public class SimpleEmailHandler implements Handler<SimpleEmailMessage> {
         eventBus.register(this);
     }
 
-    @Subscribe
     @Override
     public void handle(SimpleEmailMessage message) throws UnsupportedMessageException, ClassNotFoundException {
         simpleEmailService.delivery(message);

@@ -69,13 +69,12 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
         Employee employee = empInfoService.getEmployee(timeRecord.getEmployeeId());
         Employee rejector = empInfoService.getEmployee(rejectorId);
         String to = employee.getEmail();
-        String from = rejector.getEmail();
         String subject = String.format(subjectTemplate,
                 subjectDateFormat.format(timeRecord.getBeginDate()),
                 subjectDateFormat.format(timeRecord.getEndDate()));
         String body = getEmailBody(employee, rejector, timeRecord);
 
-        return sendMailService.newHtmlMessage(to, from, subject, body);
+        return sendMailService.newHtmlMessage(to, subject, body);
     }
 
     private String getEmailBody(Employee employee, Employee rejector, TimeRecord timeRecord) {

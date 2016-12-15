@@ -7,10 +7,10 @@ function (modals,errorReportApi,appProps) {
         '<section id="internal-error-modal" title="Internal Error">' +
             '<h1>Internal Error</h1>' +
             '<p class="internal-error-text">' +
-                'We are sorry to report that an error occurred on the ESS server while processing your request.<br>' +
-                'Please contact the STS Help Line at (518) 455-2011 and notify us of this issue so that we can fix it!' +
+                'We are sorry to report that an error occurred on the ESS server while processing your request.<br/>' +
+                'Please contact the STS Helpline at (518) 455-2011 and notify us of this issue so that we can fix it!' +
             '</p>' +
-        '<p style="color: red" ng-show="showFailure">Sorry, your report can not send now, please contact us at (518) 455-2011</p>' +
+        '<p style="color: red" ng-show="showFailure">Sorry, your report cannot be sent.  Please contact the STS Helpline at (518) 455-2011.</p>' +
         '<pre class="internal-error-details" ng-show="showDetails">{{details | json}}</pre>' +
             '<div class="button-container">' +
                 '<input type="button" class="reject-button" ng-click="showDetails = !showDetails" value="{{showDetails ? \'Hide\' : \'Show\'}} Details"/>' +

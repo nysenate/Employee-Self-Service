@@ -479,9 +479,9 @@ input[type="number"] {
 }
 #modal-container > ng-transclude > modal > *:not(.custom-fit),
 #modal-container > #common-modals > modal > *:not(.custom-fit) {
-  max-height: 80vh;
+  max-height: calc(100vh - 50px);
   overflow-y: auto;
-  max-width: 80vw;
+  max-width: calc(100vw - 50px);
   overflow-x: auto;
 }
 #modal-container > ng-transclude > modal > *.background-modal,
@@ -496,17 +496,17 @@ input[type="number"] {
   z-index: 1003;
 }
 .modal-max-height {
-  max-height: 80vh;
+  max-height: calc(100vh - 50px);
   overflow-y: auto;
 }
 .modal-max-width {
-  max-width: 80vw;
+  max-width: calc(100vw - 50px);
   overflow-x: auto;
 }
 .modal-fit {
-  max-height: 80vh;
+  max-height: calc(100vh - 50px);
   overflow-y: auto;
-  max-width: 80vw;
+  max-width: calc(100vw - 50px);
   overflow-x: auto;
 }
 /** --- Common Modals --- */
@@ -2830,6 +2830,16 @@ img.ui-datepicker-trigger {
 .link-button:hover {
   text-decoration: underline;
 }
+.tick:before {
+  content: "\2713";
+  color: green;
+  font-weight: bold;
+}
+.cross:before {
+  content: "\2717";
+  color: crimson;
+  font-weight: bold;
+}
 /**
 * Styles for ESS Time
 */
@@ -3012,6 +3022,15 @@ table.time-record-entry-table tbody tr td.today {
   background: #799933;
   border-color: #799933;
 }
+.sick-text {
+  color: #d19525;
+}
+.personal-text {
+  color: #4196A7;
+}
+.vacation-text {
+  color: #799933;
+}
 .misc {
   background: #e64727;
   border-color: #e64727;
@@ -3158,8 +3177,20 @@ record-detail-modal,
   padding: 0.4em;
 }
 .record-details-section {
-  padding: .3em;
+  padding: 0.3em;
   text-align: center;
+}
+.record-details-section.accrual-display {
+  height: 5em;
+}
+.record-details-section.accrual-display [loader-indicator] {
+  margin: 1em auto;
+}
+.record-details-section.accrual-display table {
+  margin-left: 1em;
+}
+.record-details-section.accrual-display table tr td {
+  padding: 0.1em;
 }
 h1.attendance-entry-sub-table-title {
   color: white;
@@ -3433,15 +3464,13 @@ table.approve-attendance-rec-table tbody td:nth-child(1) {
 }
 record-review-modal,
 [record-review-modal] {
-  max-width: 90vw;
-  overflow-x: auto;
   padding: 0.4em;
 }
 #record-review-content {
   width: 1113px;
 }
 #record-review-content #record-selection-pane {
-  max-height: 80vh;
+  max-height: calc(100vh - 50px);
   overflow-y: auto;
   float: left;
   display: inline-block;
@@ -3475,8 +3504,6 @@ record-review-modal,
   text-align: left;
 }
 #record-review-content #record-details-view {
-  max-height: 80vh;
-  overflow-y: auto;
   display: inline-block;
   width: 830px;
   margin: 0;

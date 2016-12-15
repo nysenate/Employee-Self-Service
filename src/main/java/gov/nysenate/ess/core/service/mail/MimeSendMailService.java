@@ -52,11 +52,10 @@ public class MimeSendMailService extends JavaMailSenderImpl implements SendMailS
 
     /** {@inheritDoc} */
     @Override
-    public MimeMessage newHtmlMessage(String to, String from, String subject, String html) {
+    public MimeMessage newHtmlMessage(String to, String subject, String html) {
         MimeMessage message = createMimeMessage();
         try {
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(to, false));
-            message.setFrom(new InternetAddress(from, false));
             message.setSubject(subject);
             message.setContent(html, "text/html; charset=utf-8");
         } catch (MessagingException ex) {

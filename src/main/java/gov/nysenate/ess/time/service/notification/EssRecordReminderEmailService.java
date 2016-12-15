@@ -82,11 +82,10 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
         Employee employee = empInfoService.getEmployee(empId);
         Employee supervisor = empInfoService.getEmployee(supId);
         String to = employee.getEmail();
-        String from = supervisor.getEmail();
         String subject = reminderEmailSubject;
         String body = getEmailBody(employee, timeRecords);
 
-        return sendMailService.newHtmlMessage(to, from, subject, body);
+        return sendMailService.newHtmlMessage(to, subject, body);
     }
 
     /**
