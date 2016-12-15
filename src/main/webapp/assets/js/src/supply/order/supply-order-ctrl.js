@@ -1,13 +1,13 @@
 var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController',
                 ['$scope', 'LocationService', 'SupplyCartService', 'PaginationModel',
-                 'SupplyLocationAutocompleteService', 'SupplyLocationAllowanceService',
+                 'SupplyLocationAutocompleteService', 'SupplyItemApi',
                  'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService',
                  'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService',
                  supplyOrderController]);
 
 function supplyOrderController($scope, locationService, supplyCart, paginationModel,
-                               locationAutocompleteService, allowanceService, destinationService,
+                               locationAutocompleteService, itemApi, destinationService,
                                modals, supplyUtils, lineItemService, itemFilterService,
                                categoryService, stateService) {
 
@@ -38,15 +38,20 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     /** --- Initialization --- */
 
     $scope.init = function () {
-        $scope.state.toLoading();
-        $scope.paginate.itemsPerPage = 16;
-        updateFiltersFromUrlParams();
-        if (!destinationService.isDestinationConfirmed()) {
-            loadSelectDestinationState();
-        }
-        else {
-            loadShoppingState();
-        }
+        itemApi.itemsForLoc("A4-W").then(function (r) {
+            console.log(r);
+        });
+
+        //
+        // $scope.state.toLoading();
+        // $scope.paginate.itemsPerPage = 16;
+        // updateFiltersFromUrlParams();
+        // if (!destinationService.isDestinationConfirmed()) {
+        //     loadSelectDestinationState();
+        // }
+        // else {
+        //     loadShoppingState();
+        // }
 
     };
 

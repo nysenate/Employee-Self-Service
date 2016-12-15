@@ -11,7 +11,7 @@ var essSupply = angular.module('essSupply');
  * directly to a category so the url search param can be updated accordingly.
  */
 essSupply.factory('SupplyCategoryService',
-                  ['SupplyLocationAllowanceService', 'LocationService', supplyCategoryService]);
+                  ['LocationService', supplyCategoryService]);
 
 function supplyCategoryService(locationAllowanceService, locationService) {
 

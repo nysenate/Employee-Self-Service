@@ -153,6 +153,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/service/supply-category-service.js',
                         '<%= jsSource %>/supply/location/supply-location-autocomplete-service.js',
                         '<%= jsSource %>/supply/items/supply-item-autocomplete-service.js',
+                        '<%= jsSource %>/supply/api/supply-item-api.js',
                         //        <%-- History --%>
                         '<%= jsSource %>/supply/history/supply-history-ctrl.js',
                         '<%= jsSource %>/supply/history/supply-order-history-ctrl.js',
@@ -165,7 +166,6 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/order/supply-order-ctrl.js',
                         '<%= jsSource %>/supply/order/supply-quantity-selector.js',
                         '<%= jsSource %>/supply/order/order-quantity-validator.js',
-                        '<%= jsSource %>/supply/order/location-allowance-service.js',
                         '<%= jsSource %>/supply/order/order-destination-service.js',
                         '<%= jsSource %>/supply/order/order-more-prompt-modal.js',
                         '<%= jsSource %>/supply/order/order-canceling-modal.js',

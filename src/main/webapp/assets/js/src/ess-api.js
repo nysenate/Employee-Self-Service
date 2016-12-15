@@ -129,18 +129,6 @@ essApi.factory('LocationApi', ['$resource', 'appProps', function($resource, appP
     return $resource(appProps.apiPath + '/locations.json')
 }]);
 
-/** --- Supply Items API --- */
-
-essApi.factory('SupplyItemsApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/items.json')
-}]);
-
-/** --- Supply Location Allowance --- */
-
-essApi.factory('SupplyLocationAllowanceApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + '/supply/location/allowance/:id.json', {id: '@id'})
-}]);
-
 /** --- Supply Destination Api --- */
 
 essApi.factory('SupplyDestinationApi', ['$resource', 'appProps', function($resource, appProps) {
