@@ -45,6 +45,9 @@ function orderDestinationService(appProps, storageService, empInfoApi, locationA
             return defaultCode;
         },
 
+        /**
+         * Returns a location object.
+         */
         getDestination: function () {
             return storageService.load(KEY);
         }

@@ -10,19 +10,25 @@ function supplyItemApi($resource, appProps, modals) {
 
     function items() {
         return itemsApi.get().$promise
-            .then(function (response) {
-                return response.result;
-            }).catch(modals.open('500', {action: 'get valid order destinations', details: response}))
+            .then(returnResult)
+            .catch(apiError)
     }
 
     function itemsForLoc(locId) {
         // TODO: if locId is null/undefined?
         return itemsForLocApi.get({locId: locId}).$promise
-            .then(function (response) {
-                return response.result;
-            }).catch(function (response) {
-                modals.open('500', {action: 'get valid order destinations', details: response})
-            });
+            .then(returnResult)
+            .catch(apiError);
+    }
+
+    /** --- Private functions --- */
+
+    function returnResult(response) {
+        return response.result;
+    }
+
+    function apiError(response) {
+        modals.open('500', {action: 'get valid order destinations', details: response})
     }
 
     return {

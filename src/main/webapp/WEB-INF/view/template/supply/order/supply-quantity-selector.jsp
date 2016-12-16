@@ -1,5 +1,5 @@
 <div class="text-align-center">
-  <p class="dark-gray margin-0">{{lineItem.item.standardQuantity}}/Pack</p>
+  <p class="dark-gray margin-0">{{lineItem.item.unitQuantity}}/Pack</p>
   <div ng-if="!isInCart(lineItem.item)">
     <input class="add-to-cart-btn" ng-click="addToCart(lineItem)"
            type="button" value="Add to Cart">

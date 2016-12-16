@@ -89,15 +89,15 @@ function quantitySelectorCtrl($scope, modals, supplyCart) {
     };
 
     $scope.isAtMaxQty = function (lineItem) {
-        return lineItem.quantity === lineItem.item.maxQtyPerOrder;
+        return lineItem.quantity === lineItem.item.perOrderAllowance;
     };
 
     $scope.isOverMaxQty = function (lineItem) {
-        return lineItem.quantity > lineItem.item.maxQtyPerOrder
+        return lineItem.quantity > lineItem.item.perOrderAllowance
     };
 
     function previousValueOverMaxQty(lineItem) {
         var savedLineItem = supplyCart.getCartLineItem(lineItem.item.id);
-        return savedLineItem.quantity > savedLineItem.item.maxQtyPerOrder;
+        return savedLineItem.quantity > savedLineItem.item.perOrderAllowance;
     }
 }

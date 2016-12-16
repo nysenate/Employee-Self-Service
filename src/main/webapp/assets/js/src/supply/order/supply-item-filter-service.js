@@ -8,7 +8,7 @@ function itemFilterService() {
         }
         var filtered = [];
         angular.forEach(lineItems, function (lineItem) {
-            if (categories.indexOf(lineItem.item.category.name) !== -1) {
+            if (categories.indexOf(lineItem.item.category) !== -1) {
                 filtered.push(lineItem);
             }
         });

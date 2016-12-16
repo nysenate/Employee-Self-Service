@@ -2,13 +2,13 @@ var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController',
                 ['$scope', 'LocationService', 'SupplyCartService', 'PaginationModel',
                  'SupplyLocationAutocompleteService', 'SupplyItemApi',
-                 'SupplyOrderDestinationService', 'modals', 'SupplyUtils', 'SupplyLineItemService',
+                 'SupplyOrderDestinationService', 'modals', 'SupplyLineItemService',
                  'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService',
                  supplyOrderController]);
 
 function supplyOrderController($scope, locationService, supplyCart, paginationModel,
                                locationAutocompleteService, itemApi, destinationService,
-                               modals, supplyUtils, lineItemService, itemFilterService,
+                               modals, lineItemService, itemFilterService,
                                categoryService, stateService) {
 
     // A reference to the stateService on the scope for checking the state in jsp.
@@ -38,21 +38,15 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     /** --- Initialization --- */
 
     $scope.init = function () {
-        itemApi.itemsForLoc("A4-W").then(function (r) {
-            console.log(r);
-        });
-
-        //
-        // $scope.state.toLoading();
-        // $scope.paginate.itemsPerPage = 16;
-        // updateFiltersFromUrlParams();
-        // if (!destinationService.isDestinationConfirmed()) {
-        //     loadSelectDestinationState();
-        // }
-        // else {
-        //     loadShoppingState();
-        // }
-
+        $scope.state.toLoading();
+        $scope.paginate.itemsPerPage = 16;
+        updateFiltersFromUrlParams();
+        if (!destinationService.isDestinationConfirmed()) {
+            loadSelectDestinationState();
+        }
+        else {
+            loadShoppingState();
+        }
     };
 
     $scope.init();
@@ -87,19 +81,14 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     function loadShoppingState() {
         $scope.state.toLoading();
         $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
-        allowanceService.queryLocationAllowance(destinationService.getDestination())
+        itemApi.itemsForLoc(destinationService.getDestination().locId)
             .then(initializeCart)
             .then(sortAndFilterLineItems)
             .then(setDestinationDescription)
-            .then(setToShoppingState)
-            .catch(loadItemsError);
+            .then(setToShoppingState);
     }
 
-    function initializeCart(allowanceResponse) {
-        var items = [];
-        angular.forEach(allowanceResponse.result.itemAllowances, function (allowance) {
-            items.push(allowance.item);
-        });
+    function initializeCart(items) {
         supplyCart.initializeCart(lineItemService.generateLineItems(items));
     }
 
@@ -107,8 +96,6 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         $scope.displayedLineItems = itemFilterService.filterLineItems(supplyCart.getLineItems(),
                                                                       categoryService.getSelectedCategoryNames(),
                                                                       $scope.filter.searchTerm);
-        $scope.displayedLineItems = supplyUtils.alphabetizeLineItems($scope.displayedLineItems);
-        // Sort must take place after alphabetizing.
         $scope.displayedLineItems = updateSort($scope.displayedLineItems);
     }
 
@@ -118,10 +105,6 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     function setDestinationDescription() {
         $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
-    }
-
-    function loadItemsError(response) {
-        modals.open('500', {action: 'get supply items', details: response});
     }
 
     /** --- Search --- */
@@ -156,7 +139,7 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     /**
      * Set the page url parameter when the user changes the page.
-     * Triggers the $on('$locationChangeStart') event which will update url params and filter allowances.
+     * Triggers the $on('$locationChangeStart') event which will update url params and filter items.
      */
     $scope.onPageChange = function () {
         locationService.setSearchParam("page", $scope.paginate.currPage, true, false);
@@ -164,7 +147,7 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     /**
      * Detect url param changes due to category side bar selections, page change, or back/forward browser navigation.
-     * Update local $scope params to match the new url params and filter allowances for any categories specified.
+     * Update local $scope params to match the new url params and filter items for any categories specified.
      *
      * Note: Depends on '$locationChangeStart' in supply-category-nav-ctrl to
      * initialize the categories before this runs.
@@ -224,8 +207,8 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         }
         else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
             lineItems.sort(function (a, b) {
-                if (a.item.category.name < b.item.category.name) return -1;
-                if (a.item.category.name > b.item.category.name) return 1;
+                if (a.item.category < b.item.category) return -1;
+                if (a.item.category> b.item.category) return 1;
                 return 0;
             });
         }

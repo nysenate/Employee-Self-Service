@@ -11,9 +11,9 @@ var essSupply = angular.module('essSupply');
  * directly to a category so the url search param can be updated accordingly.
  */
 essSupply.factory('SupplyCategoryService',
-                  ['LocationService', supplyCategoryService]);
+                  ['SupplyItemApi', 'SupplyOrderDestinationService', 'LocationService', supplyCategoryService]);
 
-function supplyCategoryService(locationAllowanceService, locationService) {
+function supplyCategoryService(itemApi, destinationService, locationService) {
 
     function Category(name) {
         this.name = name;
@@ -27,7 +27,6 @@ function supplyCategoryService(locationAllowanceService, locationService) {
     function getCategories() {
         if (categories === null || categories.length === 0) {
             initCategories();
-            console.log("Categories init");
         }
         return categories;
     }
@@ -69,30 +68,32 @@ function supplyCategoryService(locationAllowanceService, locationService) {
     /** --- Private Methods --- */
 
     function initCategories() {
-        // Get allowances that should be made into categories.
-        var allowances = locationAllowanceService.getAllowances();
-        if (allowances === null) {
+        // Only init if destination has been selected.
+        if (!destinationService.isDestinationConfirmed()) {
             return;
         }
-        // Create categories
-        angular.forEach(allowances, function (allowance) {
-            if (isDistinctCategory(allowance.item.category.name)) {
-                categories.push(new Category(allowance.item.category.name));
-            }
-        });
-        // Alphabetize the categories.
-        categories.sort(function (a, b) {
-            if (a.name < b.name) {
-                return -1;
-            }
-            if (a.name > b.name) {
-                return 1;
-            }
-            return 0;
-        });
+        itemApi.itemsForLoc(destinationService.getDestination().locId)
+            .then(function (items) {
+                // Create categories
+                angular.forEach(items, function (item) {
+                    if (isDistinctCategory(item.category)) {
+                        categories.push(new Category(item.category));
+                    }
+                });
+                // Alphabetize the categories.
+                categories.sort(function (a, b) {
+                    if (a.name < b.name) {
+                        return -1;
+                    }
+                    if (a.name > b.name) {
+                        return 1;
+                    }
+                    return 0;
+                });
 
-        // Initialize any categories set in url
-        setSelectedCategories(locationService.getSearchParam("category") || []);
+                // Initialize any categories set in url
+                setSelectedCategories(locationService.getSearchParam("category") || []);
+            });
     }
 
     /** Returns true if a category is not yet in the category array, false otherwise. */
