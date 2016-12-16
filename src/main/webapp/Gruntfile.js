@@ -220,8 +220,8 @@ module.exports = function(grunt) {
                 files: ['<%= lessSource %>/**.less', '<%= lessSource %>/common/**.less'],
                 tasks: ['less', 'cssmin', 'copy:css', '<%= properties.lessBeep %>']
             },
-            css: {
-                files: ['<%= cssVendor %>/**/*.css', '<%= cssSource %>/**/*.css'],
+            cssVendor: {
+                files: ['<%= cssVendor %>/**/*.css'],
                 tasks: ['cssmin', 'copy:css', '<%= properties.cssBeep %>']
             },
             jsVendor: {
