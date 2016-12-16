@@ -146,13 +146,12 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         }
     };
 
-
     function isOverPerOrderMax(lineItem) {
-        return lineItem.quantity > lineItem.item.maxQtyPerOrder
+        return lineItem.quantity > lineItem.item.perOrderAllowance;
     }
 
     function containsSpecialItems(lineItem) {
-        return lineItem.item.visibility === 'SPECIAL';
+        return lineItem.item.specialRequest;
     }
 
     function isOverPerMonthMax(lineItem) {
@@ -161,12 +160,12 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         }
         var monthToDateQty = $scope.locationStatistics.getQuantityForLocationAndItem($scope.originalRequisition.destination.locId,
                                                                                      lineItem.item.commodityCode);
-        return monthToDateQty > lineItem.item.suggestedMaxQty
+        return monthToDateQty > lineItem.item.perMonthAllowance;
     }
 
     /** Determines if a line item should be highlighted in the editable-order-listing.jsp */
     $scope.highlightLineItem = function (lineItem) {
-        return lineItem.quantity > lineItem.item.suggestedMaxQty || lineItem.item.visibility === 'SPECIAL';
+        return lineItem.quantity > lineItem.item.perMonthAllowance || lineItem.item.specialRequest;
     };
     $scope.warning = false;
     /** --- Add Item --- **/

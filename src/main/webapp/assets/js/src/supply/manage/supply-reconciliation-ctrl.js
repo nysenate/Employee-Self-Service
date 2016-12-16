@@ -50,7 +50,7 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
                     else {
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                        lineItem.item["page"] = $scope.reconciliations[lineItem.item.category.name];
+                        lineItem.item["page"] = $scope.reconciliations[lineItem.item.category];
                         $scope.reconcilableSearch.items.push(lineItem.item);
                     }
                 })

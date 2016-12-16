@@ -1,5 +1,5 @@
 angular.module('essSupply').service('SupplyItemAutocompleteService',
-                                    ['SupplyItemsApi', itemAutocompleteService]);
+                                    ['SupplyItemApi', itemAutocompleteService]);
 
 /**
  * This service handles the data for item autocomplete elements used in supply.
@@ -11,7 +11,7 @@ function itemAutocompleteService(itemsApi) {
     var commodityCodesToItems = new Map();
 
     var setItems = function (response) {
-        items = response.result;
+        items = response;
     };
 
     var setCommodityCodes = function () {
@@ -35,7 +35,7 @@ function itemAutocompleteService(itemsApi) {
     return {
         initWithAllItems: function () {
             reset();
-            return itemsApi.get().$promise
+            return itemsApi.items()
                 .then(setItems)
                 .then(setCommodityCodes)
                 .then(setCommodityCodesToItems)

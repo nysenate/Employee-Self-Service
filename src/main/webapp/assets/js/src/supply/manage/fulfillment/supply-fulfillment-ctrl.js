@@ -1,9 +1,9 @@
 essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
-    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemsApi', 'modals', '$interval',
+    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemApi', 'modals', '$interval',
     'LocationService', 'SupplyLocationStatisticsService', 'SupplyUtils', supplyFulfillmentController]);
 
 function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
-                                     itemsApi, modals, $interval, locationService,
+                                     itemApi, modals, $interval, locationService,
                                      locationStatisticsService, supplyUtils) {
 
     $scope.pendingSearch = {
@@ -226,7 +226,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function isOverPerOrderMax(requisition) {
         var isOverPerOrderMax = false;
         angular.forEach(requisition.lineItems, function (lineItem) {
-            if (lineItem.quantity > lineItem.item.maxQtyPerOrder) {
+            if (lineItem.quantity > lineItem.item.perOrderAllowance) {
                 isOverPerOrderMax = true;
             }
         });
@@ -236,7 +236,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function containsSpecialItems(requisition) {
         var containsSpecialItems = false;
         angular.forEach(requisition.lineItems, function (lineItem) {
-            if (lineItem.item.visibility === 'SPECIAL') {
+            if (lineItem.item.visibility) {
                 containsSpecialItems = true;
             }
         });
@@ -251,7 +251,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         angular.forEach(requisition.lineItems, function (lineItem) {
             var monthToDateQty = $scope.locationStatistics.getQuantityForLocationAndItem(requisition.destination.locId,
                                                                                          lineItem.item.commodityCode);
-            if (monthToDateQty > lineItem.item.suggestedMaxQty) {
+            if (monthToDateQty > lineItem.item.perMonthAllowance) {
                 isOverPerMonthMax = true;
             }
         });
