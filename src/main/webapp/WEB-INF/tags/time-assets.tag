@@ -43,6 +43,8 @@
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-projection-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-utils.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/accrual-bar-directive.js?v=${releaseVersion}"></script>
 
         <!-- Grants -->
         <script type="text/javascript"

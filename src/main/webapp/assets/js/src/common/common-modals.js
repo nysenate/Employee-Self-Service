@@ -25,13 +25,13 @@ function confirmModal (modals) {
           '<div class="confirmation-message">' +
             '<h4 ng-show="confirmMessage" ng-bind="confirmMessage"></h4>' +
             '<div ng-hide="rejectable" class="input-container">' +
-              '<input type="button" ng-click="resolve()" class="time-neutral-button"' +
+              '<input type="button" ng-click="resolve()" class="{{confirmClass}}"' +
                      'value="{{resolveButton || \'OK\'}}" tabindex="1"/>' +
             '</div>' +
             '<div ng-show="rejectable" class="input-container">' +
-              '<input type="button" ng-click="resolve()" class="submit-button"' +
+              '<input type="button" ng-click="resolve()" class="{{resolveClass}}"' +
                      'value="{{resolveButton || \'Yes\'}}" tabindex="1"/>' +
-              '<input type="button" ng-click="reject()" class="reject-button"' +
+              '<input type="button" ng-click="reject()" class="{{rejectClass}}"' +
                      'value="{{rejectButton || \'No\'}}" tabindex="1"/>' +
             '</div>' +
           '</div>' +
@@ -50,6 +50,10 @@ function confirmModal (modals) {
 
         $scope.resolveButton = $attrs.resolveButton;
         $scope.rejectButton = $attrs.rejectButton;
+
+        $scope.resolveClass = $attrs.resolveClass || 'submit-button';
+        $scope.rejectClass = $attrs.rejectClass || 'reject-button';
+        $scope.confirmClass = $attrs.confirmClass || 'time-neutral-button';
     }
 }
 

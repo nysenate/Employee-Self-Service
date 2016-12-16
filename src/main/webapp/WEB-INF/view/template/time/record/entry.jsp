@@ -86,7 +86,7 @@
 
   <% /** Accruals and Time entry for regular/special annual time record entries. */ %>
   <div class="content-container" ng-show="!state.request.records && state.records[state.iSelectedRecord].timeEntries">
-    <p class="content-info">All hours available need approval from appointing authority.</p>
+    <p class="content-info margin-0">All hours available need approval from appointing authority.</p>
     <div ess-notification level="warn" title="Record with multiple pay types" class="margin-10"
          ng-if="state.annualEntries && state.tempEntries">
       <p>
@@ -100,50 +100,8 @@
       <!-- Annual Entry Form -->
       <div class="ra-sa-entry" ng-if="state.annualEntries">
         <h1 class="time-entry-table-title" ng-if="state.tempEntries">Regular/Special Annual Pay Entries</h1>
-        <div ng-show="state.request.accruals">
-          <h3 class="text-align-center">Loading Accruals...</h3>
-          <div loader-indicator class="sm-loader" style="margin: 15.5px auto;"></div>
-        </div>
-        <div class="accrual-hours-container" ng-hide="state.request.accruals">
-          <div class="accrual-component">
-            <div class="captioned-hour-square" style="float:left;">
-              <div class="hours-caption personal">Personal Hours</div>
-              <div class="hours-display">{{state.accrual.personalAvailable}}</div>
-            </div>
-          </div>
-          <div class="accrual-component">
-            <div class="captioned-hour-square" style="float:left;">
-              <div class="hours-caption vacation">Vacation Hours</div>
-              <div class="hours-display">{{state.accrual.vacationAvailable}}</div>
-            </div>
-          </div>
-          <div class="accrual-component">
-            <div class="captioned-hour-square" style="float:left;">
-              <div class="hours-caption sick">Sick Hours</div>
-              <div class="odometer hours-display">{{state.accrual.sickAvailable}}</div>
-            </div>
-          </div>
-          <div class="accrual-component">
-            <div class="captioned-hour-square" style="width:390px;">
-              <div style="background:rgb(92, 116, 116);color:white"
-                   class="hours-caption">Year To Date Hours Of Service
-              </div>
-              <div class="hours-display" style="font-size:1em">
-                <div class="ytd-hours">
-                  Expected: {{state.accrual.serviceYtdExpected}}
-                </div>
-                <div class="ytd-hours">Actual: {{state.accrual.serviceYtd}}</div>
-                <div class="ytd-hours" style="border-right:none;">
-                  Difference:
-                  <span
-                      ng-bind-html="(state.accrual.serviceYtd - state.accrual.serviceYtdExpected) | hoursDiffHighlighter"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div style="clear:both;"></div>
-        </div>
-        <hr/>
+        <accrual-bar accruals="state.accrual" loading="state.request.accruals"></accrual-bar>
+        <hr class="margin-top-10" />
         <% /** Display an error message if part of the time record is invalid. */ %>
         <div ess-notification level="error" title="Time record has errors"
              message="" class="time-entry-error-box margin-top-20"

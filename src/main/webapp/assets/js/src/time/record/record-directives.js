@@ -43,6 +43,7 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
                 angular.forEach($scope.record.timeEntries, function (entry) {
                     $scope.tempEntries = $scope.tempEntries || entry.payType === 'TE';
                     $scope.annualEntries = $scope.annualEntries || ['RA', 'SA'].indexOf(entry.payType) > -1;
+                    $scope.showAccruals = $scope.annualEntries && ($attrs.showAccruals === "true");
                 });
             }
 

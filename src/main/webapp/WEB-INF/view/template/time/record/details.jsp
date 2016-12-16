@@ -1,10 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <div class="grid">
+  <h3 class="content-info" style="margin-bottom:0;">
+    Attendance record for {{record.employee.fullName}} from {{record.beginDate | moment:'l'}} to {{record.endDate | moment:'l'}}
+  </h3>
+  <accrual-bar accruals="accrual" loading="loadingAccruals"></accrual-bar>
   <div class="col-10-12">
-    <h3 class="content-info" style="margin-bottom:0;">
-      Time entries for {{record.employee.fullName}} from {{record.beginDate | moment:'l'}} to {{record.endDate | moment:'l'}}
-    </h3>
     <div class="temp" ng-if="tempEntries">
       <h1 class="attendance-entry-sub-table-title margin-10" ng-if="annualEntries">Temporary Pay Entries</h1>
       <table class="attendance-entry-sub-table ess-table">
@@ -97,28 +98,6 @@
     <h3 class="content-info">Status</h3>
     <div class="record-details-section">
       <span>{{record.recordStatus | timeRecordStatus}}</span>
-    </div>
-
-    <h3 class="content-info" ng-if="showAccruals">Accruals</h3>
-    <div class="record-details-section accrual-display" ng-show="loadingAccruals">
-      <span>Loading...</span>
-      <div loader-indicator class="sm-loader"></div>
-    </div>
-    <div class="record-details-section accrual-display" ng-hide="!showAccruals || loadingAccruals">
-      <table><tbody>
-        <tr class="personal-text">
-          <td>Personal</td>
-          <td>{{accrual.personalAvailable}}</td>
-        </tr>
-        <tr class="vacation-text">
-          <td>Vacation</td>
-          <td>{{accrual.vacationAvailable}}</td>
-        </tr>
-        <tr class="sick-text">
-          <td>Sick</td>
-          <td>{{accrual.sickAvailable}}</td>
-        </tr>
-      </tbody></table>
     </div>
 
     <h3 class="content-info">Actions</h3>
