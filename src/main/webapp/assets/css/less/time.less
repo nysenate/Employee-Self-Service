@@ -237,10 +237,20 @@ table.time-record-entry-table {
   }
 }
 
+.accrual-loader {
+  .loading-text {
+    text-align: center;
+    margin: 10px 0;
+  }
+  .sm-loader {
+    font-size: 15px;
+  }
+}
+
 .accrual-hours-container {
   margin: auto;
   text-align: center;
-  padding: 0 20px;
+  padding: 10px 20px 0;
 }
 
 .accrual-component {
@@ -374,7 +384,7 @@ record-detail-modal, [record-detail-modal] {
 }
 
 .record-details-section.accrual-display {
-  height: 5em;
+  height: 6.5em;
   [loader-indicator] {
     margin: 1em auto;
   }
@@ -689,7 +699,7 @@ record-review-modal, [record-review-modal] {
 }
 
 #record-review-content {
-  width: 1113px;
+  width: 1163px;
   #record-selection-pane {
     .modal-max-height;
     float:left;
@@ -697,7 +707,6 @@ record-review-modal, [record-review-modal] {
     width:280px;
     margin:0;
     vertical-align: top;
-    border-right: 1px solid #ccc;
     background: #f5f5f5;
     overflow-x: hidden;
     #record-selection-table {
@@ -731,8 +740,9 @@ record-review-modal, [record-review-modal] {
 
   #record-details-view {
     display: inline-block;
-    width: 830px;
+    width: 881px;
     margin: 0;
+    border-left: 1px solid #ccc;
 
     #remarks-container {
       padding: .3em;
@@ -766,17 +776,9 @@ record-review-modal, [record-review-modal] {
 
 .reject-modal-textarea {
   resize:none;
-  margin:10px;
+  margin: 10px 10px 20px;
   width:375px;
   height:100px;
-}
-
-.reject-modal-button-wrapper {
-  padding:.4em;
-  background:#eee;
-  text-align: center;
-  overflow:auto;
-  clear:both;
 }
 
 .reject-modal-error {

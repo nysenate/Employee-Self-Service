@@ -2,8 +2,7 @@
   <div>
     <p class="content-info no-bottom-margin">
       Click a record from the Employee Record List on the left hand side to review the time record. You can then either
-      Approve
-      or Reject the record.
+      Approve or Disapprove the record.
     </p>
     <hr/>
     <div id="record-selection-pane">
