@@ -23,7 +23,7 @@ function quantitySelectorCtrl($scope, modals, supplyCart) {
 
     $scope.addToCart = function (lineItem) {
         // first time adding special item, display modal.
-        if (!supplyCart.isItemIdOrdered(lineItem.item.id) && lineItem.item.visibility === 'SPECIAL') {
+        if (!supplyCart.isItemIdOrdered(lineItem.item.id) && lineItem.item.specialRequest) {
             modals.open('special-order-item-modal', {lineItem: lineItem})
                 .then(function () {
                     lineItem.increment();
