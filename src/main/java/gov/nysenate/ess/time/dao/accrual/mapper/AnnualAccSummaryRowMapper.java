@@ -20,6 +20,7 @@ public class AnnualAccSummaryRowMapper extends BaseRowMapper<AnnualAccSummary>
         annAccRec.setContServiceDate(getLocalDateFromRs(rs, "CONT_SERVICE_DATE"));
         annAccRec.setPayPeriodsYtd(rs.getInt("PAY_PERIODS_YTD"));
         annAccRec.setPayPeriodsBanked(rs.getInt("PAY_PERIODS_BANKED"));
+        annAccRec.setUpdateDate(getLocalDateTimeFromRs(rs, "DTTXNUPDATE"));
         AccrualSummaryRowMapper.mapRow(rs, annAccRec);
         return annAccRec;
     }

@@ -10,6 +10,8 @@ import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -39,6 +41,13 @@ public interface AccrualDao extends BaseDao
      * @return TreeMap<Integer, AnnualAccSummary>
      */
     TreeMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear);
+
+    /**
+     * Get a list of annual accrual summaries that have been updated since the given datetime
+     * @param updatedSince LocalDateTime - will retrieve summaries updated after this time
+     * @return List<AnnualAccSummary>
+     */
+    List<AnnualAccSummary> getAnnualAccsUpdatedSince(LocalDateTime updatedSince);
 
     /**
      * Retrieve the period accrual usage objects that represent the hours charged during a given pay period.

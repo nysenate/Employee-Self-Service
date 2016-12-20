@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.model.accrual;
 import gov.nysenate.ess.time.model.accrual.AccrualSummary;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Represents a summary of accruals over a given year.
@@ -15,6 +16,8 @@ public class AnnualAccSummary extends AccrualSummary
     protected LocalDate contServiceDate;
     protected int payPeriodsYtd;
     protected int payPeriodsBanked;
+
+    protected LocalDateTime updateDate;
 
     /** --- Constructors --- */
 
@@ -68,5 +71,13 @@ public class AnnualAccSummary extends AccrualSummary
 
     public void setPayPeriodsBanked(int payPeriodsBanked) {
         this.payPeriodsBanked = payPeriodsBanked;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 }

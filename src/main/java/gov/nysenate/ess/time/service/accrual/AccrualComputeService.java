@@ -4,7 +4,7 @@ import gov.nysenate.ess.time.model.accrual.AccrualException;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.TreeMap;
 
 /**
@@ -30,5 +30,5 @@ public interface AccrualComputeService
      * @return TreeMap<PayPeriod, PeriodAccSummary>
      * @throws AccrualException
      */
-    public TreeMap<PayPeriod, PeriodAccSummary> getAccruals(int empId, List<PayPeriod> payPeriods) throws AccrualException;
+    public TreeMap<PayPeriod, PeriodAccSummary> getAccruals(int empId, Collection<PayPeriod> payPeriods) throws AccrualException;
 }

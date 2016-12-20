@@ -13,7 +13,8 @@ public enum SqlAccrualQuery implements BasicSqlQuery
         "    NUPERHRSTOT AS PER_HRS_USED, NUPERHRSYTD AS PER_HRS_ACCRUED,\n" +
         "    NUEMPHRSTOT AS EMP_HRS_USED, NUFAMHRSTOT AS FAM_HRS_USED, NUEMPHRSYTD AS EMP_HRS_ACCRUED, \n" +
         "    NUEMPHRSBSD AS EMP_HRS_BANKED, NUHOLHRSTOT AS HOL_HRS_USED, NUMISCHRSTOT AS MISC_HRS_USED, \n" +
-        "    NUPAYCTRYTD AS PAY_PERIODS_YTD, NUPAYCTRBSD AS PAY_PERIODS_BANKED\n" +
+        "    NUPAYCTRYTD AS PAY_PERIODS_YTD, NUPAYCTRBSD AS PAY_PERIODS_BANKED,\n" +
+        "    DTTXNUPDATE\n" +
         "FROM ${masterSchema}.PM23ATTEND \n" +
         // Where clause
         "%s"
@@ -27,7 +28,7 @@ public enum SqlAccrualQuery implements BasicSqlQuery
 
     GET_ANNUAL_ACC_SUMMARIES_UPDATED_SINCE(
         String.format(GET_ANNUAL_ACC_SUMMARIES_TMPL.sql,
-            "WHERE DTTXNUPDATE >= :updateDateTime"
+            "WHERE DTTXNUPDATE > :updateDateTime"
         )
     ),
 

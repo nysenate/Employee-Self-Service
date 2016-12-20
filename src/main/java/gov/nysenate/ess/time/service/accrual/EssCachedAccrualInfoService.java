@@ -19,10 +19,12 @@ import net.sf.ehcache.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -43,14 +45,17 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
 
     private Cache annualAccrualCache;
 
+    /**
+     * Tracks the last time that the cache was updated
+     * Initialized as the start date time since caches are not warmed
+     */
+    private LocalDateTime lastUpdateDateTime;
+
     @PostConstruct
     public void init() {
+        lastUpdateDateTime = LocalDateTime.now();
         eventBus.register(this);
         setupCaches();
-    }
-
-    public void setupCaches() {
-        this.annualAccrualCache = cacheManageService.registerEternalCache(getCacheType().name());
     }
 
     /**
@@ -67,28 +72,19 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
         TreeMap<Integer, AnnualAccSummary> getAnnualAccruals(int endYear) {
             return new TreeMap<>(annualAccruals.headMap(endYear, true));
         }
+
+        void updateAnnualAccSummary(AnnualAccSummary summary) {
+            annualAccruals.put(summary.getYear(), summary);
+        }
     }
 
-    /** --- Accrual Info Service Implemented Methods ---
-     * @see AccrualInfoService*/
+    /* --- Accrual Info Service Implemented Methods --- */
 
     /** {@inheritDoc} */
     @Override
     public TreeMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear) {
-        annualAccrualCache.acquireReadLockOnKey(empId);
-        Element elem = annualAccrualCache.get(empId);
-        annualAccrualCache.releaseReadLockOnKey(empId);
-        AnnualAccCacheTree cachedAccTree;
-        if (elem == null) {
-            TreeMap<Integer, AnnualAccSummary> annualAccruals =
-                accrualDao.getAnnualAccruals(empId, DateUtils.THE_FUTURE.getYear());
-            cachedAccTree = new AnnualAccCacheTree(annualAccruals);
-            putAnnualAccTreeInCache(empId, cachedAccTree);
-        }
-        else {
-            cachedAccTree = (AnnualAccCacheTree) elem.getObjectValue();
-        }
-        return cachedAccTree.getAnnualAccruals(endYear);
+        return getOrCreateAnnualAccCacheTree(empId)
+                .getAnnualAccruals(endYear);
     }
 
     /** {@inheritDoc} */
@@ -113,8 +109,7 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
         return openDates.isEmpty() ? Collections.emptyList() : payPeriodService.getPayPeriods(type, openDates.span(), dateOrder);
     }
 
-    /** --- Caching Service Implemented Methods ---
-     * @see CachingService*/
+    /* --- Caching Service Implemented Methods --- */
 
     /** {@inheritDoc} */
     @Override
@@ -141,11 +136,60 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
         // This cache doesn't get warmed
     }
 
+    @Scheduled(fixedDelayString = "${cache.poll.delay.accruals:60000}")
+    public void updateAnnualAccCache() {
+        logger.info("Checking for annual accrual record updates since {}", lastUpdateDateTime);
+        List<AnnualAccSummary> updatedAnnualAccs = accrualDao.getAnnualAccsUpdatedSince(lastUpdateDateTime);
+
+        // process any updated records and get last update date time
+        lastUpdateDateTime = updatedAnnualAccs.stream()
+                .peek(this::updateAnnualAccSummary)
+                .map(AnnualAccSummary::getUpdateDate)
+                .max(LocalDateTime::compareTo)
+                .orElse(lastUpdateDateTime);
+        logger.info("Refreshed cache with {} updated annual accrual records", updatedAnnualAccs.size());
+    }
+
     /** --- Internal Methods --- */
+
+    private void setupCaches() {
+        this.annualAccrualCache = cacheManageService.registerEternalCache(getCacheType().name());
+    }
 
     private void putAnnualAccTreeInCache(int empId, AnnualAccCacheTree annualAccCacheTree) {
         annualAccrualCache.acquireWriteLockOnKey(empId);
         annualAccrualCache.put(new Element(empId, annualAccCacheTree));
         annualAccrualCache.releaseWriteLockOnKey(empId);
+    }
+
+    private AnnualAccCacheTree getCachedAnnualAccruals(int empId) {
+        annualAccrualCache.acquireReadLockOnKey(empId);
+        Element elem = annualAccrualCache.get(empId);
+        annualAccrualCache.releaseReadLockOnKey(empId);
+        if (elem == null) {
+            return null;
+        }
+        return (AnnualAccCacheTree) elem.getObjectValue();
+    }
+
+    private AnnualAccCacheTree createAnnualAccCacheTree(int empId) {
+        TreeMap<Integer, AnnualAccSummary> annualAccruals =
+                accrualDao.getAnnualAccruals(empId, DateUtils.THE_FUTURE.getYear());
+        AnnualAccCacheTree cachedAccTree = new AnnualAccCacheTree(annualAccruals);
+        putAnnualAccTreeInCache(empId, cachedAccTree);
+        return cachedAccTree;
+    }
+
+    private AnnualAccCacheTree getOrCreateAnnualAccCacheTree(int empId) {
+        AnnualAccCacheTree annualAccCacheTree = getCachedAnnualAccruals(empId);
+        if (annualAccCacheTree == null) {
+            annualAccCacheTree = createAnnualAccCacheTree(empId);
+        }
+        return annualAccCacheTree;
+    }
+
+    private void updateAnnualAccSummary(AnnualAccSummary annualAccSummary) {
+        Optional.ofNullable(getCachedAnnualAccruals(annualAccSummary.getEmpId()))
+                .ifPresent(cacheTree -> cacheTree.updateAnnualAccSummary(annualAccSummary));
     }
 }

@@ -59,12 +59,13 @@ public class SqlAccrualDao extends SqlBaseDao implements AccrualDao
         return new TreeMap<>(Maps.uniqueIndex(annualAccRecs, AnnualAccSummary::getYear));
     }
 
+    /** {@inheritDoc} */
+    @Override
     public List<AnnualAccSummary> getAnnualAccsUpdatedSince(LocalDateTime updatedSince) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("updateDateTime", toDate(updatedSince));
-        List<AnnualAccSummary> annualAccRecs =
-            remoteNamedJdbc.query(SqlAccrualQuery.GET_ANNUAL_ACC_SUMMARIES_UPDATED_SINCE.getSql(schemaMap()), params, new AnnualAccSummaryRowMapper());
-        return annualAccRecs;
+        return remoteNamedJdbc.query(SqlAccrualQuery.GET_ANNUAL_ACC_SUMMARIES_UPDATED_SINCE.getSql(schemaMap()),
+                params, new AnnualAccSummaryRowMapper());
     }
 
     /** {@inheritDoc} */

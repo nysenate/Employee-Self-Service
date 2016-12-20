@@ -151,6 +151,20 @@ public class RangeUtils
     }
 
     /**
+     * Get a range set that contains the intersection of all of the given range sets
+     * @param rangeSets Collection<RangeSet<T>>
+     * @param <T>
+     * @return RangeSet<T>
+     */
+    public static <T extends Comparable<? super T>> RangeSet<T> intersection(Collection<RangeSet<T>> rangeSets) {
+        if (rangeSets.isEmpty()) {
+            return TreeRangeSet.create();
+        }
+        return rangeSets.stream()
+                .reduce(ImmutableRangeSet.of(Range.all()), RangeUtils::intersection);
+    }
+
+    /**
      * Returns true iff the two given ranges intersect
      * @param lhs Range<T>
      * @param rhs Range<T>
