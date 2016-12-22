@@ -35,8 +35,8 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
         return new ItemStatus(
                 // If null, initialize with default value.
                 cdStockItem == null ? false : cdStockItem.equals("Y"),
-                cdSenSuppiedItem == null ? false : !cdSenSuppiedItem.equals("Y"),
-                cdSpecPerMVisible == null ? false : cdSpecPerMVisible.equals("Y"),
+                cdSenSuppiedItem == null ? true : !cdSenSuppiedItem.equals("Y"),
+                cdSpecPerMVisible == null ? true : cdSpecPerMVisible.equals("Y"),
                 cdSpecPerMReq == null ? false : cdSpecPerMReq.equals("Y"));
     }
 }
