@@ -68,16 +68,16 @@ public class SupplyItemDaoIT extends BaseTest {
     }
 
     @Test
-    public void if_cdsensuppieditem_isNullDefaultToNotOrderedBySupply() {
+    public void if_cdsensuppieditem_isNullDefaultToOrderedBySupply() {
         SupplyItem item = itemDao.getItemById(4700);
         assertThat(item.isExpendable(), is(true));
-        assertThat(item.requiresSynchronization(), is(false));
+        assertThat(item.requiresSynchronization(), is(true));
     }
 
     @Test
-    public void if_cdspecpermvisible_isNullDefaultToNotVisible() {
+    public void if_cdspecpermvisible_isNullDefaultToVisible() {
         SupplyItem item = itemDao.getItemById(4700);
-        assertThat(item.isVisible(), is(false));
+        assertThat(item.isVisible(), is(true));
     }
 
     @Test
