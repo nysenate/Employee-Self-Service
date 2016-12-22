@@ -163,13 +163,13 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         })
     }
 
-    /**
-     * Now, it only shows the sync failed shipment until yesterday of current day.
-     */
+    /** Get all sync failures prior to today. */
     function getSyncFailedShipments() {
         var params = {
+            from: moment.unix(1).format(),
             to:moment().startOf('day').format(),
             status: "APPROVED",
+            dateField: "approved_date_time",
             savedInSfms: false
         };
         $scope.syncFailedSearch.response = requisitionApi.get(params, function (response) {
