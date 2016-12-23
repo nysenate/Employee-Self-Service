@@ -63,6 +63,50 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /** {@inheritDoc} */
     @Override
+    public AccrualsAvailable getAccrualsAvailable(int empId, PayPeriod payPeriod) throws AccrualException {
+        verifyValidPayPeriod(payPeriod);
+
+        PayPeriod prevPeriod = payPeriodService.getPayPeriod(
+                PayPeriodType.AF, payPeriod.getStartDate().minusDays(1));
+
+        // Get accrual records for the current and previous pay period
+        TreeMap<PayPeriod, PeriodAccSummary> periodAccruals =
+                getAccruals(empId, Arrays.asList(prevPeriod, payPeriod));
+
+        PeriodAccSummary currentAccruals = periodAccruals.get(payPeriod);
+        PeriodAccSummary lastAccruals = periodAccruals.get(prevPeriod);
+
+        if (currentAccruals == null || lastAccruals == null) {
+            throw new AccrualException(empId, AccrualExceptionType.PERIOD_RECORD_NOT_FOUND);
+        }
+
+        // An accrual summary we will use to calculate available accruals
+        AccrualSummary referenceSummary;
+        // Hours expected for the current year
+        BigDecimal serviceYtdExpected;
+        // Hours expected for the current pay period
+        BigDecimal biWeekHrsExpected = currentAccruals.getExpectedBiweekHours();
+
+        // If the pay period is the first of its year,
+        // we can get the accrual usage record for the pay period
+        // but set all usage to 0 to ignore time entered during that period
+        if (payPeriod.isStartOfYearSplit()) {
+            referenceSummary = new AccrualSummary(currentAccruals);
+            referenceSummary.resetAccrualUsage();
+            serviceYtdExpected = BigDecimal.ZERO;
+        }
+        // If the pay period is not the beginning of the year,
+        // we can use the accrual summary as of the end of the last pay period
+        else {
+            referenceSummary = lastAccruals;
+            serviceYtdExpected = lastAccruals.getExpectedTotalHours();
+        }
+
+        return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public PeriodAccSummary getAccruals(int empId, PayPeriod payPeriod) throws AccrualException {
         return getAccruals(empId, Collections.singletonList(payPeriod)).get(payPeriod);
     }
@@ -157,7 +201,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 .peek(period -> computeGapPeriodAccruals(period, accrualState, empTrans,
                         timeRecords, periodUsages, accrualAllowedDates))
                 .filter(remainingPeriods::contains)
-                .map(period -> accrualState.toPeriodAccrualSummary(period, period))
+                .map(period -> accrualState.toPeriodAccrualSummary(refPeriod, period))
                 .collect(Collectors.toList());
     }
 

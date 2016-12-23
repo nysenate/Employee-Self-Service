@@ -68,7 +68,6 @@ public class AccrualSummary extends AccrualUsage
             this.setPerHoursAccrued(s.getPerHoursAccrued());
             this.setVacHoursAccrued(s.getVacHoursAccrued());
             this.setVacHoursBanked(s.getVacHoursBanked());
-            this.setEmpHoursUsed(s.getEmpHoursUsed());
         }
     }
 

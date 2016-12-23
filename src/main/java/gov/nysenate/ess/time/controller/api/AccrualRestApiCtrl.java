@@ -6,7 +6,9 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.time.client.view.AccrualsAvailableView;
 import gov.nysenate.ess.time.client.view.AccrualsView;
+import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.accrual.AccrualComputeService;
@@ -43,9 +45,9 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
 
         checkPermission(new EssTimePermission( empId, ACCRUAL, GET, Range.singleton(beforeLocalDate)));
 
-        PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, beforeLocalDate.minusDays(1));
-        PeriodAccSummary periodAccSummary = accrualService.getAccruals(empId, payPeriod);
-        return new ViewObjectResponse<>(new AccrualsView(periodAccSummary));
+        PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, beforeLocalDate);
+        AccrualsAvailable accrualsAvailable = accrualService.getAccrualsAvailable(empId, payPeriod);
+        return new ViewObjectResponse<>(new AccrualsAvailableView(accrualsAvailable));
     }
 
     @RequestMapping("/history")

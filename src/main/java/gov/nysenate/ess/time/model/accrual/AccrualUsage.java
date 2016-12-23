@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -75,12 +76,32 @@ public class AccrualUsage
         return lhs;
     }
 
+    /**
+     * Sets all usage fields to 0
+     */
+    public void resetAccrualUsage() {
+        this.workHours = BigDecimal.ZERO;
+        this.travelHoursUsed = BigDecimal.ZERO;
+        this.vacHoursUsed = BigDecimal.ZERO;
+        this.perHoursUsed = BigDecimal.ZERO;
+        this.empHoursUsed = BigDecimal.ZERO;
+        this.famHoursUsed = BigDecimal.ZERO;
+        this.holHoursUsed = BigDecimal.ZERO;
+        this.miscHoursUsed = BigDecimal.ZERO;
+    }
+
     /** --- Functional Getters/Setters --- */
 
     /** The total hours is the sum of the hours used */
     public BigDecimal getTotalHoursUsed() {
-        return workHours.add(travelHoursUsed).add(vacHoursUsed).add(perHoursUsed).add(empHoursUsed)
-                        .add(famHoursUsed).add(holHoursUsed).add(miscHoursUsed);
+        return workHours
+                .add(travelHoursUsed)
+                .add(vacHoursUsed)
+                .add(perHoursUsed)
+                .add(empHoursUsed)
+                .add(famHoursUsed)
+                .add(holHoursUsed)
+                .add(miscHoursUsed);
     }
 
     public void setWorkHours(BigDecimal workHours) {

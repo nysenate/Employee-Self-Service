@@ -38,8 +38,8 @@
     </div>
     <div id="record-details-view">
       <div record-details record="records[iSelectedRecord]" exit-btn="false" show-accruals="true"></div>
-      <hr/>
       <div id="action-container" ng-if="allowApproval === true">
+        <hr/>
         <div ng-switch="getApprovalStatus(records[iSelectedRecord])" class="record-approval-buttons">
           <input type="button" class="reject-button"
                  value="Undo Approval" title="Undo Approval of Record"

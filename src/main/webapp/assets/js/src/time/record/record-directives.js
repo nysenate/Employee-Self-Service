@@ -26,10 +26,11 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
         },
         templateUrl: appProps.ctxPath + '/template/time/record/details',
         link: function($scope, $elem, $attrs) {
+            var showAccrualsSelected = $attrs['showAccruals'] === "true";
             $scope.close = modals.reject;
             $scope.tempEntries = $scope.annualEntries = false;
             $scope.showExitBtn = $attrs['exitBtn'] !== "false";
-            $scope.showAccruals = $attrs['showAccruals'] === "true";
+            $scope.showAccruals = showAccrualsSelected;
             $scope.loadingAccruals = false;
 
             $scope.$watch('record', function (record) {
@@ -43,7 +44,7 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
                 angular.forEach($scope.record.timeEntries, function (entry) {
                     $scope.tempEntries = $scope.tempEntries || entry.payType === 'TE';
                     $scope.annualEntries = $scope.annualEntries || ['RA', 'SA'].indexOf(entry.payType) > -1;
-                    $scope.showAccruals = $scope.annualEntries && ($attrs.showAccruals === "true");
+                    $scope.showAccruals = showAccrualsSelected && $scope.annualEntries;
                 });
             }
 

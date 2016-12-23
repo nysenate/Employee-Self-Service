@@ -2,6 +2,7 @@ package gov.nysenate.ess.time.service.accrual;
 
 import gov.nysenate.ess.time.model.accrual.AccrualException;
 import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 
 import java.util.Collection;
@@ -13,6 +14,16 @@ import java.util.TreeMap;
 public interface AccrualComputeService
 {
     /**
+     * Get the accruals that are available for the employee at the given pay period
+     *
+     * @param empId int - employee id
+     * @param payPeriod {@link PayPeriod} - pay period
+     * @return {@link AccrualsAvailable}
+     * @throws AccrualException if there is an error during calculation
+     */
+    AccrualsAvailable getAccrualsAvailable(int empId, PayPeriod payPeriod) throws AccrualException;
+
+    /**
      * Computes the accruals available for an employee at the start of the given pay period.
      *
      * @param empId int - Employee id to get accruals for.
@@ -20,7 +31,7 @@ public interface AccrualComputeService
      * @return PeriodAccSummary
      * @throws AccrualException - If there is an exception during either retrieval or computation of the accruals.
      */
-    public PeriodAccSummary getAccruals(int empId, PayPeriod payPeriod) throws AccrualException;
+    PeriodAccSummary getAccruals(int empId, PayPeriod payPeriod) throws AccrualException;
 
     /**
      * Retrieves a collection of accrual summaries for each of the pay periods within the given 'payPeriods'.
@@ -30,5 +41,5 @@ public interface AccrualComputeService
      * @return TreeMap<PayPeriod, PeriodAccSummary>
      * @throws AccrualException
      */
-    public TreeMap<PayPeriod, PeriodAccSummary> getAccruals(int empId, Collection<PayPeriod> payPeriods) throws AccrualException;
+    TreeMap<PayPeriod, PeriodAccSummary> getAccruals(int empId, Collection<PayPeriod> payPeriods) throws AccrualException;
 }

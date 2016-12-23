@@ -11,7 +11,11 @@ public enum AccrualExceptionType
 
     NO_ACTIVE_ANNUAL_RECORD_FOUND (
         "No annual summaries exist for the date range specified. Cannot reliably determine " +
-        "the accrual totals for the requested pay period without this information.");
+        "the accrual totals for the requested pay period without this information."),
+
+    PERIOD_RECORD_NOT_FOUND (
+            "A period accrual record for the requested period could not be retrieved or calculated." ),
+    ;
 
     String message;
 

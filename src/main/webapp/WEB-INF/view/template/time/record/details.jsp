@@ -4,7 +4,7 @@
   <h3 class="content-info" style="margin-bottom:0;">
     Attendance record for {{record.employee.fullName}} from {{record.beginDate | moment:'l'}} to {{record.endDate | moment:'l'}}
   </h3>
-  <accrual-bar accruals="accrual" loading="loadingAccruals"></accrual-bar>
+  <accrual-bar ng-show="showAccruals" accruals="accrual" loading="loadingAccruals"></accrual-bar>
   <div class="col-10-12">
     <div class="temp" ng-if="tempEntries">
       <h1 class="attendance-entry-sub-table-title margin-10" ng-if="annualEntries">Temporary Pay Entries</h1>
