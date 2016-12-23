@@ -207,6 +207,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/time/accrual/accrual-history-ctrl.js',
                         '<%= jsSource %>/time/accrual/accrual-projection-ctrl.js',
                         '<%= jsSource %>/time/accrual/accrual-utils.js',
+                        '<%= jsSource %>/time/accrual/accrual-bar.js',
                         //            <!-- Grants -->
                         '<%= jsSource %>/time/grant/grant-ctrl.js'
                     ]
