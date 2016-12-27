@@ -34,7 +34,7 @@ public class AccrualsAvailable {
                 .subtract(summary.getVacHoursUsed());
 
         this.sickAvailable = summary.getEmpHoursBanked()
-                .add(summary.getEmpHoursUsed())
+                .add(summary.getEmpHoursAccrued())
                 .subtract(summary.getEmpHoursUsed())
                 .subtract(summary.getFamHoursUsed());
 
