@@ -56,8 +56,16 @@ function recordReviewModal(appProps, modals, locationService) {
 
         /**
          * Closes the modal without the intention of submitting records
+         * Opens a prompt if there are unsubmitted approvals/disapprovals
          */
-        $scope.close = modals.reject;
+        $scope.close = function () {
+            if ($scope.submissionEmpty()) {
+                modals.reject();
+                return;
+            }
+            modals.open('record-review-close')
+                .then(modals.reject);
+        };
 
         /**
          * Removes the selected record from both the approved and disapproved categories

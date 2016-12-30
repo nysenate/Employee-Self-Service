@@ -131,5 +131,12 @@
     <modal modal-id="record-reminder-posted">
       <div confirm-modal title="Email reminders were sent successfully."></div>
     </modal>
+    <modal modal-id="record-review-close">
+      <div confirm-modal rejectable="true" title="Unsubmitted Records"
+           confirm-message="There are one or more reviewed records that have not been submitted. Discard changes?"
+           resolve-button="Discard Changes" resolve-class="reject-button"
+           reject-button="Resume Review" reject-class="submit-button">
+      </div>
+    </modal>
   </div>
 </div>

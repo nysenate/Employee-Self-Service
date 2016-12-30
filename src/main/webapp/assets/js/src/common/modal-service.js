@@ -32,6 +32,9 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
      * @returns {Promise}
      */
     function open(modalId, params, softRejectable) {
+        if (!modalId) {
+            return $q.defer();
+        }
         var modal = {
             modalId: modalId,
             deferred: $q.defer(),
