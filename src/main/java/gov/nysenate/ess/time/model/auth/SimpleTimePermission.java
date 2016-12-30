@@ -12,7 +12,13 @@ public enum SimpleTimePermission {
     MANAGEMENT_PAGES("time:management-pages"),
 
     /** Granted to annual employees allowing them to view accrual projections */
-    ACCRUAL_PROJECTIONS("time:accrual-projections:view")
+    ACCRUAL_PROJECTIONS("time:accrual-projections:view"),
+
+    /* --- Admin Permissions --- */
+
+    /** Allows full use of the time record manager to create / modify records */
+    TIME_RECORD_MANAGEMENT("admin:time:timerecords:manager")
+
     ;
 
     private String permissionString;

@@ -1,6 +1,9 @@
 package gov.nysenate.ess.time.service.attendance;
 
 import gov.nysenate.ess.core.annotation.WorkInProgress;
+import gov.nysenate.ess.core.model.period.PayPeriod;
+
+import java.util.Collection;
 
 /**
  * A service that is responsible for generating time records and ensuring that active time records contain valid data
@@ -13,9 +16,19 @@ public interface TimeRecordManager {
      * ensures that all records covering the pay periods contain correct and up to date employee information
      *
      * @param empId int - employee id
+     * @param payPeriods
+     * @return int - the number of records created/modified
+     */
+    public int ensureRecords(int empId, Collection<PayPeriod> payPeriods);
+
+    /**
+     * Overload of {@link #ensureRecords(int, Collection)} that uses all open pay periods for the given year
+     * @see #ensureRecords(int, Collection)
+     * @param empId int - employee id
      * @return int - the number of records created/modified
      */
     public int ensureRecords(int empId);
+
 
     /**
      * Ensure that all active employees have up to date, correct records for all active pay periods in the current year

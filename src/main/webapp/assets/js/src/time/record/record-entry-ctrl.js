@@ -1,12 +1,12 @@
 var essApp = angular.module('essTime')
         .controller('RecordEntryController', ['$scope', '$rootScope', '$filter', '$q', '$timeout', 'appProps',
                                               'ActiveTimeRecordsApi', 'TimeRecordApi', 'AccrualPeriodApi',
-                                              'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi',
+                                              'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi', 'TimeRecordCreationApi',
                                               'activeTimeEntryRow', 'RecordUtils', 'LocationService', 'modals',
                                               'promiseUtils', recordEntryCtrl]);
 
 function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordSaveApi, accrualPeriodApi,
-                         allowanceApi, miscLeaveGrantApi, holidayApi, activeRow, recordUtils, locationService, modals, promiseUtils) {
+                         allowanceApi, miscLeaveGrantApi, holidayApi, recordCreationApi, activeRow, recordUtils, locationService, modals, promiseUtils) {
 
     function getInitialState() {
         return {
@@ -78,33 +78,34 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         $scope.initializeState();
         
         $scope.state.request.records = true;
-        activeRecordsApi.get({
-            empId: $scope.state.empId,
-            scope: 'E'
-        }, function (response) {
-            if ($scope.state.empId in response.result.items) {
-                $scope.state.records = response.result.items[$scope.state.empId];
-                angular.forEach($scope.state.records, function(record, index) {
-                    // Compute the due from dates for each record
-                    var endDateMoment = moment(record.endDate).add(1, 'days').startOf('day');
-                    record.dueFromNowStr = endDateMoment.fromNow(false);
-                    record.isDue = endDateMoment.isBefore(moment());
-                    // Set the record index
-                    record.index = index;
-                    // Assign indexes to the entries
-                    angular.forEach(record.timeEntries, function(entry, i) {
-                        entry.index = i;
+        var params = { empId: $scope.state.empId };
+        activeRecordsApi.get(params,
+            function (response) {
+                if ($scope.state.empId in response.result.items) {
+                    $scope.state.allRecords = response.result.items[$scope.state.empId];
+                    $scope.state.records = $scope.state.allRecords
+                        .filter(function (record) {return record.scope === 'E';});
+                    angular.forEach($scope.state.records, function(record, index) {
+                        // Compute the due from dates for each record
+                        var endDateMoment = moment(record.endDate).add(1, 'days').startOf('day');
+                        record.dueFromNowStr = endDateMoment.fromNow(false);
+                        record.isDue = endDateMoment.isBefore(moment());
+                        // Set the record index
+                        record.index = index;
+                        // Assign indexes to the entries
+                        angular.forEach(record.timeEntries, function(entry, i) {
+                            entry.index = i;
+                        });
+                        // Set initial comment
+                        record.initialRemarks = record.remarks;
                     });
-                    // Set initial comment
-                    record.initialRemarks = record.remarks;
-                });
-                linkRecordFromQueryParam();
-            }
-        }, function (response) {    // handle request error
-            modals.open('500', {action: 'get active records', details: response});
-        }).$promise.finally(function() {
-            $scope.state.request.records = false;
-        });
+                    linkRecordFromQueryParam();
+                }
+            }, function (response) {    // handle request error
+                modals.open('500', {action: 'get active records', details: response});
+            }).$promise.finally(function() {
+                $scope.state.request.records = false;
+            });
     };
 
     /**
@@ -258,6 +259,22 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         });
     };
 
+    $scope.createNextRecord = function () {
+        if (!$scope.canCreateNextRecord()) {
+            return;
+        }
+        $scope.state.request.records = true;
+        var params = {empId: $scope.state.empId};
+        console.log(params);
+        recordCreationApi.save(params, {}, function (response) {
+            $scope.init();
+        }, function (errorResponse) {
+            modals.open('500', {details: errorResponse});
+            console.error(errorResponse);
+            $scope.state.request.records = false;
+        })
+    };
+
     /** --- Display Methods --- */
 
     /**
@@ -318,10 +335,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
      * @returns {boolean}
      */
     $scope.recordSubmittable = function () {
-        var record = $scope.getSelectedRecord();
-        return $scope.recordValid() &&
-               !$scope.selRecordHasRecordErrors() &&
-               !moment(record.beginDate).isAfter(moment(), 'day');
+        return !$scope.requestInProgress() &&
+               $scope.recordValid() &&
+               !$scope.selRecordHasRecordErrors();
     };
 
     /**
@@ -479,6 +495,44 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             return 7;
         }
         return $scope.isHoliday(entry) ? $scope.state.holidays[entry.date].hours : 0;
+    };
+
+    /**
+     * Return true if the employee is eligible to create a new time record for the next period
+     * @returns {boolean}
+     */
+    $scope.canCreateNextRecord = function () {
+        if ($scope.state.records.length > 0) {
+            return false;
+        }
+
+        // Return false if an existing record has a begin date past the current date
+        var now = moment();
+        for (var iRecord in $scope.state.allRecords) {
+            if (!$scope.state.allRecords.hasOwnProperty(iRecord)) {
+                continue;
+            }
+            var record = $scope.state.allRecords[iRecord];
+            if (now.isBefore(record.beginDate)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    /**
+     * Return true if a request is in progress
+     */
+    $scope.requestInProgress = function () {
+        for (var iReq in $scope.state.request) {
+            if (!$scope.state.request.hasOwnProperty(iReq)) {
+                continue;
+            }
+            if ($scope.state.request[iReq] === true) {
+                return true;
+            }
+        }
+        return false;
     };
 
     /** --- Internal Methods --- */

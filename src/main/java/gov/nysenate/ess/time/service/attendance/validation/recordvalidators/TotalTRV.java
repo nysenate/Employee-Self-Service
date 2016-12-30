@@ -1,12 +1,14 @@
-package gov.nysenate.ess.time.service.attendance.validation;
+package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
+import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
+import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
+import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

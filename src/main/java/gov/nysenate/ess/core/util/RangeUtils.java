@@ -136,6 +136,24 @@ public class RangeUtils
     }
 
     /**
+     * Generate a range set containing all ranges of the given range map that are mapped to a specific value
+     * @param rangeMap
+     * @param effectiveValue
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K extends Comparable<? super K>, V> RangeSet<K> getEffectiveRanges(
+            RangeMap<K, V> rangeMap, V effectiveValue) {
+        RangeSet<K> rangeSet = TreeRangeSet.create();
+        rangeMap.asMapOfRanges()
+                .entrySet().stream()
+                .filter(entry -> Objects.equals(effectiveValue, entry.getValue()))
+                .forEach(entry -> rangeSet.add(entry.getKey()));
+        return rangeSet;
+    }
+
+    /**
      * Get a range set that contains the intersection of the two given range sets
      * @param lhs RangeSet<T>
      * @param rhs RangeSet<T>

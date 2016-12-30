@@ -9,12 +9,16 @@ import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.client.response.InvalidTimeRecordResponse;
+import gov.nysenate.ess.time.client.view.TimeRecordCreationNotPermittedData;
 import gov.nysenate.ess.time.client.view.TimeRecordNotFoundData;
 import gov.nysenate.ess.time.client.view.TimeRecordView;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
@@ -23,12 +27,15 @@ import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
+import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.attendance.TimeRecordManager;
 import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundEx;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordException;
+import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationNotPermittedEx;
+import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationValidator;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
@@ -46,6 +53,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.TIME_RECORD_MANAGEMENT;
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -58,6 +66,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordRestApiCtrl.class);
 
     @Autowired EmployeeInfoService employeeInfoService;
+    @Autowired PayPeriodService periodService;
     @Autowired TimeRecordService timeRecordService;
     @Autowired AccrualInfoService accrualInfoService;
     @Autowired TimeRecordManager timeRecordManager;
@@ -65,9 +74,9 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @Autowired AttendanceDao attendanceDao;
 
     @Autowired TimeRecordValidationService validationService;
+    @Autowired TimeRecordCreationValidator creationValidator;
 
-    @Autowired
-    RecordReminderEmailService emailService;
+    @Autowired RecordReminderEmailService emailService;
 
     /**
      * Get Time Record API
@@ -253,6 +262,33 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     }
 
     /**
+     * Create Next Time Record API
+     * --------------------
+     *
+     * Create a new time record for the next pay period:
+     *      (POST) /api/v1/timerecords/next
+     *
+     * @param empId int - employee id
+     * @throws TimeRecordCreationNotPermittedEx - if the user has existing unsubmitted records or can't create a record next period
+     */
+    @RequestMapping(value = "/next", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse generateNextRecord(@RequestParam int empId) throws TimeRecordCreationNotPermittedEx {
+        PayPeriod currentPeriod = periodService.getPayPeriod(PayPeriodType.AF, LocalDate.now());
+        PayPeriod nextPeriod = periodService.getPayPeriod(PayPeriodType.AF, currentPeriod.getEndDate().plusDays(1));
+
+        // If the subject is not permitted to use the time record manager, require employee record post permissions
+        // And run validation on request
+        if (!getSubject().isPermitted(TIME_RECORD_MANAGEMENT.getPermission())) {
+            checkPermission(new EssTimePermission(empId, TIME_RECORDS, POST, nextPeriod.getDateRange()));
+            creationValidator.validateRecordCreation(empId, nextPeriod);
+        }
+
+        timeRecordManager.ensureRecords(empId, Collections.singleton(nextPeriod));
+
+        return new SimpleResponse(true, "time record created", "next-record-created");
+    }
+
+    /**
      * Save Time Record API
      * --------------------
      *
@@ -294,6 +330,17 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleTimeRecordNotFoundEx(TimeRecordNotFoundEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND, new TimeRecordNotFoundData(ex));
+    }
+
+    /**
+     * Handle cases where a specifically requested time record was not found
+     * @param ex {@link TimeRecordCreationNotPermittedEx}
+     * @return {@link ViewObjectErrorResponse}
+     */
+    @ExceptionHandler(TimeRecordCreationNotPermittedEx.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public BaseResponse handleTimeRecordCreationNotPermittedEx(TimeRecordCreationNotPermittedEx ex) {
+        return new ViewObjectErrorResponse(ErrorCode.CANNOT_CREATE_NEW_RECORD, new TimeRecordCreationNotPermittedData(ex));
     }
 
     /** --- Internal Methods --- */

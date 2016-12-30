@@ -10,6 +10,23 @@
   <div class="time-attendance-hero">
     <h2>Attendance Record Entry</h2>
   </div>
+
+  <div ng-show="!state.request.records && state.records.length == 0">
+    <% /** If there are no active records for the user, display a warning message indicating such. */ %>
+    <div class="margin-10-0" ess-notification level="info" title="No time records available to enter."
+         ng-hide="canCreateNextRecord()"
+         message="Please contact Senate Personnel at (518) 455-3376 if you require any assistance."></div>
+    <div class="next-record-form" ng-show="canCreateNextRecord()">
+      <p class="content-info">
+        All time records have been submitted up to the current pay period.<br>
+        You may enter time for the next pay period by pressing the button below.
+      </p>
+      <input type="button" class="time-neutral-button"
+             title="Create Next Time Record" value="Create Next Time Record"
+             ng-click="createNextRecord()">
+    </div>
+  </div>
+
   <div id="record-selection-container" class="record-selection-container content-container content-controls"
        ng-show="state.records.length > 0">
     <p class="content-info">Enter a time and attendance record by selecting from the list of active pay periods.</p>
@@ -78,11 +95,6 @@
        ng-show="state.records[state.iSelectedRecord].recordStatus === 'DISAPPROVED' ||
                 state.records[state.iSelectedRecord].recordStatus === 'DISAPPROVED_PERSONNEL'">
   </div>
-
-  <% /** If there are no active records for the user, display a warning message indicating such. */ %>
-  <div class="margin-10-0" ess-notification level="error" title="No time records available to enter."
-       ng-show="!state.request.records && state.records.length == 0"
-       message="Please contact Senate Personnel at (518) 455-3376 if you require any assistance."></div>
 
   <% /** Accruals and Time entry for regular/special annual time record entries. */ %>
   <div class="content-container" ng-show="!state.request.records && state.records[state.iSelectedRecord].timeEntries">

@@ -11,6 +11,7 @@ public enum ErrorCode
     INVALID_TIME_RECORD(101, "The provided time record contained invalid data"),
     EMPLOYEE_NOT_SUPERVISOR(102, "The given employee is not a supervisor"),
     TIME_RECORD_NOT_FOUND(103, "The requested time record was not found"),
+    CANNOT_CREATE_NEW_RECORD(104, "Time record creation is not allowed for given pay period"),
 
     /** Supply Errors */
     REQUISITION_UPDATE_CONFLICT(201, "The provided requisition was out of date."),

@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,14 +78,21 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /** {@inheritDoc} */
     @Override
-    public int ensureRecords(int empId) {
-        List<PayPeriod> payPeriods = accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC);
+    public int ensureRecords(int empId, Collection<PayPeriod> payPeriods) {
         List<TimeRecord> existingRecords =
                 timeRecordService.getTimeRecords(Collections.singleton(empId), payPeriods, TimeRecordStatus.getAll());
         List<AttendanceRecord> attendanceRecords = attendanceDao.getOpenAttendanceRecords(empId);
         return ensureRecords(empId, payPeriods, existingRecords, attendanceRecords);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public int ensureRecords(int empId) {
+        List<PayPeriod> payPeriods = accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC);
+        return ensureRecords(empId, payPeriods);
+    }
+
+    /** {@inheritDoc} */
     @Override
     public void ensureAllActiveRecords() {
         logger.info("***** CHECKING ACTIVE TIME RECORDS *****");
