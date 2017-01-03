@@ -152,7 +152,7 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
             records: selectedRecords,
             allowApproval: allowApproval
         };
-        modals.open('record-review', params)
+        modals.open('record-review', params, !allowApproval)
             .then(submitReviewedRecords)
             .then($scope.selectNone);
     };

@@ -37,7 +37,8 @@
       </table>
     </div>
     <div id="record-details-view">
-      <div record-details record="records[iSelectedRecord]" exit-btn="false" show-accruals="true"></div>
+      <div record-details record="records[iSelectedRecord]"
+           exit-btn="{{allowApproval ? 'false' : 'true'}}" show-accruals="true"></div>
       <div id="action-container" ng-if="allowApproval === true">
         <hr/>
         <div ng-switch="getApprovalStatus(records[iSelectedRecord])" class="record-approval-buttons">
