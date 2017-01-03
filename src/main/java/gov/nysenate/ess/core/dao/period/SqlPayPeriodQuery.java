@@ -14,14 +14,7 @@ public enum SqlPayPeriodQuery implements BasicSqlQuery
         "WHERE CDPERIOD = :periodType AND (DTBEGIN >= TRUNC(:startDate) OR TRUNC(:startDate) BETWEEN DTBEGIN AND DTEND)\n" +
         "                             AND (DTEND <= TRUNC(:endDate) OR TRUNC(:endDate) BETWEEN DTBEGIN AND DTEND)\n"
     ),
-    GET_OPEN_ATTEND_PERIODS_SQL(
-        "SELECT * FROM ${masterSchema}.SL16PERIOD \n" +
-        "WHERE (DTEND <= TRUNC(:endDate) OR TRUNC(:endDate) BETWEEN DTBEGIN AND DTEND) \n" +
-        "AND CDPERIOD = 'AF' AND DTPERIODYEAR >= (\n" +
-        "  SELECT DISTINCT MIN(DTPERIODYEAR)\n" +
-        "  FROM PM23ATTEND WHERE NUXREFEM = :empId AND DTCLOSE IS NULL\n" +
-        ")"
-    );
+    ;
 
     private String sql;
 

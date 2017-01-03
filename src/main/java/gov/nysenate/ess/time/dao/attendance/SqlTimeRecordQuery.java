@@ -23,11 +23,11 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
     ),
     GET_TIME_REC_SQL_TEMPLATE(
         "SELECT \n" + TIME_RECORD_COLUMNS.getSql() + "\n" +
-        "FROM ${masterSchema}.PM23ATTEND att\n" +
+        "FROM ${tsSchema}.PM23TIMESHEET rec\n" +
         "JOIN ${masterSchema}.SL16PERIOD per\n" +
-        "    ON att.DTPERIODYEAR = per.DTPERIODYEAR\n" +
-        "JOIN ${tsSchema}.PM23TIMESHEET rec\n" +
-        "    ON rec.NUXREFEM = att.NUXREFEM AND rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
+        "    ON rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
+        "LEFT JOIN ${masterSchema}.PM23ATTEND att\n" +
+        "    ON rec.NUXREFEM = att.NUXREFEM AND per.DTPERIODYEAR = att.DTPERIODYEAR\n" +
         "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
         "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'\n" +
         "WHERE per.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'\n" +
@@ -50,7 +50,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "    AND rec.CDTSSTAT IN (:statuses)\n"
     ),
     GET_TIME_REC_BY_DATES_EMP_ID(
-        GET_TIME_REC_BY_DATES.getSql() + "    AND att.NUXREFEM IN (:empIds)\n"
+        GET_TIME_REC_BY_DATES.getSql() + "    AND rec.NUXREFEM IN (:empIds)\n"
     ),
     GET_ACTIVE_TIME_REC(
         GET_TIME_REC_SQL_TEMPLATE.getSql() +
@@ -58,7 +58,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
     ),
     GET_ACTIVE_TIME_REC_BY_EMP_IDS(
         GET_ACTIVE_TIME_REC.getSql() +
-        "    AND (att.NUXREFEM IN (:empIds))\n"
+        "    AND (rec.NUXREFEM IN (:empIds))\n"
     ),
 
     GET_LAST_UPDATE_DATE_TIME (
@@ -83,19 +83,15 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         ")\n" +
         "SELECT\n" +
         TIME_RECORD_COLUMNS.getSql() + "\n" +
-        "FROM ${masterSchema}.PM23ATTEND att\n" +
+        "FROM ${tsSchema}.PM23TIMESHEET rec\n" +
         "JOIN ${masterSchema}.SL16PERIOD per\n" +
-        "    ON att.DTPERIODYEAR = per.DTPERIODYEAR\n" +
+        "    ON rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
         "       AND per.CDPERIOD = 'AF'\n" +
-        "JOIN ${tsSchema}.PM23TIMESHEET rec\n" +
-        "    ON rec.NUXREFEM = att.NUXREFEM\n" +
-        "      AND rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
         "JOIN updated_ids\n" +
         "    on rec.NUXRTIMESHEET = updated_ids.NUXRTIMESHEET\n" +
         "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
         "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'" +
-        "WHERE att.CDSTATUS = 'A'\n" +
-        "   AND per.CDSTATUS = 'A'\n"
+        "WHERE per.CDSTATUS = 'A'\n"
     ),
 
     GET_TREC_DISTINCT_YEARS(
