@@ -2874,6 +2874,9 @@ img.ui-datepicker-trigger {
     border-bottom: 1px solid black;
   }
 }
+.next-record-form {
+  text-align: center;
+}
 table.time-record-entry-table thead {
   background: white;
 }
