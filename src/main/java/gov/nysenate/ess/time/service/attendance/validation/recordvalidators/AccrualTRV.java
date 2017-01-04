@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
+import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
@@ -23,7 +24,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
- * Checks time records to make sure that no time record contains time entry that exceeds the employee's yearly allowance
+ * Checks time records to make sure that entered time does not exceed allowed accrual values
  */
 @Service
 public class AccrualTRV implements TimeRecordValidator {
@@ -35,7 +36,7 @@ public class AccrualTRV implements TimeRecordValidator {
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
-        // If the saved record contains entries where the employee was a temporary employee
+        // If the saved record contains entries where the employee was NOT a temporary employee
         return record.getScope() == TimeRecordScope.EMPLOYEE &&
                 record.getTimeEntries().stream()
                         .anyMatch(entry -> entry.getPayType() != PayType.TE);
@@ -45,55 +46,36 @@ public class AccrualTRV implements TimeRecordValidator {
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action)
             throws TimeRecordErrorException {
 
-        PeriodAccUsage periodAccUsage;
-        periodAccUsage = record.getPeriodAccUsage();
+        AccrualsAvailable accrualsAvailable =
+                essAccrualComputeService.getAccrualsAvailable(record.getEmployeeId(), record.getPayPeriod());
 
+        PeriodAccUsage recordAccUsage;
+        recordAccUsage = record.getPeriodAccUsage();
 
-        PayPeriod previousPP = payPeriodService.getPayPeriod(PayPeriodType.AF, record.getBeginDate().minusDays(1));
+        // Check personal, vacaction and sick hours
 
-        PeriodAccSummary periodAccSummary;
-        periodAccSummary = essAccrualComputeService.getAccruals(record.getEmployeeId(), previousPP);
+        checkAccrualValue("personalHours",
+                recordAccUsage.getPerHoursUsed(), accrualsAvailable.getPersonalAvailable());
 
-        BigDecimal perHoursRemain;
-        perHoursRemain = periodAccSummary.getPerHoursAccrued()
-                            .subtract(periodAccSummary.getPerHoursUsed())
-                            .subtract(periodAccUsage.getPerHoursUsed());
-        BigDecimal vacHoursRemain;
-        vacHoursRemain = periodAccSummary.getVacHoursAccrued().add(periodAccSummary.getVacHoursBanked())
-                            .subtract(periodAccSummary.getVacHoursUsed())
-                            .subtract(periodAccUsage.getVacHoursUsed());
+        checkAccrualValue("vacationHours",
+                recordAccUsage.getVacHoursUsed(), accrualsAvailable.getVacationAvailable());
 
-        BigDecimal sickHoursRemain;
-        sickHoursRemain = periodAccSummary.getEmpHoursAccrued().add(periodAccSummary.getEmpHoursBanked())
-                            .subtract(periodAccSummary.getEmpHoursUsed())
-                            .subtract(periodAccUsage.getEmpHoursUsed())
-                            .subtract(periodAccSummary.getFamHoursUsed())
-                            .subtract(periodAccUsage.getFamHoursUsed());
+        checkAccrualValue("sickHours",
+                recordAccUsage.getTotalSickHoursUsed(), accrualsAvailable.getSickAvailable());
+    }
 
-        //For simple testing only,  below -> only displaying Emp Sick Used
-
-        if (perHoursRemain.signum()==-1) {
+    /**
+     * Test to see if a used accrual value exceeds the available amount
+     * If the value exceeds, throw a validation exception
+     */
+    private void checkAccrualValue(String paramName, BigDecimal recordHours, BigDecimal availableHours)
+            throws TimeRecordErrorException {
+        if (recordHours.compareTo(availableHours) > 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.RECORD_EXCEEDS_ACCRUAL,
-                    new InvalidParameterView("perHoursRemail", "decimal",
-                            "perHoursRemain = " + perHoursRemain.toString(), perHoursRemain.toString()));
-
+                    new InvalidParameterView(paramName, "BigDecimal",
+                            "record " + paramName + " may not exceed available " + paramName,
+                            recordHours)
+            );
         }
-
-        if (vacHoursRemain.signum()==-1) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.RECORD_EXCEEDS_ACCRUAL,
-                    new InvalidParameterView("vacHoursRemain", "decimal",
-                            "vacHoursRemain = " + vacHoursRemain.toString(), vacHoursRemain.toString()));
-
-        }
-
-
-        if (sickHoursRemain.signum()==-1) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.RECORD_EXCEEDS_ACCRUAL,
-                    new InvalidParameterView("sickHoursRemain", "decimal",
-                            "sickHoursRemain = " + sickHoursRemain.toString(), sickHoursRemain.toString()));
-
-        } // Commented out for testing
-
-
     }
 }

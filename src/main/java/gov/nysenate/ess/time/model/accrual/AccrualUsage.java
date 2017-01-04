@@ -104,6 +104,14 @@ public class AccrualUsage
                 .add(miscHoursUsed);
     }
 
+    /**
+     * Get total sick hours used (employee sick hours + family sick hours)
+     */
+    public BigDecimal getTotalSickHoursUsed() {
+        return this.getEmpHoursUsed()
+                .add(this.getFamHoursUsed());
+    }
+
     public void setWorkHours(BigDecimal workHours) {
         this.workHours = Optional.ofNullable(workHours).orElse(BigDecimal.ZERO);
     }
