@@ -11,7 +11,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
      * valid employee groups for a supervisor.
      */
     GET_SUP_EMP_TRANS_SQL(
-        "SELECT empList.*, per.NALAST, per.NUXREFSV, per.CDEMPSTATUS, " +
+        "SELECT empList.*, per.NALAST, per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER, " +
         "       ptx.CDTRANS, ptx.CDTRANSTYP, ptx.DTEFFECT, per.DTTXNORIGIN,\n" +
         "       ROW_NUMBER() " +
         "       OVER (PARTITION BY EMP_GROUP, NUXREFEM, OVR_NUXREFSV ORDER BY DTEFFECT DESC, DTTXNORIGIN DESC) AS TRANS_RANK\n" +

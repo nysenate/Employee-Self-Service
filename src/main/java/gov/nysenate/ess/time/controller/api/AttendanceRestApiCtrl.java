@@ -64,7 +64,7 @@ public class AttendanceRestApiCtrl extends BaseRestApiCtrl {
                                              @RequestParam String to) {
         LocalDate fromDate = parseISODate(from, "from");
         LocalDate toDate = parseISODate(to, "to");
-        Range<LocalDate> dateRange = getClosedRange(fromDate, toDate, "from", "to");
+        Range<LocalDate> dateRange = getClosedOpenRange(fromDate, toDate, "from", "to");
 
         checkPermission(new EssTimePermission( empId, ATTENDANCE_RECORDS, GET, dateRange));
 

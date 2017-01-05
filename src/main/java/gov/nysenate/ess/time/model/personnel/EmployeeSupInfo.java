@@ -45,7 +45,7 @@ public class EmployeeSupInfo
         if (supEndDate == null) {
             return Range.atLeast(supStartDate);
         }
-        return Range.closedOpen(supStartDate, supEndDate.plusDays(1));
+        return Range.closedOpen(supStartDate, supEndDate);
     }
 
     /** --- Overrides --- */

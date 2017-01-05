@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.model.personnel;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Range;
 import com.google.common.collect.Table;
+import gov.nysenate.ess.core.util.RangeUtils;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -103,7 +104,7 @@ public class SupervisorEmpGroup
      * @return boolean
      */
     private boolean isSupInfoInRange(EmployeeSupInfo supInfo, Range<LocalDate> dateRange) {
-        return supInfo.getSupEndDate() == null || dateRange.contains(supInfo.getSupEndDate());
+        return RangeUtils.intersects(dateRange, supInfo.getEffectiveDateRange());
     }
 
     /** --- Functional Getters/Setters --- */

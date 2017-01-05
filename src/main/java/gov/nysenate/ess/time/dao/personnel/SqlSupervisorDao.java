@@ -6,6 +6,7 @@ import com.google.common.collect.Table;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.transaction.SqlEmpTransactionDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
+import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.time.model.personnel.*;
@@ -110,6 +111,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 String group = colMap.get("EMP_GROUP").toString();
                 int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
                 TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
+                PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
                 LocalDate effectDate = LocalDate.from(formatter.parse(colMap.get("DTEFFECT").toString()));
                 int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
@@ -126,6 +128,11 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 empSupInfo.setEmpLastName(colMap.get("NALAST").toString());
                 if (transType.equals(EMP)) {
                     empTerminated = true;
+
+                    // If the employee is retiring, the effective retirement will start the next day
+                    if (perStatus == PersonnelStatus.RETD) {
+                        effectDate = effectDate.plusDays(1);
+                    }
                     empSupInfo.setSupEndDate(effectDate);
                 }
                 else {
