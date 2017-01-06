@@ -129,8 +129,8 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 if (transType.equals(EMP)) {
                     empTerminated = true;
 
-                    // If the employee is retiring, the effective retirement will start the next day
-                    if (perStatus == PersonnelStatus.RETD) {
+                    // Unless the employee is retiring, the effective retirement will start the next day
+                    if (perStatus != PersonnelStatus.RETD) {
                         effectDate = effectDate.plusDays(1);
                     }
                     empSupInfo.setSupEndDate(effectDate);

@@ -109,9 +109,9 @@ public class TransactionHistory
                 empStatuses.put(date, true);
             } else if (StringUtils.equals(vals.get("CDEMPSTATUS"), "I")) {
                 if (StringUtils.equals(vals.get("CDSTATPER"), "RETD")) {
-                    empStatuses.put(date.plusDays(1), false);
-                } else {
                     empStatuses.put(date, false);
+                } else {
+                    empStatuses.put(date.plusDays(1), false);
                 }
             }
         });
