@@ -1,8 +1,6 @@
 package gov.nysenate.ess.time.dao.personnel;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Range;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.transaction.SqlEmpTransactionDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
@@ -100,9 +98,12 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
          */
         if (!res.isEmpty()) {
             SupervisorEmpGroup empGroup = new SupervisorEmpGroup(supId, startDate, endDate);
-            Map<Integer, EmployeeSupInfo> primaryEmps = new HashMap<>();
-            Map<Integer, EmployeeSupInfo> overrideEmps = new HashMap<>();
+//            Map<Integer, EmployeeSupInfo> primaryEmps = new HashMap<>();
+//            Map<Integer, EmployeeSupInfo> overrideEmps = new HashMap<>();
+            HashMultimap<Integer, EmployeeSupInfo> primaryEmps = HashMultimap.create();
+            HashMultimap<Integer, EmployeeSupInfo> overrideEmps = HashMultimap.create();
             Table<Integer, Integer, EmployeeSupInfo> supOverrideEmps = HashBasedTable.create();
+
             Map<Integer, LocalDate> possiblePrimaryEmps = new HashMap<>();
             Table<Integer, Integer, LocalDate> possibleSupOvrEmps = HashBasedTable.create();
 
@@ -139,12 +140,12 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                     empSupInfo.setSupStartDate(effectDate);
                 }
 
-                /**
+                /*
                  * The first rank record for a given empId contains latest transaction that took effect
                  * before/on the given 'end' date.
                  */
                 if (rank == 1) {
-                    /**
+                    /*
                      * Add the employee to their supervisor's respective group if their supervisor id
                      * matches the given 'supId'. For PRIMARY AND SUP_OVR codes we flag mismatches as possible
                      * employees when the effect date is between the 'start' and 'end' dates. The proceeding
@@ -181,7 +182,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                     }
                 }
                 else {
-                    /**
+                    /*
                      * Process the records of employees that had a supervisor change during the date range.
                      * If a supervisor match is found to occur on/before the 'start' date, we addUsage them to their
                      * respective supervisor group. Otherwise if we can't find a match and the effect date has
@@ -193,6 +194,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                                 if (currSupId == supId && !empTerminated) {
                                     empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
                                     primaryEmps.put(empId, empSupInfo);
+                                    possiblePrimaryEmps.remove(empId);
                                 }
                                 else if (!effectDateIsPast) {
                                     possiblePrimaryEmps.put(empId, effectDate);
@@ -200,6 +202,13 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                                 else {
                                     possiblePrimaryEmps.remove(empId);
                                 }
+                            }
+                            // Indicates that the supervisor had this employee for
+                            // at least one additional period of time
+                            // In this case add another possible primary Emp
+                            else if (primaryEmps.containsKey(empId) &&
+                                    (empTerminated || currSupId != supId)) {
+                                possiblePrimaryEmps.put(empId, effectDate);
                             }
                             break;
                         }

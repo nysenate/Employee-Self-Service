@@ -1,13 +1,10 @@
 package gov.nysenate.ess.time.model.personnel;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Range;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import gov.nysenate.ess.core.util.RangeUtils;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -28,11 +25,11 @@ public class SupervisorEmpGroup
 
     /** Primary employees that directly assigned to this supervisor.
      *  Mapping of empId -> EmployeeSupInfo */
-    protected Map<Integer, EmployeeSupInfo> primaryEmployees = new HashMap<>();
+    protected Multimap<Integer, EmployeeSupInfo> primaryEmployees = HashMultimap.create();
 
     /** Override employees are specific employees that this supervisor was given access to.
      *  Mapping of empId -> EmployeeSupInfo */
-    protected Map<Integer, EmployeeSupInfo> overrideEmployees = new HashMap<>();
+    protected Multimap<Integer, EmployeeSupInfo> overrideEmployees = HashMultimap.create();
 
     /** Supervisor override employees are all the primary employees for the supervisors that
      *  granted override access.
@@ -46,10 +43,10 @@ public class SupervisorEmpGroup
     public SupervisorEmpGroup(SupervisorEmpGroup supEmpGroup) {
         if (supEmpGroup != null) {
             this.supervisorId = supEmpGroup.supervisorId;
-            this.startDate = supEmpGroup.getStartDate();
-            this.endDate = supEmpGroup.getEndDate();
-            this.primaryEmployees = new HashMap<>(supEmpGroup.getPrimaryEmployees());
-            this.overrideEmployees = new HashMap<>(supEmpGroup.getOverrideEmployees());
+            this.startDate = supEmpGroup.startDate;
+            this.endDate = supEmpGroup.endDate;
+            this.primaryEmployees = HashMultimap.create(supEmpGroup.primaryEmployees);
+            this.overrideEmployees = HashMultimap.create(supEmpGroup.overrideEmployees);
             this.supOverrideEmployees = HashBasedTable.create(supEmpGroup.supOverrideEmployees);
         }
     }
@@ -72,9 +69,13 @@ public class SupervisorEmpGroup
     }
 
     public boolean hasEmployeeAtDate(int empId, LocalDate date) {
-        Optional<EmployeeSupInfo> supInfoOpt = getAllEmployees().stream()
+        return hasEmployeeDuringRange(empId, Range.singleton(date));
+    }
+
+    public boolean hasEmployeeDuringRange(int empId, Range<LocalDate> dateRange) {
+        Optional<EmployeeSupInfo> supInfoOpt = getAllEmployeeSupInfos().stream()
                 .filter(supInfo -> empId == supInfo.getEmpId())
-                .filter(employeeSupInfo -> employeeSupInfo.getEffectiveDateRange().contains(date))
+                .filter(employeeSupInfo -> isSupInfoInRange(employeeSupInfo, dateRange))
                 .findAny();
         return supInfoOpt.isPresent();
     }
@@ -85,12 +86,19 @@ public class SupervisorEmpGroup
      * @param dateRange Range<LocalDate>
      */
     public void filterActiveEmployeesByDate(Range<LocalDate> dateRange) {
-        this.setPrimaryEmployees(this.getPrimaryEmployees().values().stream()
+
+        HashMultimap<Integer, EmployeeSupInfo> newPrimaryEmpMap = HashMultimap.create();
+        this.getPrimaryEmployees().values().stream()
             .filter(supInfo -> isSupInfoInRange(supInfo, dateRange))
-            .collect(Collectors.toMap(EmployeeSupInfo::getEmpId, Function.identity())));
-        this.setOverrideEmployees(this.getOverrideEmployees().values().stream()
+            .forEach(supInfo -> newPrimaryEmpMap.put(supInfo.empId, supInfo));
+        this.setPrimaryEmployees(newPrimaryEmpMap);
+
+        HashMultimap<Integer, EmployeeSupInfo> newOverrideEmpMap = HashMultimap.create();
+        this.getOverrideEmployees().values().stream()
                 .filter(supInfo -> isSupInfoInRange(supInfo, dateRange))
-                .collect(Collectors.toMap(EmployeeSupInfo::getEmpId, Function.identity())));
+                .forEach(supInfo -> newOverrideEmpMap.put(supInfo.empId, supInfo));
+        this.setOverrideEmployees(newOverrideEmpMap);
+
         HashBasedTable<Integer, Integer, EmployeeSupInfo> filteredSupOverrideEmps = HashBasedTable.create();
         this.supOverrideEmployees.values().stream().filter(supInfo -> isSupInfoInRange(supInfo, dateRange))
             .forEach(supInfo -> filteredSupOverrideEmps.put(supInfo.getSupId(), supInfo.getEmpId(), supInfo));
@@ -113,7 +121,7 @@ public class SupervisorEmpGroup
         return supOverrideEmployees.rowKeySet();
     }
 
-    public Set<EmployeeSupInfo> getAllEmployees() {
+    public Set<EmployeeSupInfo> getAllEmployeeSupInfos() {
         Set<EmployeeSupInfo> empSet = new HashSet<>();
         this.primaryEmployees.values().forEach(empSet::add);
         this.overrideEmployees.values().forEach(empSet::add);
@@ -121,11 +129,33 @@ public class SupervisorEmpGroup
         return empSet;
     }
 
+    public Set<Integer> getAllEmpIds() {
+        return getAllEmployeeSupInfos().stream()
+                .map(EmployeeSupInfo::getEmpId)
+                .collect(Collectors.toSet());
+    }
+
     /**
      * Get overridden employees granted by the given supervisor id
      */
     public Map<Integer, EmployeeSupInfo> getSupOverrideEmployees(int supId) {
         return supOverrideEmployees.rowMap().get(supId);
+    }
+
+    public ImmutableMultimap<Integer, EmployeeSupInfo> getPrimaryEmployees() {
+        return ImmutableMultimap.copyOf(primaryEmployees);
+    }
+
+    public void setPrimaryEmployees(Multimap<Integer, EmployeeSupInfo> primaryEmployees) {
+        this.primaryEmployees = HashMultimap.create(primaryEmployees);
+    }
+
+    public ImmutableMultimap<Integer, EmployeeSupInfo> getOverrideEmployees() {
+        return ImmutableMultimap.copyOf(overrideEmployees);
+    }
+
+    public void setOverrideEmployees(Multimap<Integer, EmployeeSupInfo> overrideEmployees) {
+        this.overrideEmployees = HashMultimap.create(overrideEmployees);
     }
 
     /** --- Basic Getters/Setters --- */
@@ -152,22 +182,6 @@ public class SupervisorEmpGroup
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public Map<Integer, EmployeeSupInfo> getPrimaryEmployees() {
-        return primaryEmployees;
-    }
-
-    public void setPrimaryEmployees(Map<Integer, EmployeeSupInfo> primaryEmployees) {
-        this.primaryEmployees = primaryEmployees;
-    }
-
-    public Map<Integer, EmployeeSupInfo> getOverrideEmployees() {
-        return overrideEmployees;
-    }
-
-    public void setOverrideEmployees(Map<Integer, EmployeeSupInfo> overrideEmployees) {
-        this.overrideEmployees = overrideEmployees;
     }
 
     public Table<Integer, Integer, EmployeeSupInfo> getSupOverrideEmployees() {

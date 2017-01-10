@@ -1,9 +1,7 @@
 package gov.nysenate.ess.time.service.attendance;
 
-import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.util.RangeUtils;
@@ -218,17 +216,18 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     /** {@inheritDoc} */
     @Override
-    public ListMultimap<Integer, TimeRecord> getSupervisorRecords(int supId, Range<LocalDate> dateRange,
-                                                                  Set<TimeRecordStatus> statuses)
+    public ListMultimap<Integer, TimeRecord> getActiveSupervisorRecords(int supId, Range<LocalDate> dateRange,
+                                                                        Set<TimeRecordStatus> statuses)
             throws SupervisorException {
 
         SupervisorEmpGroup empGroup = supervisorInfoService.getSupervisorEmpGroup(supId, dateRange);
         ListMultimap<Integer, TimeRecord> records = ArrayListMultimap.create();
-        empGroup.getAllEmployees().forEach(emp ->
-                records.putAll(emp.getEmpId(), getActiveTimeRecords(emp.getEmpId()).stream()
-                        .filter(tr -> statuses.contains(tr.getRecordStatus()))
-                        .filter(tr -> empGroup.hasEmployeeAtDate(tr.getEmployeeId(), tr.getBeginDate()))
-                        .collect(toList())));
+        empGroup.getAllEmpIds().stream()
+                .map(this::getActiveTimeRecords)
+                .flatMap(Collection::stream)
+                .filter(tr -> statuses.contains(tr.getRecordStatus()))
+                .filter(tr -> empGroup.hasEmployeeDuringRange(tr.getEmployeeId(), tr.getDateRange()))
+                .forEach(tr -> records.put(tr.getEmployeeId(), tr));
         return records;
     }
 

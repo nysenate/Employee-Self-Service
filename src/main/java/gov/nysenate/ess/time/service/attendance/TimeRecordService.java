@@ -4,7 +4,6 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
@@ -113,16 +112,16 @@ public interface TimeRecordService
      * @param statuses Set<TimeRecordStatus> - time record statuses to retrieve
      * @return ListMultimap<Integer, TimeRecord> - Mapping of original supervisor id -> time records under that supervisor
      */
-    ListMultimap<Integer, TimeRecord> getSupervisorRecords(int supId, Range<LocalDate> dateRange,
-                                                           Set<TimeRecordStatus> statuses) throws SupervisorException;
+    ListMultimap<Integer, TimeRecord> getActiveSupervisorRecords(int supId, Range<LocalDate> dateRange,
+                                                                 Set<TimeRecordStatus> statuses) throws SupervisorException;
 
     /**
-     * @see #getSupervisorRecords(int, Range, Set)
+     * @see #getActiveSupervisorRecords(int, Range, Set)
      * An overload that gets supervisor employee records that are still in progress i.e. not approved by personnel
      */
-    default ListMultimap<Integer, TimeRecord> getSupervisorRecords(int supId, Range<LocalDate> dateRange)
+    default ListMultimap<Integer, TimeRecord> getActiveSupervisorRecords(int supId, Range<LocalDate> dateRange)
             throws SupervisorException {
-        return getSupervisorRecords(supId, dateRange, TimeRecordStatus.inProgress());
+        return getActiveSupervisorRecords(supId, dateRange, TimeRecordStatus.inProgress());
     }
 
     /**

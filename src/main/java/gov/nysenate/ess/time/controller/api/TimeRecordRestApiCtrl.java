@@ -27,7 +27,6 @@ import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
-import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.attendance.TimeRecordManager;
@@ -172,7 +171,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         Set<TimeRecordStatus> statuses = parseStatuses(status, TimeRecordStatus.inProgress());
         return new ViewObjectResponse<>(new ViewObject() {
             public Integer getCount() throws SupervisorException {
-                return timeRecordService.getSupervisorRecords(supId, dateRange, statuses).size();
+                return timeRecordService.getActiveSupervisorRecords(supId, dateRange, statuses).size();
             }
             @Override
             public String getViewType() {
@@ -203,7 +202,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_RECORDS, GET, dateRange));
 
         Set<TimeRecordStatus> statuses = parseStatuses(status, TimeRecordStatus.inProgress());
-        return getRecordResponse(timeRecordService.getSupervisorRecords(supId, dateRange, statuses), false);
+        return getRecordResponse(timeRecordService.getActiveSupervisorRecords(supId, dateRange, statuses), false);
     }
 
     /**

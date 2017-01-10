@@ -1,10 +1,10 @@
 package gov.nysenate.ess.time.model.personnel;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Associates a supervisor to an employee during a specific time period.
@@ -40,7 +40,7 @@ public class EmployeeSupInfo
             return Range.all();
         }
         if (supStartDate == null) {
-            return Range.lessThan(supEndDate.plusDays(1));
+            return Range.lessThan(supEndDate);
         }
         if (supEndDate == null) {
             return Range.atLeast(supStartDate);

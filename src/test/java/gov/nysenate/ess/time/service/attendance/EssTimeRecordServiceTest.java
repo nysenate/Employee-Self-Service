@@ -41,7 +41,7 @@ public class EssTimeRecordServiceTest extends BaseTest {
         LocalDate now = LocalDate.now();
         Stopwatch sw = Stopwatch.createStarted();
         ListMultimap<Integer, TimeRecord> supRecords =
-                timeRecordService.getSupervisorRecords(9896, Range.all());
+                timeRecordService.getActiveSupervisorRecords(9896, Range.all());
         logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
         supRecords.keySet().forEach(supId -> logger.info("empId {}: {} records", supId, supRecords.get(supId).size()));
     }
@@ -52,7 +52,7 @@ public class EssTimeRecordServiceTest extends BaseTest {
         Stopwatch sw = Stopwatch.createStarted();
         Set<TimeRecordStatus> statusSet = Sets.union(TimeRecordStatus.unlockedForEmployee(), TimeRecordStatus.unlockedForSupervisor());
         ListMultimap<Integer, TimeRecord> supRecords =
-                timeRecordService.getSupervisorRecords(3117, Range.all(), statusSet);
+                timeRecordService.getActiveSupervisorRecords(3117, Range.all(), statusSet);
         logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
         supRecords.keySet().forEach(supId -> logger.info("empId {}: {} records", supId, supRecords.get(supId).size()));
     }

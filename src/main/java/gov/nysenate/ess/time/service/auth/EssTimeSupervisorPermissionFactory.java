@@ -57,7 +57,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         supPermissions.add(SimpleTimePermission.MANAGEMENT_PAGES.getPermission());
 
         // Add permissions to view/post employee data
-        supEmpGroup.getAllEmployees().stream()
+        supEmpGroup.getAllEmployeeSupInfos().stream()
                 .map(this::getEmployeePermissions)
                 .flatMap(Collection::stream)
                 .forEach(supPermissions::add);

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.model.auth;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Range;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
@@ -49,5 +50,19 @@ public class DateTimeRangePermission extends WildcardPermission {
         }
 
         return super.implies(p) && this.effectiveRange.encloses(((DateTimeRangePermission) p).effectiveRange);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DateTimeRangePermission)) return false;
+        if (!super.equals(o)) return false;
+        DateTimeRangePermission that = (DateTimeRangePermission) o;
+        return Objects.equal(effectiveRange, that.effectiveRange);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), effectiveRange);
     }
 }

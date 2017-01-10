@@ -47,7 +47,7 @@ public class EssTimeRecordManagerTest extends BaseTest
 
     @Test
     public void ensureRecordsTest() {
-        int empId = 6221;
+        int empId = 1952;
 
         RangeSet<LocalDate> openDates = attendanceDao.getOpenDates(empId);
         List<PayPeriod> payPeriods = openDates.asRanges().stream()
