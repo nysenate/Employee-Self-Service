@@ -24,6 +24,9 @@ public class PeriodAccSummary extends AccrualSummary
     /** If true, this summary record was computed. */
     protected boolean computed = false;
 
+    /** True iff this summary was computed using submitted time records */
+    protected boolean submitted = false;
+
     /** The accrual state used for computing this record if applicable. */
     protected EmpAccrualState empAccrualState = null;
 
@@ -140,6 +143,14 @@ public class PeriodAccSummary extends AccrualSummary
 
     public void setVacRate(BigDecimal vacRate) {
         this.vacRate = vacRate;
+    }
+
+    public boolean isSubmitted() {
+        return submitted;
+    }
+
+    public void setSubmitted(boolean submitted) {
+        this.submitted = submitted;
     }
 
     @Deprecated

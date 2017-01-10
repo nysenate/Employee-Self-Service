@@ -7,11 +7,14 @@ essTime.controller('AccrualProjectionCtrl', ['$scope', '$timeout', 'appProps',
 
 function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, EmpInfoApi, modals, accrualUtils) {
 
+    var maxVacationBanked = 210,
+        maxSickBanked = 1400;
+
     $scope.state = {
         empId: appProps.user.employeeId,
         today: moment(),
-        projections: {},
-        accSummaries: {},
+        projections: [],
+        accSummaries: [],
         selectedYear: moment().year(),
         empInfo: {},
         isTe: false,
@@ -35,7 +38,7 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
 
     $scope.getAccSummaries = function(year) {
         $scope.state.searching = true;
-        var fromDate = moment([year, 0, 1]);
+        var fromDate = moment([year, 0, 1]).subtract(6, 'months');
         var toDate = moment([year + 1, 0, 1]).subtract(1, 'days');
         AccrualHistoryApi.get({
             empId: $scope.state.empId,
@@ -47,12 +50,12 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
                 // Compute deltas
                 accrualUtils.computeDeltas(resp.result);
                 // Gather historical acc summaries
-                $scope.state.accSummaries[year] = resp.result.filter(function(acc) {
+                $scope.state.accSummaries = resp.result.filter(function(acc) {
                     return !acc.computed;
                 }).reverse();
                 // Gather projected acc records if year is 1 yr ago, current, or future.
                 if (year >= $scope.state.today.year() - 1) {
-                    $scope.state.projections[year] = resp.result
+                    $scope.state.projections = resp.result
                         .filter(isValidProjection)
                         .map(initializeProjection);
                 }
@@ -71,27 +74,47 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
     /**
      * When a user enters in hours in the projections table, the totals need to be re-computed for
      * the projected accrual records.
-     * @param year - the selected year
      */
-    $scope.recalculateProjectionTotals = function(year) {
-        var projLen = $scope.state.projections[year].length;
-        var summLen = $scope.state.accSummaries[year].length;
+    $scope.recalculateProjectionTotals = function() {
+        var projLen = $scope.state.projections.length;
+        var summLen = $scope.state.accSummaries.length;
         var baseRec = null;
         if (summLen > 0) {
-            baseRec = $scope.state.accSummaries[year][0];
+            baseRec = $scope.state.accSummaries[0];
         }
         else {
-            baseRec = $scope.state.projections[year][0];
+            baseRec = $scope.state.projections[0];
         }
+        var multiYear = false;
+
         var per = baseRec.personalUsed, 
             vac = baseRec.vacationUsed, 
             sick = baseRec.empSickUsed + baseRec.famSickUsed;
         // Acc projections are stored in reverse chrono order
-        for (var i = 0; i < $scope.state.projections[year].length; i++) {
-            var rec = $scope.state.projections[year][i];
+        for (var i = 0; i < $scope.state.projections.length; i++) {
+            var rec = $scope.state.projections[i];
+            var lastRec = $scope.state.projections[i - 1];
+
+            // If multiple years are present, banked hours will be dynamic and need to be reset
+            if (multiYear) {
+                rec.vacationBanked = lastRec.vacationBanked;
+                rec.sickBanked = lastRec.sickBanked;
+            }
+
+            // Apply rollover if record is the first of the year
+            if (i > 0 && accrualUtils.isFirstRecordOfYear(rec)) {
+                multiYear = true;
+
+                rec.vacationBanked = Math.min(lastRec.vacationAvailable, maxVacationBanked);
+                rec.sickBanked = Math.min(lastRec.sickAvailable, maxSickBanked);
+
+                per = vac = sick = 0;
+            }
+
             per += rec.personalUsedDelta || 0;
             vac += rec.vacationUsedDelta || 0;
             sick += rec.sickUsedDelta || 0;
+
             rec.personalAvailable = rec.personalAccruedYtd - per;
             rec.vacationAvailable = rec.vacationAccruedYtd + rec.vacationBanked - vac;
             rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - sick;
@@ -106,7 +129,7 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
      *                          and the employee is able to accrue/use accruals
      */
     function isValidProjection(acc) {
-        return acc.computed && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
+        return acc.computed && !acc.submitted && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
     }
 
     /** Indicates delta fields that are used for input, used to init projection */

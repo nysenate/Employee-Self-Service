@@ -17,10 +17,10 @@
 
     <div class="content-container"
          ng-show="state.searching === false">
-        <p class="content-info" ng-hide="state.projections[state.selectedYear].length > 0">
+        <p class="content-info" ng-hide="state.projections.length > 0">
             No projections exist for this year.
         </p>
-        <div ng-show="state.projections[state.selectedYear].length > 0">
+        <div ng-show="state.projections.length > 0">
             <p class="content-info">
                 The following hours are projected and can be adjusted as time records are processed.<br/>
                 Enter hours into the 'Use' column to view projected available hours. No changes will be saved.
@@ -50,7 +50,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="record in state.projections[state.selectedYear]"
+                    <tr ng-repeat="record in state.projections"
                         ng-class="{'highlighted': record.payPeriod.current}"
                         ng-attr-id="{{$last && 'earliest-projection' || undefined}}">
                         <td class="pay-period">{{record.payPeriod.payPeriodNum}}</td>
@@ -58,21 +58,21 @@
                         <td class="date">{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}</td>
                         <td class="accrual-hours personal used-hours">
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[state.selectedYear][$index].personalUsedDelta"
+                                   ng-model="$parent.state.projections[$index].personalUsedDelta"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);"/>
                         </td>
                         <td class="accrual-hours personal available-hours">{{record.personalAvailable}}</td>
                         <td class="accrual-hours vacation rate">{{record.vacationRate}}</td>
                         <td class="accrual-hours vacation used-hours">
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[state.selectedYear][$index].vacationUsedDelta"
+                                   ng-model="$parent.state.projections[$index].vacationUsedDelta"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);"/>
                         </td>
                         <td class="accrual-hours vacation available-hours">{{record.vacationAvailable}}</td>
                         <td class="accrual-hours sick rate">{{record.sickRate}}</td>
                         <td class="accrual-hours sick used-hours">
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[state.selectedYear][$index].sickUsedDelta"
+                                   ng-model="$parent.state.projections[$index].sickUsedDelta"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);" />
                         </td>
                         <td class="accrual-hours sick available-hours">{{record.sickAvailable}}</td>

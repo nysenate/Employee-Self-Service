@@ -19,6 +19,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,19 +299,27 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             accrualState.applyYearRollover();
         }
 
+        boolean usesSubmittedRecord = false;
+
         // Set accrual usage from matching PD23ATTEND record if it exists
         if (periodUsages.containsKey(gapPeriod)) {
             accrualState.addUsage(periodUsages.get(gapPeriod));
+            usesSubmittedRecord = true;
         }
         // Otherwise check if there is a time record to apply accrual usage from.
         else {
             while (!timeRecords.isEmpty() && gapPeriod.getEndDate().isAfter(timeRecords.get(0).getBeginDate())) {
-                if (gapPeriod.getDateRange().contains(timeRecords.get(0).getBeginDate())) {
-                    accrualState.addUsage(timeRecords.get(0).getPeriodAccUsage());
+                TimeRecord record = timeRecords.remove(0);
+                if (gapPeriod.getDateRange().contains(record.getBeginDate())) {
+                    accrualState.addUsage(record.getPeriodAccUsage());
+                    if (record.getScope() != TimeRecordScope.EMPLOYEE) {
+                        usesSubmittedRecord = true;
+                    }
                 }
-                timeRecords.remove(0);
             }
         }
+
+        accrualState.setSubmittedRecords(usesSubmittedRecord);
 
         // As long as this is a valid accrual period, increment the accruals.
         if (!gapPeriod.isStartOfYearSplit()) {

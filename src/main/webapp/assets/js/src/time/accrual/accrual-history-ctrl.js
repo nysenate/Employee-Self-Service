@@ -48,9 +48,10 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
                     // Compute deltas
                     accrualUtils.computeDeltas(resp.result);
                     // Gather historical acc summaries
-                    $scope.state.accSummaries[year] = resp.result.filter(function(acc) {
-                        return !acc.computed;
-                    }).reverse();
+                    $scope.state.accSummaries[year] = resp.result
+                        .filter(function(acc) {
+                            return !acc.computed || acc.submitted;
+                        }).reverse();
                 }
                 $scope.state.searching = false;
             }, function(resp) {

@@ -26,6 +26,8 @@ public class AccrualState extends AccrualSummary
     protected int payPeriodCount;
     /** True iff the employee accrues time for the latest pay period */
     protected boolean empAccruing;
+    /** True iff the latest period was calculated using a submitted time record */
+    protected boolean submittedRecords;
     protected PayType payType;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
@@ -50,6 +52,7 @@ public class AccrualState extends AccrualSummary
         PeriodAccSummary periodAccSummary = new PeriodAccSummary(this);
         periodAccSummary.setYear(currPeriod.getEndDate().getYear());
         periodAccSummary.setComputed(true);
+        periodAccSummary.setSubmitted(this.isSubmittedRecords());
         periodAccSummary.setEmpAccrualState(new EmpAccrualState(this));
         periodAccSummary.setRefPayPeriod(refPeriod);
         periodAccSummary.setPayPeriod(currPeriod);
@@ -146,6 +149,7 @@ public class AccrualState extends AccrualSummary
                 this.getEmpHoursBanked()
                         .add(this.getEmpHoursAccrued())
                         .subtract(this.getEmpHoursUsed())
+                        .subtract(this.getFamHoursUsed())
                         .min(AccrualRate.SICK.getMaxHoursBanked()));
         this.setEmpHoursAccrued(BigDecimal.ZERO);
         this.setYtdHoursExpected(BigDecimal.ZERO);
@@ -240,5 +244,13 @@ public class AccrualState extends AccrualSummary
 
     public void setYtdHoursExpected(BigDecimal ytdHoursExpected) {
         this.ytdHoursExpected = ytdHoursExpected;
+    }
+
+    public boolean isSubmittedRecords() {
+        return submittedRecords;
+    }
+
+    public void setSubmittedRecords(boolean submittedRecords) {
+        this.submittedRecords = submittedRecords;
     }
 }

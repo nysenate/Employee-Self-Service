@@ -14,6 +14,7 @@ public class AccrualsView implements ViewObject
 {
     protected PayPeriodView payPeriod;
     protected boolean computed;
+    protected boolean submitted;
     protected AccrualStateView empState;
 
     protected BigDecimal sickAccruedYtd = BigDecimal.ZERO;
@@ -45,6 +46,7 @@ public class AccrualsView implements ViewObject
             if (this.computed) {
                 this.empState = new AccrualStateView(pac.getEmpAccrualState());
             }
+            this.submitted = pac.isSubmitted();
             this.sickAccruedYtd = pac.getEmpHoursAccrued();
             this.personalAccruedYtd = pac.getPerHoursAccrued();
             this.vacationAccruedYtd = pac.getVacHoursAccrued();
@@ -179,6 +181,11 @@ public class AccrualsView implements ViewObject
     @XmlElement
     public BigDecimal getSickRate() {
         return sickRate;
+    }
+
+    @XmlElement
+    public boolean getSubmitted() {
+        return submitted;
     }
 
     @Override
