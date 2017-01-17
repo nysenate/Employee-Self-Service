@@ -28,7 +28,6 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
         link: function($scope, $elem, $attrs) {
             var showAccrualsSelected = $attrs['showAccruals'] === "true";
             $scope.close = modals.reject;
-            $scope.tempEntries = $scope.annualEntries = false;
             $scope.showExitBtn = $attrs['exitBtn'] !== "false";
             $scope.showAccruals = showAccrualsSelected;
             $scope.loadingAccruals = false;
@@ -42,6 +41,7 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
 
             function detectPayTypes() {
                 angular.forEach($scope.record.timeEntries, function (entry) {
+                    $scope.tempEntries = $scope.annualEntries = false;
                     $scope.tempEntries = $scope.tempEntries || entry.payType === 'TE';
                     $scope.annualEntries = $scope.annualEntries || ['RA', 'SA'].indexOf(entry.payType) > -1;
                     $scope.showAccruals = showAccrualsSelected && $scope.annualEntries;
@@ -55,10 +55,10 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
                 var record = $scope.record;
                 console.log(record);
                 var empId = record.employeeId;
-                var periodStartMoment = moment(record.payPeriod.startDate);
+                var recordStartDate = moment(record.beginDate);
                 var params = {
                     empId: empId,
-                    beforeDate: periodStartMoment.format('YYYY-MM-DD')
+                    beforeDate: recordStartDate.format('YYYY-MM-DD')
                 };
                 $scope.loadingAccruals = true;
                 return accrualApi.get(params,
