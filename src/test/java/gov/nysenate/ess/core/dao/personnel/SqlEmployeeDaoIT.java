@@ -68,7 +68,7 @@ public class SqlEmployeeDaoIT extends BaseTest
 
     @Test
     public void getUpdatedEmployeesTest() {
-        LocalDateTime fromDateTime = LocalDate.of(2016, 1, 2).atStartOfDay();
+        LocalDateTime fromDateTime = LocalDate.now().minusMonths(1).atStartOfDay();
         List<Employee> updatedEmps = employeeDao.getUpdatedEmployees(fromDateTime);
         LocalDateTime latestUpdate = updatedEmps.stream()
                 .map(Employee::getUpdateDateTime)

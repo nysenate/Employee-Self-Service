@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.unit.LocationType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class LocationRowMapper extends BaseRowMapper<Location>
 {
@@ -24,8 +25,11 @@ public class LocationRowMapper extends BaseRowMapper<Location>
 
     @Override
     public Location mapRow(ResultSet rs, int rowNum) throws SQLException {
-        LocationId locId = new LocationId(rs.getString(pfx + "CDLOCAT"),
-                LocationType.valueOfCode(rs.getString(pfx + "CDLOCTYPE").charAt(0)));
+        LocationType locType = Optional.ofNullable(rs.getString(pfx + "CDLOCTYPE"))
+                .map(locStr -> locStr.charAt(0))
+                .map(LocationType::valueOfCode)
+                .orElse(null);
+        LocationId locId = new LocationId(rs.getString(pfx + "CDLOCAT"), locType);
         Address addr = new Address();
         addr.setAddr1(rs.getString(pfx + "FFADSTREET1"));
         addr.setAddr2(rs.getString(pfx + "FFADSTREET2"));
