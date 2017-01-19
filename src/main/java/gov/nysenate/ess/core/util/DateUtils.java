@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.util;
 import com.google.common.collect.*;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.EnumSet;
 
@@ -182,6 +183,52 @@ public class DateUtils
             return Range.atLeast(startDateTime);
         }
         return Range.closedOpen(startDateTime, endDateTime);
+    }
+
+    /**
+     * Return true if the date is a weekday
+     * @param date LocalDate
+     * @return Boolean
+     */
+    public static boolean isWeekday(LocalDate date) {
+        return !WEEKEND.contains(date.getDayOfWeek());
+    }
+
+    /**
+     * Get the number of weekdays during the given date range
+     * @param dateRange Range<LocalDate>
+     * @return Integer
+     */
+    public static long getNumberOfWeekdays(Range<LocalDate> dateRange) {
+        if (!(dateRange.hasLowerBound() && dateRange.hasUpperBound())) {
+            throw new IllegalStateException("Cannot get number of work days in an unbounded date range: " + dateRange);
+        }
+        long workDays = 0;
+        LocalDate startDate = startOfDateRange(dateRange);
+        LocalDate endDate = endOfDateRange(dateRange);
+
+        // Cut the date range into a week divisible form.  Add all cut days to a running total (if they are work days)
+        while (DayOfWeek.MONDAY != startDate.getDayOfWeek() && startDate.isBefore(endDate)) {
+            if (isWeekday(startDate)) {
+                workDays++;
+            }
+            startDate = startDate.plusDays(1);
+        }
+        while (DayOfWeek.SUNDAY != endDate.getDayOfWeek() && !startDate.isAfter(endDate)) {
+            if (isWeekday(endDate)) {
+                workDays++;
+            }
+            endDate = endDate.minusDays(1);
+        }
+
+        // Once the range is divisible by 7 (if it hasn't been reduced to nothing),
+        // get the total days in the range and multiply by 5/7.  Add to running total
+        if (startDate.isBefore(endDate)) {
+            long totalRangeDays = ChronoUnit.DAYS.between(startDate, endDate.plusDays(1));
+            workDays += totalRangeDays * 5 / 7;
+        }
+
+        return workDays;
     }
 
     /**

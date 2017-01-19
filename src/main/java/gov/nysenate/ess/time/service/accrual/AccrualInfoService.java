@@ -1,5 +1,6 @@
 package gov.nysenate.ess.time.service.accrual;
 
+import com.google.common.collect.ImmutableSortedMap;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;
@@ -18,7 +19,7 @@ public interface AccrualInfoService
      * @param endYear int - The most recent year to fetch up to
      * @return TreeMap<Integer, AnnualAccSummary>
      */
-    TreeMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear);
+     ImmutableSortedMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear);
 
     /**
      * Attendance years are closed out and finalized at some point after the year has ended. The pay periods

@@ -3,12 +3,15 @@ package gov.nysenate.ess.time.model.accrual;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+
+import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
+import static gov.nysenate.ess.time.model.EssTimeConstants.HOURS_PER_DAY;
 
 /**
  * This class is intended for use within the accrual dao layer. It contains the necessary information
@@ -17,10 +20,6 @@ import java.time.LocalDate;
  */
 public class AccrualState extends AccrualSummary
 {
-    private static MathContext FOUR_DIGITS_MAX = new MathContext(4);
-    private static BigDecimal HOURS_PER_DAY = new BigDecimal(7);
-    private static BigDecimal MAX_YTD_HOURS = new BigDecimal("1820");
-    private static BigDecimal ANNUAL_PER_HOURS = new BigDecimal(35);
 
     protected LocalDate beginDate;
     protected LocalDate endDate;
@@ -74,13 +73,6 @@ public class AccrualState extends AccrualSummary
         this.vacRate = AccrualRate.VACATION.getRate(payPeriodCount, getProratePercentage());
     }
 
-    public BigDecimal getProratePercentage() {
-        if (this.minTotalHours != null) {
-            return this.minTotalHours.divide(MAX_YTD_HOURS, FOUR_DIGITS_MAX);
-        }
-        return BigDecimal.ZERO;
-    }
-
     /**
      * Helper method which increment the pay periods worked by 1.
      */
@@ -111,6 +103,12 @@ public class AccrualState extends AccrualSummary
         BigDecimal four = new BigDecimal(4);
         BigDecimal roundedYtdHours = totalYtdHours.multiply(four).setScale(0, RoundingMode.HALF_UP).divide(four);
         this.setYtdHoursExpected(roundedYtdHours);
+    }
+
+    /* --- Internal Methods --- */
+
+    private BigDecimal getProratePercentage() {
+        return AccrualUtils.getProratePercentage(this.minTotalHours);
     }
 
     /**

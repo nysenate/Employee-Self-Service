@@ -1,9 +1,6 @@
 package gov.nysenate.ess.time.service.accrual;
 
-import com.google.common.collect.ImmutableRangeSet;
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
+import com.google.common.collect.*;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -26,12 +23,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Objects.firstNonNull;
+import static gov.nysenate.ess.time.model.EssTimeConstants.*;
+import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
+import static gov.nysenate.ess.time.util.AccrualUtils.roundAccrualValue;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
@@ -77,7 +79,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         PeriodAccSummary currentAccruals = periodAccruals.get(payPeriod);
         PeriodAccSummary lastAccruals = periodAccruals.get(prevPeriod);
 
-        if (currentAccruals == null || lastAccruals == null) {
+        if (currentAccruals == null) {
             throw new AccrualException(empId, AccrualExceptionType.PERIOD_RECORD_NOT_FOUND);
         }
 
@@ -88,10 +90,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // Hours expected for the current pay period
         BigDecimal biWeekHrsExpected = currentAccruals.getExpectedBiweekHours();
 
-        // If the pay period is the first of its year,
+        // If the pay period is the first of its year or is the first pay period,
         // we can get the accrual usage record for the pay period
         // but set all usage to 0 to ignore time entered during that period
-        if (payPeriod.isStartOfYearSplit()) {
+        if (lastAccruals == null || payPeriod.isStartOfYearSplit()) {
             referenceSummary = new AccrualSummary(currentAccruals);
 
             // Remove accrued hours as they are not available until next period
@@ -155,13 +157,25 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                                                         SortedSet<PayPeriod> remainingPeriods,
                                                         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals) {
 
+        TransactionHistory empTrans = empTransService.getTransHistory(empId);
+        RangeSet<LocalDate> accrualAllowedDates = getAccrualAllowedDates(empTrans);
+
         // Fetch the annual accrual records (PM23ATTEND) because it provides the pay period counter which
         // is necessary for determining if the accrual rates should change.
         PayPeriod lastPeriod = remainingPeriods.last();
-        TreeMap<Integer, AnnualAccSummary> annualAcc = accrualInfoService.getAnnualAccruals(empId, lastPeriod.getYear());
+        TreeMap<Integer, AnnualAccSummary> annualAcc =
+                new TreeMap<>(accrualInfoService.getAnnualAccruals(empId, lastPeriod.getYear()));
+
+        // Attempt to compute an initial annual accrual summary if none exists
         if (annualAcc.isEmpty()) {
-            throw new AccrualException(empId, AccrualExceptionType.NO_ACTIVE_ANNUAL_RECORD_FOUND);
+            if (RangeUtils.intersects(accrualAllowedDates, remainingPeriods.first().getDateRange())) {
+                AnnualAccSummary annualAccSummary = computeInitialAnnualAccSummary(empTrans);
+                annualAcc.put(annualAccSummary.getYear(), annualAccSummary);
+            } else {
+                throw new AccrualException(empId, AccrualExceptionType.NO_ACTIVE_ANNUAL_RECORD_FOUND);
+            }
         }
+
         LocalDate fromDate = firstNonNull(annualAcc.lastEntry().getValue().getEndDate(),
                 annualAcc.lastEntry().getValue().getContServiceDate());
 
@@ -173,12 +187,9 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // Pay periods which do not have existing accrual records
         List<PayPeriod> unMatchedPeriods = payPeriodService.getPayPeriods(PayPeriodType.AF, periodRange, SortOrder.ASC);
 
-        TransactionHistory empTrans = empTransService.getTransHistory(empId);
         List<TimeRecord> timeRecords = timeRecordDao.getRecordsDuring(empId, periodRange);
 
         TreeMap<PayPeriod, PeriodAccUsage> periodUsages = accrualDao.getPeriodAccrualUsages(empId, periodRange);
-
-        RangeSet<LocalDate> accrualAllowedDates = getAccrualAllowedDates(empTrans);
 
         // Get the latest already existing period accrual summary, if one exists
         Map.Entry<PayPeriod, PeriodAccSummary> periodAccRecord = periodAccruals.lowerEntry(lastPeriod);
@@ -236,6 +247,93 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         return payPeriods.stream()
                 .filter(period -> !accrualRecords.keySet().contains(period))
                 .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    /**
+     * Computes an annual accrual summary that can be used to calculate accruals for a new employee
+     * This should only be used if no actual annual accrual summaries exist for an employee yet
+     * @param transHistory {@link TransactionHistory}
+     * @return {@link AnnualAccSummary}
+     */
+    private AnnualAccSummary computeInitialAnnualAccSummary(TransactionHistory transHistory) {
+
+        LocalDate latestAppDate = getLatestAppDate(transHistory);
+        BigDecimal startingPerHours = getStartingPerHours(transHistory);
+        BigDecimal startingSickAccRate = getStartingSickAccRate(transHistory);
+
+        AnnualAccSummary annualAccSummary = new AnnualAccSummary();
+
+        annualAccSummary.setEmpId(transHistory.getEmployeeId());
+        annualAccSummary.setContServiceDate(latestAppDate);
+        annualAccSummary.setEndDate(latestAppDate.minusDays(1));
+        annualAccSummary.setYear(latestAppDate.getYear());
+        annualAccSummary.setPayPeriodsYtd(0);
+        annualAccSummary.setPayPeriodsBanked(0);
+        annualAccSummary.setUpdateDate(LocalDateTime.now());
+        annualAccSummary.setPerHoursAccrued(startingPerHours);
+        annualAccSummary.setEmpHoursAccrued(startingSickAccRate);
+
+        return annualAccSummary;
+    }
+
+    /**
+     * Get the latest appoint date for an employee
+     * @param transHistory {@link TransactionHistory}
+     * @return LocalDate
+     */
+    private LocalDate getLatestAppDate(TransactionHistory transHistory) {
+        TreeMap<LocalDate, Boolean> effectiveEmpStatusMap = transHistory.getEffectiveEmpStatus(Range.all());
+        return effectiveEmpStatusMap.keySet().stream()
+                .filter(effectiveEmpStatusMap::get)
+                .max(LocalDate::compareTo)
+                .orElseThrow(() -> new IllegalStateException("Employee has no app date!"));
+    }
+
+    /**
+     * Calculate the number of personal hours an employee starts starts with
+     * @param transHistory
+     * @return
+     */
+    private BigDecimal getStartingPerHours(TransactionHistory transHistory) {
+        LocalDate appDate = getLatestAppDate(transHistory);
+
+        PayType payType = transHistory.getEffectivePayTypes(Range.singleton(appDate))
+                .lastEntry().getValue();
+
+        if (payType == PayType.TE) {
+            return BigDecimal.ZERO;
+        }
+
+        BigDecimal minTotalHours = transHistory.getEffectiveMinHours(Range.singleton(appDate))
+                .lastEntry().getValue();
+        BigDecimal prorateRatio = getProratePercentage(minTotalHours);
+
+        Range<LocalDate> remainderOfYear = Range.closedOpen(appDate, appDate.plusYears(1).withDayOfYear(1));
+        BigDecimal daysLeft = new BigDecimal(DateUtils.getNumberOfWeekdays(remainderOfYear))
+                .min(MAX_DAYS_PER_YEAR);
+        BigDecimal yearRatio = daysLeft.divide(MAX_DAYS_PER_YEAR, new MathContext(4));
+
+        BigDecimal rawPerHours = ANNUAL_PER_HOURS
+                .multiply(prorateRatio)
+                .multiply(yearRatio);
+
+        return roundAccrualValue(rawPerHours);
+    }
+
+    /**
+     * Calculate initial sick rate of employee
+     * @param transHistory
+     * @return
+     */
+    private BigDecimal getStartingSickAccRate(TransactionHistory transHistory) {
+        LocalDate appDate = getLatestAppDate(transHistory);
+
+        BigDecimal minTotalHours = transHistory.getEffectiveMinHours(Range.singleton(appDate))
+                .lastEntry().getValue();
+
+        BigDecimal prorateRatio = getProratePercentage(minTotalHours);
+
+        return AccrualRate.SICK.getRate(0, prorateRatio);
     }
 
     /**

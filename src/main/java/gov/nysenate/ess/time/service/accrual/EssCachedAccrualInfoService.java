@@ -1,5 +1,6 @@
 package gov.nysenate.ess.time.service.accrual;
 
+import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.eventbus.EventBus;
@@ -69,8 +70,9 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
             this.annualAccruals = annualAccruals;
         }
 
-        TreeMap<Integer, AnnualAccSummary> getAnnualAccruals(int endYear) {
-            return new TreeMap<>(annualAccruals.headMap(endYear, true));
+        ImmutableSortedMap<Integer, AnnualAccSummary> getAnnualAccruals(int endYear) {
+            return ImmutableSortedMap.copyOf(
+                    annualAccruals.headMap(endYear, true));
         }
 
         void updateAnnualAccSummary(AnnualAccSummary summary) {
@@ -82,7 +84,7 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
 
     /** {@inheritDoc} */
     @Override
-    public TreeMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear) {
+    public ImmutableSortedMap<Integer, AnnualAccSummary> getAnnualAccruals(int empId, int endYear) {
         return getOrCreateAnnualAccCacheTree(empId)
                 .getAnnualAccruals(endYear);
     }
@@ -90,7 +92,7 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
     /** {@inheritDoc} */
     @Override
     public List<PayPeriod> getActiveAttendancePeriods(int empId, LocalDate endDate, SortOrder dateOrder) {
-        TreeMap<Integer, AnnualAccSummary> annAcc = getAnnualAccruals(empId, endDate.getYear());
+        ImmutableSortedMap<Integer, AnnualAccSummary> annAcc = getAnnualAccruals(empId, endDate.getYear());
         Optional<Integer> openYear = annAcc.descendingMap().entrySet().stream()
                 .filter(e -> e.getValue().getCloseDate() == null)
                 .map(Map.Entry::getKey)

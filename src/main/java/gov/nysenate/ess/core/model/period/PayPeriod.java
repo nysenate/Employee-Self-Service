@@ -3,9 +3,7 @@ package gov.nysenate.ess.core.model.period;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.RangeUtils;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -77,7 +75,7 @@ public class PayPeriod implements Comparable<PayPeriod>
         }
         int workDays = 0;
         for (LocalDate day = startDate; !day.isAfter(endDate); day = day.plusDays(1)) {
-            if (DateUtils.WEEKEND.contains(day.getDayOfWeek())) {
+            if (!DateUtils.isWeekday(day)) {
                 continue;
             }
             if (!activeDates.contains(day)) {
