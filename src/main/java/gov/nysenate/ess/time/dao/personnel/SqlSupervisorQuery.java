@@ -71,7 +71,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "      )\n" +
         "    )\n" +
         "  )" +
-        "  AND ptx.CDTRANSTYP = 'PER'\n" +
+        "  AND per.CDSTATUS = 'A' AND ptx.CDTRANSTYP = 'PER'\n" +
         "  AND ptx.CDSTATUS = 'A' AND ptx.DTEFFECT <= :endDate\n" +
         "ORDER BY NUXREFEM, TRANS_RANK"),
 
