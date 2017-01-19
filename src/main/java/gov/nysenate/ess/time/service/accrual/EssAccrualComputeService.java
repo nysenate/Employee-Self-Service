@@ -93,6 +93,11 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // but set all usage to 0 to ignore time entered during that period
         if (payPeriod.isStartOfYearSplit()) {
             referenceSummary = new AccrualSummary(currentAccruals);
+
+            // Remove accrued hours as they are not available until next period
+            referenceSummary.setEmpHoursAccrued(BigDecimal.ZERO);
+            referenceSummary.setVacHoursAccrued(BigDecimal.ZERO);
+
             referenceSummary.resetAccrualUsage();
             serviceYtdExpected = BigDecimal.ZERO;
         }
@@ -322,7 +327,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         accrualState.setSubmittedRecords(usesSubmittedRecord);
 
         // As long as this is a valid accrual period, increment the accruals.
-        if (!gapPeriod.isStartOfYearSplit()) {
+        if (!gapPeriod.isEndOfYearSplit()) {
             accrualState.incrementPayPeriodCount();
             accrualState.computeRates();
             accrualState.incrementAccrualsEarned();

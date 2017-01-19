@@ -20,6 +20,7 @@ public class AccrualState extends AccrualSummary
     private static MathContext FOUR_DIGITS_MAX = new MathContext(4);
     private static BigDecimal HOURS_PER_DAY = new BigDecimal(7);
     private static BigDecimal MAX_YTD_HOURS = new BigDecimal("1820");
+    private static BigDecimal ANNUAL_PER_HOURS = new BigDecimal(35);
 
     protected LocalDate beginDate;
     protected LocalDate endDate;
@@ -139,6 +140,7 @@ public class AccrualState extends AccrualSummary
      * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
     public void applyYearRollover() {
+        this.setPerHoursAccrued(ANNUAL_PER_HOURS.multiply(getProratePercentage()));
         this.setVacHoursBanked(
             this.getVacHoursBanked()
                     .add(this.getVacHoursAccrued())
