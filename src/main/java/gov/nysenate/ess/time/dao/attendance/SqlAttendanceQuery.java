@@ -6,25 +6,37 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum SqlAttendanceQuery implements BasicSqlQuery {
 
     GET_OPEN_ATTENDANCE_YEARS(
-        "SELECT CAST(DTPERIODYEAR AS INTEGER) AS DTPERIODYEAR\n" +
-        "FROM ${masterSchema}.PM23ATTEND\n" +
-        "WHERE CDSTATUS = 'A'\n" +
-        "  AND NUXREFEM = :empId\n" +
-        "  AND (DTCLOSE IS NULL OR DTCLOSE > SYSDATE)\n" +
-
-        "UNION\n" +
-        // Select the current year if the last year was a valid attendance year
-        // and the current year's record doesn't exist yet
-        "SELECT last.DTPERIODYEAR + 1 AS DEPERIODYEAR\n" +
-        "FROM ${masterSchema}.PM23ATTEND last\n" +
-        "LEFT JOIN ${masterSchema}.PM23ATTEND curr\n" +
-        "  ON last.DTPERIODYEAR = curr.DTPERIODYEAR - 1\n" +
-        "  AND last.NUXREFEM = curr.NUXREFEM\n" +
-        "WHERE last.CDSTATUS = 'A'\n" +
-        "  AND last.NUXREFEM = :empId\n" +
-        "  AND last.DTPERIODYEAR = EXTRACT(YEAR FROM SYSDATE) - 1\n" +
-        "  AND curr.CDSTATUS IS NULL\n" +
-        "ORDER BY DTPERIODYEAR ASC"
+        "SELECT DISTINCT year\n" +
+        "FROM (\n" +
+        "  WITH current_year AS (\n" +
+        "      SELECT\n" +
+        "        EXTRACT(YEAR FROM SYSDATE)                 AS year,\n" +
+        "        TRUNC(SYSDATE, 'YEAR')                     AS year_start,\n" +
+        "        ADD_MONTHS(TRUNC(SYSDATE, 'YEAR'), 12) - 1 AS year_end\n" +
+        "      FROM DUAL\n" +
+        "  )\n" +
+        // Get years for open master attendance records
+        "  SELECT TO_NUMBER(DTPERIODYEAR) AS year\n" +
+        "  FROM ${masterSchema}.PM23ATTEND\n" +
+        "  WHERE CDSTATUS = 'A'\n" +
+        "        AND NUXREFEM = :empId\n" +
+        "        AND (DTCLOSE IS NULL OR DTCLOSE > SYSDATE)\n" +
+        "  UNION\n" +
+        // Get the current year if the employee is currently active
+        "  SELECT year\n" +
+        "  FROM current_year, ${masterSchema}.PM21PERSONN pers\n" +
+        "  WHERE pers.NUXREFEM = :empId AND pers.CDEMPSTATUS = 'A'\n" +
+        "  UNION\n" +
+        // Or get the current year if the employee was terminated during the year
+        "  SELECT year\n" +
+        "  FROM current_year, ${masterSchema}.PM21PERAUDIT aud, ${masterSchema}.PD21PTXNCODE code\n" +
+        "  WHERE aud.CDSTATUS = 'A' AND code.CDSTATUS = 'A'\n" +
+        "        AND code.CDTRANS = 'EMP'\n" +
+        "        AND aud.NUCHANGE = code.NUCHANGE\n" +
+        "        AND aud.NUXREFEM = :empId\n" +
+        "        AND aud.CDSTATPER != 'RETD'\n" +
+        "        AND code.DTEFFECT BETWEEN year_start AND year_end\n" +
+        ")"
     ),
     GET_ALL_ATTENDANCE_YEARS(
         "SELECT DTPERIODYEAR\n" +

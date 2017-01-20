@@ -96,10 +96,13 @@ public class EssTimeRecordManager implements TimeRecordManager
     @Override
     public void ensureAllActiveRecords() {
         logger.info("***** CHECKING ACTIVE TIME RECORDS *****");
-        // Get all employees with open attendance periods, also get all active time records
-        Set<Integer> empIds = employeeDao.getActiveEmployeeIds();
+        // Get all employees currently active, also get all active attendance records
+        Set<Integer> activeEmpIds = employeeDao.getActiveEmployeeIds();
         logger.info("getting active attendance records...");
         ListMultimap<Integer, AttendanceRecord> activeAttendanceRecords = attendanceDao.getOpenAttendanceRecords();
+
+        // Examine employees that are active or have open attendance records
+        Set<Integer> empIds = Sets.union(activeEmpIds, activeAttendanceRecords.keySet());
 
         logger.info("processing active employee records...");
 
@@ -113,7 +116,7 @@ public class EssTimeRecordManager implements TimeRecordManager
                         timeRecordService.getActiveTimeRecords(empId),
                         Optional.ofNullable(activeAttendanceRecords.get(empId)).orElse(Collections.emptyList())))
                 .reduce(0, Integer::sum);
-        logger.info("saved {} records", totalSaved);
+        logger.info("checked {} employees\tsaved {} records", empIds.size(), totalSaved);
     }
 
     /**
@@ -141,7 +144,7 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .forEach(this::ensureRecords);
     }
 
-    /** --- Internal Methods --- */
+    /* --- Internal Methods --- */
 
     /**
      * Ensure that the employee has up to date records that cover all given pay periods

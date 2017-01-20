@@ -23,7 +23,7 @@ public class SqlAttendanceDao extends SqlBaseDao implements AttendanceDao
     public SortedSet<Integer> getOpenAttendanceYears(Integer empId) {
         return new TreeSet<>(
                 remoteNamedJdbc.query(SqlAttendanceQuery.GET_OPEN_ATTENDANCE_YEARS.getSql(schemaMap()),
-                        new MapSqlParameterSource("empId", empId), ((rs, rowNum) -> rs.getInt("DTPERIODYEAR")))
+                        new MapSqlParameterSource("empId", empId), ((rs, rowNum) -> rs.getInt("year")))
         );
     }
 

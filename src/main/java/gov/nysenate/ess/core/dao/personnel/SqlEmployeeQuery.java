@@ -56,8 +56,8 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
 
     GET_ACTIVE_EMP_IDS(
         "SELECT DISTINCT NUXREFEM\n" +
-        "FROM ${masterSchema}.PM23ATTEND\n" +
-        "WHERE CDSTATUS = 'A' AND (DTCLOSE IS NULL OR DTCLOSE > SYSDATE)"
+        "FROM ${masterSchema}.PM21PERSONN\n" +
+        "WHERE CDEMPSTATUS = 'A'"
     ),
 
     GET_EMP_BY_UPDATE_DATE(
