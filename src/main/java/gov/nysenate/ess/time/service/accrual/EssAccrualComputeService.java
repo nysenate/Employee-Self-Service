@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Objects.firstNonNull;
 import static gov.nysenate.ess.time.model.EssTimeConstants.*;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
-import static gov.nysenate.ess.time.util.AccrualUtils.roundAccrualValue;
+import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
+import static gov.nysenate.ess.time.util.AccrualUtils.roundSickVacHours;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
@@ -317,7 +318,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 .multiply(prorateRatio)
                 .multiply(yearRatio);
 
-        return roundAccrualValue(rawPerHours);
+        return roundPersonalHours(rawPerHours);
     }
 
     /**

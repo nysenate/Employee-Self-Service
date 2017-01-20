@@ -7,7 +7,8 @@ import com.google.common.collect.RangeMap;
 import gov.nysenate.ess.core.util.RangeUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+
+import static gov.nysenate.ess.time.util.AccrualUtils.roundSickVacHours;
 
 /**
  * Provides accrual rates for vacation and sick time based on number of biweekly pay periods.
@@ -72,7 +73,7 @@ public enum AccrualRate
      * @return BigDecimal with prorated accrual rate to the nearest .25.
      */
     public BigDecimal getRate(int payPeriods, BigDecimal proratePercentage) {
-        return roundUpToNearestQuarter(getRate(payPeriods).multiply(proratePercentage));
+        return roundSickVacHours(getRate(payPeriods).multiply(proratePercentage));
     }
 
     /**
@@ -81,16 +82,5 @@ public enum AccrualRate
      */
     public BigDecimal getMaxHoursBanked() {
         return maxHoursBanked;
-    }
-
-    /**
-     * Rounds the given BigDecimal up to the nearest .25 increment.
-     *
-     * @param num BigDecimal
-     * @return BigDecimal with rounded value
-     */
-    private BigDecimal roundUpToNearestQuarter(BigDecimal num) {
-        BigDecimal four = new BigDecimal(4);
-        return num.multiply(four).setScale(0, RoundingMode.CEILING).divide(four);
     }
 }

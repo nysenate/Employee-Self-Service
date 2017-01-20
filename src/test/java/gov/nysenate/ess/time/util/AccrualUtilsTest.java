@@ -6,7 +6,7 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigDecimal;
 
-import static gov.nysenate.ess.time.model.EssTimeConstants.ACCRUAL_INCREMENT;
+import static gov.nysenate.ess.time.model.EssTimeConstants.SICK_VAC_INCREMENT;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_YTD_HOURS;
 import static org.junit.Assert.*;
 import static gov.nysenate.ess.time.util.AccrualUtils.*;
@@ -25,17 +25,17 @@ public class AccrualUtilsTest {
 
     @Test
     public void testRoundAccrualValue() throws Exception {
-        BigDecimal roundedValue = ACCRUAL_INCREMENT.multiply(new BigDecimal(51));
+        BigDecimal roundedValue = SICK_VAC_INCREMENT.multiply(new BigDecimal(51));
 
-        assertTrue(roundedValue.compareTo(roundAccrualValue(roundedValue)) == 0);
+        assertTrue(roundedValue.compareTo(roundSickVacHours(roundedValue)) == 0);
 
-        BigDecimal lessThanAccInc = ACCRUAL_INCREMENT.divide(BigDecimal.TEN);
+        BigDecimal lessThanAccInc = SICK_VAC_INCREMENT.divide(BigDecimal.TEN);
 
         BigDecimal unRoundedValue = roundedValue.add(lessThanAccInc);
 
-        BigDecimal expectedRound = roundedValue.add(ACCRUAL_INCREMENT);
+        BigDecimal expectedRound = roundedValue.add(SICK_VAC_INCREMENT);
 
-        assertTrue(expectedRound.compareTo(roundAccrualValue(unRoundedValue)) == 0);
+        assertTrue(expectedRound.compareTo(roundSickVacHours(unRoundedValue)) == 0);
     }
 
 }

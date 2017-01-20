@@ -100,8 +100,7 @@ public class AccrualState extends AccrualSummary
             throw new IllegalStateException("YtdHoursExpected needs to be initialized before incrementing it.");
         }
         BigDecimal totalYtdHours = this.getYtdHoursExpected().add(hoursExpectedInPeriod);
-        BigDecimal four = new BigDecimal(4);
-        BigDecimal roundedYtdHours = totalYtdHours.multiply(four).setScale(0, RoundingMode.HALF_UP).divide(four);
+        BigDecimal roundedYtdHours = AccrualUtils.roundExpectedHours(totalYtdHours);
         this.setYtdHoursExpected(roundedYtdHours);
     }
 
@@ -124,9 +123,10 @@ public class AccrualState extends AccrualSummary
      * @param numWorkDays number of days
      */
     private BigDecimal getHoursExpectedForDays(int numWorkDays) {
-        return getProratePercentage()
-                .multiply(HOURS_PER_DAY)
-                .multiply(new BigDecimal(numWorkDays));
+        return AccrualUtils.roundExpectedHours(
+                getProratePercentage()
+                        .multiply(HOURS_PER_DAY)
+                        .multiply(new BigDecimal(numWorkDays)));
     }
 
     /**
@@ -138,12 +138,13 @@ public class AccrualState extends AccrualSummary
      * - Personal hours are reset to their initial state (35 hours prorated based on min hours required).
      */
     public void applyYearRollover() {
-        this.setPerHoursAccrued(ANNUAL_PER_HOURS.multiply(getProratePercentage()));
+        this.setPerHoursAccrued(AccrualUtils.roundPersonalHours(
+                ANNUAL_PER_HOURS.multiply(getProratePercentage())));
         this.setVacHoursBanked(
-            this.getVacHoursBanked()
-                    .add(this.getVacHoursAccrued())
-                    .subtract(this.getVacHoursUsed())
-                    .min(AccrualRate.VACATION.getMaxHoursBanked()));
+                this.getVacHoursBanked()
+                        .add(this.getVacHoursAccrued())
+                        .subtract(this.getVacHoursUsed())
+                        .min(AccrualRate.VACATION.getMaxHoursBanked()));
         this.setVacHoursAccrued(BigDecimal.ZERO);
         this.setEmpHoursBanked(
                 this.getEmpHoursBanked()
