@@ -85,6 +85,7 @@ mail.smtp.auth = true
 mail.smtp.starttls.enable = true
 # Enables connection attempts using SSL authentication
 mail.smtp.ssl.enable = true
+mail.smtp.ssl.protocols = TLSv1.2
 
 # Username
 mail.smtp.user =

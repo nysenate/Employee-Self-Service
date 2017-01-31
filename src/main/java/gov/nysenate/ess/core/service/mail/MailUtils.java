@@ -25,6 +25,7 @@ public class MailUtils
     @Value("${mail.smtp.from:noreply@nysenate.gov}") private String smtpFrom;
     @Value("${mail.smtp.starttls.enable:false}") private boolean stlsEnable;
     @Value("${mail.smtp.ssl.enable:false}") private boolean sslEnable;
+    @Value("${mail.smtp.ssl.protocols}") private String sslProtocol;
 
     private Properties mailProperties;
     private Authenticator authenticator;
@@ -40,6 +41,7 @@ public class MailUtils
         mailProperties.put("mail.smtp.auth", auth);
         mailProperties.put("mail.smtp.starttls.enable", stlsEnable);
         mailProperties.put("mail.smtp.ssl.enable", sslEnable);
+        mailProperties.put("mail.smtp.ssl.protocols", sslProtocol);
         mailProperties.put("mail.smtp.user", smtpUser);
         mailProperties.put("mail.smtp.pass", smtpPass);
         mailProperties.put("mail.smtp.from", smtpFrom);
