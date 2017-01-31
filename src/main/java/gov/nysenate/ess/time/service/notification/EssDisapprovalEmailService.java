@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.Map;
 
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.DISAPPROVED;
@@ -34,18 +32,8 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
 
     @Autowired private EmployeeInfoService empInfoService;
 
-    private Template emailTemplate;
-
     @Value("${freemarker.time.templates.time_record_disapproval_notice:time_record_disapproval_notice.ftlh}")
     private String emailTemplateName;
-
-    /**
-     * Initializes the time record email template
-     */
-    @PostConstruct
-    public void init() throws IOException {
-        emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
-    }
 
     @Override
     public void sendRejectionMessage(TimeRecord rejectedRecord, int rejectorId) {
@@ -82,9 +70,10 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
 
         Map dataModel = ImmutableMap.of("employee", employee, "rejector", rejector, "timeRecord", timeRecord);
         try {
+            Template emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
             emailTemplate.process(dataModel, out);
         } catch (IOException | TemplateException ex) {
-            throw new EssTemplateException(emailTemplate, ex);
+            throw new EssTemplateException(emailTemplateName, ex);
         }
         return out.toString();
     }

@@ -1,4 +1,4 @@
-angular.module('essTime')
+angular.module('ess')
     .directive('progressModal', [progressModal])
     .directive('confirmModal', ['modals', confirmModal])
 ;

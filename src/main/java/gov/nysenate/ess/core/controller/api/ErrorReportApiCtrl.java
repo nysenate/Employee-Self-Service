@@ -1,29 +1,32 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.google.common.eventbus.EventBus;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import gov.nysenate.ess.core.client.parameter.ErrorReport;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
-import gov.nysenate.ess.core.dao.unit.SessionDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
-import gov.nysenate.ess.core.service.notification.email.simple.message.SimpleEmailHandler;
 import gov.nysenate.ess.core.service.personnel.EssCachedEmployeeInfoService;
+import gov.nysenate.ess.core.service.template.EssTemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.annotation.Resource;
+import javax.mail.internet.MimeMessage;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * Created by senateuser on 2016/11/4.
@@ -31,35 +34,74 @@ import java.util.Date;
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/report")
 public class ErrorReportApiCtrl extends BaseRestApiCtrl {
-    @Value("${report.email}")
-    private String reportEmail;
-    @Autowired
-    EventBus eventBus;
-    @Autowired
-    SendMailService sendMailService;
-    @Autowired
-    private EssCachedEmployeeInfoService essCachedEmployeeInfoService;
 
+    private static final Logger logger = LoggerFactory.getLogger(ErrorReportApiCtrl.class);
 
-    @RequestMapping(value = "/error", method = RequestMethod.GET)
-    public SimpleResponse report(@RequestParam Integer user, @RequestParam String url,@RequestParam String details){
-        Employee employee = essCachedEmployeeInfoService.getEmployee(user);
-        DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
-        Date now = new Date();
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jo = (JsonObject)jsonParser.parse(details);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final String subjectPrefix = "ESS Error Report from ";
+
+    @Value("${report.email}") private String reportEmail;
+    @Value("${freemarker.core.templates.error_report:error_report.ftlh}")
+    private String emailTemplateName;
+
+    @Autowired private Configuration freemarkerCfg;
+    @Autowired private SendMailService sendMailService;
+    @Autowired private EssCachedEmployeeInfoService essCachedEmployeeInfoService;
+
+    @Resource(name = "jsonObjectMapper") ObjectMapper objectMapper;
+
+    /**
+     * Receives an error report and sends an email notification
+     *
+     * @param errorReport {@link ErrorReport}
+     * @return {@link SimpleResponse}
+     * @throws JsonProcessingException
+     */
+    @RequestMapping(value = "/error", method = RequestMethod.POST, consumes = "application/json")
+    public SimpleResponse report(@RequestBody ErrorReport errorReport) throws JsonProcessingException {
         try {
-            sendMailService.sendMessage(reportEmail, employee.getEmail(),employee.getFullName() +" reports an issues",
-                    "Report Time: " + df.format(now)+"\n"+"\n"+
-                            "URL: "+ url+"\n"+"\n"+
-                            "Error: "+"\n"+
-                    gson.toJson(jo)
-            );
+            MimeMessage message = getErrorMessage(errorReport);
+            sendMailService.send(message);
+        } catch (Exception e) {
+            logger.error("Exception occurred during processing of error report submission!", e);
+            return new SimpleResponse(false, e.getMessage(), e.getClass().getSimpleName());
         }
-        catch (Exception e){
-            return new SimpleResponse(false,e.getMessage(),e.getClass().getSimpleName());
-        }
-        return new SimpleResponse(true,"successful","successful");
+
+        return new SimpleResponse(true, "successful", "successful");
     }
+
+    /* --- Internal Methods --- */
+
+    private MimeMessage getErrorMessage(ErrorReport errorReport) throws JsonProcessingException {
+        Employee employee = essCachedEmployeeInfoService.getEmployee(errorReport.getUser());
+
+        String subject = subjectPrefix + employee.getFullName();
+        String message = getMessageBody(errorReport, employee);
+
+        return sendMailService.newHtmlMessage(reportEmail, subject, message);
+    }
+
+    private String getMessageBody(ErrorReport errorReport, Employee employee) throws JsonProcessingException {
+        LocalDateTime now = LocalDateTime.now();
+
+        String details = objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(errorReport.getDetails());
+
+        Map dataModel = ImmutableMap.of(
+                "employee", employee,
+                "timestamp", now,
+                "errorReport", errorReport,
+                "details", details
+        );
+
+        StringWriter out = new StringWriter();
+        try {
+            Template emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
+            emailTemplate.process(dataModel, out);
+        } catch (IOException | TemplateException ex) {
+            throw new EssTemplateException(emailTemplateName, ex);
+        }
+
+        return out.toString();
+    }
+
 }

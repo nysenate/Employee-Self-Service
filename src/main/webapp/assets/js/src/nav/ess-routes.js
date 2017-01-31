@@ -74,6 +74,12 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/accrual/projections'
     });
 
+    /** Test */
+
+    $routeProvider.when(ctxPath + '/time/test/errormodal', {
+        templateUrl: ctxPath + '/template/time/test/error-modal-test'
+    });
+
     /** Supply */
 
     $routeProvider.when(ctxPath + '/supply', {

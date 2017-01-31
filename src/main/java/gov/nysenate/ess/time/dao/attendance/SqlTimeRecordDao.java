@@ -97,14 +97,6 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 
     /** {@inheritDoc} */
     @Override
-    public ListMultimap<Integer, TimeRecord> getAllActiveRecords() {
-        TimeRecordRowCallbackHandler handler = new TimeRecordRowCallbackHandler();
-        remoteNamedJdbc.query( SqlTimeRecordQuery.GET_ACTIVE_TIME_REC.getSql(schemaMap(), timeRecordOrder), handler);
-        return handler.getRecordMap();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public List<TimeRecord> getActiveRecords(Integer empId) {
         TimeRecordRowCallbackHandler handler = new TimeRecordRowCallbackHandler();
         MapSqlParameterSource params = new MapSqlParameterSource("empIds", empId);

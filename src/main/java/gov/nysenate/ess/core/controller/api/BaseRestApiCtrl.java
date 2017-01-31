@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +40,7 @@ public class BaseRestApiCtrl
     @Autowired protected EventBus eventBus;
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         this.eventBus.register(this);
     }
 

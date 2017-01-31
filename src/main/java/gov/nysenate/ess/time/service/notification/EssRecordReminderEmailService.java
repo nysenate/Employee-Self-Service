@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -40,17 +39,6 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
     private String emailTemplateName;
 
     private static final String reminderEmailSubject = "Time and Attendance records need to be submitted";
-
-    private Template emailTemplate;
-
-    /**
-     * Initializes the time record email template
-     * @throws IOException
-     */
-    @PostConstruct
-    public void init() throws IOException {
-        emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -98,13 +86,13 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
         StringWriter out = new StringWriter();
         // Ensure the records are ordered by date
         List<TimeRecord> sortedTimeRecords = new ArrayList<>(timeRecords);
-        Collections.sort(sortedTimeRecords,
-                (tRecA, tRecB) -> tRecA.getBeginDate().compareTo(tRecB.getBeginDate()));
+        sortedTimeRecords.sort(Comparator.comparing(TimeRecord::getBeginDate));
         Map dataModel = ImmutableMap.of("employee", employee, "timeRecords", sortedTimeRecords);
         try {
+            Template emailTemplate = freemarkerCfg.getTemplate(emailTemplateName);
             emailTemplate.process(dataModel, out);
         } catch (IOException | TemplateException ex) {
-            throw new EssTemplateException(emailTemplate, ex);
+            throw new EssTemplateException(emailTemplateName, ex);
         }
         return out.toString();
     }

@@ -10,7 +10,7 @@ var essApp = angular.module('ess', [
     // Angular modules
     'ngRoute', 'ngResource', 'ngAnimate',
     // Local modules
-    'essMyInfo', 'essTime', 'essSupply', 'essHelp',
+    'essCore', 'essMyInfo', 'essTime', 'essSupply', 'essHelp',
     // Third party modules
     'floatThead', 'angularUtils.directives.dirPagination', 'ui.autocomplete', 'nsPopover']);
 
