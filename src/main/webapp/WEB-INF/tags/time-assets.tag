@@ -49,6 +49,10 @@
         <!-- Grants -->
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/grant/grant-ctrl.js?v=${releaseVersion}"></script>
+
+        <!-- Tests -->
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/test/error-modal-test.js?v=${releaseVersion}"></script>
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/dest/ess-time.min.js?v=${releaseVersion}"></script>
