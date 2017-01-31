@@ -129,7 +129,9 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/common/timeout-modal.js',
                         '<%= jsSource %>/common/toggle-panel-directive.js',
                         '<%= jsSource %>/common/zero-pad-filter.js',
-                        '<%= jsSource %>/common/ess-storage-service.js'
+                        '<%= jsSource %>/common/ess-storage-service.js',
+                        // <!-- Testing Code -->
+                        '<%= jsSource %>/test/error-modal-test.js'
                     ],
                     //help
                     '<%= jsDest %>/ess-help.min.js': ['<%= jsSource %>/help/help.js'],
