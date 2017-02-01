@@ -76,24 +76,22 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
      * the projected accrual records.
      */
     $scope.recalculateProjectionTotals = function() {
-        var projLen = $scope.state.projections.length;
-        var summLen = $scope.state.accSummaries.length;
-        var baseRec = null;
-        if (summLen > 0) {
-            baseRec = $scope.state.accSummaries[0];
-        }
-        else {
-            baseRec = $scope.state.projections[0];
-        }
+        var accSummaries = $scope.state.accSummaries;
+        var projections = $scope.state.projections;
+        var baseRec = accSummaries.length > 0 ? accSummaries[0] : null;
         var multiYear = false;
 
-        var per = baseRec.personalUsed, 
-            vac = baseRec.vacationUsed, 
+        var per = 0, vac = 0, sick = 0;
+        if (baseRec) {
+            per = baseRec.personalUsed;
+            vac = baseRec.vacationUsed;
             sick = baseRec.empSickUsed + baseRec.famSickUsed;
+        }
         // Acc projections are stored in reverse chrono order
-        for (var i = 0; i < $scope.state.projections.length; i++) {
-            var rec = $scope.state.projections[i];
-            var lastRec = $scope.state.projections[i - 1];
+        for (var i = 0; i < projections.length; i++) {
+            var rec = projections[i];
+
+            var lastRec = i === 0 ? baseRec : projections[i - 1];
 
             // If multiple years are present, banked hours will be dynamic and need to be reset
             if (multiYear) {
@@ -101,8 +99,8 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
                 rec.sickBanked = lastRec.sickBanked;
             }
 
-            // Apply rollover if record is the first of the year
-            if (i > 0 && accrualUtils.isFirstRecordOfYear(rec)) {
+            // Apply rollover if record is the first of the year and a preceding record is available
+            if (lastRec && accrualUtils.isFirstRecordOfYear(rec)) {
                 multiYear = true;
 
                 rec.vacationBanked = Math.min(lastRec.vacationAvailable, maxVacationBanked);
