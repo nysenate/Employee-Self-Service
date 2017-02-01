@@ -16,7 +16,6 @@ public class Person {
     protected String lastName;
     protected String initial;
     protected String suffix;
-    protected String fullName;
     protected String email;
     protected String workPhone;
     protected String homePhone;
@@ -33,7 +32,6 @@ public class Person {
         this.lastName = other.lastName;
         this.initial = other.initial;
         this.suffix = other.suffix;
-        this.fullName = other.fullName;
         this.email = other.email;
         this.workPhone = other.workPhone;
         this.homePhone = other.homePhone;
@@ -43,7 +41,7 @@ public class Person {
         this.homeAddress = other.homeAddress;
     }
 
-    /** Functional Getters */
+    /* Functional Getters */
 
     /**
      * Returns the age of the person in years based on dateOfBirth.
@@ -55,6 +53,14 @@ public class Person {
             return (int) ChronoUnit.YEARS.between(dateOfBirth, LocalDate.now());
         }
         throw new IllegalStateException("Cannot compute age if date of birth is null");
+    }
+
+    public String getFullName() {
+        String fullName = this.getFirstName() + " " +
+                ((StringUtils.isNotBlank(this.getInitial())) ? (this.getInitial() + " ") : "") +
+                this.getLastName() + " " +
+                ((StringUtils.isNotBlank(this.getSuffix())) ? this.getSuffix() : "");
+        return fullName.trim().replaceAll("\\s+", " ");
     }
 
     /** Basic Getters/Setters */
@@ -97,18 +103,6 @@ public class Person {
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
-    }
-
-    public String getFullName() {
-        String fullName = this.getFirstName() + " " +
-                ((StringUtils.isNotBlank(this.getInitial())) ? (this.getInitial() + " ") : "") +
-                this.getLastName() + " " +
-                ((StringUtils.isNotBlank(this.getSuffix())) ? this.getSuffix() : "");
-        return WordUtils.capitalizeFully(fullName.toLowerCase()).trim().replaceAll("\\s+", " ");
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public String getEmail() {

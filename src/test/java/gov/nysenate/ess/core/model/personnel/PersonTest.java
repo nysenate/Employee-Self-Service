@@ -19,7 +19,6 @@ public class PersonTest
         p.setDateOfBirth(LocalDate.now());
         p.setEmail("test@test.com");
         p.setFirstName("Sample");
-        p.setFullName("Test");
         p.setGender(Gender.M);
         p.setHomeAddress(new Address("Sample Address"));
         p.setHomePhone("123123123");

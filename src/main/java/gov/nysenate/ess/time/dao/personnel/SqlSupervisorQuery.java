@@ -11,7 +11,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
      * valid employee groups for a supervisor.
      */
     GET_SUP_EMP_TRANS_SQL(
-        "SELECT empList.*, per.NALAST, per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER, " +
+        "SELECT empList.*, pers.FFNALAST, pers.FFNAFIRST, per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER, " +
         "       ptx.CDTRANS, ptx.CDTRANSTYP, ptx.DTEFFECT, per.DTTXNORIGIN,\n" +
         "       ROW_NUMBER() " +
         "       OVER (PARTITION BY EMP_GROUP, NUXREFEM, OVR_NUXREFSV ORDER BY DTEFFECT DESC, DTTXNORIGIN DESC) AS TRANS_RANK\n" +
@@ -43,6 +43,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "  ) empList\n" +
         "JOIN ${masterSchema}.PM21PERAUDIT per ON empList.NUXREFEM = per.NUXREFEM\n" +
         "JOIN ${masterSchema}.PD21PTXNCODE ptx ON per.NUXREFEM = ptx.NUXREFEM AND per.NUCHANGE = ptx.NUCHANGE\n" +
+        "JOIN ${masterSchema}.PM21PERSONN pers ON per.NUXREFEM = pers.NUXREFEM\n" +
 
         /**  Retrieve just the APP/RTP/SUP/EMP transactions unless the employee doesn't
          *   have any of them (some earlier employees may be missing APP for example). */

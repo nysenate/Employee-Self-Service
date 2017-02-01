@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static gov.nysenate.ess.core.dao.base.SqlBaseDao.getLocalDate;
 import static gov.nysenate.ess.core.dao.base.SqlBaseDao.getLocalDateTime;
@@ -40,7 +42,6 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee>
         emp.setFirstName(rs.getString(pfx + "FFNAFIRST"));
         emp.setInitial(rs.getString(pfx + "FFNAMIDINIT"));
         emp.setLastName(rs.getString(pfx + "FFNALAST"));
-        emp.setFullName(rs.getString(pfx + "NAEMPLABEL"));
         emp.setTitle(rs.getString(pfx + "FFNATITLE"));
         emp.setSuffix(rs.getString(pfx + "FFNASUFFIX"));
         emp.setEmail(rs.getString(pfx + "NAEMAIL"));
@@ -55,7 +56,7 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee>
         emp.setHomeAddress(addressRowMapper.mapRow(rs, rowNum));
         emp.setRespCenter(respCenterRowMapper.mapRow(rs, rowNum));
         emp.setWorkLocation(locationRowMapper.mapRow(rs, rowNum));
-        emp.setUpdateDateTime(Arrays.asList(
+        LocalDateTime maxUpdateDateTime = Stream.of(
                 getLocalDateTime(rs, "DTTXNUPDATE"),
                 getLocalDateTime(rs, "TTL_DTTXNUPDATE"),
                 getLocalDateTime(rs, "ADDR_DTTXNUPDATE"),
@@ -64,9 +65,11 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee>
                 getLocalDateTime(rs, "RCTRHD_DTTXNUPDATE"),
                 getLocalDateTime(rs, "AGCY_DTTXNUPDATE"),
                 getLocalDateTime(rs, "LOC_DTTXNUPDATE")
-        ).stream()
-                .filter(dateTime -> dateTime != null)
-                .max(LocalDateTime::compareTo).orElse(null));
+        )
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo).orElse(null);
+
+        emp.setUpdateDateTime(maxUpdateDateTime);
 
         if (emp.getEmail() != null) {
             emp.setUid(emp.getEmail().split("@")[0]);

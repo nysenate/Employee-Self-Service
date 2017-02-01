@@ -46,7 +46,6 @@ public class EmployeeView extends SimpleEmployeeView implements ViewObject
         emp.setLastName(lastName);
         emp.setInitial(initial);
         emp.setSuffix(suffix);
-        emp.setFullName(fullName);
         emp.setActive(active);
         emp.setEmail(email);
         emp.setWorkPhone(workPhone);

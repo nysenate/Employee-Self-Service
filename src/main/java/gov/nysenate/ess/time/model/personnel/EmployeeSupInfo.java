@@ -14,6 +14,7 @@ public class EmployeeSupInfo
     protected int empId;
     protected int supId;
     protected String empLastName;
+    protected String empFirstName;
     // The requested supervisor date range when this instance was created
     // TODO rename these fields
     protected LocalDate startDate;
@@ -125,5 +126,13 @@ public class EmployeeSupInfo
 
     public void setSupEndDate(LocalDate supEndDate) {
         this.supEndDate = supEndDate;
+    }
+
+    public String getEmpFirstName() {
+        return empFirstName;
+    }
+
+    public void setEmpFirstName(String empFirstName) {
+        this.empFirstName = empFirstName;
     }
 }

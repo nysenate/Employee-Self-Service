@@ -14,6 +14,7 @@ public class SupervisorEmpView implements ViewObject
     protected int empId;
     protected int supId;
     protected String empLastName;
+    protected String empFirstName;
     protected LocalDate supStartDate;
     protected LocalDate supEndDate;
 
@@ -23,8 +24,8 @@ public class SupervisorEmpView implements ViewObject
         if (supInfo != null) {
             this.empId = supInfo.getEmpId();
             this.supId = supInfo.getSupId();
-            this.empLastName = (supInfo.getEmpLastName() != null) ?
-                StringUtils.capitalize(supInfo.getEmpLastName().toLowerCase()) : null;
+            this.empLastName = supInfo.getEmpLastName();
+            this.empFirstName = supInfo.getEmpFirstName();
             this.supStartDate = supInfo.getSupStartDate();
             this.supEndDate = supInfo.getSupEndDate();
         }
@@ -45,6 +46,11 @@ public class SupervisorEmpView implements ViewObject
     @XmlElement
     public String getEmpLastName() {
         return empLastName;
+    }
+
+    @XmlElement
+    public String getEmpFirstName() {
+        return empFirstName;
     }
 
     @XmlElement

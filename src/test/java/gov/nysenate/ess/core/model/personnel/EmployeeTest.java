@@ -58,7 +58,6 @@ public class EmployeeTest
         emp1.setEmail("test@test.com");
         emp1.setEmployeeId(1);
         emp1.setFirstName("Sample");
-        emp1.setFullName("Test");
         emp1.setGender(Gender.M);
         emp1.setHomeAddress(new Address("Sample Address"));
         emp1.setHomePhone("123123123");

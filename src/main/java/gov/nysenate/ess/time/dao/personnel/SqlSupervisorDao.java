@@ -98,8 +98,6 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
          */
         if (!res.isEmpty()) {
             SupervisorEmpGroup empGroup = new SupervisorEmpGroup(supId, startDate, endDate);
-//            Map<Integer, EmployeeSupInfo> primaryEmps = new HashMap<>();
-//            Map<Integer, EmployeeSupInfo> overrideEmps = new HashMap<>();
             HashMultimap<Integer, EmployeeSupInfo> primaryEmps = HashMultimap.create();
             HashMultimap<Integer, EmployeeSupInfo> overrideEmps = HashMultimap.create();
             Table<Integer, Integer, EmployeeSupInfo> supOverrideEmps = HashBasedTable.create();
@@ -126,7 +124,8 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 int currSupId = Integer.parseInt(colMap.get("NUXREFSV").toString());
 
                 EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId, startDate, endDate);
-                empSupInfo.setEmpLastName(colMap.get("NALAST").toString());
+                empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
+                empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
                 if (transType.equals(EMP)) {
                     empTerminated = true;
 

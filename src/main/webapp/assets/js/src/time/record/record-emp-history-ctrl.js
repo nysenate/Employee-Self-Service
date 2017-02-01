@@ -75,7 +75,8 @@ function empRecordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, T
     function setAdditionalEmpData(emp) {
         emp.supStartMoment = moment(emp.supStartDate || '1970-01-01');
         emp.supEndMoment = moment(emp.supEndDate || undefined);
-        emp.dropDownLabel = emp.empLastName + ' (' + emp.supStartMoment.format('MMM YYYY') + ' - ' +
+        emp.dropDownLabel = emp.empLastName + ' ' + emp.empFirstName[0] + '.' +
+            ' (' + emp.supStartMoment.format('MMM YYYY') + ' - ' +
             emp.supEndMoment.format('MMM YYYY') + ')';
     }
 

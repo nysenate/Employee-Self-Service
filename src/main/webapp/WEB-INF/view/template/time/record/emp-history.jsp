@@ -20,7 +20,7 @@
             <%--<ess-notification level="warn" title="No time records were found for {{state.selectedEmp.empLastName}}"></ess-notification>--%>
         <%--</div>--%>
         <div ng-show="state.recordYears.length > 0">
-            <h1>{{state.selectedEmp.empLastName}}'s Attendance Records</h1>
+            <h1>{{state.selectedEmp.empFirstName}} {{state.selectedEmp.empLastName}}'s Attendance Records</h1>
             <div class="content-controls">
                 <p class="content-info" style="margin-bottom:0;">
                     View attendance records for year &nbsp;
