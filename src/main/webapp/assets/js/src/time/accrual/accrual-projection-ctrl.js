@@ -51,7 +51,7 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
                 accrualUtils.computeDeltas(resp.result);
                 // Gather historical acc summaries
                 $scope.state.accSummaries = resp.result.filter(function(acc) {
-                    return !acc.computed;
+                    return !acc.computed || acc.submitted;
                 }).reverse();
                 // Gather projected acc records if year is 1 yr ago, current, or future.
                 if (year >= $scope.state.today.year() - 1) {
