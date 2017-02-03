@@ -32,8 +32,13 @@ public class SqlSupervisorDaoTest extends BaseTest
 
     @Test
     public void testGetSupEmpGroup_ReturnsEmpGroup() throws Exception {
-        SupervisorEmpGroup group =
-            supervisorDao.getSupervisorEmpGroup(9896, Range.closed(LocalDate.of(1970, 1, 1), LocalDate.now()));
+        int empId = 1024;
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusYears(1);
+        Range<LocalDate> dateRange = Range.closed(startDate, endDate);
+
+        SupervisorEmpGroup group = supervisorDao.getSupervisorEmpGroup(empId, dateRange);
+
         logger.info(OutputUtils.toJson(group));
     }
 

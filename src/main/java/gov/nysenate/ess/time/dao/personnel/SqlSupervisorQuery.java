@@ -18,7 +18,8 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "FROM (\n" +
 
         /**  Fetch the ids of the supervisor's direct employees. */
-        "    SELECT DISTINCT 'PRIMARY' AS EMP_GROUP, NUXREFEM, NULL AS OVR_NUXREFSV\n" +
+        "    SELECT DISTINCT 'PRIMARY' AS EMP_GROUP, NUXREFEM, NULL AS OVR_NUXREFSV,\n" +
+        "        NULL AS OVR_DTSTART, NULL AS OVR_DTEND\n" +
         "    FROM ${masterSchema}.PM21PERAUDIT WHERE NUXREFSV = :supId AND CDSTATUS = 'A' \n" +
 
         /**  Combine that with the ids of the employees that are accessible through the sup overrides.
@@ -29,7 +30,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "        WHEN ovr.NUXREFSVSUB IS NOT NULL THEN 'SUP_OVR' \n" +
         "        WHEN ovr.NUXREFEMSUB IS NOT NULL THEN 'EMP_OVR' " +
         "    END,\n" +
-        "    per.NUXREFEM, ovr.NUXREFSVSUB\n" +
+        "    per.NUXREFEM, ovr.NUXREFSVSUB, ovr.DTSTART AS OVR_DTSTART, ovr.DTEND AS OVR_DTEND\n" +
         "    FROM ${tsSchema}.PM23SUPOVRRD ovr\n" +
         "    LEFT JOIN ${masterSchema}.PM21PERAUDIT per ON \n" +
         "      per.CDSTATUS = 'A' AND\n" +

@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.util;
 import com.google.common.collect.*;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.EnumSet;
@@ -15,6 +16,8 @@ public class DateUtils
     public static final LocalDate THE_FUTURE = LocalDate.of(2999, 12, 31);
     public static final Range<LocalDate> ALL_DATES = Range.closed(LONG_AGO, THE_FUTURE);
     public static final Range<LocalDateTime> ALL_DATE_TIMES = Range.closed(LONG_AGO.atStartOfDay(), atEndOfDay(THE_FUTURE));
+
+    public static final DateTimeFormatter SFMS_DATE_TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
     /**
      * The number of months BEFORE the standard year that the Senate Fiscal Year starts

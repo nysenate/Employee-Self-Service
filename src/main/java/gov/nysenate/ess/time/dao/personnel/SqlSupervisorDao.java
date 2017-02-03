@@ -7,6 +7,8 @@ import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.model.personnel.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -78,10 +80,10 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
     /**{@inheritDoc} */
     @Override
-    public SupervisorEmpGroup getSupervisorEmpGroup(int supId, Range<LocalDate> dateRange) throws SupervisorException {
+    public SupervisorEmpGroup getSupervisorEmpGroup(int supId, Range<LocalDate> queryRange) throws SupervisorException {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        LocalDate startDate = startOfDateRange(dateRange);
-        LocalDate endDate = endOfDateRange(dateRange);
+        LocalDate startDate = startOfDateRange(queryRange);
+        LocalDate endDate = endOfDateRange(queryRange);
         params.addValue("supId", supId);
         params.addValue("endDate", toDate(endDate));
         List<Map<String, Object>> res;
@@ -92,7 +94,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
             throw new SupervisorException("Failed to retrieve matching employees for supId: " + supId + " before: " + endDate);
         }
 
-        /**
+        /*
          * The transactions for the matching employees need to be processed to determine if they
          * are still under the given supervisor.
          */
@@ -111,8 +113,11 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
                 TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
                 PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-                LocalDate effectDate = LocalDate.from(formatter.parse(colMap.get("DTEFFECT").toString()));
+
+                LocalDate effectDate = getDateCol(colMap, "DTEFFECT");
+                LocalDate ovrStartDate = getDateCol(colMap, "OVR_DTSTART");
+                LocalDate ovrEndDate = getDateCol(colMap, "OVR_DTEND");
+
                 int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
                 boolean empTerminated = false;
                 boolean effectDateIsPast = effectDate.compareTo(startDate) <= 0;
@@ -162,9 +167,15 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                             break;
                         }
                         case "EMP_OVR": {
-                            if (empTerminated && effectDateIsPast) {
+                            Range<LocalDate> overrideRange = Range.closedOpen(
+                                    Optional.ofNullable(ovrStartDate).orElse(LocalDate.MIN),
+                                    Optional.ofNullable(ovrEndDate).orElse(LocalDate.MAX)
+                            );
+                            if (!RangeUtils.intersects(overrideRange, queryRange)) {
                                 continue;
                             }
+                            empSupInfo.setSupStartDate(ovrStartDate);
+                            empSupInfo.setSupEndDate(ovrEndDate);
                             overrideEmps.put(empId, empSupInfo);
                             break;
                         }
@@ -280,5 +291,15 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
     public LocalDateTime getLastSupUpdateDate() {
         return remoteNamedJdbc.queryForObject(SqlSupervisorQuery.GET_LATEST_SUP_UPDATE_DATE.getSql(schemaMap()),
                 new MapSqlParameterSource(), (rs, rowNum) -> getLocalDateTime(rs, "DTTXNUPDATE"));
+    }
+
+    /* --- Internal Methods --- */
+
+    private LocalDate getDateCol(Map<String, Object> colMap, String colName) {
+        return Optional.ofNullable(colMap.get(colName))
+                .map(Object::toString)
+                .map(DateUtils.SFMS_DATE_TIME_FMT::parse)
+                .map(LocalDate::from)
+                .orElse(null);
     }
 }
