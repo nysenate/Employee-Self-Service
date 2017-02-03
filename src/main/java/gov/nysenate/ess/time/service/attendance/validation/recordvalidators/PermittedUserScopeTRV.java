@@ -1,14 +1,18 @@
 package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
+import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
+import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,7 +24,10 @@ import java.util.Optional;
 @Service
 public class PermittedUserScopeTRV implements TimeRecordValidator
 {
+
     private static final Logger logger = LoggerFactory.getLogger(PermittedUserScopeTRV.class);
+
+    @Autowired private SupervisorInfoService supInfoService;
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
@@ -85,9 +92,17 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
      * @throws TimeRecordErrorException if the employee is not the supervisor of the given record
      */
     private void testSupervisorScope(TimeRecord prevRecord, int empId) {
+        // Check if the employee is listed as a supervisor on the time record
         if (prevRecord.getSupervisorId().equals(empId)) {
             return;
         }
+
+        // Check if the employee is responsible for the employee during the record period (in case of an override)
+        SupervisorEmpGroup supervisorEmpGroup = supInfoService.getSupervisorEmpGroup(empId, Range.all());
+        if (supervisorEmpGroup.hasEmployeeDuringRange(prevRecord.getEmployeeId(), prevRecord.getDateRange())) {
+            return;
+        }
+
         throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_TIME_RECORD_SCOPE);
     }
 
