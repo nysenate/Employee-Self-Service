@@ -194,6 +194,8 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
                 return postReminders(selectedRecords);
             })
             .then(function () {
+                // Close 'record-reminder-posting' modal
+                modals.rejectAll();
                 modals.open('record-reminder-posted', true)
             });
     };
@@ -211,13 +213,12 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
             beginDates.push(record.beginDate);
         });
         modals.open('record-reminder-posting');
-        return reminderApi.save({empId: empIds, beginDate: beginDates}, {}, function() {}, 
-            function(errorData) {
+        return reminderApi.save({empId: empIds, beginDate: beginDates}, {}, function () {},
+            function (errorData) {
                 console.error('reminder post', errorData);
                 modals.rejectAll();
-                modals.open('500', errorData);
-            }).$promise
-            .finally(modals.resolve);
+                modals.open('500', {details: errorData});
+        }).$promise
     }
 
     /** --- Internal Methods --- */
