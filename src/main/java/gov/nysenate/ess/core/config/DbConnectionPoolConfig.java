@@ -40,6 +40,11 @@ public class DbConnectionPoolConfig
                 dbLocalUser, dbLocalPass);
         cpds.setMinPoolSize(3);
         cpds.setMaxPoolSize(10);
+
+        /** Verify connectivity before handing over the connection. */
+        cpds.setTestConnectionOnCheckout(true);
+        cpds.setPreferredTestQuery("SELECT 1");
+
         return cpds;
     }
 
