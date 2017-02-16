@@ -166,12 +166,13 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
         );
     }
 
-    $scope.getProjection = function () {
+    function reflowTable () {
         $timeout(function () {
-            $("table").floatThead('reflow');
+            $(".detail-acc-history-table").floatThead('reflow');
         }, 0);
-        return $scope.state.projections[$scope.state.selectedYear]
-    };
+    }
+
+    $scope.$watchCollection('state.projections', reflowTable);
     
     $scope.init();
 }

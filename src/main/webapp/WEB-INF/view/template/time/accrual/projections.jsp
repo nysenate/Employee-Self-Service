@@ -27,7 +27,7 @@
             </p>
             <div class="padding-10">
                 <table class="detail-acc-history-table projections" float-thead-enabled="true"
-                       float-thead="floatTheadOpts" ng-value="getProjection()">
+                       float-thead="floatTheadOpts" ng-model="state.projections">
                     <thead>
                     <tr>
                         <th colspan="3">Pay Period</th>
