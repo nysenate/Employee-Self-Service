@@ -4,15 +4,11 @@ import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.personnel.Person;
-import gov.nysenate.ess.core.util.DateUtils;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public interface EmployeeInfoService
 {
@@ -75,5 +71,11 @@ public interface EmployeeInfoService
     default List<Integer> getEmployeeActiveYearsService(int empId) {
         return getEmployeeActiveYearsService(empId, false);
     }
+
+    /**
+     *  Get a set of ids for all currently active employees
+     * @return NavigableSet<Integer>
+     */
+    Set<Integer> getActiveEmpIds();
 
 }

@@ -73,7 +73,7 @@ public class SupervisorEmpGroup
     }
 
     public boolean hasEmployeeDuringRange(int empId, Range<LocalDate> dateRange) {
-        Optional<EmployeeSupInfo> supInfoOpt = getAllEmployeeSupInfos().stream()
+        Optional<EmployeeSupInfo> supInfoOpt = getDirectEmployeeSupInfos().stream()
                 .filter(supInfo -> empId == supInfo.getEmpId())
                 .filter(employeeSupInfo -> isSupInfoInRange(employeeSupInfo, dateRange))
                 .findAny();
@@ -86,6 +86,12 @@ public class SupervisorEmpGroup
      * @param dateRange Range<LocalDate>
      */
     public void filterActiveEmployeesByDate(Range<LocalDate> dateRange) {
+
+        Range<LocalDate> currentDateRange = Range.closedOpen(startDate, endDate);
+        // Do nothing if the new date range covers the existing one
+        if (dateRange.encloses(currentDateRange)) {
+            return;
+        }
 
         HashMultimap<Integer, EmployeeSupInfo> newPrimaryEmpMap = HashMultimap.create();
         this.getPrimaryEmployees().values().stream()
@@ -121,18 +127,28 @@ public class SupervisorEmpGroup
         return supOverrideEmployees.rowKeySet();
     }
 
-    public Set<EmployeeSupInfo> getAllEmployeeSupInfos() {
+    /**
+     * Get all employee sup info's for which the supervisor is responsible for
+     * @return {@link Set<EmployeeSupInfo>}
+     */
+    public ImmutableSet<EmployeeSupInfo> getDirectEmployeeSupInfos() {
         Set<EmployeeSupInfo> empSet = new HashSet<>();
         this.primaryEmployees.values().forEach(empSet::add);
         this.overrideEmployees.values().forEach(empSet::add);
         this.supOverrideEmployees.values().forEach(empSet::add);
-        return empSet;
+        return ImmutableSet.copyOf(empSet);
     }
 
-    public Set<Integer> getAllEmpIds() {
-        return getAllEmployeeSupInfos().stream()
+    /**
+     * Get all employee ids for which the supervisor is responsible for
+     * @return {@link Set<Integer>}
+     */
+    public ImmutableSet<Integer> getDirectEmpIds() {
+        return getDirectEmployeeSupInfos().stream()
                 .map(EmployeeSupInfo::getEmpId)
-                .collect(Collectors.toSet());
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toSet(), ImmutableSet::copyOf
+                ));
     }
 
     /**
@@ -144,6 +160,10 @@ public class SupervisorEmpGroup
 
     public ImmutableMultimap<Integer, EmployeeSupInfo> getPrimaryEmployees() {
         return ImmutableMultimap.copyOf(primaryEmployees);
+    }
+
+    public ImmutableSet<EmployeeSupInfo> getPrimaryEmpSupInfos() {
+        return ImmutableSet.copyOf(primaryEmployees.values());
     }
 
     public void setPrimaryEmployees(Multimap<Integer, EmployeeSupInfo> primaryEmployees) {

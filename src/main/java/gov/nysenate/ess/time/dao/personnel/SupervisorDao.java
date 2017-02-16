@@ -25,6 +25,13 @@ public interface SupervisorDao extends BaseDao
     boolean isSupervisor(int empId, Range<LocalDate> dateRange);
 
     /**
+     * Indicates whether the given empId was ever a T&A supervisor
+     * @param empId int - employee id
+     * @return boolean - true iff 'empId' had subordinates at any point during their time at the senate.
+     */
+    boolean isSupervisor(int empId);
+
+    /**
      * Retrieves any supervisor ids that are designated to be included or excluded from the
      * given employee's supervisor chain.
      *

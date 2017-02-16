@@ -2,10 +2,7 @@ package gov.nysenate.ess.time.service.personnel;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
-import gov.nysenate.ess.time.model.personnel.SupervisorException;
-import gov.nysenate.ess.time.model.personnel.SupervisorChain;
-import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
+import gov.nysenate.ess.time.model.personnel.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -67,10 +64,17 @@ public interface SupervisorInfoService
      */
     SupervisorEmpGroup getSupervisorEmpGroup(int supId, Range<LocalDate> dateRange) throws SupervisorException;
 
-    default SupervisorEmpGroup getSupervisorEmpGroup(int supId) throws SupervisorException {
-        LocalDate now = LocalDate.now();
-        return getSupervisorEmpGroup(supId, Range.closed(DateUtils.firstDayOfPreviousYear(now), now));
-    }
+    /**
+     * Returns an {@link ExtendedSupEmpGroup} for the given employee,
+     * effective during the given date range.
+     *
+     * @param supId int
+     * @param dateRange Range<LocalDate>
+     * @return {@link ExtendedSupEmpGroup}
+     * @throws SupervisorException - if the employee was never a supervisor
+     */
+    ExtendedSupEmpGroup getExtendedSupEmpGroup(int supId, Range<LocalDate> dateRange)
+            throws SupervisorException;
 
     /**
      * Returns a chain of supervisors that are above the given supervisor on the given date.

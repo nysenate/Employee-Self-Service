@@ -43,10 +43,20 @@ public class SqlSupervisorDaoTest extends BaseTest
     }
 
     @Test
-    public void issupTest() {
+    public void issupTest() throws InterruptedException {
+        Thread.sleep(5000);
         supervisorDao.isSupervisor(11423, DateUtils.ALL_DATES);
         Stopwatch stopwatch = Stopwatch.createStarted();
         logger.info("{}", supervisorDao.isSupervisor(11423, DateUtils.ALL_DATES));
+        logger.info("{}", stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Test
+    public void rangelessIsSupTest() throws InterruptedException {
+        Thread.sleep(5000);
+        supervisorDao.isSupervisor(1024);
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        logger.info("{}", supervisorDao.isSupervisor(11423));
         logger.info("{}", stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 

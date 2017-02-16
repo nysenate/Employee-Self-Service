@@ -222,7 +222,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
         SupervisorEmpGroup empGroup = supervisorInfoService.getSupervisorEmpGroup(supId, dateRange);
         ListMultimap<Integer, TimeRecord> records = ArrayListMultimap.create();
-        empGroup.getAllEmpIds().stream()
+        empGroup.getDirectEmpIds().stream()
                 .map(this::getActiveTimeRecords)
                 .flatMap(Collection::stream)
                 .filter(tr -> statuses.contains(tr.getRecordStatus()))
@@ -312,13 +312,6 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         logger.info("Clearing {} cache..", getCacheType());
         activeRecordCache.removeAll();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void warmCache() {
-        // No warming for this cache
-    }
-
 
     /**
      * Check for updated time records in the data store

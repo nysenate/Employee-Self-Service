@@ -132,12 +132,6 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
         annualAccrualCache.removeAll();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void warmCache() {
-        // This cache doesn't get warmed
-    }
-
     @Scheduled(fixedDelayString = "${cache.poll.delay.accruals:60000}")
     public void updateAnnualAccCache() {
         logger.info("Checking for annual accrual record updates since {}", lastUpdateDateTime);

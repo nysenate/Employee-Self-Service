@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.BaseTest;
+import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -26,6 +27,15 @@ public class EssAccrualComputeServiceTest extends BaseTest
     PayPeriodDao payPeriodDao;
     @Autowired
     EssAccrualComputeService accrualComputeService;
+
+    @Test
+    public void getAvailableAccrualsTest() {
+        int empId = 12195;
+        LocalDate date = LocalDate.of(2017, 1, 26);
+        PayPeriod period = payPeriodDao.getPayPeriod(PayPeriodType.AF, date);
+        AccrualsAvailable accrualsAvailable = accrualComputeService.getAccrualsAvailable(empId, period);
+        logger.info("{}", OutputUtils.toJson(accrualsAvailable));
+    }
 
     @Test
     public void testGetAccruals() throws Exception {

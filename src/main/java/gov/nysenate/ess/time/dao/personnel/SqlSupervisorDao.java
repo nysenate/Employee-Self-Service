@@ -1,20 +1,22 @@
 package gov.nysenate.ess.time.dao.personnel;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Range;
+import com.google.common.collect.Table;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.dao.transaction.SqlEmpTransactionDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
-import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.model.personnel.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -22,22 +24,21 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static gov.nysenate.ess.core.model.transaction.TransactionCode.EMP;
 import static gov.nysenate.ess.core.util.DateUtils.endOfDateRange;
 import static gov.nysenate.ess.core.util.DateUtils.startOfDateRange;
-import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
 
 @Repository
 public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlSupervisorDao.class);
 
-    @Autowired private SqlEmpTransactionDao empTransDao;
-
-    private final Set<TransactionCode> supTransCodes = new HashSet<>(Arrays.asList(ACC, SUP,APP,RTP));
-    private final Set<TransactionCode> checkedTransCodes = new HashSet<>(Arrays.asList(EMP,SUP,APP,RTP));
+    private static final String primaryLabel = "PRIMARY";
+    private static final String overrideLabel = "OVERRIDE";
+    private static final String supOverrideLabel = "SUP_OVR";
+    private static final String empOverrideLabel = "EMP_OVR";
 
     /**
      * {@inheritDoc}
@@ -54,6 +55,18 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
             return false;
         }
         return supervisorEmpGroup.hasEmployees();
+    }
+
+    /**{@inheritDoc} */
+    @Override
+    public boolean isSupervisor(int empId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
+        try {
+            return remoteNamedJdbc.queryForObject(SqlSupervisorQuery.TEST_IF_SUPERVISOR.getSql(schemaMap()),
+                    params, Boolean.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return false;
+        }
     }
 
     /**{@inheritDoc} */
@@ -109,7 +122,15 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
             for (Map<String,Object> colMap : res) {
                 logger.trace(colMap.toString());
-                String group = colMap.get("EMP_GROUP").toString();
+
+                Integer ovrSupId = Optional.ofNullable(colMap.get("OVR_NUXREFSV"))
+                        .map(Object::toString)
+                        .map(Integer::parseInt)
+                        .orElse(null);
+
+                String groupVal = colMap.get("EMP_GROUP").toString();
+                String group = getEmpGroup(groupVal, ovrSupId);
+
                 int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
                 TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
                 PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
@@ -157,7 +178,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                      * at some point on/after the 'start' date.
                      */
                     switch (group) {
-                        case "PRIMARY": {
+                        case primaryLabel: {
                             if (currSupId == supId && !empTerminated) {
                                 primaryEmps.put(empId, empSupInfo);
                             }
@@ -166,7 +187,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                             }
                             break;
                         }
-                        case "EMP_OVR": {
+                        case empOverrideLabel: {
                             Range<LocalDate> overrideRange = Range.closedOpen(
                                     Optional.ofNullable(ovrStartDate).orElse(LocalDate.MIN),
                                     Optional.ofNullable(ovrEndDate).orElse(LocalDate.MAX)
@@ -179,8 +200,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                             overrideEmps.put(empId, empSupInfo);
                             break;
                         }
-                        case "SUP_OVR": {
-                            int ovrSupId = Integer.parseInt(colMap.get("OVR_NUXREFSV").toString());
+                        case supOverrideLabel: {
                             if (currSupId == ovrSupId && !empTerminated) {
                                 supOverrideEmps.put(ovrSupId, empId, empSupInfo);
                             }
@@ -199,7 +219,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                      * occurred before the 'start' date, we know that they don't belong in the group for this range.
                      */
                     switch (group) {
-                        case "PRIMARY": {
+                        case primaryLabel: {
                             if (possiblePrimaryEmps.containsKey(empId)) {
                                 if (currSupId == supId && !empTerminated) {
                                     empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
@@ -222,8 +242,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                             }
                             break;
                         }
-                        case "SUP_OVR": {
-                            int ovrSupId = Integer.parseInt(colMap.get("OVR_NUXREFSV").toString());
+                        case supOverrideLabel: {
                             if (possibleSupOvrEmps.contains(ovrSupId, empId)) {
                                 if (currSupId == ovrSupId && !empTerminated) {
                                     empSupInfo.setSupEndDate(possibleSupOvrEmps.get(ovrSupId, empId));
@@ -247,7 +266,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
             empGroup.setSupOverrideEmployees(supOverrideEmps);
             return empGroup;
         }
-        throw new SupervisorMissingEmpsEx("No employee associations could be found for supId: " + supId + " before " + endDate);
+        throw new SupervisorMissingEmpsEx(supId, endDate);
     }
 
     /**{@inheritDoc} */
@@ -301,5 +320,17 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 .map(DateUtils.SFMS_DATE_TIME_FMT::parse)
                 .map(LocalDate::from)
                 .orElse(null);
+    }
+
+    private String getEmpGroup(String groupVal, Integer supId) {
+        if (!Objects.equals(groupVal, overrideLabel)) {
+            return groupVal;
+        }
+
+        if (supId == null) {
+            return empOverrideLabel;
+        }
+
+        return supOverrideLabel;
     }
 }

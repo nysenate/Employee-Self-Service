@@ -5,9 +5,6 @@ import gov.nysenate.ess.core.model.cache.CacheEvictEvent;
 import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
 import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
-import net.sf.ehcache.config.SizeOfPolicyConfiguration;
-
-import static net.sf.ehcache.config.SizeOfPolicyConfiguration.MaxDepthExceededBehavior.ABORT;
 
 /**
  * Defines methods that are required to manage a service that depends on one or more caches
@@ -32,8 +29,11 @@ public interface CachingService<ContentId>
 
     /**
      * Pre-fetch a subset of currently active data and store it in the cache.
+     * If no override is provided, just evict the cache
      */
-    void warmCache();
+    default void warmCache() {
+        evictCache();
+    }
 
     /**
      * If a CacheEvictEvent is sent out on the event bus, the caching service

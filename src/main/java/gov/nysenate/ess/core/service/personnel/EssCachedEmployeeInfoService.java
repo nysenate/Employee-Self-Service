@@ -127,6 +127,12 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
                 .collect(Collectors.toList());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Set<Integer> getActiveEmpIds() {
+        return employeeDao.getActiveEmployeeIds();
+    }
+
     /** --- Caching Service Implemented Methods ---
      * @see CachingService*/
 

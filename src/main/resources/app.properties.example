@@ -107,6 +107,11 @@ cache.max.size = 1000
 # otherwise.
 cache.warm.onstartup = true
 
+# Specific Cache Warming
+# Set these to true/false to enable/disable startup warming for specific caches
+# Warming will still be disabled for all caches if cache.warm.onstartup = false
+cache.warm.onstartup.supervisors = true
+
 # Holiday cache
 cache.cron.holiday = 0 0 0 * * *
 

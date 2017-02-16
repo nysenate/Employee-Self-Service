@@ -104,6 +104,7 @@ public class EssCachedHolidayService implements HolidayService, CachingService<S
     /** {@inheritDoc} */
     @Override
     public void warmCache() {
+        evictCache();
         cacheHolidays();
     }
 

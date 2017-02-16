@@ -15,6 +15,10 @@ public class EmployeeSupInfo
     protected int supId;
     protected String empLastName;
     protected String empFirstName;
+
+    /** True if this employee is also a supervisor */
+    boolean isSupervisor;
+
     // The requested supervisor date range when this instance was created
     // TODO rename these fields
     protected LocalDate startDate;

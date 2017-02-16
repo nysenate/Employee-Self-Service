@@ -25,8 +25,9 @@ public class EssTimeSupervisorPermissionFactoryTest extends BaseTest {
 
     @Test
     public void getPermissions() throws Exception {
-        int empId = 1162;
+        int empId = 9896;
         Employee employee = empInfoService.getEmployee(empId);
+        logger.info("Adding permissions for {}", empId);
         ImmutableList<Permission> permissions =
                 supPermFactory.getPermissions(employee, ImmutableSet.of());
         logger.info("yep");

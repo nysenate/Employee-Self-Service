@@ -39,11 +39,11 @@ public class SupervisorEmpGroupTest
         empGroup.setSupOverrideEmployees(supOverrideEmployees);
 
         int totalEmployees = 40;
-        assertEquals(totalEmployees, empGroup.getAllEmployeeSupInfos().size());
+        assertEquals(totalEmployees, empGroup.getDirectEmployeeSupInfos().size());
 
-        assertTrue(empGroup.getAllEmployeeSupInfos().contains(new EmployeeSupInfo(9, 1000, date, date)));
-        assertTrue(empGroup.getAllEmployeeSupInfos().contains(new EmployeeSupInfo(1002, 1000, date, date)));
-        assertTrue(empGroup.getAllEmployeeSupInfos().contains(new EmployeeSupInfo(2002, 2000, date, date)));
-        assertTrue(empGroup.getAllEmployeeSupInfos().contains(new EmployeeSupInfo(3002, 3000, date, date)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(9, 1000, date, date)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(1002, 1000, date, date)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(2002, 2000, date, date)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(3002, 3000, date, date)));
     }
 }

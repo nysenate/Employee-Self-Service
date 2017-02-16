@@ -90,12 +90,6 @@ public class EssCachedEmpTransactionService implements EmpTransactionService, Ca
         transCache.removeAll();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void warmCache() {
-        // No cache warming for transaction service
-    }
-
     /** --- Internal Methods --- */
 
     private TransactionHistory getTransHistoryFromDao(int empId) {
