@@ -121,7 +121,10 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
             try {
                 SupervisorEmpGroup subEmpGroup =
                         getSupervisorEmpGroup(supInfo.getEmpId(), supInfo.getEffectiveDateRange());
-                extendedEmpGroup.addEmployeeSupEmpGroup(subEmpGroup);
+                // The employee may not be supervising any employees for their time under this supervisor
+                if (subEmpGroup.hasEmployees()) {
+                    extendedEmpGroup.addEmployeeSupEmpGroup(subEmpGroup);
+                }
             } catch (SupervisorException ignored) {
                 // Do not add entries for employees that are not supervisors
             }
