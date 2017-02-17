@@ -6,7 +6,6 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.auth.PermissionFactory;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
@@ -35,9 +34,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Component
 public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
-    @Autowired SupervisorInfoService supInfoService;
-    @Autowired EmployeeInfoService empInfoService;
-    @Autowired TimeRecordService timeRecordService;
+    @Autowired private SupervisorInfoService supInfoService;
+    @Autowired private TimeRecordService timeRecordService;
 
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
@@ -53,13 +51,12 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
     private List<Permission> getSupervisorPermissions(int supId) {
         ExtendedSupEmpGroup supEmpGroup = supInfoService.getExtendedSupEmpGroup(supId, Range.all());
-//        SupervisorEmpGroup supEmpGroup = supInfoService.getSupervisorEmpGroup(supId, Range.all());
         List<Permission> supPermissions = new ArrayList<>();
 
         // Add permission to use manage pages
         supPermissions.add(SimpleTimePermission.MANAGEMENT_PAGES.getPermission());
 
-//        // Add permissions to read data for both direct and indirect employees
+        // Add permissions to read data for both direct and indirect employees
         supEmpGroup.getExtendedEmployeeSupInfos().stream()
                 .map(this::getEmployeeReadPermissions)
                 .flatMap(Collection::stream)
@@ -68,6 +65,12 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         // Add permissions to write data for direct employees
         supEmpGroup.getDirectEmployeeSupInfos().stream()
                 .map(this::getEmployeeReadWritePermissions)
+                .flatMap(Collection::stream)
+                .forEach(supPermissions::add);
+
+        // Add permissions to view supervisor information for primary employees
+        supEmpGroup.getPrimaryEmpSupInfos().stream()
+                .map(this::getSupervisorPermissions)
                 .flatMap(Collection::stream)
                 .forEach(supPermissions::add);
 
@@ -108,6 +111,21 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         return Arrays.asList(
                 new EssTimePermission(empId, TIME_RECORDS,              POST,   effectiveRange),
                 new EssTimePermission(empId, TIME_RECORD_NOTIFICATION,  POST,   effectiveRange)
+        );
+    }
+
+    /**
+     * Return a list of permissions for supervisor functions for the given employees
+     * @param supInfo {@link EmployeeSupInfo}
+     * @return List<Permission>
+     */
+    private List<Permission> getSupervisorPermissions(EmployeeSupInfo supInfo) {
+        int empId = supInfo.getEmpId();
+        Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
+        return Arrays.asList(
+                new EssTimePermission(empId, SUPERVISOR_EMPLOYEES, GET, effectiveRange),
+                new EssTimePermission(empId, SUPERVISOR_OVERRIDES, GET, effectiveRange),
+                new EssTimePermission(empId, SUPERVISOR_TIME_RECORDS, GET, effectiveRange)
         );
     }
 
