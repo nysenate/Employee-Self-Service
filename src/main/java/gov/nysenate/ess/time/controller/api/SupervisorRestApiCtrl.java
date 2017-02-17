@@ -1,12 +1,15 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.Range;
+import freemarker.template.utility.DateUtil;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.client.view.personnel.*;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
+import gov.nysenate.ess.time.model.personnel.ExtendedSupEmpGroup;
 import gov.nysenate.ess.time.model.personnel.SupervisorChain;
 import gov.nysenate.ess.time.model.personnel.SupervisorMissingEmpsEx;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
@@ -45,16 +48,26 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
     @RequestMapping(value = "/employees")
     public BaseResponse getSupervisorEmployees(@RequestParam Integer supId,
                                                @RequestParam(required = false) String fromDate,
-                                               @RequestParam(required = false) String toDate) {
-        LocalDate fromLocalDate = (fromDate != null) ? parseISODate(fromDate, "from date") : DateUtils.LONG_AGO;
-        LocalDate toLocalDate = (toDate != null) ? parseISODate(toDate, "to date") : DateUtils.THE_FUTURE;
+                                               @RequestParam(required = false) String toDate,
+                                               @RequestParam(defaultValue = "false") boolean extended) {
+        LocalDate fromLocalDate = Optional.ofNullable(fromDate)
+                .map(dateString -> parseISODate(dateString, "fromDate"))
+                .orElse(DateUtils.LONG_AGO);
+        LocalDate toLocalDate = Optional.ofNullable(toDate)
+                .map(dateString -> parseISODate(dateString, "toDate"))
+                .orElse(DateUtils.THE_FUTURE);
+
+        Range<LocalDate> dateRange =
+                getClosedOpenRange(fromLocalDate, toLocalDate, "fromDate", "toDate");
 
         checkPermission(new EssTimePermission(supId, SUPERVISOR_EMPLOYEES, GET,
                 Range.closed(fromLocalDate, toLocalDate)));
 
-        return new ViewObjectResponse<>(
-            new SupervisorEmpGroupView(
-                supInfoService.getSupervisorEmpGroup(supId, Range.closed(fromLocalDate, toLocalDate))));
+        ViewObject responseData = extended
+                ? new ExtendedSupEmpGroupView(supInfoService.getExtendedSupEmpGroup(supId, dateRange))
+                : new SupervisorEmpGroupView(supInfoService.getSupervisorEmpGroup(supId, dateRange));
+
+        return new ViewObjectResponse<>(responseData);
     }
 
     @RequestMapping(value = "/chain")
