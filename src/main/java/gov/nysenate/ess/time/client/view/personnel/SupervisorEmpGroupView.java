@@ -1,4 +1,4 @@
-package gov.nysenate.ess.time.client.view;
+package gov.nysenate.ess.time.client.view.personnel;
 
 import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;

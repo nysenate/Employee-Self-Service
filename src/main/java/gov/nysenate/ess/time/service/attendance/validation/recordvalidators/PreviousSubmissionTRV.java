@@ -1,6 +1,6 @@
 package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
-import gov.nysenate.ess.time.client.view.SimpleTimeRecordView;
+import gov.nysenate.ess.time.client.view.attendance.SimpleTimeRecordView;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;

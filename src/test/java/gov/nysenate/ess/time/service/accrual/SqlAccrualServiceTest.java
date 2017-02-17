@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.BaseTest;
-import gov.nysenate.ess.time.client.view.AccrualsView;
+import gov.nysenate.ess.time.client.view.accrual.AccrualsView;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;

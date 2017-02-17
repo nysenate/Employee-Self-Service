@@ -1,4 +1,4 @@
-package gov.nysenate.ess.time.client.view;
+package gov.nysenate.ess.time.client.view.attendance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nysenate.ess.core.client.view.EmployeeView;

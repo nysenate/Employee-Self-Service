@@ -2,8 +2,8 @@ package gov.nysenate.ess.time.client.response;
 
 import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.time.client.view.TimeRecordErrorView;
-import gov.nysenate.ess.time.client.view.TimeRecordView;
+import gov.nysenate.ess.time.client.view.attendance.TimeRecordErrorView;
+import gov.nysenate.ess.time.client.view.attendance.TimeRecordView;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;

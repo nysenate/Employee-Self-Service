@@ -1,4 +1,4 @@
-package gov.nysenate.ess.time.client.view;
+package gov.nysenate.ess.time.client.view.accrual;
 
 import gov.nysenate.ess.core.client.view.PayPeriodView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;

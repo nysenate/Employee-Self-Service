@@ -1,4 +1,4 @@
-package gov.nysenate.ess.time.client.view;
+package gov.nysenate.ess.time.client.view.personnel;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;

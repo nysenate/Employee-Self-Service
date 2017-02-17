@@ -1,6 +1,6 @@
 package gov.nysenate.ess.time.client.response;
 
-import gov.nysenate.ess.time.client.view.AccrualsView;
+import gov.nysenate.ess.time.client.view.accrual.AccrualsView;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

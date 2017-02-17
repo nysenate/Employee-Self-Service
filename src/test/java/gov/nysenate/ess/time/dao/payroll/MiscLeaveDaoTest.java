@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.dao.payroll;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.BaseTest;
-import gov.nysenate.ess.time.client.view.MiscLeaveGrantView;
+import gov.nysenate.ess.time.client.view.attendance.MiscLeaveGrantView;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveGrant;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

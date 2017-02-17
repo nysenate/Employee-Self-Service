@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.controller.api;
 
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.time.client.view.PaycheckView;
+import gov.nysenate.ess.time.client.view.payroll.PaycheckView;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.payroll.Paycheck;
 import gov.nysenate.ess.time.service.payroll.PaycheckService;

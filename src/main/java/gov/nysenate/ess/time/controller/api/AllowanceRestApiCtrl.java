@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.controller.api;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.time.client.view.AllowanceUsageView;
+import gov.nysenate.ess.time.client.view.allowances.AllowanceUsageView;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 

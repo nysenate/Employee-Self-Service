@@ -1,15 +1,13 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.time.client.view.*;
+import gov.nysenate.ess.time.client.view.personnel.*;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.personnel.SupervisorChain;
-import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.model.personnel.SupervisorMissingEmpsEx;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;

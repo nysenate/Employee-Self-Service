@@ -4,7 +4,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.time.client.view.MiscLeaveGrantView;
+import gov.nysenate.ess.time.client.view.attendance.MiscLeaveGrantView;
 import gov.nysenate.ess.time.dao.payroll.MiscLeaveDao;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import org.springframework.beans.factory.annotation.Autowired;

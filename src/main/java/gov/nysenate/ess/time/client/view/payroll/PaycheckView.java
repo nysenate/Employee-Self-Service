@@ -1,6 +1,7 @@
-package gov.nysenate.ess.time.client.view;
+package gov.nysenate.ess.time.client.view.payroll;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.time.client.view.payroll.DeductionView;
 import gov.nysenate.ess.time.model.payroll.Deduction;
 import gov.nysenate.ess.time.model.payroll.Paycheck;
 

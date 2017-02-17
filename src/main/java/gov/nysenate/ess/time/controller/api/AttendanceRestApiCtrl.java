@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.time.client.view.AttendanceRecordView;
+import gov.nysenate.ess.time.client.view.attendance.AttendanceRecordView;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;

@@ -3,7 +3,7 @@ package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 import com.google.common.collect.ContiguousSet;
 import gov.nysenate.ess.core.client.view.base.DateView;
 import gov.nysenate.ess.core.util.RangeUtils;
-import gov.nysenate.ess.time.client.view.InvalidTimeEntryParameterView;
+import gov.nysenate.ess.time.client.view.attendance.InvalidTimeEntryParameterView;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
