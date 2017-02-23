@@ -4,8 +4,8 @@
   </div>
 
   <%--Error saving requisition notification--%>
-  <div ess-notification level="error" title="Error saving requisition."
-       message="Your changes could not be saved because someone else made changes to the requisition. Please reload the page and try again."
+  <div class="margin-10" ess-notification level="error" title="Error saving requisition."
+       message="Unable to save requisition due to multiple users updating at once. Please reload this page and try again."
        ng-show="saveResponse.error"></div>
 
   <%--   Pending Orders   --%>

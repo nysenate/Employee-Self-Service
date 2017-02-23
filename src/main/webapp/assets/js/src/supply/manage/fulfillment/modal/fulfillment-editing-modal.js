@@ -38,16 +38,11 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     };
     $scope.init();
 
-    /** Close the modal and return the promise resulting from calling the save requisition api. */
+    /** Close the modal and return the promise resulting from calling the save requisition api.
+     * Errors are handled in the supply-fulfillment-ctrl. */
     $scope.saveChanges = function () {
-        requisitionApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise.then(function(){
-            modals.resolve();
-        },(
-            function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            }
-            ))};
+        modals.resolve(requisitionApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
+    };
 
     $scope.closeModal = function () {
         modals.reject();
@@ -77,7 +72,7 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     };
 
     $scope.selfApprove = false;
-    
+
     $scope.approveShipment = function () {
         if (appProps.user.employeeId === $scope.originalRequisition.customer.employeeId) {
             // can not approve the order made by current user self

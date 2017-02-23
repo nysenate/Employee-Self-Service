@@ -167,7 +167,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getSyncFailedShipments() {
         var params = {
             from: moment.unix(1).format(),
-            to:moment().startOf('day').format(),
+            to: moment().startOf('day').format(),
             status: "APPROVED",
             dateField: "approved_date_time",
             savedInSfms: false
@@ -191,6 +191,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         });
         return result;
     }
+
     /** Get shipments that have been canceled today. A shipment is canceled when its order is rejected. */
     function getCanceledShipments() {
         var params = {
@@ -273,14 +274,20 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     }
 
     function errorSaving(response) {
-        if (response === undefined || response.status !== 409) {
-            // modal was rejected for a reason besides a failed update. E.g. clicking outside the modal will reject it.
+        if (response === undefined) {
+            // modal was rejected for a reason besides a failed update. E.g. clicking cancel button.
             return;
         }
-        $scope.saveResponse = response;
-        $scope.saveResponse.error = true;
-        modals.open('500', {details: response});
-        console.log(response);
+        if (response.status === 409) {
+            // Requisition Conflict error, display error notification.
+            $scope.saveResponse.error = true;
+        }
+        else {
+            // Any other server error, display internal error modal.
+            modals.open('500', {details: response});
+            console.log(response);
+        }
+        return response;
     }
 
     $scope.showImmutableModal = function (requisition) {
