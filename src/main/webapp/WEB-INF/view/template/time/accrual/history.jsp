@@ -39,7 +39,7 @@
                         <th colspan="2">Pay Period</th>
                         <th colspan="4" class="">Personal Hours</th>
                         <th colspan="5" class="">Vacation Hours</th>
-                        <th colspan="5" class="">Sick Hours</th>
+                        <th colspan="6" class="">Sick Hours</th>
                     </tr>
                     <tr>
                         <th>#</th>
@@ -58,13 +58,21 @@
                         <th class="sick">Used</th>
                         <th class="sick">Used Ytd</th>
                         <th class="sick">Avail</th>
-                    </tr>
+                   </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="record in state.accSummaries[state.selectedYear]"
                         ng-class="{'highlighted': record.payPeriod.current}">
                         <td>{{record.payPeriod.payPeriodNum}}</td>
-                        <td >{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}</td>
+                        <td>
+
+                            <a target="_blank" title="Open a Printable View for this Record"
+                               ng-href="{{getAccrualReportURL(record)}}">
+                                {{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
+                            </a>
+
+
+                        </td>
                         <td class="accrual-hours personal">{{record.personalAccruedYtd}}</td>
                         <td class="accrual-hours personal">{{record.personalUsedDelta}}</td>
                         <td class="accrual-hours personal">{{record.personalUsed}}</td>
@@ -76,8 +84,8 @@
                         <td class="accrual-hours available-hours vacation">{{record.vacationAvailable}}</td>
                         <td class="accrual-hours sick">{{record.sickRate}}</td>
                         <td class="accrual-hours sick">{{record.sickAccruedYtd}}</td>
-                        <td class="accrual-hours sick">{{record.sickUsedDelta}}</td>
-                        <td class="accrual-hours sick">{{record.empSickUsed + record.famSickUsed}}</td>
+                        <td class="accrual-hours sick">{{record.sickEmpUsedDelta + record.sickFamUsedDelta}}</td>
+                        <td class="accrual-hours sick">{{record.sickEmpUsed + record.sickFamUsed}}</td>
                         <td class="accrual-hours available-hours sick">{{record.sickAvailable}}</td>
                     </tr>
                     </tbody>

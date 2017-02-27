@@ -17,6 +17,10 @@ public class AccrualsView implements ViewObject
     protected boolean submitted;
     protected AccrualStateView empState;
 
+    protected int empId;
+
+    protected String payType = "";
+
     protected BigDecimal sickAccruedYtd = BigDecimal.ZERO;
     protected BigDecimal personalAccruedYtd = BigDecimal.ZERO;
     protected BigDecimal vacationAccruedYtd = BigDecimal.ZERO;
@@ -27,15 +31,28 @@ public class AccrualsView implements ViewObject
     protected BigDecimal sickBanked = BigDecimal.ZERO;
     protected BigDecimal vacationBanked = BigDecimal.ZERO;
 
-    protected BigDecimal empSickUsed = BigDecimal.ZERO;
-    protected BigDecimal famSickUsed = BigDecimal.ZERO;
+    protected BigDecimal sickEmpUsed = BigDecimal.ZERO;
+    protected BigDecimal sickFamUsed = BigDecimal.ZERO;
     protected BigDecimal personalUsed = BigDecimal.ZERO;
     protected BigDecimal vacationUsed = BigDecimal.ZERO;
     protected BigDecimal holidayUsed = BigDecimal.ZERO;
     protected BigDecimal miscUsed = BigDecimal.ZERO;
+    protected BigDecimal prevTotalHoursYtd = BigDecimal.ZERO;
+    protected BigDecimal totalHoursYtd = BigDecimal.ZERO;
+
+    protected BigDecimal biweekSickEmpUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekSickFamUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekPersonalUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekHolidayUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekVacationUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekMiscUsed = BigDecimal.ZERO;
+    protected BigDecimal biweekTravelUsed = BigDecimal.ZERO;
 
     protected BigDecimal vacationRate = BigDecimal.ZERO;
     protected BigDecimal sickRate = BigDecimal.ZERO;
+
+    protected BigDecimal zeroHours = BigDecimal.ZERO;
+
 
     /** --- Constructors --- */
 
@@ -46,6 +63,7 @@ public class AccrualsView implements ViewObject
             if (this.computed) {
                 this.empState = new AccrualStateView(pac.getEmpAccrualState());
             }
+            this.empId = pac.getEmpId();
             this.submitted = pac.isSubmitted();
             this.sickAccruedYtd = pac.getEmpHoursAccrued();
             this.personalAccruedYtd = pac.getPerHoursAccrued();
@@ -55,14 +73,24 @@ public class AccrualsView implements ViewObject
             this.biWeekHrsExpected = pac.getExpectedBiweekHours();
             this.sickBanked = pac.getEmpHoursBanked();
             this.vacationBanked = pac.getVacHoursBanked();
-            this.empSickUsed = pac.getEmpHoursUsed();
-            this.famSickUsed = pac.getFamHoursUsed();
+            this.sickEmpUsed = pac.getEmpHoursUsed();
+            this.sickFamUsed = pac.getFamHoursUsed();
             this.personalUsed = pac.getPerHoursUsed();
             this.vacationUsed = pac.getVacHoursUsed();
             this.holidayUsed = pac.getHolHoursUsed();
             this.miscUsed = pac.getMiscHoursUsed();
             this.vacationRate = pac.getVacRate();
             this.sickRate = pac.getSickRate();
+            this.prevTotalHoursYtd =  pac.getPrevTotalHoursYtd();
+            this.totalHoursYtd =  pac.getTotalHoursYtd();
+            this.biweekSickFamUsed = pac.getBiweekFamHoursUsed();
+            this.biweekSickEmpUsed = pac.getBiweekEmpHoursUsed();
+            this.biweekMiscUsed = pac.getBiweekMiscHoursUsed();
+            this.biweekVacationUsed = pac.getBiweekVacHoursUsed();
+            this.biweekPersonalUsed = pac.getBiweekPerHoursUsed();
+            this.biweekHolidayUsed = pac.getBiweekHolHoursUsed();
+            this.biweekTravelUsed = pac.getBiweekTravelkHours();
+
         }
     }
 
@@ -82,8 +110,8 @@ public class AccrualsView implements ViewObject
     public BigDecimal getSickAvailable() {
         return Optional.ofNullable(sickAccruedYtd).orElse(BigDecimal.ZERO)
                 .add(Optional.ofNullable(sickBanked).orElse(BigDecimal.ZERO))
-                .subtract(Optional.ofNullable(empSickUsed).orElse(BigDecimal.ZERO))
-                .subtract(Optional.ofNullable(famSickUsed).orElse(BigDecimal.ZERO));
+                .subtract(Optional.ofNullable(sickEmpUsed).orElse(BigDecimal.ZERO))
+                .subtract(Optional.ofNullable(sickFamUsed).orElse(BigDecimal.ZERO));
     }
 
     /** --- Basic Getters --- */
@@ -144,13 +172,13 @@ public class AccrualsView implements ViewObject
     }
 
     @XmlElement
-    public BigDecimal getEmpSickUsed() {
-        return empSickUsed;
+    public BigDecimal getsickEmpUsed() {
+        return sickEmpUsed;
     }
 
     @XmlElement
-    public BigDecimal getFamSickUsed() {
-        return famSickUsed;
+    public BigDecimal getsickFamUsed() {
+        return sickFamUsed;
     }
 
     @XmlElement
@@ -174,6 +202,42 @@ public class AccrualsView implements ViewObject
     }
 
     @XmlElement
+    public BigDecimal getBiweekSickEmpUsed() {
+        return biweekSickEmpUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekSickFamUsed() {
+        return biweekSickFamUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekHolidayUsed() {
+        return biweekHolidayUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekPersonalUsed() {
+        return biweekPersonalUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekVacationUsed() {
+        return biweekVacationUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekMiscUsed() {
+        return biweekMiscUsed;
+    }
+
+    @XmlElement
+    public BigDecimal getBiweekTravelUsed() {
+        return biweekTravelUsed;
+    }
+
+
+    @XmlElement
     public BigDecimal getVacationRate() {
         return vacationRate;
     }
@@ -183,9 +247,31 @@ public class AccrualsView implements ViewObject
         return sickRate;
     }
 
+
+    @XmlElement
+    public BigDecimal getPrevTotalHoursYtd() {
+        return prevTotalHoursYtd;
+    }
+
+
+    @XmlElement
+    public BigDecimal getTotalHoursYtd() {
+        return totalHoursYtd;
+    }
+
+    @XmlElement
+    public BigDecimal getZeroHours() {
+        return zeroHours;
+    }
+
     @XmlElement
     public boolean getSubmitted() {
         return submitted;
+    }
+
+    @XmlElement
+    public int getEmpId() {
+        return empId;
     }
 
     @Override

@@ -33,7 +33,7 @@
                         <th colspan="3">Pay Period</th>
                         <th colspan="2" class="">Personal Hours</th>
                         <th colspan="3" class="">Vacation Hours</th>
-                        <th colspan="3" class="">Sick Hours</th>
+                        <th colspan="4" class="">Sick Hours</th>
                     </tr>
                     <tr>
                         <th class="pay-period">#</th>
@@ -45,7 +45,8 @@
                         <th class="vacation used-hours">Use</th>
                         <th class="vacation available-hours">Avail</th>
                         <th class="sick rate">Rate</th>
-                        <th class="sick used-hours">Use</th>
+                        <th class="sick used-hours">Emp Use</th>
+                        <th class="sick used-hours">Fam Use</th>
                         <th class="sick available-hours">Avail</th>
                     </tr>
                     </thead>
@@ -53,9 +54,21 @@
                     <tr ng-repeat="record in state.projections"
                         ng-class="{'highlighted': record.payPeriod.current}"
                         ng-attr-id="{{$last && 'earliest-projection' || undefined}}">
-                        <td class="pay-period">{{record.payPeriod.payPeriodNum}}</td>
-                        <td class="date">{{record.payPeriod.startDate | moment:'MM/DD/YYYY'}}</td>
-                        <td class="date">{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}</td>
+                        <td class="pay-period">
+                            <a target="_blank" title="Open a Printable View for this Record"
+                               ng-href="{{getAccrualReportURL(record, 'P')}}">{{record.payPeriod.payPeriodNum}}
+                            </a>
+                        </td>
+                        <td class="date">
+                            <a target="_blank" title="Open a Printable View for this Record"
+                               ng-href="{{getAccrualReportURL(record, 'P')}}">{{record.payPeriod.startDate | moment:'MM/DD/YYYY'}}
+                            </a>
+                        </td>
+                        <td class="date">
+                            <a target="_blank" title="Open a Printable View for this Record"
+                               ng-href="{{getAccrualReportURL(record, 'P')}}">{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
+                            </a>
+                        </td>
                         <td class="accrual-hours personal used-hours">
                             <input type="number" min="0" step=".5" placeholder="0"
                                    ng-model="$parent.state.projections[$index].personalUsedDelta"
@@ -72,7 +85,12 @@
                         <td class="accrual-hours sick rate">{{record.sickRate}}</td>
                         <td class="accrual-hours sick used-hours">
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[$index].sickUsedDelta"
+                                   ng-model="$parent.state.projections[$index].sickEmpUsedDelta"
+                                   ng-change="recalculateProjectionTotals(state.selectedYear);" />
+                        </td>
+                        <td class="accrual-hours sick used-hours">
+                            <input type="number" min="0" step=".5" placeholder="0"
+                                   ng-model="$parent.state.projections[$index].sickFamUsedDelta"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);" />
                         </td>
                         <td class="accrual-hours sick available-hours">{{record.sickAvailable}}</td>

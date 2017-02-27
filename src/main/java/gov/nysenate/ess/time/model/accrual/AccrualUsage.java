@@ -27,6 +27,15 @@ public class AccrualUsage
     BigDecimal holHoursUsed = BigDecimal.ZERO;
     BigDecimal miscHoursUsed = BigDecimal.ZERO;
 
+    BigDecimal biweekVacHoursUsed = BigDecimal.ZERO;
+    BigDecimal biweekPerHoursUsed = BigDecimal.ZERO;
+    BigDecimal biweekEmpHoursUsed = BigDecimal.ZERO;
+    BigDecimal biweekFamHoursUsed = BigDecimal.ZERO;
+    BigDecimal biweekMiscHoursUsed = BigDecimal.ZERO;
+    BigDecimal biweekHolHoursUsed = BigDecimal.ZERO;
+    BigDecimal biweekWorkHours = BigDecimal.ZERO;
+    BigDecimal biweekTravelHoursUsed = BigDecimal.ZERO;
+
     public AccrualUsage() {}
 
     public AccrualUsage(int empId) {
@@ -44,6 +53,15 @@ public class AccrualUsage
             this.famHoursUsed = lhs.famHoursUsed;
             this.holHoursUsed = lhs.holHoursUsed;
             this.miscHoursUsed = lhs.miscHoursUsed;
+            this.biweekVacHoursUsed = lhs.biweekVacHoursUsed;
+            this.biweekPerHoursUsed = lhs.biweekPerHoursUsed;
+            this.biweekEmpHoursUsed = lhs.biweekEmpHoursUsed;
+            this.biweekFamHoursUsed = lhs.biweekFamHoursUsed;
+            this.biweekMiscHoursUsed = lhs.biweekMiscHoursUsed;
+            this.biweekHolHoursUsed = lhs.biweekHolHoursUsed;
+            this.biweekWorkHours = lhs.biweekWorkHours;
+            this.biweekHolHoursUsed = lhs.biweekHolHoursUsed;
+            this.biweekTravelHoursUsed = lhs.biweekTravelHoursUsed;
         }
     }
 
@@ -69,6 +87,20 @@ public class AccrualUsage
         this.famHoursUsed = this.famHoursUsed.add(usage.famHoursUsed);
         this.holHoursUsed = this.holHoursUsed.add(usage.holHoursUsed);
         this.miscHoursUsed = this.miscHoursUsed.add(usage.miscHoursUsed);
+
+        /**
+         * Store Biweekly hours so it is available to display to the employee when
+         * we show Accrual Usage Report
+         */
+
+        this.biweekWorkHours = usage.workHours;
+        this.biweekTravelHoursUsed = usage.travelHoursUsed;
+        this.biweekVacHoursUsed = usage.vacHoursUsed;
+        this.biweekPerHoursUsed = usage.perHoursUsed;
+        this.biweekEmpHoursUsed = usage.empHoursUsed;
+        this.biweekFamHoursUsed = usage.famHoursUsed;
+        this.biweekHolHoursUsed = usage.holHoursUsed;
+        this.biweekMiscHoursUsed = usage.miscHoursUsed;
     }
 
     public static AccrualUsage addUsages(AccrualUsage lhs, AccrualUsage rhs) {
@@ -184,5 +216,37 @@ public class AccrualUsage
 
     public BigDecimal getMiscHoursUsed() {
         return miscHoursUsed;
+    }
+
+    public BigDecimal getBiweekVacHoursUsed() {
+    return biweekVacHoursUsed;
+}
+
+    public BigDecimal getBiweekPerHoursUsed() {
+        return biweekPerHoursUsed;
+    }
+
+    public BigDecimal getBiweekEmpHoursUsed() {
+        return biweekEmpHoursUsed;
+    }
+
+    public BigDecimal getBiweekFamHoursUsed() {
+        return biweekFamHoursUsed;
+    }
+
+    public BigDecimal getBiweekHolHoursUsed() {
+        return biweekHolHoursUsed;
+    }
+
+    public BigDecimal getBiweekMiscHoursUsed() {
+        return biweekMiscHoursUsed;
+    }
+
+    public BigDecimal getBiweekWorkHours() {
+        return biweekWorkHours;
+    }
+
+    public BigDecimal getBiweekTravelkHours() {
+        return biweekTravelHoursUsed;
     }
 }

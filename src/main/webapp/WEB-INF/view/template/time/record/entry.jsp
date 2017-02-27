@@ -125,8 +125,8 @@
             </li>
             <li ng-show="errorTypes.raSa.vacationHoursInvalidRange">Vacation hours must be between 0 and 12.</li>
             <li ng-show="errorTypes.raSa.personalHoursInvalidRange">Personal hours must be between 0 and 12.</li>
-            <li ng-show="errorTypes.raSa.empSickHoursInvalidRange">Employee sick hours must be between 0 and 12.</li>
-            <li ng-show="errorTypes.raSa.famSickHoursInvalidRange">Family sick hours must be between 0 and 12.</li>
+            <li ng-show="errorTypes.raSa.sickEmpHoursInvalidRange">Employee sick hours must be between 0 and 12.</li>
+            <li ng-show="errorTypes.raSa.sickFamHoursInvalidRange">Family sick hours must be between 0 and 12.</li>
             <li ng-show="errorTypes.raSa.miscHoursInvalidRange">Misc hours must be between 0 and 12.</li>
             <li ng-show="errorTypes.raSa.totalHoursInvalidRange">Total hours must be between 0 and 24.</li>
             <li ng-show="errorTypes.raSa.notEnoughVacationTime">Vacation hours recorded exceeds hours available.</li>
