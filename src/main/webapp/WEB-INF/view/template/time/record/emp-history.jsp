@@ -1,26 +1,40 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<section ng-controller="EmpRecordHistoryCtrl">
+<section ng-controller="EmpRecordHistoryCtrl" id="emp-history">
     <div class="time-attendance-hero">
         <h2>Employee Attendance History</h2>
     </div>
     <div class="content-container content-controls">
-        <p class="content-info">View Attendance Records for Employee &nbsp;
-            <select ng-model="state.selectedEmp" ng-if="state.allEmps.length > 0"
-                    ng-init="state.selectedEmp = state.selectedEmp || state.allEmps[0]"
-                    ng-change="getTimeRecordsForEmp(state.selectedEmp)"
-                    ng-options="emp.dropDownLabel group by emp.group for emp in state.allEmps">
+        <p class="content-info" ng-if="state.supEmpGroups.length > 1">
+          <span>
+            View Employees Under Supervisor &nbsp;
+          </span>
+          <span>
+            <select ng-model="state.iSelEmpGroup"
+                    ng-options="state.supEmpGroups.indexOf(eg) as eg.dropDownLabel group by eg.group for eg in state.supEmpGroups">
             </select>
+          </span>
+        </p>
+        <p class="content-info">
+            <span>
+              View Attendance Records for Employee &nbsp;
+            </span>
+            <span>
+              <select ng-model="state.iSelEmp" ng-if="state.allEmps.length > 0"
+                      ng-options="state.allEmps.indexOf(emp) as emp.dropDownLabel group by emp.group for emp in state.allEmps">
+              </select>
+            </span>
         </p>
     </div>
 
-    <div loader-indicator class="loader" ng-show="state.searching"></div>
-    <section class="content-container" ng-hide="state.searching">
-        <%--<div ng-show="state.recordYears.length == 0">--%>
-            <%--<ess-notification level="warn" title="No time records were found for {{state.selectedEmp.empLastName}}"></ess-notification>--%>
-        <%--</div>--%>
+    <div loader-indicator class="loader" ng-show="isLoading()"></div>
+    <section class="content-container" ng-hide="isLoading()">
         <div ng-show="state.recordYears.length > 0">
-            <h1>{{state.selectedEmp.empFirstName}} {{state.selectedEmp.empLastName}}'s Attendance Records</h1>
+            <h1>
+                {{state.allEmps[state.iSelEmp].empFirstName}}
+                {{state.allEmps[state.iSelEmp].empLastName}}'s
+                Attendance Records
+            </h1>
             <div class="content-controls">
                 <p class="content-info" style="margin-bottom:0;">
                     View attendance records for year &nbsp;
@@ -31,7 +45,7 @@
                 </p>
             </div>
             <ess-notification level="warn" title="No Employee Records For {{state.selectedRecYear}}"
-                              ng-hide="state.records.length > 0">
+                              ng-hide="state.records.length > 0 || isLoading()">
                 <p>
                     It appears as if the employee has no records for the selected year.<br>
                     Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
@@ -50,7 +64,7 @@
                     </span>
                 </p>
                 <div class="padding-10">
-                    <table id="attendance-history-table" ng-show="!state.searching" class="ess-table attendance-listing-table">
+                    <table id="attendance-history-table" ng-hide="isLoading()" class="ess-table attendance-listing-table">
                         <thead>
                         <tr>
                             <th>Date Range</th>
