@@ -297,7 +297,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
             return 0;
         });
 
-        extSupEmpGroup.dropDownLabel =  appProps.user.lastName + ' ' + appProps.user.firstName[0] + '.';
+        extSupEmpGroup.dropDownLabel = appProps.user.firstName + ' ' + appProps.user.lastName;
 
         $scope.state.supEmpGroups = [extSupEmpGroup].concat(empSupEmpGroups);
     }
