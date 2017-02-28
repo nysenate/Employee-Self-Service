@@ -50,8 +50,7 @@ public enum SqlAttendanceQuery implements BasicSqlQuery {
         "RIGHT JOIN ${masterSchema}.PD23ATTEND rec\n" +
         "   ON year.NUXREFEM = rec.NUXREFEM \n" +
         "   AND year.DTPERIODYEAR = rec.DTPERIODYEAR\n" +
-        "WHERE rec.CDSTATUS = 'A'\n" +
-        "   AND (year.CDSTATUS IS NULL OR year.CDSTATUS = 'A')"
+        "WHERE rec.CDSTATUS = 'A'\n"
     ),
     GET_OPEN_ATTENDANCE_RECORDS(
         GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
