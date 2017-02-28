@@ -39,7 +39,7 @@
                         <th colspan="2">Pay Period</th>
                         <th colspan="4" class="">Personal Hours</th>
                         <th colspan="5" class="">Vacation Hours</th>
-                        <th colspan="6" class="">Sick Hours</th>
+                        <th colspan="5" class="">Sick Hours</th>
                     </tr>
                     <tr>
                         <th>#</th>

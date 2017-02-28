@@ -94,6 +94,7 @@
                                    ng-change="recalculateProjectionTotals(state.selectedYear);" />
                         </td>
                         <td class="accrual-hours sick available-hours">{{record.sickAvailable}}</td>
+
                     </tr>
                     </tbody>
                 </table>

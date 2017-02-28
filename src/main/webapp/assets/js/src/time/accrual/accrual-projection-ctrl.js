@@ -76,16 +76,19 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
      * the projected accrual records.
      */
     $scope.recalculateProjectionTotals = function() {
+
+        console.log("***recalculateProjectionTotals");
         var accSummaries = $scope.state.accSummaries;
         var projections = $scope.state.projections;
         var baseRec = accSummaries.length > 0 ? accSummaries[0] : null;
         var multiYear = false;
 
-        var per = 0, vac = 0, sick = 0;
+        var per = 0, vac = 0, sickEmp = 0, sickFam = 0;
         if (baseRec) {
             per = baseRec.personalUsed;
             vac = baseRec.vacationUsed;
-            sick = baseRec.empSickUsed + baseRec.famSickUsed;
+            sickEmp = baseRec.sickEmpUsed;
+            sickFam = baseRec.sickFamUsed;
         }
         // Acc projections are stored in reverse chrono order
         for (var i = 0; i < projections.length; i++) {
@@ -106,16 +109,23 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
                 rec.vacationBanked = Math.min(lastRec.vacationAvailable, maxVacationBanked);
                 rec.sickBanked = Math.min(lastRec.sickAvailable, maxSickBanked);
 
-                per = vac = sick = 0;
+                per = vac = sickEmp = sickFam =  0;
             }
 
             per += rec.personalUsedDelta || 0;
             vac += rec.vacationUsedDelta || 0;
-            sick += rec.sickUsedDelta || 0;
+            sickEmp += rec.sickEmpUsedDelta || 0;
+            sickFam += rec.sickFamUsedDelta || 0;
+
+            rec.personalUsed =  per;
+            rec.vacationUsed =  vac;
+            rec.sickEmpUsed = sickEmp;
+            rec.sickFamUsed = sickFam;
+            rec.holidayUsed = rec.holidayUsed || 0;
 
             rec.personalAvailable = rec.personalAccruedYtd - per;
             rec.vacationAvailable = rec.vacationAccruedYtd + rec.vacationBanked - vac;
-            rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - sick;
+            rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - sickEmp - sickFam;
         }
     };
 
@@ -131,7 +141,7 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
     }
 
     /** Indicates delta fields that are used for input, used to init projection */
-    var deltaFields = ['personalUsedDelta', 'vacationUsedDelta', 'sickUsedDelta'];
+    var deltaFields = ['personalUsedDelta', 'vacationUsedDelta', 'sickEmpUsedDelta', 'sickFamUsedDelta'];
 
     /**
      * Initialize the given projection for display
@@ -173,6 +183,8 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
     }
 
     $scope.$watchCollection('state.projections', reflowTable);
-    
+
+    $scope.getAccrualReportURL =   accrualUtils.getAccrualReportURL;
+
     $scope.init();
 }

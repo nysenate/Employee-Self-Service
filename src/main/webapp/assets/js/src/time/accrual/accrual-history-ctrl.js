@@ -1,11 +1,11 @@
 var essTime = angular.module('essTime');
 
 essTime.controller('AccrualHistoryCtrl', ['$scope', '$timeout', 'appProps', 
-                                          'AccrualHistoryApi', 'EmpActiveYearsApi', 'EmpInfoApi',
+                                          'AccrualHistoryApi', 'EmpActiveYearsApi', 'EmpInfoApi', 'TimeRecordApi',
                                           'modals', 'AccrualUtils', accrualHistoryCtrl]);
 
 function accrualHistoryCtrl($scope, $timeout, appProps,
-                            AccrualHistoryApi, EmpActiveYearsApi, EmpInfoApi,
+                            AccrualHistoryApi, EmpActiveYearsApi, EmpInfoApi, timeRecordsApi,
                             modals, accrualUtils) {
 
     $scope.state = {
@@ -13,6 +13,7 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
         today: moment(),
         accSummaries: {},
         activeYears: [],
+        timeRecords: [],
         selectedYear: null,
         empInfo: {},
         isTe: false,
@@ -66,6 +67,31 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
     };
 
     /**
+     * Get all time records for the selected year
+     * return a promise that resolves when the records are retrieved
+     */
+    $scope.getTimeRecords = function(year) {
+        var empId = appProps.user.employeeId;
+        var now = moment();
+        var fromDate = moment([year, 0, 1]);
+        var toDate = moment([year + 1, 0, 1]).subtract(1, 'days');
+        var params = {
+            empId: $scope.state.empId,
+            from: fromDate.format('YYYY-MM-DD'),
+            to: toDate.format('YYYY-MM-DD')
+        };
+
+        return timeRecordsApi.get(params, function(response) {
+            console.log('got time records');
+            $scope.state.timesheetRecords = response.result.items[empId];
+        }, function(response) {
+            modals.open('500', {details: response});
+            console.error(response);
+        }).$promise;
+    };
+
+
+    /**
      * Retrieves the years that an employee has been employed during.
      * @param callBack
      */
@@ -109,12 +135,15 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
 
     $scope.$watchCollection('state.accSummaries[state.selectedYear]', reflowTable);
 
+    $scope.getAccrualReportURL =   accrualUtils.getAccrualReportURL;
+
     /**
      * Initialize
-     */
-    $scope.init = function() {
-        $scope.getEmpActiveYears(function() {
-            $scope.getAccSummaries($scope.state.selectedYear);
-        });
-    }();
+*/
+$scope.init = function() {
+    $scope.getEmpActiveYears(function() {
+        $scope.getAccSummaries($scope.state.selectedYear);
+        $scope.getTimeRecords($scope.state.selectedYear);
+    });
+}();
 }

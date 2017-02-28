@@ -42,7 +42,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
     };
 
     $scope.init = function() {
-        console.log('Time record initialization');
+        //console.log('Time record initialization');
         $scope.initializeState();
         $scope.getRecords();
         $scope.getMiscLeaveTypeGrants();
@@ -59,7 +59,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 $scope.getAccrualForSelectedRecord(),
                 $scope.getAllowanceForSelRecord()
             ]).then(function() {
-                console.log('allowances/accruals retrieved, calling update functions');
+                //console.log('allowances/accruals retrieved, calling update functions');
                 getSelectedSalaryRecs();
                 onRecordChange();
                 setRecordSearchParams();
@@ -216,7 +216,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             return allowanceApi.get(params, function(response) {
                 for (var i in response.result) {
                     var allowance = response.result[i];
-                    console.log('retrieved allowance', allowance.empId, allowance.year);
+                    //console.log('retrieved allowance', allowance.empId, allowance.year);
                     $scope.state.allowances[allowance.year] = allowance;
                 }
             }, function(resp) {
@@ -252,7 +252,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                     $scope.state.holidays[holiday.date] = holiday;
                 }
             });
-            console.log('retrieved holidays');
+            //console.log('retrieved holidays');
         }, function (response) {
             modals.open('500', {details: response});
             console.error(response);
@@ -265,7 +265,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
         $scope.state.request.records = true;
         var params = {empId: $scope.state.empId};
-        console.log(params);
+        //console.log(params);
         recordCreationApi.save(params, {}, function (response) {
             $scope.init();
         }, function (errorResponse) {
@@ -766,8 +766,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             holidayHoursInvalidRange: false,
             vacationHoursInvalidRange: false,
             personalHoursInvalidRange: false,
-            empSickHoursInvalidRange: false,
-            famSickHoursInvalidRange: false,
+            sickEmpHoursInvalidRange: false,
+            sickFamHoursInvalidRange: false,
             miscHoursInvalidRange: false,
             totalHoursInvalidRange: false,
             notEnoughVacationTime: false,
@@ -952,7 +952,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 }
                 isValid &= isEnoughSickTime();
                 if (typeof hrs === 'undefined') {
-                    $scope.errorTypes.raSa.empSickHoursInvalidRange = true;
+                    $scope.errorTypes.raSa.sickEmpHoursInvalidRange = true;
                     isValid = false;
                 }
                 isValid &= checkRaSaHourIncrements(hrs);
@@ -966,7 +966,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 }
                 isValid &= isEnoughSickTime();
                 if (typeof hrs === 'undefined') {
-                    $scope.errorTypes.raSa.famSickHoursInvalidRange = true;
+                    $scope.errorTypes.raSa.sickFamHoursInvalidRange = true;
                     isValid = false;
                 }
                 isValid &= checkRaSaHourIncrements(hrs);
