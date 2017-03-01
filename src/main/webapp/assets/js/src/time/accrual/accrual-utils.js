@@ -74,7 +74,7 @@ function accrualUtils () {
                 "&p_nuperhrsuse=" + record.personalUsed +
                 "&p_nutotalhrs=" + record.totalHoursYtd +
                 // Total Hours YTD was passed instead, set to 0 since these hours are added in the report
-                "&p_nutothrslast=" + record.zeroHours +
+                "&p_nutothrslast=" + 0 +
                 "&p_nutrvhrs=" + record.biweekTravelUsed +
                 "&p_nuvachrs=" + record.biweekVacationUsed +
                 "&p_nuvachrsacc=" + record.vacationAccruedYtd +

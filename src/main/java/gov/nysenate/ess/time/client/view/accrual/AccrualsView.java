@@ -51,8 +51,6 @@ public class AccrualsView implements ViewObject
     protected BigDecimal vacationRate = BigDecimal.ZERO;
     protected BigDecimal sickRate = BigDecimal.ZERO;
 
-    protected BigDecimal zeroHours = BigDecimal.ZERO;
-
 
     /** --- Constructors --- */
 
@@ -257,11 +255,6 @@ public class AccrualsView implements ViewObject
     @XmlElement
     public BigDecimal getTotalHoursYtd() {
         return totalHoursYtd;
-    }
-
-    @XmlElement
-    public BigDecimal getZeroHours() {
-        return zeroHours;
     }
 
     @XmlElement
