@@ -27,7 +27,7 @@ public class ErrorPageCtrl
         return warningPage(modelMap);
     }
 
-    @RequestMapping(value = "/authz-error", method = RequestMethod.GET)
+    @RequestMapping(value = "/authz", method = RequestMethod.GET)
     public String authzError(ModelMap modelMap) {
         modelMap.addAttribute("title", "Authorization Error")
                 .addAttribute("message",

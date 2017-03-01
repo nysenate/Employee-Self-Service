@@ -15,14 +15,14 @@ import java.io.IOException;
  * Redirects user to error page if not
  */
 @Component("verifyAuthz")
-public class AuthorizationVerificationFilter extends PermissionsAuthorizationFilter {
+public class VerifyAuthorizationFilter extends PermissionsAuthorizationFilter {
 
     /** Permission that should be present for all authorized users */
     private static final String[] authTestPermissionStrings =
             new String[] {SimpleEssPermission.SENATE_EMPLOYEE.getPermissionString()};
 
     /** Relative url to the 'authorization error' page */
-    private static final String authzErrorUrl = "/error/authz-error";
+    private static final String authzErrorUrl = "/error/authz";
 
 
     /** {@inheritDoc} */
