@@ -56,17 +56,17 @@
                         ng-attr-id="{{$last && 'earliest-projection' || undefined}}">
                         <td class="pay-period">
                             <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record, 'P')}}">{{record.payPeriod.payPeriodNum}}
+                               ng-href="{{getAccrualReportURL(record)}}">{{record.payPeriod.payPeriodNum}}
                             </a>
                         </td>
                         <td class="date">
                             <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record, 'P')}}">{{record.payPeriod.startDate | moment:'MM/DD/YYYY'}}
+                               ng-href="{{getAccrualReportURL(record)}}">{{record.payPeriod.startDate | moment:'MM/DD/YYYY'}}
                             </a>
                         </td>
                         <td class="date">
                             <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record, 'P')}}">{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
+                               ng-href="{{getAccrualReportURL(record)}}">{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
                             </a>
                         </td>
                         <td class="accrual-hours personal used-hours">
