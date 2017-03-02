@@ -46,7 +46,7 @@ public class SqlAccrualDao extends SqlBaseDao implements AccrualDao
         MapSqlParameterSource params = getPeriodAccSummaryParams(empId, beforeDate);
         OrderBy orderBy = new OrderBy("DTEND", order);
         List<PeriodAccSummary> periodAccSummaries =
-            remoteNamedJdbc.query(SqlAccrualQuery.GET_PERIOD_ACC_SUMMARIES.getSql(schemaMap(), orderBy, limOff), params, new PeriodAccSummaryRowMapper("",""));
+            remoteNamedJdbc.query(SqlAccrualQuery.GET_PERIOD_ACC_SUMMARIES.getSql(schemaMap(), orderBy, limOff), params, new PeriodAccSummaryRowMapper("", "BW_", ""));
         return new TreeMap<>(Maps.uniqueIndex(periodAccSummaries, PeriodAccSummary::getRefPayPeriod));
     }
 

@@ -15,18 +15,26 @@ public class AccrualUsageRowMapper
      * Sets accrual usage columns on the supplied AccrualUsage object.
      * @throws java.sql.SQLException
      */
-    public static void mapRow(ResultSet rs, AccrualUsage accUsage) throws SQLException {
+    public static void mapRow(ResultSet rs, AccrualUsage accUsage, String pfx) throws SQLException {
         if (accUsage == null) {
             throw new IllegalArgumentException("Accrual usage object cannot be null.");
         }
-        accUsage.setEmpId(rs.getInt("NUXREFEM"));
-        accUsage.setWorkHours(rs.getBigDecimal("WORK_HRS"));
-        accUsage.setTravelHoursUsed(rs.getBigDecimal("TRV_HRS_USED"));
-        accUsage.setHolHoursUsed(rs.getBigDecimal("HOL_HRS_USED"));
-        accUsage.setVacHoursUsed(rs.getBigDecimal("VAC_HRS_USED"));
-        accUsage.setPerHoursUsed(rs.getBigDecimal("PER_HRS_USED"));
-        accUsage.setEmpHoursUsed(rs.getBigDecimal("EMP_HRS_USED"));
-        accUsage.setFamHoursUsed(rs.getBigDecimal("FAM_HRS_USED"));
-        accUsage.setMiscHoursUsed(rs.getBigDecimal("MISC_HRS_USED"));
+        accUsage.setEmpId(rs.getInt(pfx + "NUXREFEM"));
+        accUsage.setWorkHours(rs.getBigDecimal(pfx + "WORK_HRS"));
+        accUsage.setTravelHoursUsed(rs.getBigDecimal(pfx + "TRV_HRS_USED"));
+        accUsage.setHolHoursUsed(rs.getBigDecimal(pfx + "HOL_HRS_USED"));
+        accUsage.setVacHoursUsed(rs.getBigDecimal(pfx + "VAC_HRS_USED"));
+        accUsage.setPerHoursUsed(rs.getBigDecimal(pfx + "PER_HRS_USED"));
+        accUsage.setEmpHoursUsed(rs.getBigDecimal(pfx + "EMP_HRS_USED"));
+        accUsage.setFamHoursUsed(rs.getBigDecimal(pfx + "FAM_HRS_USED"));
+        accUsage.setMiscHoursUsed(rs.getBigDecimal(pfx + "MISC_HRS_USED"));
+    }
+
+    /**
+     * Sets accrual usage columns on the supplied AccrualUsage object.
+     * @throws java.sql.SQLException
+     */
+    public static void mapRow(ResultSet rs, AccrualUsage accrualUsage) throws SQLException {
+        mapRow(rs, accrualUsage, "");
     }
 }

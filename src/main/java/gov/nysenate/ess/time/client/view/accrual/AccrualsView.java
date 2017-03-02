@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.client.view.accrual;
 import gov.nysenate.ess.core.client.view.PayPeriodView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
+import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -81,14 +82,15 @@ public class AccrualsView implements ViewObject
             this.sickRate = pac.getSickRate();
             this.prevTotalHoursYtd =  pac.getPrevTotalHoursYtd();
             this.totalHoursYtd =  pac.getTotalHoursYtd();
-            this.biweekSickFamUsed = pac.getBiweekFamHoursUsed();
-            this.biweekSickEmpUsed = pac.getBiweekEmpHoursUsed();
-            this.biweekMiscUsed = pac.getBiweekMiscHoursUsed();
-            this.biweekVacationUsed = pac.getBiweekVacHoursUsed();
-            this.biweekPersonalUsed = pac.getBiweekPerHoursUsed();
-            this.biweekHolidayUsed = pac.getBiweekHolHoursUsed();
-            this.biweekTravelUsed = pac.getBiweekTravelkHours();
 
+            PeriodAccUsage accUsage = pac.getPeriodAccUsage();
+            this.biweekSickFamUsed = accUsage.getFamHoursUsed();
+            this.biweekSickEmpUsed = accUsage.getEmpHoursUsed();
+            this.biweekMiscUsed = accUsage.getMiscHoursUsed();
+            this.biweekVacationUsed = accUsage.getVacHoursUsed();
+            this.biweekPersonalUsed = accUsage.getPerHoursUsed();
+            this.biweekHolidayUsed = accUsage.getHolHoursUsed();
+            this.biweekTravelUsed = accUsage.getTravelHoursUsed();
         }
     }
 

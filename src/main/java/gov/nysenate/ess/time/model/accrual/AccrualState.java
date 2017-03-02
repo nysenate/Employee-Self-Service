@@ -34,6 +34,8 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
+    /** Tracks usage for the current period */
+    private PeriodAccUsage periodAccUsage = new PeriodAccUsage();
 
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
@@ -61,6 +63,7 @@ public class AccrualState extends AccrualSummary
         periodAccSummary.setPrevTotalHoursYtd(this.getTotalHoursUsed());
         periodAccSummary.setSickRate(this.getSickRate());
         periodAccSummary.setVacRate(this.getVacRate());
+        periodAccSummary.setPeriodAccUsage(this.periodAccUsage);
         return periodAccSummary;
     }
 
@@ -169,6 +172,12 @@ public class AccrualState extends AccrualSummary
         this.setMiscHoursUsed(BigDecimal.ZERO);
         this.setWorkHours(BigDecimal.ZERO);
         this.setTravelHoursUsed(BigDecimal.ZERO);
+    }
+
+    public void resetPeriodAccUsage(PayPeriod nextPeriod) {
+        this.periodAccUsage.resetAccrualUsage();
+        this.periodAccUsage.setPayPeriod(nextPeriod);
+        this.periodAccUsage.setYear(nextPeriod.getYear());
     }
 
     /** Return 0 for sick rate if employee has accruals turned off */

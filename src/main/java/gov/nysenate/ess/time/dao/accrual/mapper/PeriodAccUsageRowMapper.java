@@ -22,7 +22,7 @@ public class PeriodAccUsageRowMapper extends BaseRowMapper<PeriodAccUsage>
         PeriodAccUsage accUsage = new PeriodAccUsage();
         accUsage.setYear(rs.getInt(pfx + "YEAR"));
         accUsage.setPayPeriod(payPeriodRowMapper.mapRow(rs, rowNum));
-        AccrualUsageRowMapper.mapRow(rs, accUsage);
+        AccrualUsageRowMapper.mapRow(rs, accUsage, pfx);
         return accUsage;
     }
 }

@@ -22,25 +22,28 @@ public class PeriodAccSummary extends AccrualSummary
     private static final Logger logger = LoggerFactory.getLogger(PeriodAccSummary.class);
 
     /** If true, this summary record was computed. */
-    protected boolean computed = false;
+    private boolean computed = false;
 
     /** True iff this summary was computed using submitted time records */
-    protected boolean submitted = false;
+    private boolean submitted = false;
 
     /** The accrual state used for computing this record if applicable. */
-    protected EmpAccrualState empAccrualState = null;
+    private EmpAccrualState empAccrualState = null;
 
-    protected PayPeriod refPayPeriod;
-    protected PayPeriod payPeriod;
+    private PayPeriod refPayPeriod;
+    private PayPeriod payPeriod;
 
-    protected int year;
-    protected BigDecimal prevTotalHoursYtd;
-    protected BigDecimal expectedTotalHours;
-    protected BigDecimal expectedBiweekHours;
+    /** Summary of usage within this period */
+    private PeriodAccUsage periodAccUsage;
+
+    private int year;
+    private BigDecimal prevTotalHoursYtd;
+    private BigDecimal expectedTotalHours;
+    private BigDecimal expectedBiweekHours;
 
     /** The rates should reflect the current pay period, not the base pay period. */
-    protected BigDecimal sickRate;
-    protected BigDecimal vacRate;
+    private BigDecimal sickRate;
+    private BigDecimal vacRate;
 
     /** --- Constructors --- */
 
@@ -151,6 +154,14 @@ public class PeriodAccSummary extends AccrualSummary
 
     public void setSubmitted(boolean submitted) {
         this.submitted = submitted;
+    }
+
+    public PeriodAccUsage getPeriodAccUsage() {
+        return periodAccUsage;
+    }
+
+    public void setPeriodAccUsage(PeriodAccUsage periodAccUsage) {
+        this.periodAccUsage = periodAccUsage;
     }
 
     @Deprecated

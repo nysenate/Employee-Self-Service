@@ -405,6 +405,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         boolean usesSubmittedRecord = false;
 
+        // Reset the period usage on the accrual state for the gap period
+        accrualState.resetPeriodAccUsage(gapPeriod);
         // Set accrual usage from matching PD23ATTEND record if it exists
         if (periodUsages.containsKey(gapPeriod)) {
             accrualState.addUsage(periodUsages.get(gapPeriod));

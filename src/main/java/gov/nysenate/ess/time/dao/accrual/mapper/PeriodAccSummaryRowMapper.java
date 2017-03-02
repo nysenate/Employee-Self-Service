@@ -10,10 +10,12 @@ import java.sql.SQLException;
 public class PeriodAccSummaryRowMapper extends BaseRowMapper<PeriodAccSummary>
 {
     protected String pfx = "";
+    protected PeriodAccUsageRowMapper periodAccUsageRowMapper;
     protected PayPeriodRowMapper payPeriodRowMapper;
 
-    public PeriodAccSummaryRowMapper(String pfx, String payPeriodPfx) {
+    public PeriodAccSummaryRowMapper(String pfx, String accUsagePfx, String payPeriodPfx) {
         this.pfx = pfx;
+        this.periodAccUsageRowMapper = new PeriodAccUsageRowMapper(accUsagePfx, payPeriodPfx);
         this.payPeriodRowMapper = new PayPeriodRowMapper(payPeriodPfx);
     }
 
@@ -29,6 +31,7 @@ public class PeriodAccSummaryRowMapper extends BaseRowMapper<PeriodAccSummary>
         perAccSum.setVacRate(rs.getBigDecimal(pfx + "VAC_RATE"));
         perAccSum.setRefPayPeriod(payPeriodRowMapper.mapRow(rs, rowNum));
         perAccSum.setPayPeriod(perAccSum.getRefPayPeriod());
+        perAccSum.setPeriodAccUsage(periodAccUsageRowMapper.mapRow(rs, rowNum));
         AccrualSummaryRowMapper.mapRow(rs, perAccSum);
         return perAccSum;
     }
