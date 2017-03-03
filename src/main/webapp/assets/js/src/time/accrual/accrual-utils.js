@@ -4,34 +4,10 @@ angular.module('essTime')
 function accrualUtils () {
     
     return {
-        computeDeltas: computeDeltas,
         isFirstRecordOfYear: isFirstRecordOfYear,
         getAccrualReportURL: getAccrualReportURL
 
     };
-
-    /**
-     * Compute the hours used during the given pay periods based on the change in the YTD usage.
-     * @param accruals
-     */
-    function computeDeltas (accruals) {
-        for (var i = 0; i < accruals.length; i++) {
-            var currSummary = accruals[i];
-            if (i == 0 || isFirstRecordOfYear(currSummary)) {
-                currSummary.vacationUsedDelta = currSummary.vacationUsed;
-                currSummary.personalUsedDelta = currSummary.personalUsed;
-                currSummary.sickEmpUsedDelta = currSummary.sickEmpUsed;
-                currSummary.sickFamUsedDelta = currSummary.sickFamUsed;
-            }
-            else {
-                var prevSummary = accruals[i - 1];
-                currSummary.vacationUsedDelta = currSummary.vacationUsed - prevSummary.vacationUsed;
-                currSummary.personalUsedDelta = currSummary.personalUsed - prevSummary.personalUsed;
-                currSummary.sickEmpUsedDelta = currSummary.sickEmpUsed - prevSummary.sickEmpUsed;
-                currSummary.sickFamUsedDelta = currSummary.sickFamUsed - prevSummary.sickFamUsed;
-            }
-        }
-    }
 
     /**
      * Returns true iff the given record is the first record of its year
@@ -61,22 +37,22 @@ function accrualUtils () {
                 "&p_datafrom=AUTO" +
                 "&p_nubiwsicrate=" + record.sickRate +
                 "&p_nubiwvacrate=" + record.vacationRate +
-                "&p_nuemphrs=" + record.biweekSickEmpUsed +
+                "&p_nuemphrs=" + (record.biweekSickEmpUsed || 0) +
                 "&p_nuemphrsacc=" + record.sickAccruedYtd +
                 "&p_nuemphrsbsd=" + record.sickBanked +
                 "&p_nuemphrsuse=" + record.sickEmpUsed +
-                "&p_nufamhrs=" + record.biweekSickFamUsed +
+                "&p_nufamhrs=" + (record.biweekSickFamUsed || 0) +
                 "&p_nufamhrsuse=" + record.sickFamUsed +
                 "&p_nuholhrs=" + record.biweekHolidayUsed +
                 "&p_nuhrsexpect=" + record.serviceYtdExpected +
-                "&p_nuperhrs=" + record.biweekPersonalUsed +
+                "&p_nuperhrs=" + (record.biweekPersonalUsed || 0) +
                 "&p_nuperhrsacc=" + record.personalAccruedYtd +
                 "&p_nuperhrsuse=" + record.personalUsed +
                 "&p_nutotalhrs=" + record.totalHoursYtd +
                 // Total Hours YTD was passed instead, set to 0 since these hours are added in the report
                 "&p_nutothrslast=" + 0 +
                 "&p_nutrvhrs=" + record.biweekTravelUsed +
-                "&p_nuvachrs=" + record.biweekVacationUsed +
+                "&p_nuvachrs=" + (record.biweekVacationUsed || 0) +
                 "&p_nuvachrsacc=" + record.vacationAccruedYtd +
                 "&p_nuvachrsbsd=" + record.vacationBanked +
                 "&p_nuvachrsuse=" + record.vacationUsed +

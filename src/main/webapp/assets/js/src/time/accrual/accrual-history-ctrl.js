@@ -46,8 +46,6 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
             }, function(resp) {
                 if (resp.success) {
                     $scope.state.error = null;
-                    // Compute deltas
-                    accrualUtils.computeDeltas(resp.result);
                     // Gather historical acc summaries
                     $scope.state.accSummaries[year] = resp.result
                         .filter(function(acc) {
@@ -135,15 +133,21 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
 
     $scope.$watchCollection('state.accSummaries[state.selectedYear]', reflowTable);
 
-    $scope.getAccrualReportURL =   accrualUtils.getAccrualReportURL;
+    /**
+     * Open the accrual detail modal
+     * @param accrualRecord
+     */
+    $scope.viewDetails = function (accrualRecord) {
+        modals.open('accrual-details', {accruals: accrualRecord}, true);
+    };
 
     /**
      * Initialize
-*/
-$scope.init = function() {
-    $scope.getEmpActiveYears(function() {
-        $scope.getAccSummaries($scope.state.selectedYear);
-        $scope.getTimeRecords($scope.state.selectedYear);
-    });
-}();
+     */
+    $scope.init = function() {
+        $scope.getEmpActiveYears(function() {
+            $scope.getAccSummaries($scope.state.selectedYear);
+            $scope.getTimeRecords($scope.state.selectedYear);
+        });
+    }();
 }

@@ -23,7 +23,8 @@
         <div ng-show="state.projections.length > 0">
             <p class="content-info">
                 The following hours are projected and can be adjusted as time records are processed.<br/>
-                Enter hours into the 'Use' column to view projected available hours. No changes will be saved.
+                Enter hours into the 'Use' column to view projected available hours. No changes will be saved.<br/>
+                Click a row to view or print a detailed summary of projected accrual hours.
             </p>
             <div class="padding-10">
                 <table class="detail-acc-history-table projections" float-thead-enabled="true"
@@ -53,47 +54,61 @@
                     <tbody>
                     <tr ng-repeat="record in state.projections"
                         ng-class="{'highlighted': record.payPeriod.current}"
-                        ng-attr-id="{{$last && 'earliest-projection' || undefined}}">
-                        <td class="pay-period">
-                            <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record)}}">{{record.payPeriod.payPeriodNum}}
-                            </a>
+                        ng-attr-id="{{$last && 'earliest-projection' || undefined}}"
+                        title="Open a Detail View of this Record"
+                    >
+                        <td class="pay-period" ng-click="viewDetails(record)">
+                            {{record.payPeriod.payPeriodNum}}
                         </td>
-                        <td class="date">
-                            <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record)}}">{{record.payPeriod.startDate | moment:'MM/DD/YYYY'}}
-                            </a>
+                        <td class="date" ng-click="viewDetails(record)">
+                            {{record.payPeriod.startDate | moment:'MM/DD/YYYY'}}
                         </td>
-                        <td class="date">
-                            <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record)}}">{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
-                            </a>
+                        <td class="date" ng-click="viewDetails(record)">
+                            {{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
                         </td>
-                        <td class="accrual-hours personal used-hours">
+                        <td class="accrual-hours personal used-hours"
+                            title="Project Personal Hour Usage"
+                        >
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[$index].personalUsedDelta"
+                                   ng-model="$parent.state.projections[$index].biweekPersonalUsed"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);"/>
                         </td>
-                        <td class="accrual-hours personal available-hours">{{record.personalAvailable}}</td>
-                        <td class="accrual-hours vacation rate">{{record.vacationRate}}</td>
-                        <td class="accrual-hours vacation used-hours">
+                        <td class="accrual-hours personal available-hours" ng-click="viewDetails(record)">
+                            {{record.personalAvailable}}
+                        </td>
+                        <td class="accrual-hours vacation rate" ng-click="viewDetails(record)">
+                            {{record.vacationRate}}
+                        </td>
+                        <td class="accrual-hours vacation used-hours"
+                            title="Project Vacation Hour Usage"
+                        >
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[$index].vacationUsedDelta"
+                                   ng-model="$parent.state.projections[$index].biweekVacationUsed"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);"/>
                         </td>
-                        <td class="accrual-hours vacation available-hours">{{record.vacationAvailable}}</td>
-                        <td class="accrual-hours sick rate">{{record.sickRate}}</td>
-                        <td class="accrual-hours sick used-hours">
+                        <td class="accrual-hours vacation available-hours" ng-click="viewDetails(record)">
+                            {{record.vacationAvailable}}
+                        </td>
+                        <td class="accrual-hours sick rate" ng-click="viewDetails(record)">
+                            {{record.sickRate}}
+                        </td>
+                        <td class="accrual-hours sick used-hours"
+                            title="Project Employee Sick Hour Usage"
+                        >
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[$index].sickEmpUsedDelta"
+                                   ng-model="$parent.state.projections[$index].biweekSickEmpUsed"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);" />
                         </td>
-                        <td class="accrual-hours sick used-hours">
+                        <td class="accrual-hours sick used-hours"
+                            title="Project Family Sick Hour Usage"
+                        >
                             <input type="number" min="0" step=".5" placeholder="0"
-                                   ng-model="$parent.state.projections[$index].sickFamUsedDelta"
+                                   ng-model="$parent.state.projections[$index].biweekSickFamUsed"
                                    ng-change="recalculateProjectionTotals(state.selectedYear);" />
                         </td>
-                        <td class="accrual-hours sick available-hours">{{record.sickAvailable}}</td>
+                        <td class="accrual-hours sick available-hours" ng-click="viewDetails(record)">
+                            {{record.sickAvailable}}
+                        </td>
 
                     </tr>
                     </tbody>
@@ -102,5 +117,9 @@
         </div>
     </div>
 
-    <div modal-container></div>
+    <div modal-container>
+        <modal modal-id="accrual-details">
+            <div accrual-details></div>
+        </modal>
+    </div>
 </section>

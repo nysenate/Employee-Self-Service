@@ -47,8 +47,6 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
         }, function(resp) {
             if (resp.success) {
                 $scope.state.error = null;
-                // Compute deltas
-                accrualUtils.computeDeltas(resp.result);
                 // Gather historical acc summaries
                 $scope.state.accSummaries = resp.result.filter(function(acc) {
                     return !acc.computed || acc.submitted;
@@ -112,10 +110,10 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
                 per = vac = sickEmp = sickFam =  0;
             }
 
-            per += rec.personalUsedDelta || 0;
-            vac += rec.vacationUsedDelta || 0;
-            sickEmp += rec.sickEmpUsedDelta || 0;
-            sickFam += rec.sickFamUsedDelta || 0;
+            per += rec.biweekPersonalUsed || 0;
+            vac += rec.biweekVacationUsed || 0;
+            sickEmp += rec.biweekSickEmpUsed || 0;
+            sickFam += rec.biweekSickFamUsed || 0;
 
             rec.personalUsed =  per;
             rec.vacationUsed =  vac;
@@ -127,6 +125,14 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
             rec.vacationAvailable = rec.vacationAccruedYtd + rec.vacationBanked - vac;
             rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - sickEmp - sickFam;
         }
+    };
+
+    /**
+     * Open the accrual detail modal
+     * @param accrualRecord
+     */
+    $scope.viewDetails = function (accrualRecord) {
+        modals.open('accrual-details', {accruals: accrualRecord}, true);
     };
 
     /** --- Internal Methods --- */
@@ -141,7 +147,7 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
     }
 
     /** Indicates delta fields that are used for input, used to init projection */
-    var deltaFields = ['personalUsedDelta', 'vacationUsedDelta', 'sickEmpUsedDelta', 'sickFamUsedDelta'];
+    var deltaFields = ['biweekPersonalUsed', 'biweekVacationUsed', 'biweekSickEmpUsed', 'biweekSickFamUsed'];
 
     /**
      * Initialize the given projection for display

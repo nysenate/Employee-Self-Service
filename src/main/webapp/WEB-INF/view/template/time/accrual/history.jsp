@@ -30,6 +30,7 @@
         <div ng-show="state.accSummaries[state.selectedYear].length > 0">
             <p class="content-info">
                 Summary of historical accrual records.
+                Click a row to view or print a detailed summary of projected accrual hours.
             </p>
             <div class="padding-10">
                 <table class="detail-acc-history-table" float-thead="floatTheadOpts"
@@ -62,29 +63,24 @@
                     </thead>
                     <tbody>
                     <tr ng-repeat="record in state.accSummaries[state.selectedYear]"
-                        ng-class="{'highlighted': record.payPeriod.current}">
+                        ng-class="{'highlighted': record.payPeriod.current}"
+                        title="Open a Printable View for this Record"
+                        ng-click="viewDetails(record)"
+                    >
                         <td>{{record.payPeriod.payPeriodNum}}</td>
-                        <td>
-
-                            <a target="_blank" title="Open a Printable View for this Record"
-                               ng-href="{{getAccrualReportURL(record)}}">
-                                {{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}
-                            </a>
-
-
-                        </td>
+                        <td>{{record.payPeriod.endDate | moment:'MM/DD/YYYY'}}</td>
                         <td class="accrual-hours personal">{{record.personalAccruedYtd}}</td>
-                        <td class="accrual-hours personal">{{record.personalUsedDelta}}</td>
+                        <td class="accrual-hours personal">{{record.biweekPersonalUsed}}</td>
                         <td class="accrual-hours personal">{{record.personalUsed}}</td>
                         <td class="accrual-hours available-hours personal">{{record.personalAvailable}}</td>
                         <td class="accrual-hours vacation">{{record.vacationRate}}</td>
                         <td class="accrual-hours vacation">{{record.vacationAccruedYtd + record.vacationBanked}}</td>
-                        <td class="accrual-hours vacation">{{record.vacationUsedDelta}}</td>
+                        <td class="accrual-hours vacation">{{record.biweekVacationUsed}}</td>
                         <td class="accrual-hours vacation">{{record.vacationUsed}}</td>
                         <td class="accrual-hours available-hours vacation">{{record.vacationAvailable}}</td>
                         <td class="accrual-hours sick">{{record.sickRate}}</td>
                         <td class="accrual-hours sick">{{record.sickAccruedYtd}}</td>
-                        <td class="accrual-hours sick">{{record.sickEmpUsedDelta + record.sickFamUsedDelta}}</td>
+                        <td class="accrual-hours sick">{{record.biweekSickEmpUsed + record.biweekSickFamUsed}}</td>
                         <td class="accrual-hours sick">{{record.sickEmpUsed + record.sickFamUsed}}</td>
                         <td class="accrual-hours available-hours sick">{{record.sickAvailable}}</td>
                     </tr>
@@ -93,5 +89,9 @@
             </div>
         </div>
     </div>
-    <div modal-container></div>
+    <div modal-container>
+        <modal modal-id="accrual-details">
+            <div accrual-details></div>
+        </modal>
+    </div>
 </section>

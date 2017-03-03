@@ -615,6 +615,10 @@ table.attendance-entry-sub-table {
         border: 1px solid @teal;
         border-left-width: 3px;
       }
+      &:hover {
+        background: fade(#333, 10%);
+        cursor: pointer;
+      }
       td {
         border: 0;
         border-right: 1px solid #eee;
@@ -653,6 +657,49 @@ table.attendance-entry-sub-table {
         }
       }
     }
+  }
+}
+
+/** --- Accrual Detail Modal --- */
+
+table.accrual-detail-table {
+  text-align: right;
+  width: 20em;
+
+  td {
+    width: 7em;
+    &:first-child{
+      width: 13em;
+    }
+  }
+
+  tr.total-row {
+    border-top: 1px solid @teal;
+    td {
+      font-weight: bold;
+    }
+  }
+}
+
+div.accrual-detail-content {
+  margin: 0 20px 20px;
+  width: 100%;
+}
+
+div.accrual-detail-table-container {
+  padding-right: 0;
+
+  h4.content-info:not(:first-of-type) {
+    margin-top: 15px;
+  }
+}
+
+.accrual-detail-info {
+  table td {
+    text-align: right;
+  }
+  .accrual-report-link {
+    text-align: center;
   }
 }
 
