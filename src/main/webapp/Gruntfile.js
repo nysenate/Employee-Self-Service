@@ -45,7 +45,7 @@ module.exports = function(grunt) {
         uglify: {
             vendor: {
                 options: {
-                    beautify: true,
+                    beautify: false,
                     mangle: false,
                     preserveComments: 'some',
                     sourceMap: true
