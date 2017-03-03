@@ -9,6 +9,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.HOURS_PER_DAY;
@@ -34,8 +37,8 @@ public class AccrualState extends AccrualSummary
     protected BigDecimal sickRate;
     protected BigDecimal vacRate;
     protected BigDecimal ytdHoursExpected;
-    /** Tracks usage for the current period */
-    private PeriodAccUsage periodAccUsage = new PeriodAccUsage();
+    /** Tracks usage for each period */
+    private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
@@ -63,7 +66,8 @@ public class AccrualState extends AccrualSummary
         periodAccSummary.setPrevTotalHoursYtd(this.getTotalHoursUsed());
         periodAccSummary.setSickRate(this.getSickRate());
         periodAccSummary.setVacRate(this.getVacRate());
-        periodAccSummary.setPeriodAccUsage(this.periodAccUsage);
+        PeriodAccUsage accUsage = periodAccUsageMap.get(currPeriod);
+        periodAccSummary.setPeriodAccUsage(Optional.ofNullable(accUsage).orElse(new PeriodAccUsage()));
         return periodAccSummary;
     }
 
@@ -174,10 +178,18 @@ public class AccrualState extends AccrualSummary
         this.setTravelHoursUsed(BigDecimal.ZERO);
     }
 
-    public void resetPeriodAccUsage(PayPeriod nextPeriod) {
-        this.periodAccUsage.resetAccrualUsage();
-        this.periodAccUsage.setPayPeriod(nextPeriod);
-        this.periodAccUsage.setYear(nextPeriod.getYear());
+    public void addPeriodAccUsage(PeriodAccUsage periodAccUsage) {
+        super.addUsage(periodAccUsage);
+        PayPeriod period = periodAccUsage.getPayPeriod();
+        PeriodAccUsage currentAccUsage = periodAccUsageMap.get(period);
+        if (currentAccUsage == null) {
+            currentAccUsage = new PeriodAccUsage();
+            currentAccUsage.setEmpId(periodAccUsage.getEmpId());
+            currentAccUsage.setYear(period.getYear());
+            currentAccUsage.setPayPeriod(period);
+            periodAccUsageMap.put(period, currentAccUsage);
+        }
+        currentAccUsage.addUsage(periodAccUsage);
     }
 
     /** Return 0 for sick rate if employee has accruals turned off */
