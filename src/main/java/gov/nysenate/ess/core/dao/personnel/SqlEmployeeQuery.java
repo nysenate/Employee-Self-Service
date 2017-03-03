@@ -35,7 +35,9 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "LEFT JOIN ${masterSchema}.PL21EMPTITLE ttl ON per.CDEMPTITLE = ttl.CDEMPTITLE\n" +
         "LEFT JOIN (SELECT * FROM ${masterSchema}.PM21ADDRESS WHERE CDADDRTYPE = 'LEGL') addr ON per.NUXREFEM = addr.NUXREFEM\n" +
         "LEFT JOIN (SELECT * FROM ${masterSchema}.PM21EMPXREF WHERE CDSTATUS = 'A') xref ON per.NUXREFEM = xref.NUXREFEM\n" +
-        "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16RESPCTR WHERE CDSTATUS = 'A') rctr ON per.CDRESPCTR = rctr.CDRESPCTR AND per.CDAGENCY = rctr.CDAGENCY\n" +
+        "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16RESPCTR WHERE CDSTATUS = 'A') rctr\n" +
+        "  ON per.CDRESPCTR = rctr.CDRESPCTR AND per.CDAGENCY = rctr.CDAGENCY\n" +
+        "    AND SYSDATE BETWEEN rctr.DTEFFECTBEG AND rctr.DTEFFECTEND\n" +
         "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16RSPCTRHD WHERE CDSTATUS = 'A') rctrhd ON rctr.CDRESPCTRHD = rctrhd.CDRESPCTRHD\n" +
         "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16AGENCY WHERE CDSTATUS = 'A') agcy ON rctr.CDAGENCY = agcy.CDAGENCY\n" +
         "LEFT JOIN ${masterSchema}.SL16LOCATION loc ON per.CDLOCAT = loc.CDLOCAT\n"
@@ -82,7 +84,7 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "   WHERE CDSTATUS = 'A'\n" +
         "   UNION\n" +
         "   SELECT MAX(DTTXNUPDATE) AS DTTXNUPDATE FROM ${masterSchema}.SL16RESPCTR\n" +
-        "   WHERE CDSTATUS = 'A'\n" +
+        "   WHERE CDSTATUS = 'A' AND SYSDATE BETWEEN DTEFFECTBEG AND DTEFFECTEND\n" +
         "   UNION" +
         "   SELECT MAX(DTTXNUPDATE) AS DTTXNUPDATE FROM ${masterSchema}.SL16RSPCTRHD\n" +
         "   WHERE CDSTATUS = 'A'\n" +
