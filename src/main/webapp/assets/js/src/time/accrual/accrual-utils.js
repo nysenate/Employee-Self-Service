@@ -59,7 +59,7 @@ function accrualUtils () {
                 // If Report cannot find work hours from saved attendance or timesheet record,
                 // then work hours should be 0
                 "&p_nuworkhrs=" + "00" +
-                "&p_proj=Y"
+                (record.submitted ? "" : "&p_proj=Y")
             ;
         }
 

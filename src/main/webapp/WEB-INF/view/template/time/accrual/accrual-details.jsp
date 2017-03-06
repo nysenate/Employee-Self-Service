@@ -1,5 +1,6 @@
 <div id="accrual-detail-window" class="grid">
   <h3 class="content-info">
+    <span ng-show="accruals.computed && !accruals.submitted">Projected</span>
     Accrual Usage for {{accruals.payPeriod.startDate | moment:'YYYY'}}
     Pay Period {{accruals.payPeriod.payPeriodNum +
         (accruals.payPeriod.endYearSplit ? 'A' : accruals.payPeriod.startYearSplit ? 'B' : 0)
