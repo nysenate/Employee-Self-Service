@@ -34,8 +34,8 @@ public class SqlEmployeeDaoIT extends BaseTest
         int validId = 1719;
         Employee emp = employeeDao.getEmployeeById(validId);
         assertNotNull(emp);
-        //assertEquals(validId, emp.getEmployeeId());
-        logger.debug(OutputUtils.toJson(emp));
+        assertEquals(validId, emp.getEmployeeId());
+//        logger.debug(OutputUtils.toJson(emp));
     }
 
     @Test
@@ -44,21 +44,21 @@ public class SqlEmployeeDaoIT extends BaseTest
         Employee emp = employeeDao.getEmployeeByEmail(validEmail);
         assertNotNull(emp);
         assertEquals(validEmail, emp.getEmail());
-        logger.debug(OutputUtils.toJson(emp));
+//        logger.debug(OutputUtils.toJson(emp));
     }
 
     @Test(expected = EmployeeNotFoundEx.class)
     public void testGetEmployeeById_invalidIdThrowsEmployeeNotFoundEx() throws Exception {
         assertNotNull(employeeDao);
         int invalidEmpId = 999999;
-        Employee emp = employeeDao.getEmployeeById(invalidEmpId);
+        employeeDao.getEmployeeById(invalidEmpId);
     }
 
     @Test(expected = EmployeeNotFoundEx.class)
     public void testGetEmployeeByEmail_invalidEmailThrowsEmployeeNotFoundEx() throws Exception {
         assertNotNull(employeeDao);
         String invalidEmail = "moose@kitten.com";
-        Employee emp = employeeDao.getEmployeeByEmail(invalidEmail);
+        employeeDao.getEmployeeByEmail(invalidEmail);
     }
 
     @Test
@@ -68,16 +68,18 @@ public class SqlEmployeeDaoIT extends BaseTest
 
     @Test
     public void getUpdatedEmployeesTest() {
-        LocalDateTime fromDateTime = LocalDate.now().minusMonths(1).atStartOfDay();
-        List<Employee> updatedEmps = employeeDao.getUpdatedEmployees(fromDateTime);
-        LocalDateTime latestUpdate = updatedEmps.stream()
+        final LocalDateTime lastUpdateTime = employeeDao.getLastUpdateTime();
+        // Get updated employees back to 1 day before the last update time
+        List<Employee> updatedEmps = employeeDao.getUpdatedEmployees(lastUpdateTime.minusDays(1));
+        Optional<LocalDateTime> updatedEmpsLatestUpdateTime = updatedEmps.stream()
                 .map(Employee::getUpdateDateTime)
                 .filter(Objects::nonNull)
-                .max(LocalDateTime::compareTo).orElse(DateUtils.LONG_AGO.atStartOfDay());
-        logger.info("{} emps updated since {}", updatedEmps.size(), fromDateTime);
-        LocalDateTime queriedLatestUpdate = employeeDao.getLastUpdateTime();
-        assertEquals(latestUpdate, queriedLatestUpdate);
-        logger.info("latest update was {}", latestUpdate);
+                .max(LocalDateTime::compareTo);
+        assertTrue("getUpdatedEmployees() should return at least 1 result from 1 day before getLastUpdateTime",
+                updatedEmpsLatestUpdateTime.isPresent());
+        assertEquals("latest update time from getUpdatedEmployees() should equal getLastUpdateTime()",
+                lastUpdateTime, updatedEmpsLatestUpdateTime.get());
+
     }
 
     @Test
@@ -95,9 +97,8 @@ public class SqlEmployeeDaoIT extends BaseTest
                 dupMapCheck.put(e.getEmployeeId(), e);
             }
         }
-        logger.info("Duplicates: " + dups);
-        assertTrue("Duplicate employees records exist!", dups.size() == 0);
-        logger.info("Employee count: " + employees.size());
+        assertTrue("Duplicate employee records exist for empIds: " + dups, dups.size() == 0);
+        logger.info("Active employee count: " + employees.size());
     }
 
     @Test
