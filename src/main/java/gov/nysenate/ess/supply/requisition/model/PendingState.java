@@ -2,7 +2,7 @@ package gov.nysenate.ess.supply.requisition.model;
 
 import java.time.LocalDateTime;
 
-public class PendingState implements RequisitionState {
+public class PendingState extends RequisitionState {
 
     @Override
     public Requisition process(Requisition requisition, LocalDateTime processedDateTime) {

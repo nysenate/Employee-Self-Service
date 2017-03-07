@@ -6,8 +6,8 @@ import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionState;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
-import gov.nysenate.ess.supply.requisition.service.RequisitionStateFactory;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -71,7 +71,7 @@ public class RequisitionView implements ViewObject {
                 .withCustomer(customer.toEmployee())
                 .withDestination(destination.toLocation())
                 .withLineItems(lineItems.stream().map(LineItemView::toLineItem).collect(Collectors.toSet()))
-                .withState(RequisitionStateFactory.stateForStatus(RequisitionStatus.valueOf(status)))
+                .withState(RequisitionState.of(RequisitionStatus.valueOf(status)))
                 .withSpecialInstructions(specialInstructions)
                 .withIssuer(issuer == null ? null : issuer.toEmployee())
                 .withNote(note)
