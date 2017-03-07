@@ -19,9 +19,8 @@ public final class Requisition {
     private final ImmutableSet<LineItem> lineItems;
     private final String specialInstructions; // instructions left by the customer.
     private final RequisitionState state;
-    private final RequisitionStatus status;
     private final Employee issuer;
-    private final String note; // Note/comment made by supply on a requisition.
+    private final String note; // Note or comment made by supply on a requisition.
     private final Employee modifiedBy;
     private final LocalDateTime modifiedDateTime;
     private final LocalDateTime orderedDateTime;
@@ -40,7 +39,6 @@ public final class Requisition {
         this.lineItems = ImmutableSet.copyOf(builder.lineItems);
         this.specialInstructions = builder.specialInstructions;
         this.state = checkNotNull(builder.state, "Requisition requires non null RequisitionState.");
-        this.status = checkNotNull(builder.status, "Requisition requires non null status.");
         this.issuer = builder.issuer;
         this.note = builder.note;
         this.modifiedBy = checkNotNull(builder.modifiedBy, "Requisition requires a modified by employee.");
@@ -68,7 +66,6 @@ public final class Requisition {
                 .withLineItems(this.lineItems)
                 .withSpecialInstructions(this.specialInstructions)
                 .withState(this.state)
-                .withStatus(this.status)
                 .withIssuer(this.issuer)
                 .withNote(this.note)
                 .withModifiedBy(this.modifiedBy)
@@ -93,14 +90,6 @@ public final class Requisition {
         return state.reject(this, rejectedDateTime);
     }
 
-    protected Requisition setState(RequisitionState state) {
-        return copy().withState(state).build();
-    }
-
-    /**
-     * Public Setters
-     */
-
     public Requisition setRequisitionId(int requisitionId) {
         return copy().withRequisitionId(requisitionId).build();
     }
@@ -119,10 +108,6 @@ public final class Requisition {
 
     public Requisition setLineItems(Set<LineItem> lineItems) {
         return copy().withLineItems(lineItems).build();
-    }
-
-    public Requisition setStatus(RequisitionStatus status) {
-        return copy().withStatus(status).build();
     }
 
     public Requisition setIssuer(Employee issuer) {
@@ -146,22 +131,6 @@ public final class Requisition {
         return copy().withOrderedDateTime(orderedDateTime).build();
     }
 
-    public Requisition setProcessedDateTime(LocalDateTime processedDateTime) {
-        return copy().withProcessedDateTime(processedDateTime).build();
-    }
-
-    public Requisition setCompletedDateTime(LocalDateTime completedDateTime) {
-        return copy().withCompletedDateTime(completedDateTime).build();
-    }
-
-    public Requisition setApprovedDateTime(LocalDateTime approvedDateTime) {
-        return copy().withApprovedDateTime(approvedDateTime).build();
-    }
-
-    public Requisition setRejectedDateTime(LocalDateTime rejectedDateTime) {
-        return copy().withRejectedDateTime(rejectedDateTime).build();
-    }
-
     public Requisition setLastSfmsSyncDateTimeDateTime(LocalDateTime lastSfmsSyncDateTime) {
         return copy().withLastSfmsSyncDateTimeDateTime(lastSfmsSyncDateTime).build();
     }
@@ -170,10 +139,6 @@ public final class Requisition {
     public Requisition setSavedInSfms(boolean savedInSfms) {
         return copy().withSavedInSfms(savedInSfms).build();
     }
-
-    /**
-     * Basic Getters
-     */
 
     public int getRequisitionId() {
         return requisitionId;
@@ -200,7 +165,7 @@ public final class Requisition {
     }
 
     public RequisitionStatus getStatus() {
-        return status;
+        return state.getStatus();
     }
 
     public Optional<Employee> getIssuer() {
@@ -255,28 +220,52 @@ public final class Requisition {
         return sb.toString();
     }
 
+    /**
+     * Protected methods handled by implementations of the RequisitionState interface.
+     */
+
+    protected Requisition setState(RequisitionState state) {
+        return copy().withState(state).build();
+    }
+
+    protected Requisition setProcessedDateTime(LocalDateTime processedDateTime) {
+        return copy().withProcessedDateTime(processedDateTime).build();
+    }
+
+    protected Requisition setCompletedDateTime(LocalDateTime completedDateTime) {
+        return copy().withCompletedDateTime(completedDateTime).build();
+    }
+
+    protected Requisition setApprovedDateTime(LocalDateTime approvedDateTime) {
+        return copy().withApprovedDateTime(approvedDateTime).build();
+    }
+
+    protected Requisition setRejectedDateTime(LocalDateTime rejectedDateTime) {
+        return copy().withRejectedDateTime(rejectedDateTime).build();
+    }
+
     @Override
     public String toString() {
         return "Requisition{" +
-               "requisitionId=" + requisitionId +
-               ", revisionId=" + revisionId +
-               ", customer=" + customer +
-               ", destination=" + destination +
-               ", lineItems=" + lineItems +
-               ", status=" + status +
-               ", issuer=" + issuer +
-               ", note='" + note + '\'' +
-               ", specialInstructions='" + specialInstructions + '\'' +
-               ", modifiedBy=" + modifiedBy +
-               ", modifiedDateTime=" + modifiedDateTime +
-               ", orderedDateTime=" + orderedDateTime +
-               ", processedDateTime=" + processedDateTime +
-               ", completedDateTime=" + completedDateTime +
-               ", approvedDateTime=" + approvedDateTime +
-               ", rejectedDateTime=" + rejectedDateTime +
-               ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
-               ", savedInSfms=" + savedInSfms +
-               '}';
+                "requisitionId=" + requisitionId +
+                ", revisionId=" + revisionId +
+                ", customer=" + customer +
+                ", destination=" + destination +
+                ", lineItems=" + lineItems +
+                ", specialInstructions='" + specialInstructions + '\'' +
+                ", state=" + state +
+                ", issuer=" + issuer +
+                ", note='" + note + '\'' +
+                ", modifiedBy=" + modifiedBy +
+                ", modifiedDateTime=" + modifiedDateTime +
+                ", orderedDateTime=" + orderedDateTime +
+                ", processedDateTime=" + processedDateTime +
+                ", completedDateTime=" + completedDateTime +
+                ", approvedDateTime=" + approvedDateTime +
+                ", rejectedDateTime=" + rejectedDateTime +
+                ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
+                ", savedInSfms=" + savedInSfms +
+                '}';
     }
 
     @Override
@@ -290,11 +279,11 @@ public final class Requisition {
         if (customer != null ? !customer.equals(that.customer) : that.customer != null) return false;
         if (destination != null ? !destination.equals(that.destination) : that.destination != null) return false;
         if (lineItems != null ? !lineItems.equals(that.lineItems) : that.lineItems != null) return false;
-        if (status != that.status) return false;
-        if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
-        if (note != null ? !note.equals(that.note) : that.note != null) return false;
         if (specialInstructions != null ? !specialInstructions.equals(that.specialInstructions) : that.specialInstructions != null)
             return false;
+        if (state != null ? !state.equals(that.state) : that.state != null) return false;
+        if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
+        if (note != null ? !note.equals(that.note) : that.note != null) return false;
         if (modifiedBy != null ? !modifiedBy.equals(that.modifiedBy) : that.modifiedBy != null) return false;
         if (modifiedDateTime != null ? !modifiedDateTime.equals(that.modifiedDateTime) : that.modifiedDateTime != null)
             return false;
@@ -318,10 +307,10 @@ public final class Requisition {
         result = 31 * result + (customer != null ? customer.hashCode() : 0);
         result = 31 * result + (destination != null ? destination.hashCode() : 0);
         result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (specialInstructions != null ? specialInstructions.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (issuer != null ? issuer.hashCode() : 0);
         result = 31 * result + (note != null ? note.hashCode() : 0);
-        result = 31 * result + (specialInstructions != null ? specialInstructions.hashCode() : 0);
         result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
         result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
         result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
@@ -341,7 +330,6 @@ public final class Requisition {
         private Location destination;
         private Set<LineItem> lineItems;
         private RequisitionState state;
-        private RequisitionStatus status;
         private Employee issuer;
         private String note;
         private String specialInstructions;
@@ -382,11 +370,6 @@ public final class Requisition {
 
         public Builder withState(RequisitionState state) {
             this.state = state;
-            return this;
-        }
-
-        public Builder withStatus(RequisitionStatus status) {
-            this.status = status;
             return this;
         }
 

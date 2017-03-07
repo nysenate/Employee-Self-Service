@@ -306,7 +306,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("revision_id")))
                     .withSpecialInstructions(rs.getString("special_instructions"))
-                    .withStatus(RequisitionStatus.valueOf(rs.getString("status")))
                     .withState(RequisitionStateFactory.stateForStatus(RequisitionStatus.valueOf(rs.getString("status"))))
                     .withIssuer(rs.getInt("issuing_emp_id") == 0 ? null : employeeInfoService.getEmployee(rs.getInt("issuing_emp_id")))
                     .withNote(rs.getString("note"))

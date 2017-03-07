@@ -18,7 +18,9 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
+import gov.nysenate.ess.supply.requisition.model.PendingState;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionState;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
@@ -59,7 +61,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withDestination(locationService.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
                 .withLineItems(lineItems)
                 .withSpecialInstructions(submitRequisitionView.getSpecialInstructions())
-                .withStatus(RequisitionStatus.PENDING)
+                .withState(new PendingState())
                 .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withOrderedDateTime(LocalDateTime.now())
                 .build();

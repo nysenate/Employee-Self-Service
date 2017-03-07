@@ -21,7 +21,6 @@ public class RequisitionFixture {
                 .withCustomer(createEmployeeWithId(1))
                 .withDestination(createStubLocation())
                 .withLineItems(new HashSet<>())
-                .withStatus(RequisitionStatus.PENDING)
                 .withState(new PendingState())
                 .withIssuer(createEmployeeWithId(2))
                 .withModifiedBy(createEmployeeWithId(1))
@@ -37,7 +36,6 @@ public class RequisitionFixture {
                 .withCustomer(createEmployeeWithId(1))
                 .withDestination(createStubLocation())
                 .withLineItems(createStubLineItem())
-                .withStatus(RequisitionStatus.PENDING)
                 .withState(new PendingState())
                 .withIssuer(createEmployeeWithId(2))
                 .withModifiedBy(createEmployeeWithId(1))
@@ -47,9 +45,7 @@ public class RequisitionFixture {
     }
 
     public static Set<LineItem> createStubLineItem() {
-//        SupplyItem stubItem = new SupplyItem(2, "AA", "", "", new Category(""), 1, 1, 1, ItemVisibility.VISIBLE, true);
         Set<LineItem> stubLineItems = new HashSet<>();
-//        stubLineItems.add(new LineItem(stubItem, 1));
         return stubLineItems;
     }
 

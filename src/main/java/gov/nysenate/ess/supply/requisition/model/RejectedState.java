@@ -15,4 +15,9 @@ public class RejectedState implements RequisitionState {
         // Do nothing
         return requisition;
     }
+
+    @Override
+    public RequisitionStatus getStatus() {
+        return RequisitionStatus.REJECTED;
+    }
 }

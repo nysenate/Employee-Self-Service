@@ -15,4 +15,9 @@ public class ApprovedState implements RequisitionState {
         // Do nothing, can't reject an Approved Requisition.
         return requisition;
     }
+
+    @Override
+    public RequisitionStatus getStatus() {
+        return RequisitionStatus.APPROVED;
+    }
 }
