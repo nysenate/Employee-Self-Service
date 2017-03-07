@@ -53,6 +53,7 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
                         }).reverse();
                 }
                 $scope.state.searching = false;
+                console.log('got acc summaries');
             }, function(resp) {
                 modals.open('500', {details: resp});
                 console.log(resp);
@@ -125,10 +126,15 @@ function accrualHistoryCtrl($scope, $timeout, appProps,
         );
     }
 
-    function reflowTable () {
+    function reflowTable (count) {
+        if (count > 20 || !$scope.state.accSummaries[$scope.state.selectedYear]) {
+            return;
+        }
+        count = isNaN(count) ? 0 : count;
+        $(".detail-acc-history-table").floatThead('reflow');
         $timeout(function () {
-            $(".detail-acc-history-table").floatThead('reflow');
-        }, 20);
+            reflowTable(count + 1)
+        }, 5);
     }
 
     $scope.$watchCollection('state.accSummaries[state.selectedYear]', reflowTable);

@@ -183,9 +183,14 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
     }
 
     function reflowTable () {
+        if (count > 20 || !$scope.state.accSummaries[$scope.state.selectedYear]) {
+            return;
+        }
+        count = isNaN(count) ? 0 : count;
+        $(".detail-acc-history-table").floatThead('reflow');
         $timeout(function () {
-            $(".detail-acc-history-table").floatThead('reflow');
-        }, 0);
+            reflowTable(count + 1)
+        }, 5);
     }
 
     $scope.$watchCollection('state.projections', reflowTable);
