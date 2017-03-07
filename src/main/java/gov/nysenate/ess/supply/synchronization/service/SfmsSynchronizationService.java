@@ -7,8 +7,8 @@ import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.requisition.Requisition;
-import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.synchronization.dao.SfmsSynchronizationProcedure;

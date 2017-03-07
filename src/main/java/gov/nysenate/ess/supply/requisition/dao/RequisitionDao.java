@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.supply.requisition.Requisition;
-import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;

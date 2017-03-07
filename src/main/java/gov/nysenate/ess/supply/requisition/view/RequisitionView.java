@@ -5,8 +5,8 @@ import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.view.LineItemView;
-import gov.nysenate.ess.supply.requisition.Requisition;
-import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

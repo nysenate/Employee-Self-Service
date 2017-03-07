@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.item.model.*;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.requisition.Requisition;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Before;

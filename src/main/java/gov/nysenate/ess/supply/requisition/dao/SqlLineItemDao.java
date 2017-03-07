@@ -11,7 +11,7 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
-import gov.nysenate.ess.supply.requisition.Requisition;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;

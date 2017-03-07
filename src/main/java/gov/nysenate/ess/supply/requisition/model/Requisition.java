@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.requisition;
+package gov.nysenate.ess.supply.requisition.model;
 
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -18,6 +18,7 @@ public final class Requisition {
     private final Location destination;
     private final ImmutableSet<LineItem> lineItems;
     private final String specialInstructions; // instructions left by the customer.
+    private final RequisitionState state;
     private final RequisitionStatus status;
     private final Employee issuer;
     private final String note; // Note/comment made by supply on a requisition.
@@ -38,6 +39,7 @@ public final class Requisition {
         this.destination = checkNotNull(builder.destination, "Requisition requires non null destination.");
         this.lineItems = ImmutableSet.copyOf(builder.lineItems);
         this.specialInstructions = builder.specialInstructions;
+        this.state = checkNotNull(builder.state, "Requisition requires non null RequisitionState.");
         this.status = checkNotNull(builder.status, "Requisition requires non null status.");
         this.issuer = builder.issuer;
         this.note = builder.note;
@@ -65,6 +67,7 @@ public final class Requisition {
                 .withDestination(this.destination)
                 .withLineItems(this.lineItems)
                 .withSpecialInstructions(this.specialInstructions)
+                .withState(this.state)
                 .withStatus(this.status)
                 .withIssuer(this.issuer)
                 .withNote(this.note)
@@ -79,7 +82,24 @@ public final class Requisition {
                 .withSavedInSfms(this.savedInSfms);
     }
 
-    /** Basic Setters **/
+    /**
+     * Controls transition of state in a Requisition object.
+     */
+    public Requisition process(LocalDateTime processedDateTime) {
+        return state.process(this, processedDateTime);
+    }
+
+    public Requisition reject(LocalDateTime rejectedDateTime) {
+        return state.reject(this, rejectedDateTime);
+    }
+
+    protected Requisition setState(RequisitionState state) {
+        return copy().withState(state).build();
+    }
+
+    /**
+     * Public Setters
+     */
 
     public Requisition setRequisitionId(int requisitionId) {
         return copy().withRequisitionId(requisitionId).build();
@@ -117,7 +137,6 @@ public final class Requisition {
         return copy().withModifiedBy(modifiedBy).build();
     }
 
-
     /** Modified date time should only be set by the dao layer before saving. */
     public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
         return copy().withModifiedDateTime(modifiedDateTime).build();
@@ -152,7 +171,9 @@ public final class Requisition {
         return copy().withSavedInSfms(savedInSfms).build();
     }
 
-    /** Basic Getters **/
+    /**
+     * Basic Getters
+     */
 
     public int getRequisitionId() {
         return requisitionId;
@@ -319,6 +340,7 @@ public final class Requisition {
         private Employee customer;
         private Location destination;
         private Set<LineItem> lineItems;
+        private RequisitionState state;
         private RequisitionStatus status;
         private Employee issuer;
         private String note;
@@ -355,6 +377,11 @@ public final class Requisition {
 
         public Builder withLineItems(Set<LineItem> lineItems) {
             this.lineItems = lineItems;
+            return this;
+        }
+
+        public Builder withState(RequisitionState state) {
+            this.state = state;
             return this;
         }
 

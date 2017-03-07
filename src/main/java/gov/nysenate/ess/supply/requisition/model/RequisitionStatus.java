@@ -1,4 +1,4 @@
-package gov.nysenate.ess.supply.requisition;
+package gov.nysenate.ess.supply.requisition.model;
 
 public enum RequisitionStatus {
     REJECTED,

@@ -1,12 +1,11 @@
 package gov.nysenate.ess.supply.notification;
 
-import gov.nysenate.ess.core.service.notification.base.message.base.*;
 import gov.nysenate.ess.core.service.notification.base.message.base.Component;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailContent;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailSubject;
 import gov.nysenate.ess.core.service.notification.email.simple.component.SimpleEmailTemplate;
 import gov.nysenate.ess.core.service.notification.email.simple.header.SimpleEmailHeader;
-import gov.nysenate.ess.supply.requisition.Requisition;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.util.mail.SendSimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

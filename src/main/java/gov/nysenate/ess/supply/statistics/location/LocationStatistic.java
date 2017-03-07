@@ -2,7 +2,7 @@ package gov.nysenate.ess.supply.statistics.location;
 
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
-import gov.nysenate.ess.supply.requisition.Requisition;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.statistics.SupplyStatistic;
 
 import java.util.HashMap;

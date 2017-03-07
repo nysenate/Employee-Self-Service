@@ -8,8 +8,9 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.*;
-import gov.nysenate.ess.supply.requisition.Requisition;
-import gov.nysenate.ess.supply.requisition.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.service.RequisitionStateFactory;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,6 +307,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("revision_id")))
                     .withSpecialInstructions(rs.getString("special_instructions"))
                     .withStatus(RequisitionStatus.valueOf(rs.getString("status")))
+                    .withState(RequisitionStateFactory.stateForStatus(RequisitionStatus.valueOf(rs.getString("status"))))
                     .withIssuer(rs.getInt("issuing_emp_id") == 0 ? null : employeeInfoService.getEmployee(rs.getInt("issuing_emp_id")))
                     .withNote(rs.getString("note"))
                     .withModifiedBy(employeeInfoService.getEmployee(rs.getInt("modified_by_id")))
