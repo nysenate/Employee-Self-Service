@@ -41,6 +41,7 @@ public class SupplyRequisitionService implements RequisitionService {
      * @param requisition
      */
     private void checkPessimisticLocking(Requisition requisition) {
+        // TODO: How to ensure modifiedDateTime is not updated by client?
         Optional<Requisition> previousRevision = requisitionDao.getRequisitionById(requisition.getRequisitionId());
         if (previousRevision.isPresent()) {
             if (!previousRevision.get().getModifiedDateTime().equals(requisition.getModifiedDateTime())) {
