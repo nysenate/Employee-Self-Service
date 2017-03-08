@@ -17,10 +17,10 @@ var essSupply = angular.module('essSupply')
             templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/editable-order-listing'
         }
     }])
-    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi',
-        'SupplyLocationAutocompleteService', 'SupplyItemAutocompleteService', fulfillmentEditingModal]);
+    .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyRequisitionRejectApi',
+        'SupplyRequisitionProcessApi', 'SupplyLocationAutocompleteService', 'SupplyItemAutocompleteService', fulfillmentEditingModal]);
 
-function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
+function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqRejectApi, reqProcessApi,
                                  locationAutocompleteService, itemAutocompleteService) {
     $scope.dirty = false;
     $scope.originalRequisition = {};
@@ -41,34 +41,19 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
     /** Close the modal and return the promise resulting from calling the save requisition api.
      * Errors are handled in the supply-fulfillment-ctrl. */
     $scope.saveChanges = function () {
-        modals.resolve(requisitionApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
+        modals.resolve(reqSaveApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
+    };
+
+    $scope.processReq = function () {
+        modals.resolve(reqProcessApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
+    };
+
+    $scope.rejectReq = function () {
+        modals.resolve(reqRejectApi.save({id: $scope.originalRequisition.requisitionId}, $scope.editableRequisition).$promise);
     };
 
     $scope.closeModal = function () {
         modals.reject();
-    };
-
-    $scope.processOrder = function () {
-        $scope.editableRequisition.status = 'PROCESSING';
-        $scope.editableRequisition.processedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
-        if ($scope.editableRequisition.issuer === null) {
-            setIssuerToLoggedInUser();
-        }
-        $scope.saveChanges();
-    };
-
-    function setIssuerToLoggedInUser() {
-        angular.forEach($scope.supplyEmployees, function (emp) {
-            if (emp.employeeId === appProps.user.employeeId) {
-                $scope.editableRequisition.issuer = emp
-            }
-        })
-    }
-
-    $scope.completeOrder = function () {
-        $scope.editableRequisition.status = 'COMPLETED';
-        $scope.editableRequisition.completedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
-        $scope.saveChanges();
     };
 
     $scope.selfApprove = false;
@@ -82,9 +67,7 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
         else {
             $scope.selfApprove = false;
         }
-        $scope.editableRequisition.status = 'APPROVED';
-        $scope.editableRequisition.approvedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
-        $scope.saveChanges();
+        $scope.processReq();
     };
 
     /**
@@ -97,9 +80,7 @@ function fulfillmentEditingModal($scope, appProps, modals, requisitionApi,
             $scope.displayRejectInstructions = true;
         }
         else {
-            $scope.editableRequisition.status = 'REJECTED';
-            $scope.editableRequisition.rejectedDateTime = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
-            $scope.saveChanges();
+            $scope.rejectReq();
         }
     };
 

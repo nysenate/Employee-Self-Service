@@ -122,7 +122,8 @@ public final class Requisition {
         return copy().withModifiedBy(modifiedBy).build();
     }
 
-    /** Modified date time should only be set by the dao layer before saving. */
+    /** Modified date time should only be set by the dao layer before saving.
+     * It is used in optimistic locking to ensure multiple updates are not done at once. */
     public Requisition setModifiedDateTime(LocalDateTime modifiedDateTime) {
         return copy().withModifiedDateTime(modifiedDateTime).build();
     }

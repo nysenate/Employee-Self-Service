@@ -123,11 +123,11 @@
            ng-disabled="!dirty">
 
     <%--Process button. Current status must be pending.--%>
-    <input ng-show="originalRequisition.status === 'PENDING'" ng-click="processOrder()"
+    <input ng-show="originalRequisition.status === 'PENDING'" ng-click="processReq()"
            class="process-button" style="width: 15%" type="button" value="Process">
 
     <%--Complete button. Current status must be PENDING.--%>
-    <input ng-show="originalRequisition.status === 'PROCESSING'" ng-click="completeOrder()"
+    <input ng-show="originalRequisition.status === 'PROCESSING'" ng-click="processReq()"
            class="complete-button" style="width: 15%" type="button" value="Complete">
 
     <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>

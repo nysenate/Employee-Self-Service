@@ -20,16 +20,11 @@ import java.util.Optional;
 public class SupplyRequisitionService implements RequisitionService {
 
     @Autowired private RequisitionDao requisitionDao;
-    @Autowired private SupplyEmailService emailService;
 
     @Override
     public synchronized Requisition saveRequisition(Requisition requisition) {
-
         checkPessimisticLocking(requisition);
         requisition = requisitionDao.saveRequisition(requisition);
-        if (requisition.getStatus() == RequisitionStatus.REJECTED) {
-            emailService.sendRejectEmail(requisition);
-        }
         return requisition;
     }
 

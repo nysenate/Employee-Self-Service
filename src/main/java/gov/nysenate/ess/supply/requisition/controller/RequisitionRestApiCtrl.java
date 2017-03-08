@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.requisition.controller;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
+import com.sun.xml.internal.bind.v2.TODO;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -18,6 +19,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
+import gov.nysenate.ess.supply.notification.SupplyEmailService;
 import gov.nysenate.ess.supply.requisition.model.PendingState;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionState;
@@ -49,6 +51,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private RequisitionService requisitionService;
     @Autowired private EmployeeInfoService employeeService;
     @Autowired private LocationService locationService;
+    @Autowired private SupplyEmailService emailService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
@@ -75,6 +78,56 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         checkViewRequisitionPermissions(requisition);
         return new ViewObjectResponse<>(new RequisitionView(requisition));
     }
+
+    /**
+     * Saves changes made to a requisition without processing it to the next state.
+     * @param id
+     * @param requisitionView
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+        checkPermission(new WildcardPermission("supply:requisition:edit"));
+        Requisition requisition = requisitionView.toRequisition();
+        requisition = requisition.setModifiedBy(getModifiedBy());
+        requisitionService.saveRequisition(requisition);
+    }
+
+    /**
+     * Process requisition and save any changes made.
+     * @param id
+     * @param requisitionView
+     */
+    @RequestMapping(value = "/{id}/process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void processRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+        checkPermission(new WildcardPermission("supply:requisition:edit"));
+        if (RequisitionStatus.valueOf(requisitionView.getStatus()) == RequisitionStatus.COMPLETED) {
+            checkPermission(new WildcardPermission("supply:requisition:approve"));
+        }
+
+        Requisition requisition = requisitionView.toRequisition();
+        if (!requisition.getIssuer().isPresent()) {
+            requisition = requisition.setIssuer(getModifiedBy());
+        }
+        requisition = requisition.setModifiedBy(getModifiedBy());
+        requisition = requisition.process(LocalDateTime.now());
+        requisitionService.saveRequisition(requisition);
+    }
+
+    /**
+     * Reject a requisition.
+     * @param id
+     * @param requisitionView
+     */
+    @RequestMapping(value = "/{id}/reject", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void rejectRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
+        checkPermission(new WildcardPermission("supply:requisition:edit"));
+        Requisition requisition = requisitionView.toRequisition();
+        requisition = requisition.setModifiedBy(getModifiedBy());
+        requisition = requisition.reject(LocalDateTime.now());
+        requisitionService.saveRequisition(requisition);
+        emailService.sendRejectEmail(requisition);
+    }
+
 
     @RequestMapping("")
     public BaseResponse searchRequisitions(@RequestParam(defaultValue = "All", required = false) String location,
@@ -127,19 +180,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                                    .map(RequisitionView::new)
                                                    .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
-
-        checkPermission(new WildcardPermission("supply:requisition:edit"));
-        if (RequisitionStatus.valueOf(requisitionView.getStatus()) == RequisitionStatus.APPROVED) {
-            checkPermission(new WildcardPermission("supply:requisition:approve"));
-        }
-
-        Requisition requisition = requisitionView.toRequisition();
-        requisition = requisition.setModifiedBy(getSubjectEmployeeView().toEmployee());
-        requisitionService.saveRequisition(requisition);
     }
 
     /**
@@ -202,10 +242,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
             statusList.add(RequisitionStatus.valueOf(s));
         }
         return EnumSet.copyOf(statusList);
-    }
-
-    private EmployeeView getSubjectEmployeeView() {
-        return new EmployeeView(getModifiedBy());
     }
 
     private Employee getModifiedBy() {

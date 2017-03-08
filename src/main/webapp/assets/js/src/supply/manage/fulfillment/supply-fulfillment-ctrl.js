@@ -261,6 +261,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
 
     /** --- Modals --- */
 
+    /**
+     * Display a modal which allows editing of the selected requisition.
+     */
     $scope.showEditingModal = function (requisition) {
         /** Editing modal returns a promise containing the save requisition api request
          * if the user saved their changes, undefined otherwise.*/
@@ -290,6 +293,11 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         return response;
     }
 
+    /**
+     * Display a modal which does not allow editing of the selected requisition.
+     *
+     * This is used to display APPROVED requisitions which should never be edited.
+     */
     $scope.showImmutableModal = function (requisition) {
         modals.open('fulfillment-immutable-modal', requisition);
     };
