@@ -57,11 +57,6 @@
               <td>Used in Period (Family)</td>
               <td ng-bind="-accruals.biweekSickFamUsed | number:2"></td>
             </tr>
-            <tr class="total-row">
-              <td>Available next Period</td>
-              <td ng-bind="accruals.sickAvailable - accruals.biweekSickEmpUsed - accruals.biweekSickFamUsed | number:2">
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -84,11 +79,6 @@
             <tr>
               <td>Used in Period</td>
               <td ng-bind="accruals.biweekPersonalUsed | number:2"></td>
-            </tr>
-            <tr class="total-row">
-              <td>Available next Period</td>
-              <td ng-bind="accruals.personalAvailable - accruals.biweekPersonalUsed | number:2">
-              </td>
             </tr>
           </tbody>
         </table>
@@ -114,11 +104,6 @@
             <tr>
               <td>Used in Period</td>
               <td ng-bind="accruals.biweekVacationUsed | number:2"></td>
-            </tr>
-            <tr class="total-row">
-              <td>Available next Period</td>
-              <td ng-bind="accruals.vacationAvailable - accruals.biweekVacationUsed | number:2">
-              </td>
             </tr>
           </tbody>
         </table>
