@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * An API for getting information about supply employees.
@@ -25,11 +26,22 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplyEmployeeApiCtrl.class);
     @Autowired private RoleDao roleDao;
+    @Autowired private SupplyEmployeeDao supplyEmployeeDao;
 
     @RequestMapping("")
     public BaseResponse getSupplyEmployees() {
         checkPermission(new WildcardPermission("supply:employee"));
         ImmutableList<Employee> employees = roleDao.getEmployeesWithRole(EssRole.SUPPLY_EMPLOYEE);
+        return ListViewResponse.of(new ArrayList(employees));
+    }
+
+    /**
+     * Returns all employees who have ever issued a requisition.
+     */
+    @RequestMapping("/issuers")
+    public BaseResponse getIssuers() {
+        checkPermission(new WildcardPermission("supply:employee"));
+        Set<Employee> employees = supplyEmployeeDao.getDistinctIssuers();
         return ListViewResponse.of(new ArrayList(employees));
     }
 }

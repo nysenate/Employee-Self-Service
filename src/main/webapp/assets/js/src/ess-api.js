@@ -178,6 +178,10 @@ essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function ($resour
     return $resource(appProps.apiPath + '/supply/employees')
 }]);
 
+essApi.factory('SupplyIssuersApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/supply/employees/issuers.json')
+}]);
+
 /** --- Supply Statistics API --- */
 
 essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function ($resource, appProps) {
