@@ -8,6 +8,7 @@ import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 @Category(IntegrationTest.class)
 @Transactional
 @TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)

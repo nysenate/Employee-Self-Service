@@ -4,9 +4,11 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.supply.item.dao.ItemRestrictionDao;
 import gov.nysenate.ess.supply.item.model.ItemRestriction;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Ignore
 @org.junit.experimental.categories.Category(IntegrationTest.class)
 public class ItemRestrictionDaoIT extends BaseTest {
 

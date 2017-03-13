@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
+@Ignore
 @org.junit.experimental.categories.Category(IntegrationTest.class)
 public class SupplyItemDaoIT extends BaseTest {
 
