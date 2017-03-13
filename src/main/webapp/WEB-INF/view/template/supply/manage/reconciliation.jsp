@@ -31,7 +31,7 @@
         </div>
       </div>
       <%--Item rows--%>
-      <div ng-repeat="item in reconcilableSearch.items | filter : {'page' : currentPage}">
+      <div ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}">
         <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'" ng-click="setSelected(item)">
           <div class="col-3-12">
             {{item.commodityCode}}

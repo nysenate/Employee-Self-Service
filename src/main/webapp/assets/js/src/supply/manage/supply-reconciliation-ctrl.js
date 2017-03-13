@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-    ['$scope', 'SupplyReconciliationApi', 'SupplyRequisitionApi', 'LocationService', '$window', '$timeout', supplyReconciliationController]);
+    ['$scope', 'SupplyRequisitionApi', 'LocationService', '$window', '$timeout', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, supplyReconciliationApi, requisitionApi, locationService, $window, $timeout) {
+function supplyReconciliationController($scope, requisitionApi, locationService, $window, $timeout) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
@@ -14,9 +14,8 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
         error: false
     };
     $scope.currentPage = 1;
-    $scope.reconciliations = {};
-    
-    /** Map of unique item id's to array of all shipments containing that item objects. */
+
+    /** Map of item id's to shipments containing that item. */
     $scope.reconcilableItemMap= {};
 
 
@@ -26,13 +25,7 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
     };
 
     function initItems() {
-        //Get reconciliation page
-        supplyReconciliationApi.get().$promise.then(function (response) {
-            response.result.forEach(function (item) {
-                $scope.reconciliations[item.item_category] = item.page;
-            });
-
-        // Get shipments completed today
+        // Get shipments approved today
         var params = {
             status: "APPROVED",
             from: moment().startOf('day').format(),
@@ -50,8 +43,8 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
                     else {
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                        lineItem.item["page"] = $scope.reconciliations[lineItem.item.category];
                         $scope.reconcilableSearch.items.push(lineItem.item);
+                        console.log(lineItem.item);
                     }
                 })
             });
@@ -61,7 +54,6 @@ function supplyReconciliationController($scope, supplyReconciliationApi, requisi
             $scope.reconcilableSearch.error = true;
             modals.open('500', {details: response});
             console.error(response);
-        });
         });
     }
 

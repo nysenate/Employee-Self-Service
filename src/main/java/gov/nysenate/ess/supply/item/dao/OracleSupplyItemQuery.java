@@ -8,7 +8,7 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
     SUPPLY_ITEM_QUERY(
             "Select com.Nuxrefco, xref.CdCommodity, com.CdCategory, com.CdStockItem, com.CdIssUnit, com.DeCommodityf, \n"
                     + "com.DeCommdtyEssSupply, com.CdSpecPerMReq, com.CdSpecPerMVisible, unit.AmStdUnit, \n"
-                    + "com.numaxunitord, com.numaxunitmon, com.cdsensuppieditem \n"
+                    + "com.numaxunitord, com.numaxunitmon, com.cdsensuppieditem, com.nusupreqformpgno \n"
                     + "From ${masterSchema}.FM12COMMODTY com \n"
                     + "Inner Join ${masterSchema}.FM12COMXREF xref On com.Nuxrefco = xref.Nuxrefco \n"
                     + "Inner Join ${masterSchema}.FL12STDUNIT unit On com.CdIssUnit = unit.CdStdUnit \n"

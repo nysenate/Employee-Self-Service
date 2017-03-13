@@ -15,6 +15,7 @@ public final class SupplyItem {
     private final ItemAllowance allowance;
     private final ItemUnit unit;
     private ItemRestriction restriction;
+    private final int reconciliationPage;
 
     public SupplyItem(Builder builder) {
         this.id = builder.id;
@@ -25,6 +26,7 @@ public final class SupplyItem {
         this.allowance = checkNotNull(builder.allowance, "SupplyItem cannot have null ItemAllowance.");
         this.unit = checkNotNull(builder.unit, "SupplyItem cannot have null ItemUnit.");
         this.restriction = new ItemRestriction(ImmutableSet.of());
+        this.reconciliationPage = builder.reconciliationPage;
     }
 
     public int getId() {
@@ -87,6 +89,10 @@ public final class SupplyItem {
         return restriction.isAllowed(locId);
     }
 
+    public int getReconciliationPage() {
+        return reconciliationPage;
+    }
+
     public static class Builder {
         private int id;
         private String commodityCode;
@@ -95,6 +101,7 @@ public final class SupplyItem {
         private Category category;
         private ItemAllowance allowance;
         private ItemUnit unit;
+        private int reconciliationPage;
 
         public Builder withId(int id) {
             this.id = id;
@@ -131,6 +138,11 @@ public final class SupplyItem {
             return this;
         }
 
+        public Builder withReconciliationPage(int page) {
+            this.reconciliationPage = page;
+            return this;
+        }
+
         public SupplyItem build() {
             return new SupplyItem(this);
         }
@@ -147,6 +159,7 @@ public final class SupplyItem {
                 ", allowance=" + allowance +
                 ", unit=" + unit +
                 ", restriction=" + restriction +
+                ", reconciliationPage=" + reconciliationPage +
                 '}';
     }
 

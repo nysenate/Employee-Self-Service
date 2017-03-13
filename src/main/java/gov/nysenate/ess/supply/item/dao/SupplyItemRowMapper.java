@@ -18,7 +18,16 @@ public class SupplyItemRowMapper extends BaseRowMapper<SupplyItem> {
                 .withCategory(new Category(rs.getString("CdCategory")))
                 .withAllowance(new ItemAllowance(rs.getInt("numaxunitord"), rs.getInt("numaxunitmon")))
                 .withUnit(new ItemUnit(rs.getString("CdIssUnit"), rs.getInt("AmStdUnit")))
+                .withReconciliationPage(getReconciliationPageNum(rs))
                 .build();
+    }
+
+    /**
+     * Get the reconciliation page number.
+     * Valid values are 1 or 2. Defaults to 2 of any other value.
+     */
+    private int getReconciliationPageNum(ResultSet rs) throws SQLException {
+        return rs.getInt("nusupreqformpgno") == 1 ? 1 : 2;
     }
 
     private String getDescription(ResultSet rs) throws SQLException {

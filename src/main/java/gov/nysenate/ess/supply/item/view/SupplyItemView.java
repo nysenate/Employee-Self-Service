@@ -18,6 +18,7 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
     protected boolean isInventoryTracked;
     protected boolean isExpendable;
     protected boolean isRestricted;
+    protected int reconciliationPage;
 
     public SupplyItemView() {
     }
@@ -36,6 +37,7 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
         this.isInventoryTracked = item.requiresSynchronization();
         this.isExpendable = item.isExpendable();
         this.isRestricted = item.isRestricted();
+        this.reconciliationPage = item.getReconciliationPage();
     }
 
     public SupplyItem toSupplyItem() {
@@ -47,6 +49,7 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
                 .withCategory(new Category(category))
                 .withAllowance(new ItemAllowance(perOrderAllowance, perMonthAllowance))
                 .withUnit(new ItemUnit(unit, unitQuantity))
+                .withReconciliationPage(this.reconciliationPage)
                 .build();
     }
 
@@ -100,6 +103,10 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
 
     public boolean isRestricted() {
         return isRestricted;
+    }
+
+    public int getReconciliationPage() {
+        return reconciliationPage;
     }
 
     @Override

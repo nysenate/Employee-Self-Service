@@ -86,5 +86,11 @@ public class SupplyItemDaoIT extends BaseTest {
         assertThat(item.isSpecialRequest(), is(false));
     }
 
+    @Test
+    public void reconciliationPageNum_defaultsTo2() {
+        SupplyItem item = itemDao.getItemById(4700);
+        assertThat(item.getReconciliationPage(), is(2));
+    }
+
     // Cant test default value when cdstockitem is null, no values in the database.
 }
