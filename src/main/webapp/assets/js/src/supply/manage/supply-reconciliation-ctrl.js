@@ -44,7 +44,6 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
                         $scope.reconcilableSearch.items.push(lineItem.item);
-                        console.log(lineItem.item);
                     }
                 })
             });
@@ -96,10 +95,8 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
         initItems();
     };
 
-    $scope.setCurrentPage = function (e) {
-        $("#page" + $scope.currentPage).css("text-decoration", "");
-        $scope.currentPage = e;
-        $("#page" + $scope.currentPage).css("text-decoration", "underline");
+    $scope.setCurrentPage = function (page) {
+        $scope.currentPage = page;
     };
 
     $scope.init();

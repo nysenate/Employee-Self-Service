@@ -12,11 +12,13 @@
   </div>
 
   <div class="content-container" ng-show="reconcilableSearch.response.$resolved && reconcilableSearch.items.length > 0">
-    <p class="content-info">
-      <span id="page1" ng-click="setCurrentPage(1)" style="padding-right: 150px;    text-decoration: underline;">Page One</span>
-      <span id="page2" style="padding-left:150px;" ng-click="setCurrentPage(2)">Page Two</span>
-      <a id="printPage" style="float: right" ng-click="print()">Print</a>
-    </p>
+    <div style="display:inline-block; width:100%">
+      <ul class="reconciliation-tab-links">
+        <li ng-class="{'active-reconciliation-tab': currentPage === 1}"><a href="#" ng-click="setCurrentPage(1)">Page One</a></li>
+        <li ng-class="{'active-reconciliation-tab': currentPage === 2}"><a href="#" ng-click="setCurrentPage(2)">Page Two</a></li>
+      </ul>
+      <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
+    </div>
     <%--Header--%>
     <div class="large-print-font-size">
       <div class="grid expandable-div-header">

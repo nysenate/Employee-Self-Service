@@ -398,3 +398,45 @@ img.ui-datepicker-trigger {
   color: crimson;
   font-weight: bold;
 }
+
+.reconciliation-tab-links{
+  :after {
+    display: block;
+    clear: both;
+    content: '';
+  }
+  li {
+    margin: 0px 5px;
+    float: left;
+    list-style: none;
+    a {
+      padding: 9px 30px;
+      display: inline-block;
+      border-radius: 3px 3px 0px 0px;
+      background: lighten(@gray, 20%);
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      transition: all linear 0.15s;
+      &:hover {
+        background: darken(@blue-purple, 20%);
+        text-decoration: none;
+      }
+      @media print {
+        display: none;
+      }
+    }
+  }
+  li.active-reconciliation-tab a {
+    background: @blue-purple;
+    text-decoration: none;
+    &:hover {
+      background: darken(@blue-purple, 20%);
+      text-decoration: none;
+    }
+    @media print {
+      display: inline-block;
+      color: black;
+    }
+  }
+}
