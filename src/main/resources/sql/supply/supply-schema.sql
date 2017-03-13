@@ -94,61 +94,6 @@ ALTER SEQUENCE location_specific_items_id_seq OWNED BY location_specific_items.i
 
 
 --
--- Name: reconciliation_category_groups; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
---
-
-CREATE TABLE reconciliation_category_groups (
-  id integer NOT NULL,
-  item_category text NOT NULL,
-  page smallint NOT NULL
-);
-
-
-ALTER TABLE reconciliation_category_groups OWNER TO postgres;
-
---
--- Name: TABLE reconciliation_category_groups; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON TABLE reconciliation_category_groups IS 'Groups supply item categories to the reconciliation page they should be displayed on.';
-
-
---
--- Name: COLUMN reconciliation_category_groups.item_category; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON COLUMN reconciliation_category_groups.item_category IS 'The supply item category';
-
-
---
--- Name: COLUMN reconciliation_category_groups.page; Type: COMMENT; Schema: supply; Owner: postgres
---
-
-COMMENT ON COLUMN reconciliation_category_groups.page IS 'The reconciliation page this item should be on.';
-
-
---
--- Name: reconciliation_category_groups_id_seq; Type: SEQUENCE; Schema: supply; Owner: postgres
---
-
-CREATE SEQUENCE reconciliation_category_groups_id_seq
-START WITH 1
-INCREMENT BY 1
-NO MINVALUE
-NO MAXVALUE
-CACHE 1;
-
-
-ALTER TABLE reconciliation_category_groups_id_seq OWNER TO postgres;
-
---
--- Name: reconciliation_category_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
---
-
-ALTER SEQUENCE reconciliation_category_groups_id_seq OWNED BY reconciliation_category_groups.id;
-
-
---
 -- Name: requisition; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
 --
 
@@ -258,13 +203,6 @@ ALTER TABLE ONLY location_specific_items ALTER COLUMN id SET DEFAULT nextval('lo
 
 
 --
--- Name: id; Type: DEFAULT; Schema: supply; Owner: postgres
---
-
-ALTER TABLE ONLY reconciliation_category_groups ALTER COLUMN id SET DEFAULT nextval('reconciliation_category_groups_id_seq'::regclass);
-
-
---
 -- Name: requisition_id; Type: DEFAULT; Schema: supply; Owner: postgres
 --
 
@@ -285,14 +223,6 @@ ALTER TABLE ONLY line_item
 
 ALTER TABLE ONLY location_specific_items
   ADD CONSTRAINT location_specific_items_pkey PRIMARY KEY (id);
-
-
---
--- Name: reconciliation_category_groups_pkey; Type: CONSTRAINT; Schema: supply; Owner: postgres; Tablespace:
---
-
-ALTER TABLE ONLY reconciliation_category_groups
-  ADD CONSTRAINT reconciliation_category_groups_pkey PRIMARY KEY (id);
 
 
 --
