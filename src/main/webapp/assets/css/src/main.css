@@ -3811,6 +3811,49 @@ img.ui-datepicker-trigger {
   color: crimson;
   font-weight: bold;
 }
+.reconciliation-tab-links :after {
+  display: block;
+  clear: both;
+  content: '';
+}
+.reconciliation-tab-links li {
+  margin: 0px 5px;
+  float: left;
+  list-style: none;
+}
+.reconciliation-tab-links li a {
+  padding: 9px 30px;
+  display: inline-block;
+  border-radius: 3px 3px 0px 0px;
+  background: #b3b3b3;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  transition: all linear 0.15s;
+}
+.reconciliation-tab-links li a:hover {
+  background: #374282;
+  text-decoration: none;
+}
+@media print {
+  .reconciliation-tab-links li a {
+    display: none;
+  }
+}
+.reconciliation-tab-links li.active-reconciliation-tab a {
+  background: #6270BD;
+  text-decoration: none;
+}
+.reconciliation-tab-links li.active-reconciliation-tab a:hover {
+  background: #374282;
+  text-decoration: none;
+}
+@media print {
+  .reconciliation-tab-links li.active-reconciliation-tab a {
+    display: inline-block;
+    color: black;
+  }
+}
 /**
 * Styles for ESS Time
 */
