@@ -2,6 +2,7 @@ package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
 import com.google.common.collect.ContiguousSet;
 import gov.nysenate.ess.core.client.view.base.DateView;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.client.view.attendance.InvalidTimeEntryParameterView;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
@@ -50,7 +51,7 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
 
         // Get a set of all dates in pay period
         ContiguousSet<LocalDate> recordDates =
-                ContiguousSet.create(prevState.getDateRange(), RangeUtils.getLocalDateDiscreteDomain());
+                ContiguousSet.create(prevState.getDateRange(), DateUtils.getLocalDateDiscreteDomain());
 
         // Iterate through each possible date
         for (LocalDate date : recordDates) {

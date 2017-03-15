@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.EnumSet;
 
+
 public class DateUtils
 {
     /** --- Reference Dates --- */
@@ -84,35 +85,31 @@ public class DateUtils
      * Converts a date range to a range of years enclosing the date range
      * @param dateRange Range<LocalDate>
      * @param fiscalYears boolean - will return range of fiscal years if true
-     * @return Range<Integer> - a closed range containing all years covered by the date range
+     * @return Range<Integer> - a closed open range containing all years covered by the date range
      */
     public static Range<Integer> toYearRange(Range<LocalDate> dateRange, boolean fiscalYears) {
         Integer lowerEndpointYear = null;
         Integer upperEndpointYear = null;
-        if (dateRange.hasLowerBound()) {
-            LocalDate lowerEndpoint = dateRange.lowerEndpoint();
-            if (dateRange.lowerBoundType() == BoundType.OPEN) {
-                lowerEndpoint = lowerEndpoint.plusDays(1);
-            }
+        Range<LocalDate> canonicalRange = dateRange.canonical(getLocalDateDiscreteDomain());
+        if (canonicalRange.hasLowerBound()) {
+            LocalDate lowerEndpoint = canonicalRange.lowerEndpoint();
             lowerEndpointYear = fiscalYears ? getFiscalYear(lowerEndpoint) : lowerEndpoint.getYear();
         }
-        if (dateRange.hasUpperBound()) {
-            LocalDate upperEndpoint = dateRange.upperEndpoint();
-            if (dateRange.upperBoundType() == BoundType.OPEN) {
-                upperEndpoint = upperEndpoint.minusDays(1);
-            }
+        if (canonicalRange.hasUpperBound()) {
+            LocalDate upperEndpoint = canonicalRange.upperEndpoint().minusDays(1);
             upperEndpointYear = fiscalYears ? getFiscalYear(upperEndpoint) : upperEndpoint.getYear();
+            upperEndpointYear += 1;  // the upper endpoint is closed
         }
         if (upperEndpointYear == null && lowerEndpointYear == null) {
             return Range.all();
         }
         if (lowerEndpointYear == null) {
-            return Range.atMost(upperEndpointYear);
+            return Range.lessThan(upperEndpointYear);
         }
         if (upperEndpointYear == null) {
             return Range.atMost(lowerEndpointYear);
         }
-        return Range.encloseAll(ImmutableList.of(upperEndpointYear, lowerEndpointYear));
+        return Range.closedOpen(lowerEndpointYear, upperEndpointYear);
     }
 
     /**
@@ -125,15 +122,11 @@ public class DateUtils
      */
     public static LocalDate startOfDateRange(Range<LocalDate> localDateRange) {
         if (localDateRange != null) {
-            LocalDate lower;
-            if (localDateRange.hasLowerBound()) {
-                lower = (localDateRange.lowerBoundType().equals(BoundType.CLOSED))
-                        ? localDateRange.lowerEndpoint() : localDateRange.lowerEndpoint().plusDays(1);
+            Range<LocalDate> canonicalRange = localDateRange.canonical(getLocalDateDiscreteDomain());
+            if (!canonicalRange.hasLowerBound()) {
+                return LONG_AGO;
             }
-            else {
-                lower = LocalDate.ofYearDay(1, 1);
-            }
-            return lower;
+            return canonicalRange.lowerEndpoint();
         }
         throw new IllegalArgumentException("Supplied localDateRange is null.");
     }
@@ -148,15 +141,11 @@ public class DateUtils
      */
     public static LocalDate endOfDateRange(Range<LocalDate> localDateRange) {
         if (localDateRange != null) {
-            LocalDate upper;
-            if (localDateRange.hasUpperBound()) {
-                upper = (localDateRange.upperBoundType().equals(BoundType.CLOSED))
-                        ? localDateRange.upperEndpoint() : localDateRange.upperEndpoint().minusDays(1);
+            Range<LocalDate> canonicalRange = localDateRange.canonical(getLocalDateDiscreteDomain());
+            if (!canonicalRange.hasUpperBound()) {
+                return THE_FUTURE;
             }
-            else {
-                upper = LocalDate.ofYearDay(2999, 1);
-            }
-            return upper;
+            return canonicalRange.upperEndpoint().minusDays(1);
         }
         throw new IllegalArgumentException("Supplied localDateRange is null.");
     }
@@ -324,6 +313,45 @@ public class DateUtils
      */
     public static LocalDate firstDayOfPreviousYear(LocalDate date) {
         return LocalDate.from(date).minusYears(1).withDayOfYear(1);
+    }
+
+
+
+    /**
+     * --- Discrete Domains ---
+     * Custom implementations of the DiscreteDomain class for various data types that enable more range functionality
+     */
+    public static DiscreteDomain<LocalDate> getLocalDateDiscreteDomain() {
+        return LocalDateDomain.INSTANCE;
+    }
+    private static final class LocalDateDomain extends DiscreteDomain<LocalDate>
+    {
+        private static final LocalDateDomain INSTANCE = new LocalDateDomain();
+
+        @Override
+        public LocalDate next(LocalDate value) {
+            return (LocalDate.MAX.equals(value)) ? null : value.plusDays(1);
+        }
+
+        @Override
+        public LocalDate previous(LocalDate value) {
+            return (LocalDate.MIN.equals(value)) ? null : value.minusDays(1);
+        }
+
+        @Override
+        public long distance(LocalDate start, LocalDate end) {
+            return Period.between(start, end).getDays();
+        }
+
+        @Override
+        public LocalDate minValue() {
+            return LONG_AGO;
+        }
+
+        @Override
+        public LocalDate maxValue() {
+            return THE_FUTURE;
+        }
     }
 
 }

@@ -5,6 +5,8 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -17,6 +19,8 @@ import static gov.nysenate.ess.core.util.DateUtils.*;
 @Category(UnitTest.class)
 @WorkInProgress(author = "sam", since = "2/17/2017", desc = "needs to cover more methods")
 public class DateUtilsTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(DateUtilsTest.class);
 
     @Test
     public void testIsWeekday() throws Exception {
@@ -71,4 +75,51 @@ public class DateUtilsTest {
         assertEquals(260, getNumberOfWeekdays(range2017));
     }
 
+    @Test
+    public void localDateDiscreteDomainTest() {
+        Range<LocalDate> range = Range.all();
+        Range<LocalDate> canonical = range.canonical(getLocalDateDiscreteDomain());
+        Range<LocalDate> expectedCanonical = Range.atLeast(LONG_AGO);
+        assertEquals(expectedCanonical, canonical);
+    }
+
+    @Test
+    public void startOfDateRangeTest() {
+        LocalDate now = LocalDate.now();
+
+        Range<LocalDate> all = Range.all();
+        LocalDate allStart = startOfDateRange(all);
+        LocalDate allStartExpected = LONG_AGO;
+        assertEquals(allStartExpected, allStart);
+
+        Range<LocalDate> greaterThan = Range.greaterThan(now);
+        LocalDate gtStart = startOfDateRange(greaterThan);
+        LocalDate gtStartExpected = now.plusDays(1);
+        assertEquals(gtStartExpected, gtStart);
+
+        Range<LocalDate> atLeast = Range.atLeast(now);
+        LocalDate atLeastStart = startOfDateRange(atLeast);
+        LocalDate atLeastStartExpected = now;
+        assertEquals(atLeastStartExpected, atLeastStart);
+    }
+
+    @Test
+    public void endOfDateRangeTest() {
+        LocalDate now = LocalDate.now();
+
+        Range<LocalDate> all = Range.all();
+        LocalDate allEnd = endOfDateRange(all);
+        LocalDate allEndExpected = THE_FUTURE;
+        assertEquals(allEndExpected, allEnd);
+
+        Range<LocalDate> lessThan = Range.lessThan(now);
+        LocalDate ltEnd = endOfDateRange(lessThan);
+        LocalDate ltEndExpected = now.minusDays(1);
+        assertEquals(ltEndExpected, ltEnd);
+
+        Range<LocalDate> atMost = Range.atMost(now);
+        LocalDate atMostEnd = endOfDateRange(atMost);
+        LocalDate atMostEndExpected = now;
+        assertEquals(atMostEndExpected, atMostEnd);
+    }
 }

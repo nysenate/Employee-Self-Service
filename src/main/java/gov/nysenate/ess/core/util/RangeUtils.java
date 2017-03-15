@@ -7,6 +7,7 @@ import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.util.DateUtils.getLocalDateDiscreteDomain;
 import static java.util.Map.Entry;
 
 public class RangeUtils
@@ -154,6 +155,24 @@ public class RangeUtils
     }
 
     /**
+     * @see #getEffectiveRanges(RangeMap, Object)
+     * Overload of {@link #getEffectiveRanges(RangeMap, Object)} taking in a {@link SortedMap}
+     * Calls {@link #toRangeMap(SortedMap)} on the map before passing it into {@link #getEffectiveRanges(RangeMap, Object)}
+     * @param sortedMap SortedMap
+     * @param effectiveValue effective value
+     * @param <K> K
+     * @param <V> V
+     * @return RangeSet<K>
+     */
+    public static <K extends Comparable<? super K>, V> RangeSet<K> getEffectiveRanges(
+            SortedMap<K, V> sortedMap, V effectiveValue) {
+        return getEffectiveRanges(
+                toRangeMap(sortedMap),
+                effectiveValue
+        );
+    }
+
+    /**
      * Get a range set that contains the intersection of the two given range sets
      * @param lhs RangeSet<T>
      * @param rhs RangeSet<T>
@@ -245,44 +264,6 @@ public class RangeUtils
      */
     public static Iterator<Integer> getCounter() {
         return getCounter(Range.greaterThan(0));
-    }
-
-    /**
-     * --- Discrete Domains ---
-     * Custom implementations of the DiscreteDomain class for various data types that enable more range functionality
-     */
-
-    public static DiscreteDomain<LocalDate> getLocalDateDiscreteDomain() {
-        return LocalDateDomain.INSTANCE;
-    }
-    private static final class LocalDateDomain extends DiscreteDomain<LocalDate>
-    {
-        private static final LocalDateDomain INSTANCE = new LocalDateDomain();
-
-        @Override
-        public LocalDate next(LocalDate value) {
-            return (LocalDate.MAX.equals(value)) ? null : value.plusDays(1);
-        }
-
-        @Override
-        public LocalDate previous(LocalDate value) {
-            return (LocalDate.MIN.equals(value)) ? null : value.minusDays(1);
-        }
-
-        @Override
-        public long distance(LocalDate start, LocalDate end) {
-            return Period.between(start, end).getDays();
-        }
-
-        @Override
-        public LocalDate minValue() {
-            return LocalDate.MIN;
-        }
-
-        @Override
-        public LocalDate maxValue() {
-            return LocalDate.MAX;
-        }
     }
 
 }
