@@ -14,29 +14,16 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         /* Subquery to get the the employee ids for all direct employees and overrides */
         "WITH empList AS (\n" +
         /*  Fetch the ids of the supervisor's direct employees. */
-        "  SELECT DISTINCT 'PRIMARY' AS EMP_GROUP, NUXREFEM,\n" +
-        "         NULL AS OVR_NUXREFSV, NULL AS OVR_DTSTART, NULL AS OVR_DTEND\n" +
+        "  SELECT DISTINCT NUXREFEM\n" +
         "  FROM ${masterSchema}.PM21PERAUDIT\n" +
         "  WHERE NUXREFSV = :supId AND CDSTATUS = 'A' \n" +
-        /*  Combine that with the ids of the employees that are accessible through the sup overrides.
-         *   The EMP_GROUP column will either be 'SUP_OVR' or 'EMP_OVR' to indicate the type of override. */
-        "  UNION ALL\n" +
-        "  SELECT DISTINCT 'OVERRIDE' AS EMP_GROUP, per.NUXREFEM,\n" +
-        "                   ovr.NUXREFSVSUB, ovr.DTSTART AS OVR_DTSTART, ovr.DTEND AS OVR_DTEND\n" +
-        "  FROM ${tsSchema}.PM23SUPOVRRD ovr\n" +
-        "  JOIN ${masterSchema}.PM21PERAUDIT per\n" +
-        "    ON ovr.NUXREFSVSUB = per.NUXREFSV OR ovr.NUXREFEMSUB = per.NUXREFEM\n" +
-        "  WHERE ovr.CDSTATUS = 'A' AND per.CDSTATUS = 'A'\n" +
-        "    AND ovr.NUXREFEM = :supId\n" +
-        "    AND :endDate BETWEEN NVL(ovr.DTSTART, :endDate)\n" +
-        "                     AND NVL(ovr.DTEND, :endDate)\n" +
         ")\n" +
 
-        "SELECT empList.*, pers.FFNALAST, pers.FFNAFIRST,\n" +
+        "SELECT empList.NUXREFEM, pers.FFNALAST, pers.FFNAFIRST,\n" +
         "       per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER, per.DTTXNORIGIN,\n" +
         "       ptx.CDTRANS, ptx.CDTRANSTYP, ptx.DTEFFECT,\n" +
         "       ROW_NUMBER() OVER (\n" +
-        "            PARTITION BY EMP_GROUP, NUXREFEM, OVR_NUXREFSV ORDER BY DTEFFECT DESC, DTTXNORIGIN DESC\n" +
+        "            PARTITION BY NUXREFEM ORDER BY DTEFFECT DESC, DTTXNORIGIN DESC\n" +
         "       ) AS TRANS_RANK\n" +
         "FROM empList\n" +
         "JOIN ${masterSchema}.PM21PERAUDIT per ON empList.NUXREFEM = per.NUXREFEM\n" +
@@ -47,7 +34,6 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
          *   have any of them (some earlier employees may be missing APP for example). */
         "WHERE per.CDSTATUS = 'A' AND ptx.CDSTATUS = 'A'\n" +
         "  AND ptx.CDTRANSTYP = 'PER'\n" +
-        "  AND ptx.DTEFFECT <= :endDate\n" +
         "  AND (\n" +
         "    ptx.CDTRANS IN ('APP', 'RTP', 'SUP', 'EMP')\n" +
         /** If the employee has no supervisor assigning transactions, allow their first personnel transaction */
@@ -108,13 +94,18 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "SELECT NUXREFEM, NUXREFSV, CDTYPE, CDSTATUS FROM ${masterSchema}.PM23SPCHNEX\n" +
         "WHERE CDSTATUS = 'A' AND NUXREFEM = :empId"),
 
-    GET_SUP_OVERRIDES(
-        "SELECT NUXREFEM, NUXREFSVSUB, CDSTATUS, DTSTART, DTEND, DTTXNORIGIN, DTTXNUPDATE\n" +
+    GET_ALL_OVERRIDES (
+        "SELECT NUXREFEM, NUXREFSVSUB, NUXREFEMSUB, CDSTATUS, DTSTART, DTEND, DTTXNORIGIN, DTTXNUPDATE\n" +
         "FROM ${tsSchema}.PM23SUPOVRRD\n" +
-        "WHERE NUXREFEM = :empId AND NUXREFSVSUB IS NOT NULL AND CDSTATUS = 'A'"
+        "WHERE NUXREFEM = :empId AND CDSTATUS = 'A'"
     ),
+
+    GET_SUP_OVERRIDES (
+        GET_ALL_OVERRIDES.getSql() + " AND NUXREFSVSUB IS NOT NULL"
+    ),
+
     GET_SUP_GRANTS(
-        "SELECT NUXREFEM, NUXREFSVSUB, CDSTATUS, DTSTART, DTEND, DTTXNORIGIN, DTTXNUPDATE\n" +
+        "SELECT NUXREFEM, NUXREFSVSUB, NUXREFEMSUB, CDSTATUS, DTSTART, DTEND, DTTXNORIGIN, DTTXNUPDATE\n" +
         "FROM ${tsSchema}.PM23SUPOVRRD\n" +
         "WHERE NUXREFSVSUB = :empId AND CDSTATUS = 'A'"
     ),

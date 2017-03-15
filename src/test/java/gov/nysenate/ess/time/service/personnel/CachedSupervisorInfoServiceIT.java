@@ -27,9 +27,13 @@ public class CachedSupervisorInfoServiceIT extends BaseTest {
         Thread.sleep(5000);
         int supId = 1024;
         Range<LocalDate> dateRange = Range.all();
-        logger.info("Getting sups for {}", supId);
+        logger.info("Getting emps for {}", supId);
         Stopwatch sw = Stopwatch.createStarted();
         SupervisorEmpGroup supervisorEmpGroup = supInfoService.getSupervisorEmpGroup(supId, dateRange);
+        logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
+        logger.info("Getting emps for {} again", supId);
+        sw.reset().start();
+        SupervisorEmpGroup supervisorEmpGroup2 = supInfoService.getSupervisorEmpGroup(supId, dateRange);
         logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 
@@ -38,13 +42,13 @@ public class CachedSupervisorInfoServiceIT extends BaseTest {
         Thread.sleep(5000);
         int supId = 1024;
         Range<LocalDate> dateRange = Range.all();
-        logger.info("Getting sups for {}", supId);
+        logger.info("Getting emps for {}", supId);
         Stopwatch sw = Stopwatch.createStarted();
         ExtendedSupEmpGroup extendedSupEmpGroup = supInfoService.getExtendedSupEmpGroup(supId, dateRange);
         logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
         sw.reset().start();
         logger.info("Getting sups for {} again", supId);
-        extendedSupEmpGroup = supInfoService.getExtendedSupEmpGroup(supId, dateRange);
+        ExtendedSupEmpGroup extendedSupEmpGroup2 = supInfoService.getExtendedSupEmpGroup(supId, dateRange);
         logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 

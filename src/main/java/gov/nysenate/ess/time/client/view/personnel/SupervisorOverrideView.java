@@ -20,8 +20,8 @@ public class SupervisorOverrideView implements ViewObject
 
     public SupervisorOverrideView(SupervisorOverride ovr, Employee overrideSupervisor) {
         if (ovr != null) {
-            this.supervisorId = ovr.getGranteeSupervisorId();
-            this.overrideSupervisorId = ovr.getGranterSupervisorId();
+            this.supervisorId = ovr.getGranteeEmpId();
+            this.overrideSupervisorId = ovr.getGranterEmpId();
             this.overrideSupervisor = new EmployeeView(overrideSupervisor);
             this.active = ovr.isActive();
             this.startDate = ovr.getStartDate().orElse(null);

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.personnel;
 
+import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
@@ -120,7 +121,8 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
                 .filter(range -> range.hasLowerBound() && range.hasUpperBound())
                 // Convert to a range of years
                 .map(range -> DateUtils.toYearRange(range, fiscalYears))
-                .flatMapToInt(range -> IntStream.rangeClosed(range.lowerEndpoint(), range.upperEndpoint()))
+                .map(range -> range.canonical(DiscreteDomain.integers()))
+                .flatMapToInt(range -> IntStream.range(range.lowerEndpoint(), range.upperEndpoint()))
                 .boxed()
                 .distinct()
                 .sorted()

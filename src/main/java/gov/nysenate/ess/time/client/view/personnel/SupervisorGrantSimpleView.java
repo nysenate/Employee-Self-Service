@@ -19,8 +19,8 @@ public class SupervisorGrantSimpleView implements ViewObject
 
     public SupervisorGrantSimpleView(SupervisorOverride ovr) {
         if (ovr != null) {
-            this.granteeSupervisorId = ovr.getGranteeSupervisorId();
-            this.granterSupervisorId = ovr.getGranterSupervisorId();
+            this.granteeSupervisorId = ovr.getGranteeEmpId();
+            this.granterSupervisorId = ovr.getGranterEmpId();
             this.active = ovr.isActive();
             this.startDate = ovr.getStartDate().orElse(null);
             this.endDate = ovr.getEndDate().orElse(null);

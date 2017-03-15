@@ -6,17 +6,17 @@ import gov.nysenate.ess.time.model.personnel.ExtendedSupEmpGroup;
 
 public class ExtendedSupEmpGroupView extends SupervisorEmpGroupView {
 
-    private Multimap<Integer, SupervisorEmpGroupView> employeeSupEmpGroups = HashMultimap.create();
+    private Multimap<Integer, PrimarySupEmpGroupView> employeeSupEmpGroups = HashMultimap.create();
 
     public ExtendedSupEmpGroupView(ExtendedSupEmpGroup eseg) {
         super(eseg);
 
         eseg.getEmployeeSupEmpGroups().values().stream()
-                .map(SupervisorEmpGroupView::new)
+                .map(PrimarySupEmpGroupView::new)
                 .forEach(seg -> employeeSupEmpGroups.put(seg.getSupId(), seg));
     }
 
-    public Multimap<Integer, SupervisorEmpGroupView> getEmployeeSupEmpGroups() {
+    public Multimap<Integer, PrimarySupEmpGroupView> getEmployeeSupEmpGroups() {
         return employeeSupEmpGroups;
     }
 

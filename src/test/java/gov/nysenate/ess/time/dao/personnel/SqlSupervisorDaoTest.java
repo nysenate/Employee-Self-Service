@@ -4,11 +4,9 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
-import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.BaseTest;
-import gov.nysenate.ess.time.model.personnel.SupGrantType;
-import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
+import gov.nysenate.ess.time.model.personnel.PrimarySupEmpGroup;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -33,22 +31,10 @@ public class SqlSupervisorDaoTest extends BaseTest
     @Test
     public void testGetSupEmpGroup_ReturnsEmpGroup() throws Exception {
         int empId = 1024;
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusYears(1);
-        Range<LocalDate> dateRange = Range.closed(startDate, endDate);
 
-        SupervisorEmpGroup group = supervisorDao.getSupervisorEmpGroup(empId, dateRange);
+        PrimarySupEmpGroup group = supervisorDao.getPrimarySupEmpGroup(empId);
 
         logger.info(OutputUtils.toJson(group));
-    }
-
-    @Test
-    public void issupTest() throws InterruptedException {
-        Thread.sleep(5000);
-        supervisorDao.isSupervisor(11423, DateUtils.ALL_DATES);
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        logger.info("{}", supervisorDao.isSupervisor(11423, DateUtils.ALL_DATES));
-        logger.info("{}", stopwatch.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -62,8 +48,12 @@ public class SqlSupervisorDaoTest extends BaseTest
 
     @Test
     public void supOverrideTest() throws Exception {
-//        supervisorDao.setSupervisorOverride(11423, 7048, Range.closed(LocalDate.of(2015, 7, 16), LocalDate.of(2015, 7, 29)));
-        logger.info("{}", OutputUtils.toJson(supervisorDao.getSupervisorOverrides(9896, SupGrantType.GRANTER)));
+        logger.info("{}", OutputUtils.toJson(supervisorDao.getSupervisorOverrides(7048)));
+    }
+
+    @Test
+    public void supGrantTest() {
+        logger.info("{}", OutputUtils.toJson(supervisorDao.getSupervisorGrants(9896)));
     }
 
     @Test

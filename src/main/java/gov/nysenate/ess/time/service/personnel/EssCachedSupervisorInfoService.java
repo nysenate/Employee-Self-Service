@@ -1,12 +1,11 @@
 package gov.nysenate.ess.time.service.personnel;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
@@ -16,6 +15,7 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.AsyncRunner;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.dao.personnel.SupervisorDao;
 import gov.nysenate.ess.time.model.personnel.*;
 import net.sf.ehcache.Cache;
@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
+import static gov.nysenate.ess.time.model.personnel.SupOverrideType.*;
 
 @Service
 public class EssCachedSupervisorInfoService implements SupervisorInfoService, CachingService<Integer>
@@ -102,13 +103,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
     @Override
     public SupervisorEmpGroup getSupervisorEmpGroup(int supId, Range<LocalDate> dateRange) throws SupervisorException {
-        SupervisorEmpGroup empGroup = Optional.ofNullable(getCachedSupEmpGroup(supId))
-                .orElseGet(() -> this.getAndCacheSupEmpGroup(supId));
-
-        SupervisorEmpGroup filteredEmpGroup = new SupervisorEmpGroup(empGroup);
-        filteredEmpGroup.filterActiveEmployeesByDate(dateRange);
-        filteredEmpGroup.setStartDate(DateUtils.startOfDateRange(dateRange));
-        filteredEmpGroup.setEndDate(DateUtils.endOfDateRange(dateRange));
+        SupervisorEmpGroup filteredEmpGroup = getSupEmpGroup(supId);
+        filteredEmpGroup.setActiveDates(dateRange);
         return filteredEmpGroup;
     }
 
@@ -119,8 +115,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
         for (EmployeeSupInfo supInfo : extendedEmpGroup.getPrimaryEmployees().values()) {
             try {
-                SupervisorEmpGroup subEmpGroup =
-                        getSupervisorEmpGroup(supInfo.getEmpId(), supInfo.getEffectiveDateRange());
+                PrimarySupEmpGroup subEmpGroup = getPrimarySupEmpGroup(supInfo.getEmpId());
+                subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
                 // The employee may not be supervising any employees for their time under this supervisor
                 if (subEmpGroup.hasEmployees()) {
                     extendedEmpGroup.addEmployeeSupEmpGroup(subEmpGroup);
@@ -139,7 +135,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         int currDepth = 0;
         SupervisorChain supChain = new SupervisorChain(currEmpId);
         while (true) {
-            /** Eliminate possibility of infinite recursion. */
+            /* Eliminate possibility of infinite recursion. */
             if (currDepth >= maxChainLength) {
                 break;
             }
@@ -160,30 +156,30 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
     @Override
     public List<SupervisorOverride> getSupervisorOverrides(int supId) throws SupervisorException {
-        return supervisorDao.getSupervisorOverrides(supId, SupGrantType.GRANTEE);
+        return supervisorDao.getSupervisorOverrides(supId);
     }
 
     @Override
     public List<SupervisorOverride> getSupervisorGrants(int supId) throws SupervisorException {
-        return supervisorDao.getSupervisorOverrides(supId, SupGrantType.GRANTER);
+        return supervisorDao.getSupervisorGrants(supId);
     }
 
     @Override
     public void updateSupervisorOverride(SupervisorOverride override) throws SupervisorException {
-        if (isSupervisorDuring(override.getGranteeSupervisorId(), Range.all()) &&
-            isSupervisorDuring(override.getGranterSupervisorId(), Range.all())) {
+        if (isSupervisorDuring(override.getGranteeEmpId(), Range.all()) &&
+            isSupervisorDuring(override.getGranterEmpId(), Range.all())) {
             // If the override is set to inactive, only apply the override if there is an existing grant
             // with the given granter -> grantee pair. There's no reason to create it if there isn't one.
             if (!override.isActive()) {
-                boolean hasExistingGrant = getSupervisorGrants(override.getGranterSupervisorId()).stream()
-                        .anyMatch(ovr -> ovr.getGranteeSupervisorId() == override.getGranteeSupervisorId());
+                boolean hasExistingGrant = getSupervisorGrants(override.getGranterEmpId()).stream()
+                        .anyMatch(ovr -> ovr.getGranteeEmpId() == override.getGranteeEmpId());
                 if (!hasExistingGrant) {
                     return;
                 }
             }
-            supervisorDao.setSupervisorOverride(override.getGranterSupervisorId(), override.getGranteeSupervisorId(),
+            supervisorDao.setSupervisorOverride(override.getGranterEmpId(), override.getGranteeEmpId(),
                     override.isActive(), override.getStartDate().orElse(null), override.getEndDate().orElse(null));
-            getAndCacheSupEmpGroup(override.getGranteeSupervisorId());
+            getAndCachePrimarySupEmpGroup(override.getGranteeEmpId());
             eventBus.post(new SupervisorGrantUpdateEvent(override));
         }
         else {
@@ -232,13 +228,141 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
     /* --- Internal Methods --- */
 
     /**
-     * Get a {@link SupervisorEmpGroup} from the cache for the given supervisor
+     * Construct a {@link SupervisorEmpGroup} for the given supId
+     * Uses {@link PrimarySupEmpGroup} and/or {@link SupervisorOverride}s
+     * @param supId int
+     * @return {@link SupervisorEmpGroup}
+     * @throws SupervisorException if the employee ref'd by supId has no primary employees or overrides
+     */
+    private SupervisorEmpGroup getSupEmpGroup(int supId) throws SupervisorException {
+        SupervisorEmpGroup empGroup;
+        List<SupervisorOverride> overrides = getOverrides(supId);
+
+        try {
+            empGroup = new SupervisorEmpGroup(getPrimarySupEmpGroup(supId));
+        } catch (SupervisorMissingEmpsEx ex) {
+            if (overrides.isEmpty()) {
+                throw ex;
+            }
+            empGroup = new SupervisorEmpGroup();
+            empGroup.setSupervisorId(supId);
+        }
+
+        for (SupervisorOverride override : overrides) {
+            switch (override.getSupOverrideType()) {
+                case SUPERVISOR:
+                    getSupOverrideEmps(override).forEach(empGroup::addSupOverrideEmployee);
+                    break;
+                case EMPLOYEE:
+                    getEmpOverrideEmp(override).forEach(empGroup::addOverrideEmployee);
+                    break;
+            }
+        }
+
+        return empGroup;
+    }
+
+    /**
+     * Generates {@link EmployeeSupInfo}s for the given supervisor override.
+     * Uses the granter's {@link PrimarySupEmpGroup} to get {@link EmployeeSupInfo}s.
+     * Must be called for {@link SupOverrideType#SUPERVISOR} overrides.
+     *
+     * @param override {@link SupervisorOverride}
+     * @return {@link Set<EmployeeSupInfo>}
+     * @throws IllegalStateException if non {@link SupOverrideType#SUPERVISOR} is passed in
+     */
+    private Set<EmployeeSupInfo> getSupOverrideEmps(SupervisorOverride override) {
+        if (SUPERVISOR != override.getSupOverrideType()) {
+            throw new IllegalStateException("This method is intended for " + SUPERVISOR + " overrides.  " +
+                    "Received: " + override);
+        }
+        try {
+            PrimarySupEmpGroup filteredEmpGroup = getPrimarySupEmpGroup(override.getGranterEmpId());
+            filteredEmpGroup.setActiveDates(override.getEffectiveDateRange());
+            return filteredEmpGroup.getPrimaryEmpSupInfos();
+        } catch (SupervisorMissingEmpsEx ex) {
+            return Collections.emptySet();
+        }
+    }
+
+    /**
+     * Generates {@link EmployeeSupInfo}s for the given employee supervisor override.
+     * Uses the employee's {@link TransactionHistory} to filter out non-employed dates
+     *   and possibly split into multiple {@link EmployeeSupInfo}s if the employee had multiple supervisors
+     *   during the override.
+     * Must be called for {@link SupOverrideType#EMPLOYEE} overrides
+     *
+     * @param override {@link SupervisorOverride}
+     * @return {@link Set<EmployeeSupInfo>}
+     * @throws IllegalStateException if non {@link SupOverrideType#EMPLOYEE} is passed in
+     */
+    private Set<EmployeeSupInfo> getEmpOverrideEmp(SupervisorOverride override) {
+        if (EMPLOYEE != override.getSupOverrideType()) {
+            throw new IllegalStateException("This method is intended for " + EMPLOYEE + " overrides.  " +
+                    "Received: " + override);
+        }
+        int empId = override.getGranterEmpId();
+
+        TransactionHistory transHistory = empTransService.getTransHistory(empId);
+
+        RangeSet<LocalDate> activeDates = RangeUtils.getEffectiveRanges(
+                transHistory.getEffectiveEmpStatus(Range.all()), true);
+
+        TreeMap<LocalDate, Integer> effectiveSupervisorIds = transHistory.getEffectiveSupervisorIds(Range.all());
+        RangeSet<LocalDate> supervisorDates = RangeUtils.getRangeSet(RangeUtils.toRangeMap(effectiveSupervisorIds));
+
+        // Get intersection of active dates, continuous supervisor dates, and the override effective date range
+        // this will get ranges for each necessary EmployeeSupInfo
+        RangeSet<LocalDate> empInfoRanges = RangeUtils.intersection(Arrays.asList(
+                activeDates, supervisorDates, ImmutableRangeSet.of(override.getEffectiveDateRange())
+        ));
+
+        Employee employee = empInfoService.getEmployee(empId);
+
+        Set<EmployeeSupInfo> empSupInfos = empInfoRanges.asRanges().stream()
+                .map(range -> {
+                    LocalDate startDate = DateUtils.startOfDateRange(range);
+                    LocalDate endDate = DateUtils.endOfDateRange(range);
+                    Integer supId = transHistory.getEffectiveSupervisorIds(range).lastEntry().getValue();
+                    EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, supId);
+                    empSupInfo.setEmpFirstName(employee.getFirstName());
+                    empSupInfo.setEmpLastName(employee.getLastName());
+                    empSupInfo.setSupStartDate(startDate);
+                    empSupInfo.setSupEndDate(endDate);
+                    return empSupInfo;
+                })
+                .collect(Collectors.toSet());
+
+        return empSupInfos;
+    }
+
+    /**
+     * Get a {@link PrimarySupEmpGroup} for the given employee
+     * The group will be retrieved from the cache if it exists there
+     * Or pulled from the database (and into the cache) if not
+     * @see #getCachedPrimarySupEmpGroup(int)
+     * @see #getAndCachePrimarySupEmpGroup(int)
+     * @param supId int - supervisor id
+     * @return {@link PrimarySupEmpGroup}
+     * @throws SupervisorException if the employee has no direct employees
+     */
+    private PrimarySupEmpGroup getPrimarySupEmpGroup(int supId) throws SupervisorException {
+        PrimarySupEmpGroup primarySupEmpGroup =
+                Optional.ofNullable(getCachedPrimarySupEmpGroup(supId))
+                        .orElseGet(() -> this.getAndCachePrimarySupEmpGroup(supId));
+
+        // Return a copy to prevent unintentional modification to the cached value
+        return new PrimarySupEmpGroup(primarySupEmpGroup);
+    }
+
+    /**
+     * Get a {@link PrimarySupEmpGroup} from the cache for the given supervisor
      *
      * @param supId int - supervisor id
-     * @return {@link SupervisorEmpGroup} if one exists, null otherwise
+     * @return {@link PrimarySupEmpGroup} if one exists, null otherwise
      * @throws SupervisorException if the employee is registered in the cache as a non-supervisor
      */
-    private SupervisorEmpGroup getCachedSupEmpGroup(int supId) throws SupervisorException {
+    private PrimarySupEmpGroup getCachedPrimarySupEmpGroup(int supId) throws SupervisorException {
         supEmployeeGroupCache.acquireReadLockOnKey(supId);
         Element cachedElem = supEmployeeGroupCache.get(supId);
         supEmployeeGroupCache.releaseReadLockOnKey(supId);
@@ -249,21 +373,21 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         if (NON_SUPERVISOR_VALUE.equals(cachedValue)) {
             throw new SupervisorMissingEmpsEx(supId);
         }
-        return (SupervisorEmpGroup) cachedElem.getObjectValue();
+        return (PrimarySupEmpGroup) cachedElem.getObjectValue();
     }
 
     /**
-     * Get a {@link SupervisorEmpGroup} and save it to the cache
-     * Register the employee in the cache as a non-supervisor if no {@link SupervisorEmpGroup} can be retrieved
+     * Get a {@link PrimarySupEmpGroup} and save it to the cache
+     * Register the employee in the cache as a non-supervisor if no {@link PrimarySupEmpGroup} can be retrieved
      * @param supId int - supervisor id
-     * @return {@link SupervisorEmpGroup}
+     * @return {@link PrimarySupEmpGroup}
      * @throws SupervisorException if the employee is not a supervisor
      */
-    private SupervisorEmpGroup getAndCacheSupEmpGroup(int supId) throws SupervisorException {
+    private PrimarySupEmpGroup getAndCachePrimarySupEmpGroup(int supId) throws SupervisorException {
         try {
-            SupervisorEmpGroup supervisorEmpGroup = supervisorDao.getSupervisorEmpGroup(supId, DateUtils.ALL_DATES);
-            putValueInCache(supId, supervisorEmpGroup);
-            return supervisorEmpGroup;
+            PrimarySupEmpGroup primarySupEmpGroup = supervisorDao.getPrimarySupEmpGroup(supId);
+            putValueInCache(supId, primarySupEmpGroup);
+            return primarySupEmpGroup;
         } catch (SupervisorException ex) {
             putValueInCache(supId, NON_SUPERVISOR_VALUE);
             throw ex;
@@ -278,6 +402,15 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         finally {
             supEmployeeGroupCache.releaseWriteLockOnKey(empId);
         }
+    }
+
+    /**
+     * Get all employee and supervisor overrides for the given employee
+     * @param supId int
+     * @return {@link List<SupervisorOverride>}
+     */
+    private List<SupervisorOverride> getOverrides(int supId) {
+        return supervisorDao.getAllOverrides(supId);
     }
 
     /**
@@ -297,7 +430,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                     return transHistory.getEffectiveSupervisorIds(relevantDates).values().stream();
                 })
                 .distinct()
-                .peek(this::getAndCacheSupEmpGroup)
+                .peek(this::getAndCachePrimarySupEmpGroup)
                 .count();
         if (updatedSups > 0) {
             logger.info("Updated {} supervisor employee groups in response to new transactions", updatedSups);
@@ -315,7 +448,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
         modifiedSups.addAll(getOvrUpdatedSups());
 
-        modifiedSups.forEach(this::getAndCacheSupEmpGroup);
+        modifiedSups.forEach(this::getAndCachePrimarySupEmpGroup);
 
         logger.debug("Refreshed {} supervisor emp groups", modifiedSups.size());
     }
@@ -327,7 +460,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         return supervisorDao.getSupOverrideChanges(lastSupOvrUpdate).stream()
                 .peek(supOvr -> lastSupOvrUpdate = supOvr.getUpdateDate().isAfter(lastSupOvrUpdate)
                         ? supOvr.getUpdateDate() : lastSupOvrUpdate)
-                .map(SupervisorOverride::getGranteeSupervisorId)
+                .map(SupervisorOverride::getGranteeEmpId)
                 .collect(Collectors.toSet());
     }
 }

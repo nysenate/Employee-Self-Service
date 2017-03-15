@@ -1,16 +1,12 @@
 package gov.nysenate.ess.time.dao.personnel;
 
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Range;
-import com.google.common.collect.Table;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.model.personnel.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,8 +23,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.EMP;
-import static gov.nysenate.ess.core.util.DateUtils.endOfDateRange;
-import static gov.nysenate.ess.core.util.DateUtils.startOfDateRange;
 
 @Repository
 public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
@@ -39,23 +33,6 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
     private static final String overrideLabel = "OVERRIDE";
     private static final String supOverrideLabel = "SUP_OVR";
     private static final String empOverrideLabel = "EMP_OVR";
-
-    /**
-     * {@inheritDoc}
-     * We determine this by simply checking if the empId managed any employees during the
-     * given time range.
-     */
-    @Override
-    public boolean isSupervisor(int empId, Range<LocalDate> dateRange) {
-        SupervisorEmpGroup supervisorEmpGroup;
-        try {
-            supervisorEmpGroup = getSupervisorEmpGroup(empId, dateRange);
-        }
-        catch (SupervisorException ex) {
-            return false;
-        }
-        return supervisorEmpGroup.hasEmployees();
-    }
 
     /**{@inheritDoc} */
     @Override
@@ -93,18 +70,15 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
     /**{@inheritDoc} */
     @Override
-    public SupervisorEmpGroup getSupervisorEmpGroup(int supId, Range<LocalDate> queryRange) throws SupervisorException {
+    public PrimarySupEmpGroup getPrimarySupEmpGroup(int supId) throws SupervisorException {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        LocalDate startDate = startOfDateRange(queryRange);
-        LocalDate endDate = endOfDateRange(queryRange);
         params.addValue("supId", supId);
-        params.addValue("endDate", toDate(endDate));
         List<Map<String, Object>> res;
         try {
             res = remoteNamedJdbc.query(SqlSupervisorQuery.GET_SUP_EMP_TRANS_SQL.getSql(schemaMap()), params, new ColumnMapRowMapper());
         }
         catch (DataRetrievalFailureException ex) {
-            throw new SupervisorException("Failed to retrieve matching employees for supId: " + supId + " before: " + endDate);
+            throw new SupervisorException("Failed to retrieve matching employees for supId: " + supId, ex);
         }
 
         /*
@@ -112,36 +86,22 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
          * are still under the given supervisor.
          */
         if (!res.isEmpty()) {
-            SupervisorEmpGroup empGroup = new SupervisorEmpGroup(supId, startDate, endDate);
+            PrimarySupEmpGroup empGroup = new PrimarySupEmpGroup(supId);
             HashMultimap<Integer, EmployeeSupInfo> primaryEmps = HashMultimap.create();
-            HashMultimap<Integer, EmployeeSupInfo> overrideEmps = HashMultimap.create();
-            Table<Integer, Integer, EmployeeSupInfo> supOverrideEmps = HashBasedTable.create();
 
             Map<Integer, LocalDate> possiblePrimaryEmps = new HashMap<>();
-            Table<Integer, Integer, LocalDate> possibleSupOvrEmps = HashBasedTable.create();
 
             for (Map<String,Object> colMap : res) {
                 logger.trace(colMap.toString());
-
-                Integer ovrSupId = Optional.ofNullable(colMap.get("OVR_NUXREFSV"))
-                        .map(Object::toString)
-                        .map(Integer::parseInt)
-                        .orElse(null);
-
-                String groupVal = colMap.get("EMP_GROUP").toString();
-                String group = getEmpGroup(groupVal, ovrSupId);
 
                 int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
                 TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
                 PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
 
                 LocalDate effectDate = getDateCol(colMap, "DTEFFECT");
-                LocalDate ovrStartDate = getDateCol(colMap, "OVR_DTSTART");
-                LocalDate ovrEndDate = getDateCol(colMap, "OVR_DTEND");
 
                 int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
                 boolean empTerminated = false;
-                boolean effectDateIsPast = effectDate.compareTo(startDate) <= 0;
 
                 if (colMap.get("NUXREFSV") == null || !StringUtils.isNumeric(colMap.get("NUXREFSV").toString())) {
                     continue;
@@ -149,7 +109,7 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 
                 int currSupId = Integer.parseInt(colMap.get("NUXREFSV").toString());
 
-                EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId, startDate, endDate);
+                EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
                 empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
                 empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
                 if (transType.equals(EMP)) {
@@ -172,44 +132,12 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 if (rank == 1) {
                     /*
                      * Add the employee to their supervisor's respective group if their supervisor id
-                     * matches the given 'supId'. For PRIMARY AND SUP_OVR codes we flag mismatches as possible
-                     * employees when the effect date is between the 'start' and 'end' dates. The proceeding
-                     * record(s) for those employees will then need to be checked to see if the supervisor matches
-                     * at some point on/after the 'start' date.
+                     * matches the given 'supId'.
                      */
-                    switch (group) {
-                        case primaryLabel: {
-                            if (currSupId == supId && !empTerminated) {
-                                primaryEmps.put(empId, empSupInfo);
-                            }
-                            else if (!effectDateIsPast) {
-                                possiblePrimaryEmps.put(empId, effectDate);
-                            }
-                            break;
-                        }
-                        case empOverrideLabel: {
-                            Range<LocalDate> overrideRange = Range.closedOpen(
-                                    Optional.ofNullable(ovrStartDate).orElse(LocalDate.MIN),
-                                    Optional.ofNullable(ovrEndDate).orElse(LocalDate.MAX)
-                            );
-                            if (!RangeUtils.intersects(overrideRange, queryRange)) {
-                                continue;
-                            }
-                            empSupInfo.setSupStartDate(ovrStartDate);
-                            empSupInfo.setSupEndDate(ovrEndDate);
-                            overrideEmps.put(empId, empSupInfo);
-                            break;
-                        }
-                        case supOverrideLabel: {
-                            if (currSupId == ovrSupId && !empTerminated) {
-                                supOverrideEmps.put(ovrSupId, empId, empSupInfo);
-                            }
-                            else if (!effectDateIsPast) {
-                                possibleSupOvrEmps.put(ovrSupId, empId, effectDate);
-                            }
-                            break;
-                        }
+                    if (currSupId == supId && !empTerminated) {
+                        primaryEmps.put(empId, empSupInfo);
                     }
+                    possiblePrimaryEmps.put(empId, effectDate);
                 }
                 else {
                     /*
@@ -218,63 +146,51 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                      * respective supervisor group. Otherwise if we can't find a match and the effect date has
                      * occurred before the 'start' date, we know that they don't belong in the group for this range.
                      */
-                    switch (group) {
-                        case primaryLabel: {
-                            if (possiblePrimaryEmps.containsKey(empId)) {
-                                if (currSupId == supId && !empTerminated) {
-                                    empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
-                                    primaryEmps.put(empId, empSupInfo);
-                                    possiblePrimaryEmps.remove(empId);
-                                }
-                                else if (!effectDateIsPast) {
-                                    possiblePrimaryEmps.put(empId, effectDate);
-                                }
-                                else {
-                                    possiblePrimaryEmps.remove(empId);
-                                }
-                            }
-                            // Indicates that the supervisor had this employee for
-                            // at least one additional period of time
-                            // In this case add another possible primary Emp
-                            else if (primaryEmps.containsKey(empId) &&
-                                    (empTerminated || currSupId != supId)) {
-                                possiblePrimaryEmps.put(empId, effectDate);
-                            }
-                            break;
+                    if (possiblePrimaryEmps.containsKey(empId)) {
+                        if (currSupId == supId && !empTerminated) {
+                            empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
+                            primaryEmps.put(empId, empSupInfo);
+                            possiblePrimaryEmps.remove(empId);
                         }
-                        case supOverrideLabel: {
-                            if (possibleSupOvrEmps.contains(ovrSupId, empId)) {
-                                if (currSupId == ovrSupId && !empTerminated) {
-                                    empSupInfo.setSupEndDate(possibleSupOvrEmps.get(ovrSupId, empId));
-                                    supOverrideEmps.put(ovrSupId, empId, empSupInfo);
-                                }
-                                else if (!effectDateIsPast) {
-                                    possibleSupOvrEmps.put(ovrSupId, empId, effectDate);
-                                }
-                                else {
-                                    possibleSupOvrEmps.remove(ovrSupId, empId);
-                                }
-                            }
-                            break;
-                        }
+                        possiblePrimaryEmps.put(empId, effectDate);
+                    }
+                    // Indicates that the supervisor had this employee for
+                    // at least one additional period of time
+                    // In this case add another possible primary Emp
+                    else if (primaryEmps.containsKey(empId) &&
+                            (empTerminated || currSupId != supId)) {
+                        possiblePrimaryEmps.put(empId, effectDate);
                     }
                 }
             }
 
             empGroup.setPrimaryEmployees(primaryEmps);
-            empGroup.setOverrideEmployees(overrideEmps);
-            empGroup.setSupOverrideEmployees(supOverrideEmps);
             return empGroup;
         }
-        throw new SupervisorMissingEmpsEx(supId, endDate);
+        throw new SupervisorMissingEmpsEx(supId);
     }
 
     /**{@inheritDoc} */
     @Override
-    public List<SupervisorOverride> getSupervisorOverrides(int supId, SupGrantType type) throws SupervisorException {
+    public List<SupervisorOverride> getAllOverrides(int supId) throws SupervisorException {
         SqlParameterSource params = new MapSqlParameterSource("empId", supId);
-        String sql = (type.equals(SupGrantType.GRANTEE)) ? SqlSupervisorQuery.GET_SUP_OVERRIDES.getSql(schemaMap())
-                                                         : SqlSupervisorQuery.GET_SUP_GRANTS.getSql(schemaMap());
+        final String sql = SqlSupervisorQuery.GET_ALL_OVERRIDES.getSql(schemaMap());
+        return remoteNamedJdbc.query(sql, params, new SupervisorOverrideRowMapper());
+    }
+
+    /**{@inheritDoc} */
+    @Override
+    public List<SupervisorOverride> getSupervisorOverrides(int supId) throws SupervisorException {
+        SqlParameterSource params = new MapSqlParameterSource("empId", supId);
+        final String sql = SqlSupervisorQuery.GET_SUP_OVERRIDES.getSql(schemaMap());
+        return remoteNamedJdbc.query(sql, params, new SupervisorOverrideRowMapper());
+    }
+
+    /**{@inheritDoc} */
+    @Override
+    public List<SupervisorOverride> getSupervisorGrants(int supId) throws SupervisorException {
+        SqlParameterSource params = new MapSqlParameterSource("empId", supId);
+        final String sql = SqlSupervisorQuery.GET_SUP_GRANTS.getSql(schemaMap());
         return remoteNamedJdbc.query(sql, params, new SupervisorOverrideRowMapper());
     }
 

@@ -9,8 +9,4 @@ public class SupervisorMissingEmpsEx extends SupervisorException
     public SupervisorMissingEmpsEx(int empId) {
         super("Employee " + empId + " has no employee associations");
     }
-
-    public SupervisorMissingEmpsEx(int empId, LocalDate endDate) {
-        super("Employee " + empId + " has no employee associations before " + endDate);
-    }
 }

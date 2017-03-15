@@ -1,7 +1,6 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.Range;
-import freemarker.template.utility.DateUtil;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -9,7 +8,7 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.client.view.personnel.*;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
-import gov.nysenate.ess.time.model.personnel.ExtendedSupEmpGroup;
+import gov.nysenate.ess.time.model.personnel.SupOverrideType;
 import gov.nysenate.ess.time.model.personnel.SupervisorChain;
 import gov.nysenate.ess.time.model.personnel.SupervisorMissingEmpsEx;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
@@ -92,7 +91,7 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
 
         List<SupervisorOverride> overrides = supInfoService.getSupervisorOverrides(supId);
         return ListViewResponse.of(overrides.stream()
-                .map(ovr -> new SupervisorOverrideView(ovr, empInfoService.getEmployee(ovr.getGranterSupervisorId())))
+                .map(ovr -> new SupervisorOverrideView(ovr, empInfoService.getEmployee(ovr.getGranterEmpId())))
                 .collect(toList()), "overrides");
     }
 
@@ -102,7 +101,8 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
 
         List<SupervisorOverride> overrides = supInfoService.getSupervisorGrants(supId);
         return ListViewResponse.of(overrides.stream()
-                .map(ovr -> new SupervisorGrantView(ovr, empInfoService.getEmployee(ovr.getGranteeSupervisorId())))
+                .filter(ovr -> SupOverrideType.SUPERVISOR == ovr.getSupOverrideType())
+                .map(ovr -> new SupervisorGrantView(ovr, empInfoService.getEmployee(ovr.getGranteeEmpId())))
                 .collect(toList()), "grants");
     }
 
@@ -120,11 +120,12 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
                 throw new IllegalArgumentException("Grant must contain a valid supervisor and override supervisor id.");
             }
             SupervisorOverride override = new SupervisorOverride();
-            override.setGranteeSupervisorId(grantView.getGranteeSupervisorId());
-            override.setGranterSupervisorId(grantView.getGranterSupervisorId());
-            override.setStartDate(Optional.ofNullable(grantView.getStartDate()));
-            override.setEndDate(Optional.ofNullable(grantView.getEndDate()));
+            override.setGranteeEmpId(grantView.getGranteeSupervisorId());
+            override.setGranterEmpId(grantView.getGranterSupervisorId());
+            override.setStartDate(grantView.getStartDate());
+            override.setEndDate(grantView.getEndDate());
             override.setActive(grantView.isActive());
+            override.setSupOverrideType(SupOverrideType.SUPERVISOR);
             supInfoService.updateSupervisorOverride(override);
         }
         return new SimpleResponse(true, "Grants have been updated", "update supervisor grant");

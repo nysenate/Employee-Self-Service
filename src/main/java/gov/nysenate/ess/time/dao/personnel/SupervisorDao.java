@@ -1,6 +1,5 @@
 package gov.nysenate.ess.time.dao.personnel;
 
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.time.model.personnel.*;
@@ -14,15 +13,6 @@ import java.util.List;
  */
 public interface SupervisorDao extends BaseDao
 {
-    /**
-     * Indicates whether the given supId is/was a T&A supervisor during the given dates.
-     *
-     * @param empId int - employee id
-     * @param dateRange Range<LocalDate> - date range
-     * @return boolean - true if 'empId' had subordinates during the date range and was thus
-     *                   a supervisor, false otherwise.
-     */
-    boolean isSupervisor(int empId, Range<LocalDate> dateRange);
 
     /**
      * Indicates whether the given empId was ever a T&A supervisor
@@ -41,26 +31,37 @@ public interface SupervisorDao extends BaseDao
     SupervisorChainAlteration getSupervisorChainAlterations(int empId);
 
     /**
-     * Retrieves the collection of employees that are managed by the given supervisor during any time in
-     * the supplied date range. This group will also contain any overrides that were active during that time.
+     * Retrieves the collection of primary employees were ever managed by the given supervisor
      *
      * @param supId int - Supervisor id
-     * @param dateRange Range<LocalDate> - The date range to filter by
      * @return SupervisorEmpGroup if successful, throws SupervisorException otherwise
      * @throws SupervisorException - SupervisorNotFoundEx if the supervisor could not be found
      */
-    SupervisorEmpGroup getSupervisorEmpGroup(int supId, Range<LocalDate> dateRange) throws SupervisorException;
+    PrimarySupEmpGroup getPrimarySupEmpGroup(int supId) throws SupervisorException;
+
+    /**
+     * Retrieves a list of active supervisor and employee overrides for the given supervisor.
+     * @param supId int - Supervisor Id
+     * @return {@link List<SupervisorOverride>}
+     * @throws SupervisorException
+     */
+    List<SupervisorOverride> getAllOverrides(int supId) throws SupervisorException;
 
     /**
      * Retrieves a list of active supervisor overrides for the given supervisor.
      * @param supId int - Supervisor id
-     * @param type SupGrantType -
-     *             if SupGrantType is GRANTEE, any supervisors that have granted an override to 'supId' will be fetched.
-     *             if SupGrantType is GRANTER, any supervisors 'supId' has granted permissions to will be fetched.
      * @return List<SupervisorOverride>
      * @throws SupervisorException
      */
-    List<SupervisorOverride> getSupervisorOverrides(int supId, SupGrantType type) throws SupervisorException;
+    List<SupervisorOverride> getSupervisorOverrides(int supId) throws SupervisorException;
+
+    /**
+     * Retrieves a list of active supervisor grants for the given supervisor.
+     * @param supId int - Supervisor id
+     * @return List<SupervisorOverride>
+     * @throws SupervisorException
+     */
+    List<SupervisorOverride> getSupervisorGrants(int supId) throws SupervisorException;
 
     /**
      * Sets an override so that 'ovrSupId' can have access to the primary employees of 'supId' during the

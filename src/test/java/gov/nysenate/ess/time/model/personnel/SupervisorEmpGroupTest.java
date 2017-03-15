@@ -29,10 +29,10 @@ public class SupervisorEmpGroupTest
         Multimap<Integer, EmployeeSupInfo> overrideEmployees = HashMultimap.create();
         Table<Integer, Integer, EmployeeSupInfo> supOverrideEmployees = HashBasedTable.create();
         for (int i = 0; i < 10; i++) {
-            primaryEmployees.put(i, new EmployeeSupInfo(i, 1000, date, date));
-            overrideEmployees.put(1001 + i, new EmployeeSupInfo(1001 + i, 1000, date, date));
-            supOverrideEmployees.put(2000, 2001 + i, new EmployeeSupInfo(2001 + i, 2000, date, date));
-            supOverrideEmployees.put(3000, 3001 + i, new EmployeeSupInfo(3001 + i, 3000, date, date));
+            primaryEmployees.put(i, new EmployeeSupInfo(i, 1000));
+            overrideEmployees.put(1001 + i, new EmployeeSupInfo(1001 + i, 1000));
+            supOverrideEmployees.put(2000, 2001 + i, new EmployeeSupInfo(2001 + i, 2000));
+            supOverrideEmployees.put(3000, 3001 + i, new EmployeeSupInfo(3001 + i, 3000));
         }
         empGroup.setPrimaryEmployees(primaryEmployees);
         empGroup.setOverrideEmployees(overrideEmployees);
@@ -41,9 +41,9 @@ public class SupervisorEmpGroupTest
         int totalEmployees = 40;
         assertEquals(totalEmployees, empGroup.getDirectEmployeeSupInfos().size());
 
-        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(9, 1000, date, date)));
-        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(1002, 1000, date, date)));
-        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(2002, 2000, date, date)));
-        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(3002, 3000, date, date)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(9, 1000)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(1002, 1000)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(2002, 2000)));
+        assertTrue(empGroup.getDirectEmployeeSupInfos().contains(new EmployeeSupInfo(3002, 3000)));
     }
 }

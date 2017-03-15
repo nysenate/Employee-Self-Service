@@ -1,23 +1,23 @@
 package gov.nysenate.ess.time.model.personnel;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * A {@link SupervisorEmpGroup} that also contains {@link SupervisorEmpGroup}s for each supervisor
+ * A {@link SupervisorEmpGroup} that also contains {@link PrimarySupEmpGroup}s for each supervisor
  * directly under the target supervisor
  */
 public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
 
     /**
-     * {@link SupervisorEmpGroup}s for each direct employee that is a supervisor
+     * {@link PrimarySupEmpGroup}s for each direct employee that is a supervisor
      */
-    private Multimap<Integer, SupervisorEmpGroup> employeeSupEmpGroups = HashMultimap.create();
+    private Multimap<Integer, PrimarySupEmpGroup> employeeSupEmpGroups = HashMultimap.create();
 
     /**
      * Initialize based on a supervisor emp group
@@ -29,15 +29,15 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
 
     /* --- Functional Getters / Setters --- */
 
-    public ImmutableMultimap<Integer, SupervisorEmpGroup> getEmployeeSupEmpGroups() {
+    public ImmutableMultimap<Integer, PrimarySupEmpGroup> getEmployeeSupEmpGroups() {
         return ImmutableMultimap.copyOf(employeeSupEmpGroups);
     }
 
-    public void setEmployeeSupEmpGroups(Multimap<Integer, SupervisorEmpGroup> employeeSupEmpGroups) {
+    public void setEmployeeSupEmpGroups(Multimap<Integer, PrimarySupEmpGroup> employeeSupEmpGroups) {
         this.employeeSupEmpGroups = HashMultimap.create(employeeSupEmpGroups);
     }
 
-    public void addEmployeeSupEmpGroup(SupervisorEmpGroup supervisorEmpGroup) {
+    public void addEmployeeSupEmpGroup(PrimarySupEmpGroup supervisorEmpGroup) {
         employeeSupEmpGroups.put(supervisorEmpGroup.getSupervisorId(), supervisorEmpGroup);
     }
 
@@ -48,7 +48,7 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
     public Set<EmployeeSupInfo> getExtendedEmployeeSupInfos() {
         Set<EmployeeSupInfo> employeeSupInfos = new HashSet<>(getDirectEmployeeSupInfos());
         this.employeeSupEmpGroups.values().stream()
-                .map(SupervisorEmpGroup::getPrimaryEmpSupInfos)
+                .map(PrimarySupEmpGroup::getPrimaryEmpSupInfos)
                 .flatMap(Collection::stream)
                 .forEach(employeeSupInfos::add);
         return employeeSupInfos;
