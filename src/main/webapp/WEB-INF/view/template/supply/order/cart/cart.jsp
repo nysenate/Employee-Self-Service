@@ -39,9 +39,11 @@
       <hr ng-if="!$first"/>
       <div class="col-3-12 text-align-center">
         <div class="content" style="padding-left: 5px">
+          <a href="${imageUrl}/{{lineItem.item.commodityCode}}_800.jpg" target="_blank">
           <img class="supply-item-image"
                ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
                err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
+          </a>
         </div>
       </div>
       <div class="col-6-12">
