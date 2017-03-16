@@ -208,12 +208,10 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         $scope.state.primaryEmps = selEmpGroup.primaryEmployees.sort(function(a,b) {
             return a.empLastName.localeCompare(b.empLastName)});
         // This lookup table maps empId -> last name in case it's needed for the supervisor overrides.
-        var primaryEmpLookup = {};
         var empList = [];
         // Add all the employees into a single collection to populate the drop down.
         angular.forEach($scope.state.primaryEmps, function(emp) {
             emp.group = 'Direct employees';
-            primaryEmpLookup[emp.empId] = emp.empLastName;
             setAdditionalEmpData(emp);
             empList.push(emp);
         });
@@ -225,8 +223,9 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
             });
             angular.forEach(selEmpGroup.supOverrideEmployees.items, function (supGroup, supId) {
                 angular.forEach(supGroup, function (emp) {
-                    emp.group = ((primaryEmpLookup[supId]) ? primaryEmpLookup[supId] + '\'s Employees'
-                        : 'Sup Override Employees');
+                    emp.group = $scope.state.nameMap[supId]
+                                ? $scope.state.nameMap[supId].lastName + '\'s Employees'
+                                : 'Sup Override Employees';
                     setAdditionalEmpData(emp);
                     empList.push(emp);
                 });
@@ -244,7 +243,10 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         emp.supEndMoment = moment(emp.supEndDate || '2999-12-31');
         emp.dropDownLabel = emp.empLastName + ' ' + emp.empFirstName[0] + '.' +
             ' (' + emp.supStartMoment.format('MMM YYYY') + ' - ' +
-            (emp.supEndMoment.isBefore() ? emp.supEndMoment.format('MMM YYYY') : 'Present') + ')';
+            (emp.supEndMoment.isBefore(moment(), 'day')
+                ? emp.supEndMoment.format('MMM YYYY')
+                : 'Present')
+            + ')';
     }
 
     function setNameMap() {
@@ -254,7 +256,15 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         var empOverrideInfos = extSupEmpGroup.empOverrideEmployees;
         var supOverrideInfos = Object.keys(extSupEmpGroup.supOverrideEmployees)
             .map(function (k) { return extSupEmpGroup.supOverrideEmployees[k] });
+
         var allEmpInfos = primaryEmpInfos.concat(empOverrideInfos).concat(supOverrideInfos);
+
+        var empSupEmpGroupMap = extSupEmpGroup.employeeSupEmpGroups;
+        angular.forEach(empSupEmpGroupMap, function (supEmpGroups) {
+            angular.forEach(supEmpGroups, function (supEmpGroup) {
+                allEmpInfos = allEmpInfos.concat(supEmpGroup.primaryEmployees);
+            })
+        });
 
         angular.forEach(allEmpInfos, function (empInfo) {
             $scope.state.nameMap[empInfo.empId] = {
@@ -273,6 +283,8 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         var extSupEmpGroup = $scope.state.extSupEmpGroup;
         var empSupEmpGroups = [];
 
+        var supName = appProps.user.firstName + ' ' + appProps.user.lastName;
+
         angular.forEach(extSupEmpGroup.employeeSupEmpGroups, function (supEmpGroups) {
             angular.forEach(supEmpGroups, function (empGroup) {
                 empGroup.supStartDate = empGroup.effectiveFrom;
@@ -280,7 +292,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
                 empGroup.empFirstName = $scope.state.nameMap[empGroup.supId].firstName;
                 empGroup.empLastName = $scope.state.nameMap[empGroup.supId].lastName;
                 setAdditionalEmpData(empGroup);
-                empGroup.group = 'Employees';
+                empGroup.group = 'Supervisors Under ' + supName;
                 empSupEmpGroups.push(empGroup);
             });
         });
@@ -297,7 +309,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
             return 0;
         });
 
-        extSupEmpGroup.dropDownLabel = appProps.user.firstName + ' ' + appProps.user.lastName;
+        extSupEmpGroup.dropDownLabel = supName;
 
         $scope.state.supEmpGroups = [extSupEmpGroup].concat(empSupEmpGroups);
     }
