@@ -85,9 +85,9 @@
             <div ng-class="{'corner-ribbon': lineItem.item.specialRequest}"
                  ng-hide="!lineItem.item.specialRequest"><span>Special</span></div>
 
-            <img class="supply-item-image"
+            <a href="${imageUrl}/{{lineItem.item.commodityCode}}_800.jpg" target="_blank"><img class="supply-item-image"
                  ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-                 err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
+                            err-src="${ctxPath}/assets/img/supply/no_photo_available.png"></a>
             <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
               {{lineItem.item.description}}
             </p>
