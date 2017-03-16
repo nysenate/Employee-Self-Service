@@ -2,7 +2,7 @@ package gov.nysenate.ess.time.client.view.personnel;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,6 +15,8 @@ public class SupervisorEmpView implements ViewObject
     protected int supId;
     protected String empLastName;
     protected String empFirstName;
+    protected LocalDate startDate;
+    protected LocalDate endDate;
     protected LocalDate supStartDate;
     protected LocalDate supEndDate;
 
@@ -26,12 +28,26 @@ public class SupervisorEmpView implements ViewObject
             this.supId = supInfo.getSupId();
             this.empLastName = supInfo.getEmpLastName();
             this.empFirstName = supInfo.getEmpFirstName();
+            this.startDate = supInfo.getStartDate();
+            this.endDate = supInfo.getEndDate();
             this.supStartDate = supInfo.getSupStartDate();
             this.supEndDate = supInfo.getSupEndDate();
         }
     }
 
-    /** --- Basic Getters --- */
+    /* --- Functional Getters --- */
+
+    @XmlElement
+    public LocalDate getEffectiveStartDate() {
+        return ObjectUtils.max(startDate, supStartDate);
+    }
+
+    @XmlElement
+    public LocalDate getEffectiveEndDate() {
+        return ObjectUtils.min(endDate, supEndDate);
+    }
+
+    /* --- Basic Getters --- */
 
     @XmlElement
     public int getEmpId() {
@@ -51,6 +67,16 @@ public class SupervisorEmpView implements ViewObject
     @XmlElement
     public String getEmpFirstName() {
         return empFirstName;
+    }
+
+    @XmlElement
+    public LocalDate getStartDate() {
+        return supStartDate;
+    }
+
+    @XmlElement
+    public LocalDate getEndDate() {
+        return supEndDate;
     }
 
     @XmlElement

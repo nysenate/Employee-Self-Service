@@ -85,8 +85,11 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         $scope.state.request.tRecYears = true;
         return ActiveYearsTimeRecordsApi.get({empId: emp.empId}, function(resp) {
             if (resp.success) {
-                var supStartYear = emp.supStartMoment.year();
-                var supEndYear = emp.supEndMoment.year();
+                var isUserSup = emp.supId === $scope.state.supId;
+                var startDate = isUserSup ? emp.supStartDate : emp.effectiveStartDate;
+                var endDate = isUserSup ? emp.supEndDate : emp.effectiveEndDate;
+                var supStartYear = moment(startDate || 0).year();
+                var supEndYear = moment(endDate || undefined).year();
                 $scope.state.recordYears = resp.years
                 // Only use years that overlap with supervisor dates
                     .filter(function(year) { return year >= supStartYear && year <= supEndYear; })
@@ -118,16 +121,23 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         $scope.state.timesheetRecords = [];
 
         // Initialize effective supervisor dates
+        var isUserSup = emp.supId === $scope.state.supId;
+        var supStartDate = isUserSup ? emp.supStartDate : emp.effectiveStartDate
+        var supEndDate = isUserSup ? emp.supEndDate : emp.effectiveEndDate;
+
         var startMoment = moment([year, 0, 1]);
         var endMoment = ($scope.state.todayMoment.year() == year) ? moment() : moment([year, 11, 31]);
+
         // Do not fetch records if this year does not overlap with supervisor dates
-        if (startMoment.isAfter(emp.supEndMoment) || endMoment.isBefore(emp.supStartMoment)) {
+        if (startMoment.isAfter(supEndDate || undefined) ||
+            endMoment.isBefore(supStartDate || 0))
+        {
             $scope.state.records = [];
             return;
         }
         // Restrict retrieval range based on effective supervisor dates
-        $scope.state.supStartDate = moment.max(startMoment, emp.supStartMoment);
-        $scope.state.supEndDate = moment.min(endMoment, emp.supEndMoment);
+        $scope.state.supStartDate = moment.max(startMoment, moment(supStartDate || 0));
+        $scope.state.supEndDate = moment.min(endMoment, moment(supEndDate || undefined));
 
         $scope.state.request.records = true;
         $q.all([
@@ -218,7 +228,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         if (isUser) {
             angular.forEach(selEmpGroup.empOverrideEmployees, function (emp) {
                 emp.group = 'Additional Employees';
-                setAdditionalEmpData(emp);
+                setAdditionalEmpData(emp, true);
                 empList.push(emp);
             });
             angular.forEach(selEmpGroup.supOverrideEmployees.items, function (supGroup, supId) {
@@ -226,7 +236,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
                     emp.group = $scope.state.nameMap[supId]
                                 ? $scope.state.nameMap[supId].lastName + '\'s Employees'
                                 : 'Sup Override Employees';
-                    setAdditionalEmpData(emp);
+                    setAdditionalEmpData(emp, true);
                     empList.push(emp);
                 });
             });
@@ -238,15 +248,22 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         $scope.state.allEmps = empList;
     }
 
-    function setAdditionalEmpData(emp) {
-        emp.supStartMoment = moment(emp.supStartDate || '1970-01-01');
-        emp.supEndMoment = moment(emp.supEndDate || '2999-12-31');
-        emp.dropDownLabel = emp.empLastName + ' ' + emp.empFirstName[0] + '.' +
-            ' (' + emp.supStartMoment.format('MMM YYYY') + ' - ' +
-            (emp.supEndMoment.isBefore(moment(), 'day')
-                ? emp.supEndMoment.format('MMM YYYY')
-                : 'Present')
-            + ')';
+    function setAdditionalEmpData(emp, override) {
+        var startDate = override ? emp.effectiveStartDate : emp.supStartDate;
+        var endDate = override ? emp.effectiveEndDate : emp.supEndDate;
+
+        var supStartMoment = moment(startDate || '1970-01-01');
+        var supEndMoment = moment(endDate || '2999-12-31');
+
+        var name = emp.empLastName + ' ' + emp.empFirstName[0] + '.';
+        var dateRange = supStartMoment.format('MMM YYYY') +
+            (supStartMoment.isSame(supEndMoment, 'month')
+                ? '' // don't display two dates if they are the same month
+                : ' - ' + // Show 'present' as end date if the end date is today
+                    (supEndMoment.isBefore(moment(), 'day')
+                        ? supEndMoment.format('MMM YYYY') : 'Present')
+            );
+        emp.dropDownLabel = name + '(' + dateRange + ')';
     }
 
     function setNameMap() {
