@@ -28,6 +28,10 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-entry-modals.js?v=${releaseVersion}"></script>
 
+        <!-- Personnel -->
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/personnel/sup-emp-group-service.js?v=${releaseVersion}"></script>
+
         <!-- Time Off Requests -->
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/timeoff/new-request-ctrl.js?v=${releaseVersion}"></script>

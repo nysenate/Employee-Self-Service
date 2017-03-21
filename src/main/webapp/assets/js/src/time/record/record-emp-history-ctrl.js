@@ -1,11 +1,14 @@
 var essTime = angular.module('essTime');
 
-essTime.controller('EmpRecordHistoryCtrl', ['$scope', '$q', '$timeout', 'appProps',  'ActiveYearsTimeRecordsApi', 'TimeRecordApi',
-                                            'AttendanceRecordApi', 'SupervisorEmployeesApi', 'modals', 'RecordUtils',
+essTime.controller('EmpRecordHistoryCtrl', ['$scope', '$q', '$timeout',
+                                            'appProps', 'modals', 'RecordUtils', 'supEmpGroupService',
+                                            'ActiveYearsTimeRecordsApi', 'TimeRecordApi',
+                                            'AttendanceRecordApi', 'SupervisorEmployeesApi',
     empRecordHistoryCtrl]);
 
-function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRecordsApi, TimeRecordsApi,
-          AttendanceRecordApi, SupervisorEmployeesApi, modals, recordUtils) {
+function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtils, supEmpGroupService,
+                              ActiveYearsTimeRecordsApi, TimeRecordsApi,
+                              AttendanceRecordApi, SupervisorEmployeesApi) {
 
     $scope.state = {
         supId: appProps.user.employeeId,
@@ -30,8 +33,6 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         timesheetRecords: [],
         attendRecords: [],
 
-        nameMap: {},
-
         extSupEmpGroup: null,
         supEmpGroups: [],
 
@@ -48,30 +49,21 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
 
     $scope.$watch('state.selectedRecYear', getRecords);
 
-    /* --- API request methods --- */
+    /* --- Init --- */
 
-    $scope.getEmployeeGroups = function(supId, fromDate, toDate) {
-        var fromDateMoment = (fromDate) ? moment(fromDate) : moment().subtract(2, 'years');
-        var toDateMoment = (toDate) ? moment(toDate) : moment();
-        var params = {
-            supId: supId,
-            fromDate: fromDateMoment.format('YYYY-MM-DD'),
-            toDate: toDateMoment.format('YYYY-MM-DD'),
-            extended: true
-        };
+    function init() {
         $scope.state.request.empGroups = true;
-        SupervisorEmployeesApi.get(params, handleEmpGroupResponse, $scope.handleErrorResponse)
-            .$promise.finally(function () {
-                $scope.state.request.empGroups = false;
-            });
-    };
-
-    function handleEmpGroupResponse (resp) {
-        $scope.state.extSupEmpGroup = resp.result;
-        setNameMap();
-        setSupEmpGroups();
-        $scope.state.iSelEmpGroup = 0;
+        supEmpGroupService.init().then(function () {
+            $scope.state.extSupEmpGroup = supEmpGroupService.getExtSupEmpGroup();
+            $scope.state.supEmpGroups = supEmpGroupService.getSupEmpGroupList();
+            $scope.state.iSelEmpGroup = 0;
+        }).finally(function () {
+            $scope.state.request.empGroups = false;
+        });
     }
+    init();
+
+    /* --- API request methods --- */
 
     function getTimeRecordYears () {
         var iSelEmp = $scope.state.iSelEmp;
@@ -141,8 +133,8 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
 
         $scope.state.request.records = true;
         $q.all([
-            $scope.getTimesheetRecords(),
-            $scope.getAttendRecords()
+            getTimesheetRecords(),
+            getAttendRecords()
         ]).then(function () {
             initTimesheetRecords();
             initAttendRecords();
@@ -152,7 +144,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
         });
     }
 
-    $scope.getTimesheetRecords = function() {
+    function getTimesheetRecords () {
         var emp = $scope.state.allEmps[$scope.state.iSelEmp];
         var params = {
             empId: emp.empId,
@@ -165,9 +157,9 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
                 console.log('got timesheet records', $scope.state.timesheetRecords);
             }, $scope.handleErrorResponse
             ).$promise;
-    };
+    }
 
-    $scope.getAttendRecords = function () {
+    function getAttendRecords () {
         var emp = $scope.state.allEmps[$scope.state.iSelEmp];
         var params = {
             empId: emp.empId,
@@ -179,7 +171,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
             $scope.state.attendRecords = response.records;
         }, $scope.handleErrorResponse
         ).$promise;
-    };
+    }
 
     /* --- Display Methods --- */
 
@@ -211,124 +203,10 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
             return;
         }
 
-        var selEmpGroup = $scope.state.supEmpGroups[$scope.state.iSelEmpGroup];
+        $scope.state.allEmps = supEmpGroupService.getEmpInfos($scope.state.iSelEmpGroup);
 
-        var isUser = selEmpGroup.supId === $scope.state.supId;
-
-        $scope.state.primaryEmps = selEmpGroup.primaryEmployees.sort(function(a,b) {
-            return a.empLastName.localeCompare(b.empLastName)});
-        // This lookup table maps empId -> last name in case it's needed for the supervisor overrides.
-        var empList = [];
-        // Add all the employees into a single collection to populate the drop down.
-        angular.forEach($scope.state.primaryEmps, function(emp) {
-            emp.group = 'Direct employees';
-            setAdditionalEmpData(emp);
-            empList.push(emp);
-        });
-        if (isUser) {
-            angular.forEach(selEmpGroup.empOverrideEmployees, function (emp) {
-                emp.group = 'Additional Employees';
-                setAdditionalEmpData(emp, true);
-                empList.push(emp);
-            });
-            angular.forEach(selEmpGroup.supOverrideEmployees.items, function (supGroup, supId) {
-                angular.forEach(supGroup, function (emp) {
-                    emp.group = $scope.state.nameMap[supId]
-                                ? $scope.state.nameMap[supId].lastName + '\'s Employees'
-                                : 'Sup Override Employees';
-                    setAdditionalEmpData(emp, true);
-                    empList.push(emp);
-                });
-            });
-        }
-        $scope.state.iSelEmp = -1;
-        $timeout(function () { // Todo find a better way of triggering record reset
-            $scope.state.iSelEmp = 0;
-        });
-        $scope.state.allEmps = empList;
-    }
-
-    function setAdditionalEmpData(emp, override) {
-        var startDate = override ? emp.effectiveStartDate : emp.supStartDate;
-        var endDate = override ? emp.effectiveEndDate : emp.supEndDate;
-
-        var supStartMoment = moment(startDate || '1970-01-01');
-        var supEndMoment = moment(endDate || '2999-12-31');
-
-        var name = emp.empLastName + ' ' + emp.empFirstName[0] + '.';
-        var dateRange = supStartMoment.format('MMM YYYY') +
-            (supStartMoment.isSame(supEndMoment, 'month')
-                ? '' // don't display two dates if they are the same month
-                : ' - ' + // Show 'present' as end date if the end date is today
-                    (supEndMoment.isBefore(moment(), 'day')
-                        ? supEndMoment.format('MMM YYYY') : 'Present')
-            );
-        emp.dropDownLabel = name + '(' + dateRange + ')';
-    }
-
-    function setNameMap() {
-        var extSupEmpGroup = $scope.state.extSupEmpGroup;
-
-        var primaryEmpInfos = extSupEmpGroup.primaryEmployees;
-        var empOverrideInfos = extSupEmpGroup.empOverrideEmployees;
-        var supOverrideInfos = Object.keys(extSupEmpGroup.supOverrideEmployees)
-            .map(function (k) { return extSupEmpGroup.supOverrideEmployees[k] });
-
-        var allEmpInfos = primaryEmpInfos.concat(empOverrideInfos).concat(supOverrideInfos);
-
-        var empSupEmpGroupMap = extSupEmpGroup.employeeSupEmpGroups;
-        angular.forEach(empSupEmpGroupMap, function (supEmpGroups) {
-            angular.forEach(supEmpGroups, function (supEmpGroup) {
-                allEmpInfos = allEmpInfos.concat(supEmpGroup.primaryEmployees);
-            })
-        });
-
-        angular.forEach(allEmpInfos, function (empInfo) {
-            $scope.state.nameMap[empInfo.empId] = {
-                firstName: empInfo.empFirstName,
-                lastName: empInfo.empLastName
-            };
-        });
-
-        $scope.state.nameMap[$scope.state.supId] = {
-            firstName: appProps.user.firstName,
-            lastName: appProps.user.lastName
-        }
-    }
-
-    function setSupEmpGroups() {
-        var extSupEmpGroup = $scope.state.extSupEmpGroup;
-        var empSupEmpGroups = [];
-
-        var supName = appProps.user.firstName + ' ' + appProps.user.lastName;
-
-        angular.forEach(extSupEmpGroup.employeeSupEmpGroups, function (supEmpGroups) {
-            angular.forEach(supEmpGroups, function (empGroup) {
-                empGroup.supStartDate = empGroup.effectiveFrom;
-                empGroup.supEndDate = empGroup.effectiveTo;
-                empGroup.empFirstName = $scope.state.nameMap[empGroup.supId].firstName;
-                empGroup.empLastName = $scope.state.nameMap[empGroup.supId].lastName;
-                setAdditionalEmpData(empGroup);
-                empGroup.group = 'Supervisors Under ' + supName;
-                empSupEmpGroups.push(empGroup);
-            });
-        });
-
-        empSupEmpGroups.sort(function (a, b) {
-            var aLabel = a.dropDownLabel;
-            var bLabel = b.dropDownLabel;
-            if (aLabel < bLabel) {
-                return -1;
-            }
-            if (aLabel > bLabel) {
-                return 1;
-            }
-            return 0;
-        });
-
-        extSupEmpGroup.dropDownLabel = supName;
-
-        $scope.state.supEmpGroups = [extSupEmpGroup].concat(empSupEmpGroups);
+        $scope.state.iSelEmp = 0;
+        getTimeRecordYears();
     }
 
     /**
@@ -396,8 +274,4 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, ActiveYearsTimeRec
             .sort(recordUtils.compareRecords)
             .reverse();
     }
-
-    $scope.init = function() {
-        $scope.getEmployeeGroups($scope.state.supId);
-    }();
 }

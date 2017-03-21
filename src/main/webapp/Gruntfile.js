@@ -201,9 +201,11 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/time/record/record-emp-history-ctrl.js',
                         '<%= jsSource %>/time/record/record-validation.js',
                         '<%= jsSource %>/time/record/record-entry-modals.js',
-                        //              <!-- Time Off Requests -->
+                        //        <!-- Personnel -->
+                        '<%= jsSource %>/time/personnel/sup-emp-group-service.js',
+                        //        <!-- Time Off Requests -->
                         '<%= jsSource %>/time/timeoff/new-request-ctrl.js',
-                        //                <!-- Pay Period Viewer -->
+                        //        <!-- Pay Period Viewer -->
                         '<%= jsSource %>/time/period/pay-period-view-ctrl.js',
                         //        <!-- Accruals -->
                         '<%= jsSource %>/time/accrual/accrual-history-ctrl.js',
@@ -211,7 +213,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/time/accrual/accrual-utils.js',
                         '<%= jsSource %>/time/accrual/accrual-bar-directive.js',
                         '<%= jsSource %>/time/accrual/accrual-detail-directive.js',
-                        //            <!-- Grants -->
+                        //        <!-- Grants -->
                         '<%= jsSource %>/time/grant/grant-ctrl.js'
                     ]
                 }
