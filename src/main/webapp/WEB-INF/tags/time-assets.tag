@@ -31,6 +31,8 @@
         <!-- Personnel -->
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/personnel/sup-emp-group-service.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/personnel/employee-select-directive.js?v=${releaseVersion}"></script>
 
         <!-- Time Off Requests -->
         <script type="text/javascript"

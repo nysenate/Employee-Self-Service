@@ -203,6 +203,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/time/record/record-entry-modals.js',
                         //        <!-- Personnel -->
                         '<%= jsSource %>/time/personnel/sup-emp-group-service.js',
+                        '<%= jsSource %>/time/personnel/employee-select-directive.js',
                         //        <!-- Time Off Requests -->
                         '<%= jsSource %>/time/timeoff/new-request-ctrl.js',
                         //        <!-- Pay Period Viewer -->

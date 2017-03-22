@@ -20,8 +20,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
         },
         todayMoment: moment(),
 
-        iSelEmpGroup: -1,
-        iSelEmp: -1,
+        selectedEmp: {},
         recordYears: [],
         selectedRecYear: -1,
         // The start and end dates for the period where the employee was under the viewing supervisor
@@ -31,21 +30,12 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
         records: [],
         timesheetMap: {},
         timesheetRecords: [],
-        attendRecords: [],
-
-        extSupEmpGroup: null,
-        supEmpGroups: [],
-
-        allEmps: [],
-        primaryEmps: [],
-        primarySups: []
+        attendRecords: []
     };
 
     /* --- Watches --- */
 
-    $scope.$watch('state.iSelEmpGroup', setActiveSupEmpGroup);
-
-    $scope.$watch('state.iSelEmp', getTimeRecordYears);
+    $scope.$watchCollection('state.selectedEmp', getTimeRecordYears);
 
     $scope.$watch('state.selectedRecYear', getRecords);
 
@@ -53,25 +43,20 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
 
     function init() {
         $scope.state.request.empGroups = true;
-        supEmpGroupService.init().then(function () {
-            $scope.state.extSupEmpGroup = supEmpGroupService.getExtSupEmpGroup();
-            $scope.state.supEmpGroups = supEmpGroupService.getSupEmpGroupList();
-            $scope.state.iSelEmpGroup = 0;
-        }).finally(function () {
-            $scope.state.request.empGroups = false;
-        });
+        supEmpGroupService.init()
+            .finally(function () {
+                $scope.state.request.empGroups = false;
+            });
     }
     init();
 
     /* --- API request methods --- */
 
     function getTimeRecordYears () {
-        var iSelEmp = $scope.state.iSelEmp;
-        if (iSelEmp < 0) {
+        var emp = $scope.state.selectedEmp;
+        if (!emp.empId) {
             return;
         }
-
-        var emp = $scope.state.allEmps[iSelEmp];
 
         $scope.state.selectedRecYear = -1;
         $scope.state.request.tRecYears = true;
@@ -97,11 +82,10 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
     }
 
     function getRecords () {
-        var iSelEmp = $scope.state.iSelEmp;
-        if (iSelEmp < 0) {
+        var emp = $scope.state.selectedEmp;
+        if (!emp.empId) {
             return;
         }
-        var emp = $scope.state.allEmps[iSelEmp];
 
         var year = $scope.state.selectedRecYear;
         if (year < 0) {
@@ -145,7 +129,7 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
     }
 
     function getTimesheetRecords () {
-        var emp = $scope.state.allEmps[$scope.state.iSelEmp];
+        var emp = $scope.state.selectedEmp;
         var params = {
             empId: emp.empId,
             from: $scope.state.supStartDate.format('YYYY-MM-DD'),
@@ -154,20 +138,20 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
         return TimeRecordsApi.get(params,
             function(resp) {
                 $scope.state.timesheetRecords = (resp.result.items[emp.empId] || []).reverse();
-                console.log('got timesheet records', $scope.state.timesheetRecords);
+                console.debug('got timesheet records', $scope.state.timesheetRecords);
             }, $scope.handleErrorResponse
             ).$promise;
     }
 
     function getAttendRecords () {
-        var emp = $scope.state.allEmps[$scope.state.iSelEmp];
+        var emp = $scope.state.selectedEmp;
         var params = {
             empId: emp.empId,
             from: $scope.state.supStartDate.format('YYYY-MM-DD'),
             to: $scope.state.supEndDate.format('YYYY-MM-DD')
         };
         return AttendanceRecordApi.get(params, function (response) {
-            console.log('got attendance records', response.records);
+            console.debug('got attendance records', response.records);
             $scope.state.attendRecords = response.records;
         }, $scope.handleErrorResponse
         ).$promise;
@@ -196,18 +180,6 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
     };
 
     /* --- Internal Methods --- */
-
-    function setActiveSupEmpGroup() {
-
-        if ($scope.state.iSelEmpGroup < 0) {
-            return;
-        }
-
-        $scope.state.allEmps = supEmpGroupService.getEmpInfos($scope.state.iSelEmpGroup);
-
-        $scope.state.iSelEmp = 0;
-        getTimeRecordYears();
-    }
 
     /**
      * Initialize timesheet records by calculating totals

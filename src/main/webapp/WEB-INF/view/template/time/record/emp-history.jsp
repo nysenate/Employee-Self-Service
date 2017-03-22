@@ -4,42 +4,20 @@
     <div class="time-attendance-hero">
         <h2>Employee Attendance History</h2>
     </div>
-    <div class="content-container content-controls">
-        <p class="content-info" ng-if="state.supEmpGroups.length > 1">
-          <span>
-            View Employees Under Supervisor &nbsp;
-          </span>
-          <span>
-            <select ng-model="state.iSelEmpGroup"
-                    ng-options="state.supEmpGroups.indexOf(eg) as eg.dropDownLabel group by eg.group for eg in state.supEmpGroups">
-            </select>
-          </span>
-        </p>
-        <p class="content-info">
-            <span>
-              View Attendance Records for Employee &nbsp;
-            </span>
-            <span>
-              <select ng-model="state.iSelEmp" ng-if="state.allEmps.length > 0"
-                      ng-options="state.allEmps.indexOf(emp) as emp.dropDownLabel group by emp.group for emp in state.allEmps">
-              </select>
-            </span>
-        </p>
-    </div>
+    <employee-select selected-emp="state.selectedEmp"></employee-select>
 
     <div loader-indicator class="loader" ng-show="isLoading()"></div>
     <section class="content-container" ng-hide="isLoading()">
         <div ng-show="state.recordYears.length > 0">
             <h1>
-                {{state.allEmps[state.iSelEmp].empFirstName}}
-                {{state.allEmps[state.iSelEmp].empLastName}}'s
+                {{state.selectedEmp.empFirstName}}
+                {{state.selectedEmp.empLastName}}'s
                 Attendance Records
             </h1>
             <div class="content-controls">
                 <p class="content-info" style="margin-bottom:0;">
                     View attendance records for year &nbsp;
                     <select ng-model="state.selectedRecYear"
-                            ng-change="getRecordsForYear(state.selectedEmp, state.selectedRecYear)"
                             ng-options="year for year in state.recordYears">
                     </select>
                 </p>
