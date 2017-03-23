@@ -9,8 +9,8 @@
       <th>Holiday</th>
       <th>Vacation</th>
       <th>Personal</th>
-      <th>Sick Fam</th>
       <th>Sick Emp</th>
+      <th>Sick Fam</th>
       <th>Misc</th>
       <th>Total Hours</th>
     </tr>
@@ -38,8 +38,8 @@
       <td>{{record.totals.holidayHours}}</td>
       <td>{{record.totals.vacationHours}}</td>
       <td>{{record.totals.personalHours}}</td>
-      <td>{{record.totals.sickFamHours}}</td>
       <td>{{record.totals.sickEmpHours}}</td>
+      <td>{{record.totals.sickFamHours}}</td>
       <td>{{record.totals.miscHours}}</td>
       <td>{{record.totals.total}}</td>
     </tr>
