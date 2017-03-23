@@ -87,29 +87,15 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
         // This lookup table maps empId -> last name in case it's needed for the supervisor overrides.
         // Add all the employees into a single collection to populate the drop down.
         angular.forEach(primaryEmps, function(emp) {
-            // todo remove
-            // emp.group = 'Direct employees';
-            // setAdditionalEmpData(emp);
-            // todo /remove
             empList.push(emp);
         });
         if (isUser) {
             angular.forEach(selEmpGroup.empOverrideEmployees, function (emp) {
-                // todo remove
-                // emp.group = 'Override Employees';
-                // setAdditionalEmpData(emp, true);
-                // todo /remove
                 emp.empOverride = true;
                 empList.push(emp);
             });
             angular.forEach(selEmpGroup.supOverrideEmployees.items, function (supGroup, supId) {
                 angular.forEach(supGroup, function (emp) {
-                    // todo remove
-                    // emp.group = nameMap[supId]
-                    //     ? nameMap[supId].lastName + '\'s Employees'
-                    //     : 'Sup Override Employees';
-                    // setAdditionalEmpData(emp, true);
-                    // todo /remove
                     emp.supOverride = true;
                     empList.push(emp);
                 });
@@ -189,21 +175,12 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
     function setSupEmpGroups() {
         var empSupEmpGroups = [];
 
-        // todo remove
-        // var supName = appProps.user.firstName + " " + appProps.user.lastName;
-        // extendedSupEmpGroup.dropDownLabel = supName;
-        // todo /remove
-
         angular.forEach(extendedSupEmpGroup.employeeSupEmpGroups, function (supEmpGroups) {
             angular.forEach(supEmpGroups, function (empGroup) {
                 empGroup.supStartDate = empGroup.effectiveFrom;
                 empGroup.supEndDate = empGroup.effectiveTo;
                 empGroup.empFirstName = nameMap[empGroup.supId].firstName;
                 empGroup.empLastName = nameMap[empGroup.supId].lastName;
-                // todo remove
-                // setAdditionalEmpData(empGroup);
-                // empGroup.group = 'Supervisors Under ' + supName;
-                // todo /remove
                 empSupEmpGroups.push(empGroup);
             });
         });
@@ -222,23 +199,4 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
     function sortEmpInfos(empInfoList) {
         return $filter('orderBy')(empInfoList, ['empLastName', 'empFirstName', 'empId', 'effectiveEndDate']);
     }
-
-    // todo remove with dropdown directive
-    // function setAdditionalEmpData(emp, override) {
-    //     var startDate = override ? emp.effectiveStartDate : emp.supStartDate;
-    //     var endDate = override ? emp.effectiveEndDate : emp.supEndDate;
-    //
-    //     var supStartMoment = moment(startDate || '1970-01-01');
-    //     var supEndMoment = moment(endDate || '2999-12-31');
-    //
-    //     var name = emp.empLastName + ' ' + emp.empFirstName[0] + '.';
-    //     var dateRange = supStartMoment.format('MMM YYYY') +
-    //         (supStartMoment.isSame(supEndMoment, 'month')
-    //                 ? '' // don't display two dates if they are the same month
-    //                 : ' - ' + // Show 'present' as end date if the end date is today
-    //          (supEndMoment.isBefore(moment(), 'day')
-    //              ? supEndMoment.format('MMM YYYY') : 'Present')
-    //         );
-    //     emp.dropDownLabel = name + '(' + dateRange + ')';
-    // }
 }

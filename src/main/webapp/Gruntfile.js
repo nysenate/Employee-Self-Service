@@ -188,32 +188,33 @@ module.exports = function(grunt) {
                     ],
                     //time
                     '<%= jsDest %>/ess-time.min.js': [
-                        //        <!-- Time Entry -->
                         '<%= jsSource %>/time/time.js',
-                        '<%= jsSource %>/time/record/record-filters.js',
+                        //        <!-- Time Entry -->
                         '<%= jsSource %>/time/record/record-directives.js',
-                        '<%= jsSource %>/time/record/record-utils.js',
+                        '<%= jsSource %>/time/record/record-emp-history-ctrl.js',
                         '<%= jsSource %>/time/record/record-entry-ctrl.js',
+                        '<%= jsSource %>/time/record/record-entry-modals.js',
+                        '<%= jsSource %>/time/record/record-filters.js',
                         '<%= jsSource %>/time/record/record-history-ctrl.js',
                         '<%= jsSource %>/time/record/record-manage-ctrl.js',
-                        '<%= jsSource %>/time/record/supervisor-record-list.js',
                         '<%= jsSource %>/time/record/record-review-modals.js',
-                        '<%= jsSource %>/time/record/record-emp-history-ctrl.js',
+                        '<%= jsSource %>/time/record/record-utils.js',
                         '<%= jsSource %>/time/record/record-validation.js',
-                        '<%= jsSource %>/time/record/record-entry-modals.js',
+                        '<%= jsSource %>/time/record/supervisor-record-list.js',
                         //        <!-- Personnel -->
-                        '<%= jsSource %>/time/personnel/sup-emp-group-service.js',
                         '<%= jsSource %>/time/personnel/employee-select-directive.js',
+                        '<%= jsSource %>/time/personnel/sup-emp-group-service.js',
                         //        <!-- Time Off Requests -->
                         '<%= jsSource %>/time/timeoff/new-request-ctrl.js',
                         //        <!-- Pay Period Viewer -->
                         '<%= jsSource %>/time/period/pay-period-view-ctrl.js',
                         //        <!-- Accruals -->
-                        '<%= jsSource %>/time/accrual/accrual-history-ctrl.js',
-                        '<%= jsSource %>/time/accrual/accrual-projection-ctrl.js',
-                        '<%= jsSource %>/time/accrual/accrual-utils.js',
                         '<%= jsSource %>/time/accrual/accrual-bar-directive.js',
                         '<%= jsSource %>/time/accrual/accrual-detail-directive.js',
+                        '<%= jsSource %>/time/accrual/accrual-history-ctrl.js',
+                        '<%= jsSource %>/time/accrual/accrual-history-directive.js',
+                        '<%= jsSource %>/time/accrual/accrual-projection-ctrl.js',
+                        '<%= jsSource %>/time/accrual/accrual-utils.js',
                         //        <!-- Grants -->
                         '<%= jsSource %>/time/grant/grant-ctrl.js'
                     ]
