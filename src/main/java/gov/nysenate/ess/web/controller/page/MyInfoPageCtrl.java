@@ -18,7 +18,7 @@ public class MyInfoPageCtrl extends BaseEssPageCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(MyInfoPageCtrl.class);
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     @Override
     String mainPage(ModelMap modelMap, HttpServletRequest request) {
         addCommonModelMapData(modelMap);

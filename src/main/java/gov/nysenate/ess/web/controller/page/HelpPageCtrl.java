@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/help/**")
 public class HelpPageCtrl extends BaseEssPageCtrl
 {
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     @Override
     String mainPage(ModelMap modelMap, HttpServletRequest request) {
         addCommonModelMapData(modelMap);

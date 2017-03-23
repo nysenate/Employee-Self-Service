@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -95,7 +96,7 @@ public class SupervisorRestApiCtrl extends BaseRestApiCtrl
                 .collect(toList()), "overrides");
     }
 
-    @RequestMapping(value = "/grants", method = GET)
+    @RequestMapping(value = "/grants", method = {GET, HEAD})
     public BaseResponse getSupervisorGrants(@RequestParam Integer supId) {
         checkPermission(new EssTimePermission(supId, SUPERVISOR_OVERRIDES, GET, LocalDate.now()));
 

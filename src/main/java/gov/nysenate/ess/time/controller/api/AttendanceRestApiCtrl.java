@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/attendance")
@@ -38,7 +39,7 @@ public class AttendanceRestApiCtrl extends BaseRestApiCtrl {
      * @param empId - Integer - required - Records will be retrieved for these employee ids
      * @param year - Integer - Specifies the attendance year for which records will be retrieved
      */
-    @RequestMapping(value = "records", method = GET, params = {"empId", "year"})
+    @RequestMapping(value = "records", method = {GET, HEAD}, params = {"empId", "year"})
     public BaseResponse getAttendanceRecords(@RequestParam Integer empId, @RequestParam Integer year) {
         checkPermission(new EssTimePermission( empId, ATTENDANCE_RECORDS, GET, DateUtils.yearDateRange(year)));
 
@@ -58,7 +59,7 @@ public class AttendanceRestApiCtrl extends BaseRestApiCtrl {
      * @param to - String (ISO 8601 Date) - Records will be retrieved up to this date
      *
      */
-    @RequestMapping(value = "records", method = GET, params = {"empId", "from", "to"})
+    @RequestMapping(value = "records", method = {GET, HEAD}, params = {"empId", "from", "to"})
     public BaseResponse getAttendanceRecords(@RequestParam Integer empId,
                                              @RequestParam String from,
                                              @RequestParam String to) {

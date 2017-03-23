@@ -56,6 +56,7 @@ import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.TIME_RECORD_
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -89,7 +90,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      *                     from - Date - default Jan 1 on year of 'to' Date - Gets time records that begin on or after this date
      *                     status - String[] - default all statuses - Will only get time records with one of these statuses
      */
-    @RequestMapping(value = "", method = GET, produces = "application/json")
+    @RequestMapping(value = "", method = {GET, HEAD}, produces = "application/json")
     public BaseResponse getRecordsJson(@RequestParam Integer[] empId,
                                        @RequestParam(required = false) String from,
                                        @RequestParam(required = false) String to,
@@ -109,7 +110,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * @param scope String (accepted values are 'E', 'S', 'P', for employee, supervisor, and personnel respectively.
      * @return TimeRecord ListView Response
      */
-    @RequestMapping(value = "/active", method = GET, produces = "application/json")
+    @RequestMapping(value = "/active", method = {GET, HEAD}, produces = "application/json")
     public BaseResponse getActiveRecords(@RequestParam Integer[] empId,
                                          @RequestParam(required = false) String[] scope) {
         Arrays.stream(empId)
@@ -159,7 +160,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * @param status String - {@link TimeRecordStatus}
      * @return ViewObjectResponse
      */
-    @RequestMapping(value = "/supervisor/count", method = GET, produces = "application/json")
+    @RequestMapping(value = "/supervisor/count", method = {GET, HEAD}, produces = "application/json")
     public BaseResponse getActiveSupervisorRecordCount(@RequestParam int supId,
                                                        @RequestParam(required = false) String from,
                                                        @RequestParam(required = false) String to,
@@ -191,7 +192,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * @return
      * @throws SupervisorException
      */
-    @RequestMapping(value = "/supervisor", method = GET, produces = "application/json")
+    @RequestMapping(value = "/supervisor", method = {GET, HEAD}, produces = "application/json")
     public BaseResponse getActiveSupervisorRecords(@RequestParam int supId,
                                                    @RequestParam(required = false) String from,
                                                    @RequestParam(required = false) String to,

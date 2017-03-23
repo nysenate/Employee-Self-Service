@@ -13,7 +13,7 @@ public class ErrorPageCtrl
 {
     private static final String errorTemplateName = "error";
 
-    @RequestMapping(value = "/404", method = RequestMethod.GET)
+    @RequestMapping(value = "/404", method = {RequestMethod.GET, RequestMethod.HEAD})
     public String pageNotFound(ModelMap modelMap) {
         modelMap.addAttribute("title", "Page Not Found")
                 .addAttribute("message", "Sorry, the page you requested could not be found.");
@@ -27,7 +27,7 @@ public class ErrorPageCtrl
         return warningPage(modelMap);
     }
 
-    @RequestMapping(value = "/authz", method = RequestMethod.GET)
+    @RequestMapping(value = "/authz", method = {RequestMethod.GET, RequestMethod.HEAD})
     public String authzError(ModelMap modelMap) {
         modelMap.addAttribute("title", "Authorization Error")
                 .addAttribute("message",

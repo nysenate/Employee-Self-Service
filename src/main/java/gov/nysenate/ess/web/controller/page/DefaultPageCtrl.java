@@ -12,7 +12,7 @@ public class DefaultPageCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(DefaultPageCtrl.class);
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     public String defaultRedirect() {
         return "redirect:/time/record/entry";
     }

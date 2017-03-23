@@ -15,7 +15,7 @@ public class SupplyPageCtrl extends BaseEssPageCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(SupplyPageCtrl.class);
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     @Override
     String mainPage(ModelMap modelMap, HttpServletRequest request) {
         addCommonModelMapData(modelMap);

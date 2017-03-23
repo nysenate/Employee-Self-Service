@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ALLOWANCE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/allowances")
@@ -30,7 +31,7 @@ public class AllowanceRestApiCtrl extends BaseRestApiCtrl
     @Autowired
     AllowanceService allowanceService;
 
-    @RequestMapping(method = GET, produces = "application/json")
+    @RequestMapping(method = {GET, HEAD}, produces = "application/json")
     public ListViewResponse getAllowances(@RequestParam Integer[] empId,
                                           @RequestParam Integer[] year) {
         Set<Integer> empIds = Sets.newHashSet(empId);

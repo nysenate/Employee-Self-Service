@@ -39,7 +39,7 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * @see CacheStatsView for response format
      */
     @RequiresPermissions("admin:cache:get")
-    @RequestMapping(value = "/stats", method = RequestMethod.GET)
+    @RequestMapping(value = "/stats", method = {RequestMethod.GET, RequestMethod.HEAD})
     public ListViewResponse<CacheStatsView> getCacheStats() {
         return ListViewResponse.of(
                 cacheManageService.getCacheStatistics().stream()

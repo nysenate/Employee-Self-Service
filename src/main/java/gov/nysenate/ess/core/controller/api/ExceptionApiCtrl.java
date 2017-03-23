@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.controller.api;
 
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
@@ -16,6 +17,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -71,6 +73,14 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     public AuthorizationResponse handleUnauthorizedException(HttpServletRequest request,
                                                              UnauthorizedException ex) {
         return getAuthResponse(AuthorizationStatus.UNAUTHORIZED, request);
+    }
+
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public SimpleResponse handleMethodNotSupportedEx(HttpRequestMethodNotSupportedException ex) {
+        final String messageTemplate = "Method %s is not supported for this request";
+        final String message = String.format(messageTemplate, ex.getMethod());
+        return new SimpleResponse(false, message, "method not supported");
     }
 
     /** --- Internal Methods --- */

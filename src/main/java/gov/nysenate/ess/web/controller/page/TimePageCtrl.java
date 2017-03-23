@@ -18,7 +18,7 @@ public class TimePageCtrl extends BaseEssPageCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(TimePageCtrl.class);
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
     public String mainPage(ModelMap modelMap, HttpServletRequest request) {
         addCommonModelMapData(modelMap);
 		return "time";

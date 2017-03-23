@@ -22,7 +22,7 @@ public class TimeOutApiCtrl extends BaseRestApiCtrl {
     @Autowired
     private SessionDao sessionDao;
 
-    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    @RequestMapping(value = "/ping", method = {RequestMethod.GET, RequestMethod.HEAD})
     public SimpleResponse ping(@RequestParam String idleTime, HttpServletRequest request, HttpServletResponse response) throws IOException {
         SimpleResponse simpleResponse = new SimpleResponse(true, sessionDao.ping(idleTime, request, response) + "", "GET");
         return simpleResponse;
