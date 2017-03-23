@@ -89,7 +89,9 @@ public class EssTimeRecordManager implements TimeRecordManager
     @Override
     public int ensureRecords(int empId) {
         List<PayPeriod> payPeriods = accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC);
-        return ensureRecords(empId, payPeriods);
+        List<TimeRecord> activeTimeRecords = timeRecordService.getActiveTimeRecords(empId);
+        List<AttendanceRecord> attendanceRecords = attendanceDao.getOpenAttendanceRecords(empId);
+        return ensureRecords(empId, payPeriods, activeTimeRecords, attendanceRecords);
     }
 
     /** {@inheritDoc} */
@@ -229,14 +231,18 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .collect(Collectors.toList());
         // Remove these ranges from the range set to indicate that they are covered
         recordRanges.removeAll(rangesUnderRecord);
-        // If there are no active record dates for the record, set it as inactive
+        // If there are no active record dates for the record and the begin date has passed,
+        // set it as inactive
         if (rangesUnderRecord.isEmpty()) {
-            logger.info("deactivating record empid: {}  dates: {}", record.getEmployeeId(), record.getDateRange());
-            record.setActive(false);
-            return Collections.singletonList(record);
+            if (record.getBeginDate().isBefore(LocalDate.now())) {
+                logger.info("deactivating record empid: {}  dates: {}", record.getEmployeeId(), record.getDateRange());
+                record.setActive(false);
+                return Collections.singletonList(record);
+            }
         }
-        // If there are multiple active record date ranges for the record, split it
-        else if (rangesUnderRecord.size() != 1 ||
+        // If there are multiple active record date ranges for the record,
+        // or the record range has changed, split it
+        else if (rangesUnderRecord.size() > 1 ||
                 !rangesUnderRecord.get(0).equals(record.getDateRange())) {
             return splitRecord(record, rangesUnderRecord);
         }
