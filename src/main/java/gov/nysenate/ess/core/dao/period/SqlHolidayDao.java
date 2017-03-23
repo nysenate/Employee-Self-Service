@@ -33,7 +33,7 @@ public class SqlHolidayDao extends SqlBaseDao implements HolidayDao
     public Holiday getHoliday(LocalDate date) {
         MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(date));
         try {
-            return remoteNamedJdbc.queryForObject(GET_HOLIDAY_SQL.getSql(schemaMap()), params, new HolidayRowMapper(""));
+            return remoteNamedJdbc.queryForObject(GET_SINGLE_HOLIDAY_SQL.getSql(schemaMap()), params, new HolidayRowMapper(""));
         }
         catch (EmptyResultDataAccessException ex) {
             throw new HolidayNotFoundForDateEx(date);

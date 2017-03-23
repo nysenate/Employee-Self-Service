@@ -63,8 +63,10 @@ public class EssCachedHolidayService implements HolidayService, CachingService<S
     }
 
     @Override
-    public Optional<Holiday> getHoliday(LocalDate date) {
-        return getHolidayCacheTree(true).getHoliday(date);
+    public Optional<Holiday> getActiveHoliday(LocalDate date) {
+        return getHolidayCacheTree(true)
+                .getHoliday(date)
+                .filter(holiday -> !holiday.isQuestionable());
     }
 
     @Override

@@ -14,12 +14,12 @@ import java.util.Optional;
 public interface HolidayService
 {
     /**
-     * Returns a holiday if it exists for the given date. Throws exception otherwise.
+     * Returns a holiday if it exists for the given date, is active, and is non-questionable
      *
-     * @param date Date
-     * @return Holiday
+     * @param date LocalDate
+     * @return {@link Optional<Holiday>}
      */
-    public Optional<Holiday> getHoliday(LocalDate date);
+    public Optional<Holiday> getActiveHoliday(LocalDate date);
 
     /**
      * Retrieves a list of all the holidays that occur between the given dates inclusively in order

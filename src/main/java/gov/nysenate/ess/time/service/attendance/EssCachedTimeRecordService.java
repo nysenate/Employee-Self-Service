@@ -379,8 +379,8 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
             TimeEntry entry = timeRecord.getEntry(entryDate);
             if (entry.getPayType() != PayType.TE) {
                 // Set holiday hours if applicable
-                Optional<Holiday> holiday = holidayService.getHoliday(entryDate);
-                if (holiday.isPresent() && !holiday.get().isQuestionable()) {
+                Optional<Holiday> holiday = holidayService.getActiveHoliday(entryDate);
+                if (holiday.isPresent()) {
                     // Set the holiday hours to the specified amount if RA only if it is a new entry
                     // not be overridden
                     if (entry.getPayType() == PayType.RA && newEntry) {
