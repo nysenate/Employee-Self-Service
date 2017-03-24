@@ -1,34 +1,34 @@
 <div class="content-container content-controls">
   <p class="content-info">Filter By Year &nbsp;
-    <select ng-model="state.selectedYear" ng-change="getAccSummaries(state.selectedYear)"
-            ng-options="year for year in state.activeYears">
+    <select ng-model="selectedYear" ng-change="getAccSummaries(selectedYear)"
+            ng-options="year for year in activeYears">
     </select>
   </p>
 </div>
 
-<ess-notification ng-show="state.searching === false && state.error !== null" level="warn"
-                  title="{{state.error.title}}" message="{{state.error.message}}">
+<ess-notification ng-show="!isLoading() && error !== null" level="warn"
+                  title="{{error.title}}" message="{{error.message}}">
 </ess-notification>
 
-<div ng-show="state.isTe">
+<div ng-show="isTe">
   <jsp:include page="te-accruals.jsp"/>
 </div>
 
-<div loader-indicator class="loader" ng-show="state.searching === true"></div>
+<div loader-indicator class="loader" ng-show="isLoading()"></div>
 
-<div class="content-container" ng-show="state.searching === false">
-  <p class="content-info" ng-hide="state.accSummaries[state.selectedYear].length > 0">
+<div class="content-container" ng-hide="isLoading()">
+  <p class="content-info" ng-hide="accSummaries[selectedYear].length > 0">
     No historical accrual records exist for this year.
     If it is early in the year they may not have been created yet.
   </p>
-  <div ng-show="state.accSummaries[state.selectedYear].length > 0">
+  <div ng-show="accSummaries[selectedYear].length > 0">
     <p class="content-info">
       Summary of historical accrual records.
       Click a row to view or print a detailed summary of projected accrual hours.
     </p>
     <div class="padding-10">
       <table class="detail-acc-history-table" float-thead="floatTheadOpts"
-             float-thead-enabled="true" ng-model="state.accSummaries">
+             float-thead-enabled="true" ng-model="accSummaries">
         <thead>
         <tr>
           <th colspan="2">Pay Period</th>
@@ -56,7 +56,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="record in state.accSummaries[state.selectedYear]"
+        <tr ng-repeat="record in accSummaries[selectedYear]"
             ng-class="{'highlighted': record.payPeriod.current}"
             title="Open a Printable View for this Record"
             ng-click="viewDetails(record)"

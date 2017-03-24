@@ -7,11 +7,15 @@ angular.module('essTime')
 function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, EmpInfoApi, EmpActiveYearsApi) {
     return {
         scope: {
-            empId: '='
+            empId: '=?'
         },
-        templateUrl: appProps.ctxPath + '/template/time/accrual/history-table',
-        link: function ($scope, $elem, $attrs) {
-            $scope.empId = $scop.empId || appProps.user.employeeId;
+        templateUrl: appProps.ctxPath + '/template/time/accrual/history-directive',
+
+        link: function ($scope) {
+            if (!$scope.empId) {
+                $scope.empId = appProps.user.employeeId;
+                console.log('No empId provided.  Using user\'s empId:', $scope.empId);
+            }
             $scope.accSummaries = {};
             $scope.activeYears = [];
             $scope.timeRecords = [];
@@ -50,9 +54,11 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                     empId: $scope.empId,
                     detail: true
                 };
+                console.debug('getting emp info', params);
                 $scope.request.empInfo = true;
                 EmpInfoApi.get(params,
                     function onSuccess(response) {
+                        console.debug('got emp info');
                         var empInfo = response.employee;
                         $scope.empInfo = empInfo;
                         $scope.isTe = empInfo.payType === 'TE';
@@ -75,11 +81,13 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                 }
                 $scope.selectedYear = null;
                 var params = {empId: $scope.empId};
+                console.debug('getting active years', params);
                 $scope.request.empActiveYears = true;
                 EmpActiveYearsApi.get(params,
                     function onSuccess(resp) {
                         $scope.activeYears = resp.activeYears.reverse();
                         $scope.selectedYear = resp.activeYears[0];
+                        console.debug('got active years', $scope.activeYears);
                     }, function onFail(resp) {
                         modals.open('500', {details: resp});
                         console.error('error loading employee active years', resp);
@@ -153,8 +161,12 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
 
             /* --- Angular smart table hacks --- */
 
+            /**
+             * Attempt to reflow the accrual table 20 times with one attempt every 5ms
+             * @param count
+             */
             function reflowTable (count) {
-                if (count > 20 || !$scope.state.accSummaries[$scope.state.selectedYear]) {
+                if (count > 20 || !$scope.accSummaries[$scope.selectedYear]) {
                     return;
                 }
                 count = isNaN(count) ? 0 : count;
@@ -164,7 +176,7 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                 }, 5);
             }
 
-            $scope.$watchCollection('state.accSummaries[state.selectedYear]', reflowTable);
+            $scope.$watchCollection('accSummaries[selectedYear]', reflowTable);
         }
     }
 }
