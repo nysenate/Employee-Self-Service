@@ -214,6 +214,12 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         }
         return lineItems;
     }
+
+    /** --- Modals --- */
+
+    $scope.displayLargeImage = function (commodityCode) {
+        modals.open('large-item-image-modal', {commodityCode: commodityCode}, true)
+    }
 }
 
 /**

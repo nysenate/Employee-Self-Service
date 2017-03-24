@@ -84,10 +84,10 @@
           <div class="padding-top-5" style="overflow: hidden;position: relative">
             <div ng-class="{'corner-ribbon': lineItem.item.specialRequest}"
                  ng-hide="!lineItem.item.specialRequest"><span>Special</span></div>
-
-            <a href="${imageUrl}/{{lineItem.item.commodityCode}}_800.jpg" target="_blank"><img class="supply-item-image"
+            <img class="supply-item-image"
+                 ng-click="displayLargeImage(lineItem.item.commodityCode)"
                  ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-                            err-src="${ctxPath}/assets/img/supply/no_photo_available.png"></a>
+                 err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
             <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
               {{lineItem.item.description}}
             </p>
@@ -113,6 +113,9 @@
     </modal>
     <modal modal-id="special-order-item-modal">
       <div special-order-item-modal></div>
+    </modal>
+    <modal modal-id="large-item-image-modal">
+      <div large-item-image-modal></div>
     </modal>
   </div>
 </div>

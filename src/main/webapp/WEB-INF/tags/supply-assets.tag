@@ -53,7 +53,10 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/order/supply-item-filter-service.js?v=${releaseVersion}"></script>
          <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/order-page-state-service.js?v=${releaseVersion}"></script>
+                 src="${ctxPath}/assets/js/src/supply/order/order-page-state-service.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/order/large-item-image-modal.js?v=${releaseVersion}"></script>
+
 
         <%-- Cart --%>
         <script type="text/javascript"

@@ -130,6 +130,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/common/toggle-panel-directive.js',
                         '<%= jsSource %>/common/zero-pad-filter.js',
                         '<%= jsSource %>/common/ess-storage-service.js',
+                        '<%= jsSource %>/common/modal-close-button.js',
                         // <!-- Testing Code -->
                         '<%= jsSource %>/test/error-modal-test.js'
                     ],
@@ -175,6 +176,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/supply/order/supply-line-item-service.js',
                         '<%= jsSource %>/supply/order/supply-item-filter-service.js',
                         '<%= jsSource %>/supply/order/order-page-state-service.js',
+                        '<%= jsSource %>/supply/order/large-item-image-modal.js',
                         //        <%-- Cart --%>
                         '<%= jsSource %>/supply/order/cart/supply-cart-service.js',
                         '<%= jsSource %>/supply/order/cart/supply-cart-ctrl.js',

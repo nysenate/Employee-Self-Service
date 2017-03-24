@@ -21,6 +21,7 @@
       position: fixed;
       .center-align;
       z-index: 1004;
+      overflow: visible;
 
       &.background-modal {
         z-index: 1002;
@@ -39,12 +40,10 @@
 
 .modal-max-height {
   max-height: calc(~"100vh - 50px");
-  overflow-y: auto;
 }
 
 .modal-max-width {
   max-width: calc(~"100vw - 50px");
-  overflow-x: auto;
 }
 
 .modal-fit {
@@ -124,3 +123,10 @@
   }
 }
 
+.modal-close-button {
+  font-size: 30px;
+  position:absolute;
+  top: -30px;
+  right: 0px;
+  cursor: pointer;
+}

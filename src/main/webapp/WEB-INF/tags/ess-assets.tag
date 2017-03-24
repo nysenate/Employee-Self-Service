@@ -71,6 +71,8 @@
                 src="${ctxPath}/assets/js/src/common/ess-storage-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/common-modals.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/modal-close-button.js?v=${releaseVersion}"></script>
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/dest/ess.min.js?v=${releaseVersion}"></script>

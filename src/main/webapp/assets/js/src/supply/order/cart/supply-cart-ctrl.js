@@ -67,6 +67,10 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
 
     /** --- Modal methods --- */
 
+    $scope.displayLargeImage = function (commodityCode) {
+        modals.open('large-item-image-modal', {commodityCode: commodityCode}, true)
+    };
+
     $scope.closeModal = function () {
         modals.resolve();
     };
