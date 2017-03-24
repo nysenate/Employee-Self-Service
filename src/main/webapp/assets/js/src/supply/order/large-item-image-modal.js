@@ -17,5 +17,5 @@ function largeItemImageModal() {
 supply.controller('LargeItemImageModalCtrl', ['$scope', 'modals', 'appProps', function ($scope, modals, appProps) {
     $scope.commodityCode = modals.params().commodityCode;
     $scope.imgUrl = appProps.imageUrl + '/' + $scope.commodityCode + '_800.jpg';
-    $scope.errorUrl = appProps.ctxPath +'/assets/img/supply/no_photo_available.png';
+    $scope.errorUrl = appProps.imageUrl +'/no_photo_available.png';
 }]);

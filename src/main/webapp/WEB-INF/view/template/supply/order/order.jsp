@@ -87,7 +87,7 @@
             <img class="supply-item-image"
                  ng-click="displayLargeImage(lineItem.item.commodityCode)"
                  ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
-                 err-src="${ctxPath}/assets/img/supply/no_photo_available.png">
+                 err-src="${imageUrl}/no_photo_available.png">
             <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">
               {{lineItem.item.description}}
             </p>
