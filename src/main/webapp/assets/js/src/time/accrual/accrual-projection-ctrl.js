@@ -39,7 +39,7 @@ function accrualProjectionCtrl($scope, $timeout, appProps, AccrualHistoryApi, Em
     $scope.getAccSummaries = function(year) {
         $scope.state.searching = true;
         var fromDate = moment([year, 0, 1]).subtract(6, 'months');
-        var toDate = moment([year + 1, 0, 1]).subtract(1, 'days');
+        var toDate = moment([year + 1, 0, 1]);
         AccrualHistoryApi.get({
             empId: $scope.state.empId,
             fromDate: fromDate.format('YYYY-MM-DD'),

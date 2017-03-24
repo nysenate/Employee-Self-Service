@@ -48,8 +48,6 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-detail-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/accrual/accrual-history-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-history-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/accrual-projection-ctrl.js?v=${releaseVersion}"></script>

@@ -7,12 +7,15 @@ function employeeSelectDirective(appProps, supEmpGroupService) {
             selectedSup: "=?",
             selectedEmp: "=?"
         },
+        restrict: 'E',
         templateUrl: appProps.ctxPath + '/template/time/personnel/employee-select',
         link: function ($scope, $elem, $attrs) {
             $scope.iSelEmpGroup = -1;
             $scope.iSelEmp = -1;
             $scope.supEmpGroups = [];
             $scope.allEmps = [];
+
+            $scope.selectSubject = $attrs.selectSubject;
 
             /**
              * Wait for supervisor emp groups to load

@@ -1,21 +1,23 @@
 
 angular.module('essTime')
     .directive('accrualHistory', ['$timeout', 'appProps', 'modals',
-                                  'AccrualHistoryApi', 'EmpInfoApi', 'EmpActiveYearsApi',
+                                  'AccrualHistoryApi', 'EmpInfoApi', 'ActiveYearsTimeRecordsApi',
                                   accrualHistoryDirective]);
 
-function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, EmpInfoApi, EmpActiveYearsApi) {
+function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, EmpInfoApi, ActiveYearsTimeRecordsApi) {
     return {
         scope: {
-            empId: '=?'
+            /**
+             *  An optional employee sup info
+             *  If this is present, then accruals will be displayed for the corresponding employee
+             *    for the appropriate dates.
+             *  Otherwise, accruals will be displayed for the logged in user
+             */
+            empSupInfo: '=?'
         },
         templateUrl: appProps.ctxPath + '/template/time/accrual/history-directive',
 
         link: function ($scope) {
-            if (!$scope.empId) {
-                $scope.empId = appProps.user.employeeId;
-                console.log('No empId provided.  Using user\'s empId:', $scope.empId);
-            }
             $scope.accSummaries = {};
             $scope.activeYears = [];
             $scope.timeRecords = [];
@@ -37,6 +39,7 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
 
             /* --- Watches --- */
 
+            $scope.$watchCollection('empSupInfo', setEmpId);
             $scope.$watch('empId', getEmpInfo);
             $scope.$watch('empId', getEmpActiveYears);
             $scope.$watch('selectedYear', getAccSummaries);
@@ -47,7 +50,8 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
              * Retrieves employee info from the api to determine if the employee is a temporary employee
              */
             function getEmpInfo() {
-                if (!$scope.empId) {
+                // Cancel emp info retrieval if empId is null or viewing non-user employee
+                if (!($scope.empId && $scope.isUser())) {
                     return;
                 }
                 var params = {
@@ -83,10 +87,18 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                 var params = {empId: $scope.empId};
                 console.debug('getting active years', params);
                 $scope.request.empActiveYears = true;
-                EmpActiveYearsApi.get(params,
+                ActiveYearsTimeRecordsApi.get(params,
                     function onSuccess(resp) {
-                        $scope.activeYears = resp.activeYears.reverse();
-                        $scope.selectedYear = resp.activeYears[0];
+                        $scope.activeYears = resp.years.reverse();
+                        // Filter active years if looking at someone else's record
+                        if (!$scope.isUser()) {
+                            var startDateYear = moment($scope.empSupInfo.effectiveStartDate || 0).year();
+                            var endDateYear = moment($scope.empSupInfo.effectiveEndDate || undefined).year();
+                            $scope.activeYears = $scope.activeYears.filter(function (year) {
+                                return year >= startDateYear && year <= endDateYear;
+                            });
+                        }
+                        $scope.selectedYear = $scope.activeYears[0];
                         console.debug('got active years', $scope.activeYears);
                     }, function onFail(resp) {
                         modals.open('500', {details: resp});
@@ -105,8 +117,19 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                 if (!year || $scope.accSummaries[year]) {
                     return;
                 }
+
                 var fromDate = moment([year, 0, 1]);
-                var toDate = moment([year + 1, 0, 1]).subtract(1, 'days');
+                var toDate = moment([year + 1, 0, 1]);
+
+                // Restrict by start and end dates if applicable
+                if (!$scope.isUser()) {
+                    var startDateMoment = moment($scope.empSupInfo.effectiveStartDate || 0);
+                    var endDateMoment = moment($scope.empSupInfo.effectiveEndDate || '3000-01-01');
+
+                    fromDate = moment.max(fromDate, startDateMoment);
+                    toDate = moment.min(toDate, endDateMoment);
+                }
+
                 var params = {
                     empId: $scope.empId,
                     fromDate: fromDate.format('YYYY-MM-DD'),
@@ -137,6 +160,13 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
             /* --- Display Methods --- */
 
             /**
+             * @returns {boolean} true iff the user's accruals are being displayed
+             */
+            $scope.isUser = function () {
+                return $scope.empId === appProps.user.employeeId;
+            };
+
+            /**
              * @returns {boolean} true iff any requests are currently loading
              */
             $scope.isLoading = function () {
@@ -158,6 +188,22 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
             $scope.viewDetails = function (accrualRecord) {
                 modals.open('accrual-details', {accruals: accrualRecord}, true);
             };
+
+            /* --- Internal Methods --- */
+
+            /**
+             * Set the employee id from the passed in employee sup info if it exists
+             * Otherwise set it to the user's empId
+             */
+            function setEmpId() {
+                if ($scope.empSupInfo && $scope.empSupInfo.empId) {
+                    $scope.empId = $scope.empSupInfo.empId;
+                }
+                else {
+                    $scope.empId = appProps.user.employeeId;
+                    console.log('No empId provided.  Using user\'s empId:', $scope.empId);
+                }
+            }
 
             /* --- Angular smart table hacks --- */
 

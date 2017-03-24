@@ -213,7 +213,6 @@ module.exports = function(grunt) {
                         //        <!-- Accruals -->
                         '<%= jsSource %>/time/accrual/accrual-bar-directive.js',
                         '<%= jsSource %>/time/accrual/accrual-detail-directive.js',
-                        '<%= jsSource %>/time/accrual/accrual-history-ctrl.js',
                         '<%= jsSource %>/time/accrual/accrual-history-directive.js',
                         '<%= jsSource %>/time/accrual/accrual-projection-ctrl.js',
                         '<%= jsSource %>/time/accrual/accrual-utils.js',

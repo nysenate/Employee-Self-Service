@@ -52,13 +52,14 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
 
     @RequestMapping("/history")
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String fromDate, @RequestParam String toDate) {
-        LocalDate fromLocalDate = parseISODate(fromDate, "from date");
-        LocalDate toLocalDate = parseISODate(toDate, "to date");
+        LocalDate fromLocalDate = parseISODate(fromDate, "fromDate");
+        LocalDate toLocalDate = parseISODate(toDate, "toDate");
+        Range<LocalDate> dateRange = getClosedOpenRange(fromLocalDate, toLocalDate, "fromDate", "toDate");
 
-        checkPermission(new EssTimePermission(empId, ACCRUAL, GET, Range.closed(fromLocalDate, toLocalDate)));
+        checkPermission(new EssTimePermission(empId, ACCRUAL, GET, dateRange));
 
         List<PayPeriod> periods =
-            payPeriodService.getPayPeriods(PayPeriodType.AF, Range.closed(fromLocalDate, toLocalDate), SortOrder.ASC);
+            payPeriodService.getPayPeriods(PayPeriodType.AF, dateRange, SortOrder.ASC);
         TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualService.getAccruals(empId, periods);
         return ListViewResponse.of(accruals.values().stream().map(AccrualsView::new).collect(Collectors.toList()));
     }

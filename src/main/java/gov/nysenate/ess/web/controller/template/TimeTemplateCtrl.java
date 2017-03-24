@@ -50,6 +50,11 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         return getManagementPage(TIME_TMPL_BASE_URL + "/record/grant");
     }
 
+    @RequestMapping(value = "/accrual/emp-history")
+    public String accrualEmpHistory() {
+        return getManagementPage(TIME_TMPL_BASE_URL + "/accrual/emp-history");
+    }
+
     /** --- Internal Methods --- */
 
     /**

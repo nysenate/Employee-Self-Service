@@ -11,7 +11,7 @@
   </p>
   <p class="content-info">
     <span>
-      View Attendance Records for Employee &nbsp;
+      View {{selectSubject}} for Employee &nbsp;
     </span>
     <span>
       <select ng-model="$parent.iSelEmp" ng-if="allEmps.length > 0" ng-change="empChange(iSelEmp)"

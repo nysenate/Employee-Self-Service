@@ -1,6 +1,7 @@
-<div class="content-container content-controls">
+<div class="content-container content-controls"
+     ng-show="isUser()">
   <p class="content-info">Filter By Year &nbsp;
-    <select ng-model="selectedYear" ng-change="getAccSummaries(selectedYear)"
+    <select ng-model="selectedYear"
             ng-options="year for year in activeYears">
     </select>
   </p>
@@ -17,6 +18,20 @@
 <div loader-indicator class="loader" ng-show="isLoading()"></div>
 
 <div class="content-container" ng-hide="isLoading()">
+  <div class="content-container content-controls"
+       ng-hide="isUser()">
+    <h1>
+      {{empSupInfo.empFirstName}}
+      {{empSupInfo.empLastName}}'s
+      Accrual History
+    </h1>
+    <p class="content-info" style="margin-bottom: 0">
+      Filter By Year &nbsp;
+      <select ng-model="selectedYear"
+              ng-options="year for year in activeYears">
+      </select>
+    </p>
+  </div>
   <p class="content-info" ng-hide="accSummaries[selectedYear].length > 0">
     No historical accrual records exist for this year.
     If it is early in the year they may not have been created yet.
