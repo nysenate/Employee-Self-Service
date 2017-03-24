@@ -1447,13 +1447,12 @@ input[type="number"] {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   z-index: 1004;
+  overflow: visible;
 }
 #modal-container > ng-transclude > modal > *:not(.custom-fit),
 #modal-container > #common-modals > modal > *:not(.custom-fit) {
   max-height: calc(100vh - 50px);
-  overflow-y: auto;
   max-width: calc(100vw - 50px);
-  overflow-x: auto;
 }
 #modal-container > ng-transclude > modal > *.background-modal,
 #modal-container > #common-modals > modal > *.background-modal {
@@ -1468,17 +1467,13 @@ input[type="number"] {
 }
 .modal-max-height {
   max-height: calc(100vh - 50px);
-  overflow-y: auto;
 }
 .modal-max-width {
   max-width: calc(100vw - 50px);
-  overflow-x: auto;
 }
 .modal-fit {
   max-height: calc(100vh - 50px);
-  overflow-y: auto;
   max-width: calc(100vw - 50px);
-  overflow-x: auto;
 }
 /** --- Common Modals --- */
 #internal-error-modal {
@@ -1542,6 +1537,13 @@ input[type="number"] {
 }
 .confirm-modal .input-container input:first-child {
   margin-left: 0;
+}
+.modal-close-button {
+  font-size: 30px;
+  position: absolute;
+  top: -30px;
+  right: 0px;
+  cursor: pointer;
 }
 .ess-notification {
   padding: .3em;
@@ -4534,7 +4536,6 @@ record-review-modal,
 }
 #record-review-content #record-selection-pane {
   max-height: calc(100vh - 50px);
-  overflow-y: auto;
   float: left;
   display: inline-block;
   width: 280px;
