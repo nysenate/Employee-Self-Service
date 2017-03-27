@@ -1264,6 +1264,11 @@ input[type="number"] {
   width: 4em;
   height: 1em;
   margin: 100px auto;
+  /* Use padding instead of margin to prevent margin collapse */
+}
+.loader.no-collapse {
+  margin: 0 auto;
+  padding: 100px 0 calc(1em + 100px) 0;
 }
 .sm-loader {
   font-size: 20px;
@@ -1271,6 +1276,11 @@ input[type="number"] {
   width: 4em;
   height: 1em;
   margin: 40px auto;
+  /* Use padding instead of margin to prevent margin collapse */
+}
+.sm-loader.no-collapse {
+  margin: 0 auto;
+  padding: 40px 0 calc(1em + 40px) 0;
 }
 .dot {
   width: 1em;
@@ -4646,24 +4656,24 @@ record-review-modal,
 #record-reminder-prompt table.reminder-records tr td:first-child {
   padding-right: 5px;
 }
-/* --- Employee Attendance History Page --- */
-#emp-history .content-controls .content-info {
+/* --- Employee Select Directive --- */
+employee-select .content-controls .content-info {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0;
 }
-#emp-history .content-controls .content-info:not(:first-child) {
+employee-select .content-controls .content-info:not(:first-child) {
   padding-top: 0;
 }
-#emp-history .content-controls .content-info > span {
+employee-select .content-controls .content-info > span {
   flex-grow: 1;
   flex-basis: 0;
 }
-#emp-history .content-controls .content-info > span:first-child {
+employee-select .content-controls .content-info > span:first-child {
   text-align: right;
 }
-#emp-history .content-controls .content-info > span:last-child {
+employee-select .content-controls .content-info > span:last-child {
   text-align: left;
 }
 /** --- Supervisor Grant Page --- */
