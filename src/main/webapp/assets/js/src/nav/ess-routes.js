@@ -135,6 +135,12 @@ essApp.config(function($routeProvider, $locationProvider) {
         // Don't need to do anything, just prevent /logout from hitting 404.
     });
 
+
+    /** Login */
+    $routeProvider.when(ctxPath + '/login', {
+        // This request is handled by servlets, don't redirect to "/template/404"
+    });
+
     /** 404 */
     $routeProvider.otherwise({
         templateUrl: ctxPath + '/template/404'
