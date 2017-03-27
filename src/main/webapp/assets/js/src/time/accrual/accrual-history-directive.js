@@ -39,9 +39,15 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
 
             /* --- Watches --- */
 
+            /** Watch the bound employee sup info and set empId when it changes */
             $scope.$watchCollection('empSupInfo', setEmpId);
+
+            /** When a new empId is selected, refresh employee info, active years and clear cached accrual summaries */
             $scope.$watch('empId', getEmpInfo);
             $scope.$watch('empId', getEmpActiveYears);
+            $scope.$watch('empId', clearAccSummaries);
+
+            /** When a new year is selected, get accrual summaries for that year */
             $scope.$watch('selectedYear', getAccSummaries);
 
             /* --- Api Request Methods --- */
@@ -203,6 +209,13 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                     $scope.empId = appProps.user.employeeId;
                     console.log('No empId provided.  Using user\'s empId:', $scope.empId);
                 }
+            }
+
+            /**
+             * Clears any existing cached accrual summaries
+             */
+            function clearAccSummaries () {
+                $scope.accSummaries = {};
             }
 
             /* --- Angular smart table hacks --- */
