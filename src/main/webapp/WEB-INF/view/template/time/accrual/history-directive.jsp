@@ -7,17 +7,17 @@
   </p>
 </div>
 
-<ess-notification ng-show="!isLoading() && error !== null" level="warn"
+<ess-notification ng-show="!isEmpLoading() && error !== null" level="warn"
                   title="{{error.title}}" message="{{error.message}}">
 </ess-notification>
+
+<div loader-indicator class="loader" ng-show="isEmpLoading()"></div>
 
 <div ng-show="isTe">
   <jsp:include page="te-accruals.jsp"/>
 </div>
 
-<div loader-indicator class="loader" ng-show="isLoading()"></div>
-
-<div class="content-container" ng-hide="isLoading()">
+<div class="content-container" ng-hide="isEmpLoading()">
   <div class="content-container content-controls"
        ng-hide="isUser()">
     <h1>
@@ -32,10 +32,14 @@
       </select>
     </p>
   </div>
-  <p class="content-info" ng-hide="accSummaries[selectedYear].length > 0">
+
+  <div loader-indicator class="sm-loader no-collapse" ng-show="isLoading()"></div>
+
+  <p class="content-info" ng-hide="accSummaries[selectedYear].length > 0 || isLoading()">
     No historical accrual records exist for this year.
     If it is early in the year they may not have been created yet.
   </p>
+
   <div ng-show="accSummaries[selectedYear].length > 0">
     <p class="content-info">
       Summary of historical accrual records.

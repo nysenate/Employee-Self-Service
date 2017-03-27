@@ -188,6 +188,13 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
             };
 
             /**
+             * @returns {boolean} true iff employee data is loading
+             */
+            $scope.isEmpLoading = function () {
+                return $scope.request.empInfo || $scope.request.empActiveYears;
+            };
+
+            /**
              * Open the accrual detail modal
              * @param accrualRecord
              */

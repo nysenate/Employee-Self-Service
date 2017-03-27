@@ -8,6 +8,12 @@
   width: 4em;
   height: 1em;
   margin: 100px auto;
+
+  /* Use padding instead of margin to prevent margin collapse */
+  &.no-collapse {
+    margin: 0 auto;
+    padding: 100px 0 calc(~"1em + 100px") 0;
+  }
 }
 
 .sm-loader {
@@ -16,6 +22,12 @@
   width: 4em;
   height: 1em;
   margin: 40px auto;
+
+  /* Use padding instead of margin to prevent margin collapse */
+  &.no-collapse {
+    margin: 0 auto;
+    padding: 40px 0 calc(~"1em + 40px") 0;
+  }
 }
 
 .dot {
