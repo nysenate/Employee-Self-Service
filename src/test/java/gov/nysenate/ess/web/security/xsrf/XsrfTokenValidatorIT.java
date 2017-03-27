@@ -36,7 +36,7 @@ public class XsrfTokenValidatorIT extends WebTest
     /** Should return the correct number of bytes when decoded. */
     @Test
     public void testGenerateXsrfTokenWithSize() throws Exception {
-        int bytesSize = Math.abs(new Random().nextInt() % 1024);
+        int bytesSize = Math.abs(new Random().nextInt()) % 1024 + 1;
         XsrfTokenValidator xsrfTokenValidator = new XsrfTokenValidator(bytesSize);
         String xsrfTokenBase64Encoded = xsrfTokenValidator.generateXsrfToken();
         byte[] xsrfTokenDecoded = Base64.decode(xsrfTokenBase64Encoded);
