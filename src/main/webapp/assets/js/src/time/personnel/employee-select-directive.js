@@ -15,6 +15,8 @@ function employeeSelectDirective(appProps, supEmpGroupService) {
             $scope.supEmpGroups = [];
             $scope.allEmps = [];
 
+            $scope.activeOnly = ($attrs.activeOnly || '').toLowerCase() === 'true';
+
             $scope.selectSubject = $attrs.selectSubject;
 
             /**
@@ -27,9 +29,22 @@ function employeeSelectDirective(appProps, supEmpGroupService) {
                 setSupGroupLabels();
             });
 
+            /* --- Watches --- */
+
             $scope.$watch('iSelEmpGroup', setSelectedEmployeeGroup);
 
             $scope.$watch('iSelEmp', setSelectedEmployee);
+
+            /* --- Display Methods --- */
+
+            $scope.activeFilter = function (empInfo) {
+                if (!$scope.activeOnly) {
+                    return true;
+                }
+                return !moment().isAfter(empInfo.effectiveEndDate || empInfo.supEndDate, 'day');
+            };
+
+            /* --- Internal Methods --- */
 
             /**
              * Callback when selected employee group is changed
@@ -121,6 +136,7 @@ function employeeSelectDirective(appProps, supEmpGroupService) {
                 }
                 emp.dropDownLabel = name + ' (' + dates + ')';
             }
+
         }
     }
 }
