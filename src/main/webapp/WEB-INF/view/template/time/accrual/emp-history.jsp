@@ -1,7 +1,7 @@
 
 <section>
   <div class="time-attendance-hero">
-    <h2>Accrual History</h2>
+    <h2>Employee Accrual History</h2>
   </div>
   <employee-select selected-emp="selectedEmp" select-subject="Accrual History">
   </employee-select>
