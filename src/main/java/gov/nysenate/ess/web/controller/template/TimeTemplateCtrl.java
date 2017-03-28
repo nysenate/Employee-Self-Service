@@ -55,6 +55,11 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         return getManagementPage(TIME_TMPL_BASE_URL + "/accrual/emp-history");
     }
 
+    @RequestMapping(value = "/accrual/emp-projections")
+    public String accrualEmpProjections() {
+        return getManagementPage(TIME_TMPL_BASE_URL + "/accrual/emp-projections");
+    }
+
     /** --- Internal Methods --- */
 
     /**
