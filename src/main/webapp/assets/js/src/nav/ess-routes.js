@@ -78,6 +78,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/accrual/emp-history'
     });
 
+    $routeProvider.when(ctxPath + '/time/accrual/emp-projections', {
+        templateUrl: ctxPath + '/template/time/accrual/emp-projections'
+    });
+
     /** Test */
 
     $routeProvider.when(ctxPath + '/time/test/errormodal', {

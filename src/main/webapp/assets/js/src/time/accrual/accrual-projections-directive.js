@@ -54,9 +54,20 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 if (!$scope.empId) {
                     return;
                 }
+
                 var year = moment().year();
                 var fromDate = moment([year, 0, 1]).subtract(6, 'months');
                 var toDate = moment([year + 1, 0, 1]);
+
+                // Restrict by start and end dates if applicable
+                if (!$scope.isUser()) {
+                    var startDateMoment = moment($scope.empSupInfo.effectiveStartDate || 0);
+                    var endDateMoment = moment($scope.empSupInfo.supEndDate || '3000-01-01');
+
+                    fromDate = moment.max(fromDate, startDateMoment);
+                    toDate = moment.min(toDate, endDateMoment);
+                }
+
                 var params = {
                     empId: $scope.empId,
                     fromDate: fromDate.format('YYYY-MM-DD'),

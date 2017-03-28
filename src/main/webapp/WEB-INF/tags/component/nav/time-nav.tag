@@ -29,6 +29,7 @@
             </li>
             <li class="sub-topic"><a href="${ctxPath}/time/record/emphistory">Employee Attendance History</a></li>
             <li class="sub-topic"><a href="${ctxPath}/time/accrual/emphistory">Employee Accrual History</a></li>
+            <li class="sub-topic"><a href="${ctxPath}/time/accrual/emp-projections">Employee Accrual Projections</a></li>
             <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>
         </ul>
     </shiro:hasPermission>
