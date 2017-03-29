@@ -4460,15 +4460,35 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 #accrual-usage-details-table tbody tr td.available-hours.personal {
   background: rgba(65, 150, 167, 0.2);
 }
+.accruals-table tbody tr td.available-hours.personal.changed,
+.detail-acc-history-table tbody tr td.available-hours.personal.changed,
+#accrual-usage-details-table tbody tr td.available-hours.personal.changed {
+  color: #4196A7;
+}
 .accruals-table tbody tr td.available-hours.sick,
 .detail-acc-history-table tbody tr td.available-hours.sick,
 #accrual-usage-details-table tbody tr td.available-hours.sick {
   background: rgba(209, 149, 37, 0.2);
 }
+.accruals-table tbody tr td.available-hours.sick.changed,
+.detail-acc-history-table tbody tr td.available-hours.sick.changed,
+#accrual-usage-details-table tbody tr td.available-hours.sick.changed {
+  color: #d19525;
+}
 .accruals-table tbody tr td.available-hours.vacation,
 .detail-acc-history-table tbody tr td.available-hours.vacation,
 #accrual-usage-details-table tbody tr td.available-hours.vacation {
   background: rgba(121, 153, 51, 0.2);
+}
+.accruals-table tbody tr td.available-hours.vacation.changed,
+.detail-acc-history-table tbody tr td.available-hours.vacation.changed,
+#accrual-usage-details-table tbody tr td.available-hours.vacation.changed {
+  color: #799933;
+}
+.accruals-table tbody tr td.available-hours:not(.changed),
+.detail-acc-history-table tbody tr td.available-hours:not(.changed),
+#accrual-usage-details-table tbody tr td.available-hours:not(.changed) {
+  transition: color 0.25s ease-out;
 }
 .accruals-table tbody tr td input,
 .detail-acc-history-table tbody tr td input,
