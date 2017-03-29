@@ -8,6 +8,9 @@ public final class ItemStatus {
     /**
      * Is this item ordered by the supply department (Maintenance and Operations).
      * Items supply does not order do not have their inventories tracked in SFMS.
+     * Non ordered items are made by the senate. e.g. Commodity codes: PML, PM, SL
+     *
+     * This equals the opposite of column "cdsensuppieditem" in SFMS.
      */
     private final boolean isOrderedBySupply;
 
