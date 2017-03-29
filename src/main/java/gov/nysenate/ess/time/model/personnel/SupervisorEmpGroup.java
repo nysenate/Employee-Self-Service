@@ -87,7 +87,7 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     }
 
     public void addOverrideEmployee(EmployeeSupInfo employeeSupInfo) {
-        this.overrideEmployees.put(employeeSupInfo.getSupId(), employeeSupInfo);
+        this.overrideEmployees.put(employeeSupInfo.getEmpId(), employeeSupInfo);
     }
 
     /* --- Overrides --- */
