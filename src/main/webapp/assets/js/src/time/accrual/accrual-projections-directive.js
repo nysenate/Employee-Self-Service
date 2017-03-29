@@ -16,7 +16,7 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
              */
             empSupInfo: '=?'
         },
-        templateUrl: appProps.ctxPath + '/template/time/accrual/projection-directive',
+        templateUrl: appProps.ctxPath + '/template/time/accrual/projections-directive',
         link: function ($scope) {
 
             var maxVacationBanked = 210,
@@ -147,12 +147,10 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 return false;
             };
 
-            /**
-             * Exposes proj. calc. function
-             * @see {recalculateProjectionTotals}
-             * @type {recalculateProjectionTotals}
-             */
-            $scope.recalculateProjectionTotals = recalculateProjectionTotals;
+            $scope.onAccUsageChange = function (accrualRecord, type) {
+                recalculateProjectionTotals();
+                setChangedFlags(accrualRecord, type);
+            };
 
             /**
              * Open the accrual detail modal
@@ -201,6 +199,8 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                         projection[fieldName] = null;
                     }
                 });
+                // Add a changed field for storing change flags
+                projection.changed = {};
                 return projection;
             }
 
@@ -304,6 +304,23 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 rec.personalAvailable = rec.personalAccruedYtd - rec.personalUsed;
                 rec.vacationAvailable = rec.vacationAccruedYtd + rec.vacationBanked - rec.vacationUsed;
                 rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - rec.sickEmpUsed - rec.sickFamUsed;
+            }
+
+            function setChangedFlags (record, type) {
+                var projections = $scope.projections;
+                var startIndex = projections.indexOf(record);
+
+                for (var i = startIndex; i < projections.length; i++) {
+                    projections[i].changed[type] = true;
+                }
+
+                $timeout(resetChangedFlags);
+            }
+
+            function resetChangedFlags () {
+                angular.forEach($scope.projections, function (record) {
+                    record.changed = {};
+                });
             }
 
             /* --- Angular Smart Table Hacks --- */

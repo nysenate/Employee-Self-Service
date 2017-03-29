@@ -643,12 +643,24 @@ table.attendance-entry-sub-table {
           font-weight: bold;
           &.personal {
             background: fade(@light-teal, 20%);
+            &.changed {
+              color: @light-teal;
+            }
           }
           &.sick {
             background: fade(@sick-color, 20%);
+            &.changed {
+              color: @sick-color;
+            }
           }
           &.vacation {
             background: fade(@vacation-color, 20%);
+            &.changed {
+              color: @vacation-color;
+            }
+          }
+          &:not(.changed) {
+            transition: color 0.25s ease-out;
           }
         }
 

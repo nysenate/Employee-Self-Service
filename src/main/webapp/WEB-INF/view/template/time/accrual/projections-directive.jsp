@@ -68,9 +68,11 @@
               title="Project Personal Hour Usage">
             <input type="number" min="0" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekPersonalUsed"
-                   ng-change="recalculateProjectionTotals(selectedYear);"/>
+                   ng-change="onAccUsageChange(record, 'personal')"/>
           </td>
-          <td class="accrual-hours personal available-hours" ng-click="viewDetails(record)">
+          <td class="accrual-hours personal available-hours"
+              ng-class="{changed: record.changed.personal}"
+              ng-click="viewDetails(record)">
             {{record.personalAvailable}}
           </td>
           <td class="accrual-hours vacation rate" ng-click="viewDetails(record)">
@@ -80,9 +82,11 @@
               title="Project Vacation Hour Usage">
             <input type="number" min="0" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekVacationUsed"
-                   ng-change="recalculateProjectionTotals(selectedYear);"/>
+                   ng-change="onAccUsageChange(record, 'vacation')"/>
           </td>
-          <td class="accrual-hours vacation available-hours" ng-click="viewDetails(record)">
+          <td class="accrual-hours vacation available-hours"
+              ng-class="{changed: record.changed.vacation}"
+              ng-click="viewDetails(record)">
             {{record.vacationAvailable}}
           </td>
           <td class="accrual-hours sick rate" ng-click="viewDetails(record)">
@@ -92,15 +96,17 @@
               title="Project Employee Sick Hour Usage">
             <input type="number" min="0" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekSickEmpUsed"
-                   ng-change="recalculateProjectionTotals(selectedYear);" />
+                   ng-change="onAccUsageChange(record, 'sick')" />
           </td>
           <td class="accrual-hours sick used-hours"
               title="Project Family Sick Hour Usage">
-            <input type="number" min="0" step=".5" placeholder="0"
+            <input type="number" min="0" ng-step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekSickFamUsed"
-                   ng-change="recalculateProjectionTotals(selectedYear);" />
+                   ng-change="onAccUsageChange(record, 'sick')" />
           </td>
-          <td class="accrual-hours sick available-hours" ng-click="viewDetails(record)">
+          <td class="accrual-hours sick available-hours"
+              ng-class="{changed: record.changed.sick}"
+              ng-click="viewDetails(record)">
             {{record.sickAvailable}}
           </td>
 
