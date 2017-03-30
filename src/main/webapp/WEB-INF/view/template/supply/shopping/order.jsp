@@ -3,7 +3,7 @@
 <div ng-controller="SupplyOrderController">
   <div class="supply-order-hero inline-block width-100">
     <h2 class="requisition-title">Requisition Form</h2>
-    <a href="${ctxPath}/supply/order/cart">
+    <a href="${ctxPath}/supply/shopping/cart/cart">
       <cart-summary class="cart-widget"></cart-summary>
     </a>
   </div>

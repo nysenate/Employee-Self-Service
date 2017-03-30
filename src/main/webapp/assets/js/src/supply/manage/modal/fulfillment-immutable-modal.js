@@ -3,7 +3,7 @@ var essSupply = angular.module('essSupply');
 essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'LocationService',
     function (appProps, modals, locationService) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/fulfillment-immutable-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/manage/modal/fulfillment-immutable-modal',
         link: link
     };
 

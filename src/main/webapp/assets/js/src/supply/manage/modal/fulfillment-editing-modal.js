@@ -1,7 +1,7 @@
 var essSupply = angular.module('essSupply')
     .directive('fulfillmentEditingModal', ['appProps', function (appProps) {
         return {
-            templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/fulfillment-editing-modal',
+            templateUrl: appProps.ctxPath + '/template/supply/manage/modal/fulfillment-editing-modal',
             scope: {
                 'supplyEmployees': '=',
                 'locationStatistics': '='
@@ -14,7 +14,7 @@ var essSupply = angular.module('essSupply')
         return {
             restrict: 'A',
             scope: false,
-            templateUrl: appProps.ctxPath + '/template/supply/manage/fulfillment/modal/editable-order-listing'
+            templateUrl: appProps.ctxPath + '/template/supply/manage/modal/editable-order-listing'
         }
     }])
     .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyRequisitionRejectApi',

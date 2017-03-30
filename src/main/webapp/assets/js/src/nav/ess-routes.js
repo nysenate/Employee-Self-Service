@@ -91,16 +91,16 @@ essApp.config(function($routeProvider, $locationProvider) {
     /** Supply */
 
     $routeProvider.when(ctxPath + '/supply', {
-        redirectTo: ctxPath + '/supply/order'
+        redirectTo: ctxPath + '/supply/shopping/order'
     });
 
-    $routeProvider.when(ctxPath + '/supply/order', {
-        templateUrl: ctxPath + '/template/supply/order',
+    $routeProvider.when(ctxPath + '/supply/shopping/order', {
+        templateUrl: ctxPath + '/template/supply/shopping/order',
         reloadOnSearch: false
     });
 
-    $routeProvider.when(ctxPath + '/supply/order/cart', {
-        templateUrl: ctxPath + '/template/supply/order/cart'
+    $routeProvider.when(ctxPath + '/supply/shopping/cart/cart', {
+        templateUrl: ctxPath + '/template/supply/shopping/cart/cart'
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/fulfillment', {
@@ -113,15 +113,15 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/reconciliation', {
-        templateUrl: ctxPath + '/template/supply/manage/reconciliation',
+        templateUrl: ctxPath + '/template/supply/manage/reconciliation'
     });
 
-    $routeProvider.when(ctxPath + '/supply/history/history', {
-        templateUrl: ctxPath + '/template/supply/history/history'
+    $routeProvider.when(ctxPath + '/supply/history/requisition-history', {
+        templateUrl: ctxPath + '/template/supply/history/requisition-history'
     });
 
-    $routeProvider.when(ctxPath + '/supply/order-history', {
-        templateUrl: ctxPath + '/template/supply/order-history'
+    $routeProvider.when(ctxPath + '/supply/history/order-history', {
+        templateUrl: ctxPath + '/template/supply/history/order-history'
     });
 
     $routeProvider.when(ctxPath + '/supply/requisition/requisition-view', {

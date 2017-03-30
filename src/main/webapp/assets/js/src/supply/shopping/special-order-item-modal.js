@@ -1,6 +1,6 @@
 angular.module('essSupply').directive('specialOrderItemModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/order/special-order-item-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/special-order-item-modal',
         controller: 'SpecialOrderItemCtrl',
         controllerAs: 'ctrl'
     }

@@ -8,7 +8,7 @@ essSupply.directive('cartSummary', ['appProps', function(appProps) {
                 return SupplyCartService.getSize();
             }
         },
-        templateUrl: appProps.ctxPath + '/template/supply/order/cart/cart-summary',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/cart/cart-summary',
         transclude: true
     }
 }]);
@@ -19,7 +19,7 @@ essSupply.directive('cartSummary', ['appProps', function(appProps) {
 essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
     return {
         restrict: 'E',
-        templateUrl: appProps.ctxPath + '/template/supply/order/cart/cart-checkout-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/cart/cart-checkout-modal',
         controller: 'CartCheckoutModalCtrl',
         controllerAs: 'ctrl'
     }

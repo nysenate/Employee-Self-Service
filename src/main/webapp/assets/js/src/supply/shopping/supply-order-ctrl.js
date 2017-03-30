@@ -184,7 +184,7 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
             $scope.state.toLoading();
             supplyCart.reset();
             destinationService.reset();
-            locationService.go("/supply/order", true);
+            locationService.go("/supply/shopping/order", true);
         }
     };
 

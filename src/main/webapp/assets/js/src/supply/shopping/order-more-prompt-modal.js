@@ -4,7 +4,7 @@
  */
 angular.module('essSupply').directive('orderMorePromptModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/order/order-more-prompt-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/order-more-prompt-modal',
         controller: 'OrderMorePromptModalCtrl',
         controllerAs: 'ctrl'
     }

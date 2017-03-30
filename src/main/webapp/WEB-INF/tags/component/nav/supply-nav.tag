@@ -8,16 +8,16 @@
     <ess-component-nav:nav-header topicTitle="Supply Menu" colorClass="blue-purple"/>
     <h3 class="main-topic">My Supply</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/supply/order">Requisition Form</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/order/cart">Shopping Cart</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/order-history">Order History</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/shopping/order">Requisition Form</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/shopping/cart/cart">Shopping Cart</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/history/order-history">Order History</a></li>
     </ul>
     <shiro:hasPermission name="supply:employee">
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/history/history">Requisition History</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/history/requisition-history">Requisition History</a></li>
     </ul>
     </shiro:hasPermission>
   </section>

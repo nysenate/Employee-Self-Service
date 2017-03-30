@@ -19,58 +19,58 @@
 
         <%-- History --%>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/history/supply-history-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/history/supply-requisition-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/history/supply-order-history-ctrl.js?v=${releaseVersion}"></script>
 
         <%-- Manage --%>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/manage/fulfillment/supply-fulfillment-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/manage/supply-fulfillment-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/manage/supply-reconciliation-ctrl.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/manage/fulfillment/modal/fulfillment-editing-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/manage/modal/fulfillment-editing-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/manage/fulfillment/modal/fulfillment-immutable-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/manage/modal/fulfillment-immutable-modal.js?v=${releaseVersion}"></script>
         <%-- Order --%>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/supply-order-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/supply-order-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/supply-quantity-selector.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/supply-quantity-selector.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/order-quantity-validator.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/order-quantity-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/order-destination-service.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/order-destination-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/order-more-prompt-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/order-more-prompt-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/order-canceling-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/order-canceling-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/special-order-item-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/special-order-item-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/supply-line-item-service.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/supply-line-item-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/supply-item-filter-service.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/supply-item-filter-service.js?v=${releaseVersion}"></script>
          <script type="text/javascript"
-                 src="${ctxPath}/assets/js/src/supply/order/order-page-state-service.js?v=${releaseVersion}"></script>
+                 src="${ctxPath}/assets/js/src/supply/shopping/order-page-state-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/large-item-image-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/large-item-image-modal.js?v=${releaseVersion}"></script>
 
 
         <%-- Cart --%>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-service.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-directives.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-directives.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/order/cart/supply-cart-empty-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-empty-modal.js?v=${releaseVersion}"></script>
 
         <%-- Requisition --%>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/requisition/supply-view-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/requisition/supply-requisition-view-ctrl.js?v=${releaseVersion}"></script>
 
         <%-- Utilities --%>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/supply/util/supply-utils-service.js"></script>

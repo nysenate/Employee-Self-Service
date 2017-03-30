@@ -3,7 +3,7 @@
  */
 angular.module('essSupply').directive('supplyCartEmptyModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/order/cart/cart-empty-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/cart/cart-empty-modal',
         controller: 'SupplyCartEmptyModal',
         controllerAs: 'ctrl'
     }

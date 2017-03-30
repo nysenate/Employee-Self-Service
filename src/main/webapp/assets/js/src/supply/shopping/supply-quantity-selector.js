@@ -8,7 +8,7 @@
 var essSupply = angular.module('essSupply')
     .directive('supplyQuantitySelector', ['appProps', function (appProps) {
         return {
-            templateUrl: appProps.ctxPath + '/template/supply/order/supply-quantity-selector',
+            templateUrl: appProps.ctxPath + '/template/supply/shopping/supply-quantity-selector',
             scope: {
                 'lineItem': '='
             },

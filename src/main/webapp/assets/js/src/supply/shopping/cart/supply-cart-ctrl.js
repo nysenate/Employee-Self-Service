@@ -61,7 +61,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
 
         function reset() {
             supplyCart.reset();
-            locationService.go("/supply/order", false);
+            locationService.go("/supply/shopping/order", false);
         }
     };
 
@@ -77,7 +77,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
 
     $scope.returnToSupply = function () {
         modals.resolve();
-        locationService.go("/supply/order", false);
+        locationService.go("/supply/shopping/order", false);
     };
 
     $scope.logout = function () {

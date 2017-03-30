@@ -4,7 +4,7 @@
  */
 angular.module('essSupply').directive('orderCancelingModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/supply/order/order-canceling-modal',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/order-canceling-modal',
         controller: 'OrderCancelingCtrl',
         controllerAs: 'ctrl'
     }
