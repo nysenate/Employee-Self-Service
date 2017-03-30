@@ -75,7 +75,7 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery
         "WITH updated_ids AS (\n" +
         "  SELECT rec.NUXRTIMESHEET\n" +
         "  FROM ${tsSchema}.PM23TIMESHEET rec\n" +
-        "  JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+        "  LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
         "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
         "  WHERE rec.DTTXNUPDATE BETWEEN :startDateTime AND :endDateTime\n" +
         "    OR ent.DTTXNUPDATE BETWEEN :startDateTime AND :endDateTime\n" +
