@@ -1457,7 +1457,7 @@ input[type="number"] {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   z-index: 1004;
-  overflow: visible;
+  overflow: auto;
 }
 #modal-container > ng-transclude > modal > *:not(.custom-fit),
 #modal-container > #common-modals > modal > *:not(.custom-fit) {
@@ -1551,8 +1551,8 @@ input[type="number"] {
 .modal-close-button {
   font-size: 30px;
   position: absolute;
-  top: -30px;
-  right: 0px;
+  top: 0;
+  right: 0;
   cursor: pointer;
 }
 .ess-notification {
@@ -3440,6 +3440,19 @@ button.ui-button::-moz-focus-inner {
   display: block;
   margin: 10px auto;
   height: 120px;
+}
+.supply-item-image-modal .title-pane {
+  background-color: #222;
+  color: #d6d6d6;
+  text-align: center;
+}
+.supply-item-image-modal .title-pane h3 {
+  margin: 0;
+  padding: 5px;
+}
+.supply-item-image-modal img {
+  display: block;
+  max-height: 800px;
 }
 .add-to-cart-btn {
   width: 90%;
