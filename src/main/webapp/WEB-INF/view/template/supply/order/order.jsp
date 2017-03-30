@@ -85,7 +85,7 @@
             <div ng-class="{'corner-ribbon': lineItem.item.specialRequest}"
                  ng-hide="!lineItem.item.specialRequest"><span>Special</span></div>
             <img class="supply-item-image"
-                 ng-click="displayLargeImage(lineItem.item.commodityCode)"
+                 ng-click="displayLargeImage(lineItem.item)"
                  ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
                  err-src="${imageUrl}/no_photo_available.png">
             <p class="dark-gray margin-5 bold" style="height: 40px; overflow: hidden;">

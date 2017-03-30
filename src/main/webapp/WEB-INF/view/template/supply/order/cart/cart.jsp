@@ -40,7 +40,7 @@
       <div class="col-3-12 text-align-center">
         <div class="content" style="padding-left: 5px">
           <img class="supply-item-image"
-               ng-click="displayLargeImage(lineItem.item.commodityCode)"
+               ng-click="displayLargeImage(lineItem.item)"
                ng-src="${imageUrl}/{{lineItem.item.commodityCode}}.jpg"
                err-src="${imageUrl}/no_photo_available.png">
         </div>

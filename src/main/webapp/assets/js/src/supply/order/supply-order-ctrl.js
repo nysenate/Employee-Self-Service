@@ -217,8 +217,8 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     /** --- Modals --- */
 
-    $scope.displayLargeImage = function (commodityCode) {
-        modals.open('large-item-image-modal', {commodityCode: commodityCode}, true)
+    $scope.displayLargeImage = function (item) {
+        modals.open('large-item-image-modal', {item: item}, true)
     }
 }
 
