@@ -2,6 +2,7 @@ package gov.nysenate.ess.time.model.personnel;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
@@ -45,12 +46,14 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
      * Get {@link EmployeeSupInfo}s for all direct and indirect employees
      * @return {@link Set<EmployeeSupInfo>}
      */
-    public Set<EmployeeSupInfo> getExtendedEmployeeSupInfos() {
+    public ImmutableSet<EmployeeSupInfo> getExtendedEmployeeSupInfos() {
         Set<EmployeeSupInfo> employeeSupInfos = new HashSet<>(getDirectEmployeeSupInfos());
         this.employeeSupEmpGroups.values().stream()
                 .map(PrimarySupEmpGroup::getPrimaryEmpSupInfos)
                 .flatMap(Collection::stream)
                 .forEach(employeeSupInfos::add);
-        return employeeSupInfos;
+        return ImmutableSet.copyOf(employeeSupInfos);
     }
+
+
 }

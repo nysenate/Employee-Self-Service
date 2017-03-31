@@ -39,20 +39,16 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
 
     /* --- Functional Getters / Setters --- */
 
-    public Set<Integer> getOverrideSupIds() {
-        return supOverrideEmployees.rowKeySet();
-    }
-
     /**
      * Get all employee sup info's for which the supervisor is responsible for
      * @return {@link Set<EmployeeSupInfo>}
      */
     public ImmutableSet<EmployeeSupInfo> getDirectEmployeeSupInfos() {
-        Set<EmployeeSupInfo> empSet = new HashSet<>();
-        this.primaryEmployees.values().forEach(empSet::add);
-        this.overrideEmployees.values().forEach(empSet::add);
-        this.supOverrideEmployees.values().forEach(empSet::add);
-        return ImmutableSet.copyOf(empSet);
+        return ImmutableSet.<EmployeeSupInfo>builder()
+                .addAll(this.primaryEmployees.values())
+                .addAll(this.overrideEmployees.values())
+                .addAll(this.supOverrideEmployees.values())
+                .build();
     }
 
     /**

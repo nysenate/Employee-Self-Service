@@ -58,12 +58,6 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
 
         // Add permissions to read data for both direct and indirect employees
         supEmpGroup.getExtendedEmployeeSupInfos().stream()
-                .map(this::getEmployeeReadPermissions)
-                .flatMap(Collection::stream)
-                .forEach(supPermissions::add);
-
-        // Add permissions to write data for direct employees
-        supEmpGroup.getDirectEmployeeSupInfos().stream()
                 .map(this::getEmployeeReadWritePermissions)
                 .flatMap(Collection::stream)
                 .forEach(supPermissions::add);
