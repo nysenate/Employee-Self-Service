@@ -113,7 +113,11 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
               USER, quantity, amqtyissstd, cdorgid, item_unit, responsibility_head, requisition_id, customer_id);
     END;
 
-  /* Has all columns from the insert_item_move query plus the new amqtyohstd value for the from location. */
+  /*
+  Audit table has all columns from the insert_item_move query plus the new amqtyohstd value for the from location.
+  amqtyohstd = standard quantity on hand.
+  amqtyohstd should equal the quantity on hand before this move took place.
+   */
   PROCEDURE insert_item_move_audit(requisition_id      NUMBER,
                                    customer_id         NUMBER,
                                    nuissue             NUMBER,
@@ -126,7 +130,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
                                    amqtyissstd         NUMBER,
                                    item_unit           VARCHAR2,
                                    responsibility_head VARCHAR2) IS
-    new_standard_quantity_on_hand NUMBER := get_supply_inventory(item_id);
+    standard_quantity_on_hand NUMBER := get_supply_inventory(item_id);
     -- Constants.
     cdrectype                     VARCHAR(1) := 'P'; -- Not sure what this is but its always 'P' for supply moves.
     cdstatus                      VARCHAR(1) := 'A';
@@ -139,7 +143,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
                                 CDORGID, CDISSUNIT, CDRESPCTRHD, NUREQUISITIONID, NUXREFEM)
       VALUES (nuissue, item_id, TO_DATE(SUBSTR(issue_date, 1, 10), 'YYYY-MM-DD'), SYSDATE, SYSDATE, SUPPLY_LOCATION_TYPE,
               to_location_type, cdrectype, cdstatus, SUPPLY_LOCATION_CODE, to_location_code, issuer_uid, USER, USER,
-              quantity, amqtyissstd, new_standard_quantity_on_hand, cdorgid, item_unit, responsibility_head, requisition_id, customer_id);
+              quantity, amqtyissstd, standard_quantity_on_hand, cdorgid, item_unit, responsibility_head, requisition_id, customer_id);
     END;
 
   /* Subtracts items from supply location inventory. */

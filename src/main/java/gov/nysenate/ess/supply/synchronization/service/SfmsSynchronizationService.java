@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * This service controls the execution of the SfmsSynchronizationProcedure.
+ */
 @Service
 public class SfmsSynchronizationService {
 
@@ -37,21 +40,29 @@ public class SfmsSynchronizationService {
 
     @Value("${scheduler.supply.sfms_synchronization.enabled}")
     private boolean synchronizationEnabled;
-    @Autowired private RequisitionService requisitionService;
-    @Autowired private SfmsSynchronizationProcedure synchronizationProcedure;
-    @Autowired private ObjectMapper xmlObjectMapper;
-    @Autowired private DateTimeFactory dateTimeFactory;
+    @Autowired
+    private RequisitionService requisitionService;
+    @Autowired
+    private SfmsSynchronizationProcedure synchronizationProcedure;
+    @Autowired
+    private ObjectMapper xmlObjectMapper;
+    @Autowired
+    private DateTimeFactory dateTimeFactory;
     @Autowired
     private SlackChatService slackChatService;
 
     /**
-     * Inserts supply requisitions into SFMS for all requisitions where savedInSfms = <code>false</code>
+     * Inserts supply requisitions into SFMS for all approved requisitions where savedInSfms = <code>false</code>
      * On success, savedInSfms gets set to <code>true</code>.
      * <p>
-     * Checks all requisitions, so any errors in previous runs will be
-     * automatically attempted again in the next run.
+     *     Checks all requisitions, so any errors in previous runs will be
+     *     automatically attempted again in the next run.
+     * </p>
      * <p>
-     * Should be run at the top of each hour.
+     *     app.properties configuration:
+     *          - 'scheduler.supply.sfms_synchronization.enabled': boolean, determines if the synchronization process should run.
+     *          - 'scheduler.supply.sfms_synchronization.cron': Spring cron string specifying when the synchronization should run.
+     * </p>
      */
     @Scheduled(cron = "${scheduler.supply.sfms_synchronization.cron}")
     public void synchronizeRequisitions() {
@@ -59,33 +70,35 @@ public class SfmsSynchronizationService {
         if (!synchronizationEnabled) {
             return;
         }
+        List<Requisition> requisitions = requisitionsNeedingSync();
+        logger.info("Attempting to synchronize {} requisitions with SFMS.", requisitions.size());
+        for (Requisition requisition : requisitions) {
+            syncRequisition(requisition);
+        }
+    }
+
+    private void syncRequisition(Requisition requisition) {
+        Requisition sfmsRequisition = filterRequisitionForSfms(requisition);
+        try {
+            synchronizationProcedure.synchronizeRequisition(toXml(sfmsRequisition));
+            requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), true);
+        } catch (DataAccessException ex) {
+            String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
+                    + " with SFMS. Exception is : " + ex.getMessage();
+            logger.error(msg);
+            sendMessageToSlack(msg);
+        }
+    }
+
+    private List<Requisition> requisitionsNeedingSync() {
         // Get all requisitions not saved in sfms since app release in 2016.
         LocalDateTime start = LocalDateTime.of(2016, 1, 1, 0, 0);
         LocalDateTime end = dateTimeFactory.now();
-        StringBuffer sb = new StringBuffer();
         Range<LocalDateTime> dateRange = Range.closed(start, end);
-        List<Requisition> requisitions = requisitionService.searchRequisitions("All", "All",
-                                                                               EnumSet.of(RequisitionStatus.APPROVED),
-                                                                               dateRange, "approved_date_time",
-                                                                               "false", LimitOffset.ALL, "All").getResults();
-        logger.info("Synchronizing {} requisitions with SFMS.", requisitions.size());
-        for (Requisition requisition : requisitions) {
-            Requisition sfmsRequisition = filterRequisitionForSfms(requisition);
-            try {
-                synchronizationProcedure.synchronizeRequisition(toXml(sfmsRequisition));
-                requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), true); // try to sync
-//                String msg = "Successful synchronizing requisition " + requisition.getRequisitionId();
-//                sb.append(msg + "\n");
-            } catch (DataAccessException ex) {
-                String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
-                        + " with SFMS. Exception is : " + ex.getMessage();
-                logger.error(msg);
-                sb.append(msg + "\n");
-                requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), false); // fail to sync
-            }
-        }
-        if (sb.length() > 0)
-            sendMessageToSlack(sb.toString());
+        return requisitionService.searchRequisitions("All", "All",
+                EnumSet.of(RequisitionStatus.APPROVED),
+                dateRange, "approved_date_time",
+                "false", LimitOffset.ALL, "All").getResults();
     }
 
     /**
@@ -101,12 +114,12 @@ public class SfmsSynchronizationService {
 
     /**
      * Removes line items of 0 quantity and items that are not tracked in inventory from a requisition.
-     * This is done because these items should not be synchronized with SFMS.
+     * These items should not be synchronized with SFMS.
      */
     private Requisition filterRequisitionForSfms(Requisition requisition) {
         Set<LineItem> filteredLineItems = requisition.getLineItems().stream()
-                                                     .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().requiresSynchronization())
-                                                     .collect(Collectors.toSet());
+                .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().requiresSynchronization())
+                .collect(Collectors.toSet());
         return requisition.setLineItems(filteredLineItems);
     }
 

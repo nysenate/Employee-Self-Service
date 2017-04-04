@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Wraps an oracle procedure which synchronizes supply data with sfms data.
+ * Wraps an oracle procedure which records all item movements and updates inventory counts in the SFMS database.
  */
 @Repository
 public class SfmsSynchronizationProcedure extends StoredProcedure {
