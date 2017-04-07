@@ -717,9 +717,23 @@ div.accrual-detail-table-container {
 
 /** --- Manage Employee Records Page --- */
 
-.emp-manage-actions-container {
-  padding:.5em;
-  text-align:right;
+.record-manage-controls {
+  display: flex;
+  justify-content: space-between;
+
+  ul {
+    padding: 0;
+    margin: 10px;
+
+    li {
+      margin-right: 10px;
+    }
+  }
+
+  .select-actions {
+    padding:.5em;
+    text-align:right;
+  }
 }
 
 table.approve-attendance-rec-table {
@@ -905,8 +919,8 @@ record-review-modal, [record-review-modal] {
 
 /* --- Employee Select Directive --- */
 
-employee-select {
-  .content-controls .content-info {
+.employee-select {
+  .content-info {
     display: flex;
     justify-content: center;
     align-items: center;

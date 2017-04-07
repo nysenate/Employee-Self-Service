@@ -3,7 +3,6 @@ var essApp = angular.module('ess');
 essApp.directive('supervisorRecordList', ['appProps', 'modals', function (appProps, modals) {
     return {
         scope: {
-            supId: '=',             // The supervisor's id
             records: '=',           // a list of records to display
             selectedIndices: '=?'   // a map of selected record indices, where the indices are
                                     // stored as object properties with a value of true

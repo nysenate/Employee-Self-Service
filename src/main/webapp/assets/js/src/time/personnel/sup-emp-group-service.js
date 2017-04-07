@@ -113,11 +113,9 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
      */
     function loadSupEmpGroup () {
         var fromDateMoment = moment().subtract(2, 'years');
-        var toDateMoment = moment();
         var params = {
             supId: appProps.user.employeeId,
             fromDate: fromDateMoment.format('YYYY-MM-DD'),
-            toDate: toDateMoment.format('YYYY-MM-DD'),
             extended: true
         };
 
@@ -158,14 +156,16 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
         angular.forEach(allEmpInfos, function (empInfo) {
             nameMap[empInfo.empId] = {
                 firstName: empInfo.empFirstName,
-                lastName: empInfo.empLastName
+                lastName: empInfo.empLastName,
+                fullName: empInfo.empFirstName + ' ' + empInfo.empLastName
             };
         });
 
         nameMap[appProps.user.employeeId] = {
             firstName: appProps.user.firstName,
-            lastName: appProps.user.lastName
-        }
+            lastName: appProps.user.lastName,
+            fullName: appProps.user.firstName + ' ' + appProps.user.lastName
+        };
     }
 
     /**

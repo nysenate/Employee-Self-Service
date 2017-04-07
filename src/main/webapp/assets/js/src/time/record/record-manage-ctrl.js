@@ -1,77 +1,112 @@
 var essApp = angular.module('ess');
 
-essApp.controller('RecordManageCtrl', ['$scope', '$q', '$filter', 'appProps', 'RecordUtils', 'modals', 'badgeService',
-    'SupervisorTimeRecordsApi', 'TimeRecordApi', 'TimeRecordReminderApi',
+essApp.controller('RecordManageCtrl', ['$scope', '$q', '$filter',
+                                       'appProps', 'RecordUtils', 'modals', 'badgeService', 'supEmpGroupService',
+                                       'SupervisorTimeRecordsApi', 'TimeRecordApi', 'TimeRecordReminderApi',
     recordManageCtrl]);
 
-function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
-                          badgeService, supRecordsApi, timeRecordsApi, reminderApi) {
+function recordManageCtrl($scope, $q, $filter,
+                          appProps, recordUtils, modals, badgeService, supEmpGroupService,
+                          supRecordsApi, timeRecordsApi, reminderApi) {
+
+    /** Object used as default template for selected indices */
+    var initialSelectedIndices = {
+        NOT_SUBMITTED: {},
+        SUBMITTED: {},
+        DISAPPROVED: {}
+    };
+
     $scope.state = {
         // Data
-        supIds: {},
-        empInfos: {},   // Mapping of empId -> employee data
-        supRecords: {},
+        /** List of supervisor entries containing sup info and records */
+        supervisors: [],
+        /** Index of currently selected supervisor */
+        iSelSup: -1,
 
         // Page state
-        loading: false,     // If data is being fetched
-        selSupId: null,     // The currently selected id from the supIds map
-        selectedIndices: {  // Mapping of selected record indices by status code, e,g {'SUBMITTED' : { 1:true, 2:true }}
-            NOT_SUBMITTED: {},         // TODO: Turn this into a constant
-            SUBMITTED: {},
-            DISAPPROVED: {},
-            APPROVED: {},
-            DISAPPROVED_PERSONNEL: {},
-            SUBMITTED_PERSONNEL: {},
-            APPROVED_PERSONNEL: {}
-        }
+        /** Flags set as true if the named request is in progress */
+        request: {
+            supEmpGroup: false,
+            records: false,
+            recordSubmit: false,
+            emailReminder: false
+        },
+
+        /** Mapping of selected record indices by status code, e,g {'SUBMITTED' : { 1:true, 2:true }} */
+        selectedIndices: angular.copy(initialSelectedIndices)
     };
 
-    // This key is used for grouping all records under a single item regardless of supervisor.
-    var allSupervisorsId = 'all';
-
-    function setDefaultValues() {
-        $scope.state.selSupId = allSupervisorsId;
-        $scope.state.supIds = [allSupervisorsId];
-        $scope.state.empInfos = {};
-        $scope.state.supRecords = {};
-    }
-
-    $scope.init = function () {
-        getEmployeeActiveRecords();
-    };
-
-    /** --- Api Methods --- */
+    /* --- Initialization --- */
 
     /**
-     * Retrieves all active, in progress records that are under supervision of the current user
-     * Also gets employee infos for the supervisor, any overridden supervisor, and all employees in the returned records
+     * Start retrieval of supervisor employee groups,
+     * Calling the supervisor initialization method on completion
      */
-    function getEmployeeActiveRecords() {
-        $scope.state.loading = true;
-        setDefaultValues();
-        var from = moment().subtract(1, 'year').format('YYYY-MM-DD');
-        var to = moment().format('YYYY-MM-DD');
-        var empId = appProps.user.employeeId;
-        supRecordsApi.get({supId: empId, from: from, to: to}, function onSuccess(resp) {
-            initializeRecords(resp.result.items);
-            updateRecordsPendingBadge();
-            resetSelection();
-            $scope.state.loading = false;
-        }, function onFail(resp) {
-            $scope.state.loading = false;
-            modals.open('500', {details: resp});
-            console.log(resp);
+    $scope.state.request.supEmpGroup = true;
+    supEmpGroupService.init()
+        .then(initializeSupervisors)
+        .finally(function () {
+            $scope.state.request.supEmpGroup = false;
         });
+
+    /* --- Watches --- */
+
+    /** Refresh records when the selected supervisor changes */
+    $scope.$watch('state.iSelSup', getActiveRecordsForSelSup);
+
+    /* --- Api Methods --- */
+
+    /**
+     * Retrieves all active, in progress records that are under supervision of the selected supervisor
+     * Stores records in a map by supervisor id
+     * Records are not requested if the supervisor's records have already been retrieved
+     */
+    function getActiveRecordsForSelSup() {
+
+        var supEntry = $scope.getSelSupEntry();
+
+        if (!supEntry) {
+            return;
+        }
+
+        getEmployeeActiveRecords(supEntry)
     }
 
     /**
-     * Gets the total number of time records that require action and updates any badges that displays
-     * this count.
+     * Retrieve employee records for the given supervisor entry
+     *
+     * @param supEntry
+     * @returns {*|Observable}
      */
-    function updateRecordsPendingBadge() {
-        var submitted = ($scope.state.supRecords[allSupervisorsId].SUBMITTED) ?
-            $scope.state.supRecords[allSupervisorsId].SUBMITTED.length : 0;
-        badgeService.setBadgeValue('pendingRecordCount', submitted);
+    function getEmployeeActiveRecords(supEntry) {
+        // Get the supId used to query records for this entry
+        var querySupId = supEntry.querySupId;
+
+        var fromMoment = moment().subtract(1, 'year');
+        var toMoment = moment().add(1, 'month');
+
+        // Trim query dates according to effective dates of supervision, if necessary
+        if (supEntry.extendedSup) {
+            fromMoment = moment.max(fromMoment, moment(supEntry.effectiveFrom));
+            toMoment = moment.min(toMoment, moment(supEntry.effectiveTo));
+        }
+
+        var params = {
+            from: fromMoment.format('YYYY-MM-DD'),
+            to: toMoment.format('YYYY-MM-DD'),
+            supId: querySupId
+        };
+        $scope.state.request.records = true;
+        return supRecordsApi.get(params, onSuccess, onFail)
+            .$promise.finally(function() {$scope.state.request.records = false;});
+        function onSuccess(resp) {
+            initializeRecords(querySupId, resp.result.items);
+            resetSelection();
+        }
+        function onFail(resp) {
+            modals.open('500', {details: resp});
+            console.error(resp);
+        }
     }
 
     /**
@@ -86,42 +121,98 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
                 function(response){console.log('fail:', record.timeRecordId, response); return response;}
             ).$promise);
         });
-        $scope.state.loading = true;
+        $scope.state.request.recordSubmit = true;
         return $q.all(promises)
             .then(function onFulfilled() {
                 console.log(records.length, 'records submitted');
-                getEmployeeActiveRecords();
+                // Refresh records for the logged in supervisor
+                getEmployeeActiveRecords($scope.state.supervisors[0])
+                    .then(function () {
+                        // If the selected supervisor was an indirect supervisor, refresh their records too
+                        if ($scope.getSelSupEntry().querySupId !== appProps.user.employeeId) {
+                            getEmployeeActiveRecords($scope.getSelSupEntry());
+                        }
+                    });
             }, function onRejected(resp) {
-                $scope.state.loading = false;
                 modals.open('500', {details: resp});
-                console.log(resp);
-            });
+                console.error(resp);
+            })
+            .finally(function () {
+                $scope.state.request.recordSubmit = false;
+            })
     }
 
-    /** --- Display Methods --- */
+    /**
+     * Posts request to send email reminders for the given time records
+     * @param timeRecords
+     * @returns {*} promise resolving on a successful request
+     */
+    function postReminders(timeRecords) {
+        if (!timeRecords) {
+            return $q.when();
+        }
+        var empIds = [];
+        var beginDates = [];
+        timeRecords.forEach(function (record) {
+            empIds.push(record.employeeId);
+            beginDates.push(record.beginDate);
+        });
+        var params = {
+            empId: empIds,
+            beginDate: beginDates
+        };
+        console.log('sending time record reminders...', params);
+        modals.open('record-reminder-posting');
+        return reminderApi.save(params, {},
+            function onSuccess() {
+                console.log('time record reminders sent.');
+            },
+            function (errorData) {
+                console.error('reminder post', errorData);
+                modals.rejectAll();
+                modals.open('500', {details: errorData});
+            }).$promise
+    }
+
+    /* --- Display Methods --- */
 
     /**
-     * Generates an option label for the given supervisor id
-     * not the angular way, but you try fitting this into an ng-options
+     * Convenience method that returns the selected supervisor
      */
-    $scope.getOptionLabel = function(supId) {
-        return (supId == allSupervisorsId ? 'All Supervisors' : $scope.state.empInfos[supId].fullName) +
-            ' - (' + ($scope.state.supRecords[supId].SUBMITTED || []).length + ' Pending Records)';
+    $scope.getSelSupEntry = function () {
+        if ($scope.state.iSelSup < 0) {
+            return null;
+        }
+        return $scope.state.supervisors[$scope.state.iSelSup];
     };
 
     /**
-     * Returns true if there are multiple supervisors to approve records for,
-     *  i.e. the current supervisor has been granted an override
+     * Get a list of record with the given status for the selected supervisor
+     * @param status
      */
-    $scope.multipleSups = function() {
-        return Object.keys($scope.state.supRecords).length > 2;
+    $scope.getRecords = function (status) {
+        var supEntry = $scope.getSelSupEntry();
+        if (!supEntry) {
+            return null;
+        }
+
+        return getRecords(supEntry, status);
+    };
+
+    /**
+     * Return's true iff the selected supervisor has records of the given status
+     * @param status
+     * @returns {boolean}
+     */
+    $scope.hasRecords = function (status) {
+        return ($scope.getRecords(status) || []).length > 0;
     };
 
     /**
      * Causes all SUBMITTED records to be selected for review
      */
     $scope.selectAll = function(status) {
-        for(var i = 0; i < $scope.state.supRecords[$scope.state.selSupId][status].length; i++) {
+        for(var i = 0; i < $scope.getRecords(status).length; i++) {
             $scope.state.selectedIndices[status][i] = true;
         }
     };
@@ -153,10 +244,14 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
             allowApproval: allowApproval
         };
         modals.open('record-review', params, !allowApproval)
-            .then(submitReviewedRecords)
-            .then($scope.selectNone);
+            .then(submitReviewedRecords);
     };
 
+    /**
+     * Return true iff there are any selected records of the given status
+     * @param status
+     * @returns {boolean}
+     */
     $scope.hasSelections = function(status) {
         for (var p in $scope.state.selectedIndices[status]) {
             if ($scope.state.selectedIndices[status].hasOwnProperty(p) && $scope.state.selectedIndices[status][p] === true) {
@@ -166,20 +261,18 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
         return false;
     };
 
-    $scope.submitPrompt = function(records) {
-        var params = {approved: records};
-        return modals.open('record-approval-submit', params);
-    };
-
     /**
      * Submits all displayed records that are awaiting supervisor approval as 'APPROVED'
+     * after the user confirms via a prompt
      */
-    $scope.approveSelections = function () { var selectedRecords = getSelectedRecords('SUBMITTED');
+    $scope.approveSelections = function () {
+        var selectedRecords = getSelectedRecords('SUBMITTED');
         if (selectedRecords) {
             selectedRecords.forEach(function (record) {
                 record.action = "submit";
             });
-            $scope.submitPrompt(selectedRecords)
+            var params = {approved: selectedRecords};
+            return modals.open('record-approval-submit', params)
                 .then(function() {
                     console.log("meow");
                     submitRecords(selectedRecords);
@@ -187,6 +280,10 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
         }
     };
 
+    /**
+     * Sends email reminders for all selected records of the given status
+     * @param status
+     */
     $scope.remindSelections = function (status) {
         var selectedRecords = getSelectedRecords(status);
         modals.open('record-reminder-prompt', {records: selectedRecords}, true)
@@ -200,62 +297,274 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
             });
     };
 
+    /**
+     * Exposes modal resolve method
+     * @see modals.resolve
+     * @type {resolve}
+     */
     $scope.resolveModal = modals.resolve;
-
-    function postReminders(timeRecords) {
-        if (!timeRecords) {
-            return $q.when();
-        }
-        var empIds = [];
-        var beginDates = [];
-        timeRecords.forEach(function (record) {
-            empIds.push(record.employeeId);
-            beginDates.push(record.beginDate);
-        });
-        modals.open('record-reminder-posting');
-        return reminderApi.save({empId: empIds, beginDate: beginDates}, {}, function () {},
-            function (errorData) {
-                console.error('reminder post', errorData);
-                modals.rejectAll();
-                modals.open('500', {details: errorData});
-        }).$promise
-    }
 
     /** --- Internal Methods --- */
 
     /**
-     * Calculates totals for each given record
-     * Puts record into $scope.supRecords keyed by supervisor id and record status
-     * Returns a list of employee ids for which we don't yet have employee infos
+     * Generate supervisor entries for the user, their overrides, and any employees that are supervisors
+     * Reset the selected supervisor
      */
-    function initializeRecords(recordMap) {
-        // All records are stored under an additional supId to facilitate access to all records regardless of supervisor
-        var allRecords = $scope.state.supRecords[allSupervisorsId] = {};
+    function initializeSupervisors () {
+        $scope.state.supervisors = getPrimarySupEntries()
+            .concat(getOverrideSupEntries())
+            .concat(getEmpOverrideEntries())
+            .concat(getExtendedSupEntries());
+        $scope.state.iSelSup = 0;
+    }
+
+    /**
+     * Return up to two supervisor entries for the logged in user
+     *  - One for the user and all overrides (if overrides are in effect)
+     *  - One for only the user's primary employees
+     * @returns {Array}
+     */
+    function getPrimarySupEntries () {
+        var primarySupEntries = [];
+        var supId = appProps.user.employeeId;
+
+        var extSupEmpGroup = supEmpGroupService.getExtSupEmpGroup();
+        var supName = supEmpGroupService.getName(supId);
+
+        var hasSupOverrides = extSupEmpGroup.supOverrideEmployees.size > 0;
+        var hasEmpOverrides = extSupEmpGroup.empOverrideEmployees.length > 0;
+
+        // Add a supervisor listing for all the supervisor's employees including overrides
+        if (hasSupOverrides || hasEmpOverrides) {
+            var fullEmpGroupBaseLabel = supName.fullName + ' + Overrides';
+            var fullEmpGroupEntry = {
+                querySupId: supId,
+                supId: supId,
+                name: supName,
+                baseLabel: fullEmpGroupBaseLabel,
+                dropDownLabel: fullEmpGroupBaseLabel,
+                fullEmpGroup: true,
+                userResponsible: true
+            };
+            primarySupEntries.push(fullEmpGroupEntry);
+        }
+
+        // Add an entry just for the supervisor
+        var supEntry = {
+            querySupId: supId,
+            supId: supId,
+            name: supName,
+            baseLabel: supName.fullName,
+            dropDownLabel: supName.fullName,
+            userResponsible: true
+        };
+        primarySupEntries.push(supEntry);
+
+        return primarySupEntries;
+    }
+
+    /**
+     * Generate and return supervisor entries for any supervisor overrides the user may have
+     * @returns {Array}
+     */
+    function getOverrideSupEntries() {
+        var extSupEmpGroup = supEmpGroupService.getExtSupEmpGroup();
+
+        // Store sup overrides in a map to group by supId
+        var supOverrides = {};
+        var supOverrideGroup = 'Supervisor Overrides';
+        angular.forEach(extSupEmpGroup.supOverrideEmployees.items, function (empInfos, supId) {
+            supId = parseInt(supId);
+            var name = supEmpGroupService.getName(supId);
+            var baseLabel = getSupNameLabel(name);
+            supOverrides[supId] = {
+                querySupId: appProps.user.employeeId,
+                supId: supId,
+                name: name,
+                group: supOverrideGroup,
+                baseLabel: baseLabel,
+                dropDownLabel: baseLabel,
+                supOverride: true,
+                userResponsible: true
+            };
+        });
+
+        var supOvrList = Object.keys(supOverrides)
+            .map(function (k) {
+                return supOverrides[k]
+            });
+
+        supOvrList = $filter('orderBy')(supOvrList, 'dropDownLabel');
+
+        return supOvrList;
+    }
+
+    /**
+     * Generate and return supervisor entries for any employee overrides the user may have
+     * @returns {Array}
+     */
+    function getEmpOverrideEntries() {
+        var extSupEmpGroup = supEmpGroupService.getExtSupEmpGroup();
+
+        // Store sup overrides in a map to group by supId
+        var empOverrides = {};
+        var empOverrideGroup = 'Employee Overrides';
+        angular.forEach(extSupEmpGroup.empOverrideEmployees, function (empInfo) {
+            var name = supEmpGroupService.getName(empInfo.empId),
+                baseLabel = getSupNameLabel(name);
+            empOverrides[empInfo.empId] = {
+                querySupId: appProps.user.employeeId,
+                supId: empInfo.supId,
+                ovrEmpId: empInfo.empId,
+                name: name,
+                group: empOverrideGroup,
+                baseLabel: baseLabel,
+                dropDownLabel: baseLabel,
+                empOverride: true,
+                userResponsible: true
+            }
+        });
+
+        var empOvrList = Object.keys(empOverrides)
+            .map(function (k) { return empOverrides[k] });
+
+        empOvrList = $filter('orderBy')(empOvrList, 'dropDownLabel');
+
+        return empOvrList;
+    }
+
+    /**
+     * Generate and return supervisor entries for each of the user's employees that is also a supervisor
+     * @returns {Array}
+     */
+    function getExtendedSupEntries() {
+        var supEmpGroups = supEmpGroupService.getSupEmpGroupList();
+
+        var supName = supEmpGroupService.getName(appProps.user.employeeId);
+
+        var extSupGroup = 'Supervisors Under ' + supName.fullName;
+
+        var extSupEntries =  supEmpGroups.slice(1)
+            .filter(function (empGroup) {
+                // Filter out emp groups that ended over a year ago
+                return moment().subtract(1, 'year')
+                    .isBefore(empGroup.effectiveTo);
+            })
+            .map(function (empGroup) {
+                var supId = empGroup.supId,
+                    name = supEmpGroupService.getName(supId),
+                    baseLabel = getSupNameLabel(name);
+                // return getSupervisorEntry(supId, name, null, extSupGroup);
+                return {
+                    querySupId: supId,
+                    supId: supId,
+                    name: name,
+                    group: extSupGroup,
+                    baseLabel: baseLabel,
+                    dropDownLabel: baseLabel,
+                    extendedSup: true,
+                    effectiveFrom: empGroup.effectiveFrom,
+                    effectiveTo: empGroup.effectiveTo
+                }
+            });
+
+        return extSupEntries;
+    }
+
+    /**
+     * Return a display name from the given name object
+     * @param name
+     * @returns {string}
+     */
+    function getSupNameLabel(name) {
+        return name.lastName + ', ' + name.firstName;
+    }
+
+    /**
+     * Calculates totals for each given record
+     * Stores records into appropriate supEntry objects keyed by record status
+     */
+    function initializeRecords(supId, recordMap) {
+        var isUser = supId === appProps.user.employeeId;
+
+        var affectedSupervisors = $scope.state.supervisors.filter(function (supEntry) {
+            return supEntry.querySupId === supId;
+        });
+
+        // Clear existing records for affected supervisors
+        affectedSupervisors.forEach(function (supEntry) {
+            supEntry.records = {};
+        });
+
+        // Store records in record map
         angular.forEach(recordMap, function(records, empId) {
             angular.forEach(records, function(record) {
+                if (!isUser && record.supervisorId !== supId) {
+                    // Ignore the record if it is an override for an indirect employee
+                    return;
+                }
                 // Compute totals for the record
                 recordUtils.calculateDailyTotals(record);
                 record.totals = recordUtils.getRecordTotals(record);
-                // Store the record under the supervisor, grouped by status code
-                var currSupId = record.supervisorId;
-                var supIdList = $scope.state.supIds;
-                if (supIdList.indexOf(currSupId) == -1) {
-                    $scope.state.supIds.push(currSupId);
-                    $scope.state.empInfos[currSupId] = record.supervisor;
-                }
-                var currSupRecords = $scope.state.supRecords[currSupId] = $scope.state.supRecords[currSupId] || {};
-                var statusList = currSupRecords[record.recordStatus] = currSupRecords[record.recordStatus] || [];
-                var allStatusList = allRecords[record.recordStatus] = allRecords[record.recordStatus] || [];
-                statusList.push(record);        // Store under supervisor
-                allStatusList.push(record);     // Store under all
+                affectedSupervisors
+                    .filter(function (supEntry) {   // Only add the record to the full emp group and the relevant sup entry
+                        return supEntry.fullEmpGroup ||
+                            supEntry.supId === record.supervisorId &&
+                            (!supEntry.ovrEmpId || supEntry.ovrEmpId === record.employeeId);
+                    })
+                    .forEach(function (supEntry) {
+                        var status = record.recordStatus;
+                        // Get or create status list
+                        var statusList = supEntry.records[status] = supEntry.records[status] || [];
+                        statusList.push(record);
+                    });
             });
         });
 
-        angular.forEach($scope.state.supRecords, function (statusRecordMap) {
-            angular.forEach(statusRecordMap, function (recordList, index) {
-                statusRecordMap[index] = $filter('orderBy')(recordList, ['employee.lastName', 'employee.firstName', 'beginDate']);
+        // Sort stored records
+        affectedSupervisors.forEach(function (supEntry) {
+            angular.forEach(supEntry.records, function (recordList, index) {
+                supEntry.records[index] =
+                    $filter('orderBy')(recordList, ['employee.lastName', 'employee.firstName', 'beginDate']);
             })
-        })
+        });
+
+        if (isUser) {
+            updatePendingRecordCounts();
+        }
+    }
+
+    /**
+     * Set the pending records text in the dropdown labels
+     * Also updates pending record badge
+     */
+    function updatePendingRecordCounts() {
+        angular.forEach($scope.state.supervisors, function (supEntry) {
+            if (supEntry.extendedSup) {
+                return;
+            }
+
+            var count = getRecords(supEntry, 'SUBMITTED').length;
+
+            if (supEntry.fullEmpGroup) {
+                badgeService.setBadgeValue('pendingRecordCount', count);
+            }
+
+            var pendingText =  ' - (' + count + ' Pending Records)';
+            supEntry.dropDownLabel = supEntry.baseLabel + pendingText;
+        });
+    }
+
+    /**
+     * Gets a list of records for the given supervisor, with the given status
+     * Will filter by an override supervisor if an id is provided
+     * @param supEntry
+     * @param status
+     * @returns {*|Array}
+     */
+    function getRecords(supEntry, status) {
+        var statusMap = supEntry.records || {};
+        return statusMap[status] || [];
     }
 
     /**
@@ -264,10 +573,19 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
      */
     function getSelectedRecords(status) {
         var selectedRecords = [];
-        for (var index in $scope.state.selectedIndices[status]) {
-            if ($scope.state.selectedIndices[status].hasOwnProperty(index)) {
-                selectedRecords.push($scope.state.supRecords[$scope.state.selSupId][status][index]);
+        var selectedSup = $scope.getSelSupEntry();
+        var statusRecords = getRecords(selectedSup, status);
+        var selectedIndices = $scope.state.selectedIndices[status];
+        for (var index in selectedIndices) {
+            if (!selectedIndices.hasOwnProperty(index) || !selectedIndices[index]) {
+                continue;
             }
+            if (!statusRecords.hasOwnProperty(index)) {
+                console.error('selected index does\'t exist!',
+                              'index:', index, 'record_status_list', statusRecords, 'supervisor', selectedSup);
+                continue;
+            }
+            selectedRecords.push(statusRecords[index]);
         }
         return selectedRecords;
     }
@@ -278,7 +596,6 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
      * Submits all passed in records via the API
      */
     function submitReviewedRecords(reviewedRecords) {
-        console.log('review modal resolved:', reviewedRecords);
         var recordsToSubmit = [];
         angular.forEach(reviewedRecords.approved, function(record) {
             record.action = "submit";
@@ -300,10 +617,7 @@ function recordManageCtrl($scope, $q, $filter, appProps, recordUtils, modals,
      * Unselects all selected record indices
      */
     function resetSelection() {
-        angular.forEach($scope.state.selectedIndices, function (selections, status) {
-            $scope.selectNone(status);
-        });
+        $scope.state.selectedIndices = angular.copy(initialSelectedIndices);
     }
 
-    $scope.init();
 }

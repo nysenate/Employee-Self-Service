@@ -12,7 +12,7 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
                 supId: appProps.user.employeeId,
                 status: 'SUBMITTED',
                 from: moment().subtract(1, 'year').format(isoDateFmt),
-                to: moment().format(isoDateFmt)
+                to: moment().add(1, 'month').format(isoDateFmt)
             };
             SupervisorTimeRecordCountsApi.get(params, function(resp) {
                 badgeService.setBadgeValue('pendingRecordCount', resp.result.count);
