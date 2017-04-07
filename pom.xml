@@ -43,12 +43,6 @@
               <goal>verify</goal>
             </goals>
           </execution>
-          <!--<execution>-->
-            <!--<id>verify</id>-->
-            <!--<goals>-->
-              <!--<goal>verify</goal>-->
-            <!--</goals>-->
-          <!--</execution>-->
         </executions>
       </plugin>
       <!-- Maven Compiler Plugin -->
