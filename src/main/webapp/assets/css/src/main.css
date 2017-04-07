@@ -1148,7 +1148,7 @@ input[type="button"].submit-button {
 input[type="button"].submit-button.inactive,
 input[type="button"].submit-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -1170,7 +1170,7 @@ input[type="button"].reject-button {
 input[type="button"].reject-button.inactive,
 input[type="button"].reject-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -1192,7 +1192,7 @@ input[type="button"].neutral-button {
 input[type="button"].neutral-button.inactive,
 input[type="button"].neutral-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -1214,7 +1214,7 @@ input[type="button"].time-neutral-button {
 input[type="button"].time-neutral-button.inactive,
 input[type="button"].time-neutral-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -3747,7 +3747,7 @@ input[type="button"].process-button {
 input[type="button"].process-button.inactive,
 input[type="button"].process-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -3769,7 +3769,7 @@ input[type="button"].complete-button {
 input[type="button"].complete-button.inactive,
 input[type="button"].complete-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -3791,7 +3791,7 @@ input[type="button"].approve-button {
 input[type="button"].approve-button.inactive,
 input[type="button"].approve-button[disabled="disabled"] {
   color: #333;
-  border: 0;
+  border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
@@ -4542,7 +4542,18 @@ div.accrual-detail-table-container h4.content-info:not(:first-of-type) {
   text-align: center;
 }
 /** --- Manage Employee Records Page --- */
-.emp-manage-actions-container {
+.record-manage-controls {
+  display: flex;
+  justify-content: space-between;
+}
+.record-manage-controls ul {
+  padding: 0;
+  margin: 10px;
+}
+.record-manage-controls ul li {
+  margin-right: 10px;
+}
+.record-manage-controls .select-actions {
   padding: .5em;
   text-align: right;
 }
@@ -4690,23 +4701,23 @@ record-review-modal,
   padding-right: 5px;
 }
 /* --- Employee Select Directive --- */
-employee-select .content-controls .content-info {
+.employee-select .content-info {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0;
 }
-employee-select .content-controls .content-info:not(:first-child) {
+.employee-select .content-info:not(:first-child) {
   padding-top: 0;
 }
-employee-select .content-controls .content-info > span {
+.employee-select .content-info > span {
   flex-grow: 1;
   flex-basis: 0;
 }
-employee-select .content-controls .content-info > span:first-child {
+.employee-select .content-info > span:first-child {
   text-align: right;
 }
-employee-select .content-controls .content-info > span:last-child {
+.employee-select .content-info > span:last-child {
   text-align: left;
 }
 /** --- Supervisor Grant Page --- */
