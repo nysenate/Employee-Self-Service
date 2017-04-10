@@ -86,7 +86,7 @@ function employeeSelectDirective(appProps, supEmpGroupService) {
                     if (empGroup.supId === appProps.user.employeeId) {
                         empGroup.dropDownLabel = supName;
                     } else {
-                        empGroup.group = 'Employees Under ' + supName;
+                        empGroup.group = 'Supervisors Under ' + supName;
                         setDropDownLabel(empGroup);
                     }
                 });
