@@ -124,11 +124,13 @@ public class TimeRecordDaoTest extends BaseTest
     @Test
     public void getUpdatedTRecsTest() {
         logger.info("Getting updated time records");
+        Stopwatch sw = Stopwatch.createStarted();
         LocalDateTime endDateTime = LocalDateTime.now();
-        LocalDateTime startDateTime = endDateTime.minusDays(2);
+        LocalDateTime startDateTime = endDateTime.minusHours(1);
         Range<LocalDateTime> dateTimeRange = Range.closed(startDateTime, endDateTime);
         List<TimeRecord> tRecs = timeRecordDao.getUpdatedRecords(dateTimeRange);
         logger.info("{}", tRecs.size());
+        logger.info("record retrieval time: {}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Test
