@@ -23,10 +23,6 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
         selectedEmp: {},
         recordYears: [],
         selectedRecYear: -1,
-        // The start and end dates for the period where the employee was under the viewing supervisor
-        //  within the selected year!
-        supStartDate: null,
-        supEndDate: null,
         records: [],
         timesheetMap: {},
         timesheetRecords: [],
@@ -98,27 +94,29 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
 
         // Initialize effective supervisor dates
         var isUserSup = emp.supId === $scope.state.supId;
-        var supStartDate = isUserSup ? emp.supStartDate : emp.effectiveStartDate
+        var supStartDate = isUserSup ? emp.supStartDate : emp.effectiveStartDate;
         var supEndDate = isUserSup ? emp.supEndDate : emp.effectiveEndDate;
 
-        var startMoment = moment([year, 0, 1]);
-        var endMoment = ($scope.state.todayMoment.year() == year) ? moment() : moment([year, 11, 31]);
+        var yearStart = moment([year]);
+        var nextYearStart = moment([year + 1]);
+
+        var supStartMoment = moment(supStartDate || 0);
+        var supEndMoment = moment(supEndDate || [3000]);
+
+        // Restrict retrieval range based on effective supervisor dates
+        var fromMoment = moment.max(yearStart, supStartMoment);
+        var toMoment = moment.min(nextYearStart, supEndMoment);
 
         // Do not fetch records if this year does not overlap with supervisor dates
-        if (startMoment.isAfter(supEndDate || undefined) ||
-            endMoment.isBefore(supStartDate || 0))
-        {
+        if (fromMoment.isAfter(toMoment)) {
             $scope.state.records = [];
             return;
         }
-        // Restrict retrieval range based on effective supervisor dates
-        $scope.state.supStartDate = moment.max(startMoment, moment(supStartDate || 0));
-        $scope.state.supEndDate = moment.min(endMoment, moment(supEndDate || undefined));
 
         $scope.state.request.records = true;
         $q.all([
-            getTimesheetRecords(),
-            getAttendRecords()
+            getTimesheetRecords(emp.empId, fromMoment, toMoment),
+            getAttendRecords(emp.empId, fromMoment, toMoment)
         ]).then(function () {
             initTimesheetRecords();
             initAttendRecords();
@@ -128,27 +126,25 @@ function empRecordHistoryCtrl($scope, $q, $timeout, appProps, modals, recordUtil
         });
     }
 
-    function getTimesheetRecords () {
-        var emp = $scope.state.selectedEmp;
+    function getTimesheetRecords (empId, from, to) {
         var params = {
-            empId: emp.empId,
-            from: $scope.state.supStartDate.format('YYYY-MM-DD'),
-            to: $scope.state.supEndDate.format('YYYY-MM-DD')
+            empId: empId,
+            from: moment(from).format('YYYY-MM-DD'),
+            to: moment(to).format('YYYY-MM-DD')
         };
         return TimeRecordsApi.get(params,
             function(resp) {
-                $scope.state.timesheetRecords = (resp.result.items[emp.empId] || []).reverse();
+                $scope.state.timesheetRecords = (resp.result.items[empId] || []).reverse();
                 console.debug('got timesheet records', $scope.state.timesheetRecords);
             }, $scope.handleErrorResponse
             ).$promise;
     }
 
-    function getAttendRecords () {
-        var emp = $scope.state.selectedEmp;
+    function getAttendRecords (empId, from, to) {
         var params = {
-            empId: emp.empId,
-            from: $scope.state.supStartDate.format('YYYY-MM-DD'),
-            to: $scope.state.supEndDate.format('YYYY-MM-DD')
+            empId: empId,
+            from: moment(from).format('YYYY-MM-DD'),
+            to: moment(to).format('YYYY-MM-DD')
         };
         return AttendanceRecordApi.get(params, function (response) {
             console.debug('got attendance records', response.records);

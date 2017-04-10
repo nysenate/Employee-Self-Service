@@ -67,14 +67,13 @@ function recordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, time
     $scope.getTimeRecords = function() {
         var empId = appProps.user.employeeId;
         var now = moment();
+        var fromMoment = moment([$scope.state.year]);
+        var toMoment = moment([$scope.state.year + 1]);
         var params = {
             empId: empId,
-            from: $scope.state.year.toString() + '-01-01',
-            to: $scope.state.year < now.year() ?
-                $scope.state.year.toString() + '-12-31' :
-                now.format('YYYY-MM-DD')
+            from: fromMoment.format('YYYY-MM-DD'),
+            to: toMoment.format('YYYY-MM-DD')
         };
-
         return timeRecordsApi.get(params, function(response) {
             console.log('got time records');
             $scope.state.timesheetRecords = response.result.items[empId];
