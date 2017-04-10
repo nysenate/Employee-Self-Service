@@ -263,8 +263,13 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         if (!$scope.canCreateNextRecord()) {
             return;
         }
+        var latestRecord = getLatestRecord();
+        var nextRecBeginDate = moment(latestRecord.endDate).add(1, 'day');
         $scope.state.request.records = true;
-        var params = {empId: $scope.state.empId};
+        var params = {
+            empId: $scope.state.empId,
+            date: nextRecBeginDate.format('YYYY-MM-DD')
+        };
         //console.log(params);
         recordCreationApi.save(params, {}, function (response) {
             $scope.init();
@@ -506,17 +511,25 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             return false;
         }
 
-        // Return false if an existing record has a begin date past the current date
-        var now = moment();
+        // Return false if any existing record has a begin date past the current date
         for (var iRecord in $scope.state.allRecords) {
             if (!$scope.state.allRecords.hasOwnProperty(iRecord)) {
                 continue;
             }
+
             var record = $scope.state.allRecords[iRecord];
-            if (now.isBefore(record.beginDate)) {
+            if (moment().isBefore(record.beginDate)) {
                 return false;
             }
         }
+
+        var latestRecord = getLatestRecord();
+        // Do not allow next record creation if the latest record does not cover the current day
+        // This would indicate a time record manager failure
+        if (latestRecord === null || moment().isAfter(latestRecord.endDate, 'day')) {
+            return false;
+        }
+
         return true;
     };
 
@@ -616,6 +629,15 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         allowance.totalHours = allowance.hoursUsed + allowance.remainingHours;
     }
 
+    function getLatestRecord() {
+        var latestRecord = null;
+        angular.forEach($scope.state.allRecords, function (record) {
+            if (!latestRecord || moment(record.beginDate).isAfter(latestRecord.beginDate)) {
+                latestRecord = record;
+            }
+        });
+        return latestRecord;
+    }
 
     /**
      * Recursively ensures that all boolean fields are false within the given object.

@@ -262,28 +262,30 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     }
 
     /**
-     * Create Next Time Record API
+     * Create Time Record API
      * --------------------
      *
-     * Create a new time record for the next pay period:
-     *      (POST) /api/v1/timerecords/next
+     * Create a new time record for the given pay period:
+     *      (POST) /api/v1/timerecords/new
      *
      * @param empId int - employee id
-     * @throws TimeRecordCreationNotPermittedEx - if the user has existing unsubmitted records or can't create a record next period
+     * @param date String - iso date formatted - will select the pay period containing this date
+     * @throws TimeRecordCreationNotPermittedEx - if a record cannot be created for the given period
      */
-    @RequestMapping(value = "/next", method = RequestMethod.POST, consumes = "application/json")
-    public BaseResponse generateNextRecord(@RequestParam int empId) throws TimeRecordCreationNotPermittedEx {
-        PayPeriod currentPeriod = periodService.getPayPeriod(PayPeriodType.AF, LocalDate.now());
-        PayPeriod nextPeriod = periodService.getPayPeriod(PayPeriodType.AF, currentPeriod.getEndDate().plusDays(1));
+    @RequestMapping(value = "/new", method = RequestMethod.POST, consumes = "application/json")
+    public BaseResponse createNewRecord(@RequestParam int empId, @RequestParam String date)
+            throws TimeRecordCreationNotPermittedEx {
+        LocalDate parsedDate = parseISODate(date, "date");
+        PayPeriod period = periodService.getPayPeriod(PayPeriodType.AF, parsedDate);
 
         // If the subject is not permitted to use the time record manager, require employee record post permissions
         // And run validation on request
         if (!getSubject().isPermitted(TIME_RECORD_MANAGEMENT.getPermission())) {
-            checkPermission(new EssTimePermission(empId, TIME_RECORDS, POST, nextPeriod.getDateRange()));
-            creationValidator.validateRecordCreation(empId, nextPeriod);
+            checkPermission(new EssTimePermission(empId, TIME_RECORDS, POST, period.getDateRange()));
+            creationValidator.validateRecordCreation(empId, period);
         }
 
-        timeRecordManager.ensureRecords(empId, Collections.singleton(nextPeriod));
+        timeRecordManager.ensureRecords(empId, Collections.singleton(period));
 
         return new SimpleResponse(true, "time record created", "next-record-created");
     }
@@ -340,7 +342,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(TimeRecordCreationNotPermittedEx.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleTimeRecordCreationNotPermittedEx(TimeRecordCreationNotPermittedEx ex) {
-        return new ViewObjectErrorResponse(ErrorCode.CANNOT_CREATE_NEW_RECORD, new TimeRecordCreationNotPermittedData(ex));
+        return new ViewObjectErrorResponse(ErrorCode.CANNOT_CREATE_NEW_RECORD,
+                new TimeRecordCreationNotPermittedData(ex));
     }
 
     /** --- Internal Methods --- */

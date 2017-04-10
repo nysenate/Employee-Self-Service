@@ -8,10 +8,12 @@ public class TimeRecordCreationNotPermittedData implements ViewObject {
 
     private int empId;
     private PayPeriodView payPeriod;
+    private String reason;
 
     public TimeRecordCreationNotPermittedData(TimeRecordCreationNotPermittedEx ex) {
         this.empId = ex.getEmpId();
         this.payPeriod = new PayPeriodView(ex.getPayPeriod());
+        this.reason = ex.getReason();
     }
 
     @Override
@@ -25,5 +27,9 @@ public class TimeRecordCreationNotPermittedData implements ViewObject {
 
     public PayPeriodView getPayPeriod() {
         return payPeriod;
+    }
+
+    public String getReason() {
+        return reason;
     }
 }

@@ -3,19 +3,18 @@ package gov.nysenate.ess.time.service.attendance;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public interface TimeRecordService
 {
@@ -28,38 +27,12 @@ public interface TimeRecordService
     List<Integer> getTimeRecordYears(Integer empId, SortOrder yearOrder);
 
     /**
-     * Gets a list of active time records. 'Active' records in this case are simply records that
-     * have an employee or supervisor scope. Records that have already been sent to personnel or
-     * approved by personnel are not active.
+     * Gets a list of time records for all currently open attendance years for the given employee.
      *
      * @param empId Integer
      * @return List<TimeRecord>
      */
     List<TimeRecord> getActiveTimeRecords(Integer empId);
-
-    /**
-     * Helper method to return just the active time records that are scoped to the 'employee'.
-     *
-     * @param empId Integer
-     * @return List<TimeRecord>
-     */
-    default List<TimeRecord> getEmployeeScopedTimeRecords(Integer empId) {
-        return getActiveTimeRecords(empId).stream()
-            .filter(tr -> tr.getRecordStatus().isUnlockedForEmployee())
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Helper method to return just the active time records that are scoped to the 'supervisor'.
-     *
-     * @param empId Integer
-     * @return List<TimeRecord>
-     */
-    default List<TimeRecord> getSupervisorScopedTimeRecords(Integer empId) {
-        return getActiveTimeRecords(empId).stream()
-            .filter(tr -> tr.getRecordStatus().isUnlockedForSupervisor())
-            .collect(Collectors.toList());
-    }
 
     /**
      * Get time records for one or more employees, matching certain time record statuses, over a specified date range.

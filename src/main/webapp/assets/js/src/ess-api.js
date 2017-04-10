@@ -39,7 +39,7 @@ essApi.factory('TimeRecordReminderApi', ['$resource', 'appProps', function ($res
 }]);
 
 essApi.factory('TimeRecordCreationApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/timerecords/next');
+    return $resource(appProps.apiPath + '/timerecords/new');
 }]);
 
 /** --- Attendance Record API --- */

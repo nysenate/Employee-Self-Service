@@ -1,9 +1,6 @@
 package gov.nysenate.ess.time.service.attendance.validation;
 
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeMap;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
+import com.google.common.collect.*;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -57,7 +53,8 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
         PayPeriod nextPeriod = periodService.getPayPeriod(PayPeriodType.AF, currentPeriod.getEndDate().plusDays(1));
 
         if (nextPeriod.compareTo(period) == -1) {
-            throw new TimeRecordCreationNotPermittedEx(empId, period);
+            throw new TimeRecordCreationNotPermittedEx(empId, period,
+                    "Can only create for next period");
         }
     }
 
@@ -89,7 +86,8 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
         RangeSet<LocalDate> fullPerStatRangeSet = RangeUtils.intersection(empStatusRangeSet, perStatRangeSet);
 
         if (!RangeUtils.intersects(fullPerStatRangeSet, period.getDateRange())) {
-            throw new TimeRecordCreationNotPermittedEx(empId, period);
+            throw new TimeRecordCreationNotPermittedEx(empId, period,
+                    "Employee status forbids time entry for pay period");
         }
     }
 
@@ -102,18 +100,22 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
                 .filter(TimeRecordStatus::isUnlockedForEmployee)
                 .findAny()
                 .ifPresent(timeRecordStatus -> {
-                    throw new TimeRecordCreationNotPermittedEx(empId, period);});
+                    throw new TimeRecordCreationNotPermittedEx(empId, period,
+                            "Unsubmitted records exist");});
     }
 
     /**
      * Ensure that the given pay period is not already covered by existing records
+     *  and that there was an existing record in the previous period
      */
     private void checkForExistingRecord(int empId, PayPeriod period) throws TimeRecordCreationNotPermittedEx {
         List<AttendanceRecord> attendanceRecords = attendanceDao.getAttendanceRecords(empId, period.getDateRange());
 
+        PayPeriod prevPeriod = periodService.getPayPeriod(PayPeriodType.AF, period.getStartDate().minusDays(1));
+
         List<TimeRecord> timeRecords = timeRecordService.getTimeRecords(
                 Collections.singleton(empId),
-                Collections.singleton(period),
+                ImmutableSet.of(prevPeriod, period),
                 TimeRecordStatus.getAll());
 
         RangeSet<LocalDate> recordRanges = TreeRangeSet.create();
@@ -126,7 +128,13 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
                 .forEach(recordRanges::add);
 
         if (recordRanges.encloses(period.getDateRange())) {
-            throw new TimeRecordCreationNotPermittedEx(empId, period);
+            throw new TimeRecordCreationNotPermittedEx(empId, period,
+                    "Existing record(s) in period");
+        }
+
+        if (!recordRanges.encloses(prevPeriod.getDateRange())) {
+            throw new TimeRecordCreationNotPermittedEx(empId, period,
+                    "Incomplete coverage for previous period");
         }
     }
 }
