@@ -5,6 +5,8 @@ package gov.nysenate.ess.core.model.personnel;
  */
 public class Agency
 {
+    public static final String SENATOR_AGENCY_CODE = "04210";
+
     protected String code;
     protected boolean active;
     protected String shortName;
@@ -18,6 +20,14 @@ public class Agency
         this.shortName = other.shortName;
         this.name = other.name;
     }
+
+    /* --- Functional Getters --- */
+
+    public boolean isSenator() {
+        return SENATOR_AGENCY_CODE.equals(code);
+    }
+
+    /* --- Getters / Setters --- */
 
     public String getCode() {
         return code;

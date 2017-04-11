@@ -101,6 +101,10 @@ public class TransactionHistory
         return payTypes;
     }
 
+    public TreeMap<LocalDate, String> getEffectiveAgencyCodes(Range<LocalDate> dateRange) {
+        return getEffectiveEntriesDuring("CDAGENCY", dateRange, true);
+    }
+
     public TreeMap<LocalDate, Boolean> getEffectiveEmpStatus(Range<LocalDate> dateRange) {
         TreeMap<LocalDate, Boolean> empStatuses = new TreeMap<>();
         getUniqueEntriesDuring(Sets.newHashSet("CDEMPSTATUS", "CDSTATPER"), dateRange, true)

@@ -11,6 +11,7 @@ import java.util.Optional;
  */
 public class Employee extends Person
 {
+
     protected int employeeId;
     protected int supervisorId;
     protected boolean active;
@@ -47,7 +48,10 @@ public class Employee extends Person
     /* --- Functional Getters --- */
 
     public boolean isSenator() {
-        return respCenter != null && respCenter.getAgency() != null && "04210".equals(respCenter.getAgency().getCode());
+        return Optional.ofNullable(respCenter)
+                .map(ResponsibilityCenter::getAgency)
+                .map(Agency::isSenator)
+                .orElse(false);
     }
 
     /* --- Overrides --- */

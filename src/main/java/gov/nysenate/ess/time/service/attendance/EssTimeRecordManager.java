@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.personnel.Agency;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
@@ -386,6 +387,14 @@ public class EssTimeRecordManager implements TimeRecordManager
         // Get active dates of service
         RangeSet<LocalDate> activeDates = empInfoService.getEmployeeActiveDatesService(empId);
 
+        // Get date ranges where the employee was a senator
+        RangeSet<LocalDate> senatorDates = TreeRangeSet.create();
+        RangeUtils.toRangeMap(transHistory.getEffectiveAgencyCodes(DateUtils.ALL_DATES))
+                .asMapOfRanges().entrySet().stream()
+                .filter(entry -> Agency.SENATOR_AGENCY_CODE.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .forEach(senatorDates::add);
+
         RangeSet<LocalDate> attendanceRecDates = TreeRangeSet.create();
         attendanceRecords.stream().map(AttendanceRecord::getDateRange).forEach(attendanceRecDates::add);
 
@@ -394,8 +403,10 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .map(PayPeriod::getDateRange)
                 // split any ranges that contain dates where there was a supervisor change
                 .flatMap(periodRange -> RangeUtils.splitRange(periodRange, newSupDates).stream())
-                // get the intersection of each range with the active dates of service
+                // Trim ranges, eliminating dates where the employee was not employed
                 .flatMap(range -> activeDates.subRangeSet(range).asRanges().stream())
+                // Trim ranges, eliminating dates where the employee was a senator
+                .flatMap(range -> senatorDates.complement().subRangeSet(range).asRanges().stream())
                 // Filter out ranges that are covered by already entered attendance periods
                 .filter(range -> !attendanceRecDates.encloses(range))
                 // Filter out ranges where the employee isn't required to enter time records
