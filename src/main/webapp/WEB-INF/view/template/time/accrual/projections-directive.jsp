@@ -13,7 +13,7 @@
 <div class="content-container" ng-hide="isLoading()">
   <h1 class="content-info" ng-if="empSupInfo">
     {{empSupInfo.empFirstName}}
-    {{empSupInfo.empLastName}}'s
+    {{empSupInfo.empLastName | possessive}}
     Accrual Projections
   </h1>
   <p class="content-info" ng-hide="projections.length > 0">

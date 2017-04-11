@@ -60,6 +60,8 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/err-src-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/common/possessive-filter.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/promise-utils.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/common/zero-pad-filter.js?v=${releaseVersion}"></script>

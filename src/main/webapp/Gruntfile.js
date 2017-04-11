@@ -121,6 +121,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/common/not-filter.js',
                         '<%= jsSource %>/common/odometer-directive.js',
                         '<%= jsSource %>/common/pagination-model.js',
+                        '<%= jsSource %>/common/possessive-filter.js',
                         '<%= jsSource %>/common/promise-utils.js',
                         '<%= jsSource %>/common/round-filter.js',
                         '<%= jsSource %>/common/text-auto-height-directive.js',

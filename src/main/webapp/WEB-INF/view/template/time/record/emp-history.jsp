@@ -12,7 +12,7 @@
     <div ng-show="state.recordYears.length > 0">
       <h1>
         {{state.selectedEmp.empFirstName}}
-        {{state.selectedEmp.empLastName}}'s
+        {{state.selectedEmp.empLastName | possessive}}
         Attendance Records
       </h1>
       <div class="content-controls">

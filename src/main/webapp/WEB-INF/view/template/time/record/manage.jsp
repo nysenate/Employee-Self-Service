@@ -37,7 +37,7 @@
       </div>
       <div ess-notification
            ng-hide="getSelSupEntry().fullEmpGroup || state.supervisors.length === 1"
-           level="info" title="None of {{getSelSupEntry().name.fullName}}'s time records need action."
+           level="info" title="None of {{getSelSupEntry().name.fullName | possessive}} time records need action."
            message="There are currently no records under {{getSelSupEntry().name.fullName}} that require approval.">
       </div>
     </div>

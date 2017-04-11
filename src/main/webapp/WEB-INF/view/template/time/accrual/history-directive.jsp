@@ -22,7 +22,7 @@
        ng-hide="isUser()">
     <h1>
       {{empSupInfo.empFirstName}}
-      {{empSupInfo.empLastName}}'s
+      {{empSupInfo.empLastName | possessive}}
       Accrual History
     </h1>
     <p class="content-info" style="margin-bottom: 0">

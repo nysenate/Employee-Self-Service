@@ -1,7 +1,7 @@
 angular.module('essTime')
-    .directive('employeeSelect', ['appProps', 'supEmpGroupService', employeeSelectDirective]);
+    .directive('employeeSelect', ['appProps', '$filter', 'supEmpGroupService', employeeSelectDirective]);
 
-function employeeSelectDirective(appProps, supEmpGroupService) {
+function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
     return {
         scope: {
             selectedSup: "=?",
@@ -99,7 +99,7 @@ function employeeSelectDirective(appProps, supEmpGroupService) {
                     } else if (emp.supOverride) {
                         var supName = supEmpGroupService.getName(emp.supId);
                         emp.group = (supName && supName.lastName)
-                            ? (supName.lastName + '\'s Employees')
+                            ? ($filter('possessive')(supName.lastName) + ' Employees')
                             : 'Sup Override Employees';
                     } else {
                         emp.group = 'Direct Employees';
