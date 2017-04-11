@@ -42,10 +42,10 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
             /** Watch the bound employee sup info and set empId when it changes */
             $scope.$watchCollection('empSupInfo', setEmpId);
 
-            /** When a new empId is selected, refresh employee info, active years and clear cached accrual summaries */
-            $scope.$watch('empId', getEmpInfo);
-            $scope.$watch('empId', getEmpActiveYears);
-            $scope.$watch('empId', clearAccSummaries);
+            /** When a new empSupInfo is selected, refresh employee info, active years and clear cached accrual summaries */
+            $scope.$watchCollection('empSupInfo', getEmpInfo);
+            $scope.$watchCollection('empSupInfo', getEmpActiveYears);
+            $scope.$watchCollection('empSupInfo', clearAccSummaries);
 
             /** When a new year is selected, get accrual summaries for that year */
             $scope.$watch('selectedYear', getAccSummaries);
