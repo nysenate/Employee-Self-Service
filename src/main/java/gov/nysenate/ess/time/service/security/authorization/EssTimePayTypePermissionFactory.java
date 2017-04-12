@@ -1,11 +1,11 @@
-package gov.nysenate.ess.time.service.auth;
+package gov.nysenate.ess.time.service.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.auth.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import org.apache.shiro.authz.Permission;
 import org.springframework.stereotype.Service;

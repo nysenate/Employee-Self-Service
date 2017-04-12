@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.dao.permission.RoleDao;
+import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.permission.WildcardPermission;

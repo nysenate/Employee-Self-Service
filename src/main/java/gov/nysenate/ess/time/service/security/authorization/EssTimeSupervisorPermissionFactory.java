@@ -1,11 +1,11 @@
-package gov.nysenate.ess.time.service.auth;
+package gov.nysenate.ess.time.service.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.auth.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;

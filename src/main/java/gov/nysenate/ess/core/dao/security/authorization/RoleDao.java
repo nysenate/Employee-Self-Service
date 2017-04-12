@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.dao.permission;
+package gov.nysenate.ess.core.dao.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;

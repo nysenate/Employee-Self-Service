@@ -1,6 +1,6 @@
-package gov.nysenate.ess.core.service.auth;
+package gov.nysenate.ess.core.service.security.authentication;
 
-import gov.nysenate.ess.core.dao.personnel.LdapAuthDao;
+import gov.nysenate.ess.core.dao.security.authentication.LdapAuthDao;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.LdapAuthStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
@@ -13,7 +13,6 @@ import org.springframework.ldap.CommunicationException;
 import org.springframework.ldap.NamingException;
 import org.springframework.stereotype.Service;
 
-import javax.naming.Name;
 import javax.naming.ldap.LdapName;
 
 /**

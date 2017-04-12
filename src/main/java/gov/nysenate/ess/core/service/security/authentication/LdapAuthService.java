@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.auth;
+package gov.nysenate.ess.core.service.security.authentication;
 
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 

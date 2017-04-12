@@ -2,8 +2,8 @@ package gov.nysenate.ess.web.security.realm;
 
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
-import gov.nysenate.ess.core.service.auth.LdapAuthService;
-import gov.nysenate.ess.core.service.auth.EssPermissionService;
+import gov.nysenate.ess.core.service.security.authentication.LdapAuthService;
+import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;

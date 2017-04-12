@@ -1,6 +1,7 @@
 package gov.nysenate.ess.web.security.filter;
 
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
+import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -16,7 +17,7 @@ import java.io.IOException;
  * Will only allow users with the {@link SimpleEssPermission#DEPARTMENT_ACCESS} permission.
  * Users without {@link SimpleEssPermission#DEPARTMENT_ACCESS} will be redirected to
  * an error page.
- * @see gov.nysenate.ess.core.service.auth.DepartmentalWhitelistService
+ * @see DepartmentalWhitelistService
  */
 @Component("deptAuthz")
 public class DepartmentalAuthorizationFilter extends PermissionsAuthorizationFilter {

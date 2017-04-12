@@ -1,10 +1,11 @@
-package gov.nysenate.ess.core.service.auth;
+package gov.nysenate.ess.core.service.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
 import org.apache.shiro.authz.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

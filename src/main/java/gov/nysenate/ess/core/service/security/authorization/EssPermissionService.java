@@ -1,12 +1,11 @@
-package gov.nysenate.ess.core.service.auth;
+package gov.nysenate.ess.core.service.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.dao.permission.SqlRoleDao;
+import gov.nysenate.ess.core.dao.security.authorization.SqlRoleDao;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.shiro.authz.Permission;
 import org.slf4j.Logger;

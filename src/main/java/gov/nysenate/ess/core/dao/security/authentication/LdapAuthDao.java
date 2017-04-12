@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.dao.personnel;
+package gov.nysenate.ess.core.dao.security.authentication;
 
 import gov.nysenate.ess.core.dao.base.LdapBaseDao;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,6 @@ import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.stereotype.Repository;
 
-import javax.naming.Name;
 import javax.naming.ldap.LdapName;
 
 /**

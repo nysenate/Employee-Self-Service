@@ -8,7 +8,7 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
-import gov.nysenate.ess.core.service.auth.EssPermissionService;
+import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;

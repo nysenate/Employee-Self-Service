@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.auth;
+package gov.nysenate.ess.core.service.security.authorization;
 
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.personnel.Employee;

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.time.service.auth;
+package gov.nysenate.ess.time.service.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -12,8 +12,6 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.*;
 
 @Category(SillyTest.class)
 public class EssTimeSupervisorPermissionFactoryTest extends BaseTest {
