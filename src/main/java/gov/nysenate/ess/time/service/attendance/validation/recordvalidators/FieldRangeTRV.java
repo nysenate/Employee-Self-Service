@@ -26,7 +26,7 @@ public class FieldRangeTRV implements TimeRecordValidator {
     private static final Logger logger = LoggerFactory.getLogger(FieldRangeTRV.class);
 
     /** Defines max hours worked in a day */
-    private static final BigDecimal workMax = new BigDecimal(21);
+    private static final BigDecimal workMax = new BigDecimal(24);
     /** Defines max non-work hours used in a day for annual employees */
     private static final BigDecimal annualEmpNonWorkMax = new BigDecimal(12);
 
