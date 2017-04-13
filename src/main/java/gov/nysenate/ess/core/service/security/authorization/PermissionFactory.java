@@ -6,16 +6,21 @@ import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.Permission;
 
+/**
+ * Contains logic to assign permissions to an employee.
+ * Typically, each permission factory implementation grants permissions based on a single role or domain.
+ */
 public interface PermissionFactory {
 
     /**
-     * Defines an employee's permissions for a single Ess application.
+     * Returns granted permissions as defined under this permission factory
      *
-     * Each app has its own implementation and a single employee can get
-     * permissions from multiple implementations.
+     * As there will be multiple {@link PermissionFactory} implementations,
+     * this list will only include a subset of the employee's permissions
      *
-     * An employee's overall permissions in Ess is the sum of their permissions from
-     * all implementations of this class.
+     * @param employee {@link Employee} - an employee object for the authenticated user
+     * @param roles {@link ImmutableSet<EssRole>} - a set of roles assigned to the authenticated user
+     * @return {@link ImmutableList<Permission>} - a list of permissions granted
      */
     ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles);
 }
