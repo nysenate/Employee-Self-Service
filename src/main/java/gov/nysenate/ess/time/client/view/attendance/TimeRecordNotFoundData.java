@@ -1,7 +1,7 @@
 package gov.nysenate.ess.time.client.view.attendance;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundEx;
+import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundEidBeginDateEx;
 
 import java.time.LocalDate;
 
@@ -15,7 +15,7 @@ public class TimeRecordNotFoundData implements ViewObject {
         this.beginDate = beginDate;
     }
 
-    public TimeRecordNotFoundData(TimeRecordNotFoundEx ex) {
+    public TimeRecordNotFoundData(TimeRecordNotFoundEidBeginDateEx ex) {
         this(ex.getEmpId(), ex.getBeginDate());
     }
 

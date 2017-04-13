@@ -1,7 +1,10 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.*;
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.base.ListView;
@@ -30,15 +33,13 @@ import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.attendance.TimeRecordManager;
-import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundEx;
+import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundEidBeginDateEx;
+import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundException;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationNotPermittedEx;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationValidator;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.time.service.notification.RecordReminderEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -55,9 +57,7 @@ import java.util.stream.Stream;
 import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.TIME_RECORD_MANAGEMENT;
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/timerecords")
@@ -312,6 +312,37 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     }
 
     /**
+     * Review Time Record API
+     * ----------------------
+     *
+     * Review a time record:
+     *     (POST) /api/v1/timerecords/review
+     *
+     * Request Params:
+     * @param timeRecordId Integer - id of the reviewed time record
+     * @param remarks - String - any remarks attached to the review
+     * @param action - String - {@link TimeRecordAction} - action to take on the record
+     */
+    @RequestMapping(value = "/review", method = POST)
+    public void reviewRecord(@RequestParam BigInteger timeRecordId,
+                             @RequestParam String remarks,
+                             @RequestParam String action) {
+        TimeRecord record = timeRecordService.getTimeRecord(timeRecordId);
+
+        checkPermission(new EssTimePermission(record.getEmployeeId(), TIME_RECORDS, POST, record.getDateRange()));
+
+        TimeRecordAction timeRecordAction = getEnumParameter("action", action, TimeRecordAction.class);
+        if (timeRecordAction == TimeRecordAction.SAVE) {
+            throw new InvalidRequestParamEx(action,
+                    "action", "String", "action != SAVE");
+        }
+
+        record.setRemarks(remarks);
+        validationService.validateTimeRecord(record, timeRecordAction);
+        timeRecordService.saveRecord(record, timeRecordAction);
+    }
+
+    /**
      * Handle cases where an invalid time record is posted
      * Return a response indicating time record errors
      * @param ex {@link InvalidTimeRecordException}
@@ -324,14 +355,26 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     }
 
     /**
-     * Handle cases where a specifically requested time record was not found
-     * @param ex {@link TimeRecordNotFoundEx}
+     * Handle cases where a requested time record was not found based on empId and begin Date
+     * @param ex {@link TimeRecordNotFoundEidBeginDateEx}
      * @return {@link ViewObjectErrorResponse}
      */
-    @ExceptionHandler(TimeRecordNotFoundEx.class)
+    @ExceptionHandler(TimeRecordNotFoundEidBeginDateEx.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    public BaseResponse handleTimeRecordNotFoundEx(TimeRecordNotFoundEx ex) {
+    public BaseResponse handleTimeRecordNotFoundEidBeginDateEx(TimeRecordNotFoundEidBeginDateEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND, new TimeRecordNotFoundData(ex));
+    }
+
+    /**
+     * Handle cases where a specifically requested time record was not found
+     * @param ex {@link TimeRecordNotFoundException}
+     * @return {@link ViewObjectErrorResponse}
+     */
+    @ExceptionHandler(TimeRecordNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public BaseResponse handleTimeRecordNotFoundEx(TimeRecordNotFoundException ex) {
+        return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND,
+                Objects.toString(ex.getTimeRecordId()));
     }
 
     /**

@@ -19,6 +19,15 @@ import java.util.Set;
 public interface TimeRecordService
 {
     /**
+     * Get the time record with the given id
+     *
+     * @param timeRecordId BigInteger - id of the requested time record
+     * @return {@link TimeRecord}
+     * @throws TimeRecordNotFoundException if it does not exist
+     */
+    TimeRecord getTimeRecord(BigInteger timeRecordId) throws TimeRecordNotFoundException;
+
+    /**
      * Gets the distinct years that an employee has at least one time record for.
      * @param empId Integer - employee id
      * @param yearOrder - SortOrder - order the returned years
@@ -60,11 +69,11 @@ public interface TimeRecordService
      * return a map of employee ids to time records that correspond to those begin dates
      * @param empIdBeginDateMap {@link Multimap} - mapping of employee id -> record begin dates
      * @return {@link Multimap} - Mapping of employee id -> {@link TimeRecord} corresponding to passed in begin dates
-     * @throws TimeRecordNotFoundEx - if one of the mappings of empId -> beginDate
+     * @throws TimeRecordNotFoundEidBeginDateEx - if one of the mappings of empId -> beginDate
      *                                does not correspond to an existing time record
      */
     Multimap<Integer, TimeRecord> getTimeRecords(Multimap<Integer, LocalDate> empIdBeginDateMap)
-            throws TimeRecordNotFoundEx;
+            throws TimeRecordNotFoundEidBeginDateEx;
 
     /**
      * Retrieves the time records for an employee with employee id 'empId' that were to be approved by the given

@@ -31,6 +31,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +117,18 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     /** {@inheritDoc} */
     @Override
+    public TimeRecord getTimeRecord(BigInteger timeRecordId) throws TimeRecordNotFoundException {
+        try {
+            TimeRecord timeRecord = timeRecordDao.getTimeRecord(timeRecordId);
+            initializeEntries(timeRecord);
+            return timeRecord;
+        } catch (EmptyResultDataAccessException ex) {
+            throw new TimeRecordNotFoundException(timeRecordId);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public List<Integer> getTimeRecordYears(Integer empId, SortOrder yearOrder) {
         return timeRecordDao.getTimeRecordYears(empId, yearOrder);
     }
@@ -174,7 +187,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     /** {@inheritDoc} */
     @Override
     public Multimap<Integer, TimeRecord> getTimeRecords(Multimap<Integer, LocalDate> empIdBeginDateMap)
-            throws TimeRecordNotFoundEx {
+            throws TimeRecordNotFoundEidBeginDateEx {
 
         // Establish a date range that encloses all given dates
         RangeSet<LocalDate> recordDateRangeSet = TreeRangeSet.create();
@@ -200,7 +213,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         // Check to make sure that all requested records were found
         empIdBeginDateMap.entries().forEach(entry -> {
             if (!foundDates.contains(entry)) {
-                throw new TimeRecordNotFoundEx(entry.getKey(), entry.getValue());
+                throw new TimeRecordNotFoundEidBeginDateEx(entry.getKey(), entry.getValue());
             }
         });
 

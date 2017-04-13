@@ -2,12 +2,12 @@ var essApp = angular.module('ess');
 
 essApp.controller('RecordManageCtrl', ['$scope', '$q', '$filter',
                                        'appProps', 'RecordUtils', 'modals', 'badgeService', 'supEmpGroupService',
-                                       'SupervisorTimeRecordsApi', 'TimeRecordApi', 'TimeRecordReminderApi',
+                                       'SupervisorTimeRecordsApi', 'TimeRecordReviewApi', 'TimeRecordReminderApi',
     recordManageCtrl]);
 
 function recordManageCtrl($scope, $q, $filter,
                           appProps, recordUtils, modals, badgeService, supEmpGroupService,
-                          supRecordsApi, timeRecordsApi, reminderApi) {
+                          supRecordsApi, timeRecordReviewApi, reminderApi) {
 
     /** Object used as default template for selected indices */
     var initialSelectedIndices = {
@@ -116,7 +116,12 @@ function recordManageCtrl($scope, $q, $filter,
     function submitRecords (records) {
         var promises = [];
         records.forEach(function(record) {
-            promises.push(timeRecordsApi.save({action: record.action}, record,
+            var params = {
+                timeRecordId: record.timeRecordId,
+                action: record.action,
+                remarks: record.remarks
+            };
+            promises.push(timeRecordReviewApi.save(params, {},
                 function(response){console.log('success:', record.timeRecordId, response)},
                 function(response){console.log('fail:', record.timeRecordId, response); return response;}
             ).$promise);

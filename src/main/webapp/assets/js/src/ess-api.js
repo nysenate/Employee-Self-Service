@@ -18,6 +18,10 @@ essApi.factory('TimeRecordApi', ['$resource', 'appProps', function ($resource, a
     return $resource(appProps.apiPath + '/timerecords');  
 }]);
 
+essApi.factory('TimeRecordReviewApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/timerecords/review');
+}]);
+
 essApi.factory('ActiveTimeRecordsApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/timerecords/active');
 }]);
