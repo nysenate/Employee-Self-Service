@@ -325,7 +325,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      */
     @RequestMapping(value = "/review", method = POST)
     public void reviewRecord(@RequestParam BigInteger timeRecordId,
-                             @RequestParam String remarks,
+                             @RequestParam(required = false) String remarks,
                              @RequestParam String action) {
         TimeRecord record = timeRecordService.getTimeRecord(timeRecordId);
 
