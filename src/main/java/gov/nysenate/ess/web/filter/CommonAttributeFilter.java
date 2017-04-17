@@ -41,6 +41,8 @@ public class CommonAttributeFilter implements Filter
     public static String TIMEOUT_ATTRIBUTE = "timeoutExempt";
     public static String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
     public static String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
+    public static String IS_SENATOR_ATTRIBUTE = "isSenator";
+    public static String IS_SUPERVISOR_ATTRIBUTE = "isSupervisor";
     @Value("${runtime.level}") private String runtimeLevel;
     @Value("${login.url}") private String loginUrl;
     @Value("${image.url}")

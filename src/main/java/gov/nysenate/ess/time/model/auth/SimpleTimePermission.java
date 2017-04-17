@@ -11,6 +11,12 @@ public enum SimpleTimePermission {
     /** Granted to supervisors allowing them to use the time management pages */
     MANAGEMENT_PAGES("time:management-pages"),
 
+    /** Granted to users that can enter time and view time attendance history */
+    ATTENDANCE_RECORD_PAGES("time:attendance-record-pages"),
+
+    /** Granted to users that can view accrual history and projections pages */
+    ACCRUAL_PAGES("time:accrual-pages"),
+
     /** Granted to annual employees allowing them to view accrual projections */
     ACCRUAL_PROJECTIONS("time:accrual-projections:view"),
 

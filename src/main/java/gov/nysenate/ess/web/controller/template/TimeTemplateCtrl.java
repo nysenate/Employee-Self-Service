@@ -18,60 +18,87 @@ import javax.servlet.http.HttpServletRequest;
 public class TimeTemplateCtrl extends BaseTemplateCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(TimeTemplateCtrl.class);
-    static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
 
-    private static final Permission MANAGE_PAGE_PERMISSION =
-            SimpleTimePermission.MANAGEMENT_PAGES.getPermission();
+    static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
 
     private static final String NOT_A_SUPERVISOR_PAGE = TIME_TMPL_BASE_URL + "/error/not-supervisor";
 
+    private static final String NO_TIME_ENTRY_PAGE = TIME_TMPL_BASE_URL + "/error/no-time-entry";
+
+    private static final String NO_ACCRUALS_PAGE = TIME_TMPL_BASE_URL + "/error/no-accruals";
+
+    /**
+     * Return the corresponding template...
+     * Unless the template uri is caught by one of the methods below
+     * @param request HttpServletRequest
+     * @return String - passed in uri
+     */
     @RequestMapping(value = "/**")
     public String getTimePage(HttpServletRequest request) {
         return request.getRequestURI();
     }
 
-    /** --- Supervisor Pages ---
-     *
-     * For these pages, if the requester is not a supervisor, they are served an error page
-     */
-
-    @RequestMapping(value="/record/manage")
-    public String manage() {
-        return getManagementPage(TIME_TMPL_BASE_URL + "/record/manage");
-    }
-
-    @RequestMapping(value="/record/emp-history")
-    public String employeeHistory() {
-        return getManagementPage(TIME_TMPL_BASE_URL + "/record/emp-history");
-    }
-
-    @RequestMapping(value="/record/grant")
-    public String grant() {
-        return getManagementPage(TIME_TMPL_BASE_URL + "/record/grant");
-    }
-
-    @RequestMapping(value = "/accrual/emp-history")
-    public String accrualEmpHistory() {
-        return getManagementPage(TIME_TMPL_BASE_URL + "/accrual/emp-history");
-    }
-
-    @RequestMapping(value = "/accrual/emp-projections")
-    public String accrualEmpProjections() {
-        return getManagementPage(TIME_TMPL_BASE_URL + "/accrual/emp-projections");
-    }
-
-    /** --- Internal Methods --- */
-
     /**
+     * Supervisor Pages
+     *
      * Returns the given page if the currently authenticated user is permitted to view management pages
      * Otherwise return an error page indicating that the user does not have required permission
-     * @param pageName String - name of the requested management page
-     * @return String - passed in <code>pageName</code> or error page depending on permissions
+     * @param request HttpServletRequest - the request (used to extract page uri)
+     * @return String - passed in uri or error page depending on permissions
      */
-    private String getManagementPage(String pageName) {
-        if (SecurityUtils.getSubject().isPermitted(MANAGE_PAGE_PERMISSION)) {
-            return pageName;
+    @RequestMapping(value = {
+            "/record/manage",
+            "/record/emp-history",
+            "/record/grant",
+            "/accrual/emp-history",
+            "/accrual/emp-projections"
+    })
+    public String getManagementPage(HttpServletRequest request) {
+        final Permission managementPermission =
+                SimpleTimePermission.MANAGEMENT_PAGES.getPermission();
+        if (SecurityUtils.getSubject().isPermitted(managementPermission)) {
+            return request.getRequestURI();
         }
         return NOT_A_SUPERVISOR_PAGE;
+    }
+
+    /**
+     * Attendance Entry Pages
+     *
+     * Returns the given page if the currently authenticated user is permitted to view attendance entry pages
+     * Otherwise return an error page indicating that the user does not have required permission
+     * @param request HttpServletRequest - the request (used to extract page uri)
+     * @return String - passed in uri or error page depending on permissions
+     */
+    @RequestMapping(value = {
+            "/record/entry",
+            "/record/history"
+    })
+    public String getMyAttendancePage(HttpServletRequest request) {
+        final Permission attendRecordPermission = SimpleTimePermission.ATTENDANCE_RECORD_PAGES.getPermission();
+        if (SecurityUtils.getSubject().isPermitted(attendRecordPermission)) {
+            return request.getRequestURI();
+        }
+        return NO_TIME_ENTRY_PAGE;
+    }
+
+    /**
+     * Accrual Pages
+     *
+     * Returns the given page if the currently authenticated user is permitted to view or project accruals
+     * Otherwise return an error page indicating that the user does not have required permission
+     * @param request HttpServletRequest - the request (used to extract page uri)
+     * @return String - passed in uri or error page depending on permissions
+     */
+    @RequestMapping(value = {
+            "/accrual/history",
+            "/accrual/projections"
+    })
+    public String getMyAccrualPage(HttpServletRequest request) {
+        final Permission accrualPagePermission = SimpleTimePermission.ACCRUAL_PAGES.getPermission();
+        if (SecurityUtils.getSubject().isPermitted(accrualPagePermission)) {
+            return request.getRequestURI();
+        }
+        return NO_TIME_ENTRY_PAGE;
     }
 }
