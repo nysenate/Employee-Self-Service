@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.dao.personnel;
 import com.google.common.collect.HashMultimap;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
+import gov.nysenate.ess.core.model.personnel.Agency;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
@@ -112,8 +113,8 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
                 empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
                 empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
-//                boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
-//                empSupInfo.setSenator(senator);
+                boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
+                empSupInfo.setSenator(senator);
                 if (transType.equals(EMP)) {
                     empTerminated = true;
 
@@ -133,10 +134,12 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                  */
                 if (rank == 1) {
                     /*
-                     * Add the employee to their supervisor's respective group if their supervisor id
-                     * matches the given 'supId'.
+                     * Add the employee to their supervisor's respective group if:
+                     *  - the employee is not the supervisor
+                     *  - their supervisor id matches the given 'supId'
+                     *  - the employee is not currently terminated
                      */
-                    if (currSupId == supId && !empTerminated) {
+                    if (empId != supId && currSupId == supId && !empTerminated) {
                         primaryEmps.put(empId, empSupInfo);
                     }
                     possiblePrimaryEmps.put(empId, effectDate);
@@ -152,8 +155,9 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                         if (currSupId == supId && !empTerminated) {
                             empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
 
-                            // Add the employee if the sup range is non-empty
-                            if (!empSupInfo.getEffectiveDateRange().isEmpty()) {
+                            // Add the employee only if it is not the supervisor,
+                            // and the effective date range is non-empty
+                            if (!(empId == supId || empSupInfo.getEffectiveDateRange().isEmpty())) {
                                 primaryEmps.put(empId, empSupInfo);
                             }
                             possiblePrimaryEmps.remove(empId);

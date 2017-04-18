@@ -1,11 +1,10 @@
 package gov.nysenate.ess.time.dao.personnel;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Range;
+import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.time.model.personnel.PrimarySupEmpGroup;
 import gov.nysenate.ess.time.model.personnel.SupervisorOverride;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class SqlSupervisorDaoTest extends BaseTest
 
     @Test
     public void testGetSupEmpGroup_ReturnsEmpGroup() throws Exception {
-        int empId = 1024;
+        int empId = 7729;
 
         PrimarySupEmpGroup group = supervisorDao.getPrimarySupEmpGroup(empId);
 

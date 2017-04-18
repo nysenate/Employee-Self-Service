@@ -7,7 +7,7 @@
       <select ng-model="$parent.iSelEmpGroup"
               ng-options="supEmpGroups.indexOf(eg) as eg.dropDownLabel
                           group by eg.group
-                          for eg in supEmpGroups | filter:activeFilter">
+                          for eg in supEmpGroups | filter:supEmpGroupFilter">
       </select>
     </span>
   </p>
@@ -19,7 +19,7 @@
       <select ng-model="$parent.iSelEmp" ng-if="allEmps.length > 0" ng-change="empChange(iSelEmp)"
               ng-options="allEmps.indexOf(emp) as emp.dropDownLabel
                           group by emp.group
-                          for emp in allEmps | filter:activeFilter">
+                          for emp in allEmps | filter:employeeFilter">
       </select>
     </span>
   </p>
