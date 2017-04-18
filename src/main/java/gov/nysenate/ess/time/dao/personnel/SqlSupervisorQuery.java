@@ -20,10 +20,10 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         ")\n" +
 
         "SELECT empList.NUXREFEM, pers.FFNALAST, pers.FFNAFIRST,\n" +
-        "       per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER, per.DTTXNORIGIN,\n" +
-        "       ptx.CDTRANS, ptx.CDTRANSTYP, ptx.DTEFFECT,\n" +
+        "       per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER,\n" +
+        "       ptx.CDTRANS, ptx.CDTRANSTYP, ptx.DTEFFECT, ptx.DTTXNORIGIN,\n" +
         "       ROW_NUMBER() OVER (\n" +
-        "            PARTITION BY NUXREFEM ORDER BY DTEFFECT DESC, DTTXNORIGIN DESC\n" +
+        "            PARTITION BY ptx.NUXREFEM ORDER BY ptx.DTEFFECT DESC, ptx.DTTXNORIGIN DESC\n" +
         "       ) AS TRANS_RANK\n" +
         "FROM empList\n" +
         "JOIN ${masterSchema}.PM21PERAUDIT per ON empList.NUXREFEM = per.NUXREFEM\n" +

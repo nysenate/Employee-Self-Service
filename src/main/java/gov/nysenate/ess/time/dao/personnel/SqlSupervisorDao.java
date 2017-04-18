@@ -112,6 +112,8 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
                 empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
                 empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
+//                boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
+//                empSupInfo.setSenator(senator);
                 if (transType.equals(EMP)) {
                     empTerminated = true;
 
@@ -142,14 +144,18 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 else {
                     /*
                      * Process the records of employees that had a supervisor change during the date range.
-                     * If a supervisor match is found to occur on/before the 'start' date, we addUsage them to their
+                     * If a supervisor match is found to occur on/before the 'start' date, we add them to their
                      * respective supervisor group. Otherwise if we can't find a match and the effect date has
                      * occurred before the 'start' date, we know that they don't belong in the group for this range.
                      */
                     if (possiblePrimaryEmps.containsKey(empId)) {
                         if (currSupId == supId && !empTerminated) {
                             empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
-                            primaryEmps.put(empId, empSupInfo);
+
+                            // Add the employee if the sup range is non-empty
+                            if (!empSupInfo.getEffectiveDateRange().isEmpty()) {
+                                primaryEmps.put(empId, empSupInfo);
+                            }
                             possiblePrimaryEmps.remove(empId);
                         }
                         possiblePrimaryEmps.put(empId, effectDate);
