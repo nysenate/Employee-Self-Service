@@ -339,31 +339,32 @@ function recordManageCtrl($scope, $q, $filter,
         var hasSupOverrides = extSupEmpGroup.supOverrideEmployees.size > 0;
         var hasEmpOverrides = extSupEmpGroup.empOverrideEmployees.length > 0;
 
-        // Add a supervisor listing for all the supervisor's employees including overrides
-        if (hasSupOverrides || hasEmpOverrides) {
-            var fullEmpGroupBaseLabel = supName.fullName + ' + Overrides';
-            var fullEmpGroupEntry = {
-                querySupId: supId,
-                supId: supId,
-                name: supName,
-                baseLabel: fullEmpGroupBaseLabel,
-                dropDownLabel: fullEmpGroupBaseLabel,
-                fullEmpGroup: true,
-                userResponsible: true
-            };
-            primarySupEntries.push(fullEmpGroupEntry);
-        }
-
-        // Add an entry just for the supervisor
-        var supEntry = {
+        // Create an entry for all of the supervisor's records
+        var fullEmpGroupEntry = {
             querySupId: supId,
             supId: supId,
             name: supName,
             baseLabel: supName.fullName,
             dropDownLabel: supName.fullName,
+            fullEmpGroup: true,
             userResponsible: true
         };
-        primarySupEntries.push(supEntry);
+
+        primarySupEntries.push(fullEmpGroupEntry);
+
+        // If there are overrides, modify the full emp group entry
+        // and add an entry for the supervisor without overrides
+        if (hasSupOverrides || hasEmpOverrides) {
+            // Add the entry for just the supervisor
+            var supEmpGroupEntry = angular.copy(fullEmpGroupEntry);
+            supEmpGroupEntry.fullEmpGroup = false;
+            primarySupEntries.push(supEmpGroupEntry);
+
+            // Modify full entry to indicate that it includes overrides
+            var fullEmpGroupBaseLabel = supName.fullName + ' + Overrides';
+            fullEmpGroupEntry.baseLabel = fullEmpGroupBaseLabel;
+            fullEmpGroupEntry.dropDownLabel = fullEmpGroupBaseLabel;
+        }
 
         return primarySupEntries;
     }
