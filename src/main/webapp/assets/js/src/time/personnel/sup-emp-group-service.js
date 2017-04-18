@@ -70,10 +70,12 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
      * Return a list of employee info objects for the requested supEmp group
      * The returned list will contain all employees in the sup emp group
      *   ordered by primary employees, emp overrides, and then sup overrides
+     * Senators will be excluded from the list if omitSenators is true
      * @param iSupEmpGroup
+     * @param omitSenators
      * @returns []
      */
-    function getEmpInfos(iSupEmpGroup) {
+    function getEmpInfos(iSupEmpGroup, omitSenators) {
         if (iSupEmpGroup < 0 || iSupEmpGroup > supEmpGroupList.length) {
             throw "sup emp group index out of bounds: " + iSupEmpGroup;
         }
@@ -102,7 +104,9 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
             });
         }
 
-        return empList;
+        return empList.filter(function (emp) {
+            return !(omitSenators && emp.senator);
+        });
     }
 
     /* --- Internal Methods --- */

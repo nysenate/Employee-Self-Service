@@ -17,6 +17,8 @@ public class EmployeeSupInfo
     protected String empLastName;
     protected String empFirstName;
 
+    protected boolean senator;
+
     // The requested supervisor date range when this instance was created
     // Forms a closed-open date range [supStartDate, supEndDate)
     // TODO rename these fields
@@ -41,6 +43,7 @@ public class EmployeeSupInfo
         this.supId = other.supId;
         this.empLastName = other.empLastName;
         this.empFirstName = other.empFirstName;
+        this.senator = other.senator;
         this.startDate = other.startDate;
         this.endDate = other.endDate;
         this.supStartDate = other.supStartDate;
@@ -114,8 +117,10 @@ public class EmployeeSupInfo
         EmployeeSupInfo that = (EmployeeSupInfo) o;
         return Objects.equals(empId, that.empId) &&
                 Objects.equals(supId, that.supId) &&
+                Objects.equals(empFirstName, that.empFirstName) &&
                 Objects.equals(empLastName, that.empLastName) &&
                 Objects.equals(startDate, that.startDate) &&
+                Objects.equals(senator, that.senator) &&
                 Objects.equals(endDate, that.endDate) &&
                 Objects.equals(supStartDate, that.supStartDate) &&
                 Objects.equals(supEndDate, that.supEndDate);
@@ -123,7 +128,7 @@ public class EmployeeSupInfo
 
     @Override
     public int hashCode() {
-        return Objects.hash(empId, supId, empLastName, startDate, endDate, supStartDate, supEndDate);
+        return Objects.hash(empId, supId, empFirstName, empLastName, senator, startDate, endDate, supStartDate, supEndDate);
     }
 
     /** --- Basic Getters/Setters --- */
@@ -174,5 +179,13 @@ public class EmployeeSupInfo
 
     public void setEmpFirstName(String empFirstName) {
         this.empFirstName = empFirstName;
+    }
+
+    public boolean isSenator() {
+        return senator;
+    }
+
+    public void setSenator(boolean senator) {
+        this.senator = senator;
     }
 }

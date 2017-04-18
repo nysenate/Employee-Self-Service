@@ -27,11 +27,14 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
     public ImmutableSet<EssRole> getRoles(Employee employee) {
         MapSqlParameterSource params = new MapSqlParameterSource("employeeId", employee.getEmployeeId());
         String sql = SqlRoleQuery.GET_EMPLOYEE_ROLES.getSql(schemaMap());
-        List<EssRole> roles = localNamedJdbc.query(sql, params, ((rs, i) -> {
-            return EssRole.valueOf(rs.getString("role"));
-        }));
+        List<EssRole> roles = localNamedJdbc.query(sql, params,
+                (rs, i) -> EssRole.valueOf(rs.getString("role")));
         // Everyone has the senate employee role by default.
         roles.add(EssRole.SENATE_EMPLOYEE);
+        // Add the senator role if the employee is a senator
+        if (employee.isSenator()) {
+            roles.add(EssRole.SENATOR);
+        }
         return ImmutableSet.copyOf(EnumSet.copyOf(roles));
     }
 
@@ -71,7 +74,7 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
         }
     }
 
-    private class EmployeeRoleMapper implements RowMapper {
+    private class EmployeeRoleMapper implements RowMapper<Employee> {
 
         private EmployeeInfoService employeeInfoService;
 

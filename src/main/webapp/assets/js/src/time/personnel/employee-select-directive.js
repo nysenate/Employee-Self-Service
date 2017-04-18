@@ -15,9 +15,19 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
             $scope.supEmpGroups = [];
             $scope.allEmps = [];
 
+            /* --- Attributes --- */
+
+            /** If true, show only supervisors and employees that are currently active */
             $scope.activeOnly = ($attrs.activeOnly || '').toLowerCase() === 'true';
 
-            $scope.selectSubject = $attrs.selectSubject;
+            /** If true, senators will appear in the employee dropdown.  Otherwise they are omitted */
+            $scope.showSenators = ($attrs.showSenators || '').toLowerCase() === 'true';
+
+            /**
+             * Specifies the subject of the employee select label
+             *  in the form "Select {selectSubject} for employee"
+             */
+            $scope.selectSubject = $attrs.selectSubject || 'info';
 
             /**
              * Wait for supervisor emp groups to load
@@ -37,11 +47,23 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
 
             /* --- Display Methods --- */
 
-            $scope.activeFilter = function (empInfo) {
-                if (!$scope.activeOnly) {
-                    return true;
-                }
-                return !moment().isAfter(empInfo.effectiveEndDate || empInfo.supEndDate, 'day');
+            /**
+             * Filter for the supervisor emp group select
+             * @param empGroup
+             * @returns {boolean}
+             */
+            $scope.supEmpGroupFilter = function (empGroup) {
+                return activeFilter(empGroup);
+            };
+
+            /**
+             * Filter for the employee select
+             * @param empInfo
+             * @returns {boolean}
+             */
+            $scope.employeeFilter = function (empInfo) {
+                return activeFilter(empInfo) &&
+                    senatorFilter(empInfo);
             };
 
             /* --- Internal Methods --- */
@@ -54,7 +76,7 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                 if ($scope.iSelEmpGroup < 0) {
                     return;
                 }
-                $scope.allEmps = supEmpGroupService.getEmpInfos($scope.iSelEmpGroup);
+                $scope.allEmps = supEmpGroupService.getEmpInfos($scope.iSelEmpGroup, !$scope.showSenators);
                 setEmpLabels();
 
                 $scope.selectedSup = $scope.supEmpGroups[$scope.iSelEmpGroup];
@@ -135,6 +157,30 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                     dates += ' - ' + supEndMoment.format('MMM YYYY');
                 }
                 emp.dropDownLabel = name + ' (' + dates + ')';
+            }
+
+            /**
+             * Returns false if the employee is not currently supervised by the user
+             * and the 'activeOnly' flag is set to true
+             * Otherwise return true
+             * @param empInfo
+             * @returns {boolean}
+             */
+            function activeFilter (empInfo) {
+                if (!$scope.activeOnly) {
+                    return true;
+                }
+                return !moment().isAfter(empInfo.effectiveEndDate || empInfo.supEndDate, 'day');
+            }
+
+            /**
+             * Returns true if the employee is NOT a senator
+             * or if the 'showSenators' flag is set to true
+             * @param empInfo
+             * @returns {boolean}
+             */
+            function senatorFilter (empInfo) {
+                return $scope.showSenators || !empInfo.senator;
             }
 
         }

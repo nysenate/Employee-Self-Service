@@ -15,6 +15,7 @@ public class SupervisorEmpView implements ViewObject
     protected int supId;
     protected String empLastName;
     protected String empFirstName;
+    protected boolean senator;
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected LocalDate supStartDate;
@@ -28,6 +29,7 @@ public class SupervisorEmpView implements ViewObject
             this.supId = supInfo.getSupId();
             this.empLastName = supInfo.getEmpLastName();
             this.empFirstName = supInfo.getEmpFirstName();
+            this.senator = supInfo.isSenator();
             this.startDate = supInfo.getStartDate();
             this.endDate = supInfo.getEndDate();
             this.supStartDate = supInfo.getSupStartDate();
@@ -67,6 +69,11 @@ public class SupervisorEmpView implements ViewObject
     @XmlElement
     public String getEmpFirstName() {
         return empFirstName;
+    }
+
+    @XmlElement
+    public boolean isSenator() {
+        return senator;
     }
 
     @XmlElement

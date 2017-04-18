@@ -31,7 +31,15 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     /** Time and Attendance */
     $routeProvider.when(ctxPath + '/time', {
-       redirectTo: ctxPath + '/time/record/entry'
+       redirectTo: function () {
+           if (globalProps.userIsSenator) {
+               if (globalProps.userIsSupervisor) {
+                   return ctxPath + '/time/record/manage'
+               }
+               return ctxPath + '/time/period/calendar'
+           }
+           return ctxPath + '/time/record/entry';
+       }
     });
 
     $routeProvider.when(ctxPath + '/time/record/entry', {
