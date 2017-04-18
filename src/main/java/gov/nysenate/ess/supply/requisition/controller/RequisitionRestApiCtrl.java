@@ -48,7 +48,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     @Autowired private RequisitionService requisitionService;
     @Autowired private EmployeeInfoService employeeService;
     @Autowired private LocationService locationService;
-    @Autowired private SupplyEmailService emailService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
@@ -65,7 +64,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withModifiedBy(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withOrderedDateTime(LocalDateTime.now())
                 .build();
-        Requisition savedRequisition = requisitionService.saveRequisition(requisition);
+        Requisition savedRequisition = requisitionService.submitRequisition(requisition);
         return new ViewObjectResponse<>(new RequisitionView(savedRequisition));
     }
 
@@ -100,14 +99,12 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         if (RequisitionStatus.valueOf(requisitionView.getStatus()) == RequisitionStatus.COMPLETED) {
             checkPermission(new WildcardPermission("supply:requisition:approve"));
         }
-
         Requisition requisition = requisitionView.toRequisition();
         if (!requisition.getIssuer().isPresent()) {
             requisition = requisition.setIssuer(getModifiedBy());
         }
         requisition = requisition.setModifiedBy(getModifiedBy());
-        requisition = requisition.process(LocalDateTime.now());
-        requisitionService.saveRequisition(requisition);
+        requisitionService.processRequisition(requisition);
     }
 
     /**
@@ -120,9 +117,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         checkPermission(new WildcardPermission("supply:requisition:edit"));
         Requisition requisition = requisitionView.toRequisition();
         requisition = requisition.setModifiedBy(getModifiedBy());
-        requisition = requisition.reject(LocalDateTime.now());
-        requisitionService.saveRequisition(requisition);
-        emailService.sendRejectEmail(requisition);
+        requisitionService.rejectRequisition(requisition);
     }
 
 

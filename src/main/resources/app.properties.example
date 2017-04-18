@@ -194,3 +194,8 @@ slack.notification.line.limit = 5
 
 # --- Error Report EmailConfiguration -----------------------------------------------------
 report.email =
+
+# --- Supply Email Configuration -----------------------------------------------------
+
+# A comma separated list of emails that will receive a notification when new requisitions are submitted.
+supply.requisition.notification.list =

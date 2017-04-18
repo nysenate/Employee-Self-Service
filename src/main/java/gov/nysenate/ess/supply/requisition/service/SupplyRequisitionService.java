@@ -20,11 +20,36 @@ import java.util.Optional;
 public class SupplyRequisitionService implements RequisitionService {
 
     @Autowired private RequisitionDao requisitionDao;
+    @Autowired private SupplyEmailService emailService;
+
+    /** {@inheritDoc} */
+    @Override
+    public Requisition submitRequisition(Requisition requisition) {
+        // Save requisition first to set it's id and check for errors.
+        requisition = saveRequisition(requisition);
+        emailService.sendNewRequisitionNotifications(requisition);
+        return requisition;
+    }
 
     @Override
     public synchronized Requisition saveRequisition(Requisition requisition) {
         checkPessimisticLocking(requisition);
         requisition = requisitionDao.saveRequisition(requisition);
+        return requisition;
+    }
+
+    @Override
+    public Requisition processRequisition(Requisition requisition) {
+        requisition = requisition.process(LocalDateTime.now());
+        saveRequisition(requisition);
+        return requisition;
+    }
+
+    @Override
+    public Requisition rejectRequisition(Requisition requisition) {
+        requisition = requisition.reject(LocalDateTime.now());
+        saveRequisition(requisition);
+        emailService.sendRejectEmail(requisition);
         return requisition;
     }
 

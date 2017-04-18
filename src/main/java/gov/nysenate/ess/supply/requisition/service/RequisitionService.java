@@ -13,7 +13,18 @@ import java.util.Optional;
 
 public interface RequisitionService {
 
+    /**
+     * Handles events for, and saves, a new requisition order.
+     * @param requisition The new requisition
+     * @return The saved requisition with its requisitionId set.
+     */
+    Requisition submitRequisition(Requisition requisition);
+
     Requisition saveRequisition(Requisition requisition);
+
+    Requisition processRequisition(Requisition requisition);
+
+    Requisition rejectRequisition(Requisition requisition);
 
     Optional<Requisition> getRequisitionById(int requisitionId);
 
