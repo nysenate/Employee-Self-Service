@@ -16,7 +16,7 @@ public class AppIT extends WebTest
     @Test
     public void simple() throws Exception {
         mockMvc.perform(get("/"))
-                .andExpect(redirectedUrlPattern("/time/record/entry"));
+                .andExpect(redirectedUrlPattern("/time"));
     }
 
     private static ResultMatcher redirectedUrlPattern(final String expectedUrlPattern) {
