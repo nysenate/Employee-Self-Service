@@ -70,19 +70,20 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         GET_EMP_SQL_TMPL.getSql() +
         "WHERE per.DTTXNUPDATE > :lastUpdate OR ttl.DTTXNUPDATE > :lastUpdate OR addr.DTTXNUPDATE > :lastUpdate\n" +
         "   OR xref.DTTXNUPDATE > :lastUpdate OR rctr.DTTXNUPDATE > :lastUpdate OR rctrhd.DTTXNUPDATE > :lastUpdate\n" +
-        "   OR loc.DTTXNUPDATE > :lastUpdate"
+        "   OR loc.DTTXNUPDATE > :lastUpdate OR agcy.DTTXNUPDATE > :lastUpdate"
     ),
 
     GET_LATEST_UPDATE_DATE(
-        "SELECT MAX(GREATEST(\n" +
-        "    per.DTTXNUPDATE,\n" +
-        "    ttl.DTTXNUPDATE,\n" +
-        "    addr.DTTXNUPDATE,\n" +
-        "    xref.DTTXNUPDATE,\n" +
-        "    rctr.DTTXNUPDATE,\n" +
-        "    rctrhd.DTTXNUPDATE,\n" +
-        "    loc.DTTXNUPDATE\n" +
-        ")) AS MAX_UPDATE_DATE\n" +
+        "SELECT GREATEST(\n" +
+        "    MAX(per.DTTXNUPDATE),\n" +
+        "    MAX(ttl.DTTXNUPDATE),\n" +
+        "    MAX(addr.DTTXNUPDATE),\n" +
+        "    MAX(xref.DTTXNUPDATE),\n" +
+        "    MAX(rctr.DTTXNUPDATE),\n" +
+        "    MAX(rctrhd.DTTXNUPDATE),\n" +
+        "    MAX(loc.DTTXNUPDATE),\n" +
+        "    MAX(agcy.DTTXNUPDATE)\n" +
+        ") AS MAX_UPDATE_DATE\n" +
         GET_EMP_SQL_TABLES.getSql()
     )
     ;
