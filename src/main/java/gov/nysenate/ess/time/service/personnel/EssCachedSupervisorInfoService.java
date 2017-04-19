@@ -251,7 +251,11 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         for (SupervisorOverride override : overrides) {
             switch (override.getSupOverrideType()) {
                 case SUPERVISOR:
-                    getSupOverrideEmps(override).forEach(empGroup::addSupOverrideEmployee);
+                    // Only add the override if it is effective now
+                    if (override.getEffectiveDateRange().contains(LocalDate.now())) {
+                        getSupOverrideEmps(override)
+                                .forEach(empGroup::addSupOverrideEmployee);
+                    }
                     break;
                 case EMPLOYEE:
                     getEmpOverrideEmp(override).forEach(empGroup::addOverrideEmployee);
