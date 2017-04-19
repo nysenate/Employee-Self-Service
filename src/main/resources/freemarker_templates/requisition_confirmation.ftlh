@@ -46,7 +46,7 @@ ${requisition.specialInstructions.get()}
 <br/>
 
 <p>
-Click <a href="https://ess.nysenate.gov/supply/history/order-history">here</a> to view the status of your requisition.
+Click <a href="${orderHistoryUrl}">here</a> to view the status of your requisition.
 </p>
 
 <p>

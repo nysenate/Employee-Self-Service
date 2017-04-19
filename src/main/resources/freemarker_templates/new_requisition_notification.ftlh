@@ -47,7 +47,7 @@ ${requisition.specialInstructions.get()}
 <br/>
 
 <p>
-Click <a href="http://ess.nysenate.gov/supply/manage/fulfillment">here</a> to go to the fulfillment page where you can process or edit this requisition.
+Click <a href="${fulfillmentUrl}">here</a> to go to the fulfillment page where you can process or edit this requisition.
 </p>
 <br/>
 

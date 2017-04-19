@@ -5,6 +5,12 @@
 # Runtime level (dev/test/prod)
 runtime.level = dev
 
+# --- Domain Configuration ----------------------------------------------------
+
+# The domain url and context path that ess is hosted on (used for generating links)
+# do not use a trailing slash
+domain.url = http://localhost:8080
+
 # --- Security Settings -------------------------------------------------------
 
 # Set to true to enforce authentication. Otherwise you will be able to login as

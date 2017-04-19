@@ -26,11 +26,14 @@ public class CustomerConfirmationEmail {
     private Configuration freemarkerCfg;
     private static final String template = "requisition_confirmation.ftlh";
     private static final String subject = "Your supply requisition request has been submitted.";
+    private static String domainUrl;
 
     @Autowired
-    public CustomerConfirmationEmail(SendMailService sendMailService, Configuration freemarkerCfg) {
+    public CustomerConfirmationEmail(SendMailService sendMailService, Configuration freemarkerCfg,
+                                     @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
+        this.domainUrl = domainUrl;
     }
 
     public MimeMessage generateConfirmationEmail(Requisition requisition, String toEmail) {
@@ -40,7 +43,8 @@ public class CustomerConfirmationEmail {
 
     private String generateBody(Requisition requisition) {
         StringWriter out = new StringWriter();
-        Map dataModel = ImmutableMap.of("requisition", requisition);
+        Map dataModel = ImmutableMap.of("requisition", requisition,
+                "orderHistoryUrl", domainUrl + "/supply/history/order-history");
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
             emailTemplate.process(dataModel, out);

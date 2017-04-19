@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.template.EssTemplateException;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
@@ -26,11 +27,14 @@ public class NewRequisitionEmail {
     private Configuration freemarkerCfg;
     private static final String template = "new_requisition_notification.ftlh";
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yy h:mm a");
+    private static String domainUrl;
 
     @Autowired
-    public NewRequisitionEmail(SendMailService sendMailService, Configuration freemarkerCfg) {
+    public NewRequisitionEmail(SendMailService sendMailService, Configuration freemarkerCfg,
+                               @Value("${domain.url}") final String domainUrl) {
         this.sendMailService = sendMailService;
         this.freemarkerCfg = freemarkerCfg;
+        this.domainUrl = domainUrl;
     }
 
     public MimeMessage generateNewRequisitionEmail(Requisition requisition, String toEmail) {
@@ -47,7 +51,8 @@ public class NewRequisitionEmail {
     private String generateBody(Requisition requisition) {
         StringWriter out = new StringWriter();
         Map dataModel = ImmutableMap.of("requisition", requisition,
-                "orderedDateTime", requisition.getOrderedDateTime().format(formatter));
+                "orderedDateTime", requisition.getOrderedDateTime().format(formatter),
+                "fulfillmentUrl", domainUrl + "/supply/manage/fulfillment");
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
             emailTemplate.process(dataModel, out);
