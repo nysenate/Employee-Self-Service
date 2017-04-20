@@ -505,8 +505,15 @@ function recordManageCtrl($scope, $q, $filter,
         // Store records in record map
         angular.forEach(recordMap, function(records, empId) {
             angular.forEach(records, function(record) {
+                // Ignore the record if it is an override for an indirect employee
                 if (!isUser && record.supervisorId !== supId) {
-                    // Ignore the record if it is an override for an indirect employee
+                    return;
+                }
+                // Ignore the record if it is a blank, employee scoped, temp employee record
+                if (record.scope === 'E' &&
+                    recordUtils.isFullTempRecord(record) &&
+                    !recordUtils.recordHasEnteredTime(record))
+                {
                     return;
                 }
                 // Compute totals for the record

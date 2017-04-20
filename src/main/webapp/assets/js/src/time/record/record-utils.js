@@ -25,7 +25,10 @@ function recordUtils() {
         getRecordTotals: getRecordTotals,
         getTimeEntryFields: getTimeEntryFields,
         formatAttendRecord: formatAttendRecord,
-        compareRecords: compareRecords
+        compareRecords: compareRecords,
+        entryHasEnteredTime: entryHasEnteredtime,
+        recordHasEnteredTime: recordHasEnteredTime,
+        isFullTempRecord: isFullTempRecord
     };
 
     // Return a copy of timeEntryFields array
@@ -71,6 +74,9 @@ function recordUtils() {
         var totals = {};
 
         for (var iField in timeEntryFields) {
+            if (!timeEntryFields.hasOwnProperty(iField)) {
+                continue;
+            }
             var field = timeEntryFields[iField];
             totals[field] = getTotal(record, field);
         }
@@ -122,6 +128,68 @@ function recordUtils() {
         if (lhsEnd.isAfter(rhsEnd)) return 1;
 
         return 0;
+    }
+
+    /**
+     * Checks if the given time entry has any entered (non-null integer) values
+     * @param timeEntry
+     * @returns {boolean} true if values have been entered
+     */
+    function entryHasEnteredtime(timeEntry) {
+        for (var iField in timeEntryFields) {
+            if (!timeEntryFields.hasOwnProperty(iField)) {
+                continue;
+            }
+            var field = timeEntryFields[iField];
+            if (!timeEntry.hasOwnProperty(field)) {
+                console.error("Field not found on time entry: ", field, timeEntry);
+            }
+            if (!isNaN(parseInt(timeEntry[field]))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Checks if the given time record has any time entries with any entered (non-null integer) values
+     * @param timeRecord
+     * @returns {boolean} true if values have been entered
+     */
+    function recordHasEnteredTime(timeRecord) {
+        var entries = timeRecord.timeEntries;
+        for (var iEntry in entries) {
+            if (!entries.hasOwnProperty(iEntry)) {
+                continue;
+            }
+            if (entryHasEnteredtime(entries[iEntry])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the record contains only entries where the employee was a temporary employee
+     * @param timeRecord
+     * @returns {boolean}
+     */
+    function isFullTempRecord(timeRecord) {
+        var entries = timeRecord.timeEntries;
+        if (entries.length === 0) {
+            return false;
+        }
+        for (var iEntry in entries) {
+            if (!entries.hasOwnProperty(iEntry)) {
+                continue;
+            }
+            var entry = entries[iEntry];
+            if (entry.payType !== 'TE') {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
