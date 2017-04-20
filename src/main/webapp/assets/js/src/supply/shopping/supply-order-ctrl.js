@@ -153,7 +153,7 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
      * initialize the categories before this runs.
      */
     $scope.$on('$locationChangeSuccess', function (event, newUrl) {
-        if ($scope.state.isShopping()) {
+        if ($scope.state.isShopping() && newUrl.indexOf("supply/shopping/order") != -1) {
             updateFiltersFromUrlParams();
             sortAndFilterLineItems();
         }
