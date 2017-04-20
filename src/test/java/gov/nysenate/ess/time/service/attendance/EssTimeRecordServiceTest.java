@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
+import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class EssTimeRecordServiceTest extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordServiceTest.class);
 
     @Autowired private TimeRecordService timeRecordService;
+    @Autowired private SupervisorInfoService supervisorInfoService;
 
     @Test
     public void testGetActiveRecords() throws Exception {
@@ -38,17 +40,21 @@ public class EssTimeRecordServiceTest extends BaseTest {
 
     @Test
     public void testGetSupervisorRecordsTest() throws Exception {
-        LocalDate now = LocalDate.now();
+        int empId = 1024;
+        // prime sup emp group cache
+        supervisorInfoService.getSupervisorEmpGroup(empId, Range.all());
         Stopwatch sw = Stopwatch.createStarted();
         ListMultimap<Integer, TimeRecord> supRecords =
-                timeRecordService.getActiveSupervisorRecords(9896, Range.all());
-        logger.info("{}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
-        supRecords.keySet().forEach(supId -> logger.info("empId {}: {} records", supId, supRecords.get(supId).size()));
+                timeRecordService.getActiveSupervisorRecords(empId, Range.all());
+        logger.info("First retrieval {}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
+        sw.reset().start();
+        supRecords = timeRecordService.getActiveSupervisorRecords(empId, Range.all());
+        logger.info("Second retrieval {}ms", sw.stop().elapsed(TimeUnit.MILLISECONDS));
+//        supRecords.keySet().forEach(supId -> logger.info("empId {}: {} records", supId, supRecords.get(supId).size()));
     }
 
     @Test
     public void testGetSupervisorRecordsTest2() throws Exception {
-        LocalDate now = LocalDate.now();
         Stopwatch sw = Stopwatch.createStarted();
         Set<TimeRecordStatus> statusSet = Sets.union(TimeRecordStatus.unlockedForEmployee(), TimeRecordStatus.unlockedForSupervisor());
         ListMultimap<Integer, TimeRecord> supRecords =
@@ -82,5 +88,29 @@ public class EssTimeRecordServiceTest extends BaseTest {
     @Test
     public void testSaveRecord1() throws Exception {
 
+    }
+
+    @Test
+    public void activeRecordsSpeedTest() {
+        final int empId = 11423;
+        final int initialRetrievals = 5;
+        final int bulkRetrievals = 100;
+        logger.info("Active Records Speed Test");
+        Stopwatch sw = Stopwatch.createUnstarted();
+        //Record first few attempts
+        logger.info("Testing {} initial retrievals...", initialRetrievals);
+        for (int i = 0; i < initialRetrievals; i++) {
+            logger.info("Retrieval #{}...", i);
+            sw.reset().start();
+            timeRecordService.getActiveTimeRecords(empId);
+            logger.info("Retrieval #{}: {}us", i, sw.stop().elapsed(TimeUnit.MICROSECONDS));
+        }
+        logger.info("Testing {} bulk retrievals", bulkRetrievals);
+        sw.reset().start();
+        for (int i = 0; i < bulkRetrievals; i++) {
+            timeRecordService.getActiveTimeRecords(empId);
+        }
+        long bulkTime = sw.stop().elapsed(TimeUnit.MICROSECONDS);
+        logger.info("{} retrievals in {}us.  {}us/retrieval", bulkRetrievals, bulkTime, bulkTime / bulkRetrievals);
     }
 }

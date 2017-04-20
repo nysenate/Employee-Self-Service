@@ -79,7 +79,9 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.updateUserId = other.updateUserId;
         this.createdDate = other.createdDate;
         this.updateDate = other.updateDate;
-        this.timeEntryMap = other.timeEntryMap;
+        other.getTimeEntries().stream()
+                .map(TimeEntry::new)
+                .forEach(this::addTimeEntry);
     }
 
     @Override

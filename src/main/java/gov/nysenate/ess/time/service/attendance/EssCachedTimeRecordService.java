@@ -90,7 +90,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
         public TimeRecordCacheCollection(int empId, Collection<TimeRecord> cachedTimeRecords) {
             this.empId = empId;
-            cachedTimeRecords.stream().forEach(this::update);
+            cachedTimeRecords.forEach(this::update);
         }
 
         public int getEmpId() {
@@ -98,7 +98,10 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         }
 
         public List<TimeRecord> getTimeRecords() {
-            return new ArrayList<>(cachedTimeRecords.values());
+            // Return a copy of each time record
+            return cachedTimeRecords.values().stream()
+                    .map(TimeRecord::new)
+                    .collect(toList());
         }
 
         public void update(TimeRecord record) {
@@ -148,13 +151,15 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         }
         else {
             List<TimeRecord> records = timeRecordDao.getActiveRecords(empId);
-            records.forEach(this::initializeEntries);
             cachedRecs = new TimeRecordCacheCollection(empId, records);
             activeRecordCache.acquireWriteLockOnKey(empId);
             activeRecordCache.put(new Element(empId, cachedRecs));
             activeRecordCache.releaseWriteLockOnKey(empId);
         }
-        return cachedRecs.getTimeRecords();
+        // Initialize time entries before returning records
+        return cachedRecs.getTimeRecords().stream()
+                .peek(this::initializeEntries)
+                .collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */
