@@ -9,7 +9,7 @@ essSupply.service('SupplyUtils', [function () {
             });
             return lineItems;
         },
-        
+
         countDistinctItemsInRequisition: function (requisition) {
             var count = 0;
             if (requisition.lineItems) {
@@ -18,9 +18,36 @@ essSupply.service('SupplyUtils', [function () {
                 });
             }
             return count;
+        },
+
+        /**
+         * Returns true if any items in a requisition are over the per order allowance.
+         */
+        containsItemOverOrderMax: function (requisition) {
+            var overOrderMax = false;
+            angular.forEach(requisition.lineItems, function (lineItem) {
+                if (lineItem.quantity > lineItem.item.perOrderAllowance) {
+                    overOrderMax = true;
+                }
+            });
+            return overOrderMax;
+        },
+
+        /**
+         * Returns true if any item in the requisition is a special item.
+         */
+        containsSpecialItem: function (requisition) {
+            var containsSpecialItems = false;
+            angular.forEach(requisition.lineItems, function (lineItem) {
+                if (lineItem.item.specialRequest) {
+                    containsSpecialItems = true;
+                }
+            });
+            return containsSpecialItems;
         }
     }
 }]);
+
 essSupply.directive('capitalize', function ($parse) {
         return {
             require: 'ngModel',

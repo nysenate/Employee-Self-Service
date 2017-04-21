@@ -117,7 +117,8 @@ essApp.config(function($routeProvider, $locationProvider) {
             locAutocomplete: ['SupplyLocationAutocompleteService', function (locAutoService) {
                 return locAutoService.initWithAllLocations();
             }]
-        }
+        },
+        reloadOnSearch: false
     });
 
     $routeProvider.when(ctxPath + '/supply/manage/reconciliation', {

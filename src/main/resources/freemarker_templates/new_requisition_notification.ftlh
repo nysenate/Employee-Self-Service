@@ -47,7 +47,9 @@ ${requisition.specialInstructions.get()}
 <br/>
 
 <p>
-Click <a href="${fulfillmentUrl}">here</a> to go to the fulfillment page where you can process or edit this requisition.
+Click <a href="${domainUrl}/supply/manage/fulfillment?requisitionId=${requisition.requisitionId}">here</a> to view/edit this order.
+<br/>
+Click <a href="${domainUrl}/supply/manage/fulfillment">here</a> to view all pending orders.
 </p>
 <br/>
 

@@ -52,7 +52,7 @@ public class NewRequisitionEmail {
         StringWriter out = new StringWriter();
         Map dataModel = ImmutableMap.of("requisition", requisition,
                 "orderedDateTime", requisition.getOrderedDateTime().format(formatter),
-                "fulfillmentUrl", domainUrl + "/supply/manage/fulfillment");
+                "domainUrl", domainUrl);
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
             emailTemplate.process(dataModel, out);

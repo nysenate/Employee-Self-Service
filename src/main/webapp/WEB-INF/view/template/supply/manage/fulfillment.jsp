@@ -38,7 +38,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="requisition in pendingSearch.matches" ng-class="calculateHighlighting(requisition)"
-          ng-click="showEditingModal(requisition)">
+          ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -80,7 +80,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="requisition in processingSearch.matches" ng-class="calculateHighlighting(requisition)"
-          ng-click="showEditingModal(requisition)">
+          ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -124,7 +124,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="requisition in completedSearch.matches" ng-class="calculateHighlighting(requisition)"
-          ng-click="showEditingModal(requisition)">
+          ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -169,7 +169,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in approvedSearch.matches" ng-click="showImmutableModal(requisition)">
+      <tr ng-repeat="requisition in approvedSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -199,7 +199,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in syncFailedSearch.matches" ng-click="showImmutableModal(requisition)">
+      <tr ng-repeat="requisition in syncFailedSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -227,7 +227,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in canceledSearch.matches" ng-click="showImmutableModal(requisition)">
+      <tr ng-repeat="requisition in canceledSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>

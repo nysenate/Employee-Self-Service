@@ -43,8 +43,7 @@ public class CustomerConfirmationEmail {
 
     private String generateBody(Requisition requisition) {
         StringWriter out = new StringWriter();
-        Map dataModel = ImmutableMap.of("requisition", requisition,
-                "orderHistoryUrl", domainUrl + "/supply/history/order-history");
+        Map dataModel = ImmutableMap.of("requisition", requisition, "domainUrl", domainUrl);
         try {
             Template emailTemplate = freemarkerCfg.getTemplate(template);
             emailTemplate.process(dataModel, out);
