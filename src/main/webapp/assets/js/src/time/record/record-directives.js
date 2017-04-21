@@ -1,8 +1,28 @@
-var essTime = angular.module('essTime');
+angular.module('essTime')
+    .filter('entryHours', [entryHoursFilter])
+    .directive('timeRecordInput', [timeRecordInputDirective])
+    .directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', recordDetailsDirective])
+    .directive('recordDetailModal', ['modals', recordDetailModalDirective])
+;
 
-/** --- Directives --- */
+/* --- Filters */
 
-essTime.directive('timeRecordInput', [function(){
+/**
+ * Returns hour value if input is a valid number, "--" otherwise
+ */
+function entryHoursFilter () {
+    var unenteredValue = "--";
+    return function (value) {
+        if (isNaN(parseInt(value))) {
+            return unenteredValue;
+        }
+        return value;
+    }
+}
+
+/* --- Directives --- */
+
+function timeRecordInputDirective () {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
@@ -14,12 +34,12 @@ essTime.directive('timeRecordInput', [function(){
             });
         }
     }
-}]);
+}
 
 /**
  * A table that displays details for a specific time record
  */
-essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', function (appProps, modals, accrualApi) {
+function recordDetailsDirective(appProps, modals, accrualApi) {
     return {
         scope: {
             record: '='
@@ -76,9 +96,14 @@ essTime.directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', fu
             }
         }
     };
-}]);
+}
 
-essTime.directive('recordDetailModal', ['modals', function (modals) {
+/**
+ * A modal containing a record-details view
+ * @param modals
+ * @returns {{template: string, link: link}}
+ */
+function recordDetailModalDirective(modals) {
     return {
         template: '<div class="record-detail-modal" record-details record="record"></div>',
         link: function ($scope, $elem, $attrs) {
@@ -86,5 +111,5 @@ essTime.directive('recordDetailModal', ['modals', function (modals) {
             $scope.record = params.record;
         }
     }
-}]);
+}
 

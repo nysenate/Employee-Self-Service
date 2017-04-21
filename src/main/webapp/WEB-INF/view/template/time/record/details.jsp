@@ -21,7 +21,7 @@
         <tr ng-repeat="entry in record.timeEntries | filter:{payType: 'TE'}">
           <td>{{entry.date | moment:'ddd'}}</td>
           <td>{{entry.date | moment:'l'}}</td>
-          <td>{{entry.workHours || '--'}}</td>
+          <td>{{entry.workHours | entryHours}}</td>
           <td class="entry-comment">{{entry.empComment}}</td>
         </tr>
         <tr class="time-totals-row" ng-if="!annualEntries">
@@ -55,13 +55,13 @@
         <tr ng-repeat="entry in record.timeEntries | filter:{payType: '!TE'}">
           <td>{{entry.date | moment:'ddd'}}</td>
           <td>{{entry.date | moment:'l'}}</td>
-          <td>{{entry.workHours || '--'}}</td>
-          <td>{{entry.holidayHours || '--'}}</td>
-          <td>{{entry.vacationHours || '--'}}</td>
-          <td>{{entry.personalHours || '--'}}</td>
-          <td>{{entry.sickEmpHours || '--'}}</td>
-          <td>{{entry.sickFamHours || '--'}}</td>
-          <td>{{entry.miscHours || '--'}}</td>
+          <td>{{entry.workHours | entryHours}}</td>
+          <td>{{entry.holidayHours | entryHours}}</td>
+          <td>{{entry.vacationHours | entryHours}}</td>
+          <td>{{entry.personalHours | entryHours}}</td>
+          <td>{{entry.sickEmpHours | entryHours}}</td>
+          <td>{{entry.sickFamHours | entryHours}}</td>
+          <td>{{entry.miscHours | entryHours}}</td>
           <td>{{entry.miscType | miscLeave}}</td>
           <td>{{entry.total}}</td>
         </tr>
