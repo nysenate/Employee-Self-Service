@@ -128,7 +128,7 @@ essTime.controller('GrantPrivilegesCtrl', ['$scope', '$http', 'appProps', 'Super
            }
        };
 
-       $scope.toggleGrantStatus = function(grantee) {
+       $scope.setModified = function(grantee) {
            $scope.state.modified = true;
            grantee.modified = true;
        };

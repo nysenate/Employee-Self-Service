@@ -31,7 +31,7 @@
                         <td>
                             <div class="horizontal-input-group">
                                 <input type="checkbox" id="grant-status-yes-{{$index}}" ng-model="grantee.granted"
-                                       ng-value="true" ng-click="toggleGrantStatus(grantee)" name="grant-status[{{$index}}]"/>
+                                       ng-value="true" ng-click="setModified(grantee)" name="grant-status[{{$index}}]"/>
                                 <label ng-class="{'success-bold-label': grantee.granted === true}"
                                        for="grant-status-yes-{{$index}}">Grant Access</label>
                             </div>
@@ -44,6 +44,7 @@
                                 <input ng-class="{'half-opacity': !grantee.granted || !grantee.grantStart}"
                                        ng-disabled="!grantee.granted || !grantee.grantStart"
                                        ng-model="grantee.grantStart" to-date="grantee.grantEnd"
+                                       ng-change="setModified(grantee)"
                                        style="width:100px" type="text" datepicker/>
                             </div>
                         </td>
@@ -54,6 +55,7 @@
                                 <label for="grant-end-date-{{$index}}">Set End Date</label>
                                 <input ng-disabled="!grantee.granted || !grantee.grantEnd"
                                        ng-model="grantee.grantEnd" from-date="grantee.grantStart"
+                                       ng-change="setModified(grantee)"
                                        style="width:100px" type="text" datepicker/>
                             </div>
                         </td>
