@@ -14,6 +14,9 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
             $scope.iSelEmp = -1;
             $scope.supEmpGroups = [];
             $scope.allEmps = [];
+            $scope.request = {
+                supervisor: false
+            };
 
             /* --- Attributes --- */
 
@@ -33,11 +36,17 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
              * Wait for supervisor emp groups to load
              * then set local variables and label emp groups
              */
-            supEmpGroupService.init().then(function () {
-                $scope.iSelEmpGroup = 0;
-                $scope.supEmpGroups = supEmpGroupService.getSupEmpGroupList();
-                setSupGroupLabels();
-            });
+            $scope.request.supervisor = true;
+            supEmpGroupService.init()
+                .then(function () {
+                    $scope.iSelEmpGroup = 0;
+                    $scope.supEmpGroups = supEmpGroupService.getSupEmpGroupList();
+                    $scope.validSupEmpGroupCount = $scope.supEmpGroups.filter($scope.supEmpGroupFilter).length;
+                    setSupGroupLabels();
+                })
+                .finally(function () {
+                    $scope.request.supervisor = false;
+                });
 
             /* --- Watches --- */
 
@@ -56,16 +65,6 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                 return activeFilter(empGroup);
             };
 
-            /**
-             * Filter for the employee select
-             * @param empInfo
-             * @returns {boolean}
-             */
-            $scope.employeeFilter = function (empInfo) {
-                return activeFilter(empInfo) &&
-                    senatorFilter(empInfo);
-            };
-
             /* --- Internal Methods --- */
 
             /**
@@ -77,6 +76,7 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                     return;
                 }
                 $scope.allEmps = supEmpGroupService.getEmpInfos($scope.iSelEmpGroup, !$scope.showSenators);
+                $scope.allEmps = $scope.allEmps.filter(employeeFilter);
                 setEmpLabels();
 
                 $scope.selectedSup = $scope.supEmpGroups[$scope.iSelEmpGroup];
@@ -157,6 +157,16 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                     dates += ' - ' + supEndMoment.format('MMM YYYY');
                 }
                 emp.dropDownLabel = name + ' (' + dates + ')';
+            }
+
+            /**
+             * Filter for the employee select
+             * @param empInfo
+             * @returns {boolean}
+             */
+            function employeeFilter (empInfo) {
+                return activeFilter(empInfo) &&
+                    senatorFilter(empInfo);
             }
 
             /**

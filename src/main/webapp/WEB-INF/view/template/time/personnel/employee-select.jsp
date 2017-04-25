@@ -1,5 +1,5 @@
 <div class="employee-select content-container content-controls">
-  <p class="content-info" ng-if="supEmpGroups.length > 1">
+  <p class="content-info" ng-if="validSupEmpGroupCount > 1">
     <span>
       View Employees Under Supervisor &nbsp;
     </span>
@@ -19,8 +19,16 @@
       <select ng-model="$parent.iSelEmp" ng-if="allEmps.length > 0" ng-change="empChange(iSelEmp)"
               ng-options="allEmps.indexOf(emp) as emp.dropDownLabel
                           group by emp.group
-                          for emp in allEmps | filter:employeeFilter">
+                          for emp in allEmps">
       </select>
     </span>
   </p>
+</div>
+<div ng-show="!request.supervisor && allEmps.length == 0">
+  <ess-notification level="info" ng-show="validSupEmpGroupCount > 1">
+    No valid Employee {{subject}}s can be viewed for for the selected supervisor.
+  </ess-notification>
+  <ess-notification level="info" ng-hide="validSupEmpGroupCount > 1">
+    No valid Employee {{subject}}s are available for viewing.
+  </ess-notification>
 </div>
