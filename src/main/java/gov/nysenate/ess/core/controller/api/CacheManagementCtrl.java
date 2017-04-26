@@ -1,11 +1,12 @@
 package gov.nysenate.ess.core.controller.api;
 
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.view.CacheStatsView;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.cache.CacheEvictEvent;
+import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
 import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
@@ -80,16 +81,45 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
      * (DELETE)    /api/v1/admin/cache/{cacheName}
      *
      * Path Variables:
-     * @param cacheName String - the name of the cache to warm, use "all" to warm all caches
+     * @param cacheName String - the name of the cache to evict, use "all" to evict all caches
      *                  @see ContentCache for cache names
      *
-     * @return SimpleResponse - indicating cache warm success
+     * @return SimpleResponse - indicating cache evict success
      */
     @RequiresPermissions("admin:cache:delete")
     @RequestMapping(value = "/{cacheName}", method = RequestMethod.DELETE)
     public SimpleResponse evictCache(@PathVariable String cacheName) {
         eventBus.post(new CacheEvictEvent(getAffectedCaches(cacheName)));
         return new SimpleResponse(true, "evicted cache: " + cacheName, "cache-evict-success");
+    }
+
+    /**
+     * Cache Element Evict Api
+     * --------------
+     * Evicts a single element from an ess cache
+     *
+     * Usage:
+     * (DELETE)    /api/v1/admin/cache/{cacheName}
+     *
+     * Path Variables:
+     * @param cacheName String - the name of the cache to warm, use "all" to warm all caches
+     *                  @see ContentCache for cache names
+     * Request Params:
+     * @param key String - key for the element to evict
+     *
+     * @return SimpleResponse - indicating cache element evict success
+     */
+    @RequiresPermissions("admin:cache:delete")
+    @RequestMapping(value = "/{cacheName}", params = {"key"},method = RequestMethod.DELETE)
+    public SimpleResponse evictCacheElement(@PathVariable String cacheName,
+                                            @RequestParam String key) {
+        ContentCache cache = getEnumParameter("cacheName", cacheName, ContentCache.class);
+        Object parsedKey = parseElementKey(cache, key);
+        eventBus.post(new CacheEvictIdEvent<>(cache, parsedKey));
+
+        return new SimpleResponse(true,
+                "evicted element:" + key + " from cache:" + cacheName,
+                "cache-evict-success");
     }
 
     /** --- Internal Methods --- */
@@ -102,4 +132,27 @@ public class CacheManagementCtrl extends BaseRestApiCtrl {
                 getEnumParameter("cacheName", cacheName, ContentCache.class)
         );
     }
+
+    private Object parseElementKey(ContentCache cacheType, String key) {
+        Class<?> keyType = cacheType.getKeyType();
+
+        if (String.class == keyType) {
+            return key;
+        }
+
+        if (Integer.class == keyType) {
+            try {
+                return Integer.parseInt(key);
+            } catch (NumberFormatException ex) {
+                throw new InvalidRequestParamEx(key, "key", "String",
+                        "Keys for cache " + cacheType + " must be parsable into an integer");
+            }
+        }
+
+
+        throw new InvalidRequestParamEx(cacheType.name(), "cacheName", "String",
+                "Element evict is not currently supported for " + cacheType);
+    }
+
+
 }

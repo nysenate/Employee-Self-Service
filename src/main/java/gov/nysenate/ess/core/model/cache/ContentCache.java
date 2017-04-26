@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.model.cache;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import gov.nysenate.ess.core.model.period.PayPeriodType;
 
 import java.util.Arrays;
 
@@ -12,15 +13,25 @@ import java.util.Arrays;
  */
 public enum ContentCache
 {
-    EMPLOYEE,
-    ACCRUAL_ANNUAL,
-    HOLIDAY,
-    PAY_PERIOD,
-    TRANSACTION,
-    SUPERVISOR_EMP_GROUP,
-    ACTIVE_TIME_RECORDS,
-    LOCATION
+    EMPLOYEE(Integer.class),
+    ACCRUAL_ANNUAL(Integer.class),
+    HOLIDAY(String.class),
+    PAY_PERIOD(PayPeriodType.class),
+    TRANSACTION(Integer.class),
+    SUPERVISOR_EMP_GROUP(Integer.class),
+    ACTIVE_TIME_RECORDS(Integer.class),
+    LOCATION(String.class)
     ;
+
+    private Class<?> keyType;
+
+    ContentCache(Class<?> keyType) {
+        this.keyType = keyType;
+    }
+
+    public Class<?> getKeyType() {
+        return keyType;
+    }
 
     private static final ImmutableSet<ContentCache> allContentCaches =
             Sets.immutableEnumSet(Arrays.asList(ContentCache.values()));
