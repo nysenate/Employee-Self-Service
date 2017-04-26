@@ -82,7 +82,7 @@
                 <tr>
                     <th>#</th>
                     <th>Supervisor</th>
-                    <th>Active</th>
+                    <th>Status</th>
                     <th>Start Date</th>
                     <th>End Date</th>
                 </tr>
@@ -91,7 +91,7 @@
                 <tr ng-repeat="granter in state.granters">
                     <td>{{$index + 1}}</td>
                     <td>{{granter.firstName}} {{granter.lastName}}</td>
-                    <td>{{granter.activeStr}}</td>
+                    <td>{{granter.status}}</td>
                     <td>{{granter.grantStartStr}}</td>
                     <td>{{granter.grantEndStr}}</td>
                 </tr>

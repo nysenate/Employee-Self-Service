@@ -57,13 +57,27 @@ essTime.controller('GrantPrivilegesCtrl', ['$scope', '$http', 'appProps', 'Super
            }).then(function (resp) {
                return SupervisorOverridesApi.get({supId: $scope.state.empId}, function (resp) {
                    if (resp.success) {
-                       $scope.state.granters = resp.overrides.map(function (ovr) {
-                           var granter = ovr.overrideSupervisor;
-                           granter.grantStartStr = (ovr.startDate) ? moment(ovr.startDate).format('MM/DD/YYYY') : 'No Start Date';
-                           granter.grantEndStr = (ovr.endDate) ? moment(ovr.endDate).format('MM/DD/YYYY') : 'No End Date';
-                           granter.activeStr = (ovr.active) ? 'Active' : 'Inactive';
-                           return granter;
-                       });
+                       $scope.state.granters = resp.overrides
+                           .filter(function (ovr) {
+                               return ovr.active
+                           })
+                           .map(function (ovr) {
+                               var granter = ovr.overrideSupervisor;
+                               var startMoment = moment(ovr.startDate || 0);
+                               var endMoment = moment(ovr.endDate || '3000-01-01');
+                               granter.grantStartStr = (ovr.startDate) ? startMoment.format('MM/DD/YYYY') : 'No Start Date';
+                               granter.grantEndStr = (ovr.endDate) ? endMoment.format('MM/DD/YYYY') : 'No End Date';
+                               granter.status = (ovr.active) ? 'Active' : 'Inactive';
+
+                               if (moment().isBefore(startMoment)) {
+                                   granter.status = 'Pending';
+                               } else if (moment().isAfter(endMoment)) {
+                                   granter.status = 'Expired';
+                               } else {
+                                   granter.status = 'Active';
+                               }
+                               return granter;
+                           });
                    }
                    $scope.state.fetched = true;
                }).$promise;
