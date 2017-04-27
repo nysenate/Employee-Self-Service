@@ -211,7 +211,7 @@
     </table>
   </div>
 
-  <%--  Canceled Shipments   --%>
+  <%--  Rejected Shipments   --%>
 
   <div class="content-container" ng-show="canceledSearch.response.$resolved && canceledSearch.matches.length > 0">
     <h1 style="background: #8D9892; color: white;">Rejected Requisition Requests</h1>

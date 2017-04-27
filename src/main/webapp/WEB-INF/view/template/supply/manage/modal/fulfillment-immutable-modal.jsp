@@ -4,7 +4,10 @@
 
 <div class="padding-10">
   <div>
-    <h3 class="content-info">Order from {{requisition.customer.firstName}}
+    <h3 class="content-info">
+      <span ng-if="requisition.status === 'REJECTED'">Rejeted</span>
+      <span ng-if="requisition.status === 'APPROVED' && requisition.savedInSfms == false">Sync Failed</span>
+      Requisition {{requisition.requisitionId}} Requested By {{requisition.customer.firstName}}
       {{requisition.customer.initial}} {{requisition.customer.lastName}}</h3>
   </div>
 

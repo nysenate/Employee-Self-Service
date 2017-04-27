@@ -9,7 +9,7 @@ essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'Locatio
 
     function link($scope, $elem, $attrs) {
         $scope.requisition = modals.params();
-        
+        $scope.status = modals.params().status;
         $scope.close = function() {
             modals.resolve();
         };

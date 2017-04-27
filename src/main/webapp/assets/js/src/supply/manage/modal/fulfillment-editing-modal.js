@@ -28,6 +28,7 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
     $scope.newLocationCode = ""; // model for editing the location.
     $scope.newItemCommodityCode = ""; // model for adding an item.
     $scope.displayRejectInstructions = false;
+    $scope.selfApprove = false;
 
     $scope.init = function () {
         $scope.originalRequisition = modals.params();
@@ -35,6 +36,9 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
         $scope.editableRequisition = angular.copy($scope.originalRequisition);
         $scope.newLocationCode = $scope.editableRequisition.destination.code;
         itemAutocompleteService.initWithAllItems();
+        if (appProps.user.employeeId === $scope.originalRequisition.customer.employeeId){
+            $scope.selfApprove = true;
+        }
     };
     $scope.init();
 
@@ -56,16 +60,9 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
         modals.reject();
     };
 
-    $scope.selfApprove = false;
-
     $scope.approveShipment = function () {
-        if (appProps.user.employeeId === $scope.originalRequisition.customer.employeeId) {
-            // can not approve the order made by current user self
-            $scope.selfApprove = true;
+        if ($scope.selfApprove) {
             return;
-        }
-        else {
-            $scope.selfApprove = false;
         }
         $scope.processReq();
     };

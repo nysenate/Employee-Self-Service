@@ -132,9 +132,18 @@
 
     <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>
     <shiro:hasPermission name="supply:requisition:approve">
-      <input ng-show="originalRequisition.status === 'COMPLETED'" ng-click="approveShipment()"
-             class="approve-button" style="width: 15%" type="button" value="Approve">
-      <p class="redorange" ng-show="selfApprove">You are not allowed to approve your own order.</p>
+      <div style="float: right; padding-right: 20px;" ng-show="originalRequisition.status === 'COMPLETED'" ns-popover ns-popover-template="reject-details" ns-popover-theme="ns-popover-tooltip-theme"
+           ns-popover-placement="top"
+           ns-popover-trigger="mouseenter" ns-popover-timeout="0.2">
+        <input ng-click="approveShipment()" style="width: 125%;"
+               class="approve-button" type="button" value="Approve">
+        <script type="text/ng-template" id="reject-details">
+          <div ng-show="selfApprove" class="triangle"></div>
+          <div ng-show="selfApprove" class="ns-popover-tooltip">
+            <p>You are not allowed to approve your own order</p>
+          </div>
+        </script>
+      </div>
     </shiro:hasPermission>
 
     <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>
