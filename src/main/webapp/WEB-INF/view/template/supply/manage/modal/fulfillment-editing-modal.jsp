@@ -32,7 +32,8 @@
 
         </label>
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
-        <p class="redorange" ng-show="warning">Item: {{newItemCommodityCode}} already exists in this order. Please adjust the quantity if it's not correct.</p>
+        <p class="redorange" ng-show="warning">Item: {{newItemCommodityCode}} already exists in this order. Please
+          adjust the quantity if it's not correct.</p>
       </div>
 
       <%-- Add Note --%>
@@ -103,17 +104,6 @@
 
   <%--Action buttons--%>
   <div class="padding-top-10" style="text-align: center">
-    <%--Rejection Confirmation template TODO: generalize this so it can be used elsewhere--%>
-    <script type="text/ng-template" id="confirmReject">
-      <div class="triangle"></div>
-      <div class="margin-10">
-        <h4 class="content-info">Are you sure?</h4>
-        <div class="">
-          <input ng-click="closeModal()" class="neutral-button" type="button" value="Cancel">
-          <input ng-click="rejectOrder()" class="reject-button" type="button" value="Reject">
-        </div>
-      </div>
-    </script>
 
     <%--Cancel button--%>
     <input ng-click="closeModal()" class="neutral-button" style="width: 15%" type="button" value="Cancel">
@@ -139,9 +129,17 @@
 
     <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>
     <input ns-popover ns-popover-template="confirmReject" ns-popover-timeout="0.5"
+           ns-popover-theme="ns-popover-tooltip-theme" ns-popover-placement="top"
            ng-show="originalRequisition.status === 'PENDING' || originalRequisition.status === 'PROCESSING'"
            class="reject-button" style="width: 15%; float: right;"
            type="button" value="Reject">
-
+    <script type="text/ng-template" id="confirmReject">
+      <div class="triangle"></div>
+      <div class="ns-popover-tooltip">
+        <h4 class="content-info">Are you sure?</h4>
+        <input ng-click="closeModal()" class="neutral-button" type="button" value="Cancel">
+        <input ng-click="rejectOrder()" class="reject-button" type="button" value="Reject">
+      </div>
+    </script>
   </div>
 </div>
