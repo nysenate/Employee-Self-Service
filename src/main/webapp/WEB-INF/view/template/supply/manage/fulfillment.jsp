@@ -33,7 +33,7 @@
         <th>Employee</th>
         <th>Item Count</th>
         <th>Order Date</th>
-        <th>Assign To</th>
+        <th>Assigned To</th>
       </tr>
       </thead>
       <tbody>
