@@ -18,11 +18,17 @@ function cartService(storageService, lineItemService) {
      * this object into local storage.
      */
     var KEY = "supply-cart";
+    var SPECIAL_INSTRUCTIONS_KEY = "supply-cart-special-instructions";
 
     /**
      * A Map of itemId's to LineItems.
      */
     var cart = undefined;
+
+    /**
+     * Special instructions that should be submitted with this order.
+     */
+    var specialInstructions = undefined;
 
     /**
      * Adds a new item to the cart.
@@ -95,7 +101,16 @@ function cartService(storageService, lineItemService) {
 
         reset: function () {
             cart = new Map();
+            specialInstructions = undefined;
             this.save();
+        },
+
+        getSpecialInstructions: function () {
+            return specialInstructions;
+        },
+
+        setSpecialInstructions: function (instructions) {
+            specialInstructions = instructions;
         },
 
         /**
@@ -109,10 +124,12 @@ function cartService(storageService, lineItemService) {
                 }
             });
             storageService.save(KEY, lineItems);
+            storageService.save(SPECIAL_INSTRUCTIONS_KEY, specialInstructions);
         },
 
         /**
-         * Get all saved line items and add them to the cart.
+         * Load saved line items and special instructions.
+         *
          * Also need to re create line item functionality that was lost
          * in the serialization process.
          */
@@ -126,6 +143,7 @@ function cartService(storageService, lineItemService) {
 
                 functionalLineItems.forEach(addToCart);
             }
+            specialInstructions = storageService.load(SPECIAL_INSTRUCTIONS_KEY) || null;
         }
     }
 }

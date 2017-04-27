@@ -17,11 +17,16 @@ function essStorageService($window, appProps) {
         /**
          * Saves a key value pair into local storage.
          * Overwrites any existing value.
-         * @param key
-         * @param value
+         * Removes key from storage if value is null or undefined since they cannot
+         * be serialized into json.
          */
         save: function (key, value) {
-            $window.localStorage.setItem(keyPrefix + key, JSON.stringify(value));
+            if (value == null) {
+                $window.localStorage.removeItem(keyPrefix + key);
+            }
+            else {
+                $window.localStorage.setItem(keyPrefix + key, JSON.stringify(value));
+            }
         },
 
         /**

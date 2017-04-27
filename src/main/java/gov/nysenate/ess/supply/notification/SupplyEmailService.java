@@ -28,52 +28,41 @@ public class SupplyEmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(SupplyEmailService.class);
 
-    private SendSimpleEmail sendSimpleEmail;
     private SendMailService sendMailService;
     private CustomerConfirmationEmail confirmationEmail;
     private NewRequisitionEmail newRequisitionEmail;
+    private RejectRequisitionEmail rejectRequisitionEmail;
     /** A collection of email addresses to notify of new requisition orders.*/
     private ImmutableSet<String> newReqEmailList;
 
     @Autowired
-    public SupplyEmailService(SendSimpleEmail sendSimpleEmail, SendMailService sendMailService,
-                              CustomerConfirmationEmail confirmationEmail, NewRequisitionEmail newRequisitionEmail,
+    public SupplyEmailService(SendMailService sendMailService, CustomerConfirmationEmail confirmationEmail,
+                              NewRequisitionEmail newRequisitionEmail, RejectRequisitionEmail rejectRequisitionEmail,
                               @Value("${supply.requisition.notification.list:}") final String notificationList) {
-        this.sendSimpleEmail = sendSimpleEmail;
         this.sendMailService = sendMailService;
         this.confirmationEmail = confirmationEmail;
         this.newRequisitionEmail = newRequisitionEmail;
+        this.rejectRequisitionEmail = rejectRequisitionEmail;
         this.newReqEmailList = Arrays.stream(StringUtils.split(notificationList, ","))
                 .map(StringUtils::trim)
                 .collect(Collectors.collectingAndThen(Collectors.toSet(), ImmutableSet::copyOf));
     }
 
+    /**
+     * Send the user a notification email if their requisition gets rejected.
+     * @param requisition The rejected requisition.
+     */
     @Async
     public void sendRejectEmail(Requisition requisition) {
-        SimpleEmailSubject subject = new SimpleEmailSubject(Color.black, "Your supply requisition request (" + requisition.getRequisitionId() + ") has been rejected");
-        // Elements
-        SimpleEmailContent detail = new SimpleEmailContent(Color.black, requisition.toOrderString(), "$detail$");
-        SimpleEmailContent note = new SimpleEmailContent(Color.black, requisition.getNote().get(), "$note$");
-        SimpleEmailContent rId = new SimpleEmailContent(Color.black, String.valueOf(requisition.getRequisitionId()), "$requisitionId$");
-        SimpleEmailContent cname = new SimpleEmailContent(Color.black, String.valueOf(requisition.getCustomer().getFirstName() + " " + requisition.getCustomer().getLastName()), "$cname$");
-        SimpleEmailTemplate reject;
-        try {
-            reject = new SimpleEmailTemplate(Color.black, "", "reject_email");
-            ArrayList<Component> simpleEmailContentList = new ArrayList<>();
-            simpleEmailContentList.add(note);
-            simpleEmailContentList.add(rId);
-            simpleEmailContentList.add(cname);
-            simpleEmailContentList.add(reject);
-            simpleEmailContentList.add(detail);
-            sendSimpleEmail.send(requisition.getIssuer().orElse(requisition.getModifiedBy()), requisition.getCustomer(),
-                                 simpleEmailContentList, new SimpleEmailHeader(), subject, 1);
-        } catch (IOException e) {
-            logger.error("Error sending supply reject email", e);
-        }
+        String toEmail = requisition.getCustomer().getEmail();
+        logger.info("Sending requisition rejection email to: " + toEmail);
+        MimeMessage message = rejectRequisitionEmail.generateRejectionEmail(requisition, toEmail);
+        sendMailService.sendMessages(Collections.singleton(message));
     }
 
     /**
      * Send all notifications for a new requisition order event.
+     * @param requisition The new requisition.
      */
     @Async
     public void sendNewRequisitionNotifications(Requisition requisition) {
