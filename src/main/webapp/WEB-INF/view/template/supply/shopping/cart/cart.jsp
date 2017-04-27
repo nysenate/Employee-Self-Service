@@ -61,7 +61,7 @@
       <div class="special-instructions-container">
         <label for="special-instructions-area">Special Instructions</label>
         <textarea id="special-instructions-area" class="special-instructions-text-area"
-                  ng-model="specialInstructions">
+                  ng-model="specialInstructions" ng-change="saveSpecialInstructions()">
         </textarea>
       </div>
       <%--<div class="col-8-12 force-min-height"></div>--%>

@@ -22,6 +22,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         supplyCart.initializeCart();
         displayedLineItems = angular.copy(supplyCart.getLineItems());
         displayedLineItems = supplyUtils.alphabetizeLineItems(displayedLineItems);
+        $scope.specialInstructions = supplyCart.getSpecialInstructions();
     };
 
     $scope.init();
@@ -37,6 +38,12 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
             }
         });
         return lineItems;
+    };
+
+    /** Save special instructions whenever they are changed. */
+    $scope.saveSpecialInstructions = function () {
+        supplyCart.setSpecialInstructions($scope.specialInstructions);
+        supplyCart.save();
     };
 
     /** --- Button's --- */
