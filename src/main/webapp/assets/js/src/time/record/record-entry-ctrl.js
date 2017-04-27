@@ -1045,6 +1045,10 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                     $scope.errorTypes.te.workHoursInvalidRange = true;
                     isValid = false;
                 }
+                if ($scope.getAvailableHours() < 0) {
+                    $scope.errorTypes.te.notEnoughWorkHours = true;
+                    isValid = false;
+                }
                 isValid &= checkTeHourIncrements(hrs);
                 return isValid;
             },
