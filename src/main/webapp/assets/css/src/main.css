@@ -1879,10 +1879,6 @@ input[type="number"] {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-/**
- * This file includes all LESS files for ESS
- * This file alone will be compiled into main.css
- */
 @media print {
   .large-print-font-size {
     font-size: 12pt;
