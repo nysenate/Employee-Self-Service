@@ -66,7 +66,7 @@
           </td>
           <td class="accrual-hours personal used-hours"
               title="Project Personal Hour Usage">
-            <input type="number" min="0" step=".5" placeholder="0"
+            <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekPersonalUsed"
                    ng-change="onAccUsageChange(record, 'personal')"/>
           </td>
@@ -80,7 +80,7 @@
           </td>
           <td class="accrual-hours vacation used-hours"
               title="Project Vacation Hour Usage">
-            <input type="number" min="0" step=".5" placeholder="0"
+            <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekVacationUsed"
                    ng-change="onAccUsageChange(record, 'vacation')"/>
           </td>
@@ -94,13 +94,13 @@
           </td>
           <td class="accrual-hours sick used-hours"
               title="Project Employee Sick Hour Usage">
-            <input type="number" min="0" step=".5" placeholder="0"
+            <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekSickEmpUsed"
                    ng-change="onAccUsageChange(record, 'sick')" />
           </td>
           <td class="accrual-hours sick used-hours"
               title="Project Family Sick Hour Usage">
-            <input type="number" min="0" ng-step=".5" placeholder="0"
+            <input type="number" min="0" max="{{record.maxHours}}" ng-step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekSickFamUsed"
                    ng-change="onAccUsageChange(record, 'sick')" />
           </td>

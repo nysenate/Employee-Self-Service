@@ -201,6 +201,8 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 });
                 // Add a changed field for storing change flags
                 projection.changed = {};
+                // Calculate a maximum usage of 12 hours / day for the pay period
+                projection.maxHours = projection.payPeriod.numDays * 12;
                 return projection;
             }
 
