@@ -28,7 +28,7 @@ public class LocationView implements ViewObject {
 
     public Location toLocation() {
         LocationId locId = new LocationId(this.code, this.locationTypeCode);
-        return new Location(locId, address.toAddress(), respCenterHead.toResponsibilityHead());
+        return new Location(locId, address.toAddress(), respCenterHead.toResponsibilityHead(), locationDescription);
     }
 
     public String getLocId() {

@@ -213,14 +213,6 @@ public final class Requisition {
         return savedInSfms;
     }
 
-    public String toOrderString() {
-        StringBuilder sb = new StringBuilder();
-        for (LineItem l : lineItems) {
-            sb.append(l.getItem().getCommodityCode() + " x " + l.getQuantity() + "\n");
-        }
-        return sb.toString();
-    }
-
     /**
      * Protected methods handled by implementations of the RequisitionState interface.
      */
