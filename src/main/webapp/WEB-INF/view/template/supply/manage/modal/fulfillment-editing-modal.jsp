@@ -134,7 +134,7 @@
     <shiro:hasPermission name="supply:requisition:approve">
       <input ng-show="originalRequisition.status === 'COMPLETED'" ng-click="approveShipment()"
              class="approve-button" style="width: 15%" type="button" value="Approve">
-      <p class="redorange" ng-show="selfApprove">You cannot approve order made by yourself</p>
+      <p class="redorange" ng-show="selfApprove">You are not allowed to approve your own order.</p>
     </shiro:hasPermission>
 
     <%--Reject button. Requires a note to be entered. Has a popup confirmation.--%>
