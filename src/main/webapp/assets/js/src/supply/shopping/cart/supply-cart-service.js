@@ -42,6 +42,7 @@ function cartService(storageService, lineItemService) {
     return {
         /**
          * Initializes the cart with the given line items plus saved line items.
+         * Or if no line items are given, initializes it with the saved cart from local storage.
          * @param lineItems LineItems to initialize the cart with.
          * Typically a array of zero quantity line items to show on the order form.
          */
@@ -70,6 +71,17 @@ function cartService(storageService, lineItemService) {
             var lineItems = [];
             cart.forEach(function (lineItem, itemId) {
                 lineItems.push(lineItem);
+            });
+            return lineItems;
+        },
+
+        /** Get items in the cart, i.e. items with a quantity > 0. */
+        getCartItems: function () {
+            var lineItems = [];
+            cart.forEach(function (lineItem, itemId) {
+                if (lineItem.quantity > 0) {
+                    lineItems.push(lineItem);
+                }
             });
             return lineItems;
         },

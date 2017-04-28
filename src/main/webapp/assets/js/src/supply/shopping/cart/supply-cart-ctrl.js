@@ -51,7 +51,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
     $scope.submitOrder = function () {
         var params = {
             customerId: appProps.user.employeeId,
-            lineItems: supplyCart.getLineItems(),
+            lineItems: supplyCart.getCartItems(),
             destinationId: $scope.destinationCode + "-W",
             specialInstructions: $scope.specialInstructions
         };
