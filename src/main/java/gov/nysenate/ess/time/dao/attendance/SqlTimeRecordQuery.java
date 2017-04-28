@@ -105,6 +105,11 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "WHERE NUXREFSV = :supId\n" +
             "   AND CDTSSTAT != 'AP'"
     ),
+    GET_TREC_ID_BY_BEGIN_DATE(
+            "SELECT NUXRTIMESHEET\n" +
+            "FROM ${tsSchema}.PM23TIMESHEET\n" +
+            "WHERE NUXREFEM = :empId AND DTBEGIN = :beginDate"
+    ),
 
     INSERT_TIME_REC(
             "INSERT \n" +

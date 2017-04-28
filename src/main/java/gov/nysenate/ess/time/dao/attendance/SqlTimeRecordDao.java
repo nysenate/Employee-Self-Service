@@ -116,8 +116,14 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 
     @Override
     public boolean saveRecord(TimeRecord record) {
-        MapSqlParameterSource params = getTimeRecordParams(record);
         boolean isUpdate = true;
+        if (record.getTimeRecordId() == null) {
+            // Attempt to find existing record for employee with matching begin date
+            // If that record exists, use that record id
+            record.setTimeRecordId(getTimeRecordId(record));
+        }
+
+        MapSqlParameterSource params = getTimeRecordParams(record);
         if (record.getTimeRecordId() == null ||
                 remoteNamedJdbc.update(SqlTimeRecordQuery.UPDATE_TIME_REC_SQL.getSql(schemaMap()), params)==0) {
             isUpdate = false;
@@ -223,7 +229,28 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return params;
     }
 
-    /** --- Internal Methods --- */
+    /* --- Internal Methods --- */
+
+    /**
+     * Try to find a time record id for a time record
+     * with the same employee id and begin date as the given time record
+     * @param record {@link TimeRecord}
+     * @return BigInteger
+     */
+    private BigInteger getTimeRecordId(TimeRecord record) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("empId", record.getEmployeeId())
+                .addValue("beginDate", SqlBaseDao.toDate(record.getBeginDate()));
+        // Attempt to find existing record for employee with matching begin date
+        // If that record exists, use that record id
+        try {
+            BigDecimal id = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_TREC_ID_BY_BEGIN_DATE.getSql(schemaMap()),
+                    params, BigDecimal.class);
+            return id.toBigInteger();
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
 
     /**
      * @param entry TimeEntry - the time entry to insert
