@@ -7,7 +7,7 @@
     <h3 class="content-info">
       <span ng-if="requisition.status === 'REJECTED'">Rejected</span>
       <span ng-if="requisition.status === 'APPROVED'  && requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime != null">Sync Failed</span>
-      <span ng-if="requisition.status === 'APPROVED'  && requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime == null">Approved</span>
+      <span ng-if="requisition.status === 'APPROVED'  && (requisition.savedInSfms == true || (requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime == null) )">Approved</span>
       Requisition {{requisition.requisitionId}} Requested By {{requisition.customer.firstName}}
       {{requisition.customer.initial}} {{requisition.customer.lastName}}</h3>
   </div>
