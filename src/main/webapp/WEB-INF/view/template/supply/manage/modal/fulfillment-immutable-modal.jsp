@@ -68,14 +68,15 @@
           Print Requisition
         </a>
       </div>
-      <div>
-        <a target="#" ng-click="close()">Exit</a>
-      </div>
 
       <div class="text-align-center" ng-show="requisition.status === 'CANCELED'">
         <input ng-click="acceptShipment(requisition)" class="submit-button" type="button" value="Accept">
       </div>
 
     </div>
+  </div>
+
+  <div class="padding-top-10" style="text-align: center">
+    <input ng-click="closeModal()" class="neutral-button" style="width: 15%" type="button" value="Exit">
   </div>
 </div>

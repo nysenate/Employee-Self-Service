@@ -17,5 +17,10 @@ essSupply.directive('fulfillmentImmutableModal', ['appProps', 'modals', 'Locatio
         function reload() {
             locationService.go("/supply/manage/fulfillment", true);
         }
+
+        $scope.closeModal = function () {
+            modals.reject();
+        }
     }
+
 }]);
