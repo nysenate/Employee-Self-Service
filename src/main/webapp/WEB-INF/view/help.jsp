@@ -5,7 +5,7 @@
 <%@ taglib prefix="ess-layout" tagdir="/WEB-INF/tags/layout" %>
 
 <ess-layout:head>
-  <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
+  <jsp:attribute name="pageTitle">ESS - Employee Self Service</jsp:attribute>
   <jsp:body>
     <ess:ess-assets/>
     <ess:help-assets/>
@@ -19,11 +19,7 @@
     <section class="content-wrapper">
       <div id="help-viewer">
         <iframe id="help-frame" src="${pageContext.request.contextPath}/assets/pdf/ess-help.pdf"></iframe>
-        <h3 id="help-link">
-          <a target="_blank"
-             href="${pageContext.request.contextPath}/assets/pdf/ess-help.pdf">
-            View in New Tab
-          </a>
+        <h3 id="help-link"><a href="${pageContext.request.contextPath}/assets/pdf/ess-help.pdf" onclick="window.open('${pageContext.request.contextPath}/assets/pdf/ess-help.pdf', 'helpwindow', 'width=1024,height=768,location=no,menubar=no,personalbar=no,status=no,titlebar=no,toolbar=no'); return false;">View in New<br/>Window</a>
         </h3>
       </div>
     </section>

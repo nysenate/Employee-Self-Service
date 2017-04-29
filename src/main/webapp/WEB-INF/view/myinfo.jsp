@@ -5,22 +5,22 @@
 <%@ taglib prefix="ess-layout" tagdir="/WEB-INF/tags/layout" %>
 
 <ess-layout:head>
-    <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
-    <jsp:body>
-        <ess:ess-assets/>
-        <ess:myinfo-assets/>
-    </jsp:body>
+  <jsp:attribute name="pageTitle">ESS - Employee Self Service</jsp:attribute>
+  <jsp:body>
+    <ess:ess-assets/>
+    <ess:myinfo-assets/>
+  </jsp:body>
 </ess-layout:head>
 
 <ess-layout:body>
-    <jsp:body>
-        <base href="/" />
-        <ess-component-nav:top-nav activeTopic="myinfo"/>
-        <section class="content-wrapper" ng-controller="MainCtrl as main">
-            <ess-component-nav:myinfo-nav/>
-            <div class="view-animate-container">
-                <div ng-view class="view-animate"></div>
-            </div>
-        </section>
-    </jsp:body>
+  <jsp:body>
+    <base href="/" />
+    <ess-component-nav:top-nav activeTopic="myinfo"/>
+    <section class="content-wrapper" ng-controller="MainCtrl as main">
+      <ess-component-nav:myinfo-nav/>
+      <div class="view-animate-container">
+        <div ng-view class="view-animate"></div>
+      </div>
+    </section>
+  </jsp:body>
 </ess-layout:body>

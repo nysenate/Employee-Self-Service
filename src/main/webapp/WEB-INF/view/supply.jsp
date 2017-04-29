@@ -5,7 +5,7 @@
 <%@ taglib prefix="ess-layout" tagdir="/WEB-INF/tags/layout" %>
 
 <ess-layout:head>
-  <jsp:attribute name="pageTitle">ESS - Time and Attendance</jsp:attribute>
+  <jsp:attribute name="pageTitle">ESS - Employee Self Service</jsp:attribute>
   <jsp:body>
     <ess:ess-assets/>
     <ess:supply-assets/>
