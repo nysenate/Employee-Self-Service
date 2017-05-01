@@ -16,10 +16,14 @@
   <jsp:body>
     <base href="/" />
     <ess-component-nav:top-nav activeTopic="help"/>
-    <section class="content-wrapper">
+    <section class="content-wrapper" ng-controller="HelpMainCtrl">
       <div id="help-viewer">
-        <iframe id="help-frame" src="${pageContext.request.contextPath}/assets/pdf/ess-help.pdf"></iframe>
-        <h3 id="help-link"><a href="${pageContext.request.contextPath}/assets/pdf/ess-help.pdf" onclick="window.open('${pageContext.request.contextPath}/assets/pdf/ess-help.pdf', 'helpwindow', 'width=1024,height=768,location=no,menubar=no,personalbar=no,status=no,titlebar=no,toolbar=no'); return false;">View in New<br/>Window</a>
+        <iframe id="help-frame" ng-src="{{helpPdfUrl}}"></iframe>
+        <h3 id="help-link">
+          <a ng-href="{{helpPdfUrl}}" ng-click="openHelpWindow($event)">
+            View in New<br/>
+            Window
+          </a>
         </h3>
       </div>
     </section>
