@@ -615,7 +615,7 @@ table.attendance-entry-sub-table {
         border: 1px solid @teal;
         border-left-width: 3px;
       }
-      &:hover {
+      &.valid:hover {
         background: fade(#333, 10%);
         cursor: pointer;
       }
@@ -666,6 +666,9 @@ table.attendance-entry-sub-table {
 
         input {
           width: 50px;
+          &.invalid {
+            background: #FFBCBC
+          }
         }
       }
     }

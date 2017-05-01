@@ -52,9 +52,9 @@
         </thead>
         <tbody>
         <tr ng-repeat="record in projections"
-            ng-class="{'highlighted': record.payPeriod.current}"
+            ng-class="{'highlighted': record.payPeriod.current, 'valid': record.valid}"
             ng-attr-id="{{$last && 'earliest-projection' || undefined}}"
-            title="Open a Detail View of this Record">
+            title="{{record.valid ? 'Open a Detail View of this Record' : ''}}">
           <td class="pay-period" ng-click="viewDetails(record)">
             {{record.payPeriod.payPeriodNum}}
           </td>
@@ -68,12 +68,13 @@
               title="Project Personal Hour Usage">
             <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekPersonalUsed"
-                   ng-change="onAccUsageChange(record, 'personal')"/>
+                   ng-change="onAccUsageChange(record, 'personal')"
+                   ng-class="{invalid: !isPerValid(record)}"/>
           </td>
           <td class="accrual-hours personal available-hours"
               ng-class="{changed: record.changed.personal}"
               ng-click="viewDetails(record)">
-            {{record.personalAvailable}}
+            {{record.validation.per ? record.personalAvailable : '--'}}
           </td>
           <td class="accrual-hours vacation rate" ng-click="viewDetails(record)">
             {{record.vacationRate}}
@@ -82,12 +83,13 @@
               title="Project Vacation Hour Usage">
             <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekVacationUsed"
-                   ng-change="onAccUsageChange(record, 'vacation')"/>
+                   ng-change="onAccUsageChange(record, 'vacation')"
+                   ng-class="{invalid: !isVacValid(record)}"/>
           </td>
           <td class="accrual-hours vacation available-hours"
               ng-class="{changed: record.changed.vacation}"
               ng-click="viewDetails(record)">
-            {{record.vacationAvailable}}
+            {{record.validation.vac ? record.vacationAvailable : '--'}}
           </td>
           <td class="accrual-hours sick rate" ng-click="viewDetails(record)">
             {{record.sickRate}}
@@ -96,18 +98,19 @@
               title="Project Employee Sick Hour Usage">
             <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekSickEmpUsed"
-                   ng-change="onAccUsageChange(record, 'sick')" />
+                   ng-change="onAccUsageChange(record, 'sick')"
+                   ng-class="{invalid: !isSickEmpValid(record)}"/>
           </td>
           <td class="accrual-hours sick used-hours"
               title="Project Family Sick Hour Usage">
-            <input type="number" min="0" max="{{record.maxHours}}" ng-step=".5" placeholder="0"
+            <input type="number" min="0" max="{{record.maxHours}}" step=".5" placeholder="0"
                    ng-model="$parent.projections[$index].biweekSickFamUsed"
-                   ng-change="onAccUsageChange(record, 'sick')" />
+                   ng-change="onAccUsageChange(record, 'sick')"
+                   ng-class="{invalid: !isSickFamValid(record)}"/>
           </td>
           <td class="accrual-hours sick available-hours"
-              ng-class="{changed: record.changed.sick}"
-              ng-click="viewDetails(record)">
-            {{record.sickAvailable}}
+              ng-class="{changed: record.changed.sick}" ng-click="viewDetails(record)">
+            {{record.validation.sick ? record.sickAvailable : '--'}}
           </td>
 
         </tr>

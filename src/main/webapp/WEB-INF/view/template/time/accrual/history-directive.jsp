@@ -76,7 +76,7 @@
         </thead>
         <tbody>
         <tr ng-repeat="record in accSummaries[selectedYear]"
-            ng-class="{'highlighted': record.payPeriod.current}"
+            class="valid" ng-class="{'highlighted': record.payPeriod.current}"
             title="Open a Printable View for this Record"
             ng-click="viewDetails(record)"
         >

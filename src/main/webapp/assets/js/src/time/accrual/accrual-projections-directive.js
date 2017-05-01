@@ -157,8 +157,18 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
              * @param accrualRecord
              */
             $scope.viewDetails = function (accrualRecord) {
+                if (!accrualRecord.valid) {
+                    console.debug('record is invalid');
+                    return;
+                }
                 modals.open('accrual-details', {accruals: accrualRecord}, true);
             };
+
+            // Expose accrual value validation functions
+            $scope.isPerValid = isPerValid;
+            $scope.isVacValid = isVacValid;
+            $scope.isSickEmpValid = isSickEmpValid;
+            $scope.isSickFamValid = isSickFamValid;
 
             /* --- Internal Methods --- */
 
@@ -203,6 +213,10 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 projection.changed = {};
                 // Calculate a maximum usage of 12 hours / day for the pay period
                 projection.maxHours = projection.payPeriod.numDays * 12;
+                // Set initial validation status
+                projection.validation = getCleanValidation();
+                projection.valid = true;
+
                 return projection;
             }
 
@@ -238,7 +252,20 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                     updateAccrualState(rec, accState);
                     setRecordUsedHours(rec, accState);
                     calculateAvailableHours(rec);
+                    validateRecord(rec, accState);
                 }
+            }
+
+            /**
+             * Get a new validation object where everything is valid
+             * @returns {{per: boolean, vac: boolean, sick: boolean}}
+             */
+            function getCleanValidation() {
+                return {
+                    per: true,
+                    vac: true,
+                    sick: true
+                };
             }
 
             /**
@@ -253,7 +280,8 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                     per: baseRec.personalUsed || 0,
                     vac: baseRec.vacationUsed || 0,
                     sickEmp: baseRec.sickEmpUsed || 0,
-                    sickFam: baseRec.sickFamUsed || 0
+                    sickFam: baseRec.sickFamUsed || 0,
+                    validation: getCleanValidation()
                 }
             }
 
@@ -306,6 +334,61 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 rec.personalAvailable = rec.personalAccruedYtd - rec.personalUsed;
                 rec.vacationAvailable = rec.vacationAccruedYtd + rec.vacationBanked - rec.vacationUsed;
                 rec.sickAvailable = rec.sickAccruedYtd + rec.sickBanked - rec.sickEmpUsed - rec.sickFamUsed;
+            }
+
+            /**
+             * Validate the record based on the accrual values present and the validation status of previous records
+             * Set the validation results to the running validation on the accrual state
+             * If a value is invalid for one record, then the same value type is invalid for all remaining records
+             * @param record
+             * @param accState
+             */
+            function validateRecord(record, accState) {
+                var validation = accState.validation;
+
+                validation.per = validation.per && isPerValid(record);
+                validation.vac = validation.vac && isVacValid(record);
+                validation.sick = validation.sick && isSickEmpValid(record) && isSickFamValid(record);
+
+                // Store a snapshot of the running validation to this record
+                record.validation = angular.copy(validation);
+
+                // Mark the full record as valid iff all fields are valid
+                record.valid = validation.per && validation.vac && validation.sick;
+            }
+
+            // Validation functions for each accrual usage type
+
+            function isPerValid(record) {
+                return isValidValue(record.biweekPersonalUsed, record.personalAvailable);
+            }
+
+            function isVacValid(record) {
+                return isValidValue(record.biweekVacationUsed, record.vacationAvailable);
+            }
+
+            function isSickEmpValid(record) {
+                return isValidValue(record.biweekSickEmpUsed, record.sickAvailable);
+            }
+
+            function isSickFamValid(record) {
+                return isValidValue(record.biweekSickFamUsed, record.sickAvailable);
+            }
+
+            /**
+             * Generic validation function for an accrual value
+             *
+             * Ensure that the value is..
+             * null or numeric
+             * divisible by 0.5
+             * not using more hours than available
+             * @param value
+             * @param available
+             * @returns {boolean}
+             */
+            function isValidValue(value, available) {
+                return value === null ||
+                    value !== undefined && available >= 0 && value % 0.5 === 0;
             }
 
             function setChangedFlags (record, type) {
