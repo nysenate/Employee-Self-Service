@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyViewController', ['$scope', 'SupplyRequisitionHistoryApi',
-    'LocationService', '$window', '$timeout', 'SupplyUtils', supplyViewController]);
+    'LocationService', '$window', '$timeout', 'SupplyUtils', 'modals',supplyViewController]);
 
-function supplyViewController($scope, historyApi, locationService, $window, $timeout, supplyUtils) {
+function supplyViewController($scope, historyApi, locationService, $window, $timeout, supplyUtils, modals) {
 
     $scope.requisitionResponse = {};
     $scope.requisitionHistory = {
@@ -79,8 +79,8 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
     };
 
     var shipmentResourceErrorHandler = function (response) {
-        console.log("Error");
-        // TODO;
+        modals.open('500', {details: response});
+        console.error(response);
     };
 
     $scope.init();
