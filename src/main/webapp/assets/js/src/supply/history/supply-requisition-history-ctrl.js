@@ -1,9 +1,9 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
     ['$scope', 'SupplyIssuersApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi',
-        'PaginationModel', 'SupplyUtils', supplyHistoryController]);
+        'PaginationModel', 'SupplyUtils', 'modals', supplyHistoryController]);
 
 function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, locationService, locationApi,
-                                 paginationModel, supplyUtils) {
+                                 paginationModel, supplyUtils, modals) {
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.loading = true;
     $scope.shipments = null;

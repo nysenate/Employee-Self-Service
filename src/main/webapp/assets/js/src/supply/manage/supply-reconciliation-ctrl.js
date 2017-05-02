@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-    ['$scope', 'SupplyRequisitionApi', 'LocationService', '$window', '$timeout', supplyReconciliationController]);
+    ['$scope', 'SupplyRequisitionApi', 'LocationService', 'modals', '$window', '$timeout', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, requisitionApi, locationService, $window, $timeout) {
+function supplyReconciliationController($scope, requisitionApi, locationService, modals, $window, $timeout) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
