@@ -24,18 +24,20 @@ function confirmModal (modals) {
           '<h3 class="content-info" ng-bind="title"></h3>' +
           '<div class="confirmation-message">' +
             '<h4 ng-show="confirmMessage" ng-bind="confirmMessage"></h4>' +
+            '<ng-transclude></ng-transclude>' +
             '<div ng-hide="rejectable" class="input-container">' +
-              '<input type="button" ng-click="resolve()" class="{{confirmClass}}"' +
+              '<input type="button" ng-click="resolve()" class="{{confirmClass}}" ' +
                      'value="{{resolveButton || \'OK\'}}" tabindex="1"/>' +
             '</div>' +
             '<div ng-show="rejectable" class="input-container">' +
-              '<input type="button" ng-click="resolve()" class="{{resolveClass}}"' +
+              '<input type="button" ng-click="resolve()" class="{{resolveClass}}" ' +
                      'value="{{resolveButton || \'Yes\'}}" tabindex="1"/>' +
-              '<input type="button" ng-click="reject()" class="{{rejectClass}}"' +
+              '<input type="button" ng-click="reject()" class="{{rejectClass}}" ' +
                      'value="{{rejectButton || \'No\'}}" tabindex="1"/>' +
             '</div>' +
           '</div>' +
         '</div>',
+        transclude: true,
         link: link
     };
     function link ($scope, $elem, $attrs) {

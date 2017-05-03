@@ -376,5 +376,19 @@
            resolve-button="Proceed" reject-button="Cancel">
       </div>
     </modal>
+    <modal modal-id="record-modified-dialog">
+      <div confirm-modal
+           title="An external modification was detected for the submitted record"
+           resolve-button="Refresh Records">
+        <p>
+          Please hit the 'Refresh Records' button to get the latest version of the record<br>
+          and resubmit if applicable.<br>
+          If this continues to occur, please
+          <a href="" ng-click="rejectModal()">
+            send an error report.
+          </a>
+        </p>
+      </div>
+    </modal>
   </div>
 </div>

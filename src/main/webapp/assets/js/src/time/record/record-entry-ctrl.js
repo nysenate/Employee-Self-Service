@@ -34,6 +34,9 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
     }
 
+    // Record error codes that indicate that there was a third party modification
+    var modifiedErrorCodes = [2, 7];
+
     $scope.state = null;                  // The container for all the state variables for this page
 
     // Create a new state from the values in the default state.
@@ -165,7 +168,26 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 modals.resolve();
             }, function (resp) {
                 modals.reject();
-                modals.open('500', {details: resp});
+
+                // Check the error codes to see if any of them indicate an external modification
+                var errorMap = (((resp || {}).data || {}).errorData || {}).items || {};
+                var errorCodes = Object.keys(errorMap).map(parseInt);
+                var modified = errorCodes.filter(function (errorCode) {
+                    return modifiedErrorCodes.indexOf(errorCode) >= 0;
+                }).length > 0;
+
+                // If the error could be explained by an external modification,
+                // prompt the user to refresh records and resubmit
+                // Otherwise open the error modal
+                if (modified) {
+                    modals.open('record-modified-dialog')
+                        .then($scope.init)
+                        .catch(function () {
+                            modals.open('500', {details: resp});
+                        });
+                } else {
+                    modals.open('500', {details: resp});
+                }
                 console.error(resp);
             }).$promise.finally(function () {
                 $scope.state.request.save = false;
