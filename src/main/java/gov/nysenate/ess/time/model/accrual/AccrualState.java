@@ -1,17 +1,20 @@
 package gov.nysenate.ess.time.model.accrual;
 
-import com.google.common.collect.Range;
+import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.HOURS_PER_DAY;
@@ -40,6 +43,9 @@ public class AccrualState extends AccrualSummary
     /** Tracks usage for each period */
     private Map<PayPeriod, PeriodAccUsage> periodAccUsageMap = new HashMap<>();
 
+    /** Range set of expected dates for the current pay period */
+    protected RangeSet<LocalDate> expectedDates = TreeRangeSet.create();
+
     public AccrualState(AnnualAccSummary annualAccSummary) {
         super(annualAccSummary);
         if (annualAccSummary != null) {
@@ -62,7 +68,7 @@ public class AccrualState extends AccrualSummary
         periodAccSummary.setRefPayPeriod(refPeriod);
         periodAccSummary.setPayPeriod(currPeriod);
         periodAccSummary.setExpectedTotalHours(this.getYtdHoursExpected());
-        periodAccSummary.setExpectedBiweekHours(this.getExpectedHoursForPeriod(currPeriod));
+        periodAccSummary.setExpectedBiweekHours(this.getExpectedHoursForPeriod());
         periodAccSummary.setPrevTotalHoursYtd(this.getTotalHoursUsed());
         periodAccSummary.setSickRate(this.getSickRate());
         periodAccSummary.setVacRate(this.getVacRate());
@@ -89,8 +95,12 @@ public class AccrualState extends AccrualSummary
 
     /**
      * Increments the accrued vacation and sick time based on the currently set vac/sick accrual rates.
+     * Do not increment hours if employee is not accruing
      */
     public void incrementAccrualsEarned() {
+        if (!empAccruing) {
+            return;
+        }
         this.setVacHoursAccrued(this.getVacHoursAccrued().add(this.getVacRate()));
         this.setEmpHoursAccrued(this.getEmpHoursAccrued().add(this.getSickRate()));
     }
@@ -98,11 +108,9 @@ public class AccrualState extends AccrualSummary
     /**
      * Increments the year to date expected hours by computing how many hours are required for the number of week
      * days in the pay period and prorating it based on the minimum hours required per year.
-     *
-     * @param period PayPeriod
      */
-    public void incrementYtdHoursExpected(PayPeriod period) {
-        BigDecimal hoursExpectedInPeriod = getExpectedHoursForPeriod(period);
+    public void incrementYtdHoursExpected() {
+        BigDecimal hoursExpectedInPeriod = getExpectedHoursForPeriod();
         if (ytdHoursExpected == null) {
             throw new IllegalStateException("YtdHoursExpected needs to be initialized before incrementing it.");
         }
@@ -119,21 +127,15 @@ public class AccrualState extends AccrualSummary
 
     /**
      * Get the number hours the employee is required to work during the given pay period
-     * @param period PayPeriod
      */
-    private BigDecimal getExpectedHoursForPeriod(PayPeriod period) {
-        return getHoursExpectedForDays(period.getNumWeekDaysInPeriod(Range.atLeast(beginDate)));
-    }
-
-    /**
-     * Get the number of hours expected of an employee for the given number of workdays
-     * @param numWorkDays number of days
-     */
-    private BigDecimal getHoursExpectedForDays(int numWorkDays) {
-        return AccrualUtils.roundExpectedHours(
-                getProratePercentage()
-                        .multiply(HOURS_PER_DAY)
-                        .multiply(new BigDecimal(numWorkDays)));
+    private BigDecimal getExpectedHoursForPeriod() {
+        return expectedDates.asRanges().stream()
+                .map(RangeUtils::getDateRangeIterator)
+                .map(iterator -> (Iterable<LocalDate>) () -> iterator)
+                .flatMap(iterable -> StreamSupport.stream(iterable.spliterator(), false))
+                .filter(DateUtils::isWeekday)
+                .map(day -> HOURS_PER_DAY.multiply(getProratePercentage()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     /**
@@ -274,5 +276,13 @@ public class AccrualState extends AccrualSummary
 
     public void setSubmittedRecords(boolean submittedRecords) {
         this.submittedRecords = submittedRecords;
+    }
+
+    public RangeSet<LocalDate> getExpectedDates() {
+        return expectedDates;
+    }
+
+    public void setExpectedDates(RangeSet<LocalDate> expectedDates) {
+        this.expectedDates = expectedDates;
     }
 }

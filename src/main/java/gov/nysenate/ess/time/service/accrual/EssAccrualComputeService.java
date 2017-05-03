@@ -1,7 +1,16 @@
 package gov.nysenate.ess.time.service.accrual;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableRangeSet;
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeSet;
+import gov.nysenate.ess.core.model.payroll.PayType;
+import gov.nysenate.ess.core.model.period.PayPeriod;
+import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.transaction.TransactionHistory;
+import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
+import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.RangeUtils;
@@ -10,12 +19,6 @@ import gov.nysenate.ess.time.dao.accrual.AccrualDao;
 import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.model.accrual.*;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
-import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +34,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Objects.firstNonNull;
-import static gov.nysenate.ess.time.model.EssTimeConstants.*;
+import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
+import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
 import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
-import static gov.nysenate.ess.time.util.AccrualUtils.roundSickVacHours;
 
 /**
  * Service layer for computing accrual information for an employee based on processed accrual
@@ -214,10 +217,12 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         PayPeriod refPeriod = (optPeriodAccRecord.isPresent()) ? optPeriodAccRecord.get().getRefPayPeriod()
                 : gapPeriods.getFirst(); // FIXME?
 
+        ImmutableRangeSet<LocalDate> expectedHourDates = getExpectedHourDates(empTrans);
+
         // Compute accruals for each gap period
         return gapPeriods.stream()
                 .peek(period -> computeGapPeriodAccruals(period, accrualState, empTrans,
-                        timeRecords, periodUsages, accrualAllowedDates))
+                        timeRecords, periodUsages, accrualAllowedDates, expectedHourDates))
                 .filter(remainingPeriods::contains)
                 .map(period -> accrualState.toPeriodAccrualSummary(refPeriod, period))
                 .collect(Collectors.toList());
@@ -380,13 +385,13 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
      */
     private void computeGapPeriodAccruals(PayPeriod gapPeriod, AccrualState accrualState, TransactionHistory transHistory,
                                           List<TimeRecord> timeRecords, TreeMap<PayPeriod, PeriodAccUsage> periodUsages,
-                                          RangeSet<LocalDate> accrualAllowedDates) {
+                                          RangeSet<LocalDate> accrualAllowedDates,
+                                          RangeSet<LocalDate> expectedHoursDates) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
         // If the employee was not allowed to accrue during the gap period, don't increment accruals
         if (!RangeUtils.intersects(accrualAllowedDates, gapPeriodRange)) {
             accrualState.setEmpAccruing(false);
-            return;
         } else {
             accrualState.setEmpAccruing(true);
         }
@@ -397,6 +402,12 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         if (!minHours.isEmpty()) {
             accrualState.setMinTotalHours(minHours.lastEntry().getValue());
         }
+
+        // Get a range set of days in the period where hours are expected
+        RangeSet<LocalDate> expectedPeriodDates =
+                RangeUtils.intersection(expectedHoursDates, ImmutableRangeSet.of(gapPeriodRange));
+        accrualState.setExpectedDates(expectedPeriodDates);
+
 
         // If pay period is start of new year perform necessary adjustments to the accruals.
         if (gapPeriod.isStartOfYearSplit()) {
@@ -432,7 +443,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             accrualState.incrementAccrualsEarned();
         }
         // Adjust the year to date hours expected
-        accrualState.incrementYtdHoursExpected(gapPeriod);
+        accrualState.incrementYtdHoursExpected();
     }
 
     /**
@@ -459,12 +470,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 .forEach(accrualStatusDates::add);
 
         // Create a range set containing dates where the employee is regular / special annual
-        RangeSet<LocalDate> annualEmploymentDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectivePayTypes(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> entry.getValue() == PayType.RA || entry.getValue() == PayType.SA)
-                .map(Map.Entry::getKey)
-                .forEach(annualEmploymentDates::add);
+        RangeSet<LocalDate> annualEmploymentDates = getAnnualEmploymentDates(empTrans);
 
         // Return the intersection of the 3 range sets
         return ImmutableRangeSet.copyOf(
@@ -472,6 +478,35 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                         Arrays.asList(activeDates, accrualStatusDates, annualEmploymentDates)
                 )
         );
+    }
+
+    private ImmutableRangeSet<LocalDate> getExpectedHourDates(TransactionHistory empTrans) {
+        // Get a range set of dates where the employee is employed and required to enter time
+        RangeSet<LocalDate> personnelStatusDates = TreeRangeSet.create();
+        RangeUtils.toRangeMap(empTrans.getEffectivePersonnelStatus(DateUtils.ALL_DATES))
+                .asMapOfRanges().entrySet().stream()
+                .filter(entry -> entry.getValue().isEmployed() && entry.getValue().isTimeEntryRequired())
+                .map(Map.Entry::getKey)
+                .forEach(personnelStatusDates::add);
+
+        // Create a range set containing dates where the employee is regular / special annual
+        RangeSet<LocalDate> annualEmploymentDates = getAnnualEmploymentDates(empTrans);
+
+        return ImmutableRangeSet.copyOf(
+                RangeUtils.intersection(
+                        Arrays.asList(personnelStatusDates, annualEmploymentDates)
+                )
+        );
+    }
+
+    private RangeSet<LocalDate> getAnnualEmploymentDates(TransactionHistory empTrans) {
+        RangeSet<LocalDate> annualEmploymentDates = TreeRangeSet.create();
+        RangeUtils.toRangeMap(empTrans.getEffectivePayTypes(DateUtils.ALL_DATES))
+                .asMapOfRanges().entrySet().stream()
+                .filter(entry -> entry.getValue() == PayType.RA || entry.getValue() == PayType.SA)
+                .map(Map.Entry::getKey)
+                .forEach(annualEmploymentDates::add);
+        return annualEmploymentDates;
     }
 
     private void verifyValidPayPeriod(PayPeriod payPeriod) {
