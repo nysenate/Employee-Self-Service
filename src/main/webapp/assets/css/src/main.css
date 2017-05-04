@@ -1535,6 +1535,7 @@ input[type="number"] {
   padding: 20px;
   text-align: left;
 }
+.confirm-modal .confirmation-message p,
 .confirm-modal .confirmation-message h4 {
   text-align: center;
   margin-top: 0;
@@ -1879,10 +1880,6 @@ input[type="number"] {
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
-/**
- * This file includes all LESS files for ESS
- * This file alone will be compiled into main.css
- */
 @media print {
   .large-print-font-size {
     font-size: 12pt;
@@ -4435,9 +4432,9 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   border: 1px solid #006B80;
   border-left-width: 3px;
 }
-.accruals-table tbody tr:hover,
-.detail-acc-history-table tbody tr:hover,
-#accrual-usage-details-table tbody tr:hover {
+.accruals-table tbody tr.valid:hover,
+.detail-acc-history-table tbody tr.valid:hover,
+#accrual-usage-details-table tbody tr.valid:hover {
   background: rgba(51, 51, 51, 0.1);
   cursor: pointer;
 }
@@ -4514,6 +4511,11 @@ table.attendance-entry-sub-table.small-text tbody tr td {
 .detail-acc-history-table tbody tr td input,
 #accrual-usage-details-table tbody tr td input {
   width: 50px;
+}
+.accruals-table tbody tr td input.invalid,
+.detail-acc-history-table tbody tr td input.invalid,
+#accrual-usage-details-table tbody tr td input.invalid {
+  background: #FFBCBC;
 }
 /** --- Accrual Detail Modal --- */
 table.accrual-detail-table {
