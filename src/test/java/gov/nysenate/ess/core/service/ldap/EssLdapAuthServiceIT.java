@@ -69,7 +69,7 @@ public class EssLdapAuthServiceIT extends BaseTest
     @Test
     public void testAuthenticateUserByUid_AuthenticationFailsInvalidPass() throws Exception {
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(validUid, "invalidPassword");
-        assertEquals(LdapAuthStatus.AUTHENTICATION_EXCEPTION, authResult.getAuthStatus());
+        assertEquals(LdapAuthStatus.INCORRECT_CREDENTIALS, authResult.getAuthStatus());
         assertEquals(validUid, authResult.getUid());
     }
 
@@ -77,7 +77,7 @@ public class EssLdapAuthServiceIT extends BaseTest
     public void testAuthenticateUserByUid_AuthenticationFailsInvalidUser() throws Exception {
         String invalidUser = "gloork";
         LdapAuthResult authResult = senateLdapService.authenticateUserByUid(invalidUser, "invalidPassword");
-        assertEquals(LdapAuthStatus.AUTHENTICATION_EXCEPTION, authResult.getAuthStatus());
+        assertEquals(LdapAuthStatus.INCORRECT_CREDENTIALS, authResult.getAuthStatus());
         assertEquals(invalidUser, authResult.getUid());
     }
 }

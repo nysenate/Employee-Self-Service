@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.CommunicationException;
-import org.springframework.ldap.NamingException;
 import org.springframework.stereotype.Service;
 
 import javax.naming.ldap.LdapName;
@@ -36,7 +36,7 @@ public class EssLdapAuthService implements LdapAuthService
         if (credentials == null || credentials.isEmpty()) {
             return new LdapAuthResult(LdapAuthStatus.EMPTY_CREDENTIALS, uid);
         }
-        logger.debug("Trying to authenticate user {} with password {}", uid, credentials);
+        logger.trace("Trying to authenticate user {} with password {}", uid, credentials);
         LdapAuthStatus authStatus = LdapAuthStatus.UNKNOWN_EXCEPTION;
         try {
             LdapName name = ldapAuthDao.authenticateByUid(uid, credentials);
@@ -46,37 +46,35 @@ public class EssLdapAuthService implements LdapAuthService
             }
         }
         catch(CommunicationException ex) {
-            logger.debug("Error connecting to LDAP server! {}", ex.getMessage());
+            logger.error("Error connecting to LDAP server! {}", ex.getMessage());
             authStatus = LdapAuthStatus.CONNECTION_ERROR;
         }
-        catch(NamingException ex) {
-            logger.debug("Authentication exception thrown when trying to authenticate {}", uid);
-            logger.error(ex.getMessage(), ex.getExplanation());
-            authStatus = LdapAuthStatus.AUTHENTICATION_EXCEPTION;
+        catch(AuthenticationException ex) {
+            logger.info("Invalid credentials supplied when trying to authenticate {}", uid);
+            authStatus = LdapAuthStatus.INCORRECT_CREDENTIALS;
         }
         catch(EmptyResultDataAccessException ex) {
-            logger.debug("No match found when trying to authenticate {}", uid);
-            authStatus = LdapAuthStatus.AUTHENTICATION_EXCEPTION;
+            logger.info("No match found when trying to authenticate {}", uid);
+            authStatus = LdapAuthStatus.NAME_NOT_FOUND_EXCEPTION;
         }
         catch(IncorrectResultSizeDataAccessException ex) {
-            logger.debug("Result size exception thrown when trying to authenticate {}", uid);
+            logger.error("Result size exception thrown when trying to authenticate {}", uid);
             authStatus = LdapAuthStatus.MULTIPLE_MATCH_EXCEPTION;
         }
         catch(Exception ex) {
-            logger.warn("Unhandled exception thrown when trying to authenticate {}: {}", uid, ex.getMessage());
+            logger.error("Unhandled exception thrown when trying to authenticate {}: {}", uid, ex.getMessage());
         }
         return new LdapAuthResult(authStatus, uid);
     }
 
     /** {@inheritDoc} */
     public LdapAuthResult authenticateUserByUidWithoutCreds(String uid, String suppliedPass, String masterPass) {
-        logger.warn("Warning! Attempting login as user {} with authentication disabled.", uid);
         LdapAuthResult ldapAuthResult = authenticateUserByUid(uid, suppliedPass);
-        if (ldapAuthResult.getAuthStatus().equals(LdapAuthStatus.AUTHENTICATION_EXCEPTION)) {
+        if (ldapAuthResult.getAuthStatus().equals(LdapAuthStatus.INCORRECT_CREDENTIALS)) {
             if (suppliedPass.equals(masterPass)) {
                 SenateLdapPerson person = ldapAuthDao.getPersonByUid(uid);
                 if (person != null) {
-                    logger.warn("Warning! Allowing login as user {} with authentication disabled.", uid);
+                    logger.warn("Warning! Allowing master pass login as user {} with authentication disabled.", uid);
                     return new LdapAuthResult(LdapAuthStatus.AUTHENTICATED, uid, null, person);
                 }
             }

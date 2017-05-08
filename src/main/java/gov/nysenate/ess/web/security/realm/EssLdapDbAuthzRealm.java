@@ -60,7 +60,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
             String username = userPassToken.getUsername();
             String password = new String(userPassToken.getPassword());
-            logger.debug("Authenticating user {} through the Senate LDAP.", username);
+            logger.info("Authenticating user {} through the Senate LDAP.{}",
+                    username, authEnabled ? "" : " (Master Pass Enabled)" );
 
             LdapAuthResult authResult =
                 (authEnabled) ? essLdapAuthService.authenticateUserByUid(username, password)
@@ -86,13 +87,15 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         }
         switch(authResult.getAuthStatus()) {
             case EMPTY_USERNAME:
-                throw new CredentialsException("The username supplied was empty.");
-            case EMPTY_CREDENTIALS:
-                throw new CredentialsException("The password supplied was empty.");
-            case AUTHENTICATION_EXCEPTION:
-                throw new CredentialsException("The username or password is invalid.");
+                throw new UnknownAccountException("The username supplied was empty.");
+            case NAME_NOT_FOUND_EXCEPTION:
+                throw new UnknownAccountException("No account was found with the supplied username");
             case MULTIPLE_MATCH_EXCEPTION:
                 throw new AccountException("Multiple entries were found for the supplied username.");
+            case EMPTY_CREDENTIALS:
+                throw new IncorrectCredentialsException("The password supplied was empty.");
+            case INCORRECT_CREDENTIALS:
+                throw new IncorrectCredentialsException("The username or password is invalid.");
             case CONNECTION_ERROR:
                 throw new AuthenticationException("Failed to connect to the authentication server.");
             default:

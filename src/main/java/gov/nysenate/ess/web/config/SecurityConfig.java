@@ -6,8 +6,6 @@ import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.config.Ini;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.realm.SimpleAccountRealm;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -98,20 +96,5 @@ public class SecurityConfig
      */
     public Ini shiroIniConfig() {
         return Ini.fromResourcePath("classpath:shiro.ini");
-    }
-
-    /**
-     * Basic realm implementation that provides hardcoded user and password for testing various roles.
-     * This realm should NEVER be used in a production environment.
-     */
-    @Bean(name = "simpleRealm")
-    public Realm senateSimpleRealm() {
-        SimpleAccountRealm realm = new SimpleAccountRealm();
-        realm.addRole("employee");
-        realm.addRole("supervisor");
-        realm.addRole("personnel");
-        realm.addRole("admin");
-        realm.addAccount("user", "pass", "employee", "supervisor", "personnel", "admin");
-        return realm;
     }
 }
