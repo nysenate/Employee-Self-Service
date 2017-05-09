@@ -3,7 +3,6 @@ package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 import com.google.common.collect.ContiguousSet;
 import gov.nysenate.ess.core.client.view.base.DateView;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.client.view.attendance.InvalidTimeEntryParameterView;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
@@ -94,6 +93,7 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
         checkEntryField(newEntry, prevEntry, "empId", "BigInteger", TimeEntry::getEmpId);
         checkEntryField(newEntry, prevEntry, "active", "boolean", TimeEntry::isActive);
         checkEntryField(newEntry, prevEntry, "payType", "String", TimeEntry::getPayType);
+        checkEntryField(newEntry, prevEntry, "employeeName", "String", TimeEntry::getEmployeeName);
     }
 
     /**
