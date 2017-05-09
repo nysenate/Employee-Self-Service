@@ -6,6 +6,7 @@ import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
+import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
@@ -36,7 +37,7 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
     }
 
     /**
-     * Ensures that the authenticated user is
+     * Ensures that the authenticated user is permitted to modify this time record
      *
      * @param record {@link TimeRecord} - A posted time record in the process of validation
      * @param previousState {@link Optional<TimeRecord>} - The most recently saved version of the posted time record
@@ -97,11 +98,13 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
             return;
         }
 
-        // Check if the employee is responsible for the employee during the record period (in case of an override)
-        SupervisorEmpGroup supervisorEmpGroup = supInfoService.getSupervisorEmpGroup(empId, Range.all());
-        if (supervisorEmpGroup.hasEmployeeDuringRange(prevRecord.getEmployeeId(), prevRecord.getDateRange())) {
-            return;
-        }
+        try {
+            // Check if the employee is responsible for the employee during the record period (in case of an override)
+            SupervisorEmpGroup supervisorEmpGroup = supInfoService.getSupervisorEmpGroup(empId, Range.all());
+            if (supervisorEmpGroup.hasEmployeeDuringRange(prevRecord.getEmployeeId(), prevRecord.getDateRange())) {
+                return;
+            }
+        } catch (SupervisorException ignored) {}
 
         throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_TIME_RECORD_SCOPE);
     }
