@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
-import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
+import gov.nysenate.ess.time.model.personnel.ExtendedSupEmpGroup;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
@@ -100,8 +100,8 @@ public class PermittedUserScopeTRV implements TimeRecordValidator
 
         try {
             // Check if the employee is responsible for the employee during the record period (in case of an override)
-            SupervisorEmpGroup supervisorEmpGroup = supInfoService.getSupervisorEmpGroup(empId, Range.all());
-            if (supervisorEmpGroup.hasEmployeeDuringRange(prevRecord.getEmployeeId(), prevRecord.getDateRange())) {
+            ExtendedSupEmpGroup supervisorEmpGroup = supInfoService.getExtendedSupEmpGroup(empId, Range.all());
+            if (supervisorEmpGroup.hasExtEmployeeDuringRange(prevRecord.getEmployeeId(), prevRecord.getDateRange())) {
                 return;
             }
         } catch (SupervisorException ignored) {}

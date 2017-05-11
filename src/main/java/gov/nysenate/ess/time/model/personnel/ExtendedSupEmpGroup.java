@@ -1,10 +1,8 @@
 package gov.nysenate.ess.time.model.personnel;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,5 +53,20 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
         return ImmutableSet.copyOf(employeeSupInfos);
     }
 
+    /**
+     * Tests whether an employee was a direct or 1 level indirect employee of this supervisor,
+     * during the given date range
+     *
+     * @param empId int - employee id
+     * @param dateRange Range<LocalDate> - date range
+     * @return boolean
+     */
+    public boolean hasExtEmployeeDuringRange(int empId, Range<LocalDate> dateRange) {
+        if (hasEmployeeDuringRange(empId, dateRange)) {
+            return true;
+        }
+        return employeeSupEmpGroups.values().stream()
+                .anyMatch(empGroup -> empGroup.hasEmployeeDuringRange(empId, dateRange));
+    }
 
 }
