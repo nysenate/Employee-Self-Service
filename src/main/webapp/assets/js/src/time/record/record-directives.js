@@ -1,7 +1,8 @@
 angular.module('essTime')
     .filter('entryHours', [entryHoursFilter])
     .directive('timeRecordInput', [timeRecordInputDirective])
-    .directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', recordDetailsDirective])
+    .directive('recordDetails', ['appProps', 'modals', 'AccrualPeriodApi', 'AllowanceApi',
+                                 'AllowanceUtils', recordDetailsDirective])
     .directive('recordDetailModal', ['modals', recordDetailModalDirective])
 ;
 
@@ -39,7 +40,7 @@ function timeRecordInputDirective () {
 /**
  * A table that displays details for a specific time record
  */
-function recordDetailsDirective(appProps, modals, accrualApi) {
+function recordDetailsDirective(appProps, modals, accrualApi, allowanceApi, allowanceUtils) {
     return {
         scope: {
             record: '='
@@ -51,21 +52,24 @@ function recordDetailsDirective(appProps, modals, accrualApi) {
             $scope.showExitBtn = $attrs['exitBtn'] !== "false";
             $scope.showAccruals = showAccrualsSelected;
             $scope.loadingAccruals = false;
+            $scope.loadingAllowance = false;
 
             $scope.$watch('record', function (record) {
                 if (record) {
                     detectPayTypes();
                     loadAccruals();
+                    loadAllowance();
                 }
             });
 
             function detectPayTypes() {
+                $scope.tempEntries = $scope.annualEntries = false;
                 angular.forEach($scope.record.timeEntries, function (entry) {
-                    $scope.tempEntries = $scope.annualEntries = false;
                     $scope.tempEntries = $scope.tempEntries || entry.payType === 'TE';
                     $scope.annualEntries = $scope.annualEntries || ['RA', 'SA'].indexOf(entry.payType) > -1;
-                    $scope.showAccruals = showAccrualsSelected && $scope.annualEntries;
                 });
+                $scope.showAccruals = showAccrualsSelected && $scope.annualEntries;
+                $scope.showAllowance = showAccrualsSelected && $scope.tempEntries;
             }
 
             function loadAccruals() {
@@ -73,7 +77,6 @@ function recordDetailsDirective(appProps, modals, accrualApi) {
                     return;
                 }
                 var record = $scope.record;
-                console.log(record);
                 var empId = record.employeeId;
                 var recordStartDate = moment(record.beginDate);
                 var params = {
@@ -93,6 +96,37 @@ function recordDetailsDirective(appProps, modals, accrualApi) {
                     }).$promise.finally(function() {
                         $scope.loadingAccruals = false;
                     });
+            }
+
+            function loadAllowance() {
+                if (!$scope.showAllowance) {
+                    return;
+                }
+                var record = $scope.record;
+                var empId = record.employeeId;
+                var year = moment(record.endDate).year();
+                var params = {
+                    empId: empId,
+                    year: year
+                };
+                $scope.loadingAllowance = true;
+                return allowanceApi.get(params, onSuccess, onFail)
+                    .$promise.finally(function () {
+                        $scope.loadingAllowance = false;
+                    });
+
+                function onSuccess (resp) {
+                    var results = resp.result || [];
+                    if (results.length !== 1) {
+                        return onFail(resp);
+                    }
+                    $scope.allowance = resp.result[0];
+                    allowanceUtils.computeRemaining($scope.allowance, record);
+                }
+                function onFail (resp) {
+                    modals.open('500', {details: resp});
+                    console.error(resp);
+                }
             }
         }
     };

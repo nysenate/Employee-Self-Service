@@ -3,10 +3,11 @@ var essApp = angular.module('essTime')
                                               'ActiveTimeRecordsApi', 'TimeRecordApi', 'AccrualPeriodApi',
                                               'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi', 'TimeRecordCreationApi',
                                               'activeTimeEntryRow', 'RecordUtils', 'LocationService', 'modals',
-                                              'promiseUtils', recordEntryCtrl]);
+                                              'promiseUtils', 'AllowanceUtils', recordEntryCtrl]);
 
 function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordSaveApi, accrualPeriodApi,
-                         allowanceApi, miscLeaveGrantApi, holidayApi, recordCreationApi, activeRow, recordUtils, locationService, modals, promiseUtils) {
+                         allowanceApi, miscLeaveGrantApi, holidayApi, recordCreationApi, activeRow, recordUtils, locationService,
+                         modals, promiseUtils, allowanceUtils) {
 
     function getInitialState() {
         return {
@@ -376,9 +377,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         var allowance = $scope.state.allowances[$scope.state.selectedYear];
         var tempWorkHours = $scope.state.totals.tempWorkHours;
 
-        if (allowance && !isNaN(tempWorkHours)) {
-            return allowance.remainingHours - tempWorkHours;
-        }
+        return allowanceUtils.getAvailableHours(allowance, tempWorkHours);
     };
 
     /**
@@ -645,10 +644,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             }
         });
 
-        allowance.remainingAllowance = allowance.yearlyAllowance - allowance.moneyUsed;
-        allowance.remainingHours = allowance.remainingAllowance / highestRate;
-        allowance.remainingHours = $filter('round')(allowance.remainingHours, 0.25, -1);
-        allowance.totalHours = allowance.hoursUsed + allowance.remainingHours;
+        allowanceUtils.computeRemaining(allowance, record);
     }
 
     function getLatestRecord() {

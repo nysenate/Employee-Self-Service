@@ -242,37 +242,10 @@
       <!-- Temporary Entry Form -->
       <div class="te-entry" ng-if="state.tempEntries">
         <h1 class="time-entry-table-title" ng-if="state.annualEntries">Temporary Pay Entries</h1>
-        <div ng-show="state.request.allowances">
-          <h3 class="text-align-center">Loading Allowance...</h3>
-          <div loader-indicator class="sm-loader" style="margin: 15.5px auto;"></div>
-        </div>
-        <div class="allowance-container" ng-hide="state.request.allowances">
-          <div class="allowance-component">
-            <div class="captioned-hour-square">
-              <div style="" class="hours-caption">
-                {{state.allowances[state.selectedYear].year}} Allowance
-              </div>
-              <div class="hours-display">
-                <div class="ytd-hours">
-                  <div class="hours-caption">Total Allowed Hours</div>
-                  {{ state.allowances[state.selectedYear].totalHours | number }}
-                </div>
-                <div class="ytd-hours">
-                  <div class="hours-caption">Reported Hours</div>
-                  {{state.allowances[state.selectedYear].hoursUsed | number}}
-                </div>
-                <div class="ytd-hours">
-                  <div class="hours-caption">Current Record Hours</div>
-                  {{state.totals.tempWorkHours | number}}
-                </div>
-                <div class="ytd-hours">
-                  <div class="hours-caption">Estimated Available Hours</div>
-                  <span ng-bind-html="getAvailableHours() | number | hoursDiffHighlighter"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <allowance-bar allowance="state.allowances[state.selectedYear]"
+                       temp-work-hours="state.totals.tempWorkHours"
+                       loading="state.request.allowances">
+        </allowance-bar>
         <hr/>
         <% /** Display an error message if part of the time record is invalid. */ %>
         <div ess-notification level="error" title="Time record has errors"

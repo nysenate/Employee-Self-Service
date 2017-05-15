@@ -1,7 +1,7 @@
 
 <div class="accrual-loader" ng-show="loading">
   <h3 class="loading-text">Loading Accruals...</h3>
-  <div loader-indicator class="sm-loader" style="margin: 15.5px auto;"></div>
+  <div loader-indicator class="sm-loader"></div>
 </div>
 
 <div class="accrual-hours-container" ng-hide="loading">

@@ -6,6 +6,7 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
@@ -89,6 +90,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         return Arrays.asList(
                 new EssTimePermission(empId, ATTENDANCE_RECORDS,        GET,    effectiveRange),
                 new EssTimePermission(empId, ACCRUAL,                   GET,    effectiveRange),
+                new EssTimePermission(empId, ALLOWANCE,                 GET,    getEffectiveYearRange(effectiveRange)),
                 new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,  GET,    Range.all()),
                 new EssTimePermission(empId, TIME_RECORDS,              GET,    effectiveRange)
         );
@@ -120,6 +122,21 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
                 new EssTimePermission(empId, SUPERVISOR_EMPLOYEES, GET, effectiveRange),
                 new EssTimePermission(empId, SUPERVISOR_OVERRIDES, GET, effectiveRange),
                 new EssTimePermission(empId, SUPERVISOR_TIME_RECORDS, GET, effectiveRange)
+        );
+    }
+
+    /**
+     * Get a range containing all days of all years present in the given range
+     * @param effectiveRange Range<LocalDate>
+     * @return Range<LocalDate>
+     */
+    private Range<LocalDate> getEffectiveYearRange(Range<LocalDate> effectiveRange) {
+        int startYear = DateUtils.startOfDateRange(effectiveRange).getYear();
+        int endYear = DateUtils.endOfDateRange(effectiveRange).getYear();
+
+        return Range.closedOpen(
+                LocalDate.ofYearDay(startYear, 1),
+                LocalDate.ofYearDay(endYear + 1, 1)
         );
     }
 
