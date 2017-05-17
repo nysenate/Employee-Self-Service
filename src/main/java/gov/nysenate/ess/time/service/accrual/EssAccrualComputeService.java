@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -33,7 +34,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Objects.firstNonNull;
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
@@ -65,6 +65,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     @Autowired private PayPeriodService payPeriodService;
     @Autowired private AccrualInfoService accrualInfoService;
     @Autowired private EmpTransactionService empTransService;
+    @Autowired private EmployeeInfoService empInfoService;
 
     /* --- Implemented Methods --- */
 
@@ -180,8 +181,15 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             }
         }
 
-        LocalDate fromDate = firstNonNull(annualAcc.lastEntry().getValue().getEndDate(),
-                annualAcc.lastEntry().getValue().getContServiceDate());
+        AnnualAccSummary lastAnnualAccSummary = annualAcc.lastEntry().getValue();
+
+        LocalDate fromDate = Optional.ofNullable(lastAnnualAccSummary)
+                .map(AnnualAccSummary::getEndDate)
+                .orElseGet(() -> empInfoService.getEmployee(empId).getSenateContServiceDate());
+
+        // Throw accrual exception if from date is null
+        Optional.ofNullable(fromDate)
+                .orElseThrow(() -> new AccrualException(empId, AccrualExceptionType.NO_FROM_DATE_FOUND));
 
         if (!fromDate.isBefore(lastPeriod.getEndDate())) {
             return Collections.emptyList();

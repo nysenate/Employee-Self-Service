@@ -1,8 +1,10 @@
 package gov.nysenate.ess.core.model.personnel;
 
+import com.google.common.base.Objects;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.unit.Location;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ public class Employee extends Person
     protected ResponsibilityCenter respCenter;
     protected Location workLocation;
     protected LocalDateTime updateDateTime;
+    protected LocalDate senateContServiceDate;
 
     public Employee() {}
 
@@ -59,40 +62,28 @@ public class Employee extends Person
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (!(o instanceof Employee)) return false;
         Employee employee = (Employee) o;
-
-        if (employeeId != employee.employeeId) return false;
-        if (supervisorId != employee.supervisorId) return false;
-        if (active != employee.active) return false;
-        if (uid != null ? !uid.equals(employee.uid) : employee.uid != null) return false;
-        if (jobTitle != null ? !jobTitle.equals(employee.jobTitle) : employee.jobTitle != null) return false;
-        if (payType != employee.payType) return false;
-        if (nid != null ? !nid.equals(employee.nid) : employee.nid != null) return false;
-        if (respCenter != null ? !respCenter.equals(employee.respCenter) : employee.respCenter != null) return false;
-        if (workLocation != null ? !workLocation.equals(employee.workLocation) : employee.workLocation != null)
-            return false;
-        return !(updateDateTime != null ? !updateDateTime.equals(employee.updateDateTime) : employee.updateDateTime != null);
-
+        return employeeId == employee.employeeId &&
+                supervisorId == employee.supervisorId &&
+                active == employee.active &&
+                Objects.equal(uid, employee.uid) &&
+                Objects.equal(jobTitle, employee.jobTitle) &&
+                payType == employee.payType &&
+                Objects.equal(nid, employee.nid) &&
+                Objects.equal(respCenter, employee.respCenter) &&
+                Objects.equal(workLocation, employee.workLocation) &&
+                Objects.equal(updateDateTime, employee.updateDateTime) &&
+                Objects.equal(senateContServiceDate, employee.senateContServiceDate);
     }
 
     @Override
     public int hashCode() {
-        int result = employeeId;
-        result = 31 * result + supervisorId;
-        result = 31 * result + (active ? 1 : 0);
-        result = 31 * result + (uid != null ? uid.hashCode() : 0);
-        result = 31 * result + (jobTitle != null ? jobTitle.hashCode() : 0);
-        result = 31 * result + (payType != null ? payType.hashCode() : 0);
-        result = 31 * result + (nid != null ? nid.hashCode() : 0);
-        result = 31 * result + (respCenter != null ? respCenter.hashCode() : 0);
-        result = 31 * result + (workLocation != null ? workLocation.hashCode() : 0);
-        result = 31 * result + (updateDateTime != null ? updateDateTime.hashCode() : 0);
-        return result;
+        return Objects.hashCode(employeeId, supervisorId, active, uid, jobTitle, payType, nid,
+                respCenter, workLocation, updateDateTime, senateContServiceDate);
     }
 
-    /* --- Basic Getters/Setters --- */
+/* --- Basic Getters/Setters --- */
 
     public int getEmployeeId() {
         return employeeId;
@@ -172,5 +163,13 @@ public class Employee extends Person
 
     public void setUpdateDateTime(LocalDateTime updateDateTime) {
         this.updateDateTime = updateDateTime;
+    }
+
+    public LocalDate getSenateContServiceDate() {
+        return senateContServiceDate;
+    }
+
+    public void setSenateContServiceDate(LocalDate senateContServiceDate) {
+        this.senateContServiceDate = senateContServiceDate;
     }
 }
