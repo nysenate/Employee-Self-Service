@@ -20,6 +20,7 @@ import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.model.accrual.*;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
+import gov.nysenate.ess.time.service.expectedhrs.TxExpectedHoursService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     @Autowired private PayPeriodService payPeriodService;
     @Autowired private AccrualInfoService accrualInfoService;
     @Autowired private EmpTransactionService empTransService;
+    @Autowired private TxExpectedHoursService txExpectedHoursService;
 
     /* --- Implemented Methods --- */
 
@@ -108,10 +110,13 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             serviceYtdExpected = BigDecimal.ZERO;
         }
         // If the pay period is not the beginning of the year,
-        // we can use the accrual summary as of the end of the last pay period
+        // we can use the accrual summary as of the end of the last pay period.
+        // Expected hours need to be computed for the employee instead of relying on
+        // the value in the Accruals so it won't vary if a new accrual record is added
+        // or removed in SFMS.
         else {
             referenceSummary = lastAccruals;
-            serviceYtdExpected = lastAccruals.getExpectedTotalHours();
+            serviceYtdExpected = txExpectedHoursService.getExpectedHours(payPeriod, empId);
         }
 
         return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected);
@@ -364,7 +369,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
-            accrualState.setYtdHoursExpected(periodAccSum.get().getExpectedTotalHours());
+            accrualState.setYtdHoursExpected(txExpectedHoursService.getExpectedHours(payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate), transHistory.getEmployeeId()));
         }
         else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
