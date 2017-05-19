@@ -12,7 +12,7 @@ angular.module('essHelp')
 function helpCtrl($scope, $window, appProps) {
 
     /** Url pointing to help pdf */
-    $scope.helpPdfUrl = appProps.ctxPath + '/assets/pdf/ess-help.pdf';
+    $scope.helpPdfUrl = appProps.ctxPath + '/assets/help/pdf/ess-help.pdf';
 
     // Options for opening the help document in a new window
     var helpWindowName = 'helpWindow';
