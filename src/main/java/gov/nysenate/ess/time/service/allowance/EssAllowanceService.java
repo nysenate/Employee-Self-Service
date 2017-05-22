@@ -240,7 +240,8 @@ public class EssAllowanceService implements AllowanceService {
                                 : BigDecimal.ZERO
                 ))
                 .filter(payment -> yearRange.contains(payment.getEffectDate()) ||
-                        yearRange.contains(payment.getEndDate()))
+                        yearRange.contains(Optional.ofNullable(payment.getEndDate())
+                                .orElse(yearRange.upperEndpoint())))
                 .sorted(Comparator.comparing(HourlyWorkPayment::getEffectDate))
                 .collect(Collectors.toList());
     }
