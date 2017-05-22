@@ -15,6 +15,9 @@ public enum AccrualExceptionType
 
     PERIOD_RECORD_NOT_FOUND (
             "A period accrual record for the requested period could not be retrieved or calculated." ),
+
+    NO_FROM_DATE_FOUND (
+            "Could not retrieve annual accrual end date or continuous service date for the employee" ),
     ;
 
     String message;

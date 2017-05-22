@@ -42,6 +42,19 @@ public class EssAllowanceService implements AllowanceService {
     /** {@inheritDoc} */
     @Override
     public AllowanceUsage getAllowanceUsage(int empId, int year) {
+        return getAllowanceUsage(empId, LocalDate.ofYearDay(year + 1, 1), false);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AllowanceUsage getAllowanceUsage(int empId, LocalDate date) {
+        return getAllowanceUsage(empId, date, true);
+    }
+
+    /* --- Internal Methods --- */
+
+    private AllowanceUsage getAllowanceUsage(int empId, LocalDate date, boolean yearOfDate) {
+        int year = yearOfDate ? date.getYear() : date.minusDays(1).getYear();
         TransactionHistory transHistory = transService.getTransHistory(empId);
         AllowanceUsage allowanceUsage = new AllowanceUsage(empId, year);
         // Set Salary Recs
@@ -51,14 +64,12 @@ public class EssAllowanceService implements AllowanceService {
         allowanceUsage.setYearlyAllowance(getYearlyAllowance(year, transHistory));
 
         // Set Allowance usage, getting dates not covered by hourly work payments
-        RangeSet<LocalDate> unpaidDates = getBaseAllowanceUsage(allowanceUsage, transHistory);
+        RangeSet<LocalDate> unpaidDates = getBaseAllowanceUsage(allowanceUsage, transHistory, date);
         if (!unpaidDates.isEmpty()) {
             getTimesheetAllowanceUsage(allowanceUsage, unpaidDates);
         }
         return allowanceUsage;
     }
-
-    /** --- Internal Methods --- */
 
     /**
      * Get the latest yearly allowance recorded in the given transaction history for the given year
@@ -73,7 +84,9 @@ public class EssAllowanceService implements AllowanceService {
      *  Calculate the number of hours and amount of money paid out for the given year, adding it to the allowance usage
      *  Returns a set of pay periods in the year for which the employee has not received pay
      */
-    private RangeSet<LocalDate> getBaseAllowanceUsage(AllowanceUsage allowanceUsage, TransactionHistory transHistory) {
+    private RangeSet<LocalDate> getBaseAllowanceUsage(AllowanceUsage allowanceUsage,
+                                                      TransactionHistory transHistory,
+                                                      LocalDate beforeDate) {
         int year = allowanceUsage.getYear();
         Range<LocalDate> yearRange = DateUtils.yearDateRange(year);
 
@@ -86,11 +99,14 @@ public class EssAllowanceService implements AllowanceService {
         payTypeRangeMap.asMapOfRanges().entrySet().stream()
                 .filter(entry -> entry.getValue() != PayType.TE)
                 .map(Map.Entry::getKey)
+                .filter(range -> DateUtils.startOfDateRange(range).isBefore(beforeDate))
                 .forEach(nonTempEmploymentDates::add);
 
         // Initialize unpaid dates as entire year, paid dates will be removed as we iterate through payments
         RangeSet<LocalDate> unpaidDates = TreeRangeSet.create();
         unpaidDates.add(yearRange);
+        // Remove all dates from beforeDate on
+        unpaidDates.remove(Range.atLeast(beforeDate));
         // Remove all dates where the employee was not a temporary employee
         unpaidDates.removeAll(nonTempEmploymentDates);
 
@@ -99,6 +115,10 @@ public class EssAllowanceService implements AllowanceService {
 
         // Add up hourly work payments to get the total hours/money paid for the year
         for (HourlyWorkPayment payment : payments) {
+            if (!RangeUtils.intersects(unpaidDates, payment.getWorkingRange())) {
+                // Ignore payments that do not coincide with unpaid dates
+                continue;
+            }
             unpaidDates.remove(payment.getWorkingRange());
             hoursPaid = hoursPaid.add(payment.getHoursPaid());
             moneyPaid = moneyPaid.add(payment.getMoneyPaidForYear(year));
@@ -221,7 +241,7 @@ public class EssAllowanceService implements AllowanceService {
                 ))
                 .filter(payment -> yearRange.contains(payment.getEffectDate()) ||
                         yearRange.contains(payment.getEndDate()))
-                .sorted((hwpA, hwpB) -> hwpA.getEffectDate().compareTo(hwpB.getEffectDate()))
+                .sorted(Comparator.comparing(HourlyWorkPayment::getEffectDate))
                 .collect(Collectors.toList());
     }
 }

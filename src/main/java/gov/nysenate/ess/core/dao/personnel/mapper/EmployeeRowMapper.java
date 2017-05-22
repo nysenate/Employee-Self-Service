@@ -11,7 +11,6 @@ import gov.nysenate.ess.core.model.personnel.MaritalStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -56,6 +55,7 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee>
         emp.setHomeAddress(addressRowMapper.mapRow(rs, rowNum));
         emp.setRespCenter(respCenterRowMapper.mapRow(rs, rowNum));
         emp.setWorkLocation(locationRowMapper.mapRow(rs, rowNum));
+        emp.setSenateContServiceDate(getLocalDate(rs, pfx + "DTCONTSERV"));
         LocalDateTime maxUpdateDateTime = Stream.of(
                 getLocalDateTime(rs, "DTTXNUPDATE"),
                 getLocalDateTime(rs, "TTL_DTTXNUPDATE"),
