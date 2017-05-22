@@ -22,6 +22,7 @@ import gov.nysenate.ess.time.model.accrual.*;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.service.expectedhrs.TxExpectedHoursService;
+import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // Hours expected for the current year
         BigDecimal serviceYtdExpected;
         // Hours expected for the current pay period
-        BigDecimal biWeekHrsExpected = currentAccruals.getExpectedBiweekHours();
+        BigDecimal biWeekHrsExpected = AccrualUtils.roundExpectedHours(currentAccruals.getExpectedBiweekHours());
 
         // If the pay period is the first of its year or is the first pay period,
         // we can get the accrual usage record for the pay period
