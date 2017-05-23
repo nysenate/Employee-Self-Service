@@ -23,6 +23,9 @@ public enum SimpleTimePermission {
     /** Granted to temporary employees allowing them to view the allowance page */
     ALLOWANCE_PAGE("time:allowance-page"),
 
+    /** Granted to supervisors of temp employees allowing them to view their employees' allowance */
+    EMPLOYEE_ALLOWANCE_PAGE("time:emp-allowance-page"),
+
     /* --- Admin Permissions --- */
 
     /** Allows full use of the time record manager to create / modify records */

@@ -26,9 +26,9 @@
 </div>
 <div ng-show="!request.supervisor && allEmps.length == 0">
   <ess-notification level="info" ng-show="validSupEmpGroupCount > 1">
-    No valid Employee {{subject}}s can be viewed for for the selected supervisor.
+    No valid Employee {{selectSubject}} can be viewed for for the selected supervisor.
   </ess-notification>
   <ess-notification level="info" ng-hide="validSupEmpGroupCount > 1">
-    No valid Employee {{subject}}s are available for viewing.
+    No valid Employee {{selectSubject}} are available for viewing.
   </ess-notification>
 </div>

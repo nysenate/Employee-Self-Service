@@ -26,6 +26,12 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
             /** If true, senators will appear in the employee dropdown.  Otherwise they are omitted */
             $scope.showSenators = ($attrs.showSenators || '').toLowerCase() === 'true';
 
+            /** If provided, employees will be filtered based on their pay type */
+            if ($attrs.payType) {
+                $scope.payTypeFilter = true;
+                $scope.payTypeRegex = new RegExp($attrs.payType, 'i');
+            }
+
             /**
              * Specifies the subject of the employee select label
              *  in the form "Select {selectSubject} for employee"
@@ -166,7 +172,8 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
              */
             function employeeFilter (empInfo) {
                 return activeFilter(empInfo) &&
-                    senatorFilter(empInfo);
+                    senatorFilter(empInfo) &&
+                    payTypeFilter(empInfo);
             }
 
             /**
@@ -191,6 +198,19 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
              */
             function senatorFilter (empInfo) {
                 return $scope.showSenators || !empInfo.senator;
+            }
+
+            /**
+             * Returns true if no pay type is passed in
+             * or if the given emp info matches the passed in pay type
+             * @param empInfo
+             * @returns {boolean}
+             */
+            function payTypeFilter (empInfo) {
+                if (!$scope.payTypeFilter) {
+                    return true;
+                }
+                return $scope.payTypeRegex.test(empInfo.payType);
             }
 
         }

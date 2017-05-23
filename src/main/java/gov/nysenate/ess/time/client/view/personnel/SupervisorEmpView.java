@@ -101,6 +101,11 @@ public class SupervisorEmpView implements ViewObject
     }
 
     @XmlElement
+    public PayType getPayType() {
+        return payType;
+    }
+
+    @XmlElement
     @Override
     public String getViewType() {
         return "supervisor emp";

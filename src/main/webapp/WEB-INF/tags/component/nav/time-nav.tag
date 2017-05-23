@@ -35,6 +35,9 @@
                badge-id="pendingRecordCount" hide-empty="true"></badge>
       </li>
       <li class="sub-topic"><a href="${ctxPath}/time/record/emphistory">Employee Attendance History</a></li>
+      <shiro:hasPermission name="<%= SimpleTimePermission.EMPLOYEE_ALLOWANCE_PAGE.getPermissionString()%>">
+        <li class="sub-topic"><a href="${ctxPath}/time/allowance/emp-status">Employee Allowed Hours</a></li>
+      </shiro:hasPermission>
       <li class="sub-topic"><a href="${ctxPath}/time/accrual/emphistory">Employee Accrual History</a></li>
       <li class="sub-topic"><a href="${ctxPath}/time/accrual/emp-projections">Employee Accrual Projections</a></li>
       <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>

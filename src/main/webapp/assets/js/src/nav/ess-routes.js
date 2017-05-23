@@ -94,6 +94,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/allowance/status'
     });
 
+    $routeProvider.when(ctxPath + '/time/allowance/emp-status', {
+        templateUrl: ctxPath + '/template/time/allowance/emp-status'
+    });
+
     /** Test */
 
     $routeProvider.when(ctxPath + '/time/test/errormodal', {
