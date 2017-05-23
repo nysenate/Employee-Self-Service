@@ -130,6 +130,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(defaultValue = "All", required = false) String issuerId,
                                            @RequestParam(required = false) String dateField,
                                            @RequestParam(defaultValue = "All", required = false) String savedInSfms,
+                                           @RequestParam(defaultValue = "All", required = false) String itemId,
                                            WebRequest webRequest) {
         checkPermission(new WildcardPermission("supply:employee"));
         LocalDateTime fromDateTime = getFromDateTime(from);
@@ -140,7 +141,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         LimitOffset limoff = getLimitOffset(webRequest, 25);
         Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
         PaginatedList<Requisition> results;
-        results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff, issuerId);
+        results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff, issuerId, itemId);
         List<RequisitionView> resultViews = results.getResults().stream()
                                                    .map(RequisitionView::new)
                                                    .collect(Collectors.toList());

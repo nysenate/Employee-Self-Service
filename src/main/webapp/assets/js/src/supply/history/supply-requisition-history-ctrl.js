@@ -1,13 +1,14 @@
 essSupply = angular.module('essSupply').controller('SupplyHistoryController',
-    ['$scope', 'SupplyIssuersApi', 'SupplyRequisitionApi', 'LocationService', 'LocationApi',
-        'PaginationModel', 'SupplyUtils', 'modals', supplyHistoryController]);
+                                                   ['$scope', 'SupplyIssuersApi', 'SupplyRequisitionApi', 'SupplyItemApi', 'LocationService', 'LocationApi',
+                                                    'PaginationModel', 'SupplyUtils', 'modals', supplyHistoryController]);
 
-function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, locationService, locationApi,
+function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemApi, locationService, locationApi,
                                  paginationModel, supplyUtils, modals) {
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.loading = true;
     $scope.shipments = null;
     $scope.locations = [];
+    $scope.selectedLocation = "All";
     $scope.selectedIssuer = null;
     $scope.issuers = [];
     $scope.issuerNameToID = [];
@@ -15,6 +16,11 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, locat
         date: {
             from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
             to: moment().format("MM/DD/YYYY")
+        },
+        commodityCode: {
+            codes: [],
+            selected: "All",
+            codeToId: {}
         }
     };
 
@@ -36,12 +42,13 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, locat
             limit: $scope.paginate.itemsPerPage,
             offset: $scope.paginate.getOffset(),
             location: $scope.selectedLocation,
-            issuerId: $scope.issuerNameToID[$scope.selectedIssuer]
+            issuerId: $scope.issuerNameToID[$scope.selectedIssuer],
+            itemId: $scope.filter.commodityCode.codeToId[$scope.filter.commodityCode.selected]
         };
         return requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
             $scope.paginate.setTotalItems(response.total);
-        },function (errorResponse) {
+        }, function (errorResponse) {
             modals.open('500', {details: errorResponse});
             console.error(errorResponse);
         })
@@ -52,31 +59,9 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, locat
             .then(setLocations);
         supplyIssuersApi.get().$promise
             .then(setIssuers);
+        itemApi.items()
+            .then(setCommodityCodes);
     }
-
-    /** Updates displayed requisitions when a filter is changed. */
-    $scope.onFilterChange = function () {
-        $scope.loading = true;
-        $scope.paginate.reset();
-        getUpdatedOrders().$promise
-            .then(doneLoading).catch(
-                function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        });
-    };
-
-    /** Updates the displayed requisitions whenever the page is changed. */
-    $scope.onPageChange = function () {
-        $scope.loading = true;
-        getUpdatedOrders().$promise
-            .then(doneLoading).catch(
-            function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            }
-        );
-    };
 
     var setLocations = function (response) {
         response.result.forEach(function (e) {
@@ -94,6 +79,40 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, locat
         });
         $scope.issuers.unshift("All");
         $scope.selectedIssuer = $scope.issuers[0];
+    };
+
+    var setCommodityCodes = function (response) {
+        response.forEach(function (e) {
+            $scope.filter.commodityCode.codes.push(e.commodityCode);
+            $scope.filter.commodityCode.codeToId[e.commodityCode] = e.id;
+        });
+        $scope.filter.commodityCode.codes.unshift("All");
+        $scope.filter.commodityCode.selected = $scope.filter.commodityCode.codes[0];
+    };
+
+    /** Updates displayed requisitions when a filter is changed. */
+    $scope.onFilterChange = function () {
+        $scope.loading = true;
+        $scope.paginate.reset();
+        getUpdatedOrders().$promise
+            .then(doneLoading)
+            .catch(
+                function (errorResponse) {
+                    modals.open('500', {details: errorResponse});
+                    console.error(errorResponse);
+                });
+    };
+
+    /** Updates the displayed requisitions whenever the page is changed. */
+    $scope.onPageChange = function () {
+        $scope.loading = true;
+        getUpdatedOrders().$promise
+            .then(doneLoading).catch(
+            function (errorResponse) {
+                modals.open('500', {details: errorResponse});
+                console.error(errorResponse);
+            }
+        );
     };
 
     var sortCodes = function (codes) {

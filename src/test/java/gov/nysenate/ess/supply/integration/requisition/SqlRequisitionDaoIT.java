@@ -43,7 +43,7 @@ public class SqlRequisitionDaoIT extends BaseTest {
     public void canSearchRequisitions() {
         Range<LocalDateTime> dateRange = Range.closed(LocalDateTime.now().minusMonths(1), LocalDateTime.now());
         requisitionDao.searchRequisitions("A42FB", "any", EnumSet.allOf(RequisitionStatus.class),
-                dateRange, "ordered_date_time", "any", LimitOffset.ALL, "All");
+                dateRange, "ordered_date_time", "any", LimitOffset.ALL, "All", "All");
     }
 
     @Test

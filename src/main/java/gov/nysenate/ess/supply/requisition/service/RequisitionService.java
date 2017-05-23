@@ -29,7 +29,8 @@ public interface RequisitionService {
     Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID);
+                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms,
+                                                  LimitOffset limitOffset, String issuerID, String itemId);
     /**
      * Search a users order history.
      * Order history consists of all of a users orders plus all other orders with destination equal to the users work location.

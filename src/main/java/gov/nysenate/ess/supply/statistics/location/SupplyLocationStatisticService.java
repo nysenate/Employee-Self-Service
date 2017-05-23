@@ -28,7 +28,7 @@ public class SupplyLocationStatisticService {
                                                                                EnumSet.allOf(RequisitionStatus.class),
                                                                                Range.closed(start, end),
                                                                                "ordered_date_time",
-                                                                               "All", LimitOffset.ALL, "All").getResults();
+                                                                               "All", LimitOffset.ALL, "All", "All").getResults();
         Set<Location> locations = distinctDestinationsIn(requisitions);
         return locations.stream()
                         .map(loc -> new LocationStatistic(loc, requisitions))

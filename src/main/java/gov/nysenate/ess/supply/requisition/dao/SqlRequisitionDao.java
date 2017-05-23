@@ -94,7 +94,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Override
     public synchronized PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                                      Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerID) {
+                                                                      Range<LocalDateTime> dateRange, String dateField, String savedInSfms,
+                                                                      LimitOffset limitOffset, String issuerID, String itemId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("destination", formatSearchString(destination))
                 .addValue("customerId", formatSearchString(customerId))
@@ -102,9 +103,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
                 .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)))
                 .addValue("issuerId", formatSearchString(issuerID))
+                .addValue("itemId", formatSearchString(itemId))
                 .addValue("savedInSfms", formatSearchString(savedInSfms));
         ensureValidColumn(dateField);
-        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL_WITH_ISSUER, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
+        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
@@ -234,16 +236,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
          * to complete this query. */
         SEARCH_REQUISITIONS_PARTIAL(
                 "SELECT *, count(*) OVER() as total_rows \n" +
-                "FROM ${supplySchema}.requisition as r \n" +
-                "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
-                "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
-                "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
-        ),
-        SEARCH_REQUISITIONS_PARTIAL_WITH_ISSUER(
-                "SELECT *, count(*) OVER() as total_rows \n" +
                         "FROM ${supplySchema}.requisition as r \n" +
                         "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
-                        "WHERE c.destination LIKE :destination AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId  AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
+                        "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
+                        "AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId \n" +
+                        "AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId) \n" +
                         "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
         ),
 

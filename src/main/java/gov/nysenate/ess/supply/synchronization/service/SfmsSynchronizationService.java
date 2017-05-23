@@ -98,7 +98,7 @@ public class SfmsSynchronizationService {
         return requisitionService.searchRequisitions("All", "All",
                 EnumSet.of(RequisitionStatus.APPROVED),
                 dateRange, "approved_date_time",
-                "false", LimitOffset.ALL, "All").getResults();
+                "false", LimitOffset.ALL, "All", "All").getResults();
     }
 
     /**

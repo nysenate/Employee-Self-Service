@@ -7,15 +7,20 @@
     <h4 class="content-info supply-text" style="margin-bottom: 0px;">
       Search approved and rejected requisitions.</h4>
     <div class="grid text-align-center">
-      <div class="col-6-12 padding-10">
+      <div class="col-4-12 padding-10">
         <label class="supply-text">Location:</label>
         <select ng-model="selectedLocation" ng-options="location for location in locations"
                 ng-required="true"
                 ng-change="onFilterChange()"></select>
       </div>
-      <div class="col-6-12 padding-10">
+      <div class="col-4-12 padding-10">
         <label class="supply-text">Issuer:</label>
         <select ng-model="selectedIssuer" ng-options="emp for emp in issuers"
+                ng-change="onFilterChange()"></select>
+      </div>
+      <div class="col-4-12 padding-10">
+        <label class="supply-text">Commodity:</label>
+        <select ng-model="filter.commodityCode.selected" ng-options="code for code in filter.commodityCode.codes"
                 ng-change="onFilterChange()"></select>
       </div>
       <div class="col-6-12" style="padding: 0 10px 10px 10px;">

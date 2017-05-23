@@ -18,7 +18,8 @@ public interface RequisitionDao {
     Optional<Requisition> getRequisitionById(int requisitionId);
 
     PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms, LimitOffset limitOffset, String issuerId);
+                                                  Range<LocalDateTime> dateRange, String dateField, String savedInSfms,
+                                                  LimitOffset limitOffset, String issuerId, String itemId);
 
     /**
      * Searches the order history for a employee.
