@@ -20,6 +20,9 @@ public enum SimpleTimePermission {
     /** Granted to annual employees allowing them to view accrual projections */
     ACCRUAL_PROJECTIONS("time:accrual-projections:view"),
 
+    /** Granted to temporary employees allowing them to view the allowance page */
+    ALLOWANCE_PAGE("time:allowance-page"),
+
     /* --- Admin Permissions --- */
 
     /** Allows full use of the time record manager to create / modify records */

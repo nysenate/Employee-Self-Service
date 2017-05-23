@@ -18,7 +18,7 @@
           <div class="hours-caption">Reported Hours</div>
           {{allowance.hoursUsed | number}}
         </div>
-        <div class="ytd-hours">
+        <div class="ytd-hours" ng-show="showRecordHours()">
           <div class="hours-caption">Current Record Hours</div>
           {{tempWorkHours | number}}
         </div>

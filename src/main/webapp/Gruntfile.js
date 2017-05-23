@@ -219,6 +219,7 @@ module.exports = function(grunt) {
                         '<%= jsSource %>/time/accrual/accrual-utils.js',
                         //        <!-- Allowances -->
                         '<%= jsSource %>/time/allowance/allowance-bar-directive.js',
+                        '<%= jsSource %>/time/allowance/allowance-status-directive.js',
                         '<%= jsSource %>/time/allowance/allowance-utils.js',
                         //        <!-- Grants -->
                         '<%= jsSource %>/time/grant/grant-ctrl.js'

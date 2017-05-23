@@ -6,6 +6,7 @@ import org.apache.shiro.authz.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +22,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
 
     static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
 
-    private static final String NOT_A_SUPERVISOR_PAGE = TIME_TMPL_BASE_URL + "/error/not-supervisor";
-
-    private static final String NO_TIME_ENTRY_PAGE = TIME_TMPL_BASE_URL + "/error/no-time-entry";
-
-    private static final String NO_ACCRUALS_PAGE = TIME_TMPL_BASE_URL + "/error/no-accruals";
+    private static final String TIME_MESSAGE_URL = TIME_TMPL_BASE_URL + "/error/time-message";
 
     /**
      * Return the corresponding template...
@@ -53,13 +50,15 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
             "/accrual/emp-history",
             "/accrual/emp-projections"
     })
-    public String getManagementPage(HttpServletRequest request) {
+    public String getManagementPage(HttpServletRequest request, ModelMap modelMap) {
         final Permission managementPermission =
                 SimpleTimePermission.MANAGEMENT_PAGES.getPermission();
         if (SecurityUtils.getSubject().isPermitted(managementPermission)) {
             return request.getRequestURI();
         }
-        return NOT_A_SUPERVISOR_PAGE;
+        modelMap.addAttribute("level", "error")
+                .addAttribute("title", "This page is only available for Time and Attendance Supervisors");
+        return TIME_MESSAGE_URL;
     }
 
     /**
@@ -74,12 +73,15 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
             "/record/entry",
             "/record/history"
     })
-    public String getMyAttendancePage(HttpServletRequest request) {
+    public String getMyAttendancePage(HttpServletRequest request, ModelMap modelMap) {
         final Permission attendRecordPermission = SimpleTimePermission.ATTENDANCE_RECORD_PAGES.getPermission();
         if (SecurityUtils.getSubject().isPermitted(attendRecordPermission)) {
             return request.getRequestURI();
         }
-        return NO_TIME_ENTRY_PAGE;
+        modelMap.addAttribute("level", "info")
+                .addAttribute("title", "Time Entry Not Required")
+                .addAttribute("message", "You are not required to submit attendance records in ESS.");
+        return TIME_MESSAGE_URL;
     }
 
     /**
@@ -94,11 +96,34 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
             "/accrual/history",
             "/accrual/projections"
     })
-    public String getMyAccrualPage(HttpServletRequest request) {
+    public String getMyAccrualPage(HttpServletRequest request, ModelMap modelMap) {
         final Permission accrualPagePermission = SimpleTimePermission.ACCRUAL_PAGES.getPermission();
         if (SecurityUtils.getSubject().isPermitted(accrualPagePermission)) {
             return request.getRequestURI();
         }
-        return NO_TIME_ENTRY_PAGE;
+        modelMap.addAttribute("level", "info")
+                .addAttribute("title", "Time Entry Not Required")
+                .addAttribute("message", "You are not required to submit attendance records in ESS.");
+        return TIME_MESSAGE_URL;
+    }
+
+    /**
+     * Allowance Page
+     *
+     * Tests that the user is able to view the allowance page.
+     * @param request HttpServletRequest
+     * @param modelMap ModelMap
+     * @return String - passed in uri or error page depending on permissions
+     */
+    @RequestMapping(value = "/allowance/status")
+    public String getAllowanceStatusPage(HttpServletRequest request, ModelMap modelMap) {
+        final Permission allowancePagePermission = SimpleTimePermission.ALLOWANCE_PAGE.getPermission();
+        if (SecurityUtils.getSubject().isPermitted(allowancePagePermission)) {
+            return request.getRequestURI();
+        }
+        modelMap.addAttribute("level", "error")
+                .addAttribute("title", "Allowance Not Available")
+                .addAttribute("message", "You are not permitted to view allowance status.");
+        return TIME_MESSAGE_URL;
     }
 }

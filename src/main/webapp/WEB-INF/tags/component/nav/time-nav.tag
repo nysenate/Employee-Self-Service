@@ -12,6 +12,9 @@
       <li class="sub-topic"><a href="${ctxPath}/time/record/entry">Attendance Record Entry</a></li>
       <li class="sub-topic"><a href="${ctxPath}/time/record/history">Attendance History</a></li>
     </shiro:hasPermission>
+    <shiro:hasPermission name="<%= SimpleTimePermission.ALLOWANCE_PAGE.getPermissionString() %>">
+      <li class="sub-topic"><a href="${ctxPath}/time/allowance/status">Allowed Hours</a></li>
+    </shiro:hasPermission>
     <li class="sub-topic"><a href="${ctxPath}/time/period/calendar">Payroll Calendar</a></li>
   </ul>
   <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PAGES.getPermissionString() %>">

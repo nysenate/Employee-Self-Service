@@ -12,7 +12,7 @@ function allowanceBarDirective(appProps, allowanceUtils) {
     return {
         scope: {
             allowance: "=",
-            tempWorkHours: "=",
+            tempWorkHours: "=?",
             loading: "=?"
         },
         templateUrl: appProps.ctxPath + '/template/time/allowance/allowance-bar',
@@ -21,9 +21,13 @@ function allowanceBarDirective(appProps, allowanceUtils) {
             var submitted = $attrs['submitted'] === 'true';
 
             $scope.getAvailableHours = function() {
-                var hours = submitted ? 0 : $scope.tempWorkHours;
+                var hours = submitted ? 0 : $scope.tempWorkHours || 0;
                 return allowanceUtils.getAvailableHours($scope.allowance, hours);
             };
+
+            $scope.showRecordHours = function () {
+                return angular.isNumber($scope.tempWorkHours);
+            }
         }
     };
 }

@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.dao.personnel;
 import com.google.common.collect.HashMultimap;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.transaction.mapper.TransInfoRowMapper;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Agency;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
@@ -115,6 +116,15 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
                 boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
                 empSupInfo.setSenator(senator);
+                PayType payType = null;
+                String payTypeVal = Objects.toString(colMap.get("CDPAYTYPE"));
+                try {
+                    payType = PayType.valueOf(payTypeVal);
+                } catch (IllegalArgumentException ex) {
+                    logger.warn("Illegal Pay type value supplied: " + payTypeVal, ex);
+                }
+                empSupInfo.setPayType(payType);
+
                 if (transType.equals(EMP)) {
                     empTerminated = true;
 

@@ -13,10 +13,6 @@
 
 <div loader-indicator class="loader" ng-show="isEmpLoading()"></div>
 
-<div ng-show="isTe">
-  <jsp:include page="te-accruals.jsp"/>
-</div>
-
 <div class="content-container" ng-hide="isEmpLoading()">
   <div class="content-container content-controls"
        ng-hide="isUser()">

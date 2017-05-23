@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.client.view.personnel;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -16,6 +17,7 @@ public class SupervisorEmpView implements ViewObject
     protected String empLastName;
     protected String empFirstName;
     protected boolean senator;
+    protected PayType payType;
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected LocalDate supStartDate;
@@ -24,17 +26,19 @@ public class SupervisorEmpView implements ViewObject
     /** --- Constructors --- */
 
     public SupervisorEmpView(EmployeeSupInfo supInfo) {
-        if (supInfo != null) {
-            this.empId = supInfo.getEmpId();
-            this.supId = supInfo.getSupId();
-            this.empLastName = supInfo.getEmpLastName();
-            this.empFirstName = supInfo.getEmpFirstName();
-            this.senator = supInfo.isSenator();
-            this.startDate = supInfo.getStartDate();
-            this.endDate = supInfo.getEndDate();
-            this.supStartDate = supInfo.getSupStartDate();
-            this.supEndDate = supInfo.getSupEndDate();
+        if (supInfo == null) {
+            return;
         }
+        this.empId = supInfo.getEmpId();
+        this.supId = supInfo.getSupId();
+        this.empLastName = supInfo.getEmpLastName();
+        this.empFirstName = supInfo.getEmpFirstName();
+        this.senator = supInfo.isSenator();
+        this.payType = supInfo.getPayType();
+        this.startDate = supInfo.getStartDate();
+        this.endDate = supInfo.getEndDate();
+        this.supStartDate = supInfo.getSupStartDate();
+        this.supEndDate = supInfo.getSupEndDate();
     }
 
     /* --- Functional Getters --- */

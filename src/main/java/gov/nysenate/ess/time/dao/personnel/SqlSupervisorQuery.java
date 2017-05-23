@@ -19,7 +19,7 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "  WHERE NUXREFSV = :supId AND CDSTATUS = 'A' \n" +
         ")\n" +
 
-        "SELECT empList.NUXREFEM, pers.FFNALAST, pers.FFNAFIRST, pers.CDAGENCY,\n" +
+        "SELECT empList.NUXREFEM, pers.FFNALAST, pers.FFNAFIRST, pers.CDAGENCY, pers.CDPAYTYPE,\n" +
         "       per.NUXREFSV, per.CDEMPSTATUS, per.CDSTATPER,\n" +
         "       ptx.CDTRANS, ptx.CDTRANSTYP, ptx.DTEFFECT, ptx.DTTXNORIGIN,\n" +
         "       ROW_NUMBER() OVER (\n" +

@@ -42,7 +42,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
     private static final Logger logger = LoggerFactory.getLogger(EssCachedSupervisorInfoService.class);
 
     /** A set of transactions that can affect a supervisor employee group */
-    private static final ImmutableSet<TransactionCode> supervisorTransCodes = ImmutableSet.of(SUP, APP, RTP, EMP);
+    private static final ImmutableSet<TransactionCode> supervisorTransCodes =
+            ImmutableSet.of(SUP, APP, RTP, EMP, AGY, TYP);
 
     /** Employees are assigned this value in the cache if they are not supervisors */
     private static final Object NON_SUPERVISOR_VALUE = Boolean.FALSE;

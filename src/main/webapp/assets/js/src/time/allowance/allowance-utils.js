@@ -9,16 +9,19 @@ function allowanceUtils($filter) {
     };
 
     /**
-     * Compute remaining allowance, hours, and total hours based on the highest salary present during the given recrod
+     * Compute remaining allowance, hours, and total hours
+     * based on the highest salary present during the given date range
+     *
      * @param allowance
+     * @param {Object} dateRange - object with params 'beginDate' and 'endDate'
      */
-    function computeRemaining (allowance, record) {
+    function computeRemaining (allowance, dateRange) {
         var highestRate = 0;
         angular.forEach(allowance.salaryRecs, function (salaryRec) {
             // Select only temporary salaries that are effective during the record date range
             if (salaryRec.payType === 'TE' &&
-                !moment(salaryRec.effectDate).isAfter(record.endDate) &&
-                !moment(record.beginDate).isAfter(salaryRec.endDate)) {
+                !moment(salaryRec.effectDate).isAfter(dateRange.endDate) &&
+                !moment(dateRange.beginDate).isAfter(salaryRec.endDate)) {
                 if (salaryRec.salaryRate > highestRate) {
                     highestRate = salaryRec.salaryRate;
                 }

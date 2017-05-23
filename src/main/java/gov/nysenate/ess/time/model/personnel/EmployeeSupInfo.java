@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.model.personnel;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.util.DateUtils;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ public class EmployeeSupInfo
     protected String empLastName;
     protected String empFirstName;
 
+    protected PayType payType;
     protected boolean senator;
 
     // The requested supervisor date range when this instance was created
@@ -43,6 +45,7 @@ public class EmployeeSupInfo
         this.supId = other.supId;
         this.empLastName = other.empLastName;
         this.empFirstName = other.empFirstName;
+        this.payType = other.payType;
         this.senator = other.senator;
         this.startDate = other.startDate;
         this.endDate = other.endDate;
@@ -120,6 +123,7 @@ public class EmployeeSupInfo
                 Objects.equals(empFirstName, that.empFirstName) &&
                 Objects.equals(empLastName, that.empLastName) &&
                 Objects.equals(startDate, that.startDate) &&
+                Objects.equals(payType, that.payType) &&
                 Objects.equals(senator, that.senator) &&
                 Objects.equals(endDate, that.endDate) &&
                 Objects.equals(supStartDate, that.supStartDate) &&
@@ -128,7 +132,8 @@ public class EmployeeSupInfo
 
     @Override
     public int hashCode() {
-        return Objects.hash(empId, supId, empFirstName, empLastName, senator, startDate, endDate, supStartDate, supEndDate);
+        return Objects.hash(empId, supId, empFirstName, empLastName, payType, senator,
+                startDate, endDate, supStartDate, supEndDate);
     }
 
     /** --- Basic Getters/Setters --- */
@@ -187,5 +192,13 @@ public class EmployeeSupInfo
 
     public void setSenator(boolean senator) {
         this.senator = senator;
+    }
+
+    public PayType getPayType() {
+        return payType;
+    }
+
+    public void setPayType(PayType payType) {
+        this.payType = payType;
     }
 }
