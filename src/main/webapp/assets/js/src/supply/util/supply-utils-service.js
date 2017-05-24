@@ -10,6 +10,15 @@ essSupply.service('SupplyUtils', [function () {
             return lineItems;
         },
 
+        alphabetizeItemsByCommodityCode: function (items) {
+            items.sort(function (a, b) {
+                if (a.commodityCode < b.commodityCode) return -1;
+                if (a.commodityCode > b.commodityCode) return 1;
+                return 0;
+            });
+            return items;
+        },
+
         countDistinctItemsInRequisition: function (requisition) {
             var count = 0;
             if (requisition.lineItems) {

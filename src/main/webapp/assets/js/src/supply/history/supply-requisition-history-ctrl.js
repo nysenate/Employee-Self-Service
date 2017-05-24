@@ -82,7 +82,8 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
     };
 
     var setCommodityCodes = function (response) {
-        response.forEach(function (e) {
+        var items = supplyUtils.alphabetizeItemsByCommodityCode(response);
+        items.forEach(function (e) {
             $scope.filter.commodityCode.codes.push(e.commodityCode);
             $scope.filter.commodityCode.codeToId[e.commodityCode] = e.id;
         });
