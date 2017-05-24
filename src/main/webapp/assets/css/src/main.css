@@ -2756,32 +2756,39 @@ button.ui-button::-moz-focus-inner {
   position: absolute;
   right: 0;
   top: 0;
+  font-size: 1.1em;
   background: #fafafa;
 }
 .ess-top-header .fixed-width-header .right-header-area .header-label-segment {
   float: left;
-  font-size: 1.1em;
   font-weight: bold;
   padding: 11px;
   display: block;
   text-decoration: none !important;
   color: #333;
 }
-.ess-top-header .fixed-width-header .right-header-area #logoutSection {
-  float: left;
-  font-size: 1.1em;
-}
-.ess-top-header .fixed-width-header .right-header-area #logoutSection:hover {
+.ess-top-header .fixed-width-header .right-header-area .header-link:hover {
   background: #ddd;
 }
-.ess-top-header .fixed-width-header .right-header-area #logoutSection:hover a .logout-icon {
+.ess-top-header .fixed-width-header .right-header-area .header-link:hover a .logout-icon {
   -webkit-transform: rotateY(-40deg);
   -moz-transform: rotateY(-40deg);
   -o-transform: rotateY(-40deg);
   -ms-transform: rotateY(-40deg);
   transform: rotateY(-40deg);
 }
+.ess-top-header .fixed-width-header .right-header-area #logoutSection {
+  float: left;
+}
 .ess-top-header .fixed-width-header .right-header-area #logoutSection a {
+  padding: 11px;
+  display: block;
+  color: #333;
+}
+.ess-top-header .fixed-width-header .right-header-area #help-link {
+  float: left;
+}
+.ess-top-header .fixed-width-header .right-header-area #help-link a {
   padding: 11px;
   display: block;
   color: #333;
@@ -4783,7 +4790,7 @@ record-review-modal,
   width: 100%;
   height: 100%;
 }
-#help-link {
+#help-pdf-link {
   position: absolute;
   top: 0;
   left: -9em;
