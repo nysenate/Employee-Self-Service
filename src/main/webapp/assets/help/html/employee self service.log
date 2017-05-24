@@ -164,7 +164,8 @@ using_ess\1_get_access_to_ess.htm
 using_ess\2_log_in_and_sign_out_of_ess.htm
 using_ess\3_about_automatic_sign_out.htm
 using_ess\4_get_help.htm
-using_ess\5_open_ess_help_guide.htm
+using_ess\5_view_and_print_ess_help_guide.htm
+ess_help_guide.pdf
 index.glo
 default.css
 pix_text_requisition_form_inside_cart.jpg
@@ -201,6 +202,7 @@ pix_requisition_form.jpg
 pix_text_employee_accrual_history.jpg
 pix_text_order_history.jpg
 pix_grant_supervisor_access.jpg
+pix_icon_pdf_helpguide.jpg
 pix_text_requisition_form_destination_change.jpg
 pix_attendance_history.jpg
 pix_text_employee_accrual_history_all_supervisors.jpg
@@ -236,6 +238,14 @@ whxdata\package_8_xml.js
 whxdata\package_9_xml.js
 whxdata\package_10_xml.js
 whxdata\package_11_xml.js
+whxdata\package_12_xml.js
+whxdata\package_13_xml.js
+whxdata\package_14_xml.js
+whxdata\package_15_xml.js
+whxdata\package_16_xml.js
+whxdata\package_17_xml.js
+whxdata\package_18_xml.js
+whxdata\package_19_xml.js
 whxdata\packageindex_xml.js
 whxdata\synonym.xml
 whxdata\synonym_xml.js
@@ -310,6 +320,8 @@ whgdata\whlstf9.htm
 whgdata\whlstf10.htm
 whgdata\whlstf11.htm
 whgdata\whlstf12.htm
+whgdata\whlstf13.htm
+whgdata\whlstf14.htm
 whgdata\whlstg0.htm
 index.htm
 index_csh.htm
