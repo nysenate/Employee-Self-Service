@@ -133,7 +133,7 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
         $scope.loading = false;
     }
 
-    $scope.viewRequisition = function (shipment) {
-        locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId + "&fromPage=requisitionhistory");
+    $scope.viewRequisition = function (requisition) {
+        modals.open('requisition-modal', requisition, true);
     };
 }

@@ -86,5 +86,9 @@
       </div>
     </div>
   </div>
-  <div modal-container></div>
+  <div modal-container>
+    <modal modal-id="requisition-modal">
+      <div requisition-modal></div>
+    </modal>
+  </div>
 </div>

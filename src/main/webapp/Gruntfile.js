@@ -161,6 +161,7 @@ module.exports = function(grunt) {
                         //        <%-- History --%>
                         '<%= jsSource %>/supply/history/supply-requisition-history-ctrl.js',
                         '<%= jsSource %>/supply/history/supply-order-history-ctrl.js',
+                        '<%= jsSource %>/supply/history/requisition-modal-ctrl.js',
                         //        <%-- Manage --%>
                         '<%= jsSource %>/supply/manage/supply-fulfillment-ctrl.js',
                         '<%= jsSource %>/supply/manage/supply-reconciliation-ctrl.js',
