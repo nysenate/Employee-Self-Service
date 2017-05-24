@@ -16,7 +16,7 @@
   <jsp:body>
     <base href="/" />
     <ess-component-nav:top-nav activeTopic="myinfo"/>
-    <section class="content-wrapper" ng-controller="MainCtrl as main">
+    <section class="content-wrapper">
       <ess-component-nav:myinfo-nav/>
       <div class="view-animate-container">
         <div ng-view class="view-animate"></div>

@@ -22,9 +22,6 @@
                 <li id="supplyLink" class="main-topic blue-purple <c:if test='${activeTopic == "supply"}'>active</c:if>">
                     <a target="_self" href="${ctxPath}/supply"><img class="nav-icon" src="${ctxPath}/assets/img/20px-ffffff/clock.png"/>Supply</a>
                 </li>
-                <li id="helpLink" class="main-topic orange <c:if test='${activeTopic == "help"}'>active</c:if>">
-                    <a target="_self" href="${ctxPath}/help"><img class="nav-icon" src="${ctxPath}/assets/img/20px-ffffff/question.png"/>Help</a>
-                </li>
             </ul>
         </div>
         <div class="right-header-area">
@@ -37,7 +34,10 @@
             <div class="header-label-segment">
                 Hi, ${principal.getFullName()}
             </div>
-            <div id="logoutSection">
+            <div id="help-link" class="header-link">
+                <a target="_self" ng-href="{{helpPageUrl}}" ng-click="openHelpWindow($event)"><span class="icon-help"></span>Help</a>
+            </div>
+            <div id="logoutSection" class="header-link">
                 <a target="_self" href="${ctxPath}/logout">Sign Out</a>
             </div>
         </div>

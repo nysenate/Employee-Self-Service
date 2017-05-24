@@ -166,26 +166,35 @@
       right: 0;
       top: 0;
 
+      font-size: 1.1em;
+
       background: #fafafa;
 
       .header-label-segment {
         float:left;
-        font-size: 1.1em;
         font-weight: bold;
         padding: 11px;
         display: block;
         text-decoration: none !important;
         color: #333;
       }
+      .header-link:hover {
+        background: #ddd;
+        a .logout-icon {
+          .transform(rotateY(-40deg));
+        }
+      }
       #logoutSection {
         float:left;
-        font-size: 1.1em;
-        &:hover {
-          background: #ddd;
-          a .logout-icon {
-            .transform(rotateY(-40deg));
-          }
+        a {
+          padding: 11px;
+          display: block;
+          //text-decoration: none !important;
+          color: #333;
         }
+      }
+      #help-link {
+        float: left;
         a {
           padding: 11px;
           display: block;

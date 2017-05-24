@@ -19,7 +19,7 @@
     <section class="content-wrapper" ng-controller="HelpMainCtrl">
       <div id="help-viewer">
         <iframe id="help-frame" ng-src="{{helpPdfUrl}}"></iframe>
-        <h3 id="help-link">
+        <h3 id="help-pdf-link">
           <a ng-href="{{helpPdfUrl}}" ng-click="openHelpWindow($event)">
             View in New<br/>
             Window
