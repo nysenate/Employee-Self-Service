@@ -11,6 +11,8 @@ public class SimpleEmployeeView implements ViewObject
 {
     protected int employeeId;
     protected String uid;
+    protected String firstName;
+    protected String lastName;
     protected String fullName;
     protected String email;
     protected boolean active;
@@ -21,6 +23,8 @@ public class SimpleEmployeeView implements ViewObject
         if (employee != null) {
             this.employeeId = employee.getEmployeeId();
             this.uid = employee.getUid();
+            this.firstName = employee.getFirstName();
+            this.lastName = employee.getLastName();
             this.fullName = employee.getFullName();
             this.email = employee.getEmail();
             this.active = employee.isActive();
@@ -40,6 +44,16 @@ public class SimpleEmployeeView implements ViewObject
     @XmlElement
     public String getUid() {
         return uid;
+    }
+
+    @XmlElement
+    public String getFirstName() {
+        return firstName;
+    }
+
+    @XmlElement
+    public String getLastName() {
+        return lastName;
     }
 
     @XmlElement

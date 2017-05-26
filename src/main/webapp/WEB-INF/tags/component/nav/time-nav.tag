@@ -43,4 +43,10 @@
       <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>
     </ul>
   </shiro:hasPermission>
+  <shiro:hasPermission name="<%= SimpleTimePermission.PERSONNEL_PAGES.getPermissionString() %>">
+    <h3 class="main-topic">Personnel</h3>
+    <ul class="sub-topic-list">
+      <li class="sub-topic"><a href="${ctxPath}/time/personnel/search">Employee Search</a></li>
+    </ul>
+  </shiro:hasPermission>
 </section>

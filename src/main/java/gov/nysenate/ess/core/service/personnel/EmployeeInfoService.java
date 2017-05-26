@@ -78,4 +78,15 @@ public interface EmployeeInfoService
      */
     Set<Integer> getActiveEmpIds();
 
+    /**
+     * Get a set of all currently active employees
+     *
+     * @return {@link Set<Employee>}
+     */
+    default Set<Employee> getActiveEmployees() {
+        return getActiveEmpIds().stream()
+                .map(this::getEmployee)
+                .collect(Collectors.toSet());
+    }
+
 }

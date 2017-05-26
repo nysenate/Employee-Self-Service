@@ -8,6 +8,8 @@ public enum EssRole {
     TIMEOUT_EXEMPT,
     /** Supply */
     SUPPLY_EMPLOYEE,
-    SUPPLY_MANAGER
-
+    SUPPLY_MANAGER,
+    /** Time */
+    PERSONNEL_MANAGER,
+    ;
 }

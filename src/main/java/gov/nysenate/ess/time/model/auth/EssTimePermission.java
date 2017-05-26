@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class EssTimePermission extends DateTimeRangePermission {
 
     private static final String TIME_DOMAIN = "time";
-    private static final String EMP_ID_PART_PREFIX = "employee-";
+    private static final String EMP_ID_PART_PREFIX = "employee";
 
     /**
      * Construct a permission that grants all actions on all ess-time objects under the given employee
@@ -63,14 +63,20 @@ public class EssTimePermission extends DateTimeRangePermission {
         super(getPermissionString(empId, object, action), effectiveDate);
     }
 
-    /** --- Internal Methods --- */
-
-    private static String getEmployeePart(int empId) {
-        return TIME_DOMAIN + PART_DIVIDER_TOKEN
-                + EMP_ID_PART_PREFIX + empId;
+    /** Construct a permission that grants an action on an object for all employees for all time */
+    public EssTimePermission(TimePermissionObject object, RequestMethod action) {
+        super(getPermissionString(null, object, action), Range.all());
     }
 
-    private static String getPermissionString(int empId, TimePermissionObject object, RequestMethod action) {
+    /** --- Internal Methods --- */
+
+    private static String getEmployeePart(Integer empId) {
+        return TIME_DOMAIN + PART_DIVIDER_TOKEN
+                + EMP_ID_PART_PREFIX + SUBPART_DIVIDER_TOKEN +
+                (empId != null ? empId : "*");
+    }
+
+    private static String getPermissionString(Integer empId, TimePermissionObject object, RequestMethod action) {
         return getEmployeePart(empId) + PART_DIVIDER_TOKEN +
                 object + PART_DIVIDER_TOKEN +
                 action;

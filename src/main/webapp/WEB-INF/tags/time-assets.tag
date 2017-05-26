@@ -14,15 +14,13 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-entry-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/record/record-history-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-manage-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/supervisor-record-list.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-review-modals.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/record/record-emp-history-ctrl.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/time/record/record-history-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-validation.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
@@ -30,9 +28,13 @@
 
         <!-- Personnel -->
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/personnel/sup-emp-group-service.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/time/personnel/employee-search-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/personnel/employee-search-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/personnel/employee-select-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/personnel/sup-emp-group-service.js?v=${releaseVersion}"></script>
 
         <!-- Time Off Requests -->
         <script type="text/javascript"

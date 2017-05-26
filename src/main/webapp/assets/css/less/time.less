@@ -954,3 +954,36 @@ record-review-modal, [record-review-modal] {
   color: @green;
   font-weight: bold;
 }
+
+/** --- Employee Search Page --- */
+
+.employee-search-directive {
+
+  .employee-search-bar {
+    width: 20em;
+    font-size: 16px;
+  }
+
+  .employee-search-results {
+    max-height: 30em;
+    overflow: auto;
+
+    .search-result {
+      font-size: 14px;
+      margin: 2.5px;
+
+      &:hover {
+        background: teal;
+        color: #fafafa;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .selected-employee {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+}

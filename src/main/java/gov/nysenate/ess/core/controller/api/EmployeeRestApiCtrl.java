@@ -1,18 +1,19 @@
 package gov.nysenate.ess.core.controller.api;
 
 import com.google.common.collect.RangeSet;
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.EmployeeActiveDatesView;
 import gov.nysenate.ess.core.client.view.EmployeeView;
+import gov.nysenate.ess.core.client.view.base.EmployeeSearchView;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
-import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
-import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.auth.CorePermissionObject.EMPLOYEE_INFO;
 import static java.util.stream.Collectors.toList;
@@ -100,6 +103,29 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
 
         return new ViewObjectResponse<>(new EmployeeActiveDatesView(empId, activeDates), "activeDates");
     }
+
+    /**
+     * Get Active Employee API
+     * -----------------------
+     *
+     * Get a list of all currently active employees
+     *
+     * Usage:       (GET) /api/v1/employees/active
+     *
+     * @return {@link ListViewResponse<EmployeeSearchView>}
+     */
+    @RequestMapping(value = "/active")
+    public ListViewResponse<EmployeeSearchView> getActiveEmployees() {
+        Set<Employee> activeEmployees = empInfoService.getActiveEmployees();
+
+        List<EmployeeSearchView> employeeViewList = activeEmployees.stream()
+                .map(EmployeeSearchView::new)
+                .collect(Collectors.toList());
+
+        return ListViewResponse.of(employeeViewList, "employees");
+    }
+
+    /* --- Internal Methods --- */
 
     private BaseResponse getEmployeeResponse(List<Employee> employeeList, boolean detail) {
         if (employeeList.size() == 1) {

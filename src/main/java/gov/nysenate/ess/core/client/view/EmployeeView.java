@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class EmployeeView extends SimpleEmployeeView implements ViewObject
 {
     protected String title;
-    protected String firstName;
-    protected String lastName;
     protected String initial;
     protected String suffix;
     protected String workPhone;
@@ -26,8 +24,6 @@ public class EmployeeView extends SimpleEmployeeView implements ViewObject
         super(employee);
         if (employee != null) {
             this.title = employee.getTitle();
-            this.firstName = employee.getFirstName();
-            this.lastName = employee.getLastName();
             this.initial = employee.getInitial();
             this.suffix = employee.getSuffix();
             this.workPhone = employee.getWorkPhone();
@@ -63,16 +59,6 @@ public class EmployeeView extends SimpleEmployeeView implements ViewObject
     @XmlElement
     public String getTitle() {
         return title;
-    }
-
-    @XmlElement
-    public String getFirstName() {
-        return firstName;
-    }
-
-    @XmlElement
-    public String getLastName() {
-        return lastName;
     }
 
     @XmlElement

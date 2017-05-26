@@ -5,21 +5,17 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
-import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.OutputUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category({IntegrationTest.class, TestDependsOnDatabase.class})
 public class SqlEmployeeDaoIT extends BaseTest
@@ -103,6 +99,14 @@ public class SqlEmployeeDaoIT extends BaseTest
 
     @Test
     public void getActiveEmpsTest() {
-        logger.info("{}", employeeDao.getActiveEmployeeIds().size());
+        logger.info("Testing active employee methods");
+        Set<Integer> activeEmployeeIds = employeeDao.getActiveEmployeeIds();
+        Set<Employee> employees = employeeDao.getActiveEmployees();
+        assertEquals("Get active employees returns same number of emps as get active employee ids",
+                employees.size(), activeEmployeeIds.size());
+        Set<Integer> activeEmpsEmpIds = employees.stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        assertEquals(activeEmployeeIds, activeEmpsEmpIds);
     }
 }
