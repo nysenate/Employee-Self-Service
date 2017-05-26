@@ -99,132 +99,23 @@ module.exports = function(grunt) {
                     '<%= jsDest %>/ess.min.js': [
                         '<%= jsSource %>/ess-app.js',
                         '<%= jsSource %>/ess-api.js',
-                        //<!-- Navigation -->
-                        '<%= jsSource %>/nav/ess-nav.js',
-                        '<%= jsSource %>/nav/ess-routes.js',
-                        '<%= jsSource %>/nav/home.js',
-                        //<!-- Common Directives -->
-                        '<%= jsSource %>/common/ai-filter.js',
-                        '<%= jsSource %>/common/badge-directive.js',
-                        '<%= jsSource %>/common/badge-service.js',
-                        '<%= jsSource %>/common/common-modals.js',
-                        '<%= jsSource %>/common/datepicker-directive.js',
-                        '<%= jsSource %>/common/debounce-function.js',
-                        '<%= jsSource %>/common/err-src-directive.js',
-                        '<%= jsSource %>/common/ess-notifications.js',
-                        '<%= jsSource %>/common/internal-error-modal.js',
-                        '<%= jsSource %>/common/loader-indicator-directive.js',
-                        '<%= jsSource %>/common/location-service.js',
-                        '<%= jsSource %>/common/modal-directive.js',
-                        '<%= jsSource %>/common/modal-service.js',
-                        '<%= jsSource %>/common/moment-filter.js',
-                        '<%= jsSource %>/common/not-filter.js',
-                        '<%= jsSource %>/common/odometer-directive.js',
-                        '<%= jsSource %>/common/pagination-model.js',
-                        '<%= jsSource %>/common/possessive-filter.js',
-                        '<%= jsSource %>/common/promise-utils.js',
-                        '<%= jsSource %>/common/round-filter.js',
-                        '<%= jsSource %>/common/text-auto-height-directive.js',
-                        '<%= jsSource %>/common/throttle-function.js',
-                        '<%= jsSource %>/common/timeout-checker.js',
-                        '<%= jsSource %>/common/timeout-modal.js',
-                        '<%= jsSource %>/common/toggle-panel-directive.js',
-                        '<%= jsSource %>/common/zero-pad-filter.js',
-                        '<%= jsSource %>/common/ess-storage-service.js',
-                        '<%= jsSource %>/common/modal-close-button.js',
-                        // <!-- Testing Code -->
-                        '<%= jsSource %>/test/error-modal-test.js'
+                        // //<!-- Navigation -->
+                        '<%= jsSource %>/nav/**/*.js',
+                        // //<!-- Common Directives -->
+                        '<%= jsSource %>/common/**/*.js',
+                        // // <!-- Testing Code -->
+                        '<%= jsSource %>/test/**/*.js'
                     ],
                     //help
                     '<%= jsDest %>/ess-help.min.js': ['<%= jsSource %>/help/help.js'],
                     //login
                     '<%= jsDest %>/ess-login.min.js': ['<%= jsSource %>/auth/login.js'],
                     //myinfo
-                    '<%= jsDest %>/ess-myinfo.min.js': [
-                        //        <!-- Personnel -->
-                        '<%= jsSource %>/myinfo/personnel/summary-ctrl.js',
-                        '<%= jsSource %>/myinfo/personnel/transaction-history-ctrl.js',
-                        '<%= jsSource %>/myinfo/personnel/transaction-history-filters.js',
-                        //        <!-- Payroll -->
-                        '<%= jsSource %>/myinfo/payroll/check-history-ctrl.js',
-                        '<%= jsSource %>/myinfo/payroll/check-history-filters.js'
-                    ],
+                    '<%= jsDest %>/ess-myinfo.min.js': ['<%= jsSource %>/myinfo/**/*.js'],
                     //supply
-                    '<%= jsDest %>/ess-supply.min.js': [
-                        //        <%-- Supply Entry --%>
-                        '<%= jsSource %>/supply/nav/supply-category-nav-ctrl.js',
-                        '<%= jsSource %>/supply/service/supply-inventory-service.js',
-                        '<%= jsSource %>/supply/service/supply-category-service.js',
-                        '<%= jsSource %>/supply/location/supply-location-autocomplete-service.js',
-                        '<%= jsSource %>/supply/items/supply-item-autocomplete-service.js',
-                        '<%= jsSource %>/supply/api/supply-item-api.js',
-                        //        <%-- History --%>
-                        '<%= jsSource %>/supply/history/supply-requisition-history-ctrl.js',
-                        '<%= jsSource %>/supply/history/supply-order-history-ctrl.js',
-                        '<%= jsSource %>/supply/history/requisition-modal-ctrl.js',
-                        //        <%-- Manage --%>
-                        '<%= jsSource %>/supply/manage/supply-fulfillment-ctrl.js',
-                        '<%= jsSource %>/supply/manage/supply-reconciliation-ctrl.js',
-                        '<%= jsSource %>/supply/manage/modal/fulfillment-editing-modal.js',
-                        '<%= jsSource %>/supply/manage/modal/fulfillment-immutable-modal.js',
-                        //        <%-- Order --%>
-                        '<%= jsSource %>/supply/shopping/supply-order-ctrl.js',
-                        '<%= jsSource %>/supply/shopping/supply-quantity-selector.js',
-                        '<%= jsSource %>/supply/shopping/order-quantity-validator.js',
-                        '<%= jsSource %>/supply/shopping/order-destination-service.js',
-                        '<%= jsSource %>/supply/shopping/order-more-prompt-modal.js',
-                        '<%= jsSource %>/supply/shopping/order-canceling-modal.js',
-                        '<%= jsSource %>/supply/shopping/special-order-item-modal.js',
-                        '<%= jsSource %>/supply/shopping/supply-line-item-service.js',
-                        '<%= jsSource %>/supply/shopping/supply-item-filter-service.js',
-                        '<%= jsSource %>/supply/shopping/order-page-state-service.js',
-                        '<%= jsSource %>/supply/shopping/large-item-image-modal.js',
-                        //        <%-- Cart --%>
-                        '<%= jsSource %>/supply/shopping/cart/supply-cart-service.js',
-                        '<%= jsSource %>/supply/shopping/cart/supply-cart-ctrl.js',
-                        '<%= jsSource %>/supply/shopping/cart/supply-cart-directives.js',
-                        '<%= jsSource %>/supply/shopping/cart/supply-cart-empty-modal.js',
-                        //        <%-- Requisition --%>
-                        '<%= jsSource %>/supply/requisition/supply-requisition-view-ctrl.js',
-                        //        <%-- Utilities --%>
-                        '<%= jsSource %>/supply/util/supply-utils-service.js',
-                        '<%= jsSource %>/supply/service/supply-location-statistics-service.js'
-                    ],
+                    '<%= jsDest %>/ess-supply.min.js': ['<%= jsSource %>/supply/**/*.js'],
                     //time
-                    '<%= jsDest %>/ess-time.min.js': [
-                        '<%= jsSource %>/time/time.js',
-                        //        <!-- Time Entry -->
-                        '<%= jsSource %>/time/record/record-directives.js',
-                        '<%= jsSource %>/time/record/record-emp-history-ctrl.js',
-                        '<%= jsSource %>/time/record/record-entry-ctrl.js',
-                        '<%= jsSource %>/time/record/record-entry-modals.js',
-                        '<%= jsSource %>/time/record/record-filters.js',
-                        '<%= jsSource %>/time/record/record-history-ctrl.js',
-                        '<%= jsSource %>/time/record/record-manage-ctrl.js',
-                        '<%= jsSource %>/time/record/record-review-modals.js',
-                        '<%= jsSource %>/time/record/record-utils.js',
-                        '<%= jsSource %>/time/record/record-validation.js',
-                        '<%= jsSource %>/time/record/supervisor-record-list.js',
-                        //        <!-- Personnel -->
-                        '<%= jsSource %>/time/personnel/employee-select-directive.js',
-                        '<%= jsSource %>/time/personnel/sup-emp-group-service.js',
-                        //        <!-- Time Off Requests -->
-                        '<%= jsSource %>/time/timeoff/new-request-ctrl.js',
-                        //        <!-- Pay Period Viewer -->
-                        '<%= jsSource %>/time/period/pay-period-view-ctrl.js',
-                        //        <!-- Accruals -->
-                        '<%= jsSource %>/time/accrual/accrual-bar-directive.js',
-                        '<%= jsSource %>/time/accrual/accrual-detail-directive.js',
-                        '<%= jsSource %>/time/accrual/accrual-history-directive.js',
-                        '<%= jsSource %>/time/accrual/accrual-projections-directive.js',
-                        '<%= jsSource %>/time/accrual/accrual-utils.js',
-                        //        <!-- Allowances -->
-                        '<%= jsSource %>/time/allowance/allowance-bar-directive.js',
-                        '<%= jsSource %>/time/allowance/allowance-status-directive.js',
-                        '<%= jsSource %>/time/allowance/allowance-utils.js',
-                        //        <!-- Grants -->
-                        '<%= jsSource %>/time/grant/grant-ctrl.js'
-                    ]
+                    '<%= jsDest %>/ess-time.min.js': ['<%= jsSource %>/time/**/*.js']
                 }
             }
         },

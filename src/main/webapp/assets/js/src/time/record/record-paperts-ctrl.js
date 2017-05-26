@@ -3,6 +3,9 @@
     var ctxPath = 'https://goo.gl';
 
     var canvas = document.getElementById('dbug-canvas');
+    if (!canvas) {
+        return;
+    }
     var ctx = canvas.getContext("2d");
 
     var requestAnimationFrame = getRequestAnimationFrameFn();
