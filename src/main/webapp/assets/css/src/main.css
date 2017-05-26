@@ -4742,6 +4742,29 @@ record-review-modal,
   color: #799933;
   font-weight: bold;
 }
+/** --- Employee Search Page --- */
+.employee-search-directive .employee-search-bar {
+  width: 20em;
+  font-size: 16px;
+}
+.employee-search-directive .employee-search-results {
+  max-height: 30em;
+  overflow: auto;
+}
+.employee-search-directive .employee-search-results .search-result {
+  font-size: 14px;
+  margin: 2.5px;
+}
+.employee-search-directive .employee-search-results .search-result:hover {
+  background: teal;
+  color: #fafafa;
+  cursor: pointer;
+}
+.employee-search-directive .selected-employee {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 /**
 * Styles for ESS Help Pages
 */
