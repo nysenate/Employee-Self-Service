@@ -52,13 +52,11 @@ public class TxExpectedHoursService implements ExpectedHoursService {
 
     @Override
     public BigDecimal getExpectedHours(PayPeriod payPeriod, int empId) {
-        logger.debug("getExpectedHours:"+payPeriod.getDateRange().toString());
         TransactionHistory transHistory = empTransactionService.getTransHistory(empId);
-
 
         LocalDate startOfYear = LocalDate.ofYearDay(payPeriod.getYear(), 1);
 
-        Range<LocalDate>  upToPayPeriodRange =  Range.openClosed(startOfYear, payPeriod.getStartDate().minusDays(1));
+        Range<LocalDate>  upToPayPeriodRange =  Range.closedOpen(startOfYear, payPeriod.getEndDate().plusDays(1));
 
         List<PayPeriod> yearPayPeriods =  payPeriodService.getPayPeriods(PayPeriodType.AF, upToPayPeriodRange, SortOrder.ASC);
 
@@ -238,7 +236,6 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         MathContext mc = new MathContext(3);
         BigDecimal hoursPerDay = minHours.divide(EssTimeConstants.MAX_DAYS_PER_YEAR, mc);
         BigDecimal expectedHours =  AccrualUtils.roundExpectedHours(hoursPerDay.multiply(numberOfWeekdays));
-        logger.debug(dateRange.lowerEndpoint()+" = "+dateRange.upperEndpoint()+":Hours per day:"+hoursPerDay+" WeekDays:"+numberOfWeekdays+" = (Expected Hours)"+expectedHours);
 
         return expectedHours;
     }

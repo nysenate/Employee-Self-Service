@@ -118,7 +118,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // or removed in SFMS.
         else {
             referenceSummary = lastAccruals;
-            serviceYtdExpected = txExpectedHoursService.getExpectedHours(payPeriod, empId);
+            serviceYtdExpected = lastAccruals.getExpectedTotalHours();
         }
 
         return new AccrualsAvailable(referenceSummary, payPeriod, serviceYtdExpected, biWeekHrsExpected);
@@ -252,6 +252,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             TreeMap<PayPeriod, PeriodAccSummary> periodAccruals, SortedSet<PayPeriod> payPeriods) {
         return periodAccruals.values().stream()
                 .filter(perAccSumm -> payPeriods.contains(perAccSumm.getPayPeriod()))
+                .peek(perAccSumm -> perAccSumm.setExpectedTotalHours(
+                        txExpectedHoursService.getExpectedHours(perAccSumm.getPayPeriod(), perAccSumm.getEmpId())))
                 .collect(Collectors.toMap(PeriodAccSummary::getPayPeriod, Function.identity(),
                         (a, b) -> b, TreeMap::new));
     }
