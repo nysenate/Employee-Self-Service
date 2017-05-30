@@ -31,5 +31,12 @@
     </toggle-panel>
   </div>
 
-  <div modal-container></div>
+  <div modal-container>
+    <modal modal-id="record-details">
+      <div record-detail-modal></div>
+    </modal>
+    <modal modal-id="accrual-details">
+      <div accrual-details></div>
+    </modal>
+  </div>
 </section>
