@@ -957,6 +957,7 @@ record-review-modal, [record-review-modal] {
 
 /** --- Employee Search Page --- */
 
+
 .employee-search-directive {
 
   .employee-search-bar {
@@ -966,10 +967,22 @@ record-review-modal, [record-review-modal] {
 
   .employee-search-results {
     max-height: 30em;
+    width: 23em;
     overflow: auto;
 
+    margin: 10px auto;
+
+    font-size: 14px;
+
+    border: 1px solid fade(@teal, 25%);
+    border-left: 0;
+    border-right: 0;
+
+    ul {
+      padding:0;
+    }
+
     .search-result {
-      font-size: 14px;
       margin: 2.5px;
 
       &:hover {

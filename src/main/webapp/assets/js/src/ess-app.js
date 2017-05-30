@@ -8,7 +8,7 @@ var essHelp = angular.module('essHelp', ['essApi']);
 
 var essApp = angular.module('ess', [
     // Angular modules
-    'ngRoute', 'ngResource', 'ngAnimate',
+    'ngRoute', 'ngResource', 'ngAnimate', 'ngSanitize',
     // Local modules
     'essCore', 'essMyInfo', 'essTime', 'essSupply', 'essHelp',
     // Third party modules

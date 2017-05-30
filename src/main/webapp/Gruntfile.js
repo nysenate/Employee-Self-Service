@@ -69,6 +69,7 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/angular-animate/angular-animate.min.js',
                         '<%= bowerRoot %>/angular-utils-pagination/dirPagination.js',
                         '<%= bowerRoot %>/angular-cookies/angular-cookies.min.js',
+                        '<%= bowerRoot %>/angular-sanitize/angular-sanitize.min.js',
 
                         '<%= bowerRoot %>/odometer/odometer.min.js',
                         '<%= bowerRoot %>/moment/min/moment.min.js',

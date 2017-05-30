@@ -10,6 +10,7 @@
     "angular-route": "^1.5.8",
     "angular-animate": "^1.5.8",
     "angular-resource": "^1.5.8",
+    "angular-sanitize": "^1.5.8",
     "jquery": "^2.2.4",
     "moment": "^2.15.1",
     "modernizr": "^3.3.1",
