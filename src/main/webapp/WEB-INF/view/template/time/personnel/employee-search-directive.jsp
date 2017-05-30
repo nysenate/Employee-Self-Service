@@ -23,16 +23,50 @@
     </div>
 
     <div class="content-info selected-employee" ng-show="selectedEmp">
-      <p>
-        <span class="bold">
-          Selected:
-        </span>
-        {{selectedEmp.fullName}}
-      </p>
+      <div>
+        <table>
+          <tr>
+            <th>Selected</th>
+            <td>
+              {{selectedEmp.fullName}}
+            </td>
+          </tr>
+          <tr>
+            <th>Emp. Id</th>
+            <td>{{empInfo.employeeId}}</td>
+          </tr>
+          <tr>
+            <th>Pay Type</th>
+            <td>{{empInfo.payType}}<td>
+          </tr>
+        </table>
+      </div>
 
-      <input type="button" class="time-neutral-button"
-             value="Select Another Employee"
-             ng-click="clearSelectedEmp()">
+      <div>
+        <div ng-show="loadingEmpInfo" loader-indicator class="sm-loader"></div>
+        <div ng-hide="loadingEmpInfo">
+          <table>
+            <tr>
+              <th>Work Phone</th>
+              <td>{{empInfo.workPhone}}</td>
+            </tr>
+            <tr>
+              <th>Email</th>
+              <td>{{empInfo.email}}</td>
+            </tr>
+            <tr>
+              <th>Resp. Ctr.</th>
+              <td>{{empInfo.respCtr.respCenterHead.name}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="select-another">
+        <input type="button" class="time-neutral-button"
+               value="Select Another Employee"
+               ng-click="clearSelectedEmp()">
+      </div>
 
     </div>
   </div>

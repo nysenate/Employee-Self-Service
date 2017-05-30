@@ -1,7 +1,8 @@
 angular.module('essTime')
-    .directive('employeeSearch', ['$filter', 'appProps', 'modals', 'ActiveEmployeeApi', employeeSearchDirective]);
+    .directive('employeeSearch', ['$filter', 'appProps', 'modals', 'ActiveEmployeeApi', 'EmpInfoApi',
+                                  employeeSearchDirective]);
 
-function employeeSearchDirective($filter,appProps, modals, activeEmpApi) {
+function employeeSearchDirective($filter,appProps, modals, activeEmpApi, empInfoApi) {
     return {
         scope: {
             selectedEmp: '=?'
@@ -11,6 +12,7 @@ function employeeSearchDirective($filter,appProps, modals, activeEmpApi) {
         link: function ($scope, $elem, $attrs) {
             $scope.activeEmps = null;
             $scope.selectedEmp = null;
+            $scope.empInfo = null;
             $scope.search = {
                 fullName: ""
             };
@@ -21,10 +23,12 @@ function employeeSearchDirective($filter,appProps, modals, activeEmpApi) {
 
             $scope.selectEmp = function (emp) {
                 $scope.selectedEmp = emp;
+                getEmpInfo();
             };
 
             $scope.clearSelectedEmp = function () {
                 $scope.selectedEmp = null;
+                $scope.empInfo = null;
             };
 
             /* --- Api Methods --- */
@@ -42,6 +46,26 @@ function employeeSearchDirective($filter,appProps, modals, activeEmpApi) {
                 }
                 function onFail(resp) {
                     console.error('Failed to get active employees', resp);
+                    modals.open('500', {details: resp});
+                }
+            }
+
+            function getEmpInfo() {
+                var params = {
+                    empId: $scope.selectedEmp.empId,
+                    detail: true
+                };
+                $scope.loadingEmpInfo = true;
+                return empInfoApi.get(params, onSuccess, onFail)
+                    .$promise.finally(function () {
+                        $scope.loadingEmpInfo = false;
+                    });
+                function onSuccess(resp) {
+                    console.log('Got employee info');
+                    $scope.empInfo = resp.employee;
+                }
+                function onFail(resp) {
+                    console.error('Failed to get employee info', resp);
                     modals.open('500', {details: resp});
                 }
             }

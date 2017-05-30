@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class CorePermission extends WildcardPermission {
 
     private static final String CORE_DOMAIN = "core";
-    private static final String EMP_ID_PART_PREFIX = "employee-";
+    private static final String EMP_ID_PART_PREFIX = "employee";
 
     /**
      * Grants all permissions relating to the given employee
@@ -31,12 +31,18 @@ public class CorePermission extends WildcardPermission {
         super(getPermissionString(empId, object, action));
     }
 
-    private static String getEmployeePart(int empId) {
-        return CORE_DOMAIN + PART_DIVIDER_TOKEN
-                + EMP_ID_PART_PREFIX + empId;
+    /** Construct a permission that grants an action on an object for all employees for all time */
+    public CorePermission(CorePermissionObject object, RequestMethod action) {
+        super(getPermissionString(null, object, action));
     }
 
-    private static String getPermissionString(int empId, CorePermissionObject object, RequestMethod action) {
+    private static String getEmployeePart(Integer empId) {
+        return CORE_DOMAIN + PART_DIVIDER_TOKEN
+                + EMP_ID_PART_PREFIX + SUBPART_DIVIDER_TOKEN +
+                (empId != null ? empId : "*");
+    }
+
+    private static String getPermissionString(Integer empId, CorePermissionObject object, RequestMethod action) {
         return getEmployeePart(empId) + PART_DIVIDER_TOKEN +
                 object + PART_DIVIDER_TOKEN +
                 action;
