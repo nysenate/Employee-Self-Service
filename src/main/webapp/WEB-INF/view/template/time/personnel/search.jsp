@@ -8,26 +8,26 @@
 
   <div ng-if="selectedEmp">
     <toggle-panel open="false" label="Attendance History">
-      <record-history emp-sup-info="selectedEmp"></record-history>
+      <record-history emp-sup-info="selectedEmp" hide-title="true"></record-history>
     </toggle-panel>
   </div>
 
   <div ng-if="selectedEmp && selectedEmp.payType === 'TE'">
     <toggle-panel open="false" label="Allowed Hours">
-      <allowance-status emp-sup-info="selectedEmp">
+      <allowance-status emp-sup-info="selectedEmp" hide-title="true">
       </allowance-status>
     </toggle-panel>
   </div>
 
   <div ng-if="selectedEmp">
     <toggle-panel open="false" label="Accrual History">
-      <accrual-history emp-sup-info="selectedEmp"></accrual-history>
+      <accrual-history emp-sup-info="selectedEmp" hide-title="true"></accrual-history>
     </toggle-panel>
   </div>
 
   <div ng-if="selectedEmp && selectedEmp.payType !== 'TE'">
     <toggle-panel open="false" label="Accrual Projections">
-      <accrual-projections emp-sup-info="selectedEmp"></accrual-projections>
+      <accrual-projections emp-sup-info="selectedEmp" hide-title="true"></accrual-projections>
     </toggle-panel>
   </div>
 

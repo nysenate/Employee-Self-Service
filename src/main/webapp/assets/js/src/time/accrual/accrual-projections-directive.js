@@ -17,7 +17,7 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
             empSupInfo: '=?'
         },
         templateUrl: appProps.ctxPath + '/template/time/accrual/projections-directive',
-        link: function ($scope) {
+        link: function ($scope, $elem, $attrs) {
 
             var maxVacationBanked = 210,
                 maxSickBanked = 1400;
@@ -38,6 +38,8 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
                 scrollingTop: 47,
                 useAbsolutePositioning: false
             };
+
+            $scope.hideTitle = $attrs.hideTitle === 'true';
 
             /* --- Watches --- */
 

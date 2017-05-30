@@ -1,7 +1,7 @@
 <div loader-indicator class="loader" ng-show="isLoading()"></div>
 <section class="content-container" ng-hide="isLoading()">
   <div ng-show="state.recordYears.length > 0">
-    <h1>
+    <h1 ng-if="!(hideTitle || isUser())">
       {{state.selectedEmp.empFirstName}}
       {{state.selectedEmp.empLastName | possessive}}
       Attendance Records

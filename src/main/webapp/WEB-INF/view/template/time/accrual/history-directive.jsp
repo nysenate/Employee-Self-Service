@@ -15,8 +15,8 @@
 
 <div class="content-container" ng-hide="isEmpLoading()">
   <div class="content-container content-controls"
-       ng-hide="isUser()">
-    <h1>
+       ng-if="!isUser())">
+    <h1 ng-if="!hideTitle">
       {{empSupInfo.empFirstName}}
       {{empSupInfo.empLastName | possessive}}
       Accrual History

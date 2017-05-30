@@ -11,7 +11,7 @@
 </div>
 
 <div class="content-container" ng-hide="isLoading()">
-  <h1 class="content-info" ng-if="empSupInfo">
+  <h1 class="content-info" ng-if="!hideTitle &&empSupInfo">
     {{empSupInfo.empFirstName}}
     {{empSupInfo.empLastName | possessive}}
     Accrual Projections

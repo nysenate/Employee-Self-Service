@@ -17,7 +17,7 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
         },
         templateUrl: appProps.ctxPath + '/template/time/accrual/history-directive',
 
-        link: function ($scope) {
+        link: function ($scope, $elem, $attrs) {
             $scope.accSummaries = {};
             $scope.activeYears = [];
             $scope.timeRecords = [];
@@ -36,6 +36,8 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
                 scrollingTop: 47,
                 useAbsolutePositioning: false
             };
+
+            $scope.hideTitle = $attrs.hideTitle === 'true';
 
             /* --- Watches --- */
 

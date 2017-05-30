@@ -22,6 +22,8 @@ function allowanceStatusDirective(appProps, modals, allowanceApi, allowanceUtils
                 allowance: false
             };
 
+            $scope.hideTitle = $attrs.hideTitle === 'true';
+
             /* --- Watches --- */
 
             $scope.$watch('empSupInfo', onEmpSupInfoChange);

@@ -39,6 +39,8 @@ function recordHistoryDirective($q, appProps, modals, recordUtils,
                 attendRecords: []
             };
 
+            $scope.hideTitle = $attrs.hideTitle === 'true';
+
             /* --- Watches --- */
 
             $scope.$watchCollection('empSupInfo', setEmpId);

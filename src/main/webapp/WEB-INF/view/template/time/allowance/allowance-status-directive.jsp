@@ -1,7 +1,7 @@
 <div loader-indicator class="loader" ng-show="request.allowance"></div>
 
 <div class="content-container" ng-hide="request.allowance">
-  <div class="content-container content-controls" ng-if="!isUser()">
+  <div class="content-container content-controls" ng-if="!(hideTitle || isUser())">
     <h1>
       {{empSupInfo.empFirstName}}
       {{empSupInfo.empLastName | possessive}}
