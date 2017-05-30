@@ -2003,6 +2003,9 @@ table.simple-table tbody tr td {
 .bold {
   font-weight: bold;
 }
+.highlight-filter-highlighted {
+  font-weight: bold;
+}
 .bold-text {
   padding: 10px;
   margin: 0;
@@ -4749,10 +4752,18 @@ record-review-modal,
 }
 .employee-search-directive .employee-search-results {
   max-height: 30em;
+  width: 23em;
   overflow: auto;
+  margin: 10px auto;
+  font-size: 14px;
+  border: 1px solid rgba(0, 107, 128, 0.25);
+  border-left: 0;
+  border-right: 0;
+}
+.employee-search-directive .employee-search-results ul {
+  padding: 0;
 }
 .employee-search-directive .employee-search-results .search-result {
-  font-size: 14px;
   margin: 2.5px;
 }
 .employee-search-directive .employee-search-results .search-result:hover {
@@ -4763,6 +4774,17 @@ record-review-modal,
 .employee-search-directive .selected-employee {
   display: flex;
   flex-direction: row;
+  justify-content: space-around;
+}
+.employee-search-directive .selected-employee th {
+  padding-right: 5px;
+}
+.employee-search-directive .selected-employee td {
+  text-align: left;
+}
+.employee-search-directive .selected-employee .select-another {
+  display: flex;
+  flex-direction: column;
   justify-content: space-around;
 }
 /**
