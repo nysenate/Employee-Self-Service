@@ -15,9 +15,8 @@
 
 <div class="content-container" ng-hide="isEmpLoading()">
   <div ng-show="selectedYear">
-    <div class="content-container content-controls"
-         ng-if="!isUser()">
-      <h1 ng-if="!hideTitle">
+    <div class="content-container content-controls" ng-hide="isUser()">
+      <h1 ng-if="!(hideTitle || isUser())">
         {{empSupInfo.empFirstName}}
         {{empSupInfo.empLastName | possessive}}
         Accrual History
