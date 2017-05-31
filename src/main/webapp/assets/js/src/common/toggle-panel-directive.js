@@ -30,14 +30,16 @@ essApp.directive('togglePanel', ['$timeout', '$rootScope', function($timeout, $r
         transclude: true,
         template:
         '<div class="content-container {{extraClasses}}" ng-class="{\'open\': open}">' +
-        '   <h1 class="toggle-panel-label" ng-click="toggle()">{{label}}</h1>' +   // TODO: Add iconss...
-        //'           <span flex></span>' +
-        //'           <i ng-class="{\'icon-chevron-up\': open, \'icon-chevron-down\': !open}" style="float: right"></i>' +
-        //'           <span class="text-xsmall margin-right-20" ng-show="showTip && !open" style="float: right">' +
-        //'               (Click to expand section)</span>' +
-        //'       </div>' +
-        //'   </div>' +
-        '   <div ng-if="opened || renderClosed" ng-show="open" class="panel-content" ng-cloak ng-transclude></div>' +
+        '  <div class="toggle-panel" ng-click="toggle()">' +
+        '    <h1 class="toggle-panel-label">{{label}}</h1>' +
+        '    <span class="toggle-panel-status">' +
+        '      <span class="toggle-panel-tip" ng-hide="open">' +
+        '        (Click to expand section)' +
+        '      </span>' +
+        '      <i ng-class="{\'icon-chevron-up\': open, \'icon-chevron-down\': !open}"></i>' +
+        '    </span>' +
+        '  </div>' +
+        '  <div ng-if="opened || renderClosed" ng-show="open" class="panel-content" ng-cloak ng-transclude></div>' +
         '</div>',
         link : function($scope, $element, $attrs) {
             $scope.opened = false;

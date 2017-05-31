@@ -434,12 +434,35 @@
 
 /** Toggle Panel Directive */
 
-.toggle-panel-label {
+.toggle-panel {
   cursor: pointer;
   &:hover {
     color: @teal;
   }
+  .toggle-panel-label {
+    color: inherit;
+  }
+
+  .toggle-panel-status {
+    position: absolute;
+    right: 0;
+    top: 1em;
+
+    text-align: right;
+
+    margin-right: 10px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    i {
+      font-size: 25px;
+    }
+  }
 }
+
 
 .ui-state-focus{
   background: lightgrey;
