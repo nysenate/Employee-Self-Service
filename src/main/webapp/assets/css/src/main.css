@@ -3046,11 +3046,28 @@ button.ui-button::-moz-focus-inner {
   margin-left: 5px;
 }
 /** Toggle Panel Directive */
-.toggle-panel-label {
+.toggle-panel {
   cursor: pointer;
 }
-.toggle-panel-label:hover {
+.toggle-panel:hover {
   color: #006B80;
+}
+.toggle-panel .toggle-panel-label {
+  color: inherit;
+}
+.toggle-panel .toggle-panel-status {
+  position: absolute;
+  right: 0;
+  top: 1em;
+  text-align: right;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.toggle-panel .toggle-panel-status i {
+  font-size: 25px;
 }
 .ui-state-focus {
   background: lightgrey;
