@@ -1,11 +1,11 @@
 var essTime = angular.module('essTime');
 
-essTime.directive('accrualProjections', ['$timeout', 'appProps',
+essTime.directive('accrualProjections', ['$timeout', '$rootScope', 'appProps',
                                         'AccrualHistoryApi', 'EmpInfoApi',
                                         'modals', 'AccrualUtils',
                                         accrualProjectionDirective]);
 
-function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpInfoApi, modals, accrualUtils) {
+function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHistoryApi, EmpInfoApi, modals, accrualUtils) {
     return {
         scope: {
             /**
@@ -49,6 +49,8 @@ function accrualProjectionDirective($timeout, appProps, AccrualHistoryApi, EmpIn
             /** When a new empId is selected, refresh employee info and accrual summaries */
             $scope.$watch('empId', getEmpInfo);
             $scope.$watch('empId', getAccSummaries);
+
+            $rootScope.$on('reflowEvent', reflowTable);
 
             /* --- Request Methods --- */
 

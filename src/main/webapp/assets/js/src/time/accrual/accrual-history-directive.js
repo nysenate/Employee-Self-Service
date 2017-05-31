@@ -1,10 +1,11 @@
 
 angular.module('essTime')
-    .directive('accrualHistory', ['$timeout', 'appProps', 'modals',
+    .directive('accrualHistory', ['$timeout', '$rootScope', 'appProps', 'modals',
                                   'AccrualHistoryApi', 'EmpInfoApi', 'ActiveYearsTimeRecordsApi',
                                   accrualHistoryDirective]);
 
-function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, EmpInfoApi, ActiveYearsTimeRecordsApi) {
+function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
+                                 AccrualHistoryApi, EmpInfoApi, ActiveYearsTimeRecordsApi) {
     return {
         scope: {
             /**
@@ -51,6 +52,8 @@ function accrualHistoryDirective($timeout, appProps, modals, AccrualHistoryApi, 
 
             /** When a new year is selected, get accrual summaries for that year */
             $scope.$watch('selectedYear', getAccSummaries);
+
+            $rootScope.$on('reflowEvent', reflowTable);
 
             /* --- Api Request Methods --- */
 

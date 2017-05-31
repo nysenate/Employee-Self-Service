@@ -17,7 +17,7 @@ var essApp = angular.module('ess');
  * extra-classes (String) Any css classes you want to apply to the outermost toggle panel container
  * show-tip (boolean) Set to true to see a 'Click to expand section' tip when panel is collapsed.
  */
-essApp.directive('togglePanel', [function(){
+essApp.directive('togglePanel', ['$timeout', '$rootScope', function($timeout, $rootScope){
     return {
         restrict: 'E',
         scope: {
@@ -46,6 +46,9 @@ essApp.directive('togglePanel', [function(){
                 if ($scope.callback) {
                     $scope.callback($scope.open);
                 }
+                $timeout(function () {
+                    $rootScope.$emit('reflowEvent');
+                });
             };
             $scope.renderClosed = $scope.renderClosed == 'true';
             // Convert attribute value to boolean using watch
