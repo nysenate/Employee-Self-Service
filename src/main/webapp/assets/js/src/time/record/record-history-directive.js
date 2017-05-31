@@ -69,7 +69,8 @@ function recordHistoryDirective($q, appProps, modals, recordUtils,
                     // Only use years that overlap with supervisor dates
                         .filter(function(year) { return year >= supStartYear && year <= supEndYear; })
                         .reverse();
-                    $scope.state.selectedRecYear = $scope.state.recordYears[0];
+                    $scope.state.selectedRecYear = $scope.state.recordYears.length > 0
+                        ? $scope.state.recordYears[0] : false;
                 }, function(resp) {
                     modals.open('500', {details: resp});
                     console.log(resp);
@@ -85,7 +86,7 @@ function recordHistoryDirective($q, appProps, modals, recordUtils,
                 }
 
                 var year = $scope.state.selectedRecYear;
-                if (year < 0) {
+                if (!year || year < 0) {
                     return;
                 }
 

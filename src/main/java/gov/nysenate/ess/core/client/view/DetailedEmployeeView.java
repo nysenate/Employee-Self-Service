@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
-import gov.nysenate.ess.core.model.unit.Location;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,6 +19,7 @@ public class DetailedEmployeeView extends EmployeeView
     protected int supervisorId;
     protected String jobTitle;
     protected String payType;
+    protected boolean senator;
     protected RespCenterView respCtr;
     protected AddressView workAddress;
     protected LocationView empWorkLocation;
@@ -33,6 +33,7 @@ public class DetailedEmployeeView extends EmployeeView
         this.jobTitle = employee.getJobTitle();
         this.empPayType = employee.getPayType();
         this.payType = (employee.getPayType() != null) ? employee.getPayType().name() : "";
+        this.senator = employee.isSenator();
         this.empRespCtr = employee.getRespCenter();
         this.respCtr = new RespCenterView(employee.getRespCenter());
         if (employee.getWorkLocation() != null) {
@@ -92,5 +93,10 @@ public class DetailedEmployeeView extends EmployeeView
     @XmlElement
     public LocationView getEmpWorkLocation() {
         return empWorkLocation;
+    }
+
+    @XmlElement
+    public boolean isSenator() {
+        return senator;
     }
 }

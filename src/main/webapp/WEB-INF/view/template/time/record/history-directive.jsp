@@ -75,4 +75,16 @@
     </div>
 
   </div>
+  <div ng-hide="state.recordYears.length > 0">
+    <ess-notification level="info" title="No Time Record History">
+      <p>
+        <span ng-show="isUser()">You have</span>
+        <span ng-hide="isUser()">{{empSupInfo.fullName}} has</span>
+        no time records.
+      </p>
+      <p ng-show="empSupInfo.senator">
+        {{empSupInfo.fullName}} is a Senator and does not currently enter time.
+      </p>
+    </ess-notification>
+  </div>
 </section>

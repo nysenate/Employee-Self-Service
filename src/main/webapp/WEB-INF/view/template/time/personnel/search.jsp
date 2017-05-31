@@ -25,7 +25,7 @@
     </toggle-panel>
   </div>
 
-  <div ng-if="selectedEmp && selectedEmp.payType !== 'TE'">
+  <div ng-if="selectedEmp && selectedEmp.payType !== 'TE' && !selectedEmp.senator">
     <toggle-panel open="false" label="Accrual Projections">
       <accrual-projections emp-sup-info="selectedEmp" hide-title="true"></accrual-projections>
     </toggle-panel>

@@ -109,7 +109,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                                 return year >= startDateYear && year <= endDateYear;
                             });
                         }
-                        $scope.selectedYear = $scope.activeYears[0];
+                        $scope.selectedYear = $scope.activeYears.length > 0 ? $scope.activeYears[0] : false;
                         console.debug('got active years', $scope.activeYears);
                     }, function onFail(resp) {
                         modals.open('500', {details: resp});
@@ -216,6 +216,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
             function setEmpId() {
                 if ($scope.empSupInfo && $scope.empSupInfo.empId) {
                     $scope.empId = $scope.empSupInfo.empId;
+                    console.log($scope.empSupInfo);
                 }
                 else {
                     $scope.empId = appProps.user.employeeId;
