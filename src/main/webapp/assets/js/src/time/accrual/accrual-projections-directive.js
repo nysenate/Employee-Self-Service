@@ -39,6 +39,8 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                 useAbsolutePositioning: false
             };
 
+            $scope.floatTheadEnabled = true;
+
             $scope.hideTitle = $attrs.hideTitle === 'true';
 
             /* --- Watches --- */
@@ -51,6 +53,11 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
             $scope.$watch('empId', getAccSummaries);
 
             $rootScope.$on('reflowEvent', reflowTable);
+
+            /** Disable the floating table header for printing */
+            $scope.$on('beforePrint', disableFloatThead);
+            /** Reenable the floating table header after printing */
+            $scope.$on('afterPrint', enableFloatThead);
 
             /* --- Request Methods --- */
 
@@ -412,7 +419,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                 });
             }
 
-            /* --- Angular Smart Table Hacks --- */
+            /* --- Angular Floating THead Hacks --- */
 
             /**
              * Attempt to reflow the accrual table 20 times with one attempt every 5ms
@@ -430,6 +437,14 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
             }
 
             $scope.$watchCollection('projections', reflowTable);
+
+            function enableFloatThead() {
+                $scope.floatTheadEnabled = true;
+            }
+
+            function disableFloatThead() {
+                $scope.floatTheadEnabled = false;
+            }
         }
     }
 }

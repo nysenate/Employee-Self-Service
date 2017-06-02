@@ -38,6 +38,8 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                 useAbsolutePositioning: false
             };
 
+            $scope.floatTheadEnabled = true;
+
             $scope.hideTitle = $attrs.hideTitle === 'true';
 
             /* --- Watches --- */
@@ -54,6 +56,11 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
             $scope.$watch('selectedYear', getAccSummaries);
 
             $rootScope.$on('reflowEvent', reflowTable);
+
+            /** Disable the floating table header for printing */
+            $scope.$on('beforePrint', disableFloatThead);
+            /** Reenable the floating table header after printing */
+            $scope.$on('afterPrint', enableFloatThead);
 
             /* --- Api Request Methods --- */
 
@@ -249,6 +256,14 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
             }
 
             $scope.$watchCollection('accSummaries[selectedYear]', reflowTable);
+
+            function enableFloatThead() {
+                $scope.floatTheadEnabled = true;
+            }
+
+            function disableFloatThead() {
+                $scope.floatTheadEnabled = false;
+            }
         }
     }
 }

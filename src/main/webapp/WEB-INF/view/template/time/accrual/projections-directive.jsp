@@ -26,7 +26,7 @@
       Click a row to view or print a detailed summary of projected accrual hours.
     </p>
     <div class="padding-10">
-      <table class="detail-acc-history-table projections" float-thead-enabled="true"
+      <table class="detail-acc-history-table projections" float-thead-enabled="floatTheadEnabled"
              float-thead="floatTheadOpts" ng-model="projections">
         <thead>
         <tr>
