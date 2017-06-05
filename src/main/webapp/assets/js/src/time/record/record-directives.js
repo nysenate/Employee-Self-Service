@@ -24,6 +24,7 @@ function entryHoursFilter () {
 /* --- Directives --- */
 
 function timeRecordInputDirective () {
+    var restrictedKeys = ['e', 'E', '-', '+'];
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
@@ -32,6 +33,11 @@ function timeRecordInputDirective () {
             });
             element.on('blur', function(event){
                 $(this).parent().parent().removeClass("active");
+            });
+            element.on('keypress', function (event) {
+                if (restrictedKeys.indexOf(event.key) >= 0) {
+                    event.preventDefault();
+                }
             });
         }
     }
