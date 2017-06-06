@@ -268,9 +268,9 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
      * Ensure that the time record id matches the id of the saved entry on the same date, if it exists
      */
     private static void ensureId(TimeEntry entry, Optional<TimeRecord> oldRecord) {
-        Optional<BigInteger> oldId = oldRecord.map(rec -> rec.getEntry(entry.getDate()))
-                                              .map(TimeEntry::getEntryId);
-        entry.setEntryId(oldId.orElse(null));
+        oldRecord.map(rec -> rec.getEntry(entry.getDate()))
+                .map(TimeEntry::getEntryId)
+                .ifPresent(entry::setEntryId);
     }
 }
 
