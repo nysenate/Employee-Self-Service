@@ -1,17 +1,14 @@
 package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
-import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
-import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.service.accrual.EssAccrualComputeService;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
@@ -70,6 +67,15 @@ public class AccrualTRV implements TimeRecordValidator {
      */
     private void checkAccrualValue(String paramName, BigDecimal recordHours, BigDecimal availableHours)
             throws TimeRecordErrorException {
+        recordHours = Optional.ofNullable(recordHours).orElse(BigDecimal.ZERO);
+
+        // Do not check accrual value if it is zero
+        // This prevents an error if available accruals are negative for whatever reason,
+        // and the user submits a time record with no accrual usage.
+        if (BigDecimal.ZERO.compareTo(recordHours) == 0) {
+            return;
+        }
+
         if (recordHours.compareTo(availableHours) > 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.RECORD_EXCEEDS_ACCRUAL,
                     new InvalidParameterView(paramName, "BigDecimal",
