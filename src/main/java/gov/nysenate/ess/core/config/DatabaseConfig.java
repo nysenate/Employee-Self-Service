@@ -21,6 +21,9 @@ public class DatabaseConfig
 {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
+    public static final String localTxManager = "localTxManager";
+    public static final String remoteTxManager = "remoteTxManager";
+
     @Autowired ComboPooledDataSource localDataSource;
     @Autowired ComboPooledDataSource remoteDataSource;
 
@@ -44,7 +47,7 @@ public class DatabaseConfig
         return new NamedParameterJdbcTemplate(remoteDataSource);
     }
 
-    @Bean(name = "localTxManager")
+    @Bean(name = localTxManager)
     public PlatformTransactionManager localTxManager() {
         return new DataSourceTransactionManager(localDataSource);
     }

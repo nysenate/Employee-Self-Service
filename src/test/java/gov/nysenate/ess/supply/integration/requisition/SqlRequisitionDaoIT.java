@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.integration.requisition;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
+import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
@@ -23,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 @Ignore
 @Category(IntegrationTest.class)
 @Transactional
-@TransactionConfiguration(transactionManager = "localTxManager", defaultRollback = true)
+@TransactionConfiguration(transactionManager = DatabaseConfig.localTxManager, defaultRollback = true)
 public class SqlRequisitionDaoIT extends BaseTest {
 
     @Autowired private RequisitionDao requisitionDao;

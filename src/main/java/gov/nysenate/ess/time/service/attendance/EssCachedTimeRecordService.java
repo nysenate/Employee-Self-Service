@@ -2,6 +2,7 @@ package gov.nysenate.ess.time.service.attendance;
 
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
+import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.util.RangeUtils;
@@ -255,7 +256,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     }
 
     @Override
-    @Transactional(value = "remoteTxManager")
+    @Transactional(value = DatabaseConfig.remoteTxManager)
     @WorkInProgress(author = "ash", desc = "Need to test this a bit better...")
     public synchronized boolean saveRecord(TimeRecord record) {
         boolean updated = timeRecordDao.saveRecord(record);
