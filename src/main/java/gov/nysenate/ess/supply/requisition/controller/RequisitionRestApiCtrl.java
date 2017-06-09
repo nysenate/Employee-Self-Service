@@ -18,6 +18,7 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.notification.SupplyEmailService;
+import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
 import gov.nysenate.ess.supply.requisition.model.PendingState;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
@@ -58,6 +59,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         Requisition requisition = new Requisition.Builder()
                 .withCustomer(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
                 .withDestination(locationService.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
+                .withDeliveryMethod(DeliveryMethod.valueOf(submitRequisitionView.getDeliveryMethod()))
                 .withLineItems(lineItems)
                 .withSpecialInstructions(submitRequisitionView.getSpecialInstructions())
                 .withState(new PendingState())

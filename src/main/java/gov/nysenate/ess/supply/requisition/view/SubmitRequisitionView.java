@@ -8,6 +8,7 @@ public class SubmitRequisitionView implements ViewObject {
     protected int customerId;
     protected LineItemView[] lineItems;
     protected String destinationId;
+    protected String deliveryMethod;
     protected String specialInstructions;
 
     public SubmitRequisitionView() {
@@ -35,6 +36,10 @@ public class SubmitRequisitionView implements ViewObject {
 
     public void setDestinationId(String destinationId) {
         this.destinationId = destinationId;
+    }
+
+    public String getDeliveryMethod() {
+        return deliveryMethod;
     }
 
     public String getSpecialInstructions() {

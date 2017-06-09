@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.view.LineItemView;
+import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionState;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
@@ -27,6 +28,7 @@ public class RequisitionView implements ViewObject {
     protected int revisionId;
     protected EmployeeView customer;
     protected LocationView destination;
+    protected String deliveryMethod;
     protected Set<LineItemView> lineItems;
     protected String specialInstructions;
     protected String status;
@@ -50,6 +52,7 @@ public class RequisitionView implements ViewObject {
         this.revisionId = requisition.getRevisionId();
         this.customer = new EmployeeView(requisition.getCustomer());
         this.destination = new LocationView(requisition.getDestination());
+        this.deliveryMethod = requisition.getDeliveryMethod().name();
         this.lineItems = requisition.getLineItems().stream()
                                     .map(LineItemView::new)
                                     .collect(Collectors.toSet());
@@ -75,6 +78,7 @@ public class RequisitionView implements ViewObject {
                 .withRevisionId(revisionId)
                 .withCustomer(customer.toEmployee())
                 .withDestination(destination.toLocation())
+                .withDeliveryMethod(DeliveryMethod.valueOf(deliveryMethod))
                 .withLineItems(lineItems.stream().map(LineItemView::toLineItem).collect(Collectors.toSet()))
                 .withState(RequisitionState.of(RequisitionStatus.valueOf(status)))
                 .withSpecialInstructions(specialInstructions)
@@ -110,6 +114,11 @@ public class RequisitionView implements ViewObject {
     @XmlElement
     public LocationView getDestination() {
         return destination;
+    }
+
+    @XmlElement
+    public String getDeliveryMethod() {
+        return deliveryMethod;
     }
 
     @XmlElement

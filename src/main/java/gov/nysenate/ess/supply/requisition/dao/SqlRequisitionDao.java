@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.*;
+import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionState;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
@@ -164,12 +165,17 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         localNamedJdbc.update(sql, params);
     }
 
+    private String formatSearchString(String param) {
+        return param != null && (param.equals("All")) ? "%" : param;
+    }
+
     private MapSqlParameterSource requisitionParams(Requisition requisition) {
         return new MapSqlParameterSource()
                 .addValue("requisitionId", requisition.getRequisitionId())
                 .addValue("revisionId", requisition.getRevisionId())
                 .addValue("customerId", requisition.getCustomer().getEmployeeId())
                 .addValue("destination", requisition.getDestination().getLocId().toString())
+                .addValue("deliveryMethod", requisition.getDeliveryMethod().name())
                 .addValue("specialInstructions", requisition.getSpecialInstructions().orElse(null))
                 .addValue("status", requisition.getStatus().toString())
                 .addValue("issuerId", requisition.getIssuer().map(Employee::getEmployeeId).orElse(null))
@@ -183,10 +189,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("savedInSfms", requisition.getSavedInSfms());
-    }
-
-    private String formatSearchString(String param) {
-        return param != null && (param.equals("All")) ? "%" : param;
     }
 
     /** Convert an EnumSet into a Set containing each enum's name. */
@@ -221,9 +223,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         /** Never insert the revision id, let it auto increment. */
         INSERT_REQUISITION_CONTENT(
                 "INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status, \n" +
-                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions) \n" +
+                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions, delivery_method) \n" +
                 "VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status, \n" +
-                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions)"
+                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions, :deliveryMethod)"
         ),
 
         GET_REQUISITION_BY_ID(
@@ -301,6 +303,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withRevisionId(rs.getInt("revision_id"))
                     .withCustomer(employeeInfoService.getEmployee(rs.getInt("customer_id")))
                     .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
+                    .withDeliveryMethod(DeliveryMethod.valueOf(rs.getString("delivery_method")))
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("revision_id")))
                     .withSpecialInstructions(rs.getString("special_instructions"))
                     .withState(RequisitionState.of(RequisitionStatus.valueOf(rs.getString("status"))))

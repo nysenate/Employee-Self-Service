@@ -16,6 +16,7 @@ public final class Requisition {
     private final int revisionId;
     private final Employee customer;
     private final Location destination;
+    private final DeliveryMethod deliveryMethod;
     private final ImmutableSet<LineItem> lineItems;
     private final String specialInstructions; // instructions left by the customer.
     private final RequisitionState state;
@@ -36,6 +37,7 @@ public final class Requisition {
         this.revisionId = builder.revisionId;
         this.customer = checkNotNull(builder.customer, "Requisition requires non null customer.");
         this.destination = checkNotNull(builder.destination, "Requisition requires non null destination.");
+        this.deliveryMethod = checkNotNull(builder.deliveryMethod, "Requisition requires non null delivery method.");
         this.lineItems = ImmutableSet.copyOf(builder.lineItems);
         this.specialInstructions = builder.specialInstructions;
         this.state = checkNotNull(builder.state, "Requisition requires non null RequisitionState.");
@@ -63,6 +65,7 @@ public final class Requisition {
                 .withRevisionId(this.revisionId)
                 .withCustomer(this.customer)
                 .withDestination(this.destination)
+                .withDeliveryMethod(this.deliveryMethod)
                 .withLineItems(this.lineItems)
                 .withSpecialInstructions(this.specialInstructions)
                 .withState(this.state)
@@ -157,6 +160,10 @@ public final class Requisition {
         return destination;
     }
 
+    public DeliveryMethod getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
     public ImmutableSet<LineItem> getLineItems() {
         return lineItems;
     }
@@ -214,7 +221,7 @@ public final class Requisition {
     }
 
     /**
-     * Protected methods handled by implementations of the RequisitionState interface.
+     * Protected methods should only be used by implementations of the RequisitionState interface via the process/reject methods.
      */
 
     protected Requisition setState(RequisitionState state) {
@@ -244,6 +251,7 @@ public final class Requisition {
                 ", revisionId=" + revisionId +
                 ", customer=" + customer +
                 ", destination=" + destination +
+                ", deliveryMethod=" + deliveryMethod +
                 ", lineItems=" + lineItems +
                 ", specialInstructions='" + specialInstructions + '\'' +
                 ", state=" + state +
@@ -271,6 +279,7 @@ public final class Requisition {
         if (savedInSfms != that.savedInSfms) return false;
         if (customer != null ? !customer.equals(that.customer) : that.customer != null) return false;
         if (destination != null ? !destination.equals(that.destination) : that.destination != null) return false;
+        if (deliveryMethod != that.deliveryMethod) return false;
         if (lineItems != null ? !lineItems.equals(that.lineItems) : that.lineItems != null) return false;
         if (specialInstructions != null ? !specialInstructions.equals(that.specialInstructions) : that.specialInstructions != null)
             return false;
@@ -299,6 +308,7 @@ public final class Requisition {
         result = 31 * result + revisionId;
         result = 31 * result + (customer != null ? customer.hashCode() : 0);
         result = 31 * result + (destination != null ? destination.hashCode() : 0);
+        result = 31 * result + (deliveryMethod != null ? deliveryMethod.hashCode() : 0);
         result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
         result = 31 * result + (specialInstructions != null ? specialInstructions.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
@@ -321,6 +331,7 @@ public final class Requisition {
         private int revisionId;
         private Employee customer;
         private Location destination;
+        private DeliveryMethod deliveryMethod;
         private Set<LineItem> lineItems;
         private RequisitionState state;
         private Employee issuer;
@@ -353,6 +364,11 @@ public final class Requisition {
 
         public Builder withDestination(Location destination) {
             this.destination = destination;
+            return this;
+        }
+
+        public Builder withDeliveryMethod(DeliveryMethod deliveryMethod) {
+            this.deliveryMethod = deliveryMethod;
             return this;
         }
 

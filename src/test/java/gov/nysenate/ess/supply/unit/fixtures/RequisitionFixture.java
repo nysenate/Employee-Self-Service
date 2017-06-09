@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.item.LineItem;
+import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
 import gov.nysenate.ess.supply.requisition.model.PendingState;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
@@ -20,6 +21,7 @@ public class RequisitionFixture {
                 .withRevisionId(1)
                 .withCustomer(createEmployeeWithId(1))
                 .withDestination(createStubLocation())
+                .withDeliveryMethod(DeliveryMethod.DELIVERY)
                 .withLineItems(new HashSet<>())
                 .withState(new PendingState())
                 .withIssuer(createEmployeeWithId(2))
@@ -35,6 +37,7 @@ public class RequisitionFixture {
                 .withRevisionId(0)
                 .withCustomer(createEmployeeWithId(1))
                 .withDestination(createStubLocation())
+                .withDeliveryMethod(DeliveryMethod.DELIVERY)
                 .withLineItems(createStubLineItem())
                 .withState(new PendingState())
                 .withIssuer(createEmployeeWithId(2))
