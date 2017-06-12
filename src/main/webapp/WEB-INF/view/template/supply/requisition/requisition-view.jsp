@@ -84,6 +84,9 @@
             <div class="col-4-12">
               <b>Modified By:</b> {{selectedVersion.modifiedBy.lastName}}
             </div>
+            <div class="col-4-12">
+              <b>Delivery Method:</b> {{selectedVersion.deliveryMethod}}
+            </div>
           </div>
         </div>
       </div>
