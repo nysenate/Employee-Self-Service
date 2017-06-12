@@ -10,7 +10,7 @@ essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
         controller: 'CartCheckoutModalCtrl',
         controllerAs: 'ctrl'
     }
-}]).controller('CartCheckoutModalCtrl', ['$scope', 'modals', function ($scope, modals) {
+}]).controller('CartCheckoutModalCtrl', ['$scope', 'modals', 'LocationService', function ($scope, modals, locationService) {
 
     $scope.requisitionId = modals.params().result.requisitionId;
 
@@ -24,6 +24,28 @@ essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
     };
 }]);
 
+/**
+ *  --- Delivery method modal ---
+ *
+ *  Returns the DeliveryMethod chosen by the user.
+ */
+essSupply.directive('deliveryMethodModal', ['appProps', function (appProps) {
+    return {
+        restrict: 'E',
+        templateUrl: appProps.ctxPath + '/template/supply/shopping/cart/delivery-method-modal',
+        controller: 'DeliveryMethodModalCtrl',
+        controllerAs: 'ctrl'
+    }
+}]).controller('DeliveryMethodModalCtrl', ['$scope', 'modals', function ($scope, modals) {
+
+    $scope.deliver = function () {
+        modals.resolve("DELIVERY");
+    };
+
+    $scope.pickup = function () {
+        modals.resolve("PICKUP");
+    };
+}]);
 
 /**
  *  --- Empty cart modal ---

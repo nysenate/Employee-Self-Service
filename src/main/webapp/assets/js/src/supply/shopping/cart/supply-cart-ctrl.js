@@ -46,13 +46,12 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         supplyCart.save();
     };
 
-    /** --- Button's --- */
-
-    $scope.submitOrder = function () {
+    var submitOrder = function (deliveryMethod) {
         var params = {
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getCartItems(),
             destinationId: $scope.destinationCode + "-W",
+            deliveryMethod: deliveryMethod,
             specialInstructions: $scope.specialInstructions
         };
         requisitionApi.save(params, function (response) {
@@ -61,6 +60,18 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         }, function (response) {
             modals.open('500', {action: 'checkout cart', details: response});
         });
+    };
+
+    /** --- Button's --- */
+
+    $scope.checkout = function () {
+        // User must select delivery or pickup before the order can be submitted.
+        modals.open('delivery-method-modal', {}, true)
+            .then(function (deliveryMethod) {
+                submitOrder(deliveryMethod)
+            })
+            // Do nothing if modal is rejected/canceled (this prevents an error message in dev tools)
+            .catch(function () {})
     };
 
     $scope.emptyCart = function () {

@@ -70,7 +70,7 @@
         <a href="${ctxPath}/supply/shopping/order">
           <input class="neutral-button" type="button" value="Continue Browsing">
         </a>
-        <input ng-click="submitOrder()" class="submit-button" type="button" value="Checkout">
+        <input ng-click="checkout()" class="submit-button" type="button" value="Checkout">
       </div>
       <div class="clearfix"></div>
     </div>
