@@ -82,12 +82,4 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         modals.resolve();
     };
 
-    $scope.returnToSupply = function () {
-        modals.resolve();
-        locationService.go("/supply/shopping/order", false);
-    };
-
-    $scope.logout = function () {
-        locationService.go('/logout', true);
-    };
 }

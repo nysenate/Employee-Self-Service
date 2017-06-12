@@ -80,6 +80,9 @@
     <modal modal-id="supply-cart-checkout-modal">
       <cart-checkout-modal></cart-checkout-modal>
     </modal>
+    <modal modal-id="delivery-method-modal">
+      <delivery-method-modal></delivery-method-modal>
+    </modal>
     <modal modal-id="supply-cart-empty-modal">
       <supply-cart-empty-modal></supply-cart-empty-modal>
     </modal>

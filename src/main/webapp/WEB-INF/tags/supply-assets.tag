@@ -68,7 +68,7 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-directives.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-empty-modal.js?v=${releaseVersion}"></script>
+                src="${ctxPath}/assets/js/src/supply/shopping/cart/supply-cart-modals.js?v=${releaseVersion}"></script>
 
         <%-- Requisition --%>
         <script type="text/javascript"
