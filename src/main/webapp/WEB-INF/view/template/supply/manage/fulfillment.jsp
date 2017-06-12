@@ -28,6 +28,7 @@
     <table class="ess-table supply-listing-table" ng-show="pendingSearch.matches.length > 0">
       <thead>
       <tr>
+        <th></th>
         <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
@@ -39,6 +40,8 @@
       <tbody>
       <tr ng-repeat="requisition in pendingSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
+        <td ng-class="{'icon-aircraft': requisition.deliveryMethod === 'DELIVERY',
+                     'icon-shopping-cart': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -70,6 +73,7 @@
     <table class="ess-table supply-listing-table" ng-show="processingSearch.matches.length > 0">
       <thead>
       <tr>
+        <th></th>
         <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
@@ -81,6 +85,8 @@
       <tbody>
       <tr ng-repeat="requisition in processingSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
+         <td ng-class="{'icon-aircraft': requisition.deliveryMethod === 'DELIVERY',
+                     'icon-shopping-cart': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -113,6 +119,7 @@
     <table class="ess-table supply-listing-table" ng-show="completedSearch.matches.length > 0">
       <thead>
       <tr>
+        <th></th>
         <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
@@ -125,6 +132,8 @@
       <tbody>
       <tr ng-repeat="requisition in completedSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
+         <td ng-class="{'icon-aircraft': requisition.deliveryMethod === 'DELIVERY',
+                     'icon-shopping-cart': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
