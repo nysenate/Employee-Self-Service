@@ -1,5 +1,5 @@
 <div class="save-progress-modal">
-  <h3 class="content-info" style="margin-bottom:0;">Select delivery method</h3>
+  <h3 class="content-info" style="margin-bottom:0;">Delivery method</h3>
   <div class="content-info">
     <h4>Would you like to pickup up this order or have it delivered?</h4>
     <p>Orders can be picked up from LC100.</p>
