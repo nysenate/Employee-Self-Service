@@ -159,7 +159,7 @@
           <b>Requesting Office:</b>
           <span style="padding-left: 10px;">{{selectedVersion.destination.locId}} </span>
           <span style="padding-left: 10px;">{{selectedVersion.destination.respCenterHead.shortName}}</span>
-          <span style="padding-left: 10px;">{{selectedVersion.destination.address.addr1}}{{selectedVersion.destination.address.city}} {{selectedVersion.destination.address.state}}
+          <span style="padding-left: 10px;">{{selectedVersion.destination.address.addr1}} {{selectedVersion.destination.address.city}} {{selectedVersion.destination.address.state}}
             {{selectedVersion.destination.address.zip5}}
            </span>
         </div>
@@ -187,14 +187,12 @@
             {{selectedVersion.issuer.lastName}}
           </div>
           <div class="col-4-12">
-            <b>Issued Date:</b>
-            <span ng-show="displayIssuedDate(selectedVersion)">
-              {{selectedVersion.completedDateTime | date:'MM/dd/yyyy h:mm a'}}
-            </span>
+            <b>Delivery Method:</b> {{selectedVersion.deliveryMethod}}
           </div>
           <div class="col-4-12">
             <b>Modified By:</b> {{selectedVersion.modifiedBy.lastName}}
           </div>
+
         </div>
       </div>
     </div>

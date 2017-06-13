@@ -6,6 +6,8 @@
 <div class="padding-10">
   <div>
     <h3 class="content-info">
+      <span style="padding-right:10px;" ng-class="{'icon-aircraft': originalRequisition.deliveryMethod === 'DELIVERY',
+                     'icon-shopping-cart': originalRequisition.deliveryMethod === 'PICKUP'}"></span>
       <span ng-if="originalRequisition.status === 'PENDING'">Pending</span>
       <span ng-if="originalRequisition.status === 'PROCESSING'">Processing</span>
       <span ng-if="originalRequisition.status === 'COMPLETED'">Completed</span>
