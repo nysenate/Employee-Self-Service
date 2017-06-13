@@ -122,7 +122,6 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         requisitionService.rejectRequisition(requisition);
     }
 
-
     @RequestMapping("")
     public BaseResponse searchRequisitions(@RequestParam(defaultValue = "All", required = false) String location,
                                            @RequestParam(defaultValue = "All", required = false) String customerId,

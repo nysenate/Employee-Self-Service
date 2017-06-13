@@ -152,8 +152,9 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Override
     public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
-        String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap()) + "and r.requisition_id = " + requisitionId;
-        List<Requisition> requisitions =  localNamedJdbc.query(sql, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+        MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
+        String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap(), new OrderBy("modified_date_time", SortOrder.ASC));
+        List<Requisition> requisitions =  localNamedJdbc.query(sql, params, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         return ImmutableList.copyOf(requisitions);
     }
 
@@ -257,7 +258,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         ),
         GET_REQUISITION_HISTORY(
                 "SELECT * from ${supplySchema}.requisition r INNER JOIN ${supplySchema}.requisition_content c \n" +
-                "ON r.requisition_id = c.requisition_id \n"
+                "ON r.requisition_id = c.requisition_id \n" +
+                "WHERE r.requisition_id = :requisitionId \n"
         ),
         SET_SAVED_IN_SFMS(
                 "UPDATE ${supplySchema}.requisition \n" +
