@@ -51,7 +51,7 @@ public class SqlLineItemDao extends SqlBaseDao {
         String sql = SqlReqLineItemQuery.GET_LINE_ITEMS.getSql(schemaMap());
         ReqLineItemHandler handler = new ReqLineItemHandler(itemDao);
         localNamedJdbc.query(sql, params, handler);
-        return handler.getLineItems();
+        return handler.getResults();
     }
 
     public Set<LineItem> getAggregateLineItems(LocationId locationId, Range<LocalDateTime> dateRange) {
@@ -63,7 +63,7 @@ public class SqlLineItemDao extends SqlBaseDao {
         ReqLineItemHandler handler = new ReqLineItemHandler(itemDao);
         localNamedJdbc.query(sql, params, handler);
         // TODO not going to work, need to sum all items
-        return handler.getLineItems();
+        return handler.getResults();
     }
 
     private enum SqlReqLineItemQuery implements BasicSqlQuery {
@@ -111,7 +111,8 @@ public class SqlLineItemDao extends SqlBaseDao {
     private class ReqLineItemHandler extends BaseHandler {
 
         private SupplyItemDao itemDao;
-        private Set<LineItem> lineItems;
+        private Map<Integer, Integer> itemIdToCounts;
+
         private Comparator alphabeticalItemDesc = new Comparator<LineItem>() {
             @Override
             public int compare(LineItem o1, LineItem o2) {
@@ -121,17 +122,20 @@ public class SqlLineItemDao extends SqlBaseDao {
 
         ReqLineItemHandler(SupplyItemDao itemDao) {
             this.itemDao = itemDao;
-            lineItems = new TreeSet<>(alphabeticalItemDesc);
+            this.itemIdToCounts = new HashMap<>();
         }
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            SupplyItem item = itemDao.getItemById(rs.getInt("item_id"));
-            int quantity = rs.getInt("quantity");
-            lineItems.add(new LineItem(item, quantity));
+            itemIdToCounts.put(rs.getInt("item_id"), rs.getInt("quantity"));
         }
 
-        Set<LineItem> getLineItems() {
+        Set<LineItem> getResults() {
+            Set<SupplyItem> items = itemDao.getItemsByIds(itemIdToCounts.keySet());
+            TreeSet<LineItem> lineItems = new TreeSet<LineItem>(alphabeticalItemDesc);
+            for(SupplyItem item : items) {
+                lineItems.add(new LineItem(item, itemIdToCounts.get(item.getId())));
+            }
             return lineItems;
         }
     }

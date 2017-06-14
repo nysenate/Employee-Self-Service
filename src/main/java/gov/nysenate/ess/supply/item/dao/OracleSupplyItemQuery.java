@@ -19,6 +19,11 @@ public enum OracleSupplyItemQuery implements BasicSqlQuery {
                     "Where com.Nuxrefco = :id"
     ),
 
+    GET_SUPPLY_ITEMS_BY_IDS(
+            SUPPLY_ITEM_QUERY.getSql() +
+            "WHERE com.nuxrefco IN (:ids)"
+    ),
+
     GET_ALL_SUPPLY_ITEMS(
             SUPPLY_ITEM_QUERY.getSql() +
                     "Where com.CdStatus= 'A' And com.CdStockItem= 'Y'"

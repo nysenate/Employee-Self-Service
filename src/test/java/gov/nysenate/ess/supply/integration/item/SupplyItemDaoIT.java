@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.integration.item;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
@@ -20,6 +22,14 @@ public class SupplyItemDaoIT extends BaseTest {
     @Autowired
     private SupplyItemDao itemDao;
 
+    private void assertItemRestrictionsInitialized(Set<SupplyItem> items) {
+        for (SupplyItem item: items) {
+            if (item.getId() == 1542) {
+                assertTrue(item.isRestricted());
+            }
+        }
+    }
+
     @Test
     public void canGetItems() {
         Set<SupplyItem> items = itemDao.getSupplyItems();
@@ -27,12 +37,11 @@ public class SupplyItemDaoIT extends BaseTest {
         assertItemRestrictionsInitialized(items);
     }
 
-    private void assertItemRestrictionsInitialized(Set<SupplyItem> items) {
-        for (SupplyItem item: items) {
-            if (item.getId() == 1542) {
-                assertTrue(item.isRestricted());
-            }
-        }
+    @Test
+    public void canGetItemsById() {
+        Set<SupplyItem> items = itemDao.getItemsByIds(Sets.newHashSet(1542, 111));
+        assertTrue(items.size() > 0);
+        assertItemRestrictionsInitialized(items);
     }
 
     @Test

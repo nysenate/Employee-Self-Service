@@ -1,5 +1,7 @@
 package gov.nysenate.ess.supply.item.dao;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
@@ -11,7 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Repository
@@ -25,10 +29,26 @@ public class ItemRestrictionDao extends SqlBaseDao {
         return new ItemRestriction(handler.results());
     }
 
+    /**
+     * Get all item restrictions.
+     * @return A map of item id's to its ItemRestriction.
+     */
+    public Map<Integer, ItemRestriction> getItemRestrictions() {
+        String sql = ItemRestrictionQuery.GET_ALL_ITEM_RESTRICTIONS.getSql(schemaMap());
+        ItemRestrictionsHandler handler = new ItemRestrictionsHandler();
+        localNamedJdbc.query(sql, handler);
+        return handler.getResults();
+    }
+
     private enum ItemRestrictionQuery implements BasicSqlQuery {
         RESTRICTIONS_FOR_ITEM(
                 "SELECT location_id from ${supplySchema}.location_specific_items \n" +
                         "WHERE item_id = :itemId"
+        ),
+
+        GET_ALL_ITEM_RESTRICTIONS(
+                "SELECT item_id, location_id \n" +
+                "FROM ${supplySchema}.location_specific_items \n"
         );
 
         ItemRestrictionQuery(String sql) {
@@ -59,6 +79,24 @@ public class ItemRestrictionDao extends SqlBaseDao {
 
         public Set<LocationId> results() {
             return locationSet;
+        }
+    }
+
+    private class ItemRestrictionsHandler implements RowCallbackHandler {
+
+        private Multimap<Integer, LocationId> itemRestrictions = HashMultimap.create();
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            itemRestrictions.put(rs.getInt("item_id"), new LocationId(rs.getString("location_id")));
+        }
+
+        public Map<Integer, ItemRestriction> getResults() {
+            Map<Integer, ItemRestriction> allRestrictions = new HashMap<>();
+            for (Integer itemId : itemRestrictions.keys()) {
+                allRestrictions.put(itemId, new ItemRestriction(itemRestrictions.get(itemId)));
+            }
+            return allRestrictions;
         }
     }
 }

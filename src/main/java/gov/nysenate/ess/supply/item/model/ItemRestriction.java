@@ -3,13 +3,14 @@ package gov.nysenate.ess.supply.item.model;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.unit.LocationId;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class ItemRestriction {
 
     private final ImmutableSet<LocationId> allowedLocations;
 
-    public ItemRestriction(Set<LocationId> allowedLocations) {
+    public ItemRestriction(Collection<LocationId> allowedLocations) {
         this.allowedLocations = allowedLocations == null
                 ? ImmutableSet.of()
                 : ImmutableSet.copyOf(allowedLocations);

@@ -8,6 +8,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+
 @Ignore
 @org.junit.experimental.categories.Category(IntegrationTest.class)
 public class ItemRestrictionDaoIT extends BaseTest {
@@ -17,5 +21,12 @@ public class ItemRestrictionDaoIT extends BaseTest {
     @Test
     public void canGetItemRestrictions() {
         ItemRestriction restriction = itemRestrictionDao.forItem(1542);
+    }
+
+    @Test
+    public void canGetAllRestrictions() {
+        Map<Integer, ItemRestriction> allRestrictions = itemRestrictionDao.getItemRestrictions();
+        assertTrue(allRestrictions.containsKey(1542));
+        assertTrue(allRestrictions.containsKey(2205));
     }
 }
