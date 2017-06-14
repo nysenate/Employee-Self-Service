@@ -1,9 +1,10 @@
 <div class="save-progress-modal">
-  <h3 class="content-info" style="margin-bottom:0;">Delivery method</h3>
+  <h3 class="content-info" style="margin-bottom:0;">Choose delivery method</h3>
   <div class="content-info">
-    <h4>Would you like to pickup up this order or have it delivered?</h4>
-    <p>Orders can be picked up from LC100.</p>
-    <input ng-click="deliver()" class="submit-button" type="button" value="Please deliver"/>
-    <input ng-click="pickup()" class="submit-button" type="button" value="I'll pickup"/>
+    <h4>Would you like to pick up this order<br/>or have it delivered to you?</h4>
+    <p>Note: Orders can be picked up from LC100.</p>
+    <input ng-click="pickup()" class="submit-button" type="button" value="I'll pick it up"/>
+    &nbsp;&nbsp;
+    <input ng-click="deliver()" class="neutral-button" type="button" value="Please deliver to me"/>
   </div>
 </div>
