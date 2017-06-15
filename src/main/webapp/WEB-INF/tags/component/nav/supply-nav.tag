@@ -18,6 +18,7 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/history/requisition-history">Requisition History</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/supply/history/item-history">Item History</a></li>
     </ul>
     </shiro:hasPermission>
   </section>

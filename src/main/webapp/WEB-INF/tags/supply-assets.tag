@@ -21,6 +21,8 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/history/supply-requisition-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/supply/history/supply-item-history-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/history/supply-order-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/history/requisition-modal-ctrl.js?v=${releaseVersion}"></script>

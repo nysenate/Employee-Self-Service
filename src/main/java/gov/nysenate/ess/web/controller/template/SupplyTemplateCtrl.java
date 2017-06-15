@@ -40,6 +40,11 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
         return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/history/requisition-history");
     }
 
+    @RequestMapping(value="/history/item-history")
+    public String itemHistory() {
+        return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/history/item-history");
+    }
+
     @RequestMapping(value="/manage/reconciliation")
     public String reconciliation() {
         return getSupplyEmployeePage(SUPPLY_TMPL_BASE_URL + "/manage/reconciliation");

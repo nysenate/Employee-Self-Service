@@ -141,6 +141,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/history/requisition-history'
     });
 
+    $routeProvider.when(ctxPath + '/supply/history/item-history', {
+        templateUrl: ctxPath + '/template/supply/history/item-history'
+    });
+
     $routeProvider.when(ctxPath + '/supply/history/order-history', {
         templateUrl: ctxPath + '/template/supply/history/order-history'
     });
