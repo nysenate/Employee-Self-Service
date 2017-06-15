@@ -19,6 +19,19 @@ essSupply.service('SupplyUtils', [function () {
             return items;
         },
 
+        /**
+         * Put an array of strings in alphabetical order.
+         * @param strings
+         */
+        alphabetizeByName: function (names) {
+            names.sort(function (a, b) {
+                if (a < b) return -1;
+                if (a > b) return 1;
+                return 0;
+            });
+            return names;
+        },
+
         countDistinctItemsInRequisition: function (requisition) {
             var count = 0;
             if (requisition.lineItems) {

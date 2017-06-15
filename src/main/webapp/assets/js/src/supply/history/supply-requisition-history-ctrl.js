@@ -67,7 +67,7 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
         response.result.forEach(function (e) {
             $scope.locations.push(e.locId);
         });
-        sortCodes($scope.locations);
+        supplyUtils.alphabetizeByName($scope.locations);
         $scope.locations.unshift("All");
         $scope.selectedLocation = $scope.locations[0];
     };
@@ -114,14 +114,6 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
                 console.error(errorResponse);
             }
         );
-    };
-
-    var sortCodes = function (codes) {
-        codes.sort(function (a, b) {
-            if (a < b) return -1;
-            if (a > b) return 1;
-            return 0;
-        })
     };
 
     /** --- Util methods --- */
