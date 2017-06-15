@@ -189,9 +189,11 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         AnnualAccSummary lastAnnualAccSummary = annualAcc.lastEntry().getValue();
 
+        // Get the end date of the last annual accrual summary
+        // Or use the day before the employee's cont. service date if they don't have an annual acc. summary
         LocalDate fromDate = Optional.ofNullable(lastAnnualAccSummary)
                 .map(AnnualAccSummary::getEndDate)
-                .orElseGet(() -> empInfoService.getEmployee(empId).getSenateContServiceDate());
+                .orElseGet(() -> empInfoService.getEmployee(empId).getSenateContServiceDate().minusDays(1));
 
         // Throw accrual exception if from date is null
         Optional.ofNullable(fromDate)
@@ -376,7 +378,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             accrualState.setEndDate(fromDate);
         }
 
-        Range<LocalDate> initialRange = Range.atMost(accrualState.getEndDate());
+        // Create a date range from the end date to the first day after the end date
+        // This is done so that the initial values are used if the employee was not active on the end date
+        Range<LocalDate> initialRange =
+                Range.closed(accrualState.getEndDate(), accrualState.getEndDate().plusDays(1));
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
@@ -385,8 +390,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
         }
-        accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).lastEntry().getValue());
-        accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).lastEntry().getValue());
+        accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).firstEntry().getValue());
+        accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue());
         accrualState.computeRates();
         return accrualState;
     }
