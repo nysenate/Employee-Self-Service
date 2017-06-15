@@ -171,6 +171,11 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         TransactionHistory empTrans = empTransService.getTransHistory(empId);
         RangeSet<LocalDate> accrualAllowedDates = getAccrualAllowedDates(empTrans);
 
+        // Filter out periods that don't intersect with accrual allowed dates
+        remainingPeriods = remainingPeriods.stream()
+                .filter(period -> RangeUtils.intersects(accrualAllowedDates, period.getDateRange()))
+                .collect(Collectors.toCollection(TreeSet::new));
+
         // Fetch the annual accrual records (PM23ATTEND) because it provides the pay period counter which
         // is necessary for determining if the accrual rates should change.
         PayPeriod lastPeriod = remainingPeriods.last();
