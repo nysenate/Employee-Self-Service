@@ -40,9 +40,7 @@
       <tbody>
       <tr ng-repeat="requisition in pendingSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
-        <td ng-class="{'supply-delivery-icon': requisition.deliveryMethod === 'DELIVERY',
-                     'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"
-            style="padding-left: 50px; padding-right: 0px;"></td>
+        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -86,9 +84,7 @@
       <tbody>
       <tr ng-repeat="requisition in processingSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
-         <td ng-class="{'supply-delivery-icon': requisition.deliveryMethod === 'DELIVERY',
-                     'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"
-            style="padding-left: 50px; padding-right: 0px;"></td>
+        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -134,9 +130,7 @@
       <tbody>
       <tr ng-repeat="requisition in completedSearch.matches" ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
-        <td ng-class="{'supply-delivery-icon': requisition.deliveryMethod === 'DELIVERY',
-                     'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"
-            style="padding-left: 50px; padding-right: 0px;"></td>
+        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
