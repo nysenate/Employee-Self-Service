@@ -27,6 +27,7 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
     $scope.editableRequisition = {};
     $scope.newLocationCode = ""; // model for editing the location.
     $scope.newItemCommodityCode = ""; // model for adding an item.
+    $scope.deliveryMethods = ['DELIVERY', 'PICKUP'];
     $scope.displayRejectInstructions = false;
     $scope.selfApprove = false;
 

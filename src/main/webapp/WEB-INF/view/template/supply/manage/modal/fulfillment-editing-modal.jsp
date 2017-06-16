@@ -64,6 +64,12 @@
              ng-change="onLocationUpdated()"
              style="width: 100px;">
 
+        <h4>Delivery Method</h4>
+        <select ng-model="editableRequisition.deliveryMethod"
+                ng-options="m for m in deliveryMethods"
+                ng-change="onUpdate()">
+        </select>
+
       <h4>Special Instructions</h4>
       <div
           ng-if="originalRequisition.specialInstructions === null || originalRequisition.specialInstructions.length === 0">
