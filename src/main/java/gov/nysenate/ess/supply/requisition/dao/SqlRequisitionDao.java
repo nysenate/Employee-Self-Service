@@ -224,9 +224,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         /** Never insert the revision id, let it auto increment. */
         INSERT_REQUISITION_CONTENT(
                 "INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status, \n" +
-                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions, delivery_method) \n" +
+                "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions,\n" +
+                "delivery_method) \n" +
                 "VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status, \n" +
-                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions, :deliveryMethod)"
+                ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions,\n" +
+                ":deliveryMethod::${supplySchema}.delivery_method)"
         ),
 
         GET_REQUISITION_BY_ID(

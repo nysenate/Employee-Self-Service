@@ -21,6 +21,17 @@ ALTER SCHEMA supply OWNER TO postgres;
 SET search_path = supply, pg_catalog;
 
 --
+-- Name: delivery_method; Type: TYPE; Schema: supply; Owner: postgres
+--
+
+CREATE TYPE delivery_method AS ENUM (
+  'DELIVERY',
+  'PICKUP'
+);
+
+ALTER TYPE delivery_method OWNER TO postgres;
+
+--
 -- Name: requisition_status; Type: TYPE; Schema: supply; Owner: postgres
 --
 
@@ -31,7 +42,6 @@ CREATE TYPE requisition_status AS ENUM (
   'COMPLETED',
   'APPROVED'
 );
-
 
 ALTER TYPE requisition_status OWNER TO postgres;
 
