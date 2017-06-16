@@ -1127,19 +1127,14 @@ a:hover {
   background: url('../../img/loading.GIF');
   background-repeat: no-repeat;
 }
-.supply-delivery-icon {
-  background: url('../../img/supply_delivery_200.png') center center;
-  height: 20px;
-  width: 20px;
-  background-size: 20px;
-  background-repeat: no-repeat;
-}
 .supply-pickup-icon {
-  background: url('../../img/supply_pickup_200.png') center center;
+  background: url('../../img/supply_nodelivery_50.png') center center;
   height: 20px;
   width: 20px;
   background-size: 20px;
   background-repeat: no-repeat;
+  padding-left: 50px !important;
+  padding-right: 0 !important;
 }
 /**
 * Styles related to inputs
