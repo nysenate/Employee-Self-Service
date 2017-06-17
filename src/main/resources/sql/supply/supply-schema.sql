@@ -135,7 +135,7 @@ CREATE TABLE requisition_content (
   issuing_emp_id smallint,
   note text,
   customer_id smallint NOT NULL,
-  delivery_method text NOT NULL,
+  delivery_method delivery_method NOT NULL,
   modified_by_id smallint NOT NULL,
   modified_date_time timestamp without time zone NOT NULL
 );
