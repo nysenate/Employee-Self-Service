@@ -4,6 +4,8 @@ essSupply = angular.module('essSupply').controller('SupplyHistoryController',
 
 function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemApi, locationService, locationApi,
                                  paginationModel, supplyUtils, modals) {
+
+    const DATE_FORMAT = "MM/DD/YYYY";
     $scope.paginate = angular.extend({}, paginationModel);
     $scope.loading = true;
     $scope.shipments = null;
@@ -14,8 +16,8 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
     $scope.issuerNameToID = [];
     $scope.filter = {
         date: {
-            from: moment().subtract(1, 'month').format("MM/DD/YYYY"),
-            to: moment().format("MM/DD/YYYY")
+            from: moment().subtract(1, 'month').format(DATE_FORMAT),
+            to: moment().format(DATE_FORMAT)
         },
         commodityCode: {
             codes: [],
@@ -37,8 +39,8 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
         var params = {
             status: ["APPROVED", "REJECTED"],
             // Only filtering by day so round dates to start/end of day.
-            from: moment($scope.filter.date.from).startOf('day').format(),
-            to: moment($scope.filter.date.to).endOf('day').format(),
+            from: moment($scope.filter.date.from, DATE_FORMAT).startOf('day').format(),
+            to: moment($scope.filter.date.to, DATE_FORMAT).endOf('day').format(),
             limit: $scope.paginate.itemsPerPage,
             offset: $scope.paginate.getOffset(),
             location: $scope.selectedLocation,
