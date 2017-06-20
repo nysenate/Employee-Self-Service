@@ -153,12 +153,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         // Get a set of pay periods that need to be computed
         TreeSet<PayPeriod> remainingPeriods = getMissingPeriods(resultMap, periodSet);
 
-        // Check if we have pay periods that are missing accrual data, these are the periods we need to
-        // compute accruals for.
-        if (!remainingPeriods.isEmpty()) {
-            getGapAccruals(empId, remainingPeriods, periodAccruals)
-                    .forEach(accSummary -> resultMap.put(accSummary.getPayPeriod(), accSummary));
-        }
+        // Compute accruals for any remaining periods
+        getGapAccruals(empId, remainingPeriods, periodAccruals)
+                .forEach(accSummary -> resultMap.put(accSummary.getPayPeriod(), accSummary));
+
         return resultMap;
     }
 
@@ -169,12 +167,19 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                                                         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals) {
 
         TransactionHistory empTrans = empTransService.getTransHistory(empId);
-        RangeSet<LocalDate> accrualAllowedDates = getAccrualAllowedDates(empTrans);
+        RangeSet<LocalDate> activeDates = getActiveEmploymentDates(empTrans);
 
-        // Filter out periods that don't intersect with accrual allowed dates
+        // Filter out periods where the employee is not employed
         remainingPeriods = remainingPeriods.stream()
-                .filter(period -> RangeUtils.intersects(accrualAllowedDates, period.getDateRange()))
+                .filter(period -> RangeUtils.intersects(activeDates, period.getDateRange()))
                 .collect(Collectors.toCollection(TreeSet::new));
+
+        // Do not proceed if there are no eligible gap periods
+        if (remainingPeriods.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        RangeSet<LocalDate> accrualAllowedDates = getAccrualAllowedDates(empTrans);
 
         // Fetch the annual accrual records (PM23ATTEND) because it provides the pay period counter which
         // is necessary for determining if the accrual rates should change.
@@ -480,12 +485,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
      */
     private ImmutableRangeSet<LocalDate> getAccrualAllowedDates(TransactionHistory empTrans) {
         // Create a range set containing dates that the employee was active
-        RangeSet<LocalDate> activeDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectiveEmpStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .map(Map.Entry::getKey)
-                .forEach(activeDates::add);
+        RangeSet<LocalDate> activeDates = getActiveEmploymentDates(empTrans);
 
         // Create a range set containing dates where the employee's accrual flag was set to true
         RangeSet<LocalDate> accrualStatusDates = TreeRangeSet.create();
@@ -526,6 +526,16 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     }
 
     private RangeSet<LocalDate> getAnnualEmploymentDates(TransactionHistory empTrans) {
+        RangeSet<LocalDate> activeDates = TreeRangeSet.create();
+        RangeUtils.toRangeMap(empTrans.getEffectiveEmpStatus(DateUtils.ALL_DATES))
+                .asMapOfRanges().entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .forEach(activeDates::add);
+        return activeDates;
+    }
+
+    private RangeSet<LocalDate> getActiveEmploymentDates(TransactionHistory empTrans) {
         RangeSet<LocalDate> annualEmploymentDates = TreeRangeSet.create();
         RangeUtils.toRangeMap(empTrans.getEffectivePayTypes(DateUtils.ALL_DATES))
                 .asMapOfRanges().entrySet().stream()
