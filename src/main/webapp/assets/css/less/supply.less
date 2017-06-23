@@ -218,6 +218,43 @@
   background: fade(#333, 5%);
 }
 
+.supply-highlight-row {
+  background: lighten(@blue-purple, 30%);
+  &:hover {
+    background: lighten(@blue-purple, 15%) !important;
+  }
+}
+
+.supply-sub-table {
+  background: lighten(@blue-purple, 38%);
+  padding: 10px 10px 25px 50px;
+  table {
+    tr {
+      background: lighten(@blue-purple, 38%);
+      &:hover {
+        background: lighten(@blue-purple, 15%) !important;
+      }
+    }
+  }
+}
+
+.div-table-body {
+  .div-row-container {
+    &:nth-child(even) {
+      background: fade(#333, 5%);
+    }
+  }
+  .div-table-row {
+    height: 31px;
+    line-height: 31px;
+    text-align: center;
+    &:hover {
+      background: #e9eeff;
+      cursor: pointer;
+    }
+  }
+}
+
 .supply-listing-table {
   tbody {
     tr {
@@ -225,11 +262,13 @@
       cursor: pointer;
       &:hover {
         background: #e9eeff;
+        cursor: pointer;
       }
       &:nth-child(even) {
         background: fade(#333, 5%);
         &:hover {
           background: #e9eeff;
+          cursor: pointer;
         }
       }
       &.warn {
