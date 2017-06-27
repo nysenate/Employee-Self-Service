@@ -61,59 +61,58 @@
         </dir-pagination-controls>
       </div>
 
-      <div class="padding-10">
-        <div class="grid text-align-center" style="border-bottom: 1px black solid">
-          <div class="bold-text col-4-12">
+      <div class="supply-div-table">
+        <div class="supply-div-table-header">
+          <div class="col-4-12">
             Commodity Code
           </div>
-          <div class="bold-text col-4-12">
+          <div class="col-4-12">
             Location Code
           </div>
-          <div class="bold-text col-4-12">
+          <div class="col-4-12">
             Quantity
           </div>
         </div>
-        <div class="div-table-body">
-          <div class="div-row-container"
-               dir-paginate="value in result.array | itemsPerPage: 15"
-               pagination-id="item-history-pagination">
-            <div class="div-table-row"
-                 ng-class="{'supply-highlight-row': showDetails}"
-                 ng-click="showDetails = !showDetails">
-              <div class="col-4-12">
-                {{value.commodityCode}}
-              </div>
-              <div class="col-4-12">
-                {{value.locationCode}}
-              </div>
-              <div class="col-4-12">
-                {{value.quantity}}
-              </div>
+        <div class="supply-div-table-body"
+             dir-paginate="value in result.array | itemsPerPage: 15"
+             pagination-id="item-history-pagination">
+          <div class="supply-div-table-row"
+               ng-class="{'supply-highlight-row': showDetails}"
+               ng-class-even="'dark-background'"
+               ng-click="showDetails = !showDetails">
+            <div class="col-4-12">
+              {{value.commodityCode}}
             </div>
-            <div ng-show="showDetails"
-                 class="supply-sub-table">
-              <table class="ess-table supply-listing-table">
-                <thead>
-                <tr>
-                  <th>Id</th>
-                  <th>Ordered By</th>
-                  <th>Quantity</th>
-                  <th>Completed Date</th>
-                  <th>Issued By</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="req in value.requisitions"
-                    ng-click="openReqModal(req)">
-                  <td>{{req.requisitionId}}</td>
-                  <td>{{req.customer.lastName}}</td>
-                  <td>{{getItemQuantity(req, value.commodityCode)}}</td>
-                  <td>{{req.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
-                  <td>{{req.issuer.lastName}}</td>
-                </tr>
-                </tbody>
-              </table>
+            <div class="col-4-12">
+              {{value.locationCode}}
             </div>
+            <div class="col-4-12">
+              {{value.quantity}}
+            </div>
+          </div>
+          <div ng-show="showDetails"
+               class="supply-sub-table">
+            <table class="ess-table supply-listing-table">
+              <thead>
+              <tr>
+                <th>Id</th>
+                <th>Ordered By</th>
+                <th>Quantity</th>
+                <th>Completed Date</th>
+                <th>Issued By</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="req in value.requisitions"
+                  ng-click="openReqModal(req)">
+                <td>{{req.requisitionId}}</td>
+                <td>{{req.customer.lastName}}</td>
+                <td>{{getItemQuantity(req, value.commodityCode)}}</td>
+                <td>{{req.completedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+                <td>{{req.issuer.lastName}}</td>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

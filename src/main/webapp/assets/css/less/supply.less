@@ -1,7 +1,7 @@
 @import "lesshat";
 @import "app";
 @import "./common/include";
-@import "./common/input";
+@import (less) "./../vendor/simplegrid.css";
 @import url(//fonts.googleapis.com/css?family=Noto+Sans:400,700);
 /** --- Supply --- */
 
@@ -191,66 +191,49 @@
   }
 }
 
-.expandable-div-header {
-  color: #333;
-  font-size: .9em;
-  border-bottom: 1px solid #155C69;
-  text-align: center !important;
-  div {
-    .bold;
-    padding: 10px 5px;
-  }
+.supply-div-table {
+  .padding-10;
 }
 
-.expandable-div-rows {
-  padding: 6.5px;
-  width: auto;
+.supply-div-table-header {
+  .grid;
   text-align: center;
-  border-bottom: 1px solid #eee !important;
-  cursor: pointer;
-  white-space: nowrap;
-  &:hover {
-    background: #e9eeff;
+  border-bottom: 1px black solid;
+  div {
+    .bold
   }
 }
 
-.expandable-dark-background {
-  background: fade(#333, 5%);
-}
-
-.supply-highlight-row {
-  background: lighten(@blue-purple, 30%);
-  &:hover {
-    background: lighten(@blue-purple, 15%) !important;
-  }
-}
-
-.supply-sub-table {
-  background: lighten(@blue-purple, 38%);
-  padding: 10px 10px 25px 50px;
-  table {
-    tr {
-      background: lighten(@blue-purple, 38%);
-      &:hover {
-        background: lighten(@blue-purple, 15%) !important;
-      }
-    }
-  }
-}
-
-.div-table-body {
-  .div-row-container {
-    &:nth-child(even) {
-      background: fade(#333, 5%);
-    }
-  }
-  .div-table-row {
+.supply-div-table-body {
+  .supply-div-table-row {
     height: 31px;
     line-height: 31px;
     text-align: center;
     &:hover {
       background: #e9eeff;
       cursor: pointer;
+    }
+  }
+  .supply-highlight-row {
+    background: lighten(@blue-purple, 30%) !important;
+    &:hover {
+      background: lighten(@blue-purple, 15%) !important;
+    }
+  }
+  .dark-background {
+    background: fade(#333, 5%);
+  }
+
+  .supply-sub-table {
+    background: lighten(@blue-purple, 38%);
+    padding: 10px 10px 25px 50px;
+    table {
+      tr {
+        background: lighten(@blue-purple, 38%);
+        &:hover {
+          background: lighten(@blue-purple, 15%);
+        }
+      }
     }
   }
 }

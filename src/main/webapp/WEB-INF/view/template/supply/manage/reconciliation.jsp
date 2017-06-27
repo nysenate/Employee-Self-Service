@@ -19,9 +19,10 @@
       </ul>
       <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
     </div>
+
     <%--Header--%>
-    <div class="large-print-font-size">
-      <div class="grid expandable-div-header">
+    <div class="supply-div-table large-print-font-size">
+      <div class="supply-div-table-header">
         <div class="col-3-12">
           Commodity Code
         </div>
@@ -33,8 +34,12 @@
         </div>
       </div>
       <%--Item rows--%>
-      <div ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}">
-        <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'" ng-click="setSelected(item)">
+      <div class="supply-div-table-body"
+           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}">
+        <div class="supply-div-table-row"
+             ng-class="{'supply-highlight-row': isItemSelected(item)}"
+             ng-class-even="'dark-background'"
+             ng-click="setSelected(item)">
           <div class="col-3-12">
             {{item.commodityCode}}
           </div>
@@ -47,44 +52,30 @@
         </div>
 
         <%--Details--%>
-        <div ng-show="isItemSelected(item)" style="padding-left: 40px; padding-top: 0px; padding-bottom: 20px;">
+        <div class="supply-sub-table"
+             ng-show="isItemSelected(item)">
           <%--Detail header--%>
-          <div class="grid expandable-div-header">
-            <div class="col-1-12">
-              Id
-            </div>
-            <div class="col-3-12">
-              Location
-            </div>
-            <div class="col-2-12">
-              Quantity
-            </div>
-            <div class="col-3-12">
-              Issued By
-            </div>
-            <div class="col-3-12">
-              Approved Date
-            </div>
-          </div>
-          <%--Detail rows--%>
-          <div class="grid expandable-div-rows" ng-class-even="'expandable-dark-background'"
-               ng-repeat="shipment in getShipmentsWithItem(item)" ng-click="viewShipment(shipment)">
-            <div class="col-1-12">
-              {{shipment.requisitionId}}
-            </div>
-            <div class="col-3-12">
-              {{shipment.destination.locId}}
-            </div>
-            <div class="col-2-12">
-              {{getOrderedQuantity(shipment, item)}}
-            </div>
-            <div class="col-3-12">
-              {{shipment.issuer.lastName}}
-            </div>
-            <div class="col-3-12">
-              {{shipment.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}
-            </div>
-          </div>
+          <table class="ess-table supply-listing-table">
+            <thead>
+            <tr>
+              <th>Id</th>
+              <th>Location</th>
+              <th>Quantity</th>
+              <th>Issued By</th>
+              <th>Approved Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="shipment in getShipmentsWithItem(item)"
+                ng-click="viewShipment(shipment)">
+              <td>{{shipment.requisitionId}}</td>
+              <td>{{shipment.destination.locId}}</td>
+              <td>{{getOrderedQuantity(shipment, item)}}</td>
+              <td>{{shipment.issuer.lastName}}</td>
+              <td>{{shipment.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
