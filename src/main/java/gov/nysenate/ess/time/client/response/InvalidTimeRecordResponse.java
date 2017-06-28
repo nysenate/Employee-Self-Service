@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 public class InvalidTimeRecordResponse extends ErrorResponse
 {
 
-    protected TimeRecordView timeRecord;
     protected MapView<Integer, TimeRecordErrorView> errorData;
+    protected TimeRecordView timeRecord;
 
     public InvalidTimeRecordResponse(TimeRecordView timeRecord, Map<TimeRecordErrorCode, ViewObject> errorData) {
         super(ErrorCode.INVALID_TIME_RECORD);
@@ -27,11 +27,11 @@ public class InvalidTimeRecordResponse extends ErrorResponse
         this.responseType = "invalid time record";
     }
 
-    public TimeRecordView getTimeRecord() {
-        return timeRecord;
-    }
-
     public MapView<Integer, TimeRecordErrorView> getErrorData() {
         return errorData;
+    }
+
+    public TimeRecordView getTimeRecord() {
+        return timeRecord;
     }
 }
