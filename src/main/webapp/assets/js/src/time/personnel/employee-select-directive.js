@@ -108,13 +108,14 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
             }
 
             function setSupGroupLabels() {
-                var supName = appProps.user.firstName + " " + appProps.user.lastName;
-
                 angular.forEach($scope.supEmpGroups, function (empGroup) {
                     if (empGroup.supId === appProps.user.employeeId) {
-                        empGroup.dropDownLabel = supName;
+                        var supName = supEmpGroupService.getName(empGroup.supId);
+                        empGroup.dropDownLabel = supName.fullName;
                     } else {
-                        empGroup.group = 'Supervisors Under ' + supName;
+                        var supId = supEmpGroupService.getSupId(empGroup.supId);
+                        var supName = supEmpGroupService.getName(supId);
+                        empGroup.group = 'Supervisors Under ' + supName.fullName;
                         setDropDownLabel(empGroup);
                     }
                 });

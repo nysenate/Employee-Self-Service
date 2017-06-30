@@ -34,7 +34,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.*;
-import static gov.nysenate.ess.time.model.personnel.SupOverrideType.*;
+import static gov.nysenate.ess.time.model.personnel.SupOverrideType.EMPLOYEE;
+import static gov.nysenate.ess.time.model.personnel.SupOverrideType.SUPERVISOR;
 
 @Service
 public class EssCachedSupervisorInfoService implements SupervisorInfoService, CachingService<Integer>
@@ -114,13 +115,29 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         SupervisorEmpGroup empGroup = getSupervisorEmpGroup(supId, dateRange);
         ExtendedSupEmpGroup extendedEmpGroup = new ExtendedSupEmpGroup(empGroup);
 
-        for (EmployeeSupInfo supInfo : extendedEmpGroup.getPrimaryEmployees().values()) {
+        Employee supervisor = empInfoService.getEmployee(supId);
+
+        Queue<EmployeeSupInfo> supInfoQueue = new ArrayDeque<>(extendedEmpGroup.getPrimaryEmpSupInfos());
+
+        while (!supInfoQueue.isEmpty()) {
+            EmployeeSupInfo supInfo = supInfoQueue.remove();
             try {
                 PrimarySupEmpGroup subEmpGroup = getPrimarySupEmpGroup(supInfo.getEmpId());
                 subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
+
                 // The employee may not be supervising any employees for their time under this supervisor
                 if (subEmpGroup.hasEmployees()) {
                     extendedEmpGroup.addEmployeeSupEmpGroup(subEmpGroup);
+                }
+
+                // If the primary supervisor is a senator,
+                // and the employee is in the senator's department,
+                // Add the employees of this employee to the queue
+                if (supervisor.isSenator() && supervisor.getRespCenterHeadCode() != null) {
+                    Employee employee = empInfoService.getEmployee(supInfo.getEmpId());
+                    if (supervisor.getRespCenterHeadCode().equals(employee.getRespCenterHeadCode())) {
+                        supInfoQueue.addAll(subEmpGroup.getPrimaryEmpSupInfos());
+                    }
                 }
             } catch (SupervisorException ignored) {
                 // Do not add entries for employees that are not supervisors

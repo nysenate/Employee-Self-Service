@@ -446,10 +446,6 @@ function recordManageCtrl($scope, $q, $filter,
     function getExtendedSupEntries() {
         var supEmpGroups = supEmpGroupService.getSupEmpGroupList();
 
-        var supName = supEmpGroupService.getName(appProps.user.employeeId);
-
-        var extSupGroup = 'Supervisors Under ' + supName.fullName;
-
         var extSupEntries =  supEmpGroups.slice(1)
             .filter(function (empGroup) {
                 // Filter out emp groups that ended over a year ago
@@ -459,8 +455,10 @@ function recordManageCtrl($scope, $q, $filter,
             .map(function (empGroup) {
                 var supId = empGroup.supId,
                     name = supEmpGroupService.getName(supId),
-                    baseLabel = getSupNameLabel(name);
-                // return getSupervisorEntry(supId, name, null, extSupGroup);
+                    baseLabel = getSupNameLabel(name),
+                    supSupId = supEmpGroupService.getSupId(empGroup.supId),
+                    supSupName = supEmpGroupService.getName(supSupId),
+                    extSupGroup = 'Supervisors Under ' + supSupName.fullName;
                 return {
                     querySupId: supId,
                     supId: supId,

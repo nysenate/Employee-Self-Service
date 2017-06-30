@@ -83,7 +83,20 @@ public class Employee extends Person
                 respCenter, workLocation, updateDateTime, senateContServiceDate);
     }
 
-/* --- Basic Getters/Setters --- */
+    /* --- Functional Getters/Setters --- */
+
+    /**
+     * Convenience method that retrieves the resp ctr head code
+     * from the {@link ResponsibilityCenter} contained in this object
+     */
+    public String getRespCenterHeadCode() {
+        return Optional.ofNullable(this.getRespCenter())
+                .map(ResponsibilityCenter::getHead)
+                .map(ResponsibilityHead::getCode)
+                .orElse(null);
+    }
+
+    /* --- Basic Getters/Setters --- */
 
     public int getEmployeeId() {
         return employeeId;

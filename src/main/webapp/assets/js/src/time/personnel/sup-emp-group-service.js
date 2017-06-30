@@ -14,9 +14,16 @@ angular.module('essTime')
  */
 function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
 
+    /** Stores extended supervisor employee group */
     var extendedSupEmpGroup = null;
+    /** Stores a flat list of all supEmpGroups */
     var supEmpGroupList = [];
+    /** A map of empId -> name for all employees in the extended sup emp group */
     var nameMap = {};
+    /** A map of empId -> supId for all employees in the extended sup emp group */
+    var supIdMap = {};
+
+    /** A promise that is resolved when the exdended supervisor employee group is fully loaded */
     var empGroupPromise = null;
 
     init();
@@ -26,6 +33,8 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
         getExtSupEmpGroup: getExtSupEmpGroup,
         getSupEmpGroupList: getSupEmpGroupList,
         getName: getName,
+        getSupId: getSupId,
+        getTier: getTier,
         getEmpInfos: getEmpInfos
     };
 
@@ -64,6 +73,39 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
      */
     function getName(empId) {
         return nameMap[empId];
+    }
+
+    /**
+     * Return the supervisor id for the employee with the given empId if it exists
+     * @param {Number} empId
+     * @returns {Object} containing fields "firstName" and "lastName"
+     */
+    function getSupId(empId) {
+        return supIdMap[empId];
+    }
+
+    /**
+     * Gets an employee's tier within the current sup emp group.
+     * The tier number is the degree of separation between the employee
+     * and the top level supervisor.
+     * @param empId
+     * @returns {number}
+     */
+    function getTier(empId) {
+        var topSupId = extendedSupEmpGroup.supId;
+        var visitedSupIds = {};
+        visitedSupIds[topSupId] = true;
+
+        var currentEmpId = empId;
+        var tier = 0;
+
+        while (currentEmpId && !visitedSupIds[currentEmpId]) {
+            tier++;
+            visitedSupIds[currentEmpId] = true;
+            currentEmpId = getSupId(currentEmpId);
+        }
+
+        return tier;
     }
 
     /**
@@ -125,7 +167,7 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
 
         function onSuccess (response) {
             extendedSupEmpGroup = response.result;
-            setNameMap();
+            setEmpMaps();
             setSupEmpGroups();
         }
         function onFail (response) {
@@ -138,8 +180,9 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
 
     /**
      * Stores all employee names in a map
+     * Stores the supervisor of every employee in a map
      */
-    function setNameMap() {
+    function setEmpMaps() {
         // Get primary and override emp infos
         var primaryEmpInfos = extendedSupEmpGroup.primaryEmployees;
         var empOverrideInfos = extendedSupEmpGroup.empOverrideEmployees;
@@ -163,6 +206,8 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
                 lastName: empInfo.empLastName,
                 fullName: empInfo.empFirstName + ' ' + empInfo.empLastName
             };
+
+            supIdMap[empInfo.empId] = empInfo.supId;
         });
 
         nameMap[appProps.user.employeeId] = {
@@ -170,6 +215,7 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
             lastName: appProps.user.lastName,
             fullName: appProps.user.firstName + ' ' + appProps.user.lastName
         };
+
     }
 
     /**
@@ -190,9 +236,13 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
         });
 
         empSupEmpGroups = $filter('orderBy')(empSupEmpGroups,
-                                             ['empLastName', 'empfirstName', 'supId', 'effectiveEndDate']);
+                [getSupEmpGroupTier, 'empLastName', 'empfirstName', 'supId', 'effectiveEndDate']);
 
         supEmpGroupList = [extendedSupEmpGroup].concat(empSupEmpGroups);
+    }
+
+    function getSupEmpGroupTier(supEmpGroup) {
+        return getTier(supEmpGroup.supId);
     }
 
     /**
