@@ -1891,7 +1891,7 @@ input[type="number"] {
 }
 @media print {
   .large-print-font-size {
-    font-size: 12pt;
+    font-size: 11pt;
   }
 }
 @media print {
@@ -1903,6 +1903,11 @@ input[type="number"] {
   .print-only {
     display: none;
     visibility: hidden;
+  }
+}
+@media print {
+  .print-gray-bottom-border {
+    border-bottom: 1px darkgray solid;
   }
 }
 @media print {
