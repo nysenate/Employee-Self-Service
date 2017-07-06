@@ -23,30 +23,30 @@
     <%--Header--%>
     <div class="supply-div-table large-print-font-size">
       <div class="supply-div-table-header">
-        <div class="col-3-12">
+        <div class="col-2-12">
           Commodity Code
         </div>
-        <div class="col-6-12">
+        <div class="col-8-12">
           Item
         </div>
-        <div class="col-3-12">
+        <div class="col-2-12">
           Quantity On Hand
         </div>
       </div>
       <%--Item rows--%>
-      <div class="supply-div-table-body"
+      <div class="supply-div-table-body print-gray-bottom-border"
            ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}">
         <div class="supply-div-table-row"
              ng-class="{'supply-highlight-row': isItemSelected(item)}"
              ng-class-even="'dark-background'"
              ng-click="setSelected(item)">
-          <div class="col-3-12">
+          <div class="col-2-12">
             {{item.commodityCode}}
           </div>
-          <div class="col-6-12" style="overflow: hidden;">
+          <div class="col-8-12" style="overflow: hidden;">
             {{item.description}}
           </div>
-          <div class="col-3-12">
+          <div class="col-2-12">
             &nbsp;
           </div>
         </div>
