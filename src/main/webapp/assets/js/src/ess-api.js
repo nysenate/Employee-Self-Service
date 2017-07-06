@@ -81,6 +81,12 @@ essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource
     return $resource(appProps.apiPath + '/accruals/history');
 }]);
 
+/** --- Expected Hours API --- */
+
+essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/expectedhrs');
+}]);
+
 /** --- Employee API --- */
 
 essApi.factory('EmpInfoApi', ['$resource', 'appProps', function ($resource, appProps) {

@@ -50,11 +50,11 @@ function expectedHoursModal (appProps, modals) {
 
         $scope.serviceYtd = params.serviceYtd;
         $scope.serviceYtdExpected = params.serviceYtdExpected;
-        $scope.biWeekHrsExpected = params.biWeekHrsExpected;
+        $scope.recordHrsExpected = params.recordHrsExpected;
         $scope.raSaTotal = params.raSaTotal;
 
         $scope.serviceSurplus = $scope.serviceYtd - $scope.serviceYtdExpected;
-        $scope.expectedDifference = $scope.biWeekHrsExpected - $scope.raSaTotal;
+        $scope.expectedDifference = $scope.recordHrsExpected - $scope.raSaTotal;
 
         $scope.resolve = modals.resolve;
         $scope.reject = modals.reject;

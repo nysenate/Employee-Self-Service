@@ -10,7 +10,7 @@
     <div ng-show="serviceSurplus < expectedDifference">
       <p>Warning: You do not have enough hours to fulfill required pay period hours.</p>
       <div style="display: flex; justify-content: space-around">
-        <span class="bold">Required: {{biWeekHrsExpected}} hrs.</span>
+        <span class="bold">Required: {{recordHrsExpected}} hrs.</span>
         <span class="bold">Entered: {{raSaTotal}} hrs.</span>
         <span class="bold">
           Year To Date

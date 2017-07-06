@@ -1,13 +1,19 @@
-var essApp = angular.module('essTime')
-        .controller('RecordEntryController', ['$scope', '$rootScope', '$filter', '$q', '$timeout', 'appProps',
-                                              'ActiveTimeRecordsApi', 'TimeRecordApi', 'AccrualPeriodApi',
+angular.module('essTime')
+        .controller('RecordEntryController', ['$scope', '$rootScope', '$filter', '$q', 'appProps',
+                                              'ActiveTimeRecordsApi', 'TimeRecordApi',
+                                              'AccrualPeriodApi', 'ExpectedHoursApi',
                                               'AllowanceApi', 'MiscLeaveGrantApi', 'HolidayApi', 'TimeRecordCreationApi',
                                               'activeTimeEntryRow', 'RecordUtils', 'LocationService', 'modals',
-                                              'promiseUtils', 'AllowanceUtils', recordEntryCtrl]);
+                                              'promiseUtils', 'AllowanceUtils',
+                                              recordEntryCtrl])
+;
 
-function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, activeRecordsApi, recordSaveApi, accrualPeriodApi,
-                         allowanceApi, miscLeaveGrantApi, holidayApi, recordCreationApi, activeRow, recordUtils, locationService,
-                         modals, promiseUtils, allowanceUtils) {
+function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
+                         activeRecordsApi, recordSaveApi,
+                         accrualPeriodApi, expectedHoursApi,
+                         allowanceApi, miscLeaveGrantApi, holidayApi,
+                         recordCreationApi, activeRow, recordUtils, locationService, modals,
+                         promiseUtils, allowanceUtils) {
 
     function getInitialState() {
         return {
@@ -15,6 +21,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             miscLeaves: appProps.miscLeaves,    // Listing of misc leave types
             miscLeaveGrants: null,              // List of records that grant use of a misc leave type
             accrual: null,                      // Accrual info for selected record
+            expectedHrs: null,                    // An object containing expected hour data for the selected record
             allowances: {},                     // A map that stores yearly temp employee allowances
             selectedYear: 0,                    // The year of the selected record (makes it easy to get the selected record's allowance)
             records: [],                        // All active employee records
@@ -61,7 +68,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
             detectPayTypes();
             $q.all([    // Get Accruals/Allowances for the record and then call record update methods
                 $scope.getAccrualForSelectedRecord(),
-                $scope.getAllowanceForSelRecord()
+                $scope.getAllowanceForSelRecord(),
+                $scope.getExpectedHoursForSelRecord()
             ]).then(function() {
                 //console.log('allowances/accruals retrieved, calling update functions');
                 getSelectedSalaryRecs();
@@ -221,6 +229,38 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         }
         // Return an automatically resolving promise if no request was made
         return $q(function (resolve) {resolve()});
+    };
+
+    /**
+     * Get the expected hours for the currently selected record
+     * @returns {*}
+     */
+    $scope.getExpectedHoursForSelRecord = function () {
+        // Return an automatically resolving promise if no annual entries exist
+        if (!$scope.state.annualEntries) {
+            return $q(function (resolve) {resolve()});
+        }
+        var empId = $scope.state.empId;
+        var record = $scope.getSelectedRecord();
+        var params = {
+            empId: empId,
+            beginDate: record.beginDate,
+            endDate: record.endDate
+        };
+        $scope.state.request.expectedHrs = true;
+        return expectedHoursApi.get(params, onSuccess, onFail)
+            .$promise.finally(cleanUp);
+
+        function onSuccess (resp) {
+            $scope.state.expectedHrs = resp.result;
+        }
+        function onFail (resp) {
+            modals.open('500', {details: resp});
+            console.error(resp);
+        }
+        function cleanUp() {
+            $scope.state.request.expectedHrs = false;
+        }
     };
 
     /**
@@ -465,7 +505,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
         if (!$scope.state.annualEntries) {
             return true;
         }
-        return $scope.state.accrual.biWeekHrsExpected <= $scope.state.totals.raSaTotal;
+        return $scope.state.expectedHrs.periodHoursExpected <= $scope.state.totals.raSaTotal;
     };
 
     /**
@@ -716,7 +756,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, $timeout, appProps, ac
                 return modals.open("expectedhrs-dialog", {
                     serviceYtd: $scope.state.accrual.serviceYtd,
                     serviceYtdExpected: $scope.state.accrual.serviceYtdExpected,
-                    biWeekHrsExpected: $scope.state.accrual.biWeekHrsExpected,
+                    recordHrsExpected: $scope.state.expectedHrs.periodHoursExpected,
                     raSaTotal: $scope.state.totals.raSaTotal
                 }, true);
             });

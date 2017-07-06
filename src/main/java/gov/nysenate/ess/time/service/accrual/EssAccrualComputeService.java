@@ -265,7 +265,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         return periodAccruals.values().stream()
                 .filter(perAccSumm -> payPeriods.contains(perAccSumm.getPayPeriod()))
                 .peek(perAccSumm -> perAccSumm.setExpectedTotalHours(
-                        txExpectedHoursService.getExpectedHours(perAccSumm.getPayPeriod(), perAccSumm.getEmpId())))
+                        txExpectedHoursService.getExpectedHours(perAccSumm.getEmpId(), perAccSumm.getPayPeriod())))
                 .collect(Collectors.toMap(PeriodAccSummary::getPayPeriod, Function.identity(),
                         (a, b) -> b, TreeMap::new));
     }
@@ -395,7 +395,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
-            accrualState.setYtdHoursExpected(txExpectedHoursService.getExpectedHours(payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate), transHistory.getEmployeeId()));
+            accrualState.setYtdHoursExpected(txExpectedHoursService.getExpectedHours(transHistory.getEmployeeId(), payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate)));
         }
         else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);

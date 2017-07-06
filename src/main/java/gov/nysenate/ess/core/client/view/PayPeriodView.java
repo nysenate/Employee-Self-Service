@@ -17,6 +17,7 @@ public class PayPeriodView implements ViewObject
     protected LocalDate endDate;
     protected String type;
     protected int numDays;
+    protected int numWeekDays;
     protected boolean startYearSplit;
     protected boolean endYearSplit;
     protected boolean active;
@@ -31,6 +32,7 @@ public class PayPeriodView implements ViewObject
             this.payPeriodNum = payPeriod.getPayPeriodNum();
             this.type = payPeriod.getType().toString();
             this.numDays = payPeriod.getNumDaysInPeriod();
+            this.numWeekDays = payPeriod.getNumWeekDaysInPeriod();
             this.startYearSplit = payPeriod.isStartOfYearSplit();
             this.endYearSplit = payPeriod.isEndOfYearSplit();
             this.active = payPeriod.isActive();
@@ -78,6 +80,11 @@ public class PayPeriodView implements ViewObject
     @XmlElement
     public int getNumDays() {
         return numDays;
+    }
+
+    @XmlElement
+    public int getNumWeekDays() {
+        return numWeekDays;
     }
 
     @XmlElement

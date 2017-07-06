@@ -3,16 +3,14 @@ package gov.nysenate.ess.time.service.expectedhrs;
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.Agency;
-import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
-import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.EssTimeConstants;
+import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
+import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
@@ -23,24 +21,22 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author Brian Heitner
+ * @author Sam Stouffer
+ *
+ * Implements functionality defined in {@link ExpectedHoursService} using point in time values extracted from
+ * employees' {@link TransactionHistory} retrieved from {@link EmpTransactionService}
  */
-
 @Service
 public class TxExpectedHoursService implements ExpectedHoursService {
     private static final Logger logger = LoggerFactory.getLogger(TxExpectedHoursService.class);
 
-    @Autowired
-    EmpTransactionService empTransactionService;
-    @Autowired
-    AllowanceService allowanceService;
-    @Autowired
-    PayPeriodService payPeriodService;
-
-    //yearDateRange
+    @Autowired EmpTransactionService empTransactionService;
+    @Autowired AllowanceService allowanceService;
 
     /**
      * Returns the Year to Date Expected Hours up to a specified Pay Period.
@@ -49,20 +45,15 @@ public class TxExpectedHoursService implements ExpectedHoursService {
      * @param payPeriod PayPeriod - Pay Period to compute YTD Expected hours up to
      * @return BigDecimal
      */
-
     @Override
-    public BigDecimal getExpectedHours(PayPeriod payPeriod, int empId) {
+    public BigDecimal getExpectedHours(int empId, PayPeriod payPeriod) {
         TransactionHistory transHistory = empTransactionService.getTransHistory(empId);
 
         LocalDate startOfYear = LocalDate.ofYearDay(payPeriod.getYear(), 1);
 
         Range<LocalDate>  upToPayPeriodRange =  Range.closedOpen(startOfYear, payPeriod.getEndDate().plusDays(1));
 
-        List<PayPeriod> yearPayPeriods =  payPeriodService.getPayPeriods(PayPeriodType.AF, upToPayPeriodRange, SortOrder.ASC);
-
-        BigDecimal expectedHours = yearPayPeriods.stream()
-                .map(entry -> getTotalPayPeriodExpectedHours(entry, transHistory))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal expectedHours = getExpectedHours(transHistory, upToPayPeriodRange);
 
         // Add any Temporary Actual Hours to the Expected Hours within the year prior to the given Pay Period.
         // Currently, the Temporary Hours included are only the Submitted Hours. RA/SA Hours include unsubmitted hours.
@@ -76,58 +67,38 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         return expectedHours;
     }
 
-    /**
-     * Returns the Expected Hours for a specified Pay Period.
-     *
-     * @param payPeriod PayPeriod - Pay Period to compute Expected hours for
-     * @param transHistory
-     * @return BigDecimal
-     */
+    @Override
+    public ExpectedHours getExpectedHours(int empId, Range<LocalDate> dateRange) throws InvalidExpectedHourDatesEx {
+        dateRange = dateRange.canonical(DateUtils.getLocalDateDiscreteDomain());
 
-    private BigDecimal getTotalPayPeriodExpectedHours(PayPeriod payPeriod, TransactionHistory transHistory) {
-        ImmutableRangeSet<LocalDate>  expectedPayPeriodHourDates = getExpectedPayPeriodHourDates(transHistory, payPeriod);
+        TransactionHistory transactionHistory = empTransactionService.getTransHistory(empId);
 
-        RangeSet<LocalDate> nonSenatorDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(transHistory.getEffectiveAgencyCodes(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> !Agency.SENATOR_AGENCY_CODE.equals(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .forEach(nonSenatorDates::add);
+        LocalDate beginDate = DateUtils.startOfDateRange(dateRange);
+        LocalDate endDate = DateUtils.endOfDateRange(dateRange);
 
-        transHistory.getEffectiveEmpStatus(payPeriod.getDateRange());
+        ExpectedHours.validateExpectedHourDates(beginDate, endDate);
 
-        ImmutableRangeSet<LocalDate>  expectedPayPeriodSplitHourDates = ImmutableRangeSet.copyOf(
-                RangeUtils.intersection(
-                        Arrays.asList(expectedPayPeriodHourDates, nonSenatorDates)
-                )
-        );
+        int year = beginDate.getYear();
 
-        BigDecimal expectedHours = getPayPeriodExpectedHours(payPeriod, transHistory, expectedPayPeriodSplitHourDates);
+        Range<LocalDate> yearToDate = Range.closedOpen(LocalDate.ofYearDay(year, 1), beginDate);
 
-        return expectedHours;
+        BigDecimal yearlyHoursExpected = transactionHistory.getEffectiveMinHours(dateRange).lastEntry().getValue();
+        BigDecimal ytdHoursExpected = getExpectedHours(transactionHistory, yearToDate);
+        BigDecimal periodHoursExpected = getExpectedHours(transactionHistory, dateRange);
+
+        return new ExpectedHours(beginDate, endDate, yearlyHoursExpected, ytdHoursExpected, periodHoursExpected);
     }
 
+    /* --- Internal Methods --- */
+
     /**
-     * Returns the Expected Hours for a specified Pay Period.
-     *
-     *
-     * @param payPeriod PayPeriod - Pay Period to compute Expected hours for
-     * @param transHistory
-     * @return BigDecimal
+     * Gets the number of hours expected of the employee over the given date range
      */
+    private BigDecimal getExpectedHours(TransactionHistory transHistory, Range<LocalDate> dateRange) {
 
-    private BigDecimal getPayPeriodExpectedHours(PayPeriod payPeriod,  TransactionHistory transHistory,  ImmutableRangeSet<LocalDate> expectedHourDates) {
-        BigDecimal expectedHours;
-        Range<LocalDate> payPeriodRange = payPeriod.getDateRange();
-        RangeSet<LocalDate>  payPeriodRangeSet =  TreeRangeSet.create();
-        payPeriodRangeSet.add(payPeriodRange);
+        RangeMap<LocalDate, BigDecimal> effectiveMinHoursMap = getEffectiveMinHoursMap(transHistory, dateRange);
 
-        RangeMap<LocalDate, BigDecimal> expectedPayPeriodHoursMap = getExpectedPayPeriodHoursMap(transHistory, payPeriod);
-
-        expectedHourDates.complement().asRanges().stream()
-                .forEach(expectedPayPeriodHoursMap::remove);
-
-        expectedHours = expectedPayPeriodHoursMap.asMapOfRanges().entrySet().stream()
+        BigDecimal expectedHours = effectiveMinHoursMap.asMapOfRanges().entrySet().stream()
                 .map(entry -> getExpectedHours(entry.getKey(), entry.getValue()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -135,15 +106,19 @@ public class TxExpectedHoursService implements ExpectedHoursService {
     }
 
     /**
-     * Returns the range of dates within the year up to the Pay Period where the employee needed to
-     * enter time and was not a Senator.
+     * Generates a range set that includes all dates for which an employee meets certain criteria that require them to
+     * work a specific number of hours per pay period and record this time on a timesheet.
+     * This includes all dates where the employee is:
+     * - employed
+     * - not on special leave
+     * - not a senator
+     * - not a temporary employee
      *
      * @param empTrans TransactionHistory - Employee Transaction History
-     * @param payPeriod PayPeriod - Pay Period to compute YTD Expected hours up to
+     * @param dateRange Range<LocalDate> - date range to filter the result
      * @return ImmutableRangeSet<LocalDate>
      */
-
-    private ImmutableRangeSet<LocalDate> getExpectedPayPeriodHourDates(TransactionHistory empTrans, PayPeriod payPeriod) {
+    private ImmutableRangeSet<LocalDate> getExpectedHourDates(TransactionHistory empTrans, Range<LocalDate> dateRange) {
         // Get a range set of dates where the employee is employed and required to enter time
         RangeSet<LocalDate> personnelStatusDates = TreeRangeSet.create();
         RangeUtils.toRangeMap(empTrans.getEffectivePersonnelStatus(DateUtils.ALL_DATES))
@@ -159,65 +134,39 @@ public class TxExpectedHoursService implements ExpectedHoursService {
                 .map(Map.Entry::getKey)
                 .forEach(nonSenatorDates::add);
 
-        LocalDate yearStart = payPeriod.getStartDate();
-        LocalDate endDate = payPeriod.getEndDate().plusDays(1);
-
-        ImmutableRangeSet<LocalDate> payPeriodRange = ImmutableRangeSet.of(Range.closedOpen(yearStart, endDate));
-
         // Create a range set containing dates where the employee is regular / special annual
-        RangeSet<LocalDate> annualEmploymentDates = getAnnualEmploymentDates(empTrans);
-
-        return ImmutableRangeSet.copyOf(
-                RangeUtils.intersection(
-                        Arrays.asList(personnelStatusDates, annualEmploymentDates, nonSenatorDates, payPeriodRange)
-                )
-        );
-    }
-
-    /**
-     * Returns the range of dates within the year up to the Pay Period
-     *
-     * @param empTrans TransactionHistory - Employee Transaction History
-     * @return ImmutableRangeSet<LocalDate>
-     */
-
-    private RangeSet<LocalDate> getAnnualEmploymentDates(TransactionHistory empTrans) {
         RangeSet<LocalDate> annualEmploymentDates = TreeRangeSet.create();
         RangeUtils.toRangeMap(empTrans.getEffectivePayTypes(DateUtils.ALL_DATES))
                 .asMapOfRanges().entrySet().stream()
                 .filter(entry -> entry.getValue() == PayType.RA || entry.getValue() == PayType.SA)
                 .map(Map.Entry::getKey)
                 .forEach(annualEmploymentDates::add);
-        return annualEmploymentDates;
+
+        RangeSet<LocalDate> filterRangeSet = ImmutableRangeSet.of(dateRange);
+
+        return ImmutableRangeSet.copyOf(
+                RangeUtils.intersection(
+                        Arrays.asList(personnelStatusDates, annualEmploymentDates, nonSenatorDates, filterRangeSet)
+                )
+        );
     }
 
     /**
-     * Returns Employee Transaction Service
+     * Generates a range map containing the employee's minimum annual expected hours over time.
+     * This range map will be filter to only contain entries within the given date range.
      *
-     * @return EmpTransactionService
-     */
-
-    public EmpTransactionService getEmpTransactionService() {
-        return empTransactionService;
-    }
-
-    /**
-     * Returns a map of Expected Pay Period Hours within a given Pay Period.
      * @param empTrans TransactionHistory - Employee Transactions
-     * @param payPeriod PayPeriod
-     *
+     * @param dateRange Range<LocalDate> - date range
      * @return EmpTransactionService RangeMap<LocalDate, BigDecimal>
      */
-
-    private RangeMap<LocalDate, BigDecimal> getExpectedPayPeriodHoursMap(TransactionHistory empTrans, PayPeriod payPeriod) {
+    private RangeMap<LocalDate, BigDecimal> getEffectiveMinHoursMap(TransactionHistory empTrans,
+                                                                    Range<LocalDate> dateRange) {
         RangeMap<LocalDate, BigDecimal> minHoursMap =
                 RangeUtils.toRangeMap(empTrans.getEffectiveMinHours(DateUtils.ALL_DATES));
 
-        ImmutableRangeSet<LocalDate> expectedHourDates = getExpectedPayPeriodHourDates(empTrans, payPeriod);
+        ImmutableRangeSet<LocalDate> expectedHourDates = getExpectedHourDates(empTrans, dateRange);
 
-        empTrans.getTransRecords(payPeriod.getDateRange(), TransactionCode.getAll(), SortOrder.ASC);
-
-        expectedHourDates.complement().asRanges().stream()
+        expectedHourDates.complement().asRanges()
                 .forEach(minHoursMap::remove);
 
         return minHoursMap;
@@ -235,8 +184,9 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         BigDecimal numberOfWeekdays = new BigDecimal(DateUtils.getNumberOfWeekdays(dateRange));
         MathContext mc = new MathContext(3);
         BigDecimal hoursPerDay = minHours.divide(EssTimeConstants.MAX_DAYS_PER_YEAR, mc);
-        BigDecimal expectedHours =  AccrualUtils.roundExpectedHours(hoursPerDay.multiply(numberOfWeekdays));
+        BigDecimal rawExpectedHours = hoursPerDay.multiply(numberOfWeekdays);
+        BigDecimal roundedExpectedHours =  AccrualUtils.roundExpectedHours(rawExpectedHours);
 
-        return expectedHours;
+        return roundedExpectedHours;
     }
 }
