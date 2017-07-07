@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,10 +169,14 @@ public class TransactionHistory
      * @return TreeMap<LocalDate, PersonnelStatus>
      */
     public TreeMap<LocalDate, PersonnelStatus> getEffectivePersonnelStatus(Range<LocalDate> dateRange) {
-        TreeMap<LocalDate, PersonnelStatus> effectivePersonnelStatusMap = new TreeMap<>();
-        getEffectiveEntriesDuring("CDSTATPER", dateRange, true)
-                .forEach((date, statper) -> effectivePersonnelStatusMap.put(date, PersonnelStatus.valueOf(statper)));
-        return effectivePersonnelStatusMap;
+        TreeMap<LocalDate, String> cdStatPerEntries = getEffectiveEntriesDuring("CDSTATPER", dateRange, true);
+        return cdStatPerEntries.entrySet().stream()
+                .map(entry -> {
+                    PersonnelStatus personnelStatus = PersonnelStatus.valueOf(entry.getValue());
+                    LocalDate offsetDate = entry.getKey().plusDays(personnelStatus.getEffectDateOffset());
+                    return Pair.of(offsetDate, personnelStatus);
+                })
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> b, TreeMap::new));
     }
 
     /**

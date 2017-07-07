@@ -5,23 +5,25 @@ package gov.nysenate.ess.core.model.personnel;
  */
 public enum PersonnelStatus {
 
-    /** The enum name of the status is also its sfms code as seen in PL21EMPSTAT */
-    SLHP("SICK LEAVE WITH HALF PAY", true, true, true),
-    TRNO("TRANSFER OUT", false, true, false),
-    ACTV("ACTIVE", true, true, false),
-    NONE("NONE", false, true, true),
-    RSGN("RESIGNED", false, true, false),
-    TERM("TERMINATED", false, true, false),
-    CHLD("CHILD CARE LEAVE", true, true, false),
-    MILT("MILITARY LEAVE", true, true, false),
-    RETD("RETIRED", false, true, false),
-    EXTS("EXTRA SERVICE", true, true, false),
-    STUD("STUDENT", true, true, false),
-    DSBL("DISABLED", true, true, false),
-    DECD("DECEASED", false, true, false),
-    LWOP("LEAVE WITHOUT PAY", true, false, true),
-    WCMP("WORKERS' COMPENSATION", true, true, true),
-    TRNW("TRANSFER WITHIN", true, true, true),
+    /**
+     * The enum name of the status is also its sfms code as seen in PL21EMPSTAT
+     *                                  Employed    Time Entry  Effect Offset   CDENCLV*/
+    SLHP("SICK LEAVE WITH HALF PAY",    true,       true,       0,              true),
+    TRNO("TRANSFER OUT",                false,      true,       1,              false),
+    ACTV("ACTIVE",                      true,       true,       0,              false),
+    NONE("NONE",                        false,      true,       0,              true),
+    RSGN("RESIGNED",                    false,      true,       1,              false),
+    TERM("TERMINATED",                  false,      true,       1,              false),
+    CHLD("CHILD CARE LEAVE",            true,       true,       0,              false),
+    MILT("MILITARY LEAVE",              true,       true,       0,              false),
+    RETD("RETIRED",                     false,      true,       0,              false),
+    EXTS("EXTRA SERVICE",               true,       true,       0,              false),
+    STUD("STUDENT",                     true,       true,       0,              false),
+    DSBL("DISABLED",                    true,       true,       0,              false),
+    DECD("DECEASED",                    false,      true,       1,              false),
+    LWOP("LEAVE WITHOUT PAY",           true,       false,      0,              true),
+    WCMP("WORKERS' COMPENSATION",       true,       true,       0,              true),
+    TRNW("TRANSFER WITHIN",             true,       true,       0,              true),
     ;
 
     /** TODO: this field is present in the database but I'm not sure what it means */
@@ -32,12 +34,19 @@ public enum PersonnelStatus {
     private boolean employed;
     /** True iff employees with this status are required to enter timesheets */
     private boolean timeEntryRequired;
+    /**
+     * Certain personnel statuses are not effective on their listed effect dates
+     * but are effective according to an offset (typically 1 day after)
+     */
+    int effectDateOffset;
 
-    PersonnelStatus(String description, boolean employed, boolean timeEntryRequired, boolean CDENCLV) {
+    PersonnelStatus(String description, boolean employed, boolean timeEntryRequired,
+                    int effectDateOffset, boolean CDENCLV) {
         this.CDENCLV = CDENCLV;
         this.description = description;
         this.employed = employed;
         this.timeEntryRequired = timeEntryRequired;
+        this.effectDateOffset = effectDateOffset;
     }
 
     public boolean isCDENCLV() {
@@ -54,5 +63,9 @@ public enum PersonnelStatus {
 
     public boolean isTimeEntryRequired() {
         return timeEntryRequired;
+    }
+
+    public int getEffectDateOffset() {
+        return effectDateOffset;
     }
 }
