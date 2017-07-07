@@ -28,7 +28,7 @@ public class ExpectedHours {
 
     public static void validateExpectedHourDates(LocalDate beginDate, LocalDate endDate) {
         if (beginDate == null || endDate == null ||
-                !beginDate.isBefore(endDate) ||
+                beginDate.isAfter(endDate) ||
                 beginDate.getYear() != endDate.getYear()) {
             throw new InvalidExpectedHourDatesEx(beginDate, endDate);
         }
