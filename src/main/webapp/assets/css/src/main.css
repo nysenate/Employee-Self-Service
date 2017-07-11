@@ -5050,6 +5050,10 @@ record-review-modal,
   width: 20em;
   font-size: 16px;
 }
+.employee-search-directive .employee-search-loader {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
 .employee-search-directive .employee-search-results {
   max-height: 30em;
   width: 23em;
