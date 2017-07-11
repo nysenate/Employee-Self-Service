@@ -105,6 +105,10 @@ essApi.factory('ActiveEmployeeApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/employees/active');
 }]);
 
+essApi.factory('EmployeeSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/employees/search');
+}]);
+
 /** --- Transaction API --- */
 
 essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {

@@ -14,12 +14,15 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 import static gov.nysenate.ess.core.model.auth.CorePermissionObject.EMPLOYEE_INFO;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/employees")
@@ -54,7 +58,7 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      * @return {@link EmployeeView} or {@link DetailedEmployeeView} depending on value of <code>detail</code>
      * @throws EmployeeException if something gets messed up
      */
-    @RequestMapping(value = "")
+    @RequestMapping(value = "", method = {GET, HEAD}, params = "empId")
     public BaseResponse getEmployeeById(@RequestParam(required = true) Integer empId[],
                                         @RequestParam(defaultValue = "false") boolean detail) throws EmployeeException {
         Arrays.stream(empId)
@@ -63,6 +67,55 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
 
         return getEmployeeResponse(
             Arrays.asList(empId).stream().map(empInfoService::getEmployee).collect(toList()), detail);
+    }
+
+    /**
+     * Get Active Employee API
+     * -----------------------
+     *
+     * Get a list of all currently active employees
+     *
+     * Usage:       (GET) /api/v1/employees/active
+     *
+     * @return {@link ListViewResponse<EmployeeSearchView>}
+     */
+    @RequestMapping(value = "", method = {GET, HEAD})
+    public ListViewResponse<EmployeeSearchView> getAllEmployees(
+            @RequestParam(defaultValue = "false") boolean activeOnly) {
+
+        Set<Employee> employees = empInfoService.getAllEmployees(activeOnly);
+
+        List<EmployeeSearchView> employeeViewList = employees.stream()
+                .map(EmployeeSearchView::new)
+                .collect(Collectors.toList());
+
+        return ListViewResponse.of(employeeViewList, "employees");
+    }
+
+    /**
+     * Employee Search API
+     * -----------------------
+     *
+     * Get a list of all currently active employees
+     *
+     * Usage:       (GET) /api/v1/employees/active
+     *
+     * @return {@link ListViewResponse<EmployeeSearchView>}
+     */
+    @RequestMapping(value = "/search", method = {GET, HEAD})
+    public ListViewResponse<EmployeeSearchView> searchEmployees(
+            @RequestParam(defaultValue = "") String term,
+            WebRequest request) {
+
+        LimitOffset limitOffset = getLimitOffset(request, 10);
+        PaginatedList<Employee> empSearchResults = empInfoService.searchEmployees(term, limitOffset);
+
+        List<EmployeeSearchView> employeeViewList = empSearchResults.getResults().stream()
+                .map(EmployeeSearchView::new)
+                .collect(Collectors.toList());
+
+        return ListViewResponse.of(employeeViewList, "employees",
+                empSearchResults.getTotal(), empSearchResults.getLimOff());
     }
 
     /**
@@ -102,27 +155,6 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
         RangeSet<LocalDate> activeDates = empInfoService.getEmployeeActiveDatesService(empId);
 
         return new ViewObjectResponse<>(new EmployeeActiveDatesView(empId, activeDates), "activeDates");
-    }
-
-    /**
-     * Get Active Employee API
-     * -----------------------
-     *
-     * Get a list of all currently active employees
-     *
-     * Usage:       (GET) /api/v1/employees/active
-     *
-     * @return {@link ListViewResponse<EmployeeSearchView>}
-     */
-    @RequestMapping(value = "/active")
-    public ListViewResponse<EmployeeSearchView> getActiveEmployees() {
-        Set<Employee> activeEmployees = empInfoService.getActiveEmployees();
-
-        List<EmployeeSearchView> employeeViewList = activeEmployees.stream()
-                .map(EmployeeSearchView::new)
-                .collect(Collectors.toList());
-
-        return ListViewResponse.of(employeeViewList, "employees");
     }
 
     /* --- Internal Methods --- */

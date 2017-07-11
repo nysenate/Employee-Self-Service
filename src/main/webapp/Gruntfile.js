@@ -77,7 +77,8 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js',
                         '<%= bowerRoot %>/underscore/underscore-min.js',
                         '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
-                        '<%= bowerRoot %>/nsPopover/src/nsPopover.js'
+                        '<%= bowerRoot %>/nsPopover/src/nsPopover.js',
+                        '<%= bowerRoot %>/ngInfiniteScroll/build/ng-infinite-scroll.min.js'
                         ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']

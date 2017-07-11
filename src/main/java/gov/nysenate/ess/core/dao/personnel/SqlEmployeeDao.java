@@ -1,7 +1,6 @@
 package gov.nysenate.ess.core.dao.personnel;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -10,11 +9,13 @@ import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
@@ -67,8 +68,30 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 
     /** {@inheritDoc} */
     @Override
+    public Set<Employee> getAllEmployees() {
+        return new HashSet<>(remoteNamedJdbc.query(SqlEmployeeQuery.GET_ALL_EMPS_SQL.getSql(schemaMap()), getEmployeeRowMapper()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Set<Employee> getActiveEmployees() {
         return new HashSet<>(remoteNamedJdbc.query(SqlEmployeeQuery.GET_ACTIVE_EMPS_SQL.getSql(schemaMap()), getEmployeeRowMapper()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset) {
+        SqlParameterSource params = new MapSqlParameterSource("term", term);
+        OrderBy orderBy = new OrderBy(
+                "per.FFNALAST", SortOrder.ASC,
+                "per.FFNAFIRST", SortOrder.ASC,
+                "per.FFNAMIDINIT", SortOrder.ASC
+        );
+        PaginatedRowHandler<Employee> rowHandler =
+                new PaginatedRowHandler<>(limitOffset, "total_rows", getEmployeeRowMapper());
+        final String searchDml = SqlEmployeeQuery.GET_EMPS_BY_SEARCH_TERM.getSql(schemaMap(), orderBy, limitOffset);
+        remoteNamedJdbc.query(searchDml, params, rowHandler);
+        return rowHandler.getList();
     }
 
     /** {@inheritDoc} */

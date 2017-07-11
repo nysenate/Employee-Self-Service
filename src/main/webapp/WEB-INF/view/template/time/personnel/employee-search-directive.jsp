@@ -1,21 +1,23 @@
 
 <section class="employee-search-directive">
 
-  <div loader-indicator class="loader" ng-show="loadingEmps"></div>
-
-  <div class="content-container" ng-hide="loadingEmps">
+  <div class="content-container">
     <div class="content-info" ng-hide="selectedEmp">
       <input type="search" class="employee-search-bar"
-             ng-model="search.fullName"
+             ng-model="searchTerm"
              ng-model-options="{debounce: 300}"
              placeholder="Search for an employee">
 
-      <div class="employee-search-results">
-        <ul>
-          <li ng-repeat="emp in activeEmps | filter:search"
+      <div loader-indicator class="loader employee-search-loader"
+           ng-class="{'visibility-hidden': !loadingEmps}">
+      </div>
+
+      <div class="employee-search-results" ng-if="searchResultsExist()">
+        <ul infinite-scroll="getNextSearchResults()" infinite-scroll-parent>
+          <li ng-repeat="emp in searchResults | filter:search"
               class="search-result"
               ng-click="selectEmp(emp)"
-              ng-bind-html="emp.fullName | highlight:search.fullName">
+              ng-bind-html="emp.fullName | highlight:searchTerm">
           </li>
         </ul>
       </div>

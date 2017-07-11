@@ -1,8 +1,8 @@
 angular.module('essTime')
-    .directive('employeeSearch', ['$filter', 'appProps', 'modals', 'ActiveEmployeeApi', 'EmpInfoApi',
+    .directive('employeeSearch', ['appProps', 'modals', 'EmployeeSearchApi', 'EmpInfoApi', 'PaginationModel',
                                   employeeSearchDirective]);
 
-function employeeSearchDirective($filter,appProps, modals, activeEmpApi, empInfoApi) {
+function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi, paginationModel) {
     return {
         scope: {
             selectedEmp: '=?'
@@ -10,22 +10,48 @@ function employeeSearchDirective($filter,appProps, modals, activeEmpApi, empInfo
         restrict: 'E',
         templateUrl: appProps.ctxPath + '/template/time/personnel/employee-search-directive',
         link: function ($scope, $elem, $attrs) {
-            $scope.activeEmps = null;
             $scope.selectedEmp = null;
             $scope.empInfo = null;
-            $scope.search = {
-                fullName: ""
-            };
+            $scope.searchTerm = "";
+            $scope.searchResults = [];
 
-            getActiveEmps();
+            var pagination = angular.copy(paginationModel);
+            pagination.itemsPerPage = 50;
+
+            /* --- Watches --- */
+
+            /** Perform a new search when the search term changes */
+            $scope.$watch('searchTerm', newSearch);
 
             /* --- Display Methods --- */
 
+            $scope.searchResultsExist = function () {
+                return $scope.searchResults && $scope.searchResults.length > 0;
+            };
+
+            /**
+             * Expands the result window
+             */
+            $scope.getNextSearchResults = function () {
+                if ($scope.loadingEmps || pagination.onLastPage()) {
+                    return;
+                }
+                pagination.nextPage();
+                return getSearchResults();
+            };
+
+            /**
+             * Sets the given employee as the selected employee
+             * @param emp
+             */
             $scope.selectEmp = function (emp) {
                 $scope.selectedEmp = emp;
                 getEmpInfo();
             };
 
+            /**
+             * Deselects the currently selected employee
+             */
             $scope.clearSelectedEmp = function () {
                 $scope.selectedEmp = null;
                 $scope.empInfo = null;
@@ -33,16 +59,23 @@ function employeeSearchDirective($filter,appProps, modals, activeEmpApi, empInfo
 
             /* --- Api Methods --- */
 
-            function getActiveEmps() {
+            function getSearchResults() {
                 $scope.loadingEmps = true;
-                return activeEmpApi.get({}, onSuccess, onFail)
+                var params = {
+                    term: $scope.searchTerm,
+                    limit: pagination.getLimit(),
+                    offset: pagination.getOffset()
+                };
+                return employeeSearchApi.get(params, onSuccess, onFail)
                     .$promise.finally(function () {
                         $scope.loadingEmps = false;
                     });
                 function onSuccess(resp) {
-                    console.log('Got employee list');
-                    $scope.activeEmps = resp.employees;
-                    sortActiveEmps()
+                    console.log('Got employee search results');
+                    resp.employees.forEach(function (emp) {
+                        $scope.searchResults.push(emp);
+                    });
+                    pagination.setTotalItems(resp.total);
                 }
                 function onFail(resp) {
                     console.error('Failed to get active employees', resp);
@@ -72,9 +105,15 @@ function employeeSearchDirective($filter,appProps, modals, activeEmpApi, empInfo
 
             /* --- Internal Methods --- */
 
-            function sortActiveEmps() {
-                $scope.activeEmps = $filter('orderBy')($scope.activeEmps, ['lastName', 'firstName']);
+            /**
+             * Clears current search results, resets pagination, and performs a new search
+             */
+            function newSearch() {
+                $scope.searchResults = [];
+                pagination.reset();
+                return getSearchResults();
             }
+
         }
     };
 }

@@ -4,6 +4,8 @@ import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.personnel.Person;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -79,14 +81,20 @@ public interface EmployeeInfoService
     Set<Integer> getActiveEmpIds();
 
     /**
-     * Get a set of all currently active employees
+     * Get a set of all senate employees
      *
+     * @param activeOnly - boolean - if true, return only currently active employees
      * @return {@link Set<Employee>}
      */
-    default Set<Employee> getActiveEmployees() {
-        return getActiveEmpIds().stream()
-                .map(this::getEmployee)
-                .collect(Collectors.toSet());
-    }
+    Set<Employee> getAllEmployees(boolean activeOnly);
+
+    /**
+     * Search for employees based on their full name.
+     *
+     * @param term String - search term
+     * @param limitOffset {@link LimitOffset} - pagination for query results
+     * @return {@link PaginatedList<Employee>}
+     */
+    PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset);
 
 }

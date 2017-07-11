@@ -19,6 +19,8 @@ import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.RangeUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -133,6 +135,20 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     @Override
     public Set<Integer> getActiveEmpIds() {
         return employeeDao.getActiveEmployeeIds();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Employee> getAllEmployees(boolean activeOnly) {
+        return activeOnly
+                ? employeeDao.getActiveEmployees()
+                : employeeDao.getAllEmployees();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset) {
+        return employeeDao.searchEmployees(term, limitOffset);
     }
 
     /** --- Caching Service Implemented Methods ---

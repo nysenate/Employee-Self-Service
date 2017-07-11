@@ -10,7 +10,8 @@ public class EmployeeSearchView implements ViewObject {
     protected String lastName;
     protected String fullName;
     protected PayType payType;
-    protected boolean isSenator;
+    protected boolean senator;
+    protected boolean active;
 
     public EmployeeSearchView(Employee employee) {
         this.empId = employee.getEmployeeId();
@@ -18,7 +19,8 @@ public class EmployeeSearchView implements ViewObject {
         this.lastName = employee.getLastName();
         this.fullName = employee.getFullName();
         this.payType = employee.getPayType();
-        this.isSenator = employee.isSenator();
+        this.senator = employee.isSenator();
+        this.active = employee.isActive();
     }
 
     public int getEmpId() {
@@ -42,7 +44,11 @@ public class EmployeeSearchView implements ViewObject {
     }
 
     public boolean isSenator() {
-        return isSenator;
+        return senator;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     @Override

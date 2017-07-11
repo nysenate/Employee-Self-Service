@@ -3,6 +3,8 @@ package gov.nysenate.ess.core.dao.personnel;
 import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,9 +44,24 @@ public interface EmployeeDao extends BaseDao
     public Map<Integer, Employee> getEmployeesByIds(List<Integer> empIds);
 
     /**
+     * @return Employee info objects for all past and present employees
+     */
+    public Set<Employee> getAllEmployees();
+
+    /**
      * @return Employee info objects for all currently active employees
      */
     public Set<Employee> getActiveEmployees();
+
+    /**
+     * Search for employees by their full name.
+     * Results are paginated and ordered in alphabetical order.
+     *
+     * @param term String - search term
+     * @param limitOffset {@link LimitOffset} - result window
+     * @return {@link PaginatedList<Employee>}
+     */
+    public PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset);
 
     /**
      * @return The ids for all currently active employees

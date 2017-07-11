@@ -43,21 +43,27 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "LEFT JOIN (SELECT * FROM ${masterSchema}.SL16AGENCY WHERE CDSTATUS = 'A') agcy ON rctr.CDAGENCY = agcy.CDAGENCY\n" +
         "LEFT JOIN ${masterSchema}.SL16LOCATION loc ON per.CDLOCAT = loc.CDLOCAT\n"
     ),
-    GET_EMP_SQL_TMPL(
+    GET_ALL_EMPS_SQL(
             GET_EMP_SQL_COLS.getSql() + GET_EMP_SQL_TABLES.getSql()
     ),
 
     GET_EMP_BY_ID_SQL(
-            GET_EMP_SQL_TMPL.getSql() +  "WHERE per.NUXREFEM = :empId"
+            GET_ALL_EMPS_SQL.getSql() +  "WHERE per.NUXREFEM = :empId"
     ),
     GET_EMP_BY_EMAIL_SQL(
-            GET_EMP_SQL_TMPL.getSql() + "WHERE per.NAEMAIL = :email"
+            GET_ALL_EMPS_SQL.getSql() + "WHERE per.NAEMAIL = :email"
     ),
     GET_ACTIVE_EMPS_SQL(
-            GET_EMP_SQL_TMPL.getSql() + "WHERE per.CDEMPSTATUS = 'A'"
+            GET_ALL_EMPS_SQL.getSql() + "WHERE per.CDEMPSTATUS = 'A'"
     ),
     GET_EMPS_BY_IDS_SQL(
-            GET_EMP_SQL_TMPL.getSql() + "WHERE per.NUXREFEM IN :empIdSet"
+            GET_ALL_EMPS_SQL.getSql() + "WHERE per.NUXREFEM IN :empIdSet"
+    ),
+    GET_EMPS_BY_SEARCH_TERM(
+            GET_EMP_SQL_COLS.getSql() + ", COUNT(*) OVER () AS total_rows\n" +
+            GET_EMP_SQL_TABLES.getSql() +
+            "WHERE UPPER(TRIM(per.NAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST))\n" +
+            "        LIKE UPPER('%' || :term || '%')"
     ),
 
     GET_ACTIVE_EMP_IDS(
@@ -67,7 +73,7 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
     ),
 
     GET_EMP_BY_UPDATE_DATE(
-        GET_EMP_SQL_TMPL.getSql() +
+        GET_ALL_EMPS_SQL.getSql() +
         "WHERE per.DTTXNUPDATE > :lastUpdate OR ttl.DTTXNUPDATE > :lastUpdate OR addr.DTTXNUPDATE > :lastUpdate\n" +
         "   OR xref.DTTXNUPDATE > :lastUpdate OR rctr.DTTXNUPDATE > :lastUpdate OR rctrhd.DTTXNUPDATE > :lastUpdate\n" +
         "   OR loc.DTTXNUPDATE > :lastUpdate OR agcy.DTTXNUPDATE > :lastUpdate"

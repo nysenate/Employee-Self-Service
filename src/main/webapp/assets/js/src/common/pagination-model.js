@@ -24,6 +24,10 @@ essApp.factory('PaginationModel', function() {
             return this.totalItems > this.itemsPerPage;
         },
 
+        onLastPage: function () {
+            return this.currPage >= this.lastPage;
+        },
+
         getOffset: function() {
             return (this.itemsPerPage * (this.currPage - 1)) + 1;
         },
