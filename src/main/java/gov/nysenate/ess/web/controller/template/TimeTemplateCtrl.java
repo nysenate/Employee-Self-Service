@@ -153,4 +153,25 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
                         "You are not permitted to view employee allowance status.");
         return TIME_MESSAGE_URI;
     }
+
+    /**
+     * Personnel Pages
+     *
+     * Tests that the user is able to view personnel pages
+     *
+     * @param request HttpServletRequest
+     * @param modelMap ModelMap
+     * @return String - passed in uri or error page depending on permissions
+     */
+    @RequestMapping(value = "/personnel/*")
+    public String getPersonnelPage(HttpServletRequest request, ModelMap modelMap) {
+        final Permission personnelPagePermission = SimpleTimePermission.PERSONNEL_PAGES.getPermission();
+        if (SecurityUtils.getSubject().isPermitted(personnelPagePermission)) {
+            return request.getRequestURI();
+        }
+        // Also require management page permission check
+        modelMap.addAttribute("level", "error")
+                .addAttribute("title", "This page is only available to Personnel");
+        return TIME_MESSAGE_URI;
+    }
 }
