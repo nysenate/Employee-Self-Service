@@ -1,5 +1,5 @@
 
-package gov.nysenate.ess.time.client.view.contact;
+package gov.nysenate.ess.core.client.view.emergency_notification;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,10 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 
+/**
+ * A ContactBatch is a xml dump which fits the sendwordnow schema.
+ * It is a collection of names and contact information for senate employees.
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
         "batchProcessingDirectives",
@@ -71,10 +75,15 @@ public class ContactBatch {
         @XmlElement(namespace = "http://www.sendwordnow.com", required = true)
         protected List<ContactBatch.BatchContactList.Contact> contact;
 
+        public BatchContactList() {
+            contact = new ArrayList<ContactBatch.BatchContactList.Contact>();
+        }
+
+        public void addContact(Contact contact) {
+            this.contact.add(contact);
+        }
+
         public List<ContactBatch.BatchContactList.Contact> getContact() {
-            if (contact == null) {
-                contact = new ArrayList<ContactBatch.BatchContactList.Contact>();
-            }
             return this.contact;
         }
 
@@ -97,10 +106,19 @@ public class ContactBatch {
             @XmlAttribute(name = "action", required = true)
             protected String action;
 
+            public Contact() {}
+
+            public Contact(String action, String contactID) {
+                this.action = action;
+                this.contactID = contactID;
+                contactField = new ArrayList<>();
+            }
+
+            public void setContactFields(List<ContactField> contactFields) {
+                this.contactField = contactFields;
+            }
+
             public List<ContactBatch.BatchContactList.Contact.ContactField> getContactField() {
-                if (contactField == null) {
-                    contactField = new ArrayList<ContactBatch.BatchContactList.Contact.ContactField>();
-                }
                 return this.contactField;
             }
 
@@ -142,13 +160,26 @@ public class ContactBatch {
                     "value"
             })
             public static class ContactField {
-
                 @XmlValue
                 protected String value;
                 @XmlAttribute(name = "name", required = true)
                 protected String name;
                 @XmlAttribute(name = "customName")
                 protected String customName;
+
+                public ContactField() {};
+
+                public ContactField(String name, String customeName, String value) {
+                    this.name = name;
+                    this.customName = customeName;
+                    this.value = value;
+                }
+
+
+                public ContactField(String name, String value) {
+                    this.name = name;
+                    this.value = value;
+                }
 
                 public String getValue() {
                     return value;
@@ -184,10 +215,15 @@ public class ContactBatch {
                 @XmlElement(namespace = "http://www.sendwordnow.com", required = true)
                 protected List<ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint> contactPoint;
 
+                public ContactPointList() {
+                    this.contactPoint = new ArrayList<>();
+                }
+
+                public void addContactPoint(ContactPoint contactPoint) {
+                    this.contactPoint.add(contactPoint);
+                }
+
                 public List<ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint> getContactPoint() {
-                    if (contactPoint == null) {
-                        contactPoint = new ArrayList<ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint>();
-                    }
                     return this.contactPoint;
                 }
 
@@ -203,10 +239,19 @@ public class ContactBatch {
                     @XmlAttribute(name = "action")
                     protected String action;
 
+                    public ContactPoint() {
+                        contactPointField = new ArrayList<>();
+                    }
+
+                    public ContactPoint(String type) {
+                        this.type = type;
+                        contactPointField = new ArrayList<>();
+                    }
+
+                    public void addContactPointField(ContactPointField field) {
+                        this.contactPointField.add(field);
+                    }
                     public List<ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint.ContactPointField> getContactPointField() {
-                        if (contactPointField == null) {
-                            contactPointField = new ArrayList<ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint.ContactPointField>();
-                        }
                         return this.contactPointField;
                     }
 
@@ -236,6 +281,13 @@ public class ContactBatch {
                         @XmlAttribute(name = "name", required = true)
                         protected String name;
 
+                        public ContactPointField() {}
+
+                        public ContactPointField(String name, String value) {
+                            this.name = name;
+                            this.value = value;
+                        }
+
                         public String getValue() {
                             return value;
                         }
@@ -262,13 +314,13 @@ public class ContactBatch {
             })
             public static class GroupList {
                 @XmlElement(namespace = "http://www.sendwordnow.com")
-                protected List<gov.nysenate.ess.time.client.view.contact.Group> group;
+                protected List<gov.nysenate.ess.core.client.view.emergency_notification.Group> group;
                 @XmlElement(namespace = "http://www.sendwordnow.com")
                 protected List<String> groupName;
 
-                public List<gov.nysenate.ess.time.client.view.contact.Group> getGroup() {
+                public List<gov.nysenate.ess.core.client.view.emergency_notification.Group> getGroup() {
                     if (group == null) {
-                        group = new ArrayList<gov.nysenate.ess.time.client.view.contact.Group>();
+                        group = new ArrayList<gov.nysenate.ess.core.client.view.emergency_notification.Group>();
                     }
                     return this.group;
                 }
@@ -302,7 +354,7 @@ public class ContactBatch {
         @XmlType(name = "", propOrder = {
                 "contactIdList"
         })
-        public static class Group extends gov.nysenate.ess.time.client.view.contact.Group {
+        public static class Group extends gov.nysenate.ess.core.client.view.emergency_notification.Group {
             @XmlElement(namespace = "http://www.sendwordnow.com")
             protected ContactBatch.BatchGroupList.Group.ContactIdList contactIdList;
             @XmlAttribute(name = "action", required = true)
@@ -391,6 +443,10 @@ public class ContactBatch {
         @XmlElement(namespace = "http://www.sendwordnow.com", required = true)
         protected List<ContactBatch.BatchProcessingDirectives.BatchProcessingOption> batchProcessingOption;
 
+//        protected BatchProcessingDirectives(ContactBatch.BatchProcessingDirectives.AccountID accountID) {
+//            this.accountID = accountID;
+//        }
+
         public ContactBatch.BatchProcessingDirectives.AccountID getAccountID() {
             return accountID;
         }
@@ -454,6 +510,13 @@ public class ContactBatch {
             protected String name;
             @XmlAttribute(name = "value", required = true)
             protected String value;
+
+            public BatchProcessingOption() {}
+
+            public BatchProcessingOption(String name, String value) {
+                this.name = name;
+                this.value = value;
+            }
 
             public String getName() {
                 return name;
