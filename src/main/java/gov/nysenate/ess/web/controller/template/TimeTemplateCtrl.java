@@ -163,7 +163,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
      * @param modelMap ModelMap
      * @return String - passed in uri or error page depending on permissions
      */
-    @RequestMapping(value = "/personnel/*")
+    @RequestMapping(value = "/personnel/search")
     public String getPersonnelPage(HttpServletRequest request, ModelMap modelMap) {
         final Permission personnelPagePermission = SimpleTimePermission.PERSONNEL_PAGES.getPermission();
         if (SecurityUtils.getSubject().isPermitted(personnelPagePermission)) {
