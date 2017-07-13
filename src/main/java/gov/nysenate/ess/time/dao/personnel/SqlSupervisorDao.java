@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.time.dao.personnel.mapper.SupervisorOverrideRowMapper;
 import gov.nysenate.ess.time.model.personnel.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

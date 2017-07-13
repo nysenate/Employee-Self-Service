@@ -12,6 +12,7 @@ import gov.nysenate.ess.time.model.EssTimeConstants;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
+import gov.nysenate.ess.time.service.personnel.TxDockHoursService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,10 @@ import java.util.Map;
 public class TxExpectedHoursService implements ExpectedHoursService {
     private static final Logger logger = LoggerFactory.getLogger(TxExpectedHoursService.class);
 
+
     @Autowired EmpTransactionService empTransactionService;
     @Autowired AllowanceService allowanceService;
+    @Autowired TxDockHoursService txDockHoursService;
 
     /**
      * Returns the Year to Date Expected Hours up to a specified Pay Period.
@@ -101,6 +104,10 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         BigDecimal expectedHours = effectiveMinHoursMap.asMapOfRanges().entrySet().stream()
                 .map(entry -> getExpectedHours(entry.getKey(), entry.getValue()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal dockedHours = txDockHoursService.getDockHours(transHistory.getEmployeeId(), dateRange);
+
+        expectedHours = expectedHours.subtract(dockedHours);
 
         return expectedHours;
     }
