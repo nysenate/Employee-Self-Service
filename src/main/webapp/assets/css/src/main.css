@@ -1236,7 +1236,9 @@ input[type="button"].time-neutral-button:hover {
 }
 input[type="text"],
 input[type="password"],
-input[type="number"] {
+input[type="number"],
+input[type="tel"],
+input[type="email"] {
   border: 1px solid #ccc;
   outline: 0;
   background: #fafafa;
@@ -1244,12 +1246,21 @@ input[type="number"] {
 }
 input[type="text"].error,
 input[type="password"].error,
-input[type="number"].error {
+input[type="number"].error,
+input[type="tel"].error,
+input[type="email"].error,
+input[type="text"].ng-invalid,
+input[type="password"].ng-invalid,
+input[type="number"].ng-invalid,
+input[type="tel"].ng-invalid,
+input[type="email"].ng-invalid {
   border-color: #B90504;
 }
 input[type="text"]:focus,
 input[type="password"]:focus,
-input[type="number"]:focus {
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus {
   border-color: #999;
 }
 input[type=checkbox],
@@ -3323,6 +3334,48 @@ button.ui-button::-moz-focus-inner {
     background: white;
     border-bottom: 1px solid black;
   }
+}
+/** --- Emergency Notification Info Page --- */
+#emergency-notification-page .eni-saved-message {
+  text-align: center;
+  margin-bottom: 0;
+  opacity: 0;
+  -webkit-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -moz-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -o-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+}
+#emergency-notification-page .eni-saved-message.eni-saved {
+  opacity: 1;
+  -webkit-transition: opacity 0s;
+  -moz-transition: opacity 0s;
+  -o-transition: opacity 0s;
+  transition: opacity 0s;
+}
+#emergency-notification-page .eni-form {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 250px 27em;
+  grid-template-rows: auto auto;
+  grid-row-gap: 3em;
+}
+#emergency-notification-page .eni-form .content-controls {
+  display: grid;
+  grid-template-columns: 7em auto;
+  grid-row-gap: 0.5em;
+  align-items: center;
+  text-align: left;
+}
+#emergency-notification-page .eni-form .content-controls label {
+  text-align: right;
+  margin-right: 1em;
+}
+#emergency-notification-page .eni-form .input-container {
+  grid-column-start: 2;
+  justify-self: end;
+}
+#emergency-notification-page .eni-form h3 {
+  text-align: center;
 }
 /** --- Paycheck History Page --- */
 @media print {
