@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <div ng-controller="EmpSummaryCtrl">
     <div class="my-info-hero">
-        <h1>{{state.emp.fullName}}</h1>
+        <h2>{{state.emp.fullName}}</h2>
     </div>
     <ess-notification level="info"
                       message="If any of the information below is inaccurate, please contact Senate Personnel." >

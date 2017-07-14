@@ -21,6 +21,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/summary'
     });
 
+    $routeProvider.when(ctxPath + '/myinfo/personnel/emergency-notification', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/emergency-notification'
+    });
+
     $routeProvider.when(ctxPath + '/myinfo/personnel/transactions', {
         templateUrl: ctxPath + '/template/myinfo/personnel/transactions'
     });

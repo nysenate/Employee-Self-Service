@@ -29,12 +29,17 @@ input[type="button"].time-neutral-button {
   .styled-button(@teal, white);
 }
 
-input[type="text"], input[type="password"], input[type="number"] {
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="email"]
+{
   border: 1px solid #ccc;
   outline: 0;
   background: #fafafa;
   padding: .3em;
-  &.error {
+  &.error, &.ng-invalid {
     border-color: @dark-red;
   }
   &:focus {

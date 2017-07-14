@@ -3,8 +3,10 @@ var essApp = angular.module('ess');
 /**
  * The wrapping controller that is the parent of the nav menu and views.
  */
-essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$location', '$window', 'appProps',
-    function($scope, $http, $route, $routeParams, $location, $window, appProps) {
+essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$location', '$window',
+                               'appProps', 'modals',
+    function($scope, $http, $route, $routeParams, $location, $window,
+             modals, appProps) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
@@ -24,6 +26,11 @@ essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$lo
         $scope.openHelpWindow = function ($event) {
             $window.open($scope.helpPageUrl, helpWindowName, helpWindowOptions);
             $event.preventDefault();    // prevents following of displayed link
-        }
+        };
+
+        $scope.handleErrorResponse = function (resp) {
+            console.error("Request error:", resp);
+            modals.open('500', {details: resp});
+        };
     }
 ]);

@@ -10,6 +10,58 @@
   .page-hero(@green, white);
 }
 
+/** --- Emergency Notification Info Page --- */
+
+#emergency-notification-page {
+  .eni-saved-message {
+    text-align: center;
+    margin-bottom: 0;
+    opacity:0;
+    @eni-saved-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-transition: @eni-saved-transition;
+    -moz-transition: @eni-saved-transition;
+    -o-transition: @eni-saved-transition;
+    transition: @eni-saved-transition;
+    &.eni-saved {
+      opacity:1;
+      -webkit-transition:opacity 0s;
+      -moz-transition:opacity 0s;
+      -o-transition:opacity 0s;
+      transition:opacity 0s;
+    }
+  }
+  .eni-form {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 250px 27em;
+    grid-template-rows: auto auto;
+
+    grid-row-gap: 3em;
+
+    .content-controls {
+      display: grid;
+      grid-template-columns: 7em auto;
+      grid-row-gap: 0.5em;
+      align-items: center;
+      text-align: left;
+
+      label {
+        text-align: right;
+        margin-right: 1em;
+      }
+    }
+
+    .input-container {
+      grid-column-start: 2;
+      justify-self: end;
+    }
+
+    h3 {
+      text-align: center;
+    }
+  }
+}
+
 /** --- Paycheck History Page --- */
 
 #paycheck-history {
