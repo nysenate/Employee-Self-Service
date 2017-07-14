@@ -31,28 +31,31 @@ essCore.run(['$cookies', function ($cookies) {
 // disable backspace key from nav
 essCore.run(function unbindBackspace() {
     $(document).unbind('keydown').bind('keydown', function (event) {
-        var doPrevent = false;
         if (event.keyCode === 8) {
-            var d = event.srcElement || event.target;
-            if ((d.tagName.toUpperCase() === 'INPUT' &&
-                    (
-                    d.type.toUpperCase() === 'TEXT' ||
-                    d.type.toUpperCase() === 'PASSWORD' ||
-                    d.type.toUpperCase() === 'FILE' ||
-                    d.type.toUpperCase() === 'SEARCH' ||
-                    d.type.toUpperCase() === 'EMAIL' ||
-                    d.type.toUpperCase() === 'NUMBER' ||
-                    d.type.toUpperCase() === 'DATE' )
-                ) ||
-                d.tagName.toUpperCase() === 'TEXTAREA') {
-                doPrevent = d.readOnly || d.disabled;
+            var doPrevent = true;
+            var types = ["text", "password", "file", "search", "email", "number", "date", "color",
+                         "datetime", "datetime-local", "month", "range", "search", "tel", "time", "url", "week"];
+            var d = $(event.srcElement || event.target);
+            var disabled = d.prop("readonly") || d.prop("disabled");
+            if (!disabled) {
+                if (d[0].isContentEditable) {
+                    doPrevent = false;
+                } else if (d.is("input")) {
+                    var type = d.attr("type");
+                    if (type) {
+                        type = type.toLowerCase();
+                    }
+                    if (types.indexOf(type) > -1) {
+                        doPrevent = false;
+                    }
+                } else if (d.is("textarea")) {
+                    doPrevent = false;
+                }
             }
-            else {
-                doPrevent = true;
+            if (doPrevent) {
+                event.preventDefault();
+                return false;
             }
-        }
-        if (doPrevent) {
-            event.preventDefault();
         }
     });
 });
