@@ -38,15 +38,6 @@ function emergencyNotificationCtrl($scope, $timeout, appProps, eniApi) {
         return loading;
     };
 
-    /**
-     * Determines if the value of a field is valid
-     * @param fieldName
-     */
-    $scope.validField = function (fieldName) {
-        return $scope.state.eni &&
-                $scope.state.eni[fieldName] !== undefined;
-    };
-
     /* --- Api Methods --- */
 
     /**

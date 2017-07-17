@@ -22,17 +22,17 @@
         <span class="immutable-value" ng-bind="state.eni.workPhone"></span>
 
         <label for="home-phone">Home</label>
-        <input type="text" id="home-phone" class="phone-input"
+        <input type="text" id="home-phone"
                ng-pattern="telPattern" ng-model="state.eni.homePhone">
         <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label for="alternate-phone">Alternate</label>
-        <input type="text" id="alternate-phone" class="phone-input"
+        <input type="text" id="alternate-phone"
                ng-pattern="telPattern" ng-model="state.eni.alternatePhone">
         <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label for="mobile-phone">Mobile</label>
-        <input type="text" id="mobile-phone" class="phone-input"
+        <input type="text" id="mobile-phone"
                ng-pattern="telPattern" ng-model="state.eni.mobilePhone">
         <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
