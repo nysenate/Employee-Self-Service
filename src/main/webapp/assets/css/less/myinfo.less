@@ -17,30 +17,31 @@
     text-align: center;
     margin-bottom: 0;
     opacity:0;
-    @eni-saved-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    -webkit-transition: @eni-saved-transition;
-    -moz-transition: @eni-saved-transition;
-    -o-transition: @eni-saved-transition;
-    transition: @eni-saved-transition;
+    @eni-saved-transition-in: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    -webkit-transition: @eni-saved-transition-in;
+    -moz-transition: @eni-saved-transition-in;
+    -o-transition: @eni-saved-transition-in;
+    transition: @eni-saved-transition-in;
     &.eni-saved {
       opacity:1;
-      -webkit-transition:opacity 0s;
-      -moz-transition:opacity 0s;
-      -o-transition:opacity 0s;
-      transition:opacity 0s;
+      @eni-saved-transition-out: opacity 0s;
+      -webkit-transition: @eni-saved-transition-out;
+      -moz-transition: @eni-saved-transition-out;
+      -o-transition: @eni-saved-transition-out;
+      transition: @eni-saved-transition-out;
     }
   }
   .eni-form {
     padding: 20px;
     display: grid;
-    grid-template-columns: 250px 27em;
+    grid-template-columns: 250px auto;
     grid-template-rows: auto auto;
 
     grid-row-gap: 3em;
 
     .content-controls {
       display: grid;
-      grid-template-columns: 7em auto;
+      grid-template-columns: 7em 20em auto;
       grid-row-gap: 0.5em;
       align-items: center;
       text-align: left;
@@ -49,11 +50,35 @@
         text-align: right;
         margin-right: 1em;
       }
+
+      .immutable-value {
+        grid-column-end: span 2;
+      }
+
+      .check-box-container {
+        grid-column-start: 2;
+        grid-column-end: 3;
+
+        label {
+          margin-left: 5px;
+        }
+      }
+
+      .eni-error-text {
+        color: indianred;
+        opacity: 0;
+        margin: 0 0 0 5px;
+      }
+
+      input.ng-invalid + .eni-error-text {
+        opacity: 1;
+      }
     }
 
     .input-container {
       grid-column-start: 2;
-      justify-self: end;
+      justify-self: left;
+      margin-left: 7em;
     }
 
     h3 {

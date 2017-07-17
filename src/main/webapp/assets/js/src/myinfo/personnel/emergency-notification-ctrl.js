@@ -7,6 +7,8 @@ angular.module('essMyInfo')
 function emergencyNotificationCtrl($scope, $timeout, appProps, eniApi) {
 
     $scope.telPattern = /^ *(\([0-9]{3}\)|[0-9]{3} *-?) *[0-9]{3} *-? *[0-9]{4} *$/;
+    $scope.phoneErrorMsg = "Please enter a valid phone number";
+    $scope.emailErrorMsg = "Please enter a valid email address";
 
     var initialState = {
         name: appProps.user.fullName,
@@ -34,6 +36,15 @@ function emergencyNotificationCtrl($scope, $timeout, appProps, eniApi) {
             loading = loading || status;
         });
         return loading;
+    };
+
+    /**
+     * Determines if the value of a field is valid
+     * @param fieldName
+     */
+    $scope.validField = function (fieldName) {
+        return $scope.state.eni &&
+                $scope.state.eni[fieldName] !== undefined;
     };
 
     /* --- Api Methods --- */

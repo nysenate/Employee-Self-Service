@@ -22,22 +22,25 @@
         <span class="immutable-value" ng-bind="state.eni.workPhone"></span>
 
         <label for="home-phone">Home</label>
-        <input type="text" id="home-phone"
+        <input type="text" id="home-phone" class="phone-input"
                ng-pattern="telPattern" ng-model="state.eni.homePhone">
+        <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label for="alternate-phone">Alternate</label>
-        <input type="text" id="alternate-phone"
+        <input type="text" id="alternate-phone" class="phone-input"
                ng-pattern="telPattern" ng-model="state.eni.alternatePhone">
+        <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label for="mobile-phone">Mobile</label>
-        <input type="text" id="mobile-phone"
+        <input type="text" id="mobile-phone" class="phone-input"
                ng-pattern="telPattern" ng-model="state.eni.mobilePhone">
+        <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
-        <div></div>
-
-        <div>
+        <div class="check-box-container">
+          <input type="checkbox" id="text-alerts"
+                 ng-model="state.eni.smsSubscribed"
+                 ng-disabled="!state.eni.mobilePhone">
           <label for="text-alerts">Receive Texts on Mobile</label>
-          <input type="checkbox" id="text-alerts" ng-model="state.eni.smsSubscribed">
         </div>
       </div>
 
@@ -48,9 +51,11 @@
 
         <label for="personal-email">Personal</label>
         <input type="email" id="personal-email" ng-model="state.eni.personalEmail">
+        <p class="eni-error-text" ng-bind="emailErrorMsg"></p>
 
         <label for="alternate-email">Alternate</label>
         <input type="email" id="alternate-email" ng-model="state.eni.alternateEmail">
+        <p class="eni-error-text" ng-bind="emailErrorMsg"></p>
       </div>
       <div class="input-container">
         <input type="button" class="submit-button"
