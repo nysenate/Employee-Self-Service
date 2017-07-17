@@ -22,17 +22,17 @@
         <span class="immutable-value" ng-bind="state.eni.workPhone"></span>
 
         <label for="home-phone">Home</label>
-        <input type="text" id="home-phone"
+        <input type="text" id="home-phone" autocomplete="home tel-national"
                ng-pattern="telPattern" ng-model="state.eni.homePhone">
         <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label for="alternate-phone">Alternate</label>
-        <input type="text" id="alternate-phone"
+        <input type="text" id="alternate-phone" autocomplete="off"
                ng-pattern="telPattern" ng-model="state.eni.alternatePhone">
         <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label for="mobile-phone">Mobile</label>
-        <input type="text" id="mobile-phone"
+        <input type="text" id="mobile-phone" autocomplete="mobile tel-national"
                ng-pattern="telPattern" ng-model="state.eni.mobilePhone">
         <p class="eni-error-text" ng-bind="phoneErrorMsg"></p>
 
@@ -50,11 +50,13 @@
         <span class="immutable-value" ng-bind="state.eni.workEmail"></span>
 
         <label for="personal-email">Personal</label>
-        <input type="email" id="personal-email" ng-model="state.eni.personalEmail">
+        <input type="email" id="personal-email" autocomplete="mobile email"
+               ng-model="state.eni.personalEmail">
         <p class="eni-error-text" ng-bind="emailErrorMsg"></p>
 
         <label for="alternate-email">Alternate</label>
-        <input type="email" id="alternate-email" ng-model="state.eni.alternateEmail">
+        <input type="email" id="alternate-email" autocomplete="off"
+               ng-model="state.eni.alternateEmail">
         <p class="eni-error-text" ng-bind="emailErrorMsg"></p>
       </div>
       <div class="input-container">
