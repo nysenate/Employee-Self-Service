@@ -15,9 +15,9 @@
     <h3 class="eni-saved-message" ng-class="{'eni-saved': state.saved}">
       Emergency Notification Info Saved
     </h3>
-    <form class="eni-form" name="eniForm">
-      <h3>Phone</h3>
-      <div class="content-controls">
+    <form class="eni-form grid" name="eniForm">
+      <h3 class="col-1-4">Phone</h3>
+      <div class="content-controls col-9-12">
         <label>Work</label>
         <span class="immutable-value" ng-bind="state.eni.workPhone"></span>
 
@@ -44,8 +44,8 @@
         </div>
       </div>
 
-      <h3>Email</h3>
-      <div class="content-controls">
+      <h3 class="col-1-4">Email</h3>
+      <div class="content-controls col-9-12">
         <label>Work</label>
         <span class="immutable-value" ng-bind="state.eni.workEmail"></span>
 
@@ -59,7 +59,7 @@
                ng-model="state.eni.alternateEmail">
         <p class="eni-error-text" ng-bind="emailErrorMsg"></p>
       </div>
-      <div class="input-container">
+      <div class="input-container push-1-4 col-9-12">
         <input type="button" class="submit-button"
                title="Save Emergency Notification Info" value="Save"
                ng-click="saveENI()"
