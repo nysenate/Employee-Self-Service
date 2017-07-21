@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.time.model.attendance.TimeRecordAction.SUBMIT;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.DISAPPROVED;
 import static java.util.stream.Collectors.toList;
@@ -257,25 +258,16 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     @Override
     @Transactional(value = DatabaseConfig.remoteTxManager)
-    @WorkInProgress(author = "ash", desc = "Need to test this a bit better...")
     public synchronized boolean saveRecord(TimeRecord record) {
         boolean updated = timeRecordDao.saveRecord(record);
         if (updated) {
-            if (record.isActive() && record.getRecordStatus().getScope() != TimeRecordScope.EMPLOYEE) {
-                // If the record is not in the employee scope i.e. it has been submitted,
-                // set any earlier, unsubmitted records as inactive
-                getActiveTimeRecords(record.getEmployeeId()).stream()
-                        .filter(otherRec -> otherRec.getBeginDate().isBefore(record.getBeginDate()))
-                        .filter(otherRec -> otherRec.getRecordStatus().getScope() == TimeRecordScope.EMPLOYEE)
-                        .peek(otherRec -> otherRec.setActive(false))
-                        .forEach(this::saveRecord);
-            }
             updateCache(record);
         }
         return updated;
     }
 
     @Override
+    @Transactional(value = DatabaseConfig.remoteTxManager)
     public boolean saveRecord(TimeRecord record, TimeRecordAction action) {
         // Set resulting status according to action
         TimeRecordStatus currentStatus = record.getRecordStatus();
@@ -293,16 +285,26 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
             record.setApprovalEmpId(ShiroUtils.getAuthenticatedEmpId());
         }
 
-        boolean result = saveRecord(record);
-        // Generate an audit record for the time record if a significant action was made on the time record.
-        if (action != TimeRecordAction.SAVE) {
-            auditDao.auditTimeRecord(record.getTimeRecordId());
-        }
-        if (result && nextStatus == DISAPPROVED) {
-            disapprovalEmailService.sendRejectionMessage(record, ShiroUtils.getAuthenticatedEmpId());
+        boolean saved = saveRecord(record);
+
+        if (saved) {
+            // If the record was in the employee scope and was submitted,
+            // deactivate any active temporary time records that came before it
+            if (currentStatus.isUnlockedForEmployee() && action == SUBMIT) {
+                deactivatePreviousTERecs(record);
+            }
+
+            // Generate an audit record for the time record if a significant action was made on the time record.
+            if (action != TimeRecordAction.SAVE) {
+                auditDao.auditTimeRecord(record.getTimeRecordId());
+            }
+
+            if (nextStatus == DISAPPROVED) {
+                disapprovalEmailService.sendRejectionMessage(record, ShiroUtils.getAuthenticatedEmpId());
+            }
         }
 
-        return result;
+        return saved;
     }
 
     @Override
@@ -374,6 +376,23 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         } finally {
             activeRecordCache.releaseWriteLockOnKey(empId);
         }
+    }
+
+    /**
+     * Deactivates all active records that meet the following criteria:
+     *  - The record ends before the given record
+     *  - The record is in the employee scope
+     *  - The record contains ONLY temporary pay entries
+     *
+     * @param record {@link TimeRecord}
+     */
+    private void deactivatePreviousTERecs(TimeRecord record) {
+        getActiveTimeRecords(record.getEmployeeId()).stream()
+                .filter(otherRec -> otherRec.getBeginDate().isBefore(record.getBeginDate()))
+                .filter(otherRec -> otherRec.getRecordStatus().getScope() == TimeRecordScope.EMPLOYEE)
+                .filter(otherRec -> Objects.equals(otherRec.getPayTypes(), Collections.singleton(PayType.TE)))
+                .peek(otherRec -> otherRec.setActive(false))
+                .forEach(this::saveRecord);
     }
 
     /**
