@@ -1,6 +1,8 @@
 
 package gov.nysenate.ess.core.client.view.emergency_notification;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,6 +18,7 @@ import javax.xml.bind.annotation.XmlValue;
  * A ContactBatch is a xml dump which fits the sendwordnow schema.
  * It is a collection of names and contact information for senate employees.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
         "batchProcessingDirectives",
@@ -33,6 +36,12 @@ public class ContactBatch {
     protected ContactBatch.BatchGroupList batchGroupList;
     @XmlAttribute(name = "version", required = true)
     protected String version;
+
+    public ContactBatch() {}
+
+    public ContactBatch(String version) {
+        this.version = version;
+    }
 
     public ContactBatch.BatchProcessingDirectives getBatchProcessingDirectives() {
         return batchProcessingDirectives;
@@ -62,10 +71,6 @@ public class ContactBatch {
         return version;
     }
 
-    public void setVersion(String value) {
-        this.version = value;
-    }
-
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
             "contact"
@@ -87,6 +92,7 @@ public class ContactBatch {
             return this.contact;
         }
 
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         @XmlAccessorType(XmlAccessType.FIELD)
         @XmlType(name = "", propOrder = {
                 "contactField",
@@ -429,6 +435,7 @@ public class ContactBatch {
         }
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
             "accountID",
@@ -441,11 +448,8 @@ public class ContactBatch {
         @XmlElement(namespace = "http://www.sendwordnow.com")
         protected ContactBatch.BatchProcessingDirectives.BatchFile batchFile;
         @XmlElement(namespace = "http://www.sendwordnow.com", required = true)
-        protected List<ContactBatch.BatchProcessingDirectives.BatchProcessingOption> batchProcessingOption;
+        protected List<ContactBatch.BatchProcessingDirectives.BatchProcessingOption> batchProcessingOption = new ArrayList<>();
 
-//        protected BatchProcessingDirectives(ContactBatch.BatchProcessingDirectives.AccountID accountID) {
-//            this.accountID = accountID;
-//        }
 
         public ContactBatch.BatchProcessingDirectives.AccountID getAccountID() {
             return accountID;
@@ -464,10 +468,11 @@ public class ContactBatch {
         }
 
         public List<ContactBatch.BatchProcessingDirectives.BatchProcessingOption> getBatchProcessingOption() {
-            if (batchProcessingOption == null) {
-                batchProcessingOption = new ArrayList<ContactBatch.BatchProcessingDirectives.BatchProcessingOption>();
-            }
             return this.batchProcessingOption;
+        }
+
+        public void addBatchProcessingOptions(List<BatchProcessingOption> options) {
+            this.batchProcessingOption.addAll(options);
         }
 
         @XmlAccessorType(XmlAccessType.FIELD)

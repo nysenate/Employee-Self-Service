@@ -28,7 +28,7 @@ public class ContactBatchFactory {
      * @param emergencyInfoMap A Mapping of employeeId to their EmergencyNotificationInfo for all employees given in {@code employees}.
      */
     public static ContactBatch create(Set<Employee> employees, Map<Integer, EmergencyNotificationInfo> emergencyInfoMap) {
-        ContactBatch contactBatch = new ContactBatch();
+        ContactBatch contactBatch = new ContactBatch("1.0.2");
         contactBatch.setBatchProcessingDirectives(createBatchProcessingDirectives());
         contactBatch.setBatchContactList(createBatchContactList(employees, emergencyInfoMap));
         return contactBatch;
@@ -37,7 +37,7 @@ public class ContactBatchFactory {
     private static BatchProcessingDirectives createBatchProcessingDirectives() {
         BatchProcessingDirectives directives = new BatchProcessingDirectives();
         directives.setAccountID(createAccountId());
-        directives.getBatchProcessingOption().addAll(createBatchProcessingOptions());
+        directives.addBatchProcessingOptions(createBatchProcessingOptions());
 
         return directives;
     }
@@ -86,7 +86,7 @@ public class ContactBatchFactory {
         contactFields.add(new ContactField("LastName", emp.getLastName()));
         contactFields.add(new ContactField("Language", "en-US"));
         contactFields.add(new ContactField("CustomField", "Title", emp.getJobTitle()));
-        contactFields.add(new ContactField("CustomFiled", "Department", emp.getRespCenter().getHead().getName()));
+        contactFields.add(new ContactField("CustomField", "Department", emp.getRespCenter().getHead().getName()));
         contactFields.add(new ContactField("CustomField", "LocationID", emp.getWorkLocation().getLocId().getCode()));
         contactFields.add(new ContactField("CustomField", "EmployeeType", "SenateEmployee"));
         contactFields.add(new ContactField("Address1", emp.getWorkLocation().getAddress().getAddr1()));
