@@ -28,7 +28,7 @@ public class ContactBatchFactory {
      * @param emergencyInfoMap A Mapping of employeeId to their EmergencyNotificationInfo for all employees given in {@code employees}.
      */
     public static ContactBatch create(Set<Employee> employees, Map<Integer, EmergencyNotificationInfo> emergencyInfoMap) {
-        ContactBatch contactBatch = new ContactBatch("1.0.2");
+        ContactBatch contactBatch = new ContactBatch("1.0.3");
         contactBatch.setBatchProcessingDirectives(createBatchProcessingDirectives());
         contactBatch.setBatchContactList(createBatchContactList(employees, emergencyInfoMap));
         return contactBatch;
@@ -68,7 +68,9 @@ public class ContactBatchFactory {
     private static BatchContactList createBatchContactList(Set<Employee> employees, Map<Integer, EmergencyNotificationInfo> emergencyInfoMap) {
         BatchContactList contactList = new BatchContactList();
         for (Employee emp: employees) {
-            contactList.addContact(createContact(emp, emergencyInfoMap.get(emp.getEmployeeId())));
+            if (emp.getUid() != null) {
+                contactList.addContact(createContact(emp, emergencyInfoMap.get(emp.getEmployeeId())));
+            }
         }
         return contactList;
     }
