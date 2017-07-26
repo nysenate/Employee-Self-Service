@@ -42,13 +42,25 @@ public class EmergencyNotificationInfoView implements ViewObject {
     public EmergencyNotificationInfo toEmergencyNotificationInfo() {
         return EmergencyNotificationInfo.builder()
                 .setEmpId(empId)
-                .setHomePhone(homePhone)
-                .setMobilePhone(mobilePhone)
-                .setAlternatePhone(alternatePhone)
+                .setHomePhone(stripFormatting(homePhone))
+                .setMobilePhone(stripFormatting(mobilePhone))
+                .setAlternatePhone(stripFormatting(alternatePhone))
                 .setSmsSubscribed(smsSubscribed)
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(alternateEmail)
                 .build();
+    }
+
+    /**
+     * Strip all phone number formatting a user may of entered.
+     * @param phoneNumber a phone number entered by a user.
+     * @return the {@code phoneNumber} with all non number characters removed or null if {@code phoneNumber} is null.
+     */
+    private String stripFormatting(String phoneNumber) {
+        if (phoneNumber == null) {
+            return null;
+        }
+        return phoneNumber.replaceAll("[^0-9]", "");
     }
 
     @Override

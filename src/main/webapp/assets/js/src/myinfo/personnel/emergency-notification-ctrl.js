@@ -1,10 +1,10 @@
 
 angular.module('essMyInfo')
-    .controller('EmergencyNotificationCtrl', ['$scope', '$timeout', 'appProps', 'EmergencyNotificationInfoApi',
+    .controller('EmergencyNotificationCtrl', ['$scope', '$timeout', '$filter', 'appProps', 'EmergencyNotificationInfoApi',
                                               emergencyNotificationCtrl])
     ;
 
-function emergencyNotificationCtrl($scope, $timeout, appProps, eniApi) {
+function emergencyNotificationCtrl($scope, $timeout, $filter, appProps, eniApi) {
 
     $scope.telPattern = /^ *(\([0-9]{3}\)|[0-9]{3} *-?) *[0-9]{3} *-? *[0-9]{4} *$/;
     $scope.phoneErrorMsg = "Please enter a valid phone number";
@@ -54,6 +54,9 @@ function emergencyNotificationCtrl($scope, $timeout, appProps, eniApi) {
 
         function onSuccess(resp) {
             $scope.state.eni = resp.result;
+            $scope.state.eni.homePhone = $filter('phoneNumber')($scope.state.eni.homePhone);
+            $scope.state.eni.mobilePhone = $filter('phoneNumber')($scope.state.eni.mobilePhone);
+            $scope.state.eni.alternatePhone = $filter('phoneNumber')($scope.state.eni.alternatePhone);
         }
 
         function postRequest() {
