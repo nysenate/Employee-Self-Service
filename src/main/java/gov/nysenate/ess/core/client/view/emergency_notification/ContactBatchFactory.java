@@ -156,10 +156,10 @@ public class ContactBatchFactory {
 
     private static ContactPoint textMessageContactPoint(EmergencyNotificationInfo emergencyNotificationInfo) {
         ContactPoint homePhone = new ContactPoint("TextMessage");
-        homePhone.addContactPointField(new ContactPointField("Label", "Text Message"));
-        homePhone.addContactPointField(new ContactPointField("CountryCode", "1"));
-        // TODO Don't think text message is formatted correctly.
-        homePhone.addContactPointField(new ContactPointField("Number", emergencyNotificationInfo.getMobilePhone()));
+        homePhone.addContactPointField(new ContactPointField("Label", "SMS"));
+        homePhone.addContactPointField(new ContactPointField("Carrier", "SWN Global SMS"));
+        // For SMS, need to include country code in phone number.
+        homePhone.addContactPointField(new ContactPointField("Number", "1" + emergencyNotificationInfo.getMobilePhone()));
         return homePhone;
     }
 
