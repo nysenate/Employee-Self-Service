@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.EmergencyNotificationInfoView;
+import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch;
+import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatchFactory;
 import gov.nysenate.ess.core.dao.emergency_notification.EmergencyNotificationInfoDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
@@ -14,9 +16,16 @@ import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationI
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
@@ -83,6 +92,26 @@ public class EmergencyNotificationInfoCtrl extends BaseRestApiCtrl {
                 true,
                 "emergency notification info updated",
                 "eni-update-success");
+    }
+
+    /**
+     * Get Emergency Notification Contact List Dump Api
+     * ------------------------------------
+     *
+     * Requires Admin permissions.
+     *
+     * Get emergency notification info for all active senate employees:
+     *      (GET) /api/v1/emergency-notification-info/contact-dump
+     */
+    @RequestMapping(value = "contact-dump", method = RequestMethod.GET)
+    public ContactBatch generateContactList() {
+        checkPermission(new WildcardPermission("admin"));
+
+        List<EmergencyNotificationInfo> enis = eniDao.getAllEmergencyNotificationInfo();
+        Map<Integer, EmergencyNotificationInfo> enisMap = enis.stream()
+                .collect(Collectors.toMap(EmergencyNotificationInfo::getEmpId, Function.identity()));
+        Set<Employee> employees = employeeInfoService.getAllEmployees(true);
+        return ContactBatchFactory.create(employees, enisMap);
     }
 
     @ExceptionHandler(EmployeeNotFoundEx.class)
