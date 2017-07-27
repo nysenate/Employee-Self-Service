@@ -27,4 +27,13 @@ public class MyInfoTemplateCtrl extends BaseTemplateCtrl
     public String getMyinfoPage(HttpServletRequest request) {
         return request.getRequestURI();
     }
+
+    /**
+     * Forbid the emergency notification page for now...
+     * @return
+     */
+    @RequestMapping(value = "/personnel/emergency-notification")
+    public String getEmergencyContactInfoPage() {
+        return "404";
+    }
 }
