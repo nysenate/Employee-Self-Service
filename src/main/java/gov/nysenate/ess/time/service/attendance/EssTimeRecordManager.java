@@ -333,13 +333,10 @@ public class EssTimeRecordManager implements TimeRecordManager
         boolean modifiedEntries = false;
         // Get effective pay types for the record
         RangeMap<LocalDate, PayType> payTypes = getPayTypeRangeMap(record.getEmployeeId());
-        // Get effective Accruing flag for the record
-        RangeMap<LocalDate, Boolean> accrualStatuses = getAccrualRangeMap(record.getEmployeeId());
 
         // Check the pay types for each entry
         for (TimeEntry entry : record.getTimeEntries()) {
             PayType correctPayType = payTypes.get(entry.getDate());
-            boolean correctAccruing = accrualStatuses.get(entry.getDate());
             if (!Objects.equals(entry.getPayType(), correctPayType)) {
                 modifiedEntries = true;
                 entry.setPayType(correctPayType);
