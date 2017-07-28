@@ -1236,7 +1236,9 @@ input[type="button"].time-neutral-button:hover {
 }
 input[type="text"],
 input[type="password"],
-input[type="number"] {
+input[type="number"],
+input[type="tel"],
+input[type="email"] {
   border: 1px solid #ccc;
   outline: 0;
   background: #fafafa;
@@ -1244,12 +1246,21 @@ input[type="number"] {
 }
 input[type="text"].error,
 input[type="password"].error,
-input[type="number"].error {
+input[type="number"].error,
+input[type="tel"].error,
+input[type="email"].error,
+input[type="text"].ng-invalid,
+input[type="password"].ng-invalid,
+input[type="number"].ng-invalid,
+input[type="tel"].ng-invalid,
+input[type="email"].ng-invalid {
   border-color: #B90504;
 }
 input[type="text"]:focus,
 input[type="password"]:focus,
-input[type="number"]:focus {
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus {
   border-color: #999;
 }
 input[type=checkbox],
@@ -3323,6 +3334,69 @@ button.ui-button::-moz-focus-inner {
     background: white;
     border-bottom: 1px solid black;
   }
+}
+/** --- Emergency Notification Info Page --- */
+#emergency-notification-page .eni-saved-message {
+  text-align: center;
+  margin-bottom: 0;
+  opacity: 0;
+  -webkit-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -moz-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  -o-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
+}
+#emergency-notification-page .eni-saved-message.eni-saved {
+  opacity: 1;
+  -webkit-transition: opacity 0s;
+  -moz-transition: opacity 0s;
+  -o-transition: opacity 0s;
+  transition: opacity 0s;
+}
+#emergency-notification-page .eni-form {
+  padding: 20px;
+}
+#emergency-notification-page .eni-form .content-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  text-align: left;
+  padding-bottom: 30px;
+}
+#emergency-notification-page .eni-form .content-controls > label {
+  text-align: right;
+  width: 15%;
+  margin: 0.7em 1em 0.7em 0;
+}
+#emergency-notification-page .eni-form .content-controls > input {
+  width: 40%;
+}
+#emergency-notification-page .eni-form .content-controls .immutable-value {
+  width: 80%;
+}
+#emergency-notification-page .eni-form .content-controls .check-box-container {
+  width: 100%;
+  padding-left: 15%;
+}
+#emergency-notification-page .eni-form .content-controls .check-box-container input {
+  margin-left: 1em;
+}
+#emergency-notification-page .eni-form .content-controls .check-box-container label {
+  margin-left: 5px;
+}
+#emergency-notification-page .eni-form .content-controls .eni-error-text {
+  width: 40%;
+  color: indianred;
+  opacity: 0;
+  margin: 0 0 0 5px;
+}
+#emergency-notification-page .eni-form .content-controls input.ng-invalid + .eni-error-text {
+  opacity: 1;
+}
+#emergency-notification-page .eni-form .input-container input.submit-button {
+  margin-left: calc(15% + 1em);
+}
+#emergency-notification-page .eni-form h3 {
+  text-align: center;
 }
 /** --- Paycheck History Page --- */
 @media print {

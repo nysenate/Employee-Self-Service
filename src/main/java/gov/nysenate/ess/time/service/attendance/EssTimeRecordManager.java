@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.service.attendance;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
@@ -24,6 +25,7 @@ import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.model.attendance.*;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
+import gov.nysenate.ess.time.service.notification.TimeRecordManagerEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +33,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,6 +69,7 @@ public class EssTimeRecordManager implements TimeRecordManager
     @Autowired protected EmpTransactionService transService;
     @Autowired protected EmployeeInfoService empInfoService;
     @Autowired protected DepartmentalWhitelistService deptWhitelistService;
+    @Autowired protected TimeRecordManagerEmailService trmEmailService;
 
     @Autowired protected EventBus eventBus;
 
@@ -107,6 +112,8 @@ public class EssTimeRecordManager implements TimeRecordManager
         // Examine employees that are active or have open attendance records
         Set<Integer> empIds = Sets.union(activeEmpIds, activeAttendanceRecords.keySet());
 
+        List<TimeRecordManagerError> exceptions = new LinkedList<>();
+
         logger.info("processing active employee records...");
 
         // Create and patch records for each employee
@@ -114,12 +121,29 @@ public class EssTimeRecordManager implements TimeRecordManager
                 // Do not modify records for departments that are not yet in ESS
                 .filter(deptWhitelistService::isAllowed)
                 .sorted()
-                .map(empId -> ensureRecords(empId,
-                        accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC),
-                        timeRecordService.getActiveTimeRecords(empId),
-                        Optional.ofNullable(activeAttendanceRecords.get(empId)).orElse(Collections.emptyList())))
+                .map(empId -> {
+                    try {
+                        return ensureRecords(empId,
+                                accrualInfoService.getOpenPayPeriods(PayPeriodType.AF, empId, SortOrder.ASC),
+                                timeRecordService.getActiveTimeRecords(empId),
+                                Optional.ofNullable(activeAttendanceRecords.get(empId)).orElse(Collections.emptyList()));
+                    } catch (Exception ex) {
+                        // Catch and save exceptions to be reported at the end
+                        LocalDateTime timestamp = LocalDateTime.now();
+                        logger.error("Time record manager ex for " + empId + " at " + timestamp, ex);
+                        Employee employee = empInfoService.getEmployee(empId);
+                        TimeRecordManagerError trmEx = new TimeRecordManagerError(employee, timestamp, ex);
+                        exceptions.add(trmEx);
+                        return 0;
+                    }
+                })
                 .reduce(0, Integer::sum);
         logger.info("checked {} employees\tsaved {} records", empIds.size(), totalSaved);
+
+        // Send email notifications if there were any exceptions
+        if (exceptions.size() > 0) {
+            trmEmailService.sendTrmErrorNotification(exceptions);
+        }
     }
 
     /**
@@ -154,10 +178,12 @@ public class EssTimeRecordManager implements TimeRecordManager
      * Existing records are split/modified as needed to ensure correctness
      * If createTempRecords is false, then records will only be created for periods with annual pay work days
      */
+    @Transactional(DatabaseConfig.remoteTxManager)
     private int ensureRecords(int empId, Collection<PayPeriod> payPeriods, Collection<TimeRecord> existingRecords,
                               Collection<AttendanceRecord> attendanceRecords) {
         logger.info("Generating records for {} over {} pay periods with {} existing records",
                 empId, payPeriods.size(), existingRecords.size());
+
 
         // Get a set of ranges for which there should be time records
         LinkedHashSet<Range<LocalDate>> recordRanges = getRecordRanges(empId, payPeriods, attendanceRecords);
@@ -333,13 +359,10 @@ public class EssTimeRecordManager implements TimeRecordManager
         boolean modifiedEntries = false;
         // Get effective pay types for the record
         RangeMap<LocalDate, PayType> payTypes = getPayTypeRangeMap(record.getEmployeeId());
-        // Get effective Accruing flag for the record
-        RangeMap<LocalDate, Boolean> accrualStatuses = getAccrualRangeMap(record.getEmployeeId());
 
         // Check the pay types for each entry
         for (TimeEntry entry : record.getTimeEntries()) {
             PayType correctPayType = payTypes.get(entry.getDate());
-            boolean correctAccruing = accrualStatuses.get(entry.getDate());
             if (!Objects.equals(entry.getPayType(), correctPayType)) {
                 modifiedEntries = true;
                 entry.setPayType(correctPayType);

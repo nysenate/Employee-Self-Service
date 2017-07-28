@@ -1,4 +1,4 @@
-package gov.nysenate.ess.time.dao.personnel;
+package gov.nysenate.ess.time.dao.personnel.mapper;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.model.personnel.SupOverrideType;
@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
-import java.util.Optional;
 
 public class SupervisorOverrideRowMapper implements RowMapper<SupervisorOverride>
 {

@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -15,8 +16,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A Time Record is the biweekly collection of daily time entries. The time record
@@ -260,6 +263,17 @@ public class TimeRecord implements Comparable<TimeRecord>
             e.setUpdateUserId(updateUser);
             e.setEmployeeName(updateUser);
         });
+    }
+
+    /**
+     * Gets a set of all pay types represented in this time record
+     *
+     * @return {@link Set<PayType>}
+     */
+    public Set<PayType> getPayTypes() {
+        return timeEntryMap.values().stream()
+                .map(TimeEntry::getPayType)
+                .collect(Collectors.toSet());
     }
 
     /** --- Basic Getters/Setters --- */

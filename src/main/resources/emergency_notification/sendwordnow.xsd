@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.sendwordnow.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sendwordnow.com" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.3">
+  <xs:element name="contactBatch">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="batchProcessingDirectives">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="accountID">
+                <xs:complexType>
+                  <xs:attribute name="username" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="batchFile" minOccurs="0">
+                <xs:complexType>
+                  <xs:attribute name="requestFileName" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="batchProcessingOption" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="name" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="BatchContinueOnContactError"/>
+                        <xs:enumeration value="BatchContinueOnGroupError"/>
+                        <xs:enumeration value="BatchFailureOnDuplicateAdd"/>
+                        <xs:enumeration value="BatchFailureOnMissingModify"/>
+                        <xs:enumeration value="BatchFailureOnMissingRemove"/>
+                        <xs:enumeration value="DeleteContactsNotInBatch"/>
+                        <xs:enumeration value="DeleteContactsWithoutUniqueID"/>
+                        <xs:enumeration value="DeleteGroupsNotInBatch"/>
+                        <xs:enumeration value="DeleteGroupsWithContactsWithoutUniqueID"/>
+                        <xs:enumeration value="ReturnContactList"/>
+                        <xs:enumeration value="ReturnContactListWithUniqueIDs"/>
+                        <xs:enumeration value="ReturnContactListWithoutUniqueIDs"/>
+                        <xs:enumeration value="MergeContactsInBatch"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="value" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="false"/>
+                        <xs:enumeration value="true"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="batchContactList" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="contact" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="contactField" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="name" use="required">
+                              <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                  <xs:enumeration value="Address1"/>
+                                  <xs:enumeration value="Address2"/>
+                                  <xs:enumeration value="City"/>
+                                  <xs:enumeration value="Country"/>
+                                  <xs:enumeration value="CustomField01"/>
+                                  <xs:enumeration value="CustomField02"/>
+                                  <xs:enumeration value="CustomField03"/>
+                                  <xs:enumeration value="CustomField04"/>
+                                  <xs:enumeration value="CustomField05"/>
+                                  <xs:enumeration value="CustomField06"/>
+                                  <xs:enumeration value="CustomField07"/>
+                                  <xs:enumeration value="CustomField08"/>
+                                  <xs:enumeration value="CustomField09"/>
+                                  <xs:enumeration value="CustomField10"/>
+                                  <xs:enumeration value="FirstName"/>
+                                  <xs:enumeration value="LastName"/>
+                                  <xs:enumeration value="MiddleName"/>
+                                  <xs:enumeration value="Pin"/>
+                                  <xs:enumeration value="PostalCode"/>
+                                  <xs:enumeration value="State"/>
+                                  <xs:enumeration value="TimeZone"/>
+                                  <xs:enumeration value="RuleProfile"/>
+                                  <xs:enumeration value="CustomField"/>
+                                  <xs:enumeration value="Language"/>
+                                </xs:restriction>
+                              </xs:simpleType>
+                            </xs:attribute>
+                            <xs:attribute name="customName" type="xs:string"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="groupList" minOccurs="0">
+                      <xs:complexType>
+                        <xs:choice>
+                          <xs:element name="group" type="group" minOccurs="0" maxOccurs="unbounded"/>
+                          <xs:element name="groupName" type="groupName" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:choice>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="contactPointList" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="contactPoint" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="contactPointField" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:simpleContent>
+                                      <xs:extension base="xs:string">
+                                        <xs:attribute name="name" use="required">
+                                          <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                              <xs:enumeration value="Address"/>
+                                              <xs:enumeration value="Carrier"/>
+                                              <xs:enumeration value="CountryCode"/>
+                                              <xs:enumeration value="Label"/>
+                                              <xs:enumeration value="Number"/>
+                                              <xs:enumeration value="Extension"/>
+                                              <xs:enumeration value="CascadeOrder"/>
+                                            </xs:restriction>
+                                          </xs:simpleType>
+                                        </xs:attribute>
+                                      </xs:extension>
+                                    </xs:simpleContent>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="type" use="required">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="Email"/>
+                                    <xs:enumeration value="TextMessage"/>
+                                    <xs:enumeration value="Voice"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                              <xs:attribute name="action" use="optional">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="Remove"/>
+                                    <xs:enumeration value="AddOrModify"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="contactID" type="contactID" use="required"/>
+                  <xs:attribute name="action" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="Add"/>
+                        <xs:enumeration value="Modify"/>
+                        <xs:enumeration value="Remove"/>
+                        <xs:enumeration value="Ignore"/>
+                        <xs:enumeration value="AddOrModify"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="batchGroupList" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="group" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:complexContent>
+                    <xs:extension base="group">
+                      <xs:sequence>
+                        <xs:element name="contactIdList" minOccurs="0">
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="contact" maxOccurs="unbounded">
+                                <xs:complexType>
+                                  <xs:attribute name="contactID" type="contactID" use="required"/>
+                                  <xs:attribute name="action" use="required">
+                                    <xs:simpleType>
+                                      <xs:restriction base="xs:string">
+                                        <xs:enumeration value="Add"/>
+                                        <xs:enumeration value="Remove"/>
+                                      </xs:restriction>
+                                    </xs:simpleType>
+                                  </xs:attribute>
+                                </xs:complexType>
+                              </xs:element>
+                            </xs:sequence>
+                            <xs:attribute name="action" use="required">
+                              <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                  <xs:enumeration value="Replace"/>
+                                  <xs:enumeration value="Merge"/>
+                                </xs:restriction>
+                              </xs:simpleType>
+                            </xs:attribute>
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                      <xs:attribute name="action" use="required">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:string">
+                            <xs:enumeration value="Add"/>
+                            <xs:enumeration value="Modify"/>
+                            <xs:enumeration value="AddOrModify"/>
+                            <xs:enumeration value="Remove"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                    </xs:extension>
+                  </xs:complexContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="1.0.1"/>
+            <xs:enumeration value="1.0.2"/>
+            <xs:enumeration value="1.0.3"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="groupName">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="groupDescription">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="contactID">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:complexType name="group">
+    <xs:attribute name="name" type="groupName" use="required"/>
+    <xs:attribute name="desc" type="groupDescription"/>
+  </xs:complexType>
+</xs:schema>

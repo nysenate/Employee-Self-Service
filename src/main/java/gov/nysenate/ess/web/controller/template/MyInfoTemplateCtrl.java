@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Handles requests for front-end templates associated with my info functionality.
  */
@@ -15,20 +17,23 @@ public class MyInfoTemplateCtrl extends BaseTemplateCtrl
     private static final Logger logger = LoggerFactory.getLogger(MyInfoTemplateCtrl.class);
     protected static final String MYINFO_TMPL_BASE_URL = TMPL_BASE_URL + "/myinfo";
 
-    /** --- Personnel --- */
-
-    @RequestMapping(value="/personnel/summary")
-    public String profileSummary() {
-        return MYINFO_TMPL_BASE_URL + "/personnel/summary";
+    /**
+     * Just return the corresponding template...
+     *
+     * @param request HttpServletRequest
+     * @return String - passed in uri
+     */
+    @RequestMapping(value = "/**")
+    public String getMyinfoPage(HttpServletRequest request) {
+        return request.getRequestURI();
     }
 
-    @RequestMapping(value="/personnel/transactions")
-    public String personnelTransactions() {
-        return MYINFO_TMPL_BASE_URL + "/personnel/transactions";
-    }
-
-    @RequestMapping(value="/payroll/checkhistory")
-    public String checkHistory() {
-        return MYINFO_TMPL_BASE_URL + "/payroll/checkhistory";
+    /**
+     * Forbid the emergency notification page for now...
+     * @return
+     */
+    @RequestMapping(value = "/personnel/emergency-notification")
+    public String getEmergencyContactInfoPage() {
+        return "404";
     }
 }
