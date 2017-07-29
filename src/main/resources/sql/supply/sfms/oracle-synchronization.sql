@@ -234,12 +234,12 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       END IF;
 
       -- Loop through all items in the requisition.
-      WHILE requisition_xml.existsNode('//lineItems/lineItems[' || item_count || ']') = 1
+      WHILE requisition_xml.existsNode('//lineItems[' || item_count || ']') = 1
       LOOP
         -- Extract item data.
-        item_id := requisition_xml.extract('//lineItems/lineItems[' || item_count || ']/item/id/text()').getNumberVal();
-        quantity := requisition_xml.extract('//lineItems/lineItems[' || item_count || ']/quantity/text()').getNumberVal();
-        issue_unit := requisition_xml.extract('//lineItems/lineItems[' || item_count || ']/item/unit/text()').getStringVal();
+        item_id := requisition_xml.extract('//lineItems[' || item_count || ']/item/id/text()').getNumberVal();
+        quantity := requisition_xml.extract('//lineItems[' || item_count || ']/quantity/text()').getNumberVal();
+        issue_unit := requisition_xml.extract('//lineItems[' || item_count || ']/item/unit/text()').getStringVal();
         nuissue := get_next_nuissue(item_id, destination_code, destination_type, approved_date_time);
         standard_quantity := quantity * get_standard_unit_size(issue_unit);
 
