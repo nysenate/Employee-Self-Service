@@ -233,6 +233,11 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
         RAISE_APPLICATION_ERROR(-20001, 'Requisition ' || requisition_id || ' has already been inserted into SFMS.');
       END IF;
 
+      IF requisition_xml.existsNode('//lineItems') = 0
+        THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Requisition ' || requisition_id || ' has no line items or has malformed xml');
+      END IF;
+
       -- Loop through all items in the requisition.
       WHILE requisition_xml.existsNode('//lineItems[' || item_count || ']') = 1
       LOOP
