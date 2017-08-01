@@ -3,8 +3,8 @@ package gov.nysenate.ess.core.util;
 import com.google.common.collect.*;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.util.DateUtils.getLocalDateDiscreteDomain;
@@ -137,39 +137,25 @@ public class RangeUtils
     }
 
     /**
-     * Generate a range set containing all ranges of the given range map that are mapped to a specific value
-     * @param rangeMap
-     * @param effectiveValue
-     * @param <K>
-     * @param <V>
-     * @return
-     */
-    public static <K extends Comparable<? super K>, V> RangeSet<K> getEffectiveRanges(
-            RangeMap<K, V> rangeMap, V effectiveValue) {
-        RangeSet<K> rangeSet = TreeRangeSet.create();
-        rangeMap.asMapOfRanges()
-                .entrySet().stream()
-                .filter(entry -> Objects.equals(effectiveValue, entry.getValue()))
-                .forEach(entry -> rangeSet.add(entry.getKey()));
-        return rangeSet;
-    }
-
-    /**
-     * @see #getEffectiveRanges(RangeMap, Object)
-     * Overload of {@link #getEffectiveRanges(RangeMap, Object)} taking in a {@link SortedMap}
-     * Calls {@link #toRangeMap(SortedMap)} on the map before passing it into {@link #getEffectiveRanges(RangeMap, Object)}
-     * @param sortedMap SortedMap
-     * @param effectiveValue effective value
-     * @param <K> K
-     * @param <V> V
+     * Given a tree map that maps effective values to keys and a predicate for the value type,
+     * return a range set containing all keys with effective values that satisfy the given predicate
+     *
+     * @param valMap TreeMap<K, V>
+     * @param valTester Predicate<V>
+     * @param <K> Key - must be Comparable
+     * @param <V> Value
      * @return RangeSet<K>
      */
     public static <K extends Comparable<? super K>, V> RangeSet<K> getEffectiveRanges(
-            SortedMap<K, V> sortedMap, V effectiveValue) {
-        return getEffectiveRanges(
-                toRangeMap(sortedMap),
-                effectiveValue
-        );
+            SortedMap<K, V> valMap, Predicate<? super V> valTester) {
+
+        RangeSet<K> effectiveRange = TreeRangeSet.create();
+        RangeUtils.toRangeMap(valMap)
+                .asMapOfRanges().entrySet().stream()
+                .filter(entry -> valTester.test(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .forEach(effectiveRange::add);
+        return effectiveRange;
     }
 
     /**

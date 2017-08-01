@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.model.transaction;
 import com.google.common.collect.*;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.payroll.SalaryRec;
+import gov.nysenate.ess.core.model.personnel.Agency;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +49,7 @@ public class TransactionHistory
     /** Creates a full snapshot view from the records containing every column and grouped by effective date. */
     protected TreeMap<LocalDate, Map<String, String>> recordSnapshots;
 
-    /** --- Constructors --- */
+    /* --- Constructors --- */
 
     public TransactionHistory(int empId, List<TransactionRecord> recordsList) {
         this(empId, null, recordsList);
@@ -88,7 +90,7 @@ public class TransactionHistory
         return !recordsByCode.get(code).isEmpty();
     }
 
-    /** --- Helper Methods --- */
+    /* --- Helper Methods --- */
 
     public TreeMap<LocalDate, Integer> getEffectiveSupervisorIds(Range<LocalDate> dateRange) {
         TreeMap<LocalDate, Integer> supIds = new TreeMap<>();
@@ -102,8 +104,27 @@ public class TransactionHistory
         return payTypes;
     }
 
+    /**
+     * Get a set of dates where the employee's pay type satisfies the given predicate
+     * @param payTypePredicate Predicate<PayType>
+     * @return RangeSet<LocalDate>
+     */
+    public RangeSet<LocalDate> getPayTypeDates(Predicate<PayType> payTypePredicate) {
+        TreeMap<LocalDate, PayType> effectivePayTypes = getEffectivePayTypes(Range.all());
+        return RangeUtils.getEffectiveRanges(effectivePayTypes, payTypePredicate);
+    }
+
     public TreeMap<LocalDate, String> getEffectiveAgencyCodes(Range<LocalDate> dateRange) {
         return getEffectiveEntriesDuring("CDAGENCY", dateRange, true);
+    }
+
+    /**
+     * Get a set containing dates where the employee was a senator
+     * @return RangeSet<LocalDate>
+     */
+    public RangeSet<LocalDate> getSenatorDates() {
+        TreeMap<LocalDate, String> effectiveAgencyCodes = getEffectiveAgencyCodes(Range.all());
+        return RangeUtils.getEffectiveRanges(effectiveAgencyCodes, Agency.SENATOR_AGENCY_CODE::equals);
     }
 
     public TreeMap<LocalDate, Boolean> getEffectiveEmpStatus(Range<LocalDate> dateRange) {
@@ -123,6 +144,14 @@ public class TransactionHistory
         return empStatuses;
     }
 
+    /**
+     * @return A set of all dates that the employee is active
+     */
+    public RangeSet<LocalDate> getActiveDates() {
+        TreeMap<LocalDate, Boolean> effectiveEmpStatus = getEffectiveEmpStatus(Range.all());
+        return RangeUtils.getEffectiveRanges(effectiveEmpStatus, Boolean::booleanValue);
+    }
+
     public TreeMap<LocalDate, BigDecimal> getEffectiveMinHours(Range<LocalDate> dateRange) {
         TreeMap<LocalDate, BigDecimal> minHrs = new TreeMap<>();
         getEffectiveEntriesDuring("NUMINTOTHRS", dateRange, true).forEach((k,v) -> minHrs.put(k, new BigDecimal(v)));
@@ -133,6 +162,15 @@ public class TransactionHistory
         TreeMap<LocalDate, Boolean> accrual = new TreeMap<>();
         getEffectiveEntriesDuring("CDACCRUE", dateRange, true).forEach((k, v) -> accrual.put(k, v.equals("Y")));
         return accrual;
+    }
+
+    /**
+     * Get a set of dates where the employee is permitted to accrue time
+     * @return RangeSet<LocalDate>
+     */
+    public RangeSet<LocalDate> getAccrualDates() {
+        TreeMap<LocalDate, Boolean> effectiveAccrualStatus = getEffectiveAccrualStatus(Range.all());
+        return RangeUtils.getEffectiveRanges(effectiveAccrualStatus, Boolean::booleanValue);
     }
 
     public TreeMap<LocalDate, BigDecimal> getEffectiveAllowances(Range<LocalDate> dateRange) {
@@ -180,6 +218,16 @@ public class TransactionHistory
     }
 
     /**
+     * Get a range set of dates where the employee's {@link PersonnelStatus} matches the given predicate
+     * @param perStatPredicate Predicate<PersonnelStatus>
+     * @return RangeSet<LocalDate>
+     */
+    public RangeSet<LocalDate> getPerStatusDates(Predicate<PersonnelStatus> perStatPredicate) {
+        TreeMap<LocalDate, PersonnelStatus> effectivePersonnelStatus = getEffectivePersonnelStatus(Range.all());
+        return RangeUtils.getEffectiveRanges(effectivePersonnelStatus, perStatPredicate);
+    }
+
+    /**
      * @return true if the employee is not in the middle of an appoint transaction
      *      ie. they have received a PER and a PAY transaction for the last appointment
      */
@@ -206,69 +254,7 @@ public class TransactionHistory
                         .count() > 1;
     }
 
-    /** --- Functional Getters/Setters --- */
-
-    /**
-     * Adds a transaction record to the history queue.
-     *
-     * @param record TransactionRecord
-     */
-    private void addTransactionRecord(TransactionRecord record) {
-        if (record != null) {
-            recordsByCode.put(record.getTransCode(), record);
-            LocalDate effectDate = record.getEffectDate();
-            if (recordSnapshots.isEmpty()) {
-                // Initialize the snapshot map
-                recordSnapshots.put(effectDate, record.getValueMap());
-                // Add the first record as an appoint transaction if no proper appoint transactions were found
-                if (appointDocuments.isEmpty()) {
-                    appointDocuments.put(PRE_SFMS_APP_DOC_ID, record);
-                }
-            } else {
-                // Update the previous map with the newly updated values
-                Map<String, String> valueMap = Maps.newHashMap(recordSnapshots.lastEntry().getValue());
-                // If the transaction record belongs to an appoint document, and has a transaction type different from the appoint transaction
-                //  extract the values of all columns of the record's transaction type as effective values
-                if (appointDocuments.containsKey(PRE_SFMS_APP_DOC_ID) &&
-                        appointDocuments.get(PRE_SFMS_APP_DOC_ID).size() == 1 &&
-                        appointDocuments.get(PRE_SFMS_APP_DOC_ID).first().getTransType() != record.getTransType()) {
-                    valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
-                    appointDocuments.put(PRE_SFMS_APP_DOC_ID, record);
-                } else if (appointDocuments.keySet().contains(record.getDocumentId()) &&
-                        appointDocuments.get(record.getDocumentId()).first().getTransType() != record.getTransType()) {
-                    valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
-                    appointDocuments.put(record.getDocumentId(), record);
-                } else {
-                    valueMap.putAll(record.getValuesForCode());
-                }
-                recordSnapshots.put(effectDate, valueMap);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Cannot add a null record to the transaction history!");
-        }
-    }
-
-    /**
-     * Adds a collection of transaction records to their respective history queue.
-     *
-     * @param recordsList List<TransactionRecord>
-     */
-    private void addTransactionRecords(List<TransactionRecord> recordsList) {
-        getInitDocIds(recordsList);
-        recordsList.forEach(this::addTransactionRecord);
-    }
-
-    /**
-     * Get the document numbers of any initializing transactions (APP, RTP) in the given list
-     *   and add them to the appoint records map
-     * @param recordsList List<TransactionRecord>
-     */
-    private void getInitDocIds(List<TransactionRecord> recordsList) {
-        recordsList.stream()
-                .filter(record -> record.getTransCode().isAppointType())
-                .forEach(record -> appointDocuments.put(record.getDocumentId(), record));
-    }
+    /* --- Functional Getters/Setters --- */
 
     /**
      * See overloaded method.
@@ -385,14 +371,6 @@ public class TransactionHistory
     }
 
     /**
-     * @see #latestValueOf(String, boolean)
-     * 'latestDate' defaults to a date far in the future.
-     */
-    public Optional<String> latestValueOf(String key, boolean skipNulls) {
-        return latestValueOf(key, LocalDate.MAX, skipNulls);
-    }
-
-    /**
      * Use this method if you want to know the value of the given 'key' where the effective date is the latest
      * to occur before or on 'latestDate'. In the case where multiple transaction records were in effect for
      * the same latest effective date, the value belonging to the most recent record with that effective date
@@ -409,33 +387,6 @@ public class TransactionHistory
             return Optional.ofNullable(entry.get().getValue());
         }
         return Optional.empty();
-    }
-
-    /**
-     * @see #getEarliestValueOf(String, LocalDate, boolean)
-     * 'earliestDate' defaults to a date way in the past.
-     */
-    public Optional<String> getEarliestValueOf(String key, boolean skipNulls) {
-       return getEarliestValueOf(key, LocalDate.ofYearDay(1, 1), skipNulls);
-    }
-
-    /**
-     * Use this method if you want to know the value of the given 'key' where the effective date is the first
-     * to occur after or on 'earliestDate'. In the case where multiple transaction records were in effect for
-     * the same earliest effective date, the value belonging to the most recent record with that effective date
-     * will be used.
-     *
-     * @param key String - A key from the value map (e.g. 'NALAST').
-     * @param earliestDate LocalDate - The earliest date for which to search from.
-     * @param skipNulls boolean - Set to true if you want to find the earliest non-null value.
-     * @return Optional<String> - If the value is found, it will be set, otherwise an empty Optional is returned.
-     */
-    public Optional<String> getEarliestValueOf(String key, LocalDate earliestDate, boolean skipNulls) {
-        return this.recordSnapshots.tailMap(earliestDate, true)
-            .entrySet().stream()
-            .filter(e -> (!skipNulls || e.getValue().get(key) != null)) // Skip null values if requested
-            .map(e -> e.getValue().get(key))                            // Extract the value for the given 'key'
-            .findFirst();                                               // Return most recent one
     }
 
     /**
@@ -466,7 +417,81 @@ public class TransactionHistory
         return ImmutableSortedMap.copyOf(recordSnapshots);
     }
 
-    /** --- Local classes --- */
+    /* --- Basic Getters/Setters --- */
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public TransactionCode getOriginalFirstCode() {
+        return originalFirstCode;
+    }
+
+    /* --- Internal Methods --- */
+
+    /**
+     * Adds a transaction record to the history queue.
+     *
+     * @param record TransactionRecord
+     */
+    private void addTransactionRecord(TransactionRecord record) {
+        if (record != null) {
+            recordsByCode.put(record.getTransCode(), record);
+            LocalDate effectDate = record.getEffectDate();
+            if (recordSnapshots.isEmpty()) {
+                // Initialize the snapshot map
+                recordSnapshots.put(effectDate, record.getValueMap());
+                // Add the first record as an appoint transaction if no proper appoint transactions were found
+                if (appointDocuments.isEmpty()) {
+                    appointDocuments.put(PRE_SFMS_APP_DOC_ID, record);
+                }
+            } else {
+                // Update the previous map with the newly updated values
+                Map<String, String> valueMap = Maps.newHashMap(recordSnapshots.lastEntry().getValue());
+                // If the transaction record belongs to an appoint document, and has a transaction type different from the appoint transaction
+                //  extract the values of all columns of the record's transaction type as effective values
+                if (appointDocuments.containsKey(PRE_SFMS_APP_DOC_ID) &&
+                        appointDocuments.get(PRE_SFMS_APP_DOC_ID).size() == 1 &&
+                        appointDocuments.get(PRE_SFMS_APP_DOC_ID).first().getTransType() != record.getTransType()) {
+                    valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
+                    appointDocuments.put(PRE_SFMS_APP_DOC_ID, record);
+                } else if (appointDocuments.keySet().contains(record.getDocumentId()) &&
+                        appointDocuments.get(record.getDocumentId()).first().getTransType() != record.getTransType()) {
+                    valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
+                    appointDocuments.put(record.getDocumentId(), record);
+                } else {
+                    valueMap.putAll(record.getValuesForCode());
+                }
+                recordSnapshots.put(effectDate, valueMap);
+            }
+        }
+        else {
+            throw new IllegalArgumentException("Cannot add a null record to the transaction history!");
+        }
+    }
+
+    /**
+     * Adds a collection of transaction records to their respective history queue.
+     *
+     * @param recordsList List<TransactionRecord>
+     */
+    private void addTransactionRecords(List<TransactionRecord> recordsList) {
+        getInitDocIds(recordsList);
+        recordsList.forEach(this::addTransactionRecord);
+    }
+
+    /**
+     * Get the document numbers of any initializing transactions (APP, RTP) in the given list
+     *   and add them to the appoint records map
+     * @param recordsList List<TransactionRecord>
+     */
+    private void getInitDocIds(List<TransactionRecord> recordsList) {
+        recordsList.stream()
+                .filter(record -> record.getTransCode().isAppointType())
+                .forEach(record -> appointDocuments.put(record.getDocumentId(), record));
+    }
+
+    /* --- Local classes --- */
 
     /** Sort by earliest (effective date, origin date) first. */
     protected static class TransDateAscending implements Comparator<TransactionRecord>
@@ -474,10 +499,10 @@ public class TransactionHistory
         @Override
         public int compare(TransactionRecord o1, TransactionRecord o2) {
             return ComparisonChain.start()
-                .compare(o1.getEffectDate(), o2.getEffectDate())
-                .compare(o1.getOriginalDate(), o2.getOriginalDate())
-                .compare(o1.getAuditDate(), o2.getAuditDate())
-                .result();
+                    .compare(o1.getEffectDate(), o2.getEffectDate())
+                    .compare(o1.getOriginalDate(), o2.getOriginalDate())
+                    .compare(o1.getAuditDate(), o2.getAuditDate())
+                    .result();
         }
     }
 
@@ -487,20 +512,10 @@ public class TransactionHistory
         @Override
         public int compare(TransactionRecord o1, TransactionRecord o2) {
             return ComparisonChain.start()
-                .compare(o2.getEffectDate(), o1.getEffectDate())
-                .compare(o2.getOriginalDate(), o1.getOriginalDate())
-                .compare(o2.getAuditDate(), o1.getAuditDate())
-                .result();
+                    .compare(o2.getEffectDate(), o1.getEffectDate())
+                    .compare(o2.getOriginalDate(), o1.getOriginalDate())
+                    .compare(o2.getAuditDate(), o1.getAuditDate())
+                    .result();
         }
-    }
-
-    /** --- Basic Getters/Setters --- */
-
-    public int getEmployeeId() {
-        return employeeId;
-    }
-
-    public TransactionCode getOriginalFirstCode() {
-        return originalFirstCode;
     }
 }

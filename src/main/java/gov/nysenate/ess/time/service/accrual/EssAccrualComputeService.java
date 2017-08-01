@@ -3,7 +3,6 @@ package gov.nysenate.ess.time.service.accrual;
 import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
@@ -167,7 +166,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                                                         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals) {
 
         TransactionHistory empTrans = empTransService.getTransHistory(empId);
-        RangeSet<LocalDate> activeDates = getActiveEmploymentDates(empTrans);
+        RangeSet<LocalDate> activeDates = empTrans.getActiveDates();
 
         // Filter out periods where the employee is not employed
         remainingPeriods = remainingPeriods.stream()
@@ -240,18 +239,26 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         LinkedList<PayPeriod> gapPeriods = new LinkedList<>(unMatchedPeriods.stream()
                 .filter(p -> RangeUtils.intersects(gapDateRange, p.getDateRange()))
                 .collect(Collectors.toList()));
-        PayPeriod refPeriod = (optPeriodAccRecord.isPresent()) ? optPeriodAccRecord.get().getRefPayPeriod()
-                : gapPeriods.getFirst(); // FIXME?
+        PayPeriod refPeriod = optPeriodAccRecord
+                .map(PeriodAccSummary::getRefPayPeriod)
+                .orElseGet(gapPeriods::getFirst); // FIXME?
 
         ImmutableRangeSet<LocalDate> expectedHourDates = getExpectedHourDates(empTrans);
 
+        List<PeriodAccSummary> gapAccruals = new ArrayList<>();
+
         // Compute accruals for each gap period
-        return gapPeriods.stream()
-                .peek(period -> computeGapPeriodAccruals(period, accrualState, empTrans,
-                        timeRecords, periodUsages, accrualAllowedDates, expectedHourDates))
-                .filter(remainingPeriods::contains)
-                .map(period -> accrualState.toPeriodAccrualSummary(refPeriod, period))
-                .collect(Collectors.toList());
+        for (PayPeriod period : gapPeriods) {
+            computeGapPeriodAccruals(period, accrualState, empTrans,
+                    timeRecords, periodUsages, accrualAllowedDates, expectedHourDates);
+
+            if (accrualState.isEmpAccruing() && remainingPeriods.contains(period)) {
+                PeriodAccSummary periodAccSummary = accrualState.toPeriodAccrualSummary(refPeriod, period);
+                gapAccruals.add(periodAccSummary);
+            }
+        }
+
+        return gapAccruals;
     }
 
     /**
@@ -484,65 +491,50 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
      * @return ImmutableRangeSet<LocalDate>
      */
     private ImmutableRangeSet<LocalDate> getAccrualAllowedDates(TransactionHistory empTrans) {
-        // Create a range set containing dates that the employee was active
-        RangeSet<LocalDate> activeDates = getActiveEmploymentDates(empTrans);
 
         // Create a range set containing dates where the employee's accrual flag was set to true
-        RangeSet<LocalDate> accrualStatusDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectiveAccrualStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .map(Map.Entry::getKey)
-                .forEach(accrualStatusDates::add);
+        RangeSet<LocalDate> accrualStatusDates = empTrans.getAccrualDates();
 
         // Create a range set containing dates where the employee is regular / special annual
-        RangeSet<LocalDate> annualEmploymentDates = getAnnualEmploymentDates(empTrans);
+        // And employed
+        ImmutableRangeSet<LocalDate> employedAnnualEmploymentDates = getEmployedAnnualEmploymentDates(empTrans);
 
-        // Return the intersection of the 3 range sets
+        // Return the intersection of the 2 range sets
         return ImmutableRangeSet.copyOf(
-                RangeUtils.intersection(
-                        Arrays.asList(activeDates, accrualStatusDates, annualEmploymentDates)
-                )
+                RangeUtils.intersection(employedAnnualEmploymentDates, accrualStatusDates)
+        );
+    }
+
+    /**
+     * Get a range set of the dates that the employee is active, and is a regular or special annual employee
+     * @param empTrans
+     * @return
+     */
+    private ImmutableRangeSet<LocalDate> getEmployedAnnualEmploymentDates(TransactionHistory empTrans) {
+        // Create a range set containing dates that the employee was active
+        RangeSet<LocalDate> activeDates = empTrans.getActiveDates();
+
+        // Create a range set containing dates where the employee is regular / special annual
+        RangeSet<LocalDate> annualEmploymentDates = empTrans.getPayTypeDates(PayType::isBiweekly);
+
+        // Return the intersection of the 2 range sets
+        return ImmutableRangeSet.copyOf(
+                RangeUtils.intersection(activeDates, annualEmploymentDates)
         );
     }
 
     private ImmutableRangeSet<LocalDate> getExpectedHourDates(TransactionHistory empTrans) {
         // Get a range set of dates where the employee is employed and required to enter time
-        RangeSet<LocalDate> personnelStatusDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectivePersonnelStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> entry.getValue().isEmployed() && entry.getValue().isTimeEntryRequired())
-                .map(Map.Entry::getKey)
-                .forEach(personnelStatusDates::add);
+        RangeSet<LocalDate> personnelStatusDates = empTrans.getPerStatusDates(
+                perStat -> perStat.isEmployed() && perStat.isTimeEntryRequired()
+        );
 
         // Create a range set containing dates where the employee is regular / special annual
-        RangeSet<LocalDate> annualEmploymentDates = getAnnualEmploymentDates(empTrans);
+        RangeSet<LocalDate> annualEmploymentDates = empTrans.getPayTypeDates(PayType::isBiweekly);
 
         return ImmutableRangeSet.copyOf(
-                RangeUtils.intersection(
-                        Arrays.asList(personnelStatusDates, annualEmploymentDates)
-                )
+                RangeUtils.intersection(personnelStatusDates, annualEmploymentDates)
         );
-    }
-
-    private RangeSet<LocalDate> getAnnualEmploymentDates(TransactionHistory empTrans) {
-        RangeSet<LocalDate> activeDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectiveEmpStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .map(Map.Entry::getKey)
-                .forEach(activeDates::add);
-        return activeDates;
-    }
-
-    private RangeSet<LocalDate> getActiveEmploymentDates(TransactionHistory empTrans) {
-        RangeSet<LocalDate> annualEmploymentDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectivePayTypes(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> entry.getValue() == PayType.RA || entry.getValue() == PayType.SA)
-                .map(Map.Entry::getKey)
-                .forEach(annualEmploymentDates::add);
-        return annualEmploymentDates;
     }
 
     private void verifyValidPayPeriod(PayPeriod payPeriod) {

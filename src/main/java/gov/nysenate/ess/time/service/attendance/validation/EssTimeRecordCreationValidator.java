@@ -1,8 +1,11 @@
 package gov.nysenate.ess.time.service.attendance.validation;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.RangeSet;
+import com.google.common.collect.TreeRangeSet;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -12,15 +15,12 @@ import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  * {@inheritDoc}
@@ -65,22 +65,10 @@ public class EssTimeRecordCreationValidator implements TimeRecordCreationValidat
         TransactionHistory transHistory = transactionService.getTransHistory(empId);
 
         // Get range set of employed dates
-        RangeSet<LocalDate> empStatusRangeSet =
-                RangeUtils.getEffectiveRanges(
-                        RangeUtils.toRangeMap(transHistory.getEffectiveEmpStatus(Range.all())),
-                        true
-                );
+        RangeSet<LocalDate> empStatusRangeSet = transHistory.getActiveDates();
 
         // Get range set of dates where time entry is required
-        RangeMap<LocalDate, Boolean> perStatRangeMap = transHistory.getEffectivePersonnelStatus(Range.all())
-                .entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(),
-                        entry.getValue().isEmployed() && entry.getValue().isTimeEntryRequired()))
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toMap(Pair::getKey, Pair::getValue, (a, b) -> b, TreeMap::new),
-                        RangeUtils::toRangeMap
-                ));
-        RangeSet<LocalDate> perStatRangeSet = RangeUtils.getEffectiveRanges(perStatRangeMap, true);
+        RangeSet<LocalDate> perStatRangeSet = transHistory.getPerStatusDates(PersonnelStatus::isTimeEntryRequired);
 
         // Get intersection of effective emp status and per status dates
         RangeSet<LocalDate> fullPerStatRangeSet = RangeUtils.intersection(empStatusRangeSet, perStatRangeSet);
