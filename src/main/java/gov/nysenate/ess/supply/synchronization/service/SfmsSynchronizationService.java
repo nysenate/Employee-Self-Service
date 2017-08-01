@@ -1,6 +1,5 @@
 package gov.nysenate.ess.supply.synchronization.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.service.notification.slack.service.SlackChatService;
@@ -45,8 +44,6 @@ public class SfmsSynchronizationService {
     @Autowired
     private SfmsSynchronizationProcedure synchronizationProcedure;
     @Autowired
-    private ObjectMapper xmlObjectMapper;
-    @Autowired
     private DateTimeFactory dateTimeFactory;
     @Autowired
     private SlackChatService slackChatService;
@@ -80,7 +77,7 @@ public class SfmsSynchronizationService {
     private void syncRequisition(Requisition requisition) {
         Requisition sfmsRequisition = filterRequisitionForSfms(requisition);
         try {
-            synchronizationProcedure.synchronizeRequisition(toXml(sfmsRequisition));
+            synchronizationProcedure.synchronizeRequisition(OutputUtils.toXml(new RequisitionView(sfmsRequisition)));
             requisitionService.savedInSfms(sfmsRequisition.getRequisitionId(), true);
         } catch (DataAccessException ex) {
             String msg = "Error synchronizing requisition " + requisition.getRequisitionId()
@@ -121,19 +118,5 @@ public class SfmsSynchronizationService {
                 .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().requiresSynchronization())
                 .collect(Collectors.toSet());
         return requisition.setLineItems(filteredLineItems);
-    }
-
-    /**
-     * Serialize requisition to xml. Does not use {@link OutputUtils} because the SFMS
-     * procedure expects dates to be ISO strings.
-     */
-    private String toXml(Requisition requisition) {
-        String xml = null;
-        try {
-            xml = xmlObjectMapper.writeValueAsString(new RequisitionView(requisition));
-        } catch (JsonProcessingException e) {
-            logger.error("Error serializing requisition with id = " + requisition.getRequisitionId() + ".", e);
-        }
-        return xml;
     }
 }
