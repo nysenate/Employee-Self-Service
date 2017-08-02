@@ -119,13 +119,14 @@ public class SfmsSynchronizationService {
      * These items should not be synchronized with SFMS.
      */
     private List<Requisition> filterRequisitions(List<Requisition> requisitions) {
+        List<Requisition> filtered = new ArrayList<>();
         for (Requisition req : requisitions) {
-            req.setLineItems(filterLineItems(req.getLineItems()));
+            filtered.add(req.setLineItems(lineItemsRequiringSync(req.getLineItems())));
         }
-        return requisitions;
+        return filtered;
     }
 
-    private Set<LineItem> filterLineItems(Set<LineItem> lineItems) {
+    private Set<LineItem> lineItemsRequiringSync(Set<LineItem> lineItems) {
         return lineItems.stream()
                 .filter(lineItem -> lineItem.getQuantity() > 0 && lineItem.getItem().requiresSynchronization())
                 .collect(Collectors.toSet());
