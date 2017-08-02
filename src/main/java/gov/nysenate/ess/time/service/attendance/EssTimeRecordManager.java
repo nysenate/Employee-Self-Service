@@ -8,21 +8,20 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.core.model.personnel.Agency;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
-import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
 import gov.nysenate.ess.time.model.attendance.*;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.notification.TimeRecordManagerEmailService;
@@ -58,7 +57,6 @@ public class EssTimeRecordManager implements TimeRecordManager
 
     /** --- Daos --- */
     @Autowired protected EmployeeDao employeeDao;
-    @Autowired protected TimeRecordDao timeRecordDao;
     @Autowired protected AttendanceDao attendanceDao;
 
     /** --- Services --- */
@@ -358,7 +356,9 @@ public class EssTimeRecordManager implements TimeRecordManager
     private boolean patchEntries(TimeRecord record) {
         boolean modifiedEntries = false;
         // Get effective pay types for the record
-        RangeMap<LocalDate, PayType> payTypes = getPayTypeRangeMap(record.getEmployeeId());
+        RangeMap<LocalDate, PayType> payTypes = RangeUtils.toRangeMap(
+                transService.getTransHistory(record.getEmployeeId())
+                        .getEffectivePayTypes(Range.all()));
 
         // Check the pay types for each entry
         for (TimeEntry entry : record.getTimeEntries()) {
@@ -372,23 +372,6 @@ public class EssTimeRecordManager implements TimeRecordManager
     }
 
     /**
-     * Get a range map containing the effective pay types for all employed dates of the given employee
-     */
-    private RangeMap<LocalDate, PayType> getPayTypeRangeMap(int empId) {
-        return RangeUtils.toRangeMap(
-                transService.getTransHistory(empId).getEffectivePayTypes(Range.all()));
-    }
-
-    /**
-     * Get a range map containing the effective pay types for all employed dates of the given employee
-     */
-    private RangeMap<LocalDate, Boolean> getAccrualRangeMap(int empId) {
-        return RangeUtils.toRangeMap(
-                transService.getTransHistory(empId).getEffectiveAccrualStatus(Range.all()));
-    }
-
-
-    /**
      * Get date ranges corresponding to active record dates over a collection of pay periods
      * Determined by pay periods, supervisor changes, and active dates of service
      */
@@ -400,23 +383,14 @@ public class EssTimeRecordManager implements TimeRecordManager
         Set<LocalDate> newSupDates = transHistory.getEffectiveSupervisorIds(DateUtils.ALL_DATES).keySet();
 
         // Get date ranges where the employee was required to enter time records
-        RangeSet<LocalDate> timeEntryRequiredDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(transHistory.getEffectivePersonnelStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry ->  entry.getValue().isTimeEntryRequired())
-                .map(Map.Entry::getKey)
-                .forEach(timeEntryRequiredDates::add);
+        RangeSet<LocalDate> timeEntryRequiredDates =
+                transHistory.getPerStatusDates(PersonnelStatus::isTimeEntryRequired);
 
         // Get active dates of service
         RangeSet<LocalDate> activeDates = empInfoService.getEmployeeActiveDatesService(empId);
 
         // Get date ranges where the employee was a senator
-        RangeSet<LocalDate> senatorDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(transHistory.getEffectiveAgencyCodes(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> Agency.SENATOR_AGENCY_CODE.equals(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .forEach(senatorDates::add);
+        RangeSet<LocalDate> senatorDates = transHistory.getSenatorDates();
 
         RangeSet<LocalDate> attendanceRecDates = TreeRangeSet.create();
         attendanceRecords.stream().map(AttendanceRecord::getDateRange).forEach(attendanceRecDates::add);

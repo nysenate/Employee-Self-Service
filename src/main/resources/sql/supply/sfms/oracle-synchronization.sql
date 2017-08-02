@@ -219,12 +219,12 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       requisition_xml := XMLTYPE(requisition_xml_string);
 
       -- Extract Requisition data
-      requisition_id := requisition_xml.extract('/RequisitionView/requisitionId/text()').getNumberVal();
-      customer_id := requisition_xml.extract('/RequisitionView/customer/employeeId/text()').getNumberVal();
-      approved_date_time := requisition_xml.extract('/RequisitionView/approvedDateTime/text()').getStringVal();
-      destination_code := requisition_xml.extract('/RequisitionView/destination/code/text()').getStringVal();
-      destination_type := requisition_xml.extract('/RequisitionView/destination/locationTypeCode/text()').getStringVal();
-      issuer_uid := UPPER(requisition_xml.extract('/RequisitionView/issuer/uid/text()').getStringVal());
+      requisition_id := requisition_xml.extract('/Requisition/requisitionId/text()').getNumberVal();
+      customer_id := requisition_xml.extract('/Requisition/customerId/text()').getNumberVal();
+      approved_date_time := requisition_xml.extract('/Requisition/approvedDateTime/text()').getStringVal();
+      destination_code := requisition_xml.extract('/Requisition/destinationCode/text()').getStringVal();
+      destination_type := requisition_xml.extract('/Requisition/destinationTypeCode/text()').getStringVal();
+      issuer_uid := UPPER(requisition_xml.extract('/Requisition/issuerUid/text()').getStringVal());
       responsibility_head := get_responsibility_head(destination_code, destination_type);
 
       -- Ensure this requisition has not been inserted before.
@@ -233,13 +233,18 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
         RAISE_APPLICATION_ERROR(-20001, 'Requisition ' || requisition_id || ' has already been inserted into SFMS.');
       END IF;
 
+      IF requisition_xml.existsNode('//lineItems') = 0
+        THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Requisition ' || requisition_id || ' has no line items or has malformed xml');
+      END IF;
+
       -- Loop through all items in the requisition.
       WHILE requisition_xml.existsNode('//lineItems[' || item_count || ']') = 1
       LOOP
         -- Extract item data.
-        item_id := requisition_xml.extract('//lineItems[' || item_count || ']/item/id/text()').getNumberVal();
+        item_id := requisition_xml.extract('//lineItems[' || item_count || ']/itemId/text()').getNumberVal();
         quantity := requisition_xml.extract('//lineItems[' || item_count || ']/quantity/text()').getNumberVal();
-        issue_unit := requisition_xml.extract('//lineItems[' || item_count || ']/item/unit/text()').getStringVal();
+        issue_unit := requisition_xml.extract('//lineItems[' || item_count || ']/issueUnit/text()').getStringVal();
         nuissue := get_next_nuissue(item_id, destination_code, destination_type, approved_date_time);
         standard_quantity := quantity * get_standard_unit_size(issue_unit);
 

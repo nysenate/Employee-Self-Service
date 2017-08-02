@@ -327,8 +327,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
         TransactionHistory transHistory = empTransService.getTransHistory(empId);
 
-        RangeSet<LocalDate> activeDates = RangeUtils.getEffectiveRanges(
-                transHistory.getEffectiveEmpStatus(Range.all()), true);
+        RangeSet<LocalDate> activeDates = transHistory.getActiveDates();
 
         TreeMap<LocalDate, Integer> effectiveSupervisorIds = transHistory.getEffectiveSupervisorIds(Range.all());
         RangeSet<LocalDate> supervisorDates = RangeUtils.getRangeSet(RangeUtils.toRangeMap(effectiveSupervisorIds));

@@ -3,7 +3,6 @@ package gov.nysenate.ess.core.service.personnel;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
@@ -21,7 +20,6 @@ import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.core.util.RangeUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -100,14 +98,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     @Override
     public RangeSet<LocalDate> getEmployeeActiveDatesService(int empId) {
         TransactionHistory transHistory = transService.getTransHistory(empId);
-        RangeSet<LocalDate> employedDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(transHistory.getEffectiveEmpStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().forEach((range, employed) -> {
-            if (employed) {
-                employedDates.add(range);
-            }
-        });
-        return employedDates;
+        return transHistory.getActiveDates();
     }
 
     /** {@inheritDoc} */

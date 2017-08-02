@@ -93,14 +93,7 @@ public class EssAllowanceService implements AllowanceService {
         List<HourlyWorkPayment> payments = getHourlyPayments(year, transHistory);
 
         // Generate a range set including all dates where the employee was not a temporary employee
-        RangeMap<LocalDate, PayType> payTypeRangeMap =
-                RangeUtils.toRangeMap(transHistory.getEffectivePayTypes(yearRange));
-        RangeSet<LocalDate> nonTempEmploymentDates = TreeRangeSet.create();
-        payTypeRangeMap.asMapOfRanges().entrySet().stream()
-                .filter(entry -> entry.getValue() != PayType.TE)
-                .map(Map.Entry::getKey)
-                .filter(range -> DateUtils.startOfDateRange(range).isBefore(beforeDate))
-                .forEach(nonTempEmploymentDates::add);
+        RangeSet<LocalDate> nonTempEmploymentDates = transHistory.getPayTypeDates(payType -> payType != PayType.TE);
 
         // Initialize unpaid dates as entire year, paid dates will be removed as we iterate through payments
         RangeSet<LocalDate> unpaidDates = TreeRangeSet.create();

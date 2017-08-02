@@ -1,9 +1,11 @@
 package gov.nysenate.ess.time.service.expectedhrs;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableRangeSet;
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeMap;
+import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
-import gov.nysenate.ess.core.model.personnel.Agency;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -23,7 +25,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * @author Brian Heitner
@@ -127,27 +128,14 @@ public class TxExpectedHoursService implements ExpectedHoursService {
      */
     private ImmutableRangeSet<LocalDate> getExpectedHourDates(TransactionHistory empTrans, Range<LocalDate> dateRange) {
         // Get a range set of dates where the employee is employed and required to enter time
-        RangeSet<LocalDate> personnelStatusDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectivePersonnelStatus(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> entry.getValue().isEmployed() && entry.getValue().isTimeEntryRequired())
-                .map(Map.Entry::getKey)
-                .forEach(personnelStatusDates::add);
+        RangeSet<LocalDate> personnelStatusDates = empTrans.getPerStatusDates(
+                perStat -> perStat.isEmployed() && perStat.isTimeEntryRequired()
+        );
 
-        RangeSet<LocalDate> nonSenatorDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectiveAgencyCodes(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> !Agency.SENATOR_AGENCY_CODE.equals(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .forEach(nonSenatorDates::add);
+        RangeSet<LocalDate> nonSenatorDates = empTrans.getSenatorDates().complement();
 
         // Create a range set containing dates where the employee is regular / special annual
-        RangeSet<LocalDate> annualEmploymentDates = TreeRangeSet.create();
-        RangeUtils.toRangeMap(empTrans.getEffectivePayTypes(DateUtils.ALL_DATES))
-                .asMapOfRanges().entrySet().stream()
-                .filter(entry -> entry.getValue() == PayType.RA || entry.getValue() == PayType.SA)
-                .map(Map.Entry::getKey)
-                .forEach(annualEmploymentDates::add);
+        RangeSet<LocalDate> annualEmploymentDates = empTrans.getPayTypeDates(PayType::isBiweekly);
 
         RangeSet<LocalDate> filterRangeSet = ImmutableRangeSet.of(dateRange);
 
