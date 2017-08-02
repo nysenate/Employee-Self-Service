@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 
 /**
  * A view representing a Requisition.
- *
- * Note: The Sfms requisition synchronization depends on the structure and names of some of these fields.
  */
 @XmlRootElement
 public class RequisitionView implements ViewObject {

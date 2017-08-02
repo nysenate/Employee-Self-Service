@@ -8,7 +8,7 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
     protected int id;
     protected String commodityCode;
     protected String description;
-    protected String unit; // * Oracle-Synchronization depends on this field name.
+    protected String unit;
     protected String category;
     protected int perOrderAllowance;
     protected int perMonthAllowance;
