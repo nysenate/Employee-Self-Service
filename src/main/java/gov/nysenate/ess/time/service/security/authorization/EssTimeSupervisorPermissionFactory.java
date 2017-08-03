@@ -12,6 +12,7 @@ import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import gov.nysenate.ess.time.model.personnel.EmployeeSupInfo;
 import gov.nysenate.ess.time.model.personnel.ExtendedSupEmpGroup;
+import gov.nysenate.ess.time.model.personnel.PrimarySupEmpGroup;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.apache.shiro.authz.Permission;
@@ -71,7 +72,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
                 .forEach(supPermissions::add);
 
         // Add permissions to view supervisor information for primary employees
-        supEmpGroup.getPrimaryEmpSupInfos().stream()
+        supEmpGroup.getEmployeeSupEmpGroups().values().stream()
                 .map(this::getSupervisorPermissions)
                 .flatMap(Collection::stream)
                 .forEach(supPermissions::add);
@@ -122,9 +123,9 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
      * @param supInfo {@link EmployeeSupInfo}
      * @return List<Permission>
      */
-    private List<Permission> getSupervisorPermissions(EmployeeSupInfo supInfo) {
-        int empId = supInfo.getEmpId();
-        Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
+    private List<Permission> getSupervisorPermissions(PrimarySupEmpGroup supInfo) {
+        int empId = supInfo.getSupervisorId();
+        Range<LocalDate> effectiveRange = supInfo.getActiveDateRange();
         return Arrays.asList(
                 new EssTimePermission(empId, SUPERVISOR_EMPLOYEES, GET, effectiveRange),
                 new EssTimePermission(empId, SUPERVISOR_OVERRIDES, GET, effectiveRange),
