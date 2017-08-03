@@ -114,10 +114,12 @@ public class ContactBatchFactory {
             if (emergencyNotificationInfo.getHomePhone() != null) {
                 cpl.addContactPoint(homePhoneContactPoint(emergencyNotificationInfo));
             }
-            if (emergencyNotificationInfo.getMobilePhone() != null) {
+            if (emergencyNotificationInfo.getMobilePhone() != null &&
+                    emergencyNotificationInfo.getMobileOptions().isCallable()) {
                 cpl.addContactPoint(mobilePhoneContactPoint(emergencyNotificationInfo));
             }
-            if (emergencyNotificationInfo.isSmsSubscribed()) {
+            if (emergencyNotificationInfo.getMobilePhone() != null &&
+                    emergencyNotificationInfo.getMobileOptions().isTextable()) {
                 cpl.addContactPoint(textMessageContactPoint(emergencyNotificationInfo));
             }
             if (emergencyNotificationInfo.getPersonalEmail() != null) {

@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo;
+import gov.nysenate.ess.core.model.emergency_notification.MobileContactOptions;
 import gov.nysenate.ess.core.model.personnel.Employee;
 
 public class EmergencyNotificationInfoView implements ViewObject {
@@ -14,7 +15,7 @@ public class EmergencyNotificationInfoView implements ViewObject {
     private String mobilePhone;
     private String alternatePhone;
 
-    private boolean smsSubscribed;
+    private MobileContactOptions mobileOptions;
 
     private String workEmail;
 
@@ -32,7 +33,7 @@ public class EmergencyNotificationInfoView implements ViewObject {
         this.mobilePhone = eni.getMobilePhone();
         this.alternatePhone = eni.getAlternatePhone();
 
-        this.smsSubscribed = eni.isSmsSubscribed();
+        this.mobileOptions = eni.getMobileOptions();
 
         this.workEmail = employee.getEmail();
         this.personalEmail = eni.getPersonalEmail();
@@ -45,7 +46,7 @@ public class EmergencyNotificationInfoView implements ViewObject {
                 .setHomePhone(stripFormatting(homePhone))
                 .setMobilePhone(stripFormatting(mobilePhone))
                 .setAlternatePhone(stripFormatting(alternatePhone))
-                .setSmsSubscribed(smsSubscribed)
+                .setMobileOptions(mobileOptions)
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(alternateEmail)
                 .build();
@@ -88,8 +89,8 @@ public class EmergencyNotificationInfoView implements ViewObject {
         return alternatePhone;
     }
 
-    public boolean isSmsSubscribed() {
-        return smsSubscribed;
+    public MobileContactOptions getMobileOptions() {
+        return mobileOptions;
     }
 
     public String getWorkEmail() {

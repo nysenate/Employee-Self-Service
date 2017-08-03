@@ -3,12 +3,14 @@ package gov.nysenate.ess.core.dao.emergency_notification;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo;
 import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfoNotFound;
+import gov.nysenate.ess.core.model.emergency_notification.MobileContactOptions;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo.EmergencyNotificationInfoBuilder;
 import static gov.nysenate.ess.core.dao.emergency_notification.SqlEmergencyNotificationInfoQuery.*;
@@ -58,7 +60,9 @@ public class SqlEmergencyNotificationInfoDao extends SqlBaseDao implements Emerg
         builder.setHomePhone(rs.getString("phone_home"));
         builder.setMobilePhone(rs.getString("phone_mobile"));
         builder.setAlternatePhone(rs.getString("phone_alternate"));
-        builder.setSmsSubscribed(rs.getBoolean("sms_subscribed"));
+        builder.setMobileOptions(Optional.ofNullable(rs.getString("mobile_options"))
+                .map(MobileContactOptions::valueOf)
+                .orElse(null));
         builder.setPersonalEmail(rs.getString("email_personal"));
         builder.setAlternateEmail(rs.getString("email_alternate"));
         return builder.build();
@@ -70,7 +74,7 @@ public class SqlEmergencyNotificationInfoDao extends SqlBaseDao implements Emerg
         params.addValue("homePhone", eni.getHomePhone());
         params.addValue("mobilePhone", eni.getMobilePhone());
         params.addValue("alternatePhone", eni.getAlternatePhone());
-        params.addValue("smsSubscribed", eni.isSmsSubscribed());
+        params.addValue("mobileOptions", String.valueOf(eni.getMobileOptions()));
         params.addValue("personalEmail", eni.getPersonalEmail());
         params.addValue("alternateEmail", eni.getAlternateEmail());
         return params;

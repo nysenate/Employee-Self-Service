@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo;
 import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfoNotFound;
+import gov.nysenate.ess.core.model.emergency_notification.MobileContactOptions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +102,7 @@ public class EmergencyNotificationInfoDaoIT extends BaseTest {
                 .setHomePhone(numberGenerator.get())
                 .setMobilePhone(numberGenerator.get())
                 .setAlternatePhone(numberGenerator.get())
-                .setSmsSubscribed(random.nextBoolean())
+                .setMobileOptions(MobileContactOptions.values()[random.nextInt(MobileContactOptions.values().length)])
                 .setPersonalEmail(numberGenerator.get())
                 .setAlternateEmail(numberGenerator.get())
                 .build();

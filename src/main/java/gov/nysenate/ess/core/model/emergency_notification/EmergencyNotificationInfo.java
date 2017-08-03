@@ -13,7 +13,7 @@ public class EmergencyNotificationInfo {
     private String mobilePhone;
     private String alternatePhone;
 
-    private boolean smsSubscribed;
+    private MobileContactOptions mobileOptions;
 
     private String personalEmail;
     private String alternateEmail;
@@ -29,7 +29,7 @@ public class EmergencyNotificationInfo {
         if (!(o instanceof EmergencyNotificationInfo)) return false;
         EmergencyNotificationInfo that = (EmergencyNotificationInfo) o;
         return empId == that.empId &&
-                smsSubscribed == that.smsSubscribed &&
+                mobileOptions == that.mobileOptions &&
                 Objects.equal(homePhone, that.homePhone) &&
                 Objects.equal(mobilePhone, that.mobilePhone) &&
                 Objects.equal(alternatePhone, that.alternatePhone) &&
@@ -40,7 +40,7 @@ public class EmergencyNotificationInfo {
     @Override
     public int hashCode() {
         return Objects.hashCode(empId, homePhone, mobilePhone, alternatePhone,
-                smsSubscribed, personalEmail, alternateEmail);
+                mobileOptions, personalEmail, alternateEmail);
     }
 
     /* --- Builder --- */
@@ -81,8 +81,8 @@ public class EmergencyNotificationInfo {
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setSmsSubscribed(boolean smsSubscribed) {
-            eni.smsSubscribed = smsSubscribed;
+        public EmergencyNotificationInfoBuilder setMobileOptions(MobileContactOptions mobileOptions) {
+            eni.mobileOptions = mobileOptions;
             return this;
         }
 
@@ -116,8 +116,8 @@ public class EmergencyNotificationInfo {
         return alternatePhone;
     }
 
-    public boolean isSmsSubscribed() {
-        return smsSubscribed;
+    public MobileContactOptions getMobileOptions() {
+        return mobileOptions;
     }
 
     public String getPersonalEmail() {

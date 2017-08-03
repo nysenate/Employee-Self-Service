@@ -7,7 +7,7 @@ public enum SqlEmergencyNotificationInfoQuery implements BasicSqlQuery {
 
     GET_EMERGENCY_NOTIFICATION_INFO (
         "SELECT employee_id, phone_home, phone_mobile, phone_alternate,\n" +
-        "  sms_subscribed, email_personal, email_alternate\n" +
+        "  mobile_options, email_personal, email_alternate\n" +
         "FROM ${essSchema}.emergency_notification_info"
     ),
 
@@ -19,15 +19,16 @@ public enum SqlEmergencyNotificationInfoQuery implements BasicSqlQuery {
     INSERT_EMERGENCY_NOTIFICATION_INFO (
         "INSERT INTO ${essSchema}.emergency_notification_info\n" +
         "       ( employee_id, phone_home, phone_mobile, phone_alternate,\n" +
-        "        sms_subscribed, email_personal, email_alternate)\n" +
+        "        mobile_options, email_personal, email_alternate)\n" +
         "VALUES (:empId,      :homePhone, :mobilePhone, :alternatePhone,\n" +
-        "       :smsSubscribed, :personalEmail, :alternateEmail)"
+        "       :mobileOptions::mobile_contact_options, :personalEmail, :alternateEmail)"
     ),
 
     UPDATE_EMERGENCY_NOTIFICATION_INFO(
         "UPDATE ${essSchema}.emergency_notification_info\n" +
         "SET phone_home = :homePhone, phone_mobile = :mobilePhone, phone_alternate = :alternatePhone,\n" +
-        "  sms_subscribed = :smsSubscribed, email_personal = :personalEmail, email_alternate = :alternateEmail\n" +
+        "  mobile_options = :mobileOptions::mobile_contact_options, email_personal = :personalEmail,\n" +
+        "  email_alternate = :alternateEmail\n" +
         "WHERE employee_id = :empId"
     ),
 
