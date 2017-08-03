@@ -1,10 +1,10 @@
 
 angular.module('essMyInfo')
-    .controller('EmergencyNotificationCtrl', ['$scope', '$timeout', '$filter', 'appProps', 'EmergencyNotificationInfoApi',
-                                              emergencyNotificationCtrl])
+    .controller('AlertCtrl', ['$scope', '$timeout', '$filter', 'appProps', 'AlertInfoApi',
+                                              alertCtrl])
     ;
 
-function emergencyNotificationCtrl($scope, $timeout, $filter, appProps, eniApi) {
+function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
 
     $scope.telPattern = /^ *(\([0-9]{3}\)|[0-9]{3} *-?) *[0-9]{3} *-? *[0-9]{4} *$/;
     $scope.phoneErrorMsg = "Please enter a valid phone number";
@@ -14,21 +14,21 @@ function emergencyNotificationCtrl($scope, $timeout, $filter, appProps, eniApi) 
         name: appProps.user.fullName,
         empId: appProps.user.employeeId,
         request: {},
-        eni: null
+        alertInfo: null
     };
 
     /* --- Initialization --- */
 
     function init() {
         $scope.state = angular.extend(initialState);
-        return getENI();
+        return getAlertInfo();
     }
 
     init();
 
     /* --- Display Methods --- */
 
-    $scope.saveENI = saveENI;
+    $scope.saveAlertInfo = saveAlertInfo;
 
     $scope.isLoading = function () {
         var loading = false;
@@ -41,36 +41,36 @@ function emergencyNotificationCtrl($scope, $timeout, $filter, appProps, eniApi) 
     /* --- Api Methods --- */
 
     /**
-     * Retrieves the user's emergency notification info
+     * Retrieves the user's alert info
      */
-    function getENI() {
+    function getAlertInfo() {
         var params = {
             empId: $scope.state.empId
         };
-        $scope.state.request.loadingEni = true;
-        return eniApi.get(params, onSuccess, $scope.handleErrorResponse)
+        $scope.state.request.loadingAlertInfo = true;
+        return alertInfoApi.get(params, onSuccess, $scope.handleErrorResponse)
             .$promise
             .finally(postRequest);
 
         function onSuccess(resp) {
-            $scope.state.eni = resp.result;
-            $scope.state.eni.homePhone = $filter('phoneNumber')($scope.state.eni.homePhone);
-            $scope.state.eni.mobilePhone = $filter('phoneNumber')($scope.state.eni.mobilePhone);
-            $scope.state.eni.alternatePhone = $filter('phoneNumber')($scope.state.eni.alternatePhone);
+            $scope.state.alertInfo = resp.result;
+            $scope.state.alertInfo.homePhone = $filter('phoneNumber')($scope.state.alertInfo.homePhone);
+            $scope.state.alertInfo.mobilePhone = $filter('phoneNumber')($scope.state.alertInfo.mobilePhone);
+            $scope.state.alertInfo.alternatePhone = $filter('phoneNumber')($scope.state.alertInfo.alternatePhone);
         }
 
         function postRequest() {
-            $scope.state.request.loadingEni = false;
+            $scope.state.request.loadingAlertInfo = false;
         }
     }
 
     /**
-     * Saves the current ENI and reinitializes the page
+     * Saves the current alert info and reinitialize the page
      */
-    function saveENI() {
-        $scope.state.request.savingEni = true;
+    function saveAlertInfo() {
+        $scope.state.request.savingAlertInfo = true;
 
-        return eniApi.save({}, $scope.state.eni, onSuccess, $scope.handleErrorResponse)
+        return alertInfoApi.save({}, $scope.state.alertInfo, onSuccess, $scope.handleErrorResponse)
             .$promise
             .then(init)
             .then(setSaved)
@@ -80,7 +80,7 @@ function emergencyNotificationCtrl($scope, $timeout, $filter, appProps, eniApi) 
         }
 
         function postRequest() {
-            $scope.state.request.savingEni = false;
+            $scope.state.request.savingAlertInfo = false;
         }
     }
 

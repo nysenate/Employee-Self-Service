@@ -1,11 +1,11 @@
-package gov.nysenate.ess.core.model.emergency_notification;
+package gov.nysenate.ess.core.model.alert;
 
 import com.google.common.base.Objects;
 
 /**
  * Contains contact info for an employee to be used in case of an emergency
  */
-public class EmergencyNotificationInfo {
+public class AlertInfo {
 
     private int empId;
 
@@ -19,15 +19,15 @@ public class EmergencyNotificationInfo {
     private String alternateEmail;
 
 
-    private EmergencyNotificationInfo() {}
+    private AlertInfo() {}
 
     /* --- Overrides --- */
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EmergencyNotificationInfo)) return false;
-        EmergencyNotificationInfo that = (EmergencyNotificationInfo) o;
+        if (!(o instanceof AlertInfo)) return false;
+        AlertInfo that = (AlertInfo) o;
         return empId == that.empId &&
                 mobileOptions == that.mobileOptions &&
                 Objects.equal(homePhone, that.homePhone) &&
@@ -45,54 +45,54 @@ public class EmergencyNotificationInfo {
 
     /* --- Builder --- */
 
-    public static EmergencyNotificationInfoBuilder builder() {
-        return new EmergencyNotificationInfoBuilder();
+    public static AlertInfoBuilder builder() {
+        return new AlertInfoBuilder();
     }
 
-    public static class EmergencyNotificationInfoBuilder {
+    public static class AlertInfoBuilder {
 
-        private EmergencyNotificationInfo eni;
+        private AlertInfo alertInfo;
 
-        private EmergencyNotificationInfoBuilder() {
-            eni = new EmergencyNotificationInfo();
+        private AlertInfoBuilder() {
+            alertInfo = new AlertInfo();
         }
 
-        public EmergencyNotificationInfo build() {
-            return eni;
+        public AlertInfo build() {
+            return alertInfo;
         }
 
-        public EmergencyNotificationInfoBuilder setEmpId(int empId) {
-            eni.empId = empId;
+        public AlertInfoBuilder setEmpId(int empId) {
+            alertInfo.empId = empId;
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setHomePhone(String homePhone) {
-            eni.homePhone = homePhone;
+        public AlertInfoBuilder setHomePhone(String homePhone) {
+            alertInfo.homePhone = homePhone;
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setMobilePhone(String mobilePhone) {
-            eni.mobilePhone = mobilePhone;
+        public AlertInfoBuilder setMobilePhone(String mobilePhone) {
+            alertInfo.mobilePhone = mobilePhone;
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setAlternatePhone(String alternatePhone) {
-            eni.alternatePhone = alternatePhone;
+        public AlertInfoBuilder setAlternatePhone(String alternatePhone) {
+            alertInfo.alternatePhone = alternatePhone;
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setMobileOptions(MobileContactOptions mobileOptions) {
-            eni.mobileOptions = mobileOptions;
+        public AlertInfoBuilder setMobileOptions(MobileContactOptions mobileOptions) {
+            alertInfo.mobileOptions = mobileOptions;
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setPersonalEmail(String personalEmail) {
-            eni.personalEmail = personalEmail;
+        public AlertInfoBuilder setPersonalEmail(String personalEmail) {
+            alertInfo.personalEmail = personalEmail;
             return this;
         }
 
-        public EmergencyNotificationInfoBuilder setAlternateEmail(String alternateEmail) {
-            eni.alternateEmail = alternateEmail;
+        public AlertInfoBuilder setAlternateEmail(String alternateEmail) {
+            alertInfo.alternateEmail = alternateEmail;
             return this;
         }
 

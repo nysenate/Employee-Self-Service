@@ -1,11 +1,11 @@
 package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo;
-import gov.nysenate.ess.core.model.emergency_notification.MobileContactOptions;
+import gov.nysenate.ess.core.model.alert.AlertInfo;
+import gov.nysenate.ess.core.model.alert.MobileContactOptions;
 import gov.nysenate.ess.core.model.personnel.Employee;
 
-public class EmergencyNotificationInfoView implements ViewObject {
+public class AlertInfoView implements ViewObject {
 
     private int empId;
 
@@ -22,26 +22,26 @@ public class EmergencyNotificationInfoView implements ViewObject {
     private String personalEmail;
     private String alternateEmail;
 
-    private EmergencyNotificationInfoView() {}
+    private AlertInfoView() {}
 
-    public EmergencyNotificationInfoView(EmergencyNotificationInfo eni, Employee employee) {
-        this.empId = eni.getEmpId();
+    public AlertInfoView(AlertInfo alertInfo, Employee employee) {
+        this.empId = alertInfo.getEmpId();
 
         this.workPhone = employee.getWorkPhone();
 
-        this.homePhone = eni.getHomePhone();
-        this.mobilePhone = eni.getMobilePhone();
-        this.alternatePhone = eni.getAlternatePhone();
+        this.homePhone = alertInfo.getHomePhone();
+        this.mobilePhone = alertInfo.getMobilePhone();
+        this.alternatePhone = alertInfo.getAlternatePhone();
 
-        this.mobileOptions = eni.getMobileOptions();
+        this.mobileOptions = alertInfo.getMobileOptions();
 
         this.workEmail = employee.getEmail();
-        this.personalEmail = eni.getPersonalEmail();
-        this.alternateEmail = eni.getAlternateEmail();
+        this.personalEmail = alertInfo.getPersonalEmail();
+        this.alternateEmail = alertInfo.getAlternateEmail();
     }
 
-    public EmergencyNotificationInfo toEmergencyNotificationInfo() {
-        return EmergencyNotificationInfo.builder()
+    public AlertInfo toAlertInfo() {
+        return AlertInfo.builder()
                 .setEmpId(empId)
                 .setHomePhone(stripFormatting(homePhone))
                 .setMobilePhone(stripFormatting(mobilePhone))
@@ -66,7 +66,7 @@ public class EmergencyNotificationInfoView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "emergency-notification-info";
+        return "alert-info";
     }
 
     public int getEmpId() {

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.model.emergency_notification;
+package gov.nysenate.ess.core.model.alert;
 
 /**
  * Enumerates different options for mobile phone alert subscriptions.

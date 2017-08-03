@@ -5,14 +5,14 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
-import gov.nysenate.ess.core.client.view.EmergencyNotificationInfoView;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatchFactory;
-import gov.nysenate.ess.core.dao.emergency_notification.EmergencyNotificationInfoDao;
+import gov.nysenate.ess.core.client.view.AlertInfoView;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch;
+import gov.nysenate.ess.core.client.view.alert.ContactBatchFactory;
+import gov.nysenate.ess.core.dao.alert.AlertInfoDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
-import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo;
-import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfoNotFound;
+import gov.nysenate.ess.core.model.alert.AlertInfo;
+import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -32,86 +32,86 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
- * API controller responsible for viewing and saving emergency notification contact info
+ * API controller responsible for viewing and saving alert contact info
  */
 @RestController
-@RequestMapping(value = BaseRestApiCtrl.REST_PATH + "emergency-notification-info")
-public class EmergencyNotificationInfoCtrl extends BaseRestApiCtrl {
+@RequestMapping(value = BaseRestApiCtrl.REST_PATH + "alert-info")
+public class AlertInfoCtrl extends BaseRestApiCtrl {
 
-    @Autowired private EmergencyNotificationInfoDao eniDao;
+    @Autowired private AlertInfoDao alertInfoDao;
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
-     * Get Emergency Notification Info API
+     * Get Alert Info API
      * ------------------------------------
      *
-     * Get emergency notification info for an employee:
-     *      (POST) /api/v1/emergency-notification-info
+     * Get alert info for an employee:
+     *      (POST) /api/v1/alert-info
      *
      * Request Params:
      * @param empId int - required - the employee id whose emerg. notif. info will be retrieved
      */
     @RequestMapping(value = "", method = {GET, HEAD})
-    public ViewObjectResponse<EmergencyNotificationInfoView> getEmergencyNotificationInfo(
+    public ViewObjectResponse<AlertInfoView> getAlertInfo(
             @RequestParam int empId ) {
 
         checkPermission(new CorePermission(empId, CorePermissionObject.EMPLOYEE_INFO, GET));
 
-        EmergencyNotificationInfo eni;
+        AlertInfo alertInfo;
         try {
-            eni = eniDao.getEmergencyNotificationInfo(empId);
-        } catch (EmergencyNotificationInfoNotFound ex) {
-            eni = getEmptyENI(empId);
+            alertInfo = alertInfoDao.getAlertInfo(empId);
+        } catch (AlertInfoNotFound ex) {
+            alertInfo = getEmptyAlertInfo(empId);
         }
         Employee employee = employeeInfoService.getEmployee(empId);
 
-        EmergencyNotificationInfoView eniView = new EmergencyNotificationInfoView(eni, employee);
+        AlertInfoView alertInfoView = new AlertInfoView(alertInfo, employee);
 
-        return new ViewObjectResponse<>(eniView);
+        return new ViewObjectResponse<>(alertInfoView);
     }
 
     /**
-     * Save Emergency Notification Info API
+     * Save Alert Info API
      * ------------------------------------
      *
-     * Save emergency notification info:
-     *      (POST) /api/v1/emergency-notification-info
+     * Save alert info:
+     *      (POST) /api/v1/-alert-info
      *
-     * Post Data: json {@link EmergencyNotificationInfoView}
+     * Post Data: json {@link AlertInfoView}
      */
     @RequestMapping(value = "", method = POST)
-    public BaseResponse saveEmergencyNotificationInfo(@RequestBody EmergencyNotificationInfoView eni) {
+    public BaseResponse saveAlertInfo(@RequestBody AlertInfoView alertInfoView) {
 
-        checkPermission(new CorePermission(eni.getEmpId(), CorePermissionObject.EMPLOYEE_INFO, POST));
+        checkPermission(new CorePermission(alertInfoView.getEmpId(), CorePermissionObject.EMPLOYEE_INFO, POST));
 
-        EmergencyNotificationInfo emergencyNotificationInfo = eni.toEmergencyNotificationInfo();
+        AlertInfo alertInfo = alertInfoView.toAlertInfo();
 
-        eniDao.updateEmergencyNotificationInfo(emergencyNotificationInfo);
+        alertInfoDao.updateAlertInfo(alertInfo);
 
         return new SimpleResponse(
                 true,
-                "emergency notification info updated",
-                "eni-update-success");
+                "alert info updated",
+                "alert-info-update-success");
     }
 
     /**
-     * Get Emergency Notification Contact List Dump Api
+     * Get Alert Contact List Dump Api
      * ------------------------------------
      *
      * Requires Admin permissions.
      *
-     * Get emergency notification info for all active senate employees:
-     *      (GET) /api/v1/emergency-notification-info/contact-dump
+     * Get alert info for all active senate employees:
+     *      (GET) /api/v1/alert-info/contact-dump
      */
     @RequestMapping(value = "contact-dump", method = RequestMethod.GET)
     public ContactBatch generateContactList() {
         checkPermission(new WildcardPermission("admin"));
 
-        List<EmergencyNotificationInfo> enis = eniDao.getAllEmergencyNotificationInfo();
-        Map<Integer, EmergencyNotificationInfo> enisMap = enis.stream()
-                .collect(Collectors.toMap(EmergencyNotificationInfo::getEmpId, Function.identity()));
+        List<AlertInfo> alertInfos = alertInfoDao.getAllAlertInfo();
+        Map<Integer, AlertInfo> alertInfoMap = alertInfos.stream()
+                .collect(Collectors.toMap(AlertInfo::getEmpId, Function.identity()));
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
-        return ContactBatchFactory.create(employees, enisMap);
+        return ContactBatchFactory.create(employees, alertInfoMap);
     }
 
     @ExceptionHandler(EmployeeNotFoundEx.class)
@@ -123,8 +123,8 @@ public class EmergencyNotificationInfoCtrl extends BaseRestApiCtrl {
 
     /* --- Internal Methods --- */
 
-    private EmergencyNotificationInfo getEmptyENI(int empId) {
-        return EmergencyNotificationInfo.builder()
+    private AlertInfo getEmptyAlertInfo(int empId) {
+        return AlertInfo.builder()
                 .setEmpId(empId)
                 .build();
     }
