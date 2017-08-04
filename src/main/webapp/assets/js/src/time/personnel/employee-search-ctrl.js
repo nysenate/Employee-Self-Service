@@ -11,15 +11,11 @@ function employeeSearchCtrl($scope, modals, allowanceUtils, accrualPeriodApi, al
 
     function getAccruals () {
         $scope.accruals = null;
-        if (!$scope.selectedEmp) {
-            return;
-        }
 
-        if ($scope.selectedEmp.senator) {
-            return;
-        }
-
-        if (['RA', 'SA'].indexOf($scope.selectedEmp.payType) < 0) {
+        // Cancel if employee is not eligible for accruals
+        if (!$scope.selectedEmp || $scope.selectedEmp.senator ||
+            ['RA', 'SA'].indexOf($scope.selectedEmp.payType) < 0 ||
+            !$scope.selectedEmp.active) {
             return;
         }
 
@@ -48,15 +44,10 @@ function employeeSearchCtrl($scope, modals, allowanceUtils, accrualPeriodApi, al
     function getAllowance () {
         $scope.allowance = null;
 
-        if (!$scope.selectedEmp) {
-            return;
-        }
-
-        if ($scope.selectedEmp.senator) {
-            return;
-        }
-
-        if ($scope.selectedEmp.payType !== 'TE') {
+        // Cancel if employee is not eligible for allowance
+        if (!$scope.selectedEmp || $scope.selectedEmp.senator ||
+            $scope.selectedEmp.payType !== 'TE' ||
+            !$scope.selectedEmp.active) {
             return;
         }
 
