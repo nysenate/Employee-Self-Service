@@ -17,6 +17,7 @@ public class Employee extends Person
     protected int employeeId;
     protected int supervisorId;
     protected boolean active;
+    protected PersonnelStatus personnelStatus;
     protected String uid;
     protected String jobTitle;
     protected PayType payType;
@@ -67,6 +68,7 @@ public class Employee extends Person
         return employeeId == employee.employeeId &&
                 supervisorId == employee.supervisorId &&
                 active == employee.active &&
+                personnelStatus == employee.personnelStatus &&
                 Objects.equal(uid, employee.uid) &&
                 Objects.equal(jobTitle, employee.jobTitle) &&
                 payType == employee.payType &&
@@ -79,7 +81,7 @@ public class Employee extends Person
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(employeeId, supervisorId, active, uid, jobTitle, payType, nid,
+        return Objects.hashCode(employeeId, supervisorId, active, personnelStatus, uid, jobTitle, payType, nid,
                 respCenter, workLocation, updateDateTime, senateContServiceDate);
     }
 
@@ -120,6 +122,14 @@ public class Employee extends Person
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public PersonnelStatus getPersonnelStatus() {
+        return personnelStatus;
+    }
+
+    public void setPersonnelStatus(PersonnelStatus personnelStatus) {
+        this.personnelStatus = personnelStatus;
     }
 
     public String getUid() {

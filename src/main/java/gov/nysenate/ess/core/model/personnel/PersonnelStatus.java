@@ -1,8 +1,11 @@
 package gov.nysenate.ess.core.model.personnel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Enumerates all possible employee statuses
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum PersonnelStatus {
 
     /**

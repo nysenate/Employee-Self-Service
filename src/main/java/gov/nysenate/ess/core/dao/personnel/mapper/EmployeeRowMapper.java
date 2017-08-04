@@ -7,11 +7,13 @@ import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.Gender;
 import gov.nysenate.ess.core.model.personnel.MaritalStatus;
+import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static gov.nysenate.ess.core.dao.base.SqlBaseDao.getLocalDate;
@@ -38,6 +40,9 @@ public class EmployeeRowMapper extends BaseRowMapper<Employee>
         emp.setEmployeeId(rs.getInt(pfx + "NUXREFEM"));
         emp.setSupervisorId(rs.getInt(pfx + "NUXREFSV"));
         emp.setActive(rs.getString(pfx + "CDEMPSTATUS").equals("A"));
+        emp.setPersonnelStatus(Optional.ofNullable(rs.getString(pfx + "CDSTATPER"))
+                .map(PersonnelStatus::valueOf)
+                .orElse(null));
         emp.setFirstName(rs.getString(pfx + "FFNAFIRST"));
         emp.setInitial(rs.getString(pfx + "FFNAMIDINIT"));
         emp.setLastName(rs.getString(pfx + "FFNALAST"));
