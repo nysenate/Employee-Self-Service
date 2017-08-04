@@ -166,12 +166,6 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                                                         TreeMap<PayPeriod, PeriodAccSummary> periodAccruals) {
 
         TransactionHistory empTrans = empTransService.getTransHistory(empId);
-        RangeSet<LocalDate> activeDates = empTrans.getActiveDates();
-
-        // Filter out periods where the employee is not employed
-        remainingPeriods = remainingPeriods.stream()
-                .filter(period -> RangeUtils.intersects(activeDates, period.getDateRange()))
-                .collect(Collectors.toCollection(TreeSet::new));
 
         // Do not proceed if there are no eligible gap periods
         if (remainingPeriods.isEmpty()) {
@@ -188,7 +182,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // Attempt to compute an initial annual accrual summary if none exists
         if (annualAcc.isEmpty()) {
-            if (RangeUtils.intersects(accrualAllowedDates, remainingPeriods.first().getDateRange())) {
+            if (accrualAllowedDates.intersects(remainingPeriods.first().getDateRange())) {
                 AnnualAccSummary annualAccSummary = computeInitialAnnualAccSummary(empTrans);
                 annualAcc.put(annualAccSummary.getYear(), annualAccSummary);
             } else {
@@ -252,7 +246,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             computeGapPeriodAccruals(period, accrualState, empTrans,
                     timeRecords, periodUsages, accrualAllowedDates, expectedHourDates);
 
-            if (accrualState.isEmpAccruing() && remainingPeriods.contains(period)) {
+            if (remainingPeriods.contains(period)) {
                 PeriodAccSummary periodAccSummary = accrualState.toPeriodAccrualSummary(refPeriod, period);
                 gapAccruals.add(periodAccSummary);
             }
@@ -428,7 +422,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
         // If the employee was not allowed to accrue during the gap period, don't increment accruals
-        if (!RangeUtils.intersects(accrualAllowedDates, gapPeriodRange)) {
+        if (!accrualAllowedDates.intersects(gapPeriodRange)) {
             accrualState.setEmpAccruing(false);
         } else {
             accrualState.setEmpAccruing(true);

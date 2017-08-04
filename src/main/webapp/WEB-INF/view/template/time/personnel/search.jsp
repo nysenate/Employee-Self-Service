@@ -17,9 +17,9 @@
     </ess-notification>
 
     <div ng-if="selectedEmp.active">
-      <accrual-bar accruals="accruals" loading="loadingAccruals"></accrual-bar>
+      <accrual-bar ng-if="accruals" accruals="accruals" loading="loadingAccruals"></accrual-bar>
 
-      <allowance-bar allowance="allowance" loading="loadingAllowance"
+      <allowance-bar ng-if="allowance" allowance="allowance" loading="loadingAllowance"
                      class="margin-top-10"></allowance-bar>
     </div>
 
