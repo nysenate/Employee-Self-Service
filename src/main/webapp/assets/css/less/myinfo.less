@@ -42,13 +42,17 @@
       text-align: left;
       padding-bottom: 30px;
 
+      & > * {
+        position: relative;
+      }
+
       & > label {
         text-align: right;
         width: 15%;
         margin: 0.7em 1em 0.7em 0;
       }
 
-      & > input {
+      & > input, .check-box-container {
         width: 40%;
       }
 
@@ -57,13 +61,6 @@
       }
 
       .check-box-container {
-        width: 100%;
-        padding-left: 15%;
-
-        input {
-          margin-left: 1em;
-        }
-
         label {
           margin-left: 5px;
         }
@@ -76,7 +73,7 @@
         margin: 0 0 0 5px;
       }
 
-      input.ng-invalid + .alert-info-error-text {
+      .ng-invalid + .alert-info-error-text {
         opacity: 1;
       }
     }

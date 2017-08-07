@@ -36,12 +36,23 @@
                ng-pattern="telPattern" ng-model="state.alertInfo.mobilePhone">
         <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
 
-        <div class="check-box-container">
-          <input type="checkbox" id="text-alerts"
-                 ng-model="state.alertInfo.smsSubscribed"
+        <label></label>
+        <div class="check-box-container"
+             ng-class="{'ng-invalid': !validMobileOptions()}">
+          <input type="checkbox" id="mobile-callable"
+                 ng-model="state.alertInfo.mobileCallable"
                  ng-disabled="!state.alertInfo.mobilePhone">
-          <label for="text-alerts">Receive Texts on Mobile</label>
+          <label for="mobile-callable">Receive Calls on Mobile</label>
+          <br>
+          <input type="checkbox" id="mobile-textable"
+                 ng-model="state.alertInfo.mobileTextable"
+                 ng-disabled="!state.alertInfo.mobilePhone">
+          <label for="mobile-textable">Receive Texts on Mobile</label>
         </div>
+        <p class="alert-info-error-text">
+          You must opt to receive calls or texts<br>
+          if a mobile number is provided.
+        </p>
       </div>
 
       <h3 class="col-1-4">Email</h3>
@@ -63,7 +74,7 @@
         <input type="button" class="submit-button"
                title="Save Alert Info" value="Save"
                ng-click="saveAlertInfo()"
-               ng-disabled="alertInfoForm.$invalid || alertInfoForm.$pristine">
+               ng-disabled="alertInfoForm.$invalid || alertInfoForm.$pristine || !validMobileOptions()">
       </div>
     </form>
   </div>

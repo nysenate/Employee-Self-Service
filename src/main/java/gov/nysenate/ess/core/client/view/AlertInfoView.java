@@ -15,7 +15,8 @@ public class AlertInfoView implements ViewObject {
     private String mobilePhone;
     private String alternatePhone;
 
-    private MobileContactOptions mobileOptions;
+    private boolean mobileCallable;
+    private boolean mobileTextable;
 
     private String workEmail;
 
@@ -33,7 +34,9 @@ public class AlertInfoView implements ViewObject {
         this.mobilePhone = alertInfo.getMobilePhone();
         this.alternatePhone = alertInfo.getAlternatePhone();
 
-        this.mobileOptions = alertInfo.getMobileOptions();
+        MobileContactOptions mobileOptions = alertInfo.getMobileOptions();
+        this.mobileCallable = mobileOptions.isCallable();
+        this.mobileTextable = mobileOptions.isTextable();
 
         this.workEmail = employee.getEmail();
         this.personalEmail = alertInfo.getPersonalEmail();
@@ -46,7 +49,7 @@ public class AlertInfoView implements ViewObject {
                 .setHomePhone(stripFormatting(homePhone))
                 .setMobilePhone(stripFormatting(mobilePhone))
                 .setAlternatePhone(stripFormatting(alternatePhone))
-                .setMobileOptions(mobileOptions)
+                .setMobileOptions(MobileContactOptions.getMobileContactOption(mobileCallable, mobileTextable))
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(alternateEmail)
                 .build();
@@ -89,8 +92,12 @@ public class AlertInfoView implements ViewObject {
         return alternatePhone;
     }
 
-    public MobileContactOptions getMobileOptions() {
-        return mobileOptions;
+    public boolean isMobileCallable() {
+        return mobileCallable;
+    }
+
+    public boolean isMobileTextable() {
+        return mobileTextable;
     }
 
     public String getWorkEmail() {

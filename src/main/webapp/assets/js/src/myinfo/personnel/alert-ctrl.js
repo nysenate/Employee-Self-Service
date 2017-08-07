@@ -38,6 +38,28 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
         return loading;
     };
 
+    /**
+     * Prevents un-checking of both mobile options so that there is always one or both selected.
+     * Called in ng-click after the model is updated.  Sets changed value to true if both are false.
+     *
+     * @param option
+     */
+    $scope.toggleMobileOption = function (option) {
+        var alertInfo = $scope.state.alertInfo;
+        if (!(alertInfo.mobileCallable || alertInfo.mobileTextable)) {
+            alertInfo[option] = true;
+        }
+    };
+
+    $scope.validMobileOptions = function () {
+        var alertInfo = $scope.state.alertInfo;
+        if (!alertInfo.mobilePhone) {
+            return true;
+        }
+
+        return !alertInfo.mobilePhone || alertInfo.mobileCallable || alertInfo.mobileTextable;
+    };
+
     /* --- Api Methods --- */
 
     /**
