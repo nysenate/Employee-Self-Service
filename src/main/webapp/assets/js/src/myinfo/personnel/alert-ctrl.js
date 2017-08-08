@@ -38,19 +38,6 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
         return loading;
     };
 
-    /**
-     * Prevents un-checking of both mobile options so that there is always one or both selected.
-     * Called in ng-click after the model is updated.  Sets changed value to true if both are false.
-     *
-     * @param option
-     */
-    $scope.toggleMobileOption = function (option) {
-        var alertInfo = $scope.state.alertInfo;
-        if (!(alertInfo.mobileCallable || alertInfo.mobileTextable)) {
-            alertInfo[option] = true;
-        }
-    };
-
     $scope.validMobileOptions = function () {
         var alertInfo = $scope.state.alertInfo;
         if (!alertInfo.mobilePhone) {
@@ -92,6 +79,8 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
     function saveAlertInfo() {
         $scope.state.request.savingAlertInfo = true;
 
+        ensureMobileOptions();
+
         return alertInfoApi.save({}, $scope.state.alertInfo, onSuccess, $scope.handleErrorResponse)
             .$promise
             .then(init)
@@ -115,6 +104,28 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
         $timeout(function () {
             $scope.state.saved = false;
         });
+    }
+
+    /**
+     * Ensures that the mobile options are valid before saving alert info.
+     * Invalid alert options should not be allowed if a mobile number is specified.
+     * If no mobile number is specified, and the alert options are valid, then they should be set to default
+     * to prevent errors on the backend.
+     */
+    function ensureMobileOptions() {
+        var alertInfo = $scope.state.alertInfo;
+
+        if (!$scope.validMobileOptions()) {
+            throw {
+                message: "Attempt to post alert info with invalid mobile options",
+                alertInfo: alertInfo
+            };
+        }
+
+        if (!(alertInfo.mobileCallable || alertInfo.mobileTextable)) {
+            alertInfo.mobileCallable = true;
+            alertInfo.mobileTextable = true;
+        }
     }
 
 }
