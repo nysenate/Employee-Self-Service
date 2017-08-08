@@ -13,7 +13,7 @@ public class AlertInfo {
     private String mobilePhone;
     private String alternatePhone;
 
-    private MobileContactOptions mobileOptions;
+    private MobileContactOptions mobileOptions = MobileContactOptions.EVERYTHING;
 
     private String personalEmail;
     private String alternateEmail;
