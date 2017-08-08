@@ -10,7 +10,7 @@
 
   <div class="content-container" ng-if="!isLoading()">
     <p class="content-info">
-      The following contact information will be used to reach you in the event of a Senate wide emergency.
+      The following contact information will be used to reach you in the event of a Senate-wide emergency.
     </p>
     <h3 class="alert-info-saved-message" ng-class="{'alert-info-saved': state.saved}">
       Alert Info Saved
@@ -50,7 +50,7 @@
           <label for="mobile-textable">Receive Texts on Mobile</label>
         </div>
         <p class="alert-info-error-text">
-          You must opt to receive calls or texts<br>
+          You must receive calls and/or texts<br>
           if a mobile number is provided.
         </p>
       </div>
