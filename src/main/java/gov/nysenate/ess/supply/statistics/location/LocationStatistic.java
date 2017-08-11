@@ -5,10 +5,7 @@ import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
 import gov.nysenate.ess.supply.statistics.SupplyStatistic;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -20,7 +17,7 @@ public class LocationStatistic extends SupplyStatistic {
 
     private Location location;
 
-    public LocationStatistic(Location location, List<Requisition> requisitions) {
+    public LocationStatistic(Location location, Set<Requisition> requisitions) {
         super(requisitions);
         this.location = checkNotNull(location);
     }

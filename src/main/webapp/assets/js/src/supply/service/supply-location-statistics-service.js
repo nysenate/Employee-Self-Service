@@ -28,7 +28,7 @@ function supplyLocationStatisticsService($q, locationStatisticsApi) {
         /**
          * Returns a promise containing a LocationStatistic object
          */
-        calculateLocationStatisticsFor: function (year, month) {
+        calculateLocationStatistics: function (year, month) {
             return $q(function (resolve, reject) {
                 var params = {
                     year: year,

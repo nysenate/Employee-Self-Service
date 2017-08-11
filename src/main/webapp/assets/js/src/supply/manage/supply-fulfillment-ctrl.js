@@ -89,14 +89,14 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getLocationStatistics() {
         var year = moment().year();
         var month = moment().month() + 1; // Moment is 0 indexed, API is not.
-        locationStatisticsService.calculateLocationStatisticsFor(year, month)
+        locationStatisticsService.calculateLocationStatistics(year, month)
             .then(function (result) {
-                      $scope.locationStatistics = result;
-                  }
-            ).catch(function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        });
+                $scope.locationStatistics = result;
+            })
+            .catch(function (errorResponse) {
+                modals.open('500', {details: errorResponse});
+                console.error(errorResponse);
+            });
     }
 
     /** Get all pending shipments */
