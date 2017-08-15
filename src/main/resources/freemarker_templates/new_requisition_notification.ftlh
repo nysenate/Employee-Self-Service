@@ -12,7 +12,7 @@
 
 <div style="background-color: #efefef; padding: 10px; width: 500px; border-radius: 2px;">
   <p>
-    <b>Id:</b> ${requisition.requisitionId}
+    <b>Id:</b> ${(requisition.requisitionId)?c}
     <br/>
     <b>Customer:</b> ${requisition.customer.firstName} ${requisition.customer.lastName}
     <br/>
@@ -51,7 +51,7 @@
 <br/>
 
 <p>
-  Click <a href="${domainUrl}/supply/manage/fulfillment?requisitionId=${requisition.requisitionId}">here</a> to
+  Click <a href="${domainUrl}/supply/manage/fulfillment?requisitionId=${(requisition.requisitionId)?c}">here</a> to
   view/edit this order.
   <br/>
   Click <a href="${domainUrl}/supply/manage/fulfillment">here</a> to view all pending orders.

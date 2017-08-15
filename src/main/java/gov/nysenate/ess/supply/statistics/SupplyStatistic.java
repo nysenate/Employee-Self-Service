@@ -4,14 +4,15 @@ import gov.nysenate.ess.supply.requisition.model.Requisition;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class SupplyStatistic {
 
-    protected List<Requisition> requisitions;
+    protected Set<Requisition> requisitions;
 
-    public SupplyStatistic(List<Requisition> requisitions) {
+    public SupplyStatistic(Set<Requisition> requisitions) {
         this.requisitions = checkNotNull(requisitions);
     }
 
