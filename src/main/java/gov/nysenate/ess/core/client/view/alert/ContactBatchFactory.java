@@ -90,7 +90,7 @@ public class ContactBatchFactory {
         contactFields.add(new ContactField("CustomField", "Title", emp.getJobTitle()));
         contactFields.add(new ContactField("CustomField", "Department", emp.getRespCenter().getHead().getName()));
         contactFields.add(new ContactField("CustomField", "LocationID", emp.getWorkLocation().getLocId().getCode()));
-        contactFields.add(new ContactField("CustomField", "EmployeeType", "SenateEmployee"));
+        contactFields.add(new ContactField("CustomField", "AgencyCode", emp.getRespCenter().getAgency().getCode()));
         contactFields.add(new ContactField("Address1", emp.getWorkLocation().getAddress().getAddr1()));
         contactFields.add(new ContactField("Address2", emp.getWorkLocation().getAddress().getAddr2()));
         contactFields.add(new ContactField("City", emp.getWorkLocation().getAddress().getCity()));
