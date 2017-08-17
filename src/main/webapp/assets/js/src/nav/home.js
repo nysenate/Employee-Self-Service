@@ -6,7 +6,7 @@ var essApp = angular.module('ess');
 essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$location', '$window',
                                'appProps', 'modals',
     function($scope, $http, $route, $routeParams, $location, $window,
-             modals, appProps) {
+             appProps, modals) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;

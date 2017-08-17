@@ -14,7 +14,7 @@ Your requisition request has been rejected by Senate Supply.
 
 <div style="background-color: #efefef; padding: 10px; width: 500px; border-radius: 2px;">
 <p>
-<b>Id:</b> ${requisition.requisitionId}
+<b>Id:</b> ${(requisition.requisitionId)?c}
 <br/>
 <b>Destination:</b> ${requisition.destination.locationDescription}
 </p>
@@ -61,7 +61,7 @@ ${requisition.note.get()}
 <br/>
 
 <p>
-Click <a href="${domainUrl}/supply/requisition/requisition-view?requisition=${requisition.requisitionId}">here</a> to view this requisition.
+Click <a href="${domainUrl}/supply/requisition/requisition-view?requisition=${(requisition.requisitionId)?c}">here</a> to view this requisition.
 </p>
 
 <p>

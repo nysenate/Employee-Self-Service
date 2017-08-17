@@ -14,7 +14,7 @@ Your requisition request has been received by Senate Supply.
 
 <div style="background-color: #efefef; padding: 10px; width: 500px; border-radius: 2px;">
 <p>
-<b>Id:</b> ${requisition.requisitionId}
+<b>Id:</b> ${(requisition.requisitionId)?c}
 <br/>
 <b>Destination:</b> ${requisition.destination.locationDescription}
 </p>

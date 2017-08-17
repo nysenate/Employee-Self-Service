@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.unit;
 
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
@@ -20,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 public class LocationStatisticTest {
 
     private static final Location LOCATION = new Location(new LocationId("A42FB-W"));
+    private static final Location ALTERNATE_LOCATION = new Location(new LocationId("ZZZ-Z"));
     private Requisition requisition;
 
     @Before
@@ -35,32 +37,32 @@ public class LocationStatisticTest {
 
     @Test(expected = NullPointerException.class)
     public void givenNullLocation_throwNPE() {
-        LocationStatistic locationStatistic = new LocationStatistic(null, new ArrayList<>());
+        LocationStatistic locationStatistic = new LocationStatistic(null, new HashSet<>());
     }
 
     @Test
     public void givenNoRequisitions_returnsEmptyMap() {
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, new ArrayList<>());
+        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, new HashSet<>());
         assertThat(locationStatistic.calculate().size(), is(0));
     }
 
     @Test
     public void givenRequisitionWithNoLineItems_returnsEmptyMap() {
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(requisition));
+        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Sets.newHashSet(requisition));
         assertThat(locationStatistic.calculate().size(), is(0));
     }
 
     @Test
     public void ignoresLineItemsWithZeroQuantity() {
         requisition = addLineItem(1, requisition, "ABC", 0);
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(requisition));
+        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Sets.newHashSet(requisition));
         assertThat(locationStatistic.calculate().size(), is(0));
     }
 
     @Test
     public void giveSingleItem_calculatesStatistics() {
         requisition = addLineItem(1, requisition, "AA", 1);
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(requisition));
+        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Sets.newHashSet(requisition));
         assertThat(locationStatistic.calculate().size(), is(1));
         assertThat(locationStatistic.calculate().get("AA"), is(1));
     }
@@ -71,7 +73,7 @@ public class LocationStatisticTest {
         first = addLineItem(1, first, "AA", 1);
         Requisition second = RequisitionFixture.baseRequisition().setDestination(LOCATION);
         second = addLineItem(1, second, "AA", 3);
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(first, second));
+        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Sets.newHashSet(first, second));
         assertThat(locationStatistic.calculate().size(), is(1));
         assertThat(locationStatistic.calculate().get("AA"), is(4));
     }
@@ -87,11 +89,11 @@ public class LocationStatisticTest {
         second = addLineItem(2, second, "BB", 3);
         second = addLineItem(3, second, "CC", 1);
         second = addLineItem(5, second, "ZZ", 1);
-        Requisition third = RequisitionFixture.baseRequisition().setDestination(new Location(new LocationId("ZZZ-Z")));
+        Requisition third = RequisitionFixture.baseRequisition().setDestination(ALTERNATE_LOCATION);
         third = addLineItem(1, third, "AA", 0);
         third = addLineItem(3, third, "CC", 1);
         third = addLineItem(4, third, "DD", 3);
-        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Arrays.asList(first, second, third));
+        LocationStatistic locationStatistic = new LocationStatistic(LOCATION, Sets.newHashSet(first, second, third));
         assertThat(locationStatistic.calculate().size(), is(5));
         assertThat(locationStatistic.calculate().get("AA"), is(1));
         assertThat(locationStatistic.calculate().get("BB"), is(3));
