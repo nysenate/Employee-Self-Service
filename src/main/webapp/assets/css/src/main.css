@@ -3335,8 +3335,8 @@ button.ui-button::-moz-focus-inner {
     border-bottom: 1px solid black;
   }
 }
-/** --- Emergency Notification Info Page --- */
-#emergency-notification-page .eni-saved-message {
+/** --- Alert Info Page --- */
+#alert-info-page .alert-info-saved-message {
   text-align: center;
   margin-bottom: 0;
   opacity: 0;
@@ -3345,57 +3345,54 @@ button.ui-button::-moz-focus-inner {
   -o-transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
   transition: opacity 4s cubic-bezier(0.95, 0.05, 0.795, 0.035);
 }
-#emergency-notification-page .eni-saved-message.eni-saved {
+#alert-info-page .alert-info-saved-message.alert-info-saved {
   opacity: 1;
   -webkit-transition: opacity 0s;
   -moz-transition: opacity 0s;
   -o-transition: opacity 0s;
   transition: opacity 0s;
 }
-#emergency-notification-page .eni-form {
+#alert-info-page .alert-info-form {
   padding: 20px;
 }
-#emergency-notification-page .eni-form .content-controls {
+#alert-info-page .alert-info-form .content-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   text-align: left;
   padding-bottom: 30px;
 }
-#emergency-notification-page .eni-form .content-controls > label {
+#alert-info-page .alert-info-form .content-controls > * {
+  position: relative;
+}
+#alert-info-page .alert-info-form .content-controls > label {
   text-align: right;
   width: 15%;
   margin: 0.7em 1em 0.7em 0;
 }
-#emergency-notification-page .eni-form .content-controls > input {
+#alert-info-page .alert-info-form .content-controls > input,
+#alert-info-page .alert-info-form .content-controls .check-box-container {
   width: 40%;
 }
-#emergency-notification-page .eni-form .content-controls .immutable-value {
+#alert-info-page .alert-info-form .content-controls .immutable-value {
   width: 80%;
 }
-#emergency-notification-page .eni-form .content-controls .check-box-container {
-  width: 100%;
-  padding-left: 15%;
-}
-#emergency-notification-page .eni-form .content-controls .check-box-container input {
-  margin-left: 1em;
-}
-#emergency-notification-page .eni-form .content-controls .check-box-container label {
+#alert-info-page .alert-info-form .content-controls .check-box-container label {
   margin-left: 5px;
 }
-#emergency-notification-page .eni-form .content-controls .eni-error-text {
+#alert-info-page .alert-info-form .content-controls .alert-info-error-text {
   width: 40%;
   color: indianred;
   opacity: 0;
   margin: 0 0 0 5px;
 }
-#emergency-notification-page .eni-form .content-controls input.ng-invalid + .eni-error-text {
+#alert-info-page .alert-info-form .content-controls .ng-invalid + .alert-info-error-text {
   opacity: 1;
 }
-#emergency-notification-page .eni-form .input-container input.submit-button {
+#alert-info-page .alert-info-form .input-container input.submit-button {
   margin-left: calc(15% + 1em);
 }
-#emergency-notification-page .eni-form h3 {
+#alert-info-page .alert-info-form h3 {
   text-align: center;
 }
 /** --- Paycheck History Page --- */
