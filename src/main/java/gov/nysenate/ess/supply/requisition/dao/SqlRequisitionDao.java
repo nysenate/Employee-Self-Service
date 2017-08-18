@@ -1,17 +1,13 @@
 package gov.nysenate.ess.supply.requisition.dao;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.*;
-import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
-import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionState;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -94,33 +89,22 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     }
 
     @Override
-    public synchronized PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                                      Range<LocalDateTime> dateRange, String dateField, String savedInSfms,
-                                                                      LimitOffset limitOffset, String issuerID, String itemId) {
+    public synchronized PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("destination", formatSearchString(destination))
-                .addValue("customerId", formatSearchString(customerId))
-                .addValue("statuses", extractEnumSetParams(statuses))
-                .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
-                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)))
-                .addValue("issuerId", formatSearchString(issuerID))
-                .addValue("itemId", formatSearchString(itemId))
-                .addValue("savedInSfms", formatSearchString(savedInSfms));
-        ensureValidColumn(dateField);
-        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
-        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+                .addValue("destination", query.getDestination())
+                .addValue("customerId", query.getCustomerId())
+                .addValue("statuses", extractEnumSetParams(query.getStatuses()))
+                .addValue("fromDate", toDate(query.getFromDateTime()))
+                .addValue("toDate", toDate(query.getToDateTime()))
+                .addValue("issuerId", query.getIssuerId())
+                .addValue("itemId", query.getItemId())
+                .addValue("savedInSfms", query.getSavedInSfms());
+        String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
+                query.getDateField(), query.getOrderBy(), query.getLimitOffset());
+        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
+                "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
-    }
-
-    /** Protect against sql injection attacks by validating that dateFiled
-     * matches one of the requisition date time fields. */
-    private void ensureValidColumn(String dateField) {
-        boolean matches = dateField.matches("ordered_date_time|processed_date_time|completed_date_time|" +
-                                            "approved_date_time|rejected_date_time");
-        if (!matches) {
-            throw new RuntimeException("Given datefield: " + dateField + "is not a valid requisition date field.");
-        }
     }
 
     /** Dynamically generates query date range filter using the supplied {@code dateField}.
@@ -133,19 +117,20 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     /**
      * {@inheritDoc}
+     * @param query
      */
     @Override
-    public synchronized PaginatedList<Requisition> searchOrderHistory(String destinationId, int customerId, EnumSet<RequisitionStatus> statuses,
-                                                         Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
+    public synchronized PaginatedList<Requisition> searchOrderHistory(RequisitionQuery query) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("destination", formatSearchString(destinationId))
-                .addValue("customerId", customerId)
-                .addValue("statuses", extractEnumSetParams(statuses))
-                .addValue("fromDate", toDate(DateUtils.startOfDateTimeRange(dateRange)))
-                .addValue("toDate", toDate(DateUtils.endOfDateTimeRange(dateRange)));
-        ensureValidColumn(dateField);
-        String sql = generateSearchQuery(SqlRequisitionQuery.ORDER_HISTORY_PARTIAL, dateField, new OrderBy(dateField, SortOrder.DESC), limitOffset);
-        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(limitOffset, "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+                .addValue("destination", query.getDestination())
+                .addValue("customerId", query.getCustomerId())
+                .addValue("statuses", extractEnumSetParams(query.getStatuses()))
+                .addValue("fromDate", toDate(query.getFromDateTime()))
+                .addValue("toDate", toDate(query.getToDateTime()));
+        String sql = generateSearchQuery(SqlRequisitionQuery.ORDER_HISTORY_PARTIAL, query.getDateField(),
+                query.getOrderBy(), query.getLimitOffset());
+        PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
+                "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
     }
@@ -164,10 +149,6 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         params.addValue("succeed", succeed);
         String sql = SqlRequisitionQuery.SET_SAVED_IN_SFMS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
-    }
-
-    private String formatSearchString(String param) {
-        return param != null && (param.equals("All")) ? "%" : param;
     }
 
     private MapSqlParameterSource requisitionParams(Requisition requisition) {
@@ -255,7 +236,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 "SELECT *, count(*) OVER() as total_rows \n" +
                 "FROM ${supplySchema}.requisition as r \n" +
                 "INNER JOIN ${supplySchema}.requisition_content as c ON r.current_revision_id = c.revision_id \n" +
-                "WHERE (c.destination = :destination OR c.customer_id = :customerId) \n" +
+                "WHERE (c.destination = :destination OR Coalesce(c.customer_id::text, '') LIKE :customerId) \n" +
                 "AND c.status::text IN (:statuses) AND r."
         ),
         GET_REQUISITION_HISTORY(

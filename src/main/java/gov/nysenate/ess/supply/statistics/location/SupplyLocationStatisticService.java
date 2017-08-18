@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.service.SupplyRequisitionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,22 +54,25 @@ public class SupplyLocationStatisticService {
      * Get all non rejected requisitions with an orderedDateTime in the given month.
      */
     private Set<Requisition> monthlyRequisitions(LocalDateTime monthStart, LocalDateTime monthEnd) {
-        return Sets.newHashSet(requisitionService.searchRequisitions("All", "All",
-                EnumSet.complementOf(EnumSet.of(RequisitionStatus.REJECTED)),
-                Range.closed(monthStart, monthEnd),
-                "ordered_date_time",
-                "All", LimitOffset.ALL, "All", "All").getResults());
+        RequisitionQuery query = new RequisitionQuery()
+                .setStatuses(EnumSet.complementOf(EnumSet.of(RequisitionStatus.REJECTED)))
+                .setFromDateTime(monthStart)
+                .setToDateTime(monthEnd)
+                .setLimitOffset(LimitOffset.ALL);
+
+        return Sets.newHashSet(requisitionService.searchRequisitions(query).getResults());
     }
 
     /**
      * Gets not yet approved requisitions from previous months.
      */
     private Set<Requisition> inProgressRequisitions(LocalDateTime monthStart) {
-        return Sets.newHashSet(requisitionService.searchRequisitions("All", "All",
-                EnumSet.of(RequisitionStatus.PENDING, RequisitionStatus.PROCESSING, RequisitionStatus.COMPLETED),
-                Range.closed(monthStart.minusYears(1), monthStart),
-                "ordered_date_time",
-                "All", LimitOffset.ALL, "All", "All").getResults());
+        RequisitionQuery query = new RequisitionQuery()
+                .setStatuses(EnumSet.of(RequisitionStatus.PENDING, RequisitionStatus.PROCESSING, RequisitionStatus.COMPLETED))
+                .setFromDateTime(monthStart.minusYears(1))
+                .setToDateTime(monthStart)
+                .setLimitOffset(LimitOffset.ALL);
+        return Sets.newHashSet(requisitionService.searchRequisitions(query).getResults());
     }
 
     private Set<Location> distinctDestinations(Set<Requisition> requisitions) {

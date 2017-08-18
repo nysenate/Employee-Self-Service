@@ -6,8 +6,9 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
+import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.unit.fixtures.RequisitionFixture;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
@@ -42,16 +44,17 @@ public class SqlRequisitionDaoIT extends BaseTest {
 
     @Test
     public void canSearchRequisitions() {
-        Range<LocalDateTime> dateRange = Range.closed(LocalDateTime.now().minusMonths(1), LocalDateTime.now());
-        requisitionDao.searchRequisitions("A42FB", "any", EnumSet.allOf(RequisitionStatus.class),
-                dateRange, "ordered_date_time", "any", LimitOffset.ALL, "All", "All");
+        RequisitionQuery query = new RequisitionQuery().setDestination("A42FB").setLimitOffset(LimitOffset.ALL);
+        requisitionDao.searchRequisitions(query);
     }
 
     @Test
     public void canSearchOrderHistory() {
-        Range<LocalDateTime> dateRange = Range.closed(LocalDateTime.now().minusMonths(1), LocalDateTime.now());
-        requisitionDao.searchOrderHistory("A42FB", 1, EnumSet.allOf(RequisitionStatus.class),
-                                          dateRange, "ordered_date_time", LimitOffset.ALL);
+        RequisitionQuery query = new RequisitionQuery()
+                .setDestination("A42FB")
+                .setCustomerId(1)
+                .setLimitOffset(LimitOffset.ALL);
+        requisitionDao.searchOrderHistory(query);
     }
 
 }

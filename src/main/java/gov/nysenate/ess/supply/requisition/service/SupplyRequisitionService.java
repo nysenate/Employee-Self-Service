@@ -1,19 +1,16 @@
 package gov.nysenate.ess.supply.requisition.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
-import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.supply.notification.SupplyEmailService;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import gov.nysenate.ess.supply.requisition.dao.RequisitionDao;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.EnumSet;
 import java.util.Optional;
 
 @Service
@@ -78,19 +75,16 @@ public class SupplyRequisitionService implements RequisitionService {
     }
 
     @Override
-    public PaginatedList<Requisition> searchRequisitions(String destination, String customerId, EnumSet<RequisitionStatus> statuses,
-                                                         Range<LocalDateTime> dateRange, String dateField, String savedInSfms,
-                                                         LimitOffset limitOffset, String issuerID, String itemId) {
-        return requisitionDao.searchRequisitions(destination, customerId, statuses, dateRange, dateField, savedInSfms, limitOffset, issuerID, itemId);
+    public PaginatedList<Requisition> searchRequisitions(RequisitionQuery query) {
+        return requisitionDao.searchRequisitions(query);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PaginatedList<Requisition> searchOrderHistory(String destination, int customerId, EnumSet<RequisitionStatus> statuses,
-                                                         Range<LocalDateTime> dateRange, String dateField, LimitOffset limitOffset) {
-        return requisitionDao.searchOrderHistory(destination, customerId, statuses, dateRange, dateField, limitOffset);
+    public PaginatedList<Requisition> searchOrderHistory(RequisitionQuery query) {
+        return requisitionDao.searchOrderHistory(query);
     }
 
     @Override
