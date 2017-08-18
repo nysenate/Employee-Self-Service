@@ -21,13 +21,13 @@ public enum SqlAlertInfoQuery implements BasicSqlQuery {
         "       ( employee_id, phone_home, phone_mobile, phone_alternate,\n" +
         "        mobile_options, email_personal, email_alternate)\n" +
         "VALUES (:empId,      :homePhone, :mobilePhone, :alternatePhone,\n" +
-        "       :mobileOptions::mobile_contact_options, :personalEmail, :alternateEmail)"
+        "       :mobileOptions::${essSchema}.mobile_contact_options, :personalEmail, :alternateEmail)"
     ),
 
     UPDATE_ALERT_INFO(
         "UPDATE ${essSchema}.alert_info\n" +
         "SET phone_home = :homePhone, phone_mobile = :mobilePhone, phone_alternate = :alternatePhone,\n" +
-        "  mobile_options = :mobileOptions::mobile_contact_options, email_personal = :personalEmail,\n" +
+        "  mobile_options = :mobileOptions::${essSchema}.mobile_contact_options, email_personal = :personalEmail,\n" +
         "  email_alternate = :alternateEmail\n" +
         "WHERE employee_id = :empId"
     ),
