@@ -1,22 +1,26 @@
 package gov.nysenate.ess.web.config;
 
+import gov.nysenate.ess.web.security.filter.EssApiAuthenticationFilter;
 import gov.nysenate.ess.web.security.filter.EssAuthenticationFilter;
 import gov.nysenate.ess.web.security.xsrf.XsrfTokenValidator;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.config.Ini;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
+import java.util.List;
 
 /**
  * Configures dependencies necessary for security based functionality.
@@ -79,6 +83,16 @@ public class SecurityConfig
     @Bean(name = "essAuthc")
     public Filter essAuthenticationFilter() {
         return new EssAuthenticationFilter();
+    }
+
+    /**
+     * Filter implementation used for API authentication. This bean is automatically detected by the
+     * ShiroFilterFactoryBean instance and can be used in the filter chain definitions by referencing
+     * the bean name as seen in shiro.ini.
+     */
+    @Bean(name = "essApiAuthc")
+    public Filter essApiAuthenticationFilter() {
+        return new EssApiAuthenticationFilter();
     }
 
     /**

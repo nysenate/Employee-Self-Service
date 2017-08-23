@@ -44,6 +44,9 @@ restrict.department.enabled = false
 # (example: STSBAC,Senate Technology Services)
 restrict.department.whitelist =
 
+# Allow these ip addresses to access the API without logging in.
+auth.api.ip.whitelist = ^$
+
 # --- Database Configuration --------------------------------------------------
 
 # Local Postgres Database
