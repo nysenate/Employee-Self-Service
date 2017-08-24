@@ -16,7 +16,8 @@
     <div class="content-info">
       <form name="selectDestinationForm" novalidate>
         <h4 style="display: inline-block;">Please select a destination: </h4>
-        <input name="destination"
+        <input type="text"
+               name="destination"
                ng-model="destinationCode"
                ui-autocomplete="getLocationAutocompleteOptions()"
                destination-validator
