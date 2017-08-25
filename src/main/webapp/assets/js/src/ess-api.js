@@ -109,10 +109,10 @@ essApi.factory('EmployeeSearchApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/employees/search');
 }]);
 
-/** --- Emergency Notification Info API --- */
+/** --- Alert Info API --- */
 
-essApi.factory('EmergencyNotificationInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/emergency-notification-info');
+essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/alert-info');
 }]);
 
 /** --- Transaction API --- */

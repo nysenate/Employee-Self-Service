@@ -1,5 +1,5 @@
 
-package gov.nysenate.ess.core.client.view.emergency_notification;
+package gov.nysenate.ess.core.client.view.alert;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -320,13 +320,13 @@ public class ContactBatch {
             })
             public static class GroupList {
                 @XmlElement(namespace = "http://www.sendwordnow.com")
-                protected List<gov.nysenate.ess.core.client.view.emergency_notification.Group> group;
+                protected List<gov.nysenate.ess.core.client.view.alert.Group> group;
                 @XmlElement(namespace = "http://www.sendwordnow.com")
                 protected List<String> groupName;
 
-                public List<gov.nysenate.ess.core.client.view.emergency_notification.Group> getGroup() {
+                public List<gov.nysenate.ess.core.client.view.alert.Group> getGroup() {
                     if (group == null) {
-                        group = new ArrayList<gov.nysenate.ess.core.client.view.emergency_notification.Group>();
+                        group = new ArrayList<gov.nysenate.ess.core.client.view.alert.Group>();
                     }
                     return this.group;
                 }
@@ -360,7 +360,7 @@ public class ContactBatch {
         @XmlType(name = "", propOrder = {
                 "contactIdList"
         })
-        public static class Group extends gov.nysenate.ess.core.client.view.emergency_notification.Group {
+        public static class Group extends gov.nysenate.ess.core.client.view.alert.Group {
             @XmlElement(namespace = "http://www.sendwordnow.com")
             protected ContactBatch.BatchGroupList.Group.ContactIdList contactIdList;
             @XmlAttribute(name = "action", required = true)
