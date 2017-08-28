@@ -48,7 +48,7 @@ public class ContactBatchFactory {
         options.add(new BatchProcessingOption("DeleteGroupsNotInBatch", "false"));
         options.add(new BatchProcessingOption("DeleteContactsWithoutUniqueID", "false"));
         options.add(new BatchProcessingOption("DeleteGroupsWithContactsWithoutUniqueID", "false"));
-        options.add(new BatchProcessingOption("MergeContactsInBatch", "true"));
+        options.add(new BatchProcessingOption("MergeContactsInBatch", "false"));
         options.add(new BatchProcessingOption("BatchContinueOnContactError", "true"));
         options.add(new BatchProcessingOption("BatchContinueOnGroupError", "true"));
         options.add(new BatchProcessingOption("BatchFailureOnMissingModify", "false"));
