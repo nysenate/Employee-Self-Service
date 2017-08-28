@@ -3,7 +3,7 @@
 <section ng-controller="AlertCtrl" id="alert-info-page">
 
   <div class="my-info-hero">
-    <h2>Alert Info</h2>
+    <h2>Emergency Alert Info</h2>
   </div>
 
   <div loader-indicator class="loader" ng-show="isLoading()"></div>
