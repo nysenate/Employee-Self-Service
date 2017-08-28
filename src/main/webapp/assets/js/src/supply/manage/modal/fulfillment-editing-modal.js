@@ -33,7 +33,6 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
 
     $scope.init = function () {
         $scope.originalRequisition = modals.params();
-        $scope.originalRequisition.note = ""; // Reset note so new note can be added. // TODO: remove this 'feature'?
         $scope.editableRequisition = angular.copy($scope.originalRequisition);
         $scope.newLocationCode = $scope.editableRequisition.destination.code;
         itemAutocompleteService.initWithAllItems();
@@ -74,7 +73,7 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
      * display instructions informing the user to leave a note.
      */
     $scope.rejectOrder = function () {
-        if ($scope.originalRequisition.note === $scope.editableRequisition.note) {
+        if ($scope.editableRequisition.note == null || $scope.editableRequisition.note.length === 0) {
             $scope.displayRejectInstructions = true;
         }
         else {
