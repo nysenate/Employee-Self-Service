@@ -46,25 +46,13 @@ public class AlertInfoView implements ViewObject {
     public AlertInfo toAlertInfo() {
         return AlertInfo.builder()
                 .setEmpId(empId)
-                .setHomePhone(stripFormatting(homePhone))
-                .setMobilePhone(stripFormatting(mobilePhone))
-                .setAlternatePhone(stripFormatting(alternatePhone))
+                .setHomePhone(homePhone)
+                .setMobilePhone(mobilePhone)
+                .setAlternatePhone(alternatePhone)
                 .setMobileOptions(MobileContactOptions.getMobileContactOption(mobileCallable, mobileTextable))
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(alternateEmail)
                 .build();
-    }
-
-    /**
-     * Strip all phone number formatting a user may of entered.
-     * @param phoneNumber a phone number entered by a user.
-     * @return the {@code phoneNumber} with all non number characters removed or null if {@code phoneNumber} is null.
-     */
-    private String stripFormatting(String phoneNumber) {
-        if (phoneNumber == null) {
-            return null;
-        }
-        return phoneNumber.replaceAll("[^0-9]", "");
     }
 
     @Override
