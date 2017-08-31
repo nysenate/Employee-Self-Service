@@ -11,6 +11,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchProcessingDirectives;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchProcessingDirectives.BatchProcessingOption;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,21 +112,21 @@ public class ContactBatchFactory {
         }
 
         if (alertInfo != null) {
-            if (alertInfo.getHomePhone() != null) {
+            if (StringUtils.isNotBlank(alertInfo.getHomePhone())) {
                 cpl.addContactPoint(homePhoneContactPoint(alertInfo));
             }
-            if (alertInfo.getMobilePhone() != null &&
+            if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
                     alertInfo.getMobileOptions().isCallable()) {
                 cpl.addContactPoint(mobilePhoneContactPoint(alertInfo));
             }
-            if (alertInfo.getMobilePhone() != null &&
+            if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
                     alertInfo.getMobileOptions().isTextable()) {
                 cpl.addContactPoint(textMessageContactPoint(alertInfo));
             }
-            if (alertInfo.getPersonalEmail() != null) {
+            if (StringUtils.isNotBlank(alertInfo.getPersonalEmail())) {
                 cpl.addContactPoint(personalEmailContactPoint(alertInfo));
             }
-            if (alertInfo.getAlternateEmail() != null) {
+            if (StringUtils.isNotBlank(alertInfo.getAlternateEmail())) {
                 cpl.addContactPoint(alternateEmailContactPoint(alertInfo));
             }
         }
