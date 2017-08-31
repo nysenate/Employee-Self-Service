@@ -10,6 +10,19 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
     $scope.phoneErrorMsg = "Please enter a valid phone number";
     $scope.emailErrorMsg = "Please enter a valid email address";
 
+    var phoneNumberFields = [
+        'workPhone',
+        'homePhone',
+        'alternatePhone',
+        'mobilePhone'
+    ];
+
+    var emailFields = [
+        'workEmail',
+        'personalEmail',
+        'alternateEmail'
+    ];
+
     var initialState = {
         name: appProps.user.fullName,
         empId: appProps.user.employeeId,
@@ -38,6 +51,10 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
         return loading;
     };
 
+    /**
+     * Checks for valid mobile options
+     * @returns {boolean} true if at least one mobile option is selected
+     */
     $scope.validMobileOptions = function () {
         var alertInfo = $scope.state.alertInfo;
         if (!alertInfo.mobilePhone) {
@@ -45,6 +62,70 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
         }
 
         return !alertInfo.mobilePhone || alertInfo.mobileCallable || alertInfo.mobileTextable;
+    };
+
+    /**
+     * Checks for duplicate phone numbers.
+     * Ignores non-numeric formatting.
+     * @returns {boolean} true if there are no duplicate phone numbers
+     */
+    $scope.noDuplicatePhoneNumbers = function () {
+        var phoneNumberSet = {};
+        for (var i in phoneNumberFields) {
+            if (!phoneNumberFields.hasOwnProperty(i)) {
+                continue;
+            }
+
+            var phoneNumber = $scope.state.alertInfo[phoneNumberFields[i]];
+
+            var formattedPhoneNumber = (phoneNumber || '').replace(/[^\d]+/g, '');
+
+            if (!formattedPhoneNumber) {
+                continue;
+            }
+
+            if (phoneNumberSet.hasOwnProperty(formattedPhoneNumber)) {
+                return false;
+            }
+
+            phoneNumberSet[formattedPhoneNumber] = true;
+        }
+        return true;
+    };
+
+    /**
+     * Checks for duplicate email addresses.
+     * Case insensitive
+     * @returns {boolean} true if there are no duplicate email addresses
+     */
+    $scope.noDuplicateEmails = function () {
+        var emailSet = {};
+        for (var i in emailFields) {
+            if (!emailFields.hasOwnProperty(i)) {
+                continue;
+            }
+
+            var email = $scope.state.alertInfo[emailFields[i]];
+
+            var formattedEmail = (email || '').replace(/^\s+|\s+$/g, '').toLowerCase();
+
+            if (emailSet.hasOwnProperty(formattedEmail)) {
+                return false;
+            }
+
+            emailSet[formattedEmail] = true;
+        }
+        return true;
+    };
+
+    /**
+     * Performs overall validation for the given alert info,
+     * returning true if it is valid
+     */
+    $scope.validAlertInfo = function () {
+        return $scope.validMobileOptions() &&
+                $scope.noDuplicatePhoneNumbers() &&
+                $scope.noDuplicateEmails();
     };
 
     /* --- Api Methods --- */

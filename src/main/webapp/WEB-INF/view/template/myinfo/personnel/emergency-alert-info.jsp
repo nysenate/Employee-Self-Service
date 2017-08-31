@@ -55,6 +55,12 @@
         </p>
       </div>
 
+      <div class="push-1-4 col-9-12 alert-info-error-container">
+        <p ng-class="{'visibility-hidden': noDuplicatePhoneNumbers()}">
+          Please remove duplicate phone numbers.
+        </p>
+      </div>
+
       <h3 class="col-1-4">Email</h3>
       <div class="content-controls col-9-12">
         <label>Work</label>
@@ -70,11 +76,18 @@
                ng-model="state.alertInfo.alternateEmail">
         <p class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
       </div>
+
+      <div class="push-1-4 col-9-12 alert-info-error-container">
+        <p ng-class="{'visibility-hidden': noDuplicateEmails()}">
+          Please remove duplicate email addresses.
+        </p>
+      </div>
+
       <div class="input-container push-1-4 col-9-12">
         <input type="button" class="submit-button"
                title="Save Alert Info" value="Save"
                ng-click="saveAlertInfo()"
-               ng-disabled="alertInfoForm.$invalid || alertInfoForm.$pristine || !validMobileOptions()">
+               ng-disabled="alertInfoForm.$invalid || alertInfoForm.$pristine || !validAlertInfo()">
       </div>
     </form>
   </div>
