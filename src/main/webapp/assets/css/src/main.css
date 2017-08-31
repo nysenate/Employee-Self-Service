@@ -3360,7 +3360,7 @@ button.ui-button::-moz-focus-inner {
   flex-wrap: wrap;
   align-items: center;
   text-align: left;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 }
 #alert-info-page .alert-info-form .content-controls > * {
   position: relative;
@@ -3388,6 +3388,12 @@ button.ui-button::-moz-focus-inner {
 }
 #alert-info-page .alert-info-form .content-controls .ng-invalid + .alert-info-error-text {
   opacity: 1;
+}
+#alert-info-page .alert-info-form .alert-info-error-container p {
+  margin-left: calc(15% + 1em);
+  color: indianred;
+  font-weight: 600;
+  text-align: left;
 }
 #alert-info-page .alert-info-form .input-container input.submit-button {
   margin-left: calc(15% + 1em);
