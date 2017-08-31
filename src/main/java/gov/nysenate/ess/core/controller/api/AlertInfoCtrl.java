@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.AlertInfoView;
+import gov.nysenate.ess.core.client.view.InvalidAlertInfoView;
 import gov.nysenate.ess.core.client.view.alert.ContactBatch;
 import gov.nysenate.ess.core.client.view.alert.ContactBatchFactory;
 import gov.nysenate.ess.core.dao.alert.AlertInfoDao;
@@ -15,6 +16,8 @@ import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.service.alert.AlertInfoValidationService;
+import gov.nysenate.ess.core.service.alert.InvalidAlertInfoEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +42,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class AlertInfoCtrl extends BaseRestApiCtrl {
 
     @Autowired private AlertInfoDao alertInfoDao;
+    @Autowired private AlertInfoValidationService alertInfoValidationService;
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
      * Get Alert Info API
-     * ------------------------------------
+     * ------------------
      *
      * Get alert info for an employee:
      *      (POST) /api/v1/alert-info
@@ -72,20 +76,22 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
 
     /**
      * Save Alert Info API
-     * ------------------------------------
+     * -------------------
      *
      * Save alert info:
      *      (POST) /api/v1/-alert-info
      *
      * Post Data: json {@link AlertInfoView}
+     *
      */
     @RequestMapping(value = "", method = POST)
-    public BaseResponse saveAlertInfo(@RequestBody AlertInfoView alertInfoView) {
+    public BaseResponse saveAlertInfo(@RequestBody AlertInfoView alertInfoView) throws InvalidAlertInfoEx {
 
         checkPermission(new CorePermission(alertInfoView.getEmpId(), CorePermissionObject.EMPLOYEE_INFO, POST));
 
         AlertInfo alertInfo = alertInfoView.toAlertInfo();
 
+        alertInfoValidationService.validateAlertInfo(alertInfo);
         alertInfoDao.updateAlertInfo(alertInfo);
 
         return new SimpleResponse(
@@ -96,7 +102,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
 
     /**
      * Get Alert Contact List Dump Api
-     * ------------------------------------
+     * -------------------------------
      *
      * Requires Admin permissions.
      *
@@ -119,6 +125,16 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
     @ResponseBody
     protected ViewObjectErrorResponse handleEmpNotFoundEx(EmployeeNotFoundEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.EMPLOYEE_NOT_FOUND, ex.getEmpId());
+    }
+
+    /**
+     * Handle submissions of invalid alert info
+     */
+    @ExceptionHandler(InvalidAlertInfoEx.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public BaseResponse handleInvalidTimeRecordException(InvalidAlertInfoEx ex) {
+        Employee employee = employeeInfoService.getEmployee(ex.getAlertInfo().getEmpId());
+        return new ViewObjectErrorResponse(ErrorCode.INVALID_ALERT_INFO, new InvalidAlertInfoView(ex, employee));
     }
 
     /* --- Internal Methods --- */

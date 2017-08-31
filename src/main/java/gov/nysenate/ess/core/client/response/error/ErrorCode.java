@@ -7,6 +7,7 @@ public enum ErrorCode
     INVALID_ARGUMENTS(2, "The necessary arguments were not provided in the correct format."),
     MISSING_PARAMETERS(3, "The necessary parameters were not provided."),
     EMPLOYEE_NOT_FOUND(4, "The requested employee was not found"),
+    INVALID_ALERT_INFO(5, "The submitted alert info contains invalid data"),
 
     /** Time Errors */
     INVALID_TIME_RECORD(101, "The provided time record contained invalid data"),

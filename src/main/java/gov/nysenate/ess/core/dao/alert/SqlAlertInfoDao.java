@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static gov.nysenate.ess.core.model.alert.AlertInfo.AlertInfoBuilder;
+import static gov.nysenate.ess.core.model.alert.AlertInfo.Builder;
 import static gov.nysenate.ess.core.dao.alert.SqlAlertInfoQuery.*;
 
 /**
@@ -55,7 +55,7 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
     /* --- Internal Methods --- */
 
     private static final RowMapper<AlertInfo> alertInfoRowMapper = ((rs, rowNum) -> {
-        AlertInfoBuilder builder = AlertInfo.builder();
+        Builder builder = AlertInfo.builder();
         builder.setEmpId(rs.getInt("employee_id"));
         builder.setHomePhone(rs.getString("phone_home"));
         builder.setMobilePhone(rs.getString("phone_mobile"));
