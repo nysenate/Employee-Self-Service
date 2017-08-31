@@ -109,6 +109,10 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
 
             var formattedEmail = (email || '').replace(/^\s+|\s+$/g, '').toLowerCase();
 
+            if (!formattedEmail) {
+                continue;
+            }
+
             if (emailSet.hasOwnProperty(formattedEmail)) {
                 return false;
             }
