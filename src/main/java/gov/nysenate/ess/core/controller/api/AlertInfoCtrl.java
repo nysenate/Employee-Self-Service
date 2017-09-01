@@ -17,7 +17,7 @@ import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.alert.AlertInfoValidationService;
-import gov.nysenate.ess.core.service.alert.InvalidAlertInfoEx;
+import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.beans.factory.annotation.Autowired;

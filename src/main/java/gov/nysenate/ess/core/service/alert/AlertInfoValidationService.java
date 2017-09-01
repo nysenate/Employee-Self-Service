@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.alert;
 
 import gov.nysenate.ess.core.model.alert.AlertInfo;
+import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
 
 /**
  * Provides a method that validates {@link AlertInfo}

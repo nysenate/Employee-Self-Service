@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.alert;
 
 import gov.nysenate.ess.core.model.alert.AlertInfo;
+import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import static gov.nysenate.ess.core.model.alert.AlertInfoErrorCode.*;
 
 @Service
 public class EssAlertInfoValidationService implements AlertInfoValidationService {
@@ -39,7 +42,7 @@ public class EssAlertInfoValidationService implements AlertInfoValidationService
      */
     private void validateEmpId(AlertInfo alertInfo) {
         if (alertInfo.getEmpId() <= 0) {
-            throw new InvalidAlertInfoEx("Invalid emp id", alertInfo);
+            throw new InvalidAlertInfoEx(INVALID_EMP_ID, String.valueOf(alertInfo.getEmpId()), alertInfo);
         }
     }
 
@@ -48,7 +51,7 @@ public class EssAlertInfoValidationService implements AlertInfoValidationService
      */
     private void validateMobileContactOptions(AlertInfo alertInfo) {
         if (alertInfo.getMobileOptions() == null) {
-            throw new InvalidAlertInfoEx("mobile contact options is null", alertInfo);
+            throw new InvalidAlertInfoEx(NULL_MOBILE_CONTACT_OPTIONS, null, alertInfo);
         }
     }
 
@@ -70,10 +73,10 @@ public class EssAlertInfoValidationService implements AlertInfoValidationService
             }
             String formattedPhoneNumber = phoneNumber.replaceAll("[^0-9]+", "");
             if (!phoneNumberPredicate.test(formattedPhoneNumber)) {
-                throw new InvalidAlertInfoEx("Invalid phone number", alertInfo);
+                throw new InvalidAlertInfoEx(INVALID_PHONE_NUMBER, formattedPhoneNumber, alertInfo);
             }
             if (!phoneNumberSet.add(formattedPhoneNumber)) {
-                throw new InvalidAlertInfoEx("Duplicate phone number", alertInfo);
+                throw new InvalidAlertInfoEx(DUPLICATE_PHONE_NUMVER, formattedPhoneNumber, alertInfo);
             }
         }
     }
@@ -95,11 +98,11 @@ public class EssAlertInfoValidationService implements AlertInfoValidationService
                 continue;
             }
             if (!emailValidator.isValid(email)) {
-                throw new InvalidAlertInfoEx("Invalid email address", alertInfo);
+                throw new InvalidAlertInfoEx(INVALID_EMAIL, email, alertInfo);
             }
             String formattedEmail = StringUtils.lowerCase(email);
             if (!emailSet.add(formattedEmail)) {
-                throw new InvalidAlertInfoEx("Duplicate phone number", alertInfo);
+                throw new InvalidAlertInfoEx(DUPLICATE_EMAIL, formattedEmail, alertInfo);
             }
         }
     }

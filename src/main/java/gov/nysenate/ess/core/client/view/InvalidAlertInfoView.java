@@ -1,21 +1,28 @@
 package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.alert.AlertInfoErrorCode;
+import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.alert.InvalidAlertInfoEx;
 
 public class InvalidAlertInfoView implements ViewObject {
 
-    private String reason;
+    private AlertInfoErrorCode alertErrorCode;
+    private String alertErrorData;
     private AlertInfoView alertInfo;
 
     public InvalidAlertInfoView(InvalidAlertInfoEx ex, Employee emp) {
-        this.reason = ex.getMessage();
+        this.alertErrorCode = ex.getErrorCode();
+        this.alertErrorData = ex.getErrorData();
         this.alertInfo = new AlertInfoView(ex.getAlertInfo(), emp);
     }
 
-    public String getReason() {
-        return reason;
+    public AlertInfoErrorCode getAlertErrorCode() {
+        return alertErrorCode;
+    }
+
+    public String getAlertErrorData() {
+        return alertErrorData;
     }
 
     public AlertInfoView getAlertInfo() {

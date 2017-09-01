@@ -1,12 +1,15 @@
 
 angular.module('essMyInfo')
-    .controller('AlertCtrl', ['$scope', '$timeout', '$filter', 'appProps', 'AlertInfoApi',
+    .controller('AlertCtrl', ['$scope', '$timeout', '$filter',
+                              'appProps', 'modals', 'AlertInfoApi',
                                               alertCtrl])
     ;
 
-function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
+function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
 
     $scope.telPattern = /^ *(\([0-9]{3}\)|[0-9]{3} *-?) *[0-9]{3} *-? *[0-9]{4} *$/;
+    /** Additional email pattern to standard html validation that requires a . in the host */
+    $scope.emailPattern = /^.*@.*\.[A-z]{2,}$/;
     $scope.phoneErrorMsg = "Please enter a valid phone number";
     $scope.emailErrorMsg = "Please enter a valid email address";
 
@@ -166,13 +169,23 @@ function alertCtrl($scope, $timeout, $filter, appProps, alertInfoApi) {
 
         ensureMobileOptions();
 
-        return alertInfoApi.save({}, $scope.state.alertInfo, onSuccess, $scope.handleErrorResponse)
+        return alertInfoApi.save({}, $scope.state.alertInfo, onSuccess, onFail)
             .$promise
             .then(init)
             .then(setSaved)
             .finally(postRequest);
 
         function onSuccess() {
+        }
+
+        function onFail(resp) {
+            if (resp.data.errorCode === 'INVALID_ALERT_INFO' &&
+                    resp.data.errorData.alertErrorCode === 'INVALID_EMAIL') {
+                $scope.errorData = resp.data.errorData.alertErrorData;
+                modals.open('invalid-email-dialog');
+            } else {
+                $scope.handleErrorResponse();
+            }
         }
 
         function postRequest() {

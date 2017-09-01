@@ -68,11 +68,13 @@
 
         <label for="personal-email">Personal</label>
         <input type="email" id="personal-email" autocomplete="mobile email"
+               ng-pattern="emailPattern"
                ng-model="state.alertInfo.personalEmail">
         <p class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
 
         <label for="alternate-email">Alternate</label>
         <input type="email" id="alternate-email" autocomplete="off"
+               ng-pattern="emailPattern"
                ng-model="state.alertInfo.alternateEmail">
         <p class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
       </div>
@@ -92,5 +94,15 @@
     </form>
   </div>
 
-  <div modal-container></div>
+  <div modal-container>
+    <modal modal-id="invalid-email-dialog">
+      <div confirm-modal
+           title="Invalid Email Address">
+        <p>
+          A submitted email address was invalid:<br>
+          {{errorData}}
+        </p>
+      </div>
+    </modal>
+  </div>
 </section>
