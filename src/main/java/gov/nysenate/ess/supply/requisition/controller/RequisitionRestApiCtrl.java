@@ -14,14 +14,12 @@ import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
-import gov.nysenate.ess.supply.notification.SupplyEmailService;
-import gov.nysenate.ess.supply.requisition.model.DeliveryMethod;
-import gov.nysenate.ess.supply.requisition.model.PendingState;
-import gov.nysenate.ess.supply.requisition.model.Requisition;
-import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdateException;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
@@ -122,6 +120,28 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         requisitionService.rejectRequisition(requisition);
     }
 
+    /**
+     * Searches for requisitions, returning all that match the given parameters.
+     * Only include parameters you wish to filter for.
+     * This endpoint is restricted to supply employees.
+     *
+     *      GET: /api/v1/supply/requisitions.json
+     *
+     * Optional Params:
+     *      location: string - A location id string matching a requisitions destination, e.g A42FB-W.
+     *      customerId: string - Searches for requisitions ordered by this employee id.
+     *      status: string[] - Searches for requisitions with one of the given {@code RequisitionStatuses}.
+     *      from: string - An ISO date to search from e.g. "2017-08-18T23:59:59"
+     *      to: string - An ISO date to search to. e.g. "2017-08-18T23:59:59"
+     *      issueId: string - Searches for requisitions issued by this employee id.
+     *      dateField: string - The field to filter by with {@code from} and {@code to}.
+     *                  Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
+     *                                  "approved_date_time", "rejected_date_time"
+     *      savedInSfms: string - Searches for requisitions based on if they are saved in sfms.
+     *                  Must be one of: "true", "false"
+     *      itemId: string - Searches for requisitions containing this item id.
+     */
+    // TODO: remove 'All' params, if we want all for a param we should not send it and it will not filter by that param.
     @RequestMapping("")
     public BaseResponse searchRequisitions(@RequestParam(defaultValue = "All", required = false) String location,
                                            @RequestParam(defaultValue = "All", required = false) String customerId,
@@ -134,21 +154,45 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
                                            WebRequest webRequest) {
         checkPermission(new WildcardPermission("supply:employee"));
-        LocalDateTime fromDateTime = getFromDateTime(from);
-        LocalDateTime toDateTime = getToDateTime(to);
-        EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
-        dateField = dateField == null ? "ordered_date_time" : dateField;
 
-        LimitOffset limoff = getLimitOffset(webRequest, 25);
-        Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
-        PaginatedList<Requisition> results;
-        results = requisitionService.searchRequisitions(location, customerId, statuses, dateRange, dateField, savedInSfms, limoff, issuerId, itemId);
+        dateField = dateField == null ? "ordered_date_time" : dateField;
+        RequisitionQuery query = new RequisitionQuery()
+                .setDestination(location)
+                .setCustomerId(customerId)
+                .setStatuses(getStatusEnumSet(status))
+                .setFromDateTime(getFromDateTime(from))
+                .setToDateTime(getToDateTime(to))
+                .setDateField(dateField)
+                .setSavedInSfms(savedInSfms)
+                .setIssuerId(issuerId)
+                .setItemId(itemId)
+                .setLimitOffset(getLimitOffset(webRequest, 25))
+                .setOrderBy(new OrderBy(dateField, SortOrder.DESC));
+
+        PaginatedList<Requisition> results = requisitionService.searchRequisitions(query);
         List<RequisitionView> resultViews = results.getResults().stream()
                                                    .map(RequisitionView::new)
                                                    .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), results.getLimOff());
     }
 
+    /**
+     * Returns a collections of requisitions ordered by an employee or with a specified destination.
+     *
+     *      GET: /api/v1/supply/orderHistory.json
+     *
+     * Required Params:
+     *      location: string - The locationId of the destination to search for. e.g. "A42FB-W"
+     *      customerId: int - The employeeId of the customer to search for.
+     *
+     * Optional Params:
+     *      status: string[] - Only return requisitions with a requisition status of one of these.
+     *      from: string - An ISO date string representing the from date time to search from.
+     *      to: string - An ISO date string representing the to date time to search to.
+     *      dateField: string - The date field to filter by with {@code from} and {@code to}.
+     *                  Must be one of: "ordered_date_time", "processed_date_time", "completed_date_time",
+     *                                  "approved_date_time", "rejected_date_time"
+     */
     @RequestMapping("/orderHistory")
     public BaseResponse orderHistory(@RequestParam String location,
                                      @RequestParam int customerId,
@@ -162,14 +206,17 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
             throw new UnauthorizedException();
         }
 
-        LocalDateTime fromDateTime = getFromDateTime(from);
-        LocalDateTime toDateTime = getToDateTime(to);
-        EnumSet<RequisitionStatus> statuses = getStatusEnumSet(status);
         dateField = dateField == null ? "ordered_date_time" : dateField;
-        LimitOffset limoff = getLimitOffset(webRequest, 25);
-
-        Range<LocalDateTime> dateRange = getClosedRange(fromDateTime, toDateTime, "from", "to");
-        PaginatedList<Requisition> results = requisitionService.searchOrderHistory(location, customerId, statuses, dateRange, dateField, limoff);
+        RequisitionQuery query = new RequisitionQuery()
+                .setDestination(location)
+                .setCustomerId(customerId)
+                .setStatuses(getStatusEnumSet(status))
+                .setFromDateTime(getFromDateTime(from))
+                .setToDateTime(getToDateTime(to))
+                .setDateField(dateField)
+                .setLimitOffset(getLimitOffset(webRequest, 25))
+                .setOrderBy(new OrderBy(dateField, SortOrder.DESC));
+        PaginatedList<Requisition> results = requisitionService.searchOrderHistory(query);
         List<RequisitionView> resultViews = results.getResults().stream()
                                                    .map(RequisitionView::new)
                                                    .collect(Collectors.toList());

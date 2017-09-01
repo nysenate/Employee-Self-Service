@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
 import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.SfmsRequisitionView;
@@ -105,13 +106,15 @@ public class SfmsSynchronizationService {
      * @return
      */
     private List<Requisition> requisitionsToBeSynced() {
-        LocalDateTime start = LocalDateTime.of(2016, 1, 1, 0, 0);
-        LocalDateTime end = dateTimeFactory.now();
-        Range<LocalDateTime> dateRange = Range.closed(start, end);
-        return requisitionService.searchRequisitions("All", "All",
-                EnumSet.of(RequisitionStatus.APPROVED),
-                dateRange, "approved_date_time",
-                "false", LimitOffset.ALL, "All", "All").getResults();
+        RequisitionQuery query = new RequisitionQuery()
+                .setStatuses(EnumSet.of(RequisitionStatus.APPROVED))
+                .setFromDateTime(LocalDateTime.of(2016, 1, 1, 0, 0)) // Date before supply was launched, so includes all requisitions.
+                .setToDateTime(dateTimeFactory.now())
+                .setSavedInSfms(false)
+                .setDateField("approved_date_time")
+                .setLimitOffset(LimitOffset.ALL);
+
+        return requisitionService.searchRequisitions(query).getResults();
     }
 
     /**

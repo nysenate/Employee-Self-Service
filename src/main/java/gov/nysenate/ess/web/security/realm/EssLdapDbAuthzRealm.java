@@ -49,6 +49,11 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     @Autowired private RoleDao roleDao;
     @Autowired private EssPermissionService essPermissionService;
 
+    @Override
+    public Class getAuthenticationTokenClass() {
+        return UsernamePasswordToken.class;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -106,16 +111,13 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         SimpleAuthorizationInfo authInfo = new SimpleAuthorizationInfo();
-
         SenatePerson user;
         int empId;
         try {
             user = (SenatePerson) principals.getPrimaryPrincipal();
             empId = user.getEmployeeId();
         } catch (Exception ex) {
-            // If there is an exception, log it and return empty auth info.
-            // todo send error notification
-            logger.error("Could not retrieve principal for authorization", ex);
+            logger.info("Ess LDAP realm could not retrieve principal for authorization");
             return authInfo;
         }
 
@@ -136,7 +138,6 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             // todo send error notification
             logger.error("Error while retrieving authorization info for employee: " + empId, ex);
         }
-
         return authInfo;
     }
 }

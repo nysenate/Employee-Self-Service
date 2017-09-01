@@ -1,16 +1,17 @@
 
-package gov.nysenate.ess.core.client.view.emergency_notification;
+package gov.nysenate.ess.core.client.view.alert;
 
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchContactList.Contact;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchContactList.Contact.ContactField;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchContactList.Contact.ContactPointList;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint.ContactPointField;
-import gov.nysenate.ess.core.model.emergency_notification.EmergencyNotificationInfo;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactField;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactPointList;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList.Contact.ContactPointList.ContactPoint.ContactPointField;
+import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchContactList;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchProcessingDirectives;
-import gov.nysenate.ess.core.client.view.emergency_notification.ContactBatch.BatchProcessingDirectives.BatchProcessingOption;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchContactList;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchProcessingDirectives;
+import gov.nysenate.ess.core.client.view.alert.ContactBatch.BatchProcessingDirectives.BatchProcessingOption;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,12 @@ public class ContactBatchFactory {
     /**
      * Creates a ContactBatch containing contact information for all given employees.
      * @param employees Employees to be included. Generally should be all active senate employees.
-     * @param emergencyInfoMap A Mapping of employeeId to their EmergencyNotificationInfo for all employees given in {@code employees}.
+     * @param alertInfoMap A Mapping of employeeId to their AlertInfo for all employees given in {@code employees}.
      */
-    public static ContactBatch create(Set<Employee> employees, Map<Integer, EmergencyNotificationInfo> emergencyInfoMap) {
+    public static ContactBatch create(Set<Employee> employees, Map<Integer, AlertInfo> alertInfoMap) {
         ContactBatch contactBatch = new ContactBatch("1.0.3");
         contactBatch.setBatchProcessingDirectives(createBatchProcessingDirectives());
-        contactBatch.setBatchContactList(createBatchContactList(employees, emergencyInfoMap));
+        contactBatch.setBatchContactList(createBatchContactList(employees, alertInfoMap));
         return contactBatch;
     }
 
@@ -48,7 +49,7 @@ public class ContactBatchFactory {
         options.add(new BatchProcessingOption("DeleteGroupsNotInBatch", "false"));
         options.add(new BatchProcessingOption("DeleteContactsWithoutUniqueID", "false"));
         options.add(new BatchProcessingOption("DeleteGroupsWithContactsWithoutUniqueID", "false"));
-        options.add(new BatchProcessingOption("MergeContactsInBatch", "true"));
+        options.add(new BatchProcessingOption("MergeContactsInBatch", "false"));
         options.add(new BatchProcessingOption("BatchContinueOnContactError", "true"));
         options.add(new BatchProcessingOption("BatchContinueOnGroupError", "true"));
         options.add(new BatchProcessingOption("BatchFailureOnMissingModify", "false"));
@@ -65,20 +66,20 @@ public class ContactBatchFactory {
         return id;
     }
 
-    private static BatchContactList createBatchContactList(Set<Employee> employees, Map<Integer, EmergencyNotificationInfo> emergencyInfoMap) {
+    private static BatchContactList createBatchContactList(Set<Employee> employees, Map<Integer, AlertInfo> alertInfoMap) {
         BatchContactList contactList = new BatchContactList();
         for (Employee emp: employees) {
             if (emp.getUid() != null) {
-                contactList.addContact(createContact(emp, emergencyInfoMap.get(emp.getEmployeeId())));
+                contactList.addContact(createContact(emp, alertInfoMap.get(emp.getEmployeeId())));
             }
         }
         return contactList;
     }
 
-    private static Contact createContact(Employee emp, EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static Contact createContact(Employee emp, AlertInfo alertInfo) {
         Contact contact = new Contact("AddOrModify", emp.getUid());
         contact.setContactFields(createContactFields(emp));
-        contact.setContactPointList(createContactPoints(emp, emergencyNotificationInfo));
+        contact.setContactPointList(createContactPoints(emp, alertInfo));
         return contact;
     }
 
@@ -90,7 +91,7 @@ public class ContactBatchFactory {
         contactFields.add(new ContactField("CustomField", "Title", emp.getJobTitle()));
         contactFields.add(new ContactField("CustomField", "Department", emp.getRespCenter().getHead().getName()));
         contactFields.add(new ContactField("CustomField", "LocationID", emp.getWorkLocation().getLocId().getCode()));
-        contactFields.add(new ContactField("CustomField", "EmployeeType", "SenateEmployee"));
+        contactFields.add(new ContactField("CustomField", "AgencyCode", emp.getRespCenter().getAgency().getCode()));
         contactFields.add(new ContactField("Address1", emp.getWorkLocation().getAddress().getAddr1()));
         contactFields.add(new ContactField("Address2", emp.getWorkLocation().getAddress().getAddr2()));
         contactFields.add(new ContactField("City", emp.getWorkLocation().getAddress().getCity()));
@@ -101,7 +102,7 @@ public class ContactBatchFactory {
         return contactFields;
     }
 
-    private static ContactPointList createContactPoints(Employee emp, EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static ContactPointList createContactPoints(Employee emp, AlertInfo alertInfo) {
         ContactPointList cpl = new ContactPointList();
         if (emp.getWorkPhone() != null) {
             cpl.addContactPoint(workPhoneContactPoint(emp));
@@ -110,21 +111,23 @@ public class ContactBatchFactory {
             cpl.addContactPoint(workEmailContactPoint(emp));
         }
 
-        if (emergencyNotificationInfo != null) {
-            if (emergencyNotificationInfo.getHomePhone() != null) {
-                cpl.addContactPoint(homePhoneContactPoint(emergencyNotificationInfo));
+        if (alertInfo != null) {
+            if (StringUtils.isNotBlank(alertInfo.getHomePhone())) {
+                cpl.addContactPoint(homePhoneContactPoint(alertInfo));
             }
-            if (emergencyNotificationInfo.getMobilePhone() != null) {
-                cpl.addContactPoint(mobilePhoneContactPoint(emergencyNotificationInfo));
+            if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
+                    alertInfo.getMobileOptions().isCallable()) {
+                cpl.addContactPoint(mobilePhoneContactPoint(alertInfo));
             }
-            if (emergencyNotificationInfo.isSmsSubscribed()) {
-                cpl.addContactPoint(textMessageContactPoint(emergencyNotificationInfo));
+            if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
+                    alertInfo.getMobileOptions().isTextable()) {
+                cpl.addContactPoint(textMessageContactPoint(alertInfo));
             }
-            if (emergencyNotificationInfo.getPersonalEmail() != null) {
-                cpl.addContactPoint(personalEmailContactPoint(emergencyNotificationInfo));
+            if (StringUtils.isNotBlank(alertInfo.getPersonalEmail())) {
+                cpl.addContactPoint(personalEmailContactPoint(alertInfo));
             }
-            if (emergencyNotificationInfo.getAlternateEmail() != null) {
-                cpl.addContactPoint(alternateEmailContactPoint(emergencyNotificationInfo));
+            if (StringUtils.isNotBlank(alertInfo.getAlternateEmail())) {
+                cpl.addContactPoint(alternateEmailContactPoint(alertInfo));
             }
         }
         return cpl;
@@ -138,28 +141,28 @@ public class ContactBatchFactory {
         return workPhone;
     }
 
-    private static ContactPoint homePhoneContactPoint(EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static ContactPoint homePhoneContactPoint(AlertInfo alertInfo) {
         ContactPoint homePhone = new ContactPoint("Voice");
         homePhone.addContactPointField(new ContactPointField("Label", "Home Phone"));
         homePhone.addContactPointField(new ContactPointField("CountryCode", "1"));
-        homePhone.addContactPointField(new ContactPointField("Number", emergencyNotificationInfo.getHomePhone()));
+        homePhone.addContactPointField(new ContactPointField("Number", alertInfo.getHomePhone()));
         return homePhone;
     }
 
-    private static ContactPoint mobilePhoneContactPoint(EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static ContactPoint mobilePhoneContactPoint(AlertInfo alertInfo) {
         ContactPoint homePhone = new ContactPoint("Voice");
         homePhone.addContactPointField(new ContactPointField("Label", "Mobile Phone"));
         homePhone.addContactPointField(new ContactPointField("CountryCode", "1"));
-        homePhone.addContactPointField(new ContactPointField("Number", emergencyNotificationInfo.getMobilePhone()));
+        homePhone.addContactPointField(new ContactPointField("Number", alertInfo.getMobilePhone()));
         return homePhone;
     }
 
-    private static ContactPoint textMessageContactPoint(EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static ContactPoint textMessageContactPoint(AlertInfo alertInfo) {
         ContactPoint homePhone = new ContactPoint("TextMessage");
         homePhone.addContactPointField(new ContactPointField("Label", "SMS"));
         homePhone.addContactPointField(new ContactPointField("Carrier", "SWN Global SMS"));
         // For SMS, need to include country code in phone number.
-        homePhone.addContactPointField(new ContactPointField("Number", "1" + emergencyNotificationInfo.getMobilePhone()));
+        homePhone.addContactPointField(new ContactPointField("Number", "1" + alertInfo.getMobilePhone()));
         return homePhone;
     }
 
@@ -170,17 +173,17 @@ public class ContactBatchFactory {
         return workEmail;
     }
 
-    private static ContactPoint personalEmailContactPoint(EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static ContactPoint personalEmailContactPoint(AlertInfo alertInfo) {
         ContactPoint workEmail = new ContactPoint("Email");
         workEmail.addContactPointField(new ContactPointField("Label", "Personal Email"));
-        workEmail.addContactPointField(new ContactPointField("Address", emergencyNotificationInfo.getPersonalEmail()));
+        workEmail.addContactPointField(new ContactPointField("Address", alertInfo.getPersonalEmail()));
         return workEmail;
     }
 
-    private static ContactPoint alternateEmailContactPoint(EmergencyNotificationInfo emergencyNotificationInfo) {
+    private static ContactPoint alternateEmailContactPoint(AlertInfo alertInfo) {
         ContactPoint workEmail = new ContactPoint("Email");
         workEmail.addContactPointField(new ContactPointField("Label", "Alternate Email"));
-        workEmail.addContactPointField(new ContactPointField("Address", emergencyNotificationInfo.getAlternateEmail()));
+        workEmail.addContactPointField(new ContactPointField("Address", alertInfo.getAlternateEmail()));
         return workEmail;
     }
 }

@@ -335,7 +335,7 @@ public final class Requisition {
         private Set<LineItem> lineItems;
         private RequisitionState state;
         private Employee issuer;
-        private String note;
+        private String note = "";
         private String specialInstructions;
         private Employee modifiedBy;
         private LocalDateTime modifiedDateTime;
