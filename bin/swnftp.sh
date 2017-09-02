@@ -16,12 +16,13 @@ timestamp=`date +%Y%m%d%H%M%S`
 swnfile=writing_request_$timestamp.xml
 
 usage() {
-  echo "Usage: $prog [--config-file file] [--tmpdir dir] [--keep-tmpfile] [--xmlfile file] [--no-xml | --no-ftp] [--verbose]" >&2
+  echo "Usage: $prog [--config-file file] [--tmpdir dir] [--keep-tmpfile] [--pretty] [--xmlfile file] [--no-xml | --no-ftp] [--verbose]" >&2
 }
 
 cfgfile=/etc/sendwordnow.cfg
 tmpdir=/tmp
 keep_tmpfile=0
+xml_filter=cat
 xml_file=
 no_xml=0
 no_ftp=0
@@ -32,6 +33,7 @@ while [ $# -gt 0 ]; do
     --conf*|-c) shift; cfgfile="$1" ;;
     --tmpdir|-t) shift; tmpdir="$1" ;;
     --keep*|-k) keep_tmpfile=1 ;;
+    --pretty|-p) xml_filter="xmllint --format - " ;;
     --xml*|-x) shift; xml_file="$1" ;;
     --no-xml|-n) no_xml=1 ;;
     --no-ftp|-N) no_ftp=1 ;;
@@ -83,16 +85,16 @@ if [ $no_xml -eq 1 ]; then
   lftp_mode="interactive"
 elif [ "$xml_file" ]; then
   echo "Using the provided XML file [$xml_file]"
-  cat "$xml_file" >"$tmpdir/$tmpfile"
+  cat "$xml_file" | $xml_filter >"$tmpdir/$tmpfile"
 else
   echo "Requesting an XML export of the contact data from ESS"
-  essApi.sh eax --no-auth --host "$esshost" >"$tmpdir/$tmpfile" 2>/dev/null || exit 1
+  { essApi.sh eax --no-auth --host "$esshost" 2>/dev/null || exit 1; } | $xml_filter >"$tmpdir/$tmpfile"
 
   if [ ! -r "$tmpdir/$tmpfile" ]; then
     echo "$prog: $tmpfile: ESS host [$esshost] did not export any XML data" >&2
     exit 1
-  elif cut -c1-13 "$tmpdir/$tmpfile" | grep -q -v '<contactBatch'; then
-    echo "$prog: $tmpfile: File does not start with XML <contactBatch> tag" >&2
+  elif head -c 13 "$tmpdir/$tmpfile" | egrep -q -v '^(<contactBatch|<[?]xml)'; then
+    echo "$prog: $tmpfile: File does not start with <?xml> or <contactBatch> tags" >&2
     [ $keep_tmpfile -eq 1 ] || rm -rf "$tmpdir/$tmpfile"
     exit 1
   fi
