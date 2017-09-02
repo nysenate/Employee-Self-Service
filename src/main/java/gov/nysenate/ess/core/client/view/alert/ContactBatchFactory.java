@@ -105,85 +105,59 @@ public class ContactBatchFactory {
     private static ContactPointList createContactPoints(Employee emp, AlertInfo alertInfo) {
         ContactPointList cpl = new ContactPointList();
         if (emp.getWorkPhone() != null) {
-            cpl.addContactPoint(workPhoneContactPoint(emp));
+            cpl.addContactPoint(voiceContactPoint("Work", emp.getWorkPhone()));
         }
         if (emp.getEmail() != null) {
-            cpl.addContactPoint(workEmailContactPoint(emp));
+            cpl.addContactPoint(emailContactPoint("Work", emp.getEmail()));
         }
 
         if (alertInfo != null) {
             if (StringUtils.isNotBlank(alertInfo.getHomePhone())) {
-                cpl.addContactPoint(homePhoneContactPoint(alertInfo));
+                cpl.addContactPoint(voiceContactPoint("Home", alertInfo.getHomePhone()));
+            }
+            if (StringUtils.isNotBlank(alertInfo.getAlternatePhone())) {
+                cpl.addContactPoint(voiceContactPoint("Alternate", alertInfo.getAlternatePhone()));
             }
             if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
                     alertInfo.getMobileOptions().isCallable()) {
-                cpl.addContactPoint(mobilePhoneContactPoint(alertInfo));
+                cpl.addContactPoint(voiceContactPoint("Mobile", alertInfo.getMobilePhone()));
             }
             if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
                     alertInfo.getMobileOptions().isTextable()) {
-                cpl.addContactPoint(textMessageContactPoint(alertInfo));
+                cpl.addContactPoint(textMessageContactPoint(alertInfo.getMobilePhone()));
             }
             if (StringUtils.isNotBlank(alertInfo.getPersonalEmail())) {
-                cpl.addContactPoint(personalEmailContactPoint(alertInfo));
+                cpl.addContactPoint(emailContactPoint("Personal", alertInfo.getPersonalEmail()));
             }
             if (StringUtils.isNotBlank(alertInfo.getAlternateEmail())) {
-                cpl.addContactPoint(alternateEmailContactPoint(alertInfo));
+                cpl.addContactPoint(emailContactPoint("Alternate", alertInfo.getAlternateEmail()));
             }
         }
         return cpl;
     }
 
-    private static ContactPoint workPhoneContactPoint(Employee emp) {
-        ContactPoint workPhone = new ContactPoint("Voice");
-        workPhone.addContactPointField(new ContactPointField("Label", "Work Phone"));
-        workPhone.addContactPointField(new ContactPointField("CountryCode", "1"));
-        workPhone.addContactPointField(new ContactPointField("Number", emp.getWorkPhone()));
-        return workPhone;
+    private static ContactPoint voiceContactPoint(String label, String val) {
+        ContactPoint cp = new ContactPoint("Voice");
+        cp.addContactPointField(new ContactPointField("Label", label+" Phone"));
+        cp.addContactPointField(new ContactPointField("CountryCode", "1"));
+        cp.addContactPointField(new ContactPointField("Number", val));
+        return cp;
     }
 
-    private static ContactPoint homePhoneContactPoint(AlertInfo alertInfo) {
-        ContactPoint homePhone = new ContactPoint("Voice");
-        homePhone.addContactPointField(new ContactPointField("Label", "Home Phone"));
-        homePhone.addContactPointField(new ContactPointField("CountryCode", "1"));
-        homePhone.addContactPointField(new ContactPointField("Number", alertInfo.getHomePhone()));
-        return homePhone;
-    }
-
-    private static ContactPoint mobilePhoneContactPoint(AlertInfo alertInfo) {
-        ContactPoint homePhone = new ContactPoint("Voice");
-        homePhone.addContactPointField(new ContactPointField("Label", "Mobile Phone"));
-        homePhone.addContactPointField(new ContactPointField("CountryCode", "1"));
-        homePhone.addContactPointField(new ContactPointField("Number", alertInfo.getMobilePhone()));
-        return homePhone;
-    }
-
-    private static ContactPoint textMessageContactPoint(AlertInfo alertInfo) {
-        ContactPoint homePhone = new ContactPoint("TextMessage");
-        homePhone.addContactPointField(new ContactPointField("Label", "SMS"));
-        homePhone.addContactPointField(new ContactPointField("Carrier", "SWN Global SMS"));
+    private static ContactPoint textMessageContactPoint(String val) {
+        ContactPoint cp = new ContactPoint("TextMessage");
+        cp.addContactPointField(new ContactPointField("Label", "SMS"));
+        cp.addContactPointField(new ContactPointField("Carrier", "SWN Global SMS"));
         // For SMS, need to include country code in phone number.
-        homePhone.addContactPointField(new ContactPointField("Number", "1" + alertInfo.getMobilePhone()));
-        return homePhone;
+        cp.addContactPointField(new ContactPointField("Number", "1"+val));
+        return cp;
     }
 
-    private static ContactPoint workEmailContactPoint(Employee emp) {
-        ContactPoint workEmail = new ContactPoint("Email");
-        workEmail.addContactPointField(new ContactPointField("Label", "Work Email"));
-        workEmail.addContactPointField(new ContactPointField("Address", emp.getEmail()));
-        return workEmail;
+    private static ContactPoint emailContactPoint(String label, String val) {
+        ContactPoint cp = new ContactPoint("Email");
+        cp.addContactPointField(new ContactPointField("Label", label+" Email"));
+        cp.addContactPointField(new ContactPointField("Address", val));
+        return cp;
     }
 
-    private static ContactPoint personalEmailContactPoint(AlertInfo alertInfo) {
-        ContactPoint workEmail = new ContactPoint("Email");
-        workEmail.addContactPointField(new ContactPointField("Label", "Personal Email"));
-        workEmail.addContactPointField(new ContactPointField("Address", alertInfo.getPersonalEmail()));
-        return workEmail;
-    }
-
-    private static ContactPoint alternateEmailContactPoint(AlertInfo alertInfo) {
-        ContactPoint workEmail = new ContactPoint("Email");
-        workEmail.addContactPointField(new ContactPointField("Label", "Alternate Email"));
-        workEmail.addContactPointField(new ContactPointField("Address", alertInfo.getAlternateEmail()));
-        return workEmail;
-    }
 }
