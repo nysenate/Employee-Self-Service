@@ -108,10 +108,6 @@ public class EssAllowanceService implements AllowanceService {
 
         // Add up hourly work payments to get the total hours/money paid for the year
         for (HourlyWorkPayment payment : payments) {
-            if (!RangeUtils.intersects(unpaidDates, payment.getWorkingRange())) {
-                // Ignore payments that do not coincide with unpaid dates
-                continue;
-            }
             unpaidDates.remove(payment.getWorkingRange());
             hoursPaid = hoursPaid.add(payment.getHoursPaid());
             moneyPaid = moneyPaid.add(payment.getMoneyPaidForYear(year));
@@ -232,9 +228,7 @@ public class EssAllowanceService implements AllowanceService {
                                 ? priorYearPayments.get(record.getEffectDate()).getBigDecimalValue("MOPRIORYRTE")
                                 : BigDecimal.ZERO
                 ))
-                .filter(payment -> yearRange.contains(payment.getEffectDate()) ||
-                        yearRange.contains(Optional.ofNullable(payment.getEndDate())
-                                .orElse(yearRange.upperEndpoint())))
+                .filter(payment -> RangeUtils.intersects(yearRange, payment.getWorkingRange()))
                 .sorted(Comparator.comparing(HourlyWorkPayment::getEffectDate))
                 .collect(Collectors.toList());
     }

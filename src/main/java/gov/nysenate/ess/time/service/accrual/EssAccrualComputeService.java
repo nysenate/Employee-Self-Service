@@ -182,12 +182,14 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // Attempt to compute an initial annual accrual summary if none exists
         if (annualAcc.isEmpty()) {
-            if (accrualAllowedDates.intersects(remainingPeriods.first().getDateRange())) {
-                AnnualAccSummary annualAccSummary = computeInitialAnnualAccSummary(empTrans);
-                annualAcc.put(annualAccSummary.getYear(), annualAccSummary);
-            } else {
+            remainingPeriods = remainingPeriods.stream()
+                    .filter(period -> accrualAllowedDates.intersects(period.getDateRange()))
+                    .collect(Collectors.toCollection(TreeSet::new));
+            if (remainingPeriods.isEmpty()) {
                 throw new AccrualException(empId, AccrualExceptionType.NO_ACTIVE_ANNUAL_RECORD_FOUND);
             }
+            AnnualAccSummary annualAccSummary = computeInitialAnnualAccSummary(empTrans);
+            annualAcc.put(annualAccSummary.getYear(), annualAccSummary);
         }
 
         AnnualAccSummary lastAnnualAccSummary = annualAcc.lastEntry().getValue();
