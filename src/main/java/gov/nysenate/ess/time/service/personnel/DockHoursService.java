@@ -19,7 +19,6 @@ public interface DockHoursService {
      * @param dateRange Range<LocalDate> - Date range used to find Total Docked Hours
      * @return BigDecimal - Total Docked Hours within the date range
      */
-
     BigDecimal getDockHours(int empId,Range<LocalDate> dateRange);
 
 }
