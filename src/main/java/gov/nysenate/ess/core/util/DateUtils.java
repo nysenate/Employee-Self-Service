@@ -224,6 +224,18 @@ public class DateUtils
     }
 
     /**
+     * Get the number of weekdays during the given date range set
+     * @see #getNumberOfWeekdays(Range)
+     * @param dateRange RangeSet<LocalDate>
+     * @return Integer
+     */
+    public static long getNumberOfWeekdays(RangeSet<LocalDate> dateRange) {
+        return dateRange.asRanges().stream()
+                .map(DateUtils::getNumberOfWeekdays)
+                .reduce(0L, Long::sum);
+    }
+
+    /**
      * Convert a LocalDateTime to a Date.
      */
     public static Date toDate(LocalDateTime localDateTime) {
