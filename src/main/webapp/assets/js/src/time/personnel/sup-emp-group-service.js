@@ -1,6 +1,6 @@
 angular.module('essTime')
     .factory('supEmpGroupService',
-             ['$filter', 'appProps', 'modals', 'SupervisorEmployeesApi', supEmpGroupService]);
+             ['$filter', '$q', 'appProps', 'modals', 'SupervisorEmployeesApi', 'SupervisorOverridesApi', supEmpGroupService]);
 
 /**
  * Provides utilities to retrieve and query
@@ -12,7 +12,7 @@ angular.module('essTime')
  * @param supEmployeeApi
  * @returns {{}}
  */
-function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
+function supEmpGroupService($filter, $q, appProps, modals, supEmployeeApi, supOverrideApi) {
 
     /** Stores extended supervisor employee group */
     var extendedSupEmpGroup = null;
@@ -45,7 +45,10 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
      */
     function init() {
         if (!empGroupPromise) {
-            empGroupPromise = loadSupEmpGroup();
+            empGroupPromise = $q.all([
+                loadSupEmpGroup(),
+                loadSupOverrides()
+            ])
         }
         return empGroupPromise;
     }
@@ -176,6 +179,37 @@ function supEmpGroupService($filter, appProps, modals, supEmployeeApi) {
         }
 
         return supEmployeeApi.get(params, onSuccess, onFail).$promise;
+    }
+
+    /**
+     * Loads info about override supervisors
+     * @returns {*}
+     */
+    function loadSupOverrides () {
+        var params = {supId: appProps.user.employeeId};
+
+        console.log('helloooo');
+
+        function onSuccess (response) {
+            response.overrides.forEach(function (override) {
+                var ovrEmpId = override.overrideSupervisorId;
+                var ovrEmpInfo = override.overrideSupervisor;
+
+                nameMap[ovrEmpInfo.employeeId] = {
+                    firstName: ovrEmpInfo.firstName,
+                    lastName: ovrEmpInfo.lastName,
+                    fullName: ovrEmpInfo.fullName
+                };
+
+                supIdMap[ovrEmpId] = override.supervisorId;
+            });
+        }
+        function onFail (response) {
+            console.error('error retrieving sup overrides\nparams:', params, 'response:', response);
+            modals.open('500', {details: response});
+        }
+
+        return supOverrideApi.get(params, onSuccess, onFail).$promise;
     }
 
     /**
