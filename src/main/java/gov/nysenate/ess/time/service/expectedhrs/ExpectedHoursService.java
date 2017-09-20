@@ -4,7 +4,6 @@ import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +14,6 @@ import java.time.LocalDate;
  *
  * Defines a service that can provide information about an employee's expected hours.
  */
-@Service
 public interface ExpectedHoursService {
 
     BigDecimal getExpectedHours(int empId, PayPeriod payPeriod);
