@@ -5169,6 +5169,43 @@ record-review-modal,
   justify-content: space-around;
 }
 /**
+ * Styles for ESS Travel
+ */
+.travel-hero {
+  padding: .3em;
+  font-weight: bold;
+  background: #d19525;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+.travel-hero h1 {
+  font-size: 2.5em;
+}
+.travel-hero h1,
+.travel-hero h2,
+.travel-hero h3,
+.travel-hero h4,
+.travel-hero p,
+.travel-hero span {
+  color: white;
+}
+@media print {
+  .travel-hero h1,
+  .travel-hero h2,
+  .travel-hero h3,
+  .travel-hero h4,
+  .travel-hero p,
+  .travel-hero span {
+    color: black;
+  }
+}
+@media print {
+  .travel-hero {
+    background: white;
+    border-bottom: 1px solid black;
+  }
+}
+/**
 * Styles for ESS Help Pages
 */
 .help-hero {
