@@ -157,6 +157,15 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/requisition/requisition-view'
     });
 
+    /** Travel */
+    $routeProvider.when(ctxPath + '/travel', {
+        redirectTo: ctxPath + 'travel/stub'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/stub', {
+        templateUrl: ctxPath + '/template/travel/stub'
+    });
+
     /** Help */
 
     $routeProvider.when(ctxPath + '/help/ta/plan', {
