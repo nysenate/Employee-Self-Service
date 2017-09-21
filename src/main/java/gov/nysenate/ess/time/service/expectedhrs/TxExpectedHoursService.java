@@ -64,7 +64,9 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
         // Hours.
 
-        expectedHours.add(allowanceService.getAllowanceUsage(empId, payPeriod.getStartDate()).getHoursUsed());
+        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, payPeriod.getStartDate()).getHoursUsed();
+
+        expectedHours = expectedHours.add(tempHours);
 
         expectedHours = AccrualUtils.roundExpectedHours(expectedHours);
 
