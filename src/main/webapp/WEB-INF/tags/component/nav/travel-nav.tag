@@ -9,6 +9,12 @@
     <h3 class="main-topic">My Travel</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/travel/stub">Travel Request</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/travel/request-history">Request History</a></li>
+    </ul>
+    <h3 class="main-topic">Manage Requests</h3>
+    <ul class="sub-topic-list">
+      <li class="sub-topic"><a href="${ctxPath}/travel/manage/review-travel-requests">Review Travel Requests</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/travel/manage/travel-manage-history">Travel Request History</a></li>
     </ul>
   </section>
 </div>

@@ -166,6 +166,14 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/stub'
     });
 
+    $routeProvider.when(ctxPath + '/travel/request-history', {
+        templateUrl: ctxPath + '/template/travel/travel-request-history'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/manage/travel-manage-history', {
+        templateUrl: ctxPath + '/template/travel/manage/travel-manage-history'
+    });
+
     /** Help */
 
     $routeProvider.when(ctxPath + '/help/ta/plan', {
