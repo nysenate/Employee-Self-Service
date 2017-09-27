@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.request.model;
+package gov.nysenate.ess.travel.application.model;
 
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.unit.Address;
@@ -6,7 +6,7 @@ import gov.nysenate.ess.core.model.unit.Address;
 import java.util.List;
 
 /**
- * The Itinerary of a TravelRequest.
+ * The Itinerary of a TravelApplication.
  * Contains the origin address and all destination address's with arrival and departure times.
  *
  * TODO What if car pooling? Origin = null?

@@ -1,27 +1,27 @@
-package gov.nysenate.ess.travel.request.model;
+package gov.nysenate.ess.travel.application.model;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 
 import java.time.LocalDateTime;
 
-public class TravelRequest {
+public class TravelApplication {
 
     private int id;
-    private Employee travelingEmployee;
+    private Employee applicant;
     private ModeOfTransportation modeOfTransportation;
     private GsaReimbursement gsaReimbursement;
     private TransportationReimbursement transportationReimbursement;
     private Itinerary itinerary;
-    private TravelRequestStatus status;
+    private TravelApplicationStatus status;
 
     private Employee createdBy;
     private LocalDateTime createdDateTime;
     private Employee modifiedBy;
     private LocalDateTime modifiedDateTime;
 
-    private TravelRequest(Builder builder) {
+    private TravelApplication(Builder builder) {
         this.id = builder.id;
-        this.travelingEmployee = builder.travelingEmployee;
+        this.applicant = builder.applicant;
         this.modeOfTransportation = builder.modeOfTransportation;
         this.gsaReimbursement = builder.gsaReimbursement;
         this.transportationReimbursement = builder.transportationReimbursement;
@@ -37,8 +37,8 @@ public class TravelRequest {
         return id;
     }
 
-    public Employee getTravelingEmployee() {
-        return travelingEmployee;
+    public Employee getApplicant() {
+        return applicant;
     }
 
     public ModeOfTransportation getModeOfTransportation() {
@@ -57,7 +57,7 @@ public class TravelRequest {
         return itinerary;
     }
 
-    public TravelRequestStatus getStatus() {
+    public TravelApplicationStatus getStatus() {
         return status;
     }
 
@@ -83,19 +83,19 @@ public class TravelRequest {
 
     public static class Builder {
         private int id;
-        private Employee travelingEmployee;
+        private Employee applicant;
         private ModeOfTransportation modeOfTransportation;
         private GsaReimbursement gsaReimbursement;
         private TransportationReimbursement transportationReimbursement;
         private Itinerary itinerary;
-        private TravelRequestStatus status;
+        private TravelApplicationStatus status;
         private Employee createdBy;
         private LocalDateTime createdDateTime;
         private Employee modifiedBy;
         private LocalDateTime modifiedDateTime;
 
-        public TravelRequest build() {
-            return new TravelRequest(this);
+        public TravelApplication build() {
+            return new TravelApplication(this);
         }
 
         public Builder setId(int id) {
@@ -103,8 +103,8 @@ public class TravelRequest {
             return this;
         }
 
-        public Builder setTravelingEmployee(Employee travelingEmployee) {
-            this.travelingEmployee = travelingEmployee;
+        public Builder setApplicant(Employee applicant) {
+            this.applicant = applicant;
             return this;
         }
 
@@ -128,7 +128,7 @@ public class TravelRequest {
             return this;
         }
 
-        public Builder setStatus(TravelRequestStatus status) {
+        public Builder setStatus(TravelApplicationStatus status) {
             this.status = status;
             return this;
         }
