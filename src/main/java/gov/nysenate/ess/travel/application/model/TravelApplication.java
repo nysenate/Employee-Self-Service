@@ -2,6 +2,8 @@ package gov.nysenate.ess.travel.application.model;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TravelApplication {
@@ -9,8 +11,8 @@ public class TravelApplication {
     private int id;
     private Employee applicant;
     private ModeOfTransportation modeOfTransportation;
-    private GsaReimbursement gsaReimbursement;
-    private TransportationReimbursement transportationReimbursement;
+    private GsaAllowance gsaAllowance;
+    private TransportationAllowance transportationAllowance;
     private Itinerary itinerary;
     private TravelApplicationStatus status;
 
@@ -23,14 +25,31 @@ public class TravelApplication {
         this.id = builder.id;
         this.applicant = builder.applicant;
         this.modeOfTransportation = builder.modeOfTransportation;
-        this.gsaReimbursement = builder.gsaReimbursement;
-        this.transportationReimbursement = builder.transportationReimbursement;
+        this.gsaAllowance = builder.gsaAllowance;
+        this.transportationAllowance = builder.transportationAllowance;
         this.itinerary = builder.itinerary;
         this.status = builder.status;
         this.createdBy = builder.createdBy;
         this.createdDateTime = builder.createdDateTime;
         this.modifiedBy = builder.modifiedBy;
         this.modifiedDateTime = builder.modifiedDateTime;
+    }
+
+    /**
+     * The total allowance available to the applicant.
+     * @return
+     */
+    public BigDecimal totalAllowance() {
+        return gsaAllowance.total().add(transportationAllowance.total());
+    }
+
+    /**
+     * The date the applicant will arrive at their first destination.
+     * Used in the UI as an identifier for a trip.
+     * // TODO Handle edge cases
+     */
+    public LocalDate travelDate() {
+        return itinerary.getTravelDestinations().get(0).getArrivalDateTime().toLocalDate();
     }
 
     public int getId() {
@@ -45,12 +64,12 @@ public class TravelApplication {
         return modeOfTransportation;
     }
 
-    public GsaReimbursement getGsaReimbursement() {
-        return gsaReimbursement;
+    public GsaAllowance getGsaAllowance() {
+        return gsaAllowance;
     }
 
-    public TransportationReimbursement getTransportationReimbursement() {
-        return transportationReimbursement;
+    public TransportationAllowance getTransportationAllowance() {
+        return transportationAllowance;
     }
 
     public Itinerary getItinerary() {
@@ -85,8 +104,8 @@ public class TravelApplication {
         private int id;
         private Employee applicant;
         private ModeOfTransportation modeOfTransportation;
-        private GsaReimbursement gsaReimbursement;
-        private TransportationReimbursement transportationReimbursement;
+        private GsaAllowance gsaAllowance;
+        private TransportationAllowance transportationAllowance;
         private Itinerary itinerary;
         private TravelApplicationStatus status;
         private Employee createdBy;
@@ -113,13 +132,13 @@ public class TravelApplication {
             return this;
         }
 
-        public Builder setGsaReimbursement(GsaReimbursement gsaReimbursement) {
-            this.gsaReimbursement = gsaReimbursement;
+        public Builder setGsaAllowance(GsaAllowance gsaAllowance) {
+            this.gsaAllowance = gsaAllowance;
             return this;
         }
 
-        public Builder setTransportationReimbursement(TransportationReimbursement transportationReimbursement) {
-            this.transportationReimbursement = transportationReimbursement;
+        public Builder setTransportationAllowance(TransportationAllowance transportationAllowance) {
+            this.transportationAllowance = transportationAllowance;
             return this;
         }
 

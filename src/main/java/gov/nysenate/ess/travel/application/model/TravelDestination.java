@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 /**
  * Represents a single destination in a travel request.
  * Each destination requires an address, arrival, and departure time
- * to be used in GSA meal and lodging reimbursement calculations.
+ * to be used in GSA meal and lodging allowance calculations.
  */
 public class TravelDestination {
 

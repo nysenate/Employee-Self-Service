@@ -14,10 +14,12 @@ public class TravelApplicationView implements ViewObject {
     private int id;
     private EmployeeView applicant;
     private String modeOfTransportation;
-    private GsaReimbursementView gsaReimbursement;
-    private TransportationReimbursementView transportationReimbursement;
+    private GsaAllowanceView gsaAllowance;
+    private TransportationAllowanceView transportationAllowance;
+    private String totalAllowance;
     private ItineraryView itinerary;
     private String status;
+    private String travelDate;
 
     private EmployeeView createdBy;
     private String createdDateTime;
@@ -28,10 +30,12 @@ public class TravelApplicationView implements ViewObject {
         this.id = ta.getId();
         this.applicant = new EmployeeView(ta.getApplicant());
         this.modeOfTransportation = ta.getModeOfTransportation().name();
-        this.gsaReimbursement = new GsaReimbursementView(ta.getGsaReimbursement());
-        this.transportationReimbursement = new TransportationReimbursementView(ta.getTransportationReimbursement());
+        this.gsaAllowance = new GsaAllowanceView(ta.getGsaAllowance());
+        this.transportationAllowance = new TransportationAllowanceView(ta.getTransportationAllowance());
+        this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
         this.status = ta.getStatus().name();
+        this.travelDate = ta.travelDate().format(DateTimeFormatter.ISO_DATE_TIME);
         this.createdBy = new EmployeeView(ta.getCreatedBy());
         this.createdDateTime = ta.getCreatedDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
         this.modifiedBy = new EmployeeView(ta.getModifiedBy());
@@ -43,8 +47,8 @@ public class TravelApplicationView implements ViewObject {
                 .setId(id)
                 .setApplicant(applicant.toEmployee())
                 .setModeOfTransportation(ModeOfTransportation.valueOf(modeOfTransportation))
-                .setGsaReimbursement(gsaReimbursement.toGsaReimbursement())
-                .setTransportationReimbursement(transportationReimbursement.toTransportReimbursement())
+                .setGsaAllowance(gsaAllowance.toGsaAllowance())
+                .setTransportationAllowance(transportationAllowance.toTransportationAllowance())
                 .setItinerary(itinerary.toItinerary())
                 .setStatus(TravelApplicationStatus.valueOf(status))
                 .setCreatedBy(createdBy.toEmployee())
@@ -66,12 +70,16 @@ public class TravelApplicationView implements ViewObject {
         return modeOfTransportation;
     }
 
-    public GsaReimbursementView getGsaReimbursement() {
-        return gsaReimbursement;
+    public GsaAllowanceView getGsaAllowance() {
+        return gsaAllowance;
     }
 
-    public TransportationReimbursementView getTransportationReimbursement() {
-        return transportationReimbursement;
+    public TransportationAllowanceView getTransportationAllowance() {
+        return transportationAllowance;
+    }
+
+    public String getTotalAllowance() {
+        return totalAllowance;
     }
 
     public ItineraryView getItinerary() {
@@ -80,6 +88,10 @@ public class TravelApplicationView implements ViewObject {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getTravelDate() {
+        return travelDate;
     }
 
     public EmployeeView getCreatedBy() {

@@ -1,24 +1,24 @@
 package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.model.GsaReimbursement;
+import gov.nysenate.ess.travel.application.model.GsaAllowance;
 
-public class GsaReimbursementView implements ViewObject {
+public class GsaAllowanceView implements ViewObject {
 
     private String meals;
     private String lodging;
     private String incidental;
     private String total;
 
-    public GsaReimbursementView(GsaReimbursement gsa) {
+    public GsaAllowanceView(GsaAllowance gsa) {
         this.meals = gsa.getMeals().toString();
         this.lodging = gsa.getLodging().toString();
         this.incidental = gsa.getIncidental().toString();
         this.total = gsa.total().toString();
     }
 
-    public GsaReimbursement toGsaReimbursement() {
-        return new GsaReimbursement(meals, lodging, incidental);
+    public GsaAllowance toGsaAllowance() {
+        return new GsaAllowance(meals, lodging, incidental);
     }
 
     public String getMeals() {
@@ -39,6 +39,6 @@ public class GsaReimbursementView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "gsa-reimbursement";
+        return "gsa-allowance";
     }
 }
