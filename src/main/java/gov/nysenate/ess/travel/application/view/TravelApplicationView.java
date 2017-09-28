@@ -27,6 +27,7 @@ public class TravelApplicationView implements ViewObject {
     private String modifiedDateTime;
 
     public TravelApplicationView(TravelApplication ta) {
+        // TODO: Prob need null checks here
         this.id = ta.getId();
         this.applicant = new EmployeeView(ta.getApplicant());
         this.modeOfTransportation = ta.getModeOfTransportation().name();
@@ -35,7 +36,7 @@ public class TravelApplicationView implements ViewObject {
         this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
         this.status = ta.getStatus().name();
-        this.travelDate = ta.travelDate().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.travelDate = ta.travelDate().format(DateTimeFormatter.ISO_DATE);
         this.createdBy = new EmployeeView(ta.getCreatedBy());
         this.createdDateTime = ta.getCreatedDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
         this.modifiedBy = new EmployeeView(ta.getModifiedBy());

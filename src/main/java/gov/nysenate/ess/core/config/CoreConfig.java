@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Profile;
 @Import({PropertyConfig.class, LdapConfig.class, EventBusConfig.class, SchedulerConfig.class,
         DbConnectionPoolConfig.class, DatabaseConfig.class, CacheConfig.class, BeanPostProcessorConfig.class,
         FreemarkerConfig.class, JacksonConfig.class})
-@ComponentScan({"gov.nysenate.ess.core", "gov.nysenate.ess.time", "gov.nysenate.ess.supply"})
+@ComponentScan({"gov.nysenate.ess.core", "gov.nysenate.ess.time", "gov.nysenate.ess.supply", "gov.nysenate.ess.travel"})
 public class CoreConfig {
 }
