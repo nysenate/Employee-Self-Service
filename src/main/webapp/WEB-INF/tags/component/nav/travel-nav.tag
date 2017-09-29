@@ -8,7 +8,7 @@
     <ess-component-nav:nav-header topicTitle="Travel Menu" colorClass="orange"/>
     <h3 class="main-topic">My Travel</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/travel/stub">Travel Request</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/travel/travel-application">Travel Application</a></li>
       <li class="sub-topic"><a href="${ctxPath}/travel/request-history">Request History</a></li>
     </ul>
     <h3 class="main-topic">Manage Requests</h3>

@@ -3,7 +3,7 @@
 
 <c:choose>
     <c:when test="${runtimeLevel eq 'dev'}">
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-application.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-request-history.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/travel-manage-history-ctrl.js?v=${releaseVersion}"></script>
     </c:when>
