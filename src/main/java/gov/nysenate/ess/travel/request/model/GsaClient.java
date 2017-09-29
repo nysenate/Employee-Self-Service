@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.request.model;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import gov.nysenate.ess.travel.application.model.MealIncidentalRates;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -12,8 +13,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.Month;
 
-public class GSAClient {
+public class GsaClient {
 
     private static final ResponseHandler<String> responseHandler = response -> {
         int status = response.getStatusLine().getStatusCode();
@@ -26,13 +29,19 @@ public class GSAClient {
         }
     };
 
+    private final LocalDateTime NOW = LocalDateTime.now();
     private int fiscalYear;
     private int zipcode;
     private JsonObject records;
 
-    public GSAClient(int fiscalYear, int zipcode) {
+    private MealIncidentalRates mealIncidentalRates;
+
+    private String meals;
+    private String lodging;
+
+    public GsaClient(int fiscalYear, String zipcode) {
         this.fiscalYear = fiscalYear;
-        this.zipcode = zipcode;
+        this.zipcode = Integer.parseInt(zipcode);
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet("https://inventory.data.gov/api/action/datastore_search?" +
@@ -40,17 +49,26 @@ public class GSAClient {
                 "FiscalYear%22:%22" + fiscalYear + "%22,%22" +
                 "Zip%22:%22" + zipcode + "%22%7D");
 
-        String responseBody = null;
-        try {
-            responseBody = httpClient.execute(httpget, responseHandler);
+        if (fiscalYear < NOW.getYear()) {
+            records = null;
+            throw new IllegalArgumentException();
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        else {
+            String responseBody = null;
+            try {
+                responseBody = httpClient.execute(httpget, responseHandler);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        JsonParser jsonParser = new JsonParser();
-        records = jsonParser.parse(responseBody).getAsJsonObject();
-        records = records.get("result").getAsJsonObject().get("records").getAsJsonArray().get(0).getAsJsonObject();
+            JsonParser jsonParser = new JsonParser();
+            records = jsonParser.parse(responseBody).getAsJsonObject();
+            records = records.get("result").getAsJsonObject().get("records").getAsJsonArray().get(0).getAsJsonObject();
+
+            meals = records.get("Meals").getAsString();
+            mealIncidentalRates = Enum.valueOf(MealIncidentalRates.class, "$" + meals);
+        }
 
         try {
             httpClient.close();
@@ -60,6 +78,24 @@ public class GSAClient {
         }
     }
 
+    public String getMeals() {
+        return meals;
+    }
+
+    public String getLodging() {
+        return lodging;
+    }
+
+    public void setLodging(Month month) {
+        String monthString = month.toString();
+        monthString = monthString.substring(0, 3);
+        monthString = monthString.substring(0, 1).toUpperCase() + monthString.substring(1).toLowerCase();
+        lodging = records.get(monthString).getAsString();
+    }
+
+    public String getIncidental() {
+        return mealIncidentalRates.getIncidentalCost();
+    }
 
     public int getFiscalYear() {
         return fiscalYear;
