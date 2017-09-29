@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -54,7 +54,7 @@
           <target>1.8</target>
           <!-- avoid possible encoding issues -->
           <encoding>utf-8</encoding>
-          </configuration>
+        </configuration>
       </plugin>
       <!-- Maven Jar Plugin -->
       <plugin>
@@ -315,7 +315,7 @@
       <version>${guava.version}</version>
     </dependency>
 
-     <!--https://mvnrepository.com/artifact/org.freemarker/freemarker-->
+    <!--https://mvnrepository.com/artifact/org.freemarker/freemarker-->
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
@@ -368,6 +368,14 @@
       <artifactId>gson</artifactId>
       <version>2.7</version>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.3</version>
+    </dependency>
+
 
   </dependencies>
 
