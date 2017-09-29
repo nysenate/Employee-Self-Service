@@ -8,19 +8,29 @@
   .page-hero(@orange, white);
 }
 
-.form-holder {
-  background-color: white;
-  padding: 20px;
-}
-
-table {
+.travel-table {
   width: 100%;
-}
+  .text-align-center;
+  thead {
+    background: white;
+    tr {
+      color: #333;
+      font-size: .9em;
+      border-bottom: 1px solid #155C69;
+      th {
+        padding: 10px 5px;
+      }
+    }
+  }
 
-thead {
-  border-bottom: 2px solid lightgrey;
-}
-
-tr:nth-child(even) {
-  background-color: lightgrey;
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background: #fafafa;
+      }
+      td {
+        .padding-10;
+      }
+    }
+  }
 }
