@@ -206,6 +206,12 @@ essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function
     return $resource(appProps.apiPath + '/supply/statistics/locations.json')
 }]);
 
+/** --- Travel API --- */
+
+essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/travel-application')
+}]);
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -217,3 +223,4 @@ essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appP
 essApi.factory('ErrorReportApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/report/error.json')
 }]);
+
