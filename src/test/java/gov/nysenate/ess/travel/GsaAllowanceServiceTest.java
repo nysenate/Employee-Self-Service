@@ -17,12 +17,15 @@ import java.util.List;
 public class GsaAllowanceServiceTest {
 
     @Test
-    public void something() {
+    public void testBaseFunctionality() {
         Address fromAddress = new Address("515 Loudon Rd", "Loudonville", "NY", "12211");
         Address toAddress = new Address("S Mall Arterial", "Albany", "NY", "12210");
 
-        LocalDateTime arrival = LocalDateTime.of(2017, Month.SEPTEMBER, 1, 19, 30);
-        LocalDateTime departure = LocalDateTime.now();
+        // 6:00am
+        LocalDateTime departure = LocalDateTime.of(2017, Month.SEPTEMBER, 29, 6, 0);
+
+        // 6:45am
+        LocalDateTime arrival = LocalDateTime.of(2017, Month.SEPTEMBER, 29, 6, 45);
         TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress);
         List<TravelDestination> travelDestinations = Arrays.asList(travelDestination);
 
