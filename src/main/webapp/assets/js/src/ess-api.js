@@ -217,3 +217,9 @@ essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appP
 essApi.factory('ErrorReportApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/report/error.json')
 }]);
+
+/** --- Travel API --- */
+
+essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/travel-application.json')
+}]);
