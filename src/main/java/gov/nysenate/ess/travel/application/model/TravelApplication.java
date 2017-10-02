@@ -48,8 +48,13 @@ public class TravelApplication {
      * Used in the UI as an identifier for a trip.
      * // TODO Handle edge cases
      */
-    public LocalDate travelDate() {
+    public LocalDate travelStartDate() {
         return itinerary.getTravelDestinations().get(0).getArrivalDateTime().toLocalDate();
+    }
+
+    public LocalDate travelEndDate() {
+        return itinerary.getTravelDestinations().get(itinerary.getTravelDestinations().size() - 1)
+                .getDepartureDateTime().toLocalDate();
     }
 
     public int getId() {

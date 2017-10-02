@@ -36,7 +36,7 @@ public class TravelApplicationView implements ViewObject {
         this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
         this.status = ta.getStatus().name();
-        this.travelDate = ta.travelDate().format(DateTimeFormatter.ISO_DATE);
+        this.travelDate = ta.travelStartDate().format(DateTimeFormatter.ISO_DATE);
         this.createdBy = new EmployeeView(ta.getCreatedBy());
         this.createdDateTime = ta.getCreatedDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
         this.modifiedBy = new EmployeeView(ta.getModifiedBy());

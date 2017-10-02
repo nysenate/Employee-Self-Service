@@ -6,6 +6,7 @@ import gov.nysenate.ess.travel.application.model.TravelApplicationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -31,5 +32,9 @@ public class TravelApplicationService {
 
     public List<TravelApplication> getTravelApplicationsByEmpId(int empId) {
         return travelAppDao.getTravelApplicationsByEmpId(empId);
+    }
+
+    public List<TravelApplication> activeApplications(int empId) {
+        return travelAppDao.activeApplications(empId, LocalDate.now());
     }
 }

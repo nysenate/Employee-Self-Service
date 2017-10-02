@@ -8,6 +8,7 @@ import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.TransactionStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,12 @@ public class InMemoryTravelApplicationDao {
     public List<TravelApplication> getTravelApplicationsByStatus(TravelApplicationStatus status) {
         return travelApplications.stream()
                 .filter(r -> r.getStatus() == status)
+                .collect(Collectors.toList());
+    }
+
+    public List<TravelApplication> activeApplications(int empId, LocalDate date) {
+        return getTravelApplicationsByEmpId(empId).stream()
+                .filter(ta -> ta.travelEndDate().isAfter(date.minusDays(1)))
                 .collect(Collectors.toList());
     }
 

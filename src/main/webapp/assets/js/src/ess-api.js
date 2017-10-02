@@ -212,6 +212,10 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
     return $resource(appProps.apiPath + '/travel/travel-application')
 }]);
 
+essApi.factory('TravelActiveApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/travel-application/active')
+}]);
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {

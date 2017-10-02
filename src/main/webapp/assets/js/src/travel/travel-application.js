@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationController', ['$scope', 'TravelApplicationApi', travelController]);
+essTravel.controller('TravelApplicationController', ['$scope', 'TravelActiveApplicationApi', travelController]);
 
-function travelController($scope, travelApplicationApi) {
+function travelController($scope, activeApplicationApi) {
 
     $scope.applications = [];
     $scope.savedApplications = [];
@@ -14,7 +14,7 @@ function travelController($scope, travelApplicationApi) {
             empId: empId,
             status: status
         };
-        var applicationRequest = travelApplicationApi.get(params);
+        var applicationRequest = activeApplicationApi.get(params);
         applicationRequest.$promise
             .then(initApplications)
     };

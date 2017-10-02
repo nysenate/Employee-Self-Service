@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +32,25 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                                                  @RequestParam String status) {
         TravelApplicationStatus appStatus = TravelApplicationStatus.valueOf(status);
         List<TravelApplication> apps = travelAppService.searchTravelApplications(empId, appStatus);
-        List<TravelApplicationView> appViews = apps.stream()
+        List<TravelApplicationView> appViews = travelApplicationsToViews(apps);
+        return ListViewResponse.of(appViews);
+    }
+
+    /**
+     * Get Travel applications that are currently active.
+     * @return Travel applications for an employee that are either scheduled
+     * in the future or currently ongoing.
+     */
+    @RequestMapping(value = "/active")
+    public BaseResponse byTravelEndDate(@RequestParam int empId) {
+        List<TravelApplication> apps = travelAppService.activeApplications(empId);
+        List<TravelApplicationView> appViews = travelApplicationsToViews(apps);
+        return ListViewResponse.of(appViews);
+    }
+
+    private List<TravelApplicationView> travelApplicationsToViews(List<TravelApplication> apps) {
+        return apps.stream()
                 .map(TravelApplicationView::new)
                 .collect(Collectors.toList());
-        return ListViewResponse.of(appViews);
     }
 }
