@@ -1,0 +1,210 @@
+#--------------------------------------------#
+# Senate Electronic Timesheets Configuration #
+#--------------------------------------------#
+
+# Runtime level (dev/test/prod)
+runtime.level = dev
+
+# --- Domain Configuration ----------------------------------------------------
+
+# The domain url and context path that ess is hosted on (used for generating links)
+# do not use a trailing slash
+domain.url = http://localhost:8080
+
+# --- Security Settings -------------------------------------------------------
+
+# Set to true to enforce authentication. Otherwise you will be able to login as
+# anyone if the profile is set to dev!
+auth.enabled = true
+
+# If auth is disabled, this password will be used to login as any user.
+auth.master.pass =
+
+# LDAP Configuration
+# Ldap server url.  Include protocol(typically ldap://) and port(typically :389).
+ldap.url =
+# Ldap search base that includes all users
+ldap.base =
+# Distinguished name of an ldap user.  This dn will be used to make queries across all users
+ldap.user.dn =
+# Ldap password for the app's ldap user
+ldap.user.pass =
+
+
+# Number of bytes generated for XSRF token
+xsrf.token.bytes = 128
+
+# If enabled will restrict all users from departments outside of the specified whitelist
+# (default: false)
+restrict.department.enabled = false
+
+# If departmental restriction is enabled,
+# only the responsibility center heads listed below can use the application.
+# Takes a comma separated list of resp center codes, short names, or full names.  Case insensitive.
+# (example: STSBAC,Senate Technology Services)
+restrict.department.whitelist =
+
+# Allow these ip addresses to access the API without logging in.
+auth.api.ip.whitelist = ^$
+
+# --- Database Configuration --------------------------------------------------
+
+# Local Postgres Database
+db.local.driver = org.postgresql.Driver
+db.local.type = postgresql:
+db.local.host = localhost
+db.local.name = ess
+db.local.user =
+db.local.pass =
+
+# Remote Oracle Database
+db.remote.driver = oracle.jdbc.OracleDriver
+db.remote.type = oracle:thin:@
+db.remote.host = nysdbdev
+db.remote.name = dev
+db.remote.user =
+db.remote.pass =
+
+# Oracle Schema Configuration
+
+# The schema containing the read-only tables
+master.schema =
+
+# The schema containing read-write tables for timesheets
+ts.schema =
+
+# Postgres Schema Configuration
+
+# Ess common schema
+ess.schema = ess
+
+# Supply's schema
+supply.schema = supply
+
+# --- Mail Configuration ------------------------------------------------------
+
+# Connection information for sending emails
+# Hostname and port
+mail.smtp.host =
+mail.smtp.port =
+
+# Enables AUTH command
+mail.smtp.auth = true
+# Enables connection attempts using STARTTLS authentication
+mail.smtp.starttls.enable = true
+# Enables connection attempts using SSL authentication
+mail.smtp.ssl.enable = true
+mail.smtp.ssl.protocols = TLSv1.2
+
+# Username
+mail.smtp.user =
+# Password
+mail.smtp.password =
+# Email address that will appear in the from header
+mail.smtp.from =
+
+mail.debug = false
+
+# --- Eh Cache Configuration --------------------------------------------------
+
+# The amount of memory to allocate to Eh Cache for all heap based caches (MB).
+# This value cannot exceed the maximum jvm heap size or the application will
+# fail to startup. (Recommended: 1000)
+cache.max.size = 1000
+
+# Set to true if caches should be warmed when the application deploys, false
+# otherwise.
+cache.warm.onstartup = true
+
+# Specific Cache Warming
+# Set these to true/false to enable/disable startup warming for specific caches
+# Warming will still be disabled for all caches if cache.warm.onstartup = false
+cache.warm.onstartup.supervisors = true
+
+# Holiday cache
+cache.cron.holiday = 0 0 0 * * *
+
+# Pay Period cache
+cache.cron.period = 0 0 0 * * *
+
+# Locations cache
+cache.cron.location = 0 0 0 * * *
+
+# Delay (ms) during which the transactions cache is refreshed from the DB.
+cache.poll.delay.transactions = 60000
+# Delay (ms) during which the employee cache is refreshed from the DB.
+cache.poll.delay.employees = 60000
+# Delay (ms) during which the supervisor cache is refreshed from the DB.
+cache.poll.delay.supervisors = 60000
+# Delay (ms) during which the time records cache is refreshed from the DB.
+cache.poll.delay.timerecords = 60000
+# Delay (ms) during which the annual accrual record cache is refreshed from the DB.
+cache.poll.delay.accruals = 60000
+
+
+# --- URL Configuration -------------------------------------------------------
+
+# The url path to be used for accessing resources (css/js)
+resource.path = /assets/**
+
+# The directory in which the actual css/js subdirectories are contained
+resource.location = /assets/
+
+# Url Details
+
+login.url = /login
+login.success.url = /time/record/entry
+
+# --- Scheduling Configuration ------------------------------------------------
+
+# Determines if the scheduled ensure all time records function will run
+# (Default: false)
+scheduler.timerecord.ensureall.enabled = false
+
+# Cron expressions that dictate scheduling for scheduled services
+# Format "{second} {minute} {hour} {day of month} {month} {day of week}"
+
+# Determines when the function that checks/generates time records for all employees runs
+# (Default every night at midnight: 0 0 0 * * *)
+scheduler.timerecord.ensureall.cron = 0 0 0 * * *
+
+# Determines if the supply SFMS synchronization process will run
+scheduler.supply.sfms_synchronization.enabled = false
+
+# Determines when to run the supply SFMS synchronization process
+scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
+
+# --- Timeout Configuration ---------------------------------------------------
+
+#timeout in secs
+timeout = 900
+
+# --- Image Folder URL --------------------------------------------------------
+
+#absolute path prefix for images
+image.url = /assets/supply_photos
+
+# --- Web Cache ---------------------------------------------------------------
+
+# in secs, 0  = no cache
+cache.frontend.expire = 60
+
+# --- Project Version ---------------------------------------------------------
+
+application.version=@project.version@
+
+# --- Slack Configuration -----------------------------------------------------
+
+# The webhook url used to send slack messages.  See Setup Instructions at https://nysstech.slack.com/services/3391217030
+slack.webhook.url =
+
+# Limit the number of lines output for slack notifications (default 5)
+slack.notification.line.limit = 5
+
+# --- Error Report EmailConfiguration -----------------------------------------------------
+report.email =
+
+# --- Supply Email Configuration -----------------------------------------------------
+
+# A comma separated list of emails that will receive a notification when new requisitions are submitted.
+supply.requisition.notification.list =
