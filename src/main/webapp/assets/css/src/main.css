@@ -5205,18 +5205,26 @@ record-review-modal,
     border-bottom: 1px solid black;
   }
 }
-.form-holder {
-  background-color: white;
-  padding: 20px;
-}
-table {
+.travel-table {
   width: 100%;
+  text-align: center !important;
 }
-thead {
-  border-bottom: 2px solid lightgrey;
+.travel-table thead {
+  background: white;
 }
-tr:nth-child(even) {
-  background-color: lightgrey;
+.travel-table thead tr {
+  color: #333;
+  font-size: .9em;
+  border-bottom: 1px solid #155C69;
+}
+.travel-table thead tr th {
+  padding: 10px 5px;
+}
+.travel-table tbody tr:nth-child(odd) {
+  background: #fafafa;
+}
+.travel-table tbody tr td {
+  padding: 10px;
 }
 /**
 * Styles for ESS Help Pages
