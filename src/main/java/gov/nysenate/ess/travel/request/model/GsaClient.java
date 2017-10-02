@@ -29,7 +29,6 @@ public class GsaClient {
         }
     };
 
-    private final LocalDateTime NOW = LocalDateTime.now();
     private int fiscalYear;
     private int zipcode;
     private JsonObject records;
@@ -37,7 +36,7 @@ public class GsaClient {
     private MealIncidentalRates mealIncidentalRates;
 
     private String meals;
-    private String lodging;
+    private int lodging;
 
     public GsaClient(int fiscalYear, String zipcode) {
         this.fiscalYear = fiscalYear;
@@ -49,6 +48,7 @@ public class GsaClient {
                 "FiscalYear%22:%22" + fiscalYear + "%22,%22" +
                 "Zip%22:%22" + zipcode + "%22%7D");
 
+        LocalDateTime NOW = LocalDateTime.now();
         if (fiscalYear < NOW.getYear()) {
             records = null;
             throw new IllegalArgumentException();
@@ -82,7 +82,7 @@ public class GsaClient {
         return meals;
     }
 
-    public String getLodging() {
+    public int getLodging() {
         return lodging;
     }
 
@@ -90,10 +90,14 @@ public class GsaClient {
         String monthString = month.toString();
         monthString = monthString.substring(0, 3);
         monthString = monthString.substring(0, 1).toUpperCase() + monthString.substring(1).toLowerCase();
-        lodging = records.get(monthString).getAsString();
+        lodging = records.get(monthString).getAsInt();
     }
 
-    public String getIncidental() {
+    public MealIncidentalRates getMealIncidentalRates() {
+        return mealIncidentalRates;
+    }
+
+    public int getIncidental() {
         return mealIncidentalRates.getIncidentalCost();
     }
 
@@ -104,6 +108,8 @@ public class GsaClient {
     public int getZipcode() {
         return zipcode;
     }
+
+
 
     public JsonObject getRecords() {
         return records;

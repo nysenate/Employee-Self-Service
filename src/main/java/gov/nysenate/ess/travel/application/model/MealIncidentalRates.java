@@ -1,32 +1,32 @@
 package gov.nysenate.ess.travel.application.model;
 
 public enum MealIncidentalRates {
-    $51("11", "23", "5"),
-    $54("12", "25", "5"),
-    $59("13", "26", "5"),
-    $64("15", "28", "5"),
-    $69("16", "31", "5"),
-    $74("17", "34", "5");
+    $51(11, 23, 0),
+    $54(12, 25, 0),
+    $59(13, 26, 0),
+    $64(15, 28, 0),
+    $69(16, 31, 0),
+    $74(17, 34, 0);
 
-    private String breakfastCost;
-    private String dinnerCost;
-    private String incidentalCost;
+    private int breakfastCost;
+    private int dinnerCost;
+    private int incidentalCost;
 
-    MealIncidentalRates(String breakfastCost, String dinnerCost, String incidentalCost) {
+    MealIncidentalRates(int breakfastCost, int dinnerCost, int incidentalCost) {
         this.breakfastCost = breakfastCost;
         this.dinnerCost = dinnerCost;
         this.incidentalCost = incidentalCost;
     }
 
-    public String getBreakfastCost() {
+    public int getBreakfastCost() {
         return breakfastCost;
     }
 
-    public String getDinnerCost() {
+    public int getDinnerCost() {
         return dinnerCost;
     }
 
-    public String getIncidentalCost() {
+    public int getIncidentalCost() {
         return incidentalCost;
     }
 }
