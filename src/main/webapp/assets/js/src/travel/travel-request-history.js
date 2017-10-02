@@ -5,7 +5,7 @@ essTravel.controller('TravelHistoryController', ['$scope', 'TravelApplicationApi
 function historyController($scope, travelApplicationApi) {
 
     var DATE_FORMAT = "MM/DD/YYYY";
-    $scope.travelHistory = [];
+    var completeTravelHistory = [];
 
     $scope.date = {
         from: moment().subtract(1, 'month').format(DATE_FORMAT),
@@ -23,6 +23,7 @@ function historyController($scope, travelApplicationApi) {
 
         function onSuccess (resp) {
             parseResponse(resp);
+            $scope.updateDateRange();
 
         }
         function onFail (resp) {
@@ -35,13 +36,25 @@ function historyController($scope, travelApplicationApi) {
         result = resp.result;
         for (var i = 0; i < result.length; i++) {
             var row = result[i];
-            $scope.travelHistory.push({
+            completeTravelHistory.push({
                travelDate: row.travelDate,
                empName: row.applicant.lastName,
                destination: row.itinerary.destinations[0].address.city,
                allottedFunds: "$" + row.totalAllowance,
                status: row.status
            });
+        }
+    }
+
+    $scope.updateDateRange = function() {
+        $scope.date.from = angular.element("#dateFrom").val();
+        $scope.date.to = angular.element("#dateTo").val();
+        $scope.travelHistory = [];
+        for (var i = 0; i < completeTravelHistory.length; i++) {
+            if (Date.parse(completeTravelHistory[i].travelDate) >= Date.parse($scope.date.from) &&
+                Date.parse(completeTravelHistory[i].travelDate) <= Date.parse($scope.date.to)) {
+                $scope.travelHistory.push(completeTravelHistory[i]);
+            }
         }
     }
 
