@@ -52,6 +52,7 @@ public class InMemoryTravelApplicationDao {
     public List<TravelApplication> activeApplications(int empId, LocalDate date) {
         return getTravelApplicationsByEmpId(empId).stream()
                 .filter(ta -> ta.travelEndDate().isAfter(date.minusDays(1)))
+                .filter(ta -> ta.getStatus() != TravelApplicationStatus.REJECTED)
                 .collect(Collectors.toList());
     }
 

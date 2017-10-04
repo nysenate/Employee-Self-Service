@@ -159,11 +159,15 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     /** Travel */
     $routeProvider.when(ctxPath + '/travel', {
-        redirectTo: ctxPath + 'travel/travel-application'
+        redirectTo: ctxPath + 'travel/upcoming-travel'
     });
 
-    $routeProvider.when(ctxPath + '/travel/travel-application', {
-        templateUrl: ctxPath + '/template/travel/travel-application'
+    $routeProvider.when(ctxPath + '/travel/upcoming-travel', {
+        templateUrl: ctxPath + '/template/travel/upcoming-travel'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/application/new-application', {
+        templateUrl: ctxPath + '/template/travel/application/new-application'
     });
 
     $routeProvider.when(ctxPath + '/travel/request-history', {
