@@ -12,7 +12,7 @@ public class TimeRecordCreationNotPermittedEx extends RuntimeException {
     private String reason;
 
     public TimeRecordCreationNotPermittedEx(int empId, PayPeriod payPeriod, String reason) {
-        super("Cannot create new time record for employee #" + empId + " on period " + payPeriod + ".  Reason: ");
+        super("Cannot create new time record for employee #" + empId + " on period " + payPeriod + ".  Reason: " + reason);
         this.empId = empId;
         this.payPeriod = payPeriod;
         this.reason = reason;

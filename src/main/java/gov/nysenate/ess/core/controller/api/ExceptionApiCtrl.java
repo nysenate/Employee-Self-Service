@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.controller.api;
 
+import gov.nysenate.ess.core.client.response.auth.AuthorizationResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
@@ -7,7 +8,6 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.core.client.view.base.ParameterView;
 import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
-import gov.nysenate.ess.core.client.response.auth.AuthorizationResponse;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -25,6 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Optional;
+
+import static gov.nysenate.ess.core.util.OutputUtils.toJson;
 
 /**
  * This class contains global controller exception handlers.
@@ -47,16 +51,21 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(InvalidRequestParamEx.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    protected ErrorResponse handleInvalidRequestParameterException(InvalidRequestParamEx ex) {
-        return new ViewObjectErrorResponse(ErrorCode.INVALID_ARGUMENTS, new InvalidParameterView(ex));
+    protected ErrorResponse handleInvalidRequestParameterException(HttpServletRequest request,
+                                                                   InvalidRequestParamEx ex) {
+        InvalidParameterView invalidParameterView = new InvalidParameterView(ex);
+        logger.warn("Invalid parameters for request: {}\n{}", request.getRequestURI(), toJson(invalidParameterView));
+        return new ViewObjectErrorResponse(ErrorCode.INVALID_ARGUMENTS, invalidParameterView);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    protected ErrorResponse handleMissingParameterException(MissingServletRequestParameterException ex) {
-        return new ViewObjectErrorResponse(ErrorCode.MISSING_PARAMETERS,
-                                           new ParameterView(ex.getParameterName(), ex.getParameterType()));
+    protected ErrorResponse handleMissingParameterException(HttpServletRequest request,
+                                                            MissingServletRequestParameterException ex) {
+        ParameterView parameterView = new ParameterView(ex.getParameterName(), ex.getParameterType());
+        logger.warn("Missing parameter for request: {}\n{}", request.getRequestURI(), toJson(parameterView));
+        return new ViewObjectErrorResponse(ErrorCode.MISSING_PARAMETERS, parameterView);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -64,6 +73,7 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ResponseBody
     public AuthorizationResponse handleUnauthenticatedException(HttpServletRequest request,
                                                                 UnauthenticatedException ex) {
+        logger.warn("Unauthenticated request for {}", request.getRequestURI());
         return getAuthResponse(AuthorizationStatus.UNAUTHENTICATED, request);
     }
 
@@ -72,6 +82,10 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
     @ResponseBody
     public AuthorizationResponse handleUnauthorizedException(HttpServletRequest request,
                                                              UnauthorizedException ex) {
+        Object user = Optional.ofNullable(getSubject())
+                .map(Subject::getPrincipal)
+                .orElse(null);
+        logger.warn("Unauthorized request by user {} for {}", user, request.getRequestURI());
         return getAuthResponse(AuthorizationStatus.UNAUTHORIZED, request);
     }
 
