@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.model.personnel;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.util.DateUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class EmployeeSupInfo
         this.supId = supId;
     }
 
-    private EmployeeSupInfo(EmployeeSupInfo other) {
+    public EmployeeSupInfo(EmployeeSupInfo other) {
         this.empId = other.empId;
         this.supId = other.supId;
         this.empLastName = other.empLastName;
@@ -109,6 +110,48 @@ public class EmployeeSupInfo
             return Range.atLeast(supStartDate);
         }
         return Range.closedOpen(supStartDate, supEndDate);
+    }
+
+    /**
+     * Determines if two employee sup infos are connecting.
+     * This means that they have intersecting effective date ranges,
+     * and are equivalent for all non-date fields.
+     * If they are overlapping, then they can be effectively {@link #merge(EmployeeSupInfo) merged}.
+     * @param other {@link EmployeeSupInfo}
+     * @return boolean - true if the other {@link EmployeeSupInfo} connects with this one
+     */
+    public boolean isConnected(EmployeeSupInfo other) {
+        // Test that the effective ranges are connected
+        if (this.getEffectiveDateRange().isConnected(other.getEffectiveDateRange())) {
+            // Test that the non-date fields are equivalent using a modified copy of other
+            EmployeeSupInfo testEsi = new EmployeeSupInfo(other);
+            testEsi.startDate = this.startDate;
+            testEsi.endDate = this.endDate;
+            testEsi.supStartDate = this.supStartDate;
+            testEsi.supEndDate = this.supEndDate;
+            return this.equals(testEsi);
+        }
+        return false;
+    }
+
+    /**
+     * Creates an {@link EmployeeSupInfo} that spans all dates covered by this {@link EmployeeSupInfo}
+     * or the one provided as an argument.
+     *
+     * @param other {@link EmployeeSupInfo}
+     * @return {@link EmployeeSupInfo}
+     * @throws IllegalStateException if the provided {@link EmployeeSupInfo} does not connect with this one.
+     */
+    public EmployeeSupInfo merge(EmployeeSupInfo other) {
+        if (!isConnected(other)) {
+            throw new IllegalArgumentException("Attempt to merge non-connecting emp sup infos");
+        }
+        EmployeeSupInfo result = new EmployeeSupInfo(this);
+        result.startDate = ObjectUtils.min(this.startDate, other.startDate);
+        result.endDate = ObjectUtils.max(this.endDate, other.endDate);
+        result.supStartDate = ObjectUtils.min(this.supStartDate, other.supStartDate);
+        result.supEndDate = ObjectUtils.max(this.supEndDate, other.supEndDate);
+        return result;
     }
 
     /* --- Overrides --- */
