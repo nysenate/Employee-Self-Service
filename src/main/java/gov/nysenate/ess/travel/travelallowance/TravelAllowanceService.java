@@ -1,20 +1,30 @@
 package gov.nysenate.ess.travel.travelallowance;
 
 import gov.nysenate.ess.travel.application.dao.InMemoryTravelApplicationDao;
-import gov.nysenate.ess.travel.application.model.TransportationAllowance;
-import gov.nysenate.ess.travel.application.model.TravelApplication;
-import gov.nysenate.ess.travel.application.model.TravelApplicationStatus;
+import gov.nysenate.ess.travel.application.model.*;
+import gov.nysenate.ess.travel.maps.MapsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Service
 public class TravelAllowanceService {
+    @Autowired
+    MapsService mapsService;
 
-    private TravelApplication travelApp;
+    public TravelAllowanceService() {}
 
-    public TravelAllowanceService(TravelApplication travelApp) {
-        this.travelApp = travelApp;
+    public void updateTravelAllowance(Itinerary itinerary) {
+        //for each travelDestination, get the address and mode of transportation
+        String[] destinations = new String[itinerary.getTravelDestinations().size()];
+        for (TravelDestination td : itinerary.getTravelDestinations()) {
+            destinations.getAddress().toString();
+        }
+             String mileage = mapsService.getTripDistance(itinerary.getOrigin().toString(), );
+        return new TransportationAllowance("0", "0"));
     }
 
-    public void updateTravelAllowance() {
-        this.travelApp.Builder().setTransportationAllowance(new TransportationAllowance("0", "0"));
-    }
+    //get IRS rate, * with mileage to get total travelAllowance for TravelAllowance object
+    //get tolls
+    //handle mode of transportation (only PERSONAL_AUTO)
+    //handle length of trip (if > 35, reimbursed for all mileage)
 }

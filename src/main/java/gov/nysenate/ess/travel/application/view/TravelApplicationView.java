@@ -30,7 +30,6 @@ public class TravelApplicationView implements ViewObject {
         // TODO: Prob need null checks here
         this.id = ta.getId();
         this.applicant = new EmployeeView(ta.getApplicant());
-        this.modeOfTransportation = ta.getModeOfTransportation().name();
         this.gsaAllowance = new GsaAllowanceView(ta.getGsaAllowance());
         this.transportationAllowance = new TransportationAllowanceView(ta.getTransportationAllowance());
         this.totalAllowance = ta.totalAllowance().toString();
@@ -47,7 +46,6 @@ public class TravelApplicationView implements ViewObject {
         return TravelApplication.Builder()
                 .setId(id)
                 .setApplicant(applicant.toEmployee())
-                .setModeOfTransportation(ModeOfTransportation.valueOf(modeOfTransportation))
                 .setGsaAllowance(gsaAllowance.toGsaAllowance())
                 .setTransportationAllowance(transportationAllowance.toTransportationAllowance())
                 .setItinerary(itinerary.toItinerary())
