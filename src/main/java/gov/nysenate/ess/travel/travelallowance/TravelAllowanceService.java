@@ -13,14 +13,14 @@ public class TravelAllowanceService {
 
     public TravelAllowanceService() {}
 
-    public void updateTravelAllowance(Itinerary itinerary) {
+    public TransportationAllowance updateTravelAllowance(Itinerary itinerary) {
         //for each travelDestination, get the address and mode of transportation
         String[] destinations = new String[itinerary.getTravelDestinations().size()];
         for (TravelDestination td : itinerary.getTravelDestinations()) {
-            destinations.getAddress().toString();
+            td.getAddress().toString();
         }
-             String mileage = mapsService.getTripDistance(itinerary.getOrigin().toString(), );
-        return new TransportationAllowance("0", "0"));
+             //String mileage = mapsService.getTripDistance(itinerary.getOrigin().toString(), destinations);
+        return new TransportationAllowance("0", "0");
     }
 
     //get IRS rate, * with mileage to get total travelAllowance for TravelAllowance object

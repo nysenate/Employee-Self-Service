@@ -47,7 +47,7 @@ public class TravelApplication {
      * // TODO Handle edge cases
      */
     public LocalDate travelDate() {
-        return itinerary.getTravelDestinations().get(0).getArrivalDateTime().toLocalDate();
+        return itinerary.getTravelDestinations().get(0).getArrivalDate();
     }
 
     public int getId() {
