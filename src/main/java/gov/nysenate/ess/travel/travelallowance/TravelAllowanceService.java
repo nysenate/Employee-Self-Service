@@ -6,6 +6,8 @@ import gov.nysenate.ess.travel.maps.MapsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class TravelAllowanceService {
     @Autowired
@@ -26,5 +28,6 @@ public class TravelAllowanceService {
     //get IRS rate, * with mileage to get total travelAllowance for TravelAllowance object
     //get tolls
     //handle mode of transportation (only PERSONAL_AUTO)
+    //rental cars???
     //handle length of trip (if > 35, reimbursed for all mileage)
 }
