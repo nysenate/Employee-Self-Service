@@ -1,12 +1,18 @@
-<div>
+<div class="padding-10">
   <h3 class="content-info">Where are you traveling from?</h3>
-  <form class="travel-address-form">
-    <label>Street 1: <input type=text ng-model="address.street1" autocomplete="address-line1"></label><br/>
-    <label>Street 2: <input type=text ng-model="address.street2" autocomplete="address-line2"></label><br/>
-    <label>City: <input type=text ng-model="address.city" size="10" autocomplete="address-level2"></label>
-    <label>State: <input type=text ng-model="address.state" size="2" autocomplete="address-level1"></label>
-    <label>Zip: <input type=text ng-model="address.zip" size="5" autocomplete="postal-code"></label><br/>
-  </form>
-  <div class="padding-10">
+  <h4>Enter an address or drag the marker.</h4>
+  <div class="padding-bottom-10">
+    <label>Address: <input id="travel-origin-address" ng-model="addressString" type="text" size="30"></label>
+  </div >
+  <div class="content-info clearfix">
+    <locationpicker options="locationpickerOptions"></locationpicker>
+  </div>
+  <div class="padding-top-10 clearfix width-100">
+    <input type="button" class="neutral-button" style="float: left;"
+           value="Cancel"
+           ng-click="addDestination()">
+    <input type="button" class="submit-button" style="float: right;"
+           value="Select"
+           ng-click="addDestination()">
   </div>
 </div>
