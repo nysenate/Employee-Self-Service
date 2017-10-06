@@ -10,7 +10,6 @@ public class TravelApplication {
 
     private int id;
     private Employee applicant;
-    private ModeOfTransportation modeOfTransportation;
     private GsaAllowance gsaAllowance;
     private TransportationAllowance transportationAllowance;
     private Itinerary itinerary;
@@ -24,7 +23,6 @@ public class TravelApplication {
     private TravelApplication(Builder builder) {
         this.id = builder.id;
         this.applicant = builder.applicant;
-        this.modeOfTransportation = builder.modeOfTransportation;
         this.gsaAllowance = builder.gsaAllowance;
         this.transportationAllowance = builder.transportationAllowance;
         this.itinerary = builder.itinerary;
@@ -63,10 +61,6 @@ public class TravelApplication {
 
     public Employee getApplicant() {
         return applicant;
-    }
-
-    public ModeOfTransportation getModeOfTransportation() {
-        return modeOfTransportation;
     }
 
     public GsaAllowance getGsaAllowance() {
@@ -108,7 +102,6 @@ public class TravelApplication {
     public static class Builder {
         private int id;
         private Employee applicant;
-        private ModeOfTransportation modeOfTransportation;
         private GsaAllowance gsaAllowance;
         private TransportationAllowance transportationAllowance;
         private Itinerary itinerary;
@@ -129,11 +122,6 @@ public class TravelApplication {
 
         public Builder setApplicant(Employee applicant) {
             this.applicant = applicant;
-            return this;
-        }
-
-        public Builder setModeOfTransportation(ModeOfTransportation modeOfTransportation) {
-            this.modeOfTransportation = modeOfTransportation;
             return this;
         }
 
