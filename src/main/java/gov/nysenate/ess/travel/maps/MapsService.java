@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MapsService {
 
-    @Value("${google.maps.apiKey}") private String apiKey;
+    @Value("${google.maps.apiKey}") private static String apiKey;
 
     /**
      *
@@ -55,5 +55,37 @@ public class MapsService {
         //add the return from last destination to the origin
         totalDist += getDistance(destinations[destinations.length-1], origin);
         return totalDist;
+    }
+
+    public static void main(String[] args) {
+        directions("181 Fort Edward Road Fort Edward, NY 12828", "515 Loudon Road Loudonville, NY 12211");
+    }
+
+    /**
+     * In theory, I can query the Google Maps API to get a list of String directions
+     * i.e, "Turn left onto Loudon Road" or "Merge onto I-90 West"
+     * but these won't tell me what exit a driver is getting on.
+     * I could potentially geolocate which exit they're getting on based on their
+     * lng/lat at the time and the lng/lat of exits.
+     * Then I'd have to emulate a web interaction with the NYS DOT toll calculator
+     * and input the correct exits, submit the form, and retrieve the toll amount.
+     *
+     * This is also assuming that the driver takes the path I expect them to.
+     * They may take a different path, thus making this inaccurate.
+     * @param origin
+     * @param destination
+     */
+    public static void directions(String origin, String destination) {
+        GeoApiContext context = new GeoApiContext().setApiKey(apiKey);
+        DirectionsRoute[] request = null;
+        try {
+            request = DirectionsApi.getDirections(context, origin, destination).await();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (DirectionsRoute d : request) {
+            System.out.println(d.legs[0].startAddress);
+        }
     }
 }
