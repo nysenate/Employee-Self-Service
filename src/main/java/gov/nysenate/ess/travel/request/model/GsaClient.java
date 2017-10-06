@@ -23,25 +23,16 @@ public class GsaClient {
         if (status >= 200 && status < 300) {
             HttpEntity entity = response.getEntity();
             return entity != null ? EntityUtils.toString(entity) : null;
-        }
-        else {
+        } else {
             throw new ClientProtocolException("Unexpected response status: " + status);
         }
     };
 
-    private int fiscalYear;
-    private int zipcode;
     private JsonObject records;
-
     private MealIncidentalRates mealIncidentalRates;
-
-    private String meals;
     private int lodging;
 
     public GsaClient(int fiscalYear, String zipcode) {
-        this.fiscalYear = fiscalYear;
-        this.zipcode = Integer.parseInt(zipcode);
-
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet("https://inventory.data.gov/api/action/datastore_search?" +
                 "resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b&filters=%7B%22" +
@@ -52,13 +43,11 @@ public class GsaClient {
         if (fiscalYear < NOW.getYear()) {
             records = null;
             throw new IllegalArgumentException();
-        }
-        else {
+        } else {
             String responseBody = null;
             try {
                 responseBody = httpClient.execute(httpget, responseHandler);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -66,20 +55,15 @@ public class GsaClient {
             records = jsonParser.parse(responseBody).getAsJsonObject();
             records = records.get("result").getAsJsonObject().get("records").getAsJsonArray().get(0).getAsJsonObject();
 
-            meals = records.get("Meals").getAsString();
+            String meals = records.get("Meals").getAsString();
             mealIncidentalRates = Enum.valueOf(MealIncidentalRates.class, "$" + meals);
         }
 
         try {
             httpClient.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getMeals() {
-        return meals;
     }
 
     public int getLodging() {
@@ -96,20 +80,6 @@ public class GsaClient {
     public MealIncidentalRates getMealIncidentalRates() {
         return mealIncidentalRates;
     }
-
-    public int getIncidental() {
-        return mealIncidentalRates.getIncidentalCost();
-    }
-
-    public int getFiscalYear() {
-        return fiscalYear;
-    }
-
-    public int getZipcode() {
-        return zipcode;
-    }
-
-
 
     public JsonObject getRecords() {
         return records;

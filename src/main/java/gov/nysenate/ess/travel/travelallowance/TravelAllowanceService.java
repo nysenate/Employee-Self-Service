@@ -6,8 +6,6 @@ import gov.nysenate.ess.travel.maps.MapsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-
 @Service
 public class TravelAllowanceService {
     @Autowired
@@ -16,6 +14,12 @@ public class TravelAllowanceService {
     public TravelAllowanceService() {}
 
     public TransportationAllowance updateTravelAllowance(Itinerary itinerary) {
+        //for each travelDestination, get the address and mode of transportation
+        String[] destinations = new String[itinerary.getTravelDestinations().size()];
+        for (TravelDestination td : itinerary.getTravelDestinations()) {
+            td.getAddress().toString();
+        }
+             //String mileage = mapsService.getTripDistance(itinerary.getOrigin().toString(), destinations);
         return new TransportationAllowance("0", "0");
     }
 
