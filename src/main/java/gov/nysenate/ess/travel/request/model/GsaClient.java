@@ -23,8 +23,7 @@ public class GsaClient {
         if (status >= 200 && status < 300) {
             HttpEntity entity = response.getEntity();
             return entity != null ? EntityUtils.toString(entity) : null;
-        }
-        else {
+        } else {
             throw new ClientProtocolException("Unexpected response status: " + status);
         }
     };
@@ -52,13 +51,11 @@ public class GsaClient {
         if (fiscalYear < NOW.getYear()) {
             records = null;
             throw new IllegalArgumentException();
-        }
-        else {
+        } else {
             String responseBody = null;
             try {
                 responseBody = httpClient.execute(httpget, responseHandler);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -72,14 +69,9 @@ public class GsaClient {
 
         try {
             httpClient.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getMeals() {
-        return meals;
     }
 
     public int getLodging() {
@@ -96,20 +88,6 @@ public class GsaClient {
     public MealIncidentalRates getMealIncidentalRates() {
         return mealIncidentalRates;
     }
-
-    public int getIncidental() {
-        return mealIncidentalRates.getIncidentalCost();
-    }
-
-    public int getFiscalYear() {
-        return fiscalYear;
-    }
-
-    public int getZipcode() {
-        return zipcode;
-    }
-
-
 
     public JsonObject getRecords() {
         return records;

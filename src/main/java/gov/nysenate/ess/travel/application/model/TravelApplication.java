@@ -44,15 +44,14 @@ public class TravelApplication {
     /**
      * The date the applicant will arrive at their first destination.
      * Used in the UI as an identifier for a trip.
-     * // TODO Handle edge cases
      */
     public LocalDate travelStartDate() {
-        return itinerary.getTravelDestinations().get(0).getArrivalDateTime().toLocalDate();
+        return itinerary.getTravelDestinations().get(0).getArrivalDate();
     }
 
     public LocalDate travelEndDate() {
         return itinerary.getTravelDestinations().get(itinerary.getTravelDestinations().size() - 1)
-                .getDepartureDateTime().toLocalDate();
+                .getDepartureDate();
     }
 
     public int getId() {
