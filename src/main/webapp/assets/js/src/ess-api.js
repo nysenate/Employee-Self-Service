@@ -209,7 +209,7 @@ essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function
 /** --- Travel API --- */
 
 essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/travel-application')
+    return $resource(appProps.apiPath + '/travel/travel-application.json')
 }]);
 
 essApi.factory('TravelActiveApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {

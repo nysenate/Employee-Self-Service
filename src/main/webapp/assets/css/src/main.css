@@ -5205,6 +5205,27 @@ record-review-modal,
     border-bottom: 1px solid black;
   }
 }
+.travel-table {
+  width: 100%;
+  text-align: center !important;
+}
+.travel-table thead {
+  background: white;
+}
+.travel-table thead tr {
+  color: #333;
+  font-size: .9em;
+  border-bottom: 1px solid #155C69;
+}
+.travel-table thead tr th {
+  padding: 10px 5px;
+}
+.travel-table tbody tr:nth-child(odd) {
+  background: #fafafa;
+}
+.travel-table tbody tr td {
+  padding: 10px;
+}
 /**
 * Styles for ESS Help Pages
 */

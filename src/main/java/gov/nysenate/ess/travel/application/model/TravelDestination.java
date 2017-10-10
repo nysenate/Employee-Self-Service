@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.application.model;
 
 import gov.nysenate.ess.core.model.unit.Address;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Represents a single destination in a travel request.
@@ -11,25 +11,32 @@ import java.time.LocalDateTime;
  */
 public class TravelDestination {
 
-    private LocalDateTime arrivalDateTime;
-    private LocalDateTime departureDateTime;
+    private LocalDate arrivalDate;
+    private LocalDate departureDate;
     private Address address;
+    private ModeOfTransportation modeOfTransportation;
 
-    public TravelDestination(LocalDateTime arrivalDateTime, LocalDateTime departureDateTime, Address address) {
-        this.arrivalDateTime = arrivalDateTime;
-        this.departureDateTime = departureDateTime;
+    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate,
+                             Address address, ModeOfTransportation modeOfTransportation) {
+        this.arrivalDate = arrivalDate;
+        this.departureDate = departureDate;
         this.address = address;
+        this.modeOfTransportation = modeOfTransportation;
     }
 
-    public LocalDateTime getArrivalDateTime() {
-        return arrivalDateTime;
+    public LocalDate getArrivalDate() {
+        return arrivalDate;
     }
 
-    public LocalDateTime getDepartureDateTime() {
-        return departureDateTime;
+    public LocalDate getDepartureDate() {
+        return departureDate;
     }
 
     public Address getAddress() {
         return address;
+    }
+
+    public ModeOfTransportation getModeOfTransportation() {
+        return modeOfTransportation;
     }
 }
