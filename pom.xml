@@ -380,13 +380,7 @@
     <dependency>
       <groupId>com.google.maps</groupId>
       <artifactId>google-maps-services</artifactId>
-      <version>0.1.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-nop</artifactId>
-      <version>${slf4j.version}</version>
+      <version>0.2.4</version>
     </dependency>
 
     <!-- jsoup -->
