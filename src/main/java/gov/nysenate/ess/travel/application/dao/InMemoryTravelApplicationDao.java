@@ -81,6 +81,7 @@ public class InMemoryTravelApplicationDao {
                 .setGsaAllowance(randomGsaAllowance())
                 .setTransportationAllowance(randomTransportationAllowance())
                 .setItinerary(itinerary())
+                .setModeOfTransportation(ModeOfTransportation.PERSONAL_AUTO)
                 .setStatus(status)
                 .setCreatedDateTime(LocalDateTime.now())
                 .setModifiedDateTime(LocalDateTime.now())
@@ -91,8 +92,7 @@ public class InMemoryTravelApplicationDao {
         List<TravelDestination> tds = new ArrayList<>();
         LocalDate arrival = LocalDate.now().minusDays(10).plusDays((int)randomWithRange(0, 30));
         tds.add(new TravelDestination(arrival, arrival.plusDays((int)randomWithRange(1, 5)),
-                new Address("100 Washington Ave", "Albany", "NY", "12222"),
-                ModeOfTransportation.PERSONAL_AUTO));
+                new Address("100 Washington Ave", "Albany", "NY", "12222")));
         return new Itinerary(new Address("88 Central Ave", "Albany", "NY", "12222"), tds);
     }
 

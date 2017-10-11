@@ -5,11 +5,12 @@ import gov.nysenate.ess.core.model.unit.Address;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * The Itinerary of a TravelApplication.
  * Contains the origin address and all destination address's with arrival and departure times.
- *
- * TODO What if car pooling? Origin = null?
  */
 public class Itinerary {
 
@@ -17,15 +18,14 @@ public class Itinerary {
     private List<TravelDestination> destinations;
 
     public Itinerary(Address origin, List<TravelDestination> destinations) {
-        this.origin = origin;
+        checkArgument(!destinations.isEmpty(), "Itinerary requires a non empty destination list.");
+        this.origin = checkNotNull(origin, "Itinerary requires non null origin");
         this.destinations = destinations;
     }
 
     /**
      * The travel route represented by this Itinerary.
      * @return A list of addresses in the order they will be traveled.
-     *
-     * TODO Add tests and handle edge cases, e.g. what if car pooling and origin is null?
      */
     public List<Address> travelRoute() {
         List<Address> route = Lists.newArrayList(origin);

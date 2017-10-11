@@ -14,14 +14,12 @@ public class TravelDestination {
     private LocalDate arrivalDate;
     private LocalDate departureDate;
     private Address address;
-    private ModeOfTransportation modeOfTransportation;
 
     public TravelDestination(LocalDate arrivalDate, LocalDate departureDate,
-                             Address address, ModeOfTransportation modeOfTransportation) {
+                             Address address) {
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.address = address;
-        this.modeOfTransportation = modeOfTransportation;
     }
 
     public LocalDate getArrivalDate() {
@@ -34,9 +32,5 @@ public class TravelDestination {
 
     public Address getAddress() {
         return address;
-    }
-
-    public ModeOfTransportation getModeOfTransportation() {
-        return modeOfTransportation;
     }
 }

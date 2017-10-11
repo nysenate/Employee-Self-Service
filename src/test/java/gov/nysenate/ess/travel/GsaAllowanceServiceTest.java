@@ -54,8 +54,7 @@ public class GsaAllowanceServiceTest {
     }
 
     private GsaAllowance createGsaAllowance(LocalDate arrival, LocalDate departure) {
-        ModeOfTransportation modeOfTransportation = ModeOfTransportation.PERSONAL_AUTO;
-        TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress, modeOfTransportation);
+        TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress);
         List<TravelDestination> travelDestinations = Arrays.asList(travelDestination);
 
         GsaAllowanceService gsaAllowanceService = new GsaAllowanceService();
