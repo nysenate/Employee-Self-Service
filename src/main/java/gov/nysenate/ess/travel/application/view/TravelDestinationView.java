@@ -7,7 +7,7 @@ import gov.nysenate.ess.travel.application.model.TravelDestination;
 
 import java.time.LocalDate;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 public class TravelDestinationView implements ViewObject {
 
@@ -17,14 +17,14 @@ public class TravelDestinationView implements ViewObject {
     private ModeOfTransportation modeOfTransportation;
 
     public TravelDestinationView(TravelDestination td) {
-        this.arrivalDateTime = td.getArrivalDate().format(ISO_DATE_TIME);
-        this.departureDateTime = td.getDepartureDate().format(ISO_DATE_TIME);
+        this.arrivalDateTime = td.getArrivalDate().format(ISO_DATE);
+        this.departureDateTime = td.getDepartureDate().format(ISO_DATE);
         this.address = new AddressView(td.getAddress());
     }
 
     public TravelDestination toTravelDestination() {
-        return new TravelDestination(LocalDate.parse(arrivalDateTime, ISO_DATE_TIME),
-                LocalDate.parse(departureDateTime, ISO_DATE_TIME),
+        return new TravelDestination(LocalDate.parse(arrivalDateTime, ISO_DATE),
+                LocalDate.parse(departureDateTime, ISO_DATE),
                 address.toAddress(),
                 modeOfTransportation);
     }

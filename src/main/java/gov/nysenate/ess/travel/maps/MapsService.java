@@ -17,7 +17,7 @@ public class MapsService {
      * @return Distance between the origin and destination in miles
      */
     private double getDistance(String origin, String destination) {
-        GeoApiContext context = new GeoApiContext().setApiKey(apiKey);
+        GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
         String[] origins = new String[] {origin};
         String[] destinations = new String[] {destination};
         double totalDist = 0;
@@ -76,15 +76,15 @@ public class MapsService {
      * @param destination
      */
     public static void directions(String origin, String destination) {
-        GeoApiContext context = new GeoApiContext().setApiKey(apiKey);
-        DirectionsRoute[] request = null;
+        GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
+        DirectionsResult result = null;
         try {
-            request = DirectionsApi.getDirections(context, origin, destination).await();
+            result = DirectionsApi.getDirections(context, origin, destination).await();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-        for (DirectionsRoute d : request) {
+        for (DirectionsRoute d : result.routes) {
             System.out.println(d.legs[0].startAddress);
         }
     }
