@@ -2,13 +2,14 @@ package gov.nysenate.ess.travel.maps;
 
 import com.google.maps.*;
 import com.google.maps.model.*;
+import gov.nysenate.ess.travel.application.dao.IrsRateDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MapsService {
 
-    @Value("${google.maps.apiKey}") private static String apiKey;
+    @Value("${google.maps.apiKey}") private String apiKey;
 
     /**
      *
@@ -43,7 +44,7 @@ public class MapsService {
      * @param destinations List of addresses, in order, of stops along the trip
      * @return Total distance traveled over the trip in miles
      */
-    public double getTripDistance(String origin, String[] destinations) {
+    public  double getTripDistance(String origin, String[] destinations) {
         double totalDist = 0;
         String from = origin;
         String to = "";
@@ -57,8 +58,24 @@ public class MapsService {
         return totalDist;
     }
 
-    public static void main(String[] args) {
-        directions("181 Fort Edward Road Fort Edward, NY 12828", "515 Loudon Road Loudonville, NY 12211");
+    /**
+     * Does not include the return trip.  Useful for determining how many miles
+     * the traveler went in one direction.
+     * @param origin
+     * @param destinations
+     * @return
+     */
+    public double getDistanceOut(String origin, String[] destinations) {
+        double totalDist = 0;
+        String from = origin;
+        String to = "";
+        for (String dest : destinations) {
+            to = dest;
+            totalDist += getDistance(from, to);
+            from = to;
+        }
+        //add the return from last destination to the origin
+        return totalDist;
     }
 
     /**
@@ -75,7 +92,7 @@ public class MapsService {
      * @param origin
      * @param destination
      */
-    public static void directions(String origin, String destination) {
+    public void directions(String origin, String destination) {
         GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
         DirectionsResult result = null;
         try {

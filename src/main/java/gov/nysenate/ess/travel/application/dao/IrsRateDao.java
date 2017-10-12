@@ -13,11 +13,11 @@ import java.io.IOException;
 public class IrsRateDao {
     private double irsRate;  // business travel rate in cents per mile
 
-    public IrsRateDao() {
-        retrieveIrsRate();
+    private IrsRateDao() {
+        webScrapeIrsRate();
     }
 
-    public void retrieveIrsRate() {
+    public void webScrapeIrsRate() {
         try {
             Document doc = Jsoup.connect("https://www.irs.gov/tax-professionals/standard-mileage-rates").get();
             String rate = doc.select("article table tbody tr td").get(1).text();
@@ -26,5 +26,9 @@ public class IrsRateDao {
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public double getIrsRate() {
+        return irsRate;
     }
 }
