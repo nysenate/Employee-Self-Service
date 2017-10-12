@@ -208,3 +208,7 @@ report.email =
 
 # A comma separated list of emails that will receive a notification when new requisitions are submitted.
 supply.requisition.notification.list =
+
+
+# --- Google Maps Configuration -------------------------------------------------------
+google.maps.apiKey =
