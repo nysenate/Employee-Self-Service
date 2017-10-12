@@ -13,6 +13,7 @@ public class TravelApplication {
     private GsaAllowance gsaAllowance;
     private TransportationAllowance transportationAllowance;
     private Itinerary itinerary;
+    private ModeOfTransportation modeOfTransportation;
     private TravelApplicationStatus status;
 
     private Employee createdBy;
@@ -31,6 +32,7 @@ public class TravelApplication {
         this.createdDateTime = builder.createdDateTime;
         this.modifiedBy = builder.modifiedBy;
         this.modifiedDateTime = builder.modifiedDateTime;
+        this.modeOfTransportation = builder.modeOfTransportation;
     }
 
     /**
@@ -74,6 +76,10 @@ public class TravelApplication {
         return itinerary;
     }
 
+    public ModeOfTransportation getModeOfTransportation() {
+        return modeOfTransportation;
+    }
+
     public TravelApplicationStatus getStatus() {
         return status;
     }
@@ -104,6 +110,7 @@ public class TravelApplication {
         private GsaAllowance gsaAllowance;
         private TransportationAllowance transportationAllowance;
         private Itinerary itinerary;
+        private ModeOfTransportation modeOfTransportation;
         private TravelApplicationStatus status;
         private Employee createdBy;
         private LocalDateTime createdDateTime;
@@ -136,6 +143,11 @@ public class TravelApplication {
 
         public Builder setItinerary(Itinerary itinerary) {
             this.itinerary = itinerary;
+            return this;
+        }
+
+        public Builder setModeOfTransportation(ModeOfTransportation modeOfTransportation) {
+            this.modeOfTransportation = modeOfTransportation;
             return this;
         }
 

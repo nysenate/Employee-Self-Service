@@ -2,39 +2,35 @@ package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 
 import java.time.LocalDate;
 
-import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 public class TravelDestinationView implements ViewObject {
 
-    private String arrivalDateTime;
-    private String departureDateTime;
+    private String arrivalDate;
+    private String departureDate;
     private AddressView address;
-    private ModeOfTransportation modeOfTransportation;
 
     public TravelDestinationView(TravelDestination td) {
-        this.arrivalDateTime = td.getArrivalDate().format(ISO_DATE_TIME);
-        this.departureDateTime = td.getDepartureDate().format(ISO_DATE_TIME);
+        this.arrivalDate = td.getArrivalDate().format(ISO_DATE);
+        this.departureDate = td.getDepartureDate().format(ISO_DATE);
         this.address = new AddressView(td.getAddress());
     }
 
     public TravelDestination toTravelDestination() {
-        return new TravelDestination(LocalDate.parse(arrivalDateTime, ISO_DATE_TIME),
-                LocalDate.parse(departureDateTime, ISO_DATE_TIME),
-                address.toAddress(),
-                modeOfTransportation);
+        return new TravelDestination(LocalDate.parse(arrivalDate, ISO_DATE),
+                LocalDate.parse(departureDate, ISO_DATE), address.toAddress());
     }
 
     public String getArrivalDate() {
-        return arrivalDateTime;
+        return arrivalDate;
     }
 
     public String getDepartureDate() {
-        return departureDateTime;
+        return departureDate;
     }
 
     public AddressView getAddress() {
