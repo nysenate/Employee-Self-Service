@@ -47,6 +47,10 @@ public abstract class SqlBaseDao
     @Value("${supply.schema}")
     protected String SUPPLY_SCHEMA;
 
+    /** The schema foor the Travel app. */
+    @Value("${travel.schema}")
+    protected String TRAVEL_SCHEMA;
+
     private static Map<String, String> schemaMap = null;
 
     /**
@@ -60,6 +64,7 @@ public abstract class SqlBaseDao
             schemaMap.put("tsSchema", TS_SCHEMA);
             schemaMap.put("essSchema", ESS_SCHEMA);
             schemaMap.put("supplySchema", SUPPLY_SCHEMA);
+            schemaMap.put("travelSchema", TRAVEL_SCHEMA);
         }
         return schemaMap;
     }
