@@ -11,6 +11,11 @@ public class MapsService {
 
     @Value("${google.maps.apiKey}") private String apiKey;
 
+    public boolean validateAddress(String address) {
+
+        return false;
+    }
+
     /**
      *
      * @param origin Address where trip originates
