@@ -81,6 +81,9 @@ ess.schema = ess
 # Supply's schema
 supply.schema = supply
 
+# Travel's schema
+travel.schema = travel
+
 # --- Mail Configuration ------------------------------------------------------
 
 # Connection information for sending emails
