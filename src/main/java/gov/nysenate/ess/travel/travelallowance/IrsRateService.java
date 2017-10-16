@@ -21,6 +21,9 @@ public class IrsRateService {
         return Double.parseDouble(rate);
     }
 
+    /**
+     * Needs to run once a day to make sure the IRS travel rate is kept current
+     */
     public void scrapeAndUpdate() {
         double webVal = -1;
         try {

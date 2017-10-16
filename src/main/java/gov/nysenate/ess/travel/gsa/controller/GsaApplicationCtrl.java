@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/gsa/travel-gsa")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "travel/gsa/travel-gsa")
 public class GsaApplicationCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(GsaApplicationCtrl.class);

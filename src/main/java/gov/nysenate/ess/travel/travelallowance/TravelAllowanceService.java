@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.travelallowance;
 
-import gov.nysenate.ess.travel.application.dao.InMemoryTravelApplicationDao;
 import gov.nysenate.ess.travel.application.dao.IrsRateDao;
 import gov.nysenate.ess.travel.application.model.*;
 import gov.nysenate.ess.travel.maps.MapsService;
@@ -15,13 +14,13 @@ public class TravelAllowanceService {
     @Autowired
     MapsService mapsService;
 
-    private IrsRateDao irsRateDao;
-
-    public TravelAllowanceService() {}
+    @Autowired
+    IrsRateDao irsRateDao;
 
     public TransportationAllowance updateTravelAllowance(Itinerary itinerary) {
         List<TravelDestination> travelDestinations = itinerary.getTravelDestinations();
         String[] destinations = new String[travelDestinations.size()];
+
         for (int i = 0; i < destinations.length; i++) {
             TravelDestination td = itinerary.getTravelDestinations().get(i);
             destinations[i] = td.getAddress().toString();
@@ -34,6 +33,5 @@ public class TravelAllowanceService {
 
         return new TransportationAllowance(mileageAllowance + "", "0");
     }
-
     //get tolls
 }

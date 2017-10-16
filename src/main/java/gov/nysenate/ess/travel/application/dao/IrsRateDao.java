@@ -13,8 +13,7 @@ public class IrsRateDao extends SqlBaseDao {
     public void updateIrsRate(double rate) {
         MapSqlParameterSource params = new MapSqlParameterSource("rate", rate);
         String sql = IrsRateDao.SqlIrsRateQuery.UPDATE_IRS_RATE.getSql(schemaMap());
-        IrsRateDao.IrsRateMapper mapper = new IrsRateMapper();
-        Double dbRate = localNamedJdbc.queryForObject(sql, params, mapper);
+        localNamedJdbc.update(sql, params);
     }
 
     public double getIrsRate() {
@@ -26,12 +25,12 @@ public class IrsRateDao extends SqlBaseDao {
     private enum SqlIrsRateQuery implements BasicSqlQuery {
 
         UPDATE_IRS_RATE(
-                "UPDATE ${travel.schema}.irs_rate" +
+                "UPDATE ${travelSchema}.irs_rate\n" +
                 "SET irs_travel_rate = :rate"
         ),
         GET_IRS_RATE(
-                "SELECT irs_travel_rate" +
-                "FROM ${travel.schema}.irs_rate"
+                "SELECT irs_travel_rate\n" +
+                "FROM ${travelSchema}.irs_rate"
         );
 
         SqlIrsRateQuery(String sql) {
@@ -51,17 +50,12 @@ public class IrsRateDao extends SqlBaseDao {
         }
     }
 
-    /**
-     * Return a set of line items sorted alphabetically by their descriptions.
-     *
-     * Cant sort in original select statement since description information is
-     * not contained in local database.
-     */
+
     private class IrsRateMapper extends BaseRowMapper<Double> {
 
         @Override
         public Double mapRow(ResultSet resultSet, int i) throws SQLException {
-            return resultSet.getDouble(i);
+            return resultSet.getDouble("irs_travel_rate");
         }
     }
 }

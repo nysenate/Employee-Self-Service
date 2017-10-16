@@ -3,8 +3,13 @@ package gov.nysenate.ess.travel.maps;
 import com.google.maps.*;
 import com.google.maps.model.*;
 import gov.nysenate.ess.travel.application.dao.IrsRateDao;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 @Service
 public class MapsService {
@@ -28,7 +33,11 @@ public class MapsService {
         String[] destinations = new String[] {destination};
         double totalDist = 0;
         try {
-            DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations).units(Unit.IMPERIAL).await();
+            DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
+                    .departureTime(DateTime.now())
+                    .trafficModel(TrafficModel.OPTIMISTIC)
+                    .units(Unit.IMPERIAL)
+                    .await();
             DistanceMatrixRow[] rows = request.rows;
             for (DistanceMatrixRow d : rows) {
                 for (DistanceMatrixElement el : d.elements) {
@@ -101,7 +110,10 @@ public class MapsService {
         GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
         DirectionsResult result = null;
         try {
-            result = DirectionsApi.getDirections(context, origin, destination).await();
+            result = DirectionsApi.getDirections(context, origin, destination)
+                    .departureTime(DateTime.now())
+                    .trafficModel(TrafficModel.OPTIMISTIC)
+                    .await();
         }
         catch (Exception e) {
             e.printStackTrace();

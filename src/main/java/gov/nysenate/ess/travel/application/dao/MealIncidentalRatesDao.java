@@ -35,7 +35,7 @@ public class MealIncidentalRatesDao extends SqlBaseDao {
         localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    @Transactional(value = "localTxManager")
+    //@Transactional(value = "localTxManager")
     public synchronized void updateMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
         String sql = SqlMealIncidentalRateQuery.TRUNCATE_TABLE.getSql(schemaMap());
         localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
