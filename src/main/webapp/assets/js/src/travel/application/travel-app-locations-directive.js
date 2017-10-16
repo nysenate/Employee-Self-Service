@@ -7,9 +7,14 @@ function appLocations(appProps, modals) {
        templateUrl: appProps.ctxPath + '/template/travel/application/travel-app-locations',
        link: function ($scope, $elem, $attrs) {
 
-           $scope.setOrigin = function() {
-               modals.open('origin-selection-modal');
+           $scope.enterDestination = function() {
+               modals.open('destination-selection-modal')
+                   .then(addDestination);
            };
+
+           function addDestination(destination) {
+               console.log(destination);
+           }
 
            $scope.setAddress = function (address) {
                console.log("callback executed");

@@ -17,7 +17,7 @@
     <div class="grid text-align-center padding-10">
       <%--Left button--%>
       <div class="col-3-12">
-        <input type="button" class="reject-button"
+        <input type="button" class="neutral-button"
                value="Cancel">
       </div>
       <div class="col-6-12">&nbsp;

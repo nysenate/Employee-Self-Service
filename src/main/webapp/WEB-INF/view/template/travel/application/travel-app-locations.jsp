@@ -11,15 +11,15 @@
       <h4>Destination (To)</h4>
       <div class="padding-10">
         <input type="button" class="submit-button"
-               value="Set Destination"
-               ng-click="addDestination()">
+               value="Enter Destination"
+               ng-click="enterDestination()">
       </div>
     </div>
   </div>
 
   <div modal-container>
-    <modal modal-id="origin-selection-modal">
-      <div origin-selection-modal></div>
+    <modal modal-id="destination-selection-modal">
+      <div destination-selection-modal></div>
     </modal>
   </div>
 </div>
