@@ -9,6 +9,11 @@ function appLocations(appProps, modals) {
 
            $scope.setOrigin = function() {
                modals.open('origin-selection-modal');
+           };
+
+           $scope.setAddress = function (address) {
+               console.log("callback executed");
+               console.log(address);
            }
        }
    }
