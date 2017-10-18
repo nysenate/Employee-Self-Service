@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.gsa;
+package gov.nysenate.ess.travel.gsa.service;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.GsaAllowance;

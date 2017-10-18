@@ -4,9 +4,8 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
-import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
-import gov.nysenate.ess.travel.gsa.GsaAllowanceService;
+import gov.nysenate.ess.travel.gsa.service.GsaAllowanceService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application.dao;
+package gov.nysenate.ess.travel.gsa.dao;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class MealIncidentalRatesDao extends SqlBaseDao {
+@Transactional
+public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealIncidentalRatesDao {
 
+    @Override
     public void insertMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
         List<SqlParameterSource> paramList = new ArrayList<>();
         for (MealIncidentalRate mealIncidentalRate : mealIncidentalRates) {
@@ -35,7 +37,8 @@ public class MealIncidentalRatesDao extends SqlBaseDao {
         localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    //@Transactional(value = "localTxManager")
+    @Override
+    @Transactional(value = "localTxManager")
     public synchronized void updateMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
         String sql = SqlMealIncidentalRateQuery.TRUNCATE_TABLE.getSql(schemaMap());
         localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());

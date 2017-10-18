@@ -7,7 +7,7 @@ import gov.nysenate.ess.travel.application.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.view.GsaAllowanceView;
 import gov.nysenate.ess.travel.application.view.ItineraryView;
-import gov.nysenate.ess.travel.gsa.GsaAllowanceService;
+import gov.nysenate.ess.travel.gsa.service.GsaAllowanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
