@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.gsa.service;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
-import gov.nysenate.ess.travel.application.model.MealIncidentalRates;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import gov.nysenate.ess.travel.request.model.GsaClient;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ public class GsaAllowanceService {
     public GsaAllowance computeAllowance(Itinerary itinerary) {
         int mealAllowance = 0;
         int lodgingAllowance = 0;
+        int incidentalAllowance = 0;
 
         List<TravelDestination> travelDestinations = itinerary.getTravelDestinations();
         for (TravelDestination travelDestination : travelDestinations) {
@@ -30,34 +30,35 @@ public class GsaAllowanceService {
 
             GsaClient client = new GsaClient(getFiscalYear(currentDate), destinationAddress.getZip5());
             client.setLodging(currentDate.getMonth());
-            MealIncidentalRates mealIncidentalRates = client.getMealIncidentalRates();
 
             int daysThere = (int) ChronoUnit.DAYS.between(arrival, departure) + 1;
 
             // Same day
             if (daysThere == 1) {
-                mealAllowance += mealIncidentalRates.getBreakfastCost();
-                mealAllowance += mealIncidentalRates.getDinnerCost();
+                mealAllowance += client.getBreakfastCost();
+                mealAllowance += client.getDinnerCost();
+                incidentalAllowance += client.getIncidentalCost();
             }
             // More than one day
             else {
                 // Handles every but the last day
                 for (int i = 1; i < daysThere; i++) {
-                    mealAllowance += mealIncidentalRates.getBreakfastCost();
-                    mealAllowance += mealIncidentalRates.getDinnerCost();
+                    mealAllowance += client.getBreakfastCost();
+                    mealAllowance += client.getDinnerCost();
 
                     lodgingAllowance += client.getLodging();
+                    incidentalAllowance += client.getIncidentalCost();
+
                     currentDate = currentDate.plusDays(1);
                     client = handleIfNewMonth(arrival, currentDate, client, destinationAddress);
-                    mealIncidentalRates = client.getMealIncidentalRates();
                 }
 
-                mealAllowance += mealIncidentalRates.getBreakfastCost();
-                mealAllowance += mealIncidentalRates.getDinnerCost();
+                mealAllowance += client.getBreakfastCost();
+                mealAllowance += client.getDinnerCost();
             }
         }
 
-        return new GsaAllowance(String.valueOf(mealAllowance), String.valueOf(lodgingAllowance), "0");
+        return new GsaAllowance(String.valueOf(mealAllowance), String.valueOf(lodgingAllowance), String.valueOf(incidentalAllowance));
     }
 
     private GsaClient handleIfNewMonth(LocalDate arrival, LocalDate currentDate, GsaClient client, Address destinationAddress) {

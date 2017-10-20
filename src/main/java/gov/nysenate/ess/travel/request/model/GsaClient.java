@@ -77,10 +77,17 @@ public class GsaClient {
         lodging = records.get(monthString).getAsInt();
     }
 
-    public MealIncidentalRates getMealIncidentalRates() {
-        return mealIncidentalRates;
+    public int getBreakfastCost() {
+        return mealIncidentalRates.getBreakfastCost();
     }
 
+    public int getDinnerCost() {
+        return mealIncidentalRates.getDinnerCost();
+    }
+
+    public int getIncidentalCost() {
+        return mealIncidentalRates.getIncidentalCost();
+    }
     public JsonObject getRecords() {
         return records;
     }
