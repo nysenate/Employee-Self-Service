@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "travel/transportation-allowance")
-
 public class TravelAllowanceCtrl extends BaseRestApiCtrl {
+
     private static final Logger logger = LoggerFactory.getLogger(TravelAllowanceCtrl.class);
 
     @Autowired private TravelAllowanceService travelAllowanceService;
