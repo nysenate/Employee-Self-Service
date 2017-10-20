@@ -26,8 +26,8 @@ public class AddressValidationCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value="")
     public boolean returnValidationResult(@RequestParam String addr1,
-                                                @RequestParam String city,
-                                                @RequestParam String state) {
+                                          @RequestParam String city,
+                                          @RequestParam String state) {
 
         if (validateAddress(addr1, city, state).equals("SUCCESS")) return true;
         else return false;
