@@ -19,32 +19,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("https://pubgeo.nysenate.gov/api/v2/address/validate")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/address/validate")
 public class AddressValidationCtrl extends BaseRestApiCtrl {
 
     private static final Logger log = LoggerFactory.getLogger(AddressValidationCtrl.class);
 
     @RequestMapping(value="")
-    public static BaseResponse validateAddress(@RequestParam String addr1,
-                                               @RequestParam String city,
-                                               @RequestParam String state) {
+    public boolean returnValidationResult(@RequestParam String addr1,
+                                                @RequestParam String city,
+                                                @RequestParam String state) {
 
+        if (validateAddress(addr1, city, state).equals("SUCCESS")) return true;
+        else return false;
+    }
+
+    private String validateAddress(String addr1, String city, String state) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://pubgeo.nysenate.gov/api/v2/address/validate?" +
-                     "addr1=" + addr1 + "&" +
-                     "city="  + city + "&" +
-                     "state=" + state;
+                "addr1=" + addr1 + "&" +
+                "city="  + city + "&" +
+                "state=" + state;
         String resp = restTemplate.getForObject(url, String.class);
         JsonParser parser = new JsonParser();
         JsonObject jsonResponse = parser.parse(resp).getAsJsonObject();
         JsonElement status = jsonResponse.get("status");
-        System.out.println(status.toString());
-        return null;
-    }
-
-    public static void main(String[] args) {
-        validateAddress("100 South Swan St", "Albany", "NY");
-        validateAddress("100000000 east nowhere", "timbuktu", "albania");
-        validateAddress("515 Loudon Road", "", "");
+        return status.getAsString();
     }
 }
