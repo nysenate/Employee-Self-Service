@@ -299,9 +299,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
                     "Received: " + override);
         }
         try {
-            PrimarySupEmpGroup filteredEmpGroup = getPrimarySupEmpGroup(override.getGranterEmpId());
-            filteredEmpGroup.setActiveDates(override.getEffectiveDateRange());
-            return filteredEmpGroup.getPrimaryEmpSupInfos();
+            PrimarySupEmpGroup overrideEmpGroup = getPrimarySupEmpGroup(override.getGranterEmpId());
+            return overrideEmpGroup.getPrimaryEmpSupInfos();
         } catch (SupervisorMissingEmpsEx ex) {
             return Collections.emptySet();
         }
@@ -334,9 +333,7 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
 
         // Get intersection of active dates, continuous supervisor dates, and the override effective date range
         // this will get ranges for each necessary EmployeeSupInfo
-        RangeSet<LocalDate> empInfoRanges = RangeUtils.intersection(Arrays.asList(
-                activeDates, supervisorDates, ImmutableRangeSet.of(override.getEffectiveDateRange())
-        ));
+        RangeSet<LocalDate> empInfoRanges = RangeUtils.intersection(activeDates, supervisorDates);
 
         Employee employee = empInfoService.getEmployee(empId);
 
