@@ -1,38 +1,45 @@
 package gov.nysenate.ess.travel;
 
+import gov.nysenate.ess.core.BaseTest;
+import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.maps.AddressValidationCtrl;
+import gov.nysenate.ess.travel.maps.AddressValidationService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.Assert.assertEquals;
 
 
-@Category(UnitTest.class)
-public class AddressValidationTest {
+@Category(IntegrationTest.class)
+public class AddressValidationTest extends BaseTest{
 
-    private AddressValidationCtrl addressValidationCtrl = new AddressValidationCtrl();
+    @Autowired
+    AddressValidationService addressValidationService;
 
     @Test
-    public void completeValidAddress_true() {
-        assert(addressValidationCtrl.returnValidationResult("100 South Swan St", "Albany", "NY"));
+    public void completeValidAddress_SUCCESS() {
+        assertEquals(addressValidationService.validateAddress("100 South Swan St", "Albany", "NY").getStatus(), "SUCCESS");
     }
 
     @Test
-    public void completeInvalidAddress_false() {
-        assert(!addressValidationCtrl.returnValidationResult("100000000 east nowhere", "timbuktu", "albania"));
+    public void completeInvalidAddress_INVALID_ADDRESS() {
+        assertEquals(addressValidationService.validateAddress("100000000 east nowhere", "timbuktu", "albania").getStatus(), "NO_ADDRESS_VALIDATE_RESULT");
     }
 
     @Test
-    public void completeMisspelledAddress_false() {
-        assert(!addressValidationCtrl.returnValidationResult("100 Sout Swain St", "Albanyy", "New York"));
+    public void completeMisspelledAddress_INVALID_ADDRESS() {
+        assertEquals(addressValidationService.validateAddress("100 Sout Swain St", "Albanyy", "New York").getStatus(), "NO_ADDRESS_VALIDATE_RESULT");
     }
 
     @Test
-    public void incompleteAddress_false() {
-        assert(!addressValidationCtrl.returnValidationResult("515 Loudon Road", "", ""));
+    public void incompleteAddress_INSUFFICIENT_ADDRESS() {
+        assertEquals(addressValidationService.validateAddress("515 Loudon Road", "", "").getStatus(), "INSUFFICIENT_ADDRESS");
     }
 
     @Test
-    public void missingAddress_false() {
-        assert(!addressValidationCtrl.returnValidationResult("", "", ""));
+    public void missingAddress_MISSING_ADDRESS() {
+        assertEquals(addressValidationService.validateAddress("", "", "").getStatus(), "MISSING_ADDRESS");
     }
 }
