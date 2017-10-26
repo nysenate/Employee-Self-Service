@@ -88,6 +88,7 @@ public class GsaClient {
     public int getIncidentalCost() {
         return mealIncidentalRates.getIncidentalCost();
     }
+
     public JsonObject getRecords() {
         return records;
     }

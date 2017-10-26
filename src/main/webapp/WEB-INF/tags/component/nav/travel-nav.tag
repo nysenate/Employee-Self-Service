@@ -10,6 +10,7 @@
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/travel/travel-application">Travel Application</a></li>
       <li class="sub-topic"><a href="${ctxPath}/travel/request-history">Request History</a></li>
+      <li class="sub-topic"><a href="${ctxPath}/travel/travel-user-config">User Configuration</a></li>
     </ul>
     <h3 class="main-topic">Manage Requests</h3>
     <ul class="sub-topic-list">
