@@ -9,7 +9,7 @@
       <label>Departure Date: <input datepicker ng-model="destination.departureDate" size="13"></label>
     </div>
   </div >
-  <div class="padding-top-10 clearfix width-100">
+  <div class="padding-top-10 text-align-center">
     <input type="button" class="neutral-button"
            value="Cancel"
            ng-click="cancel()">

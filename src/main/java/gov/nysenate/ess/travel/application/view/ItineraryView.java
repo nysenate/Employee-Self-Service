@@ -12,6 +12,9 @@ public class ItineraryView implements ViewObject {
     private AddressView origin;
     private ListView<TravelDestinationView> destinations;
 
+    public ItineraryView() {
+    }
+
     public ItineraryView(Itinerary itinerary) {
         this.origin = new AddressView(itinerary.getOrigin());
         this.destinations = ListView.of(itinerary.getTravelDestinations().stream()

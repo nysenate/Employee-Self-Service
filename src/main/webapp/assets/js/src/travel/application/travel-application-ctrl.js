@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
-                     ['$scope', 'appProps', 'modals', 'LocationService', travelAppController]);
+                     ['$scope', 'appProps', 'modals', 'LocationService', 'TravelGsaAllowanceApi', travelAppController]);
 
-function travelAppController($scope, appProps, modals, locationService, activeApplicationApi) {
+function travelAppController($scope, appProps, modals, locationService, gsaApi) {
 
     /* --- Container Page --- */
 
@@ -14,7 +14,15 @@ function travelAppController($scope, appProps, modals, locationService, activeAp
         itinerary: {
             origin: undefined,
             destinations: []
-        }
+        },
+        modeOfTransportation: undefined,
+        transportationAllowance: {
+            tolls: 0
+        },
+        parkingAllowance: 0,
+        alternateTravelAllowance: 0,
+        registrationFeeAllowance: 0,
+        purposeOfTravel: ''
     };
 
     function init() {
@@ -23,10 +31,6 @@ function travelAppController($scope, appProps, modals, locationService, activeAp
     }
 
     init();
-
-    $scope.areLocationsEntered = function() {
-        return $scope.app.itinerary.origin && $scope.app.itinerary.destinations.length > 0;
-    };
 
     /* --- Location Selection --- */
 
@@ -41,4 +45,37 @@ function travelAppController($scope, appProps, modals, locationService, activeAp
             });
     };
 
+    $scope.removeDestination = function(dest) {
+        var index = $scope.app.itinerary.destinations.indexOf(dest);
+        $scope.app.itinerary.destinations.splice(index, 1);
+    };
+
+    $scope.locationsCompleted = function() {
+        return $scope.app.itinerary.origin && $scope.app.itinerary.destinations.length > 0;
+    };
+
+    $scope.toMethodAndPurpose = function() {
+        $scope.state = STATES[1];
+    };
+
+    /* --- Method and Purpose --- */
+
+    $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Train', 'Airplane', 'Other'];
+
+    $scope.methodAndPurposeCompleted = function () {
+        return $scope.app.modeOfTransportation;
+    };
+
+    $scope.toReviewAndSubmit = function () {
+        $scope.state = STATES[2];
+        $scope.initReviewAndSubmit();
+    };
+
+    /* --- Review and Submit --- */
+
+    $scope.initReviewAndSubmit = function () {
+        gsaApi.save($scope.app.itinerary, function (response) {
+            console.log(response);
+        })
+    };
 }

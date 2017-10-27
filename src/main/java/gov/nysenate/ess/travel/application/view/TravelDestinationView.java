@@ -14,6 +14,9 @@ public class TravelDestinationView implements ViewObject {
     private String departureDate;
     private AddressView address;
 
+    public TravelDestinationView() {
+    }
+
     public TravelDestinationView(TravelDestination td) {
         this.arrivalDate = td.getArrivalDate().format(ISO_DATE);
         this.departureDate = td.getDepartureDate().format(ISO_DATE);
