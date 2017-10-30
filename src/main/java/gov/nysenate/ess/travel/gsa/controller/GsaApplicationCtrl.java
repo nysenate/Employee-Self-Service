@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.gsa.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.application.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
@@ -31,8 +32,6 @@ public class GsaApplicationCtrl extends BaseRestApiCtrl {
 
         GsaAllowance gsaAllowance = gsaAllowanceService.computeAllowance(itinerary);
         GsaAllowanceView gsaAllowanceView = new GsaAllowanceView(gsaAllowance);
-
-        List<GsaAllowanceView> list = Arrays.asList(gsaAllowanceView);
-        return ListViewResponse.of(list);
+        return new ViewObjectResponse<>(gsaAllowanceView);
     }
 }

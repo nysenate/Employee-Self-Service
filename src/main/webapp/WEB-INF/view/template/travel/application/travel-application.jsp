@@ -23,11 +23,11 @@
           </div>
           <div class="col-6-12">
             <h4>Destination (To)</h4>
-            <div ng-repeat="dest in app.itinerary.destinations">
+            <div ng-repeat="dest in app.itinerary.destinations.items">
               <div class="travel-location-div width-90 float-left">
                 <div style="float: left; font-size: 0.8em;">
-                  Arrival Date: {{dest.arrivalDate}}<br/>
-                  Departure Date: {{dest.departureDate}}
+                  Arrival Date: {{dest.arrivalDate | date: 'shortDate'}}<br/>
+                  Departure Date: {{dest.departureDate | date: 'shortDate'}}
                 </div>
                 <div style="float: right;">
                   {{dest.address.addr1}}<br/>
@@ -82,7 +82,7 @@
 
       <%-- Review and Submit --%>
       <div ng-show="state === 'REVIEW_AND_SUBMIT'">
-        <h4 class="content-info">Review and Submit</h4>
+        <h2 class="content-info">Review and Submit</h2>
         <div>
           <h4>Departure (from)</h4>
           <div class="travel-location-div width-50">
@@ -95,11 +95,11 @@
         </div>
         <div>
           <h4>Destinations (to)</h4>
-          <div ng-repeat="dest in app.itinerary.destinations"
+          <div ng-repeat="dest in app.itinerary.destinations.items"
                class="travel-location-div width-50">
             <div style="float: left; font-size: 0.8em;">
-              Arrival Date: {{dest.arrivalDate}}<br/>
-              Departure Date: {{dest.departureDate}}
+              Arrival Date: {{dest.arrivalDate | date: 'shortDate'}}<br/>
+              Departure Date: {{dest.departureDate | date: 'shortDate'}}
             </div>
             <div style="float: right;">
               {{dest.address.addr1}}<br/>
@@ -108,10 +108,30 @@
             </div>
           </div>
         </div>
-        <div>
-          <h4>Estimated Allowances</h4>
-          <label class="travel-allowance-label">Tolls</label>
-          <input ng-model="app.transportationAllowance.tolls" type="number" step="0.01" min="0" readonly>
+        <div style="margin-top: 40px;">
+          <h4>Travel and Allowances</h4>
+          <div>
+            <label class="travel-allowance-label">Mode of Transportation: </label>
+            {{app.modeOfTransportation}}
+            <label class="travel-allowance-label">Meals: </label>
+            {{app.gsaAllowance.meals | currency}}
+            <label class="travel-allowance-label">Lodging: </label>
+            {{app.gsaAllowance.lodging | currency}}
+            <label class="travel-allowance-label">Mileage: </label>
+            {{app.transportationAllowance.mileage | currency}}
+            <label class="travel-allowance-label">Tolls: </label>
+            {{app.transportationAllowance.tolls | currency}}
+             <label class="travel-allowance-label">Parking: </label>
+            {{app.parkingAllowance | currency}}
+             <label class="travel-allowance-label">Taxi/Bus/Subway: </label>
+            {{app.alternateTravelAllowance | currency}}
+             <label class="travel-allowance-label">Registration Fee: </label>
+            {{app.registrationFeeAllowance | currency}}
+          </div>
+        </div>
+        <div style="margin-top: 40px;">
+          <h4>Purpose</h4>
+          {{app.purposeOfTravel}}
         </div>
 
         <%-- END --%>
@@ -160,6 +180,22 @@
                  ng-click="toReviewAndSubmit()">
         </div>
       </div>
+
+        <%-- Review and Submit buttons --%>
+        <div ng-show="state === 'REVIEW_AND_SUBMIT'">
+          <div class="col-3-12">
+            <input type="button" class="neutral-button"
+                   value="Back">
+          </div>
+          <div class="col-6-12">&nbsp;
+          </div>
+
+          <div class="col-3-12">
+            <input type="button" class="submit-button"
+                   value="Submit"
+                   ng-click="submitApplication()">
+          </div>
+        </div>
 
     </div>
   </div>

@@ -2,7 +2,7 @@
   <h3 class="content-info">Enter destination info</h3>
   <div class="content-info">
     <div class="padding-10">
-      <label>Destination: <input travel-autocomplete callback="setAddressCallback(address)" placeholder="Enter Address" type="text" size="30"></label>
+      <label>Destination: <input travel-autocomplete callback="addressCallback(address)" placeholder="Enter Address" type="text" size="30"></label>
     </div>
     <div class="padding-10">
       <label>Arrival Date: <input datepicker ng-model="destination.arrivalDate" size="13"></label>

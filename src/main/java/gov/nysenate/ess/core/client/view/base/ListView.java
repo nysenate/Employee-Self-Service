@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement
@@ -21,15 +22,21 @@ public class ListView<ViewType> implements ViewObject
     public static <ViewType extends ViewObject> ListView<ViewType> of(List<ViewType> items) {
         return new ListView<>(items);
     }
+
     public static ListView<String> ofStringList(List<String> items) {
         return new ListView<>(items);
     }
+
     public static ListView<Integer> ofIntList(List<Integer> items) {
         return new ListView<>(items);
     }
 
     private ListView(List<ViewType> items) {
         this.items = items != null ? ImmutableList.copyOf(items) : ImmutableList.of();
+    }
+
+    private ListView() {
+        items = ImmutableList.of();
     }
 
     @Override

@@ -1,9 +1,10 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
-                     ['$scope', 'appProps', 'modals', 'LocationService', 'TravelGsaAllowanceApi', travelAppController]);
+                     ['$scope', 'appProps', 'modals', 'LocationService', 'TravelGsaAllowanceApi', 'TravelTransportationAllowanceApi',
+                      travelAppController]);
 
-function travelAppController($scope, appProps, modals, locationService, gsaApi) {
+function travelAppController($scope, appProps, modals, locationService, gsaApi, transportationApi) {
 
     /* --- Container Page --- */
 
@@ -13,7 +14,9 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi) 
         applicant: undefined,
         itinerary: {
             origin: undefined,
-            destinations: []
+            destinations: {
+                items: []
+            }
         },
         modeOfTransportation: undefined,
         transportationAllowance: {
@@ -41,17 +44,17 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi) 
     $scope.addDestinationOnClick = function() {
         modals.open('destination-selection-modal')
             .then(function (destination) {
-                $scope.app.itinerary.destinations.push(destination);
+                $scope.app.itinerary.destinations.items.push(destination);
             });
     };
 
     $scope.removeDestination = function(dest) {
-        var index = $scope.app.itinerary.destinations.indexOf(dest);
-        $scope.app.itinerary.destinations.splice(index, 1);
+        var index = $scope.app.itinerary.destinations.items.indexOf(dest);
+        $scope.app.itinerary.destinations.items.splice(index, 1);
     };
 
     $scope.locationsCompleted = function() {
-        return $scope.app.itinerary.origin && $scope.app.itinerary.destinations.length > 0;
+        return $scope.app.itinerary.origin && $scope.app.itinerary.destinations.items.length > 0;
     };
 
     $scope.toMethodAndPurpose = function() {
@@ -76,6 +79,15 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi) 
     $scope.initReviewAndSubmit = function () {
         gsaApi.save($scope.app.itinerary, function (response) {
             console.log(response);
-        })
+            $scope.app.gsaAllowance = response.result;
+        });
+
+        transportationApi.save($scope.app.itinerary, function (response) {
+            $scope.app.transportationAllowance.mileage = response.result.mileage;
+        });
+    };
+
+    $scope.submitApplication = function () {
+        console.log("Submitting app");
     };
 }

@@ -11,13 +11,16 @@ essTravel.directive('destinationSelectionModal', ['appProps', function (appProps
 
 function destSelectionCtrl($scope, modals) {
 
+    const DATEPICKER_FORMAT = 'MM-DD-YYYY';
+    const ISO_FORMAT = 'YYYY-MM-DD';
+
     $scope.destination = {
         address: undefined,
         arrivalDate: undefined,
         departureDate: undefined
     };
 
-    $scope.setAddressCallback = function(address) {
+    $scope.addressCallback = function(address) {
         $scope.destination.address = address;
     };
     
@@ -28,6 +31,9 @@ function destSelectionCtrl($scope, modals) {
     };
 
     $scope.submit = function () {
+        // Convert arrival/departure dates to ISO format.
+        $scope.destination.arrivalDate = moment($scope.destination.arrivalDate, DATEPICKER_FORMAT).format(ISO_FORMAT);
+        $scope.destination.departureDate = moment($scope.destination.departureDate, DATEPICKER_FORMAT).format(ISO_FORMAT);
         modals.resolve($scope.destination);
     };
 

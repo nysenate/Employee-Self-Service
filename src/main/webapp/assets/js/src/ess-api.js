@@ -220,6 +220,9 @@ essApi.factory('TravelGsaAllowanceApi', ['$resource', 'appProps', function ($res
     return $resource(appProps.apiPath + '/travel/gsa')
 }]);
 
+essApi.factory('TravelTransportationAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/transportation-allowance')
+}]);
 
 /** --- Timeout API --- */
 
