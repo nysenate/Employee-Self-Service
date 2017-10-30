@@ -13,7 +13,6 @@ function travelDetailCtrl($scope, modals) {
     //display the travel application details corresponding to what they clicked on
 
     $scope.requestInfo = modals.params().info;
-    console.log($scope.requestInfo.applicant.lastName);
 
     $scope.exit = function () {
         modals.resolve();

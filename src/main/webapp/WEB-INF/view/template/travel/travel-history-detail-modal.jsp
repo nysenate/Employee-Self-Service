@@ -31,9 +31,9 @@
         </tbody>
       </table>
       <div>
-        <p class="inline-block col-4-12">Meal Allowance: {{ '$' + requestInfo.gsaAllowance.meals}}</p>
-        <p class="inline-block col-4-12">Lodging Allowance: {{ '$' + requestInfo.gsaAllowance.lodging}}</p>
-        <p class="inline-block col-4-12">Travel Allowance: {{ '$' + requestInfo.transportationAllowance.total}}</p>
+        <p class="inline-block col-4-12">Meal Allowance:{{ '$' + requestInfo.gsaAllowance.meals}}</p>
+        <p class="inline-block col-4-12">Lodging Allowance:{{ '$' + requestInfo.gsaAllowance.lodging}}</p>
+        <p class="inline-block col-4-12">Travel Allowance:{{ '$' + requestInfo.transportationAllowance.total}}</p>
       </div>
     </div>
   </div>
