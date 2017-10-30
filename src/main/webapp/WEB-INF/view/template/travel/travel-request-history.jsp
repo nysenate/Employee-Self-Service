@@ -4,7 +4,7 @@
   </div>
   <div class="content-container">
     <div>
-      <h2 class="content-info">Travel Request History</h2>
+      <h4 class="content-info">Travel Request History</h4>
       <div class="text-align-center">
         <div class="padding-10 inline-block">
           <label class="bold">From:</label>
@@ -34,11 +34,12 @@
           </thead>
           <tbody>
             <tr dir-paginate="row in travelHistory | orderBy: '-travelDate' : true | itemsPerPage : 5"
-                pagination-id="travel-history-pagination">
+                pagination-id="travel-history-pagination"
+                ng-click="viewApplicationDetails(row.id)">
               <td>{{row.travelDate | date:'M/d/yyyy'}}</td>
-              <td>{{row.empName}}</td>
-              <td>{{row.destination}}</td>
-              <td>{{row.allottedFunds}}</td>
+              <td>{{row.applicant.lastName}}</td>
+              <td>{{row.itinerary.destinations[0].address.city}}</td>
+              <td>{{'$' + row.totalAllowance}}</td>
               <td>{{row.status}}</td>
             </tr>
           </tbody>
@@ -48,6 +49,11 @@
                                    boundary-links="true" max-size="10"></dir-pagination-controls>
         </div>
       </div>
+    </div>
+    <div modal-container>
+      <modal modal-id="travel-history-detail-modal">
+        <div travel-history-detail-modal></div>
+      </modal>
     </div>
   </div>
 </div>

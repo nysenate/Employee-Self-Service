@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelHistoryController', ['$scope', 'TravelApplicationApi', 'PaginationModel', historyController]);
+essTravel.controller('TravelHistoryController', ['$scope', 'appProps', 'modals', 'TravelApplicationApi', 'PaginationModel', historyController]);
 
-function historyController($scope, travelApplicationApi) {
+function historyController($scope, appProps, modals, travelApplicationApi) {
 
     var DATE_FORMAT = "MM/DD/YYYY";
     var completeTravelHistory = [];
@@ -35,14 +35,7 @@ function historyController($scope, travelApplicationApi) {
     function parseResponse(resp) {
         result = resp.result;
         for (var i = 0; i < result.length; i++) {
-            var row = result[i];
-            completeTravelHistory.push({
-               travelDate: row.travelDate,
-               empName: row.applicant.lastName,
-               destination: row.itinerary.destinations[0].address.city,
-               allottedFunds: "$" + row.totalAllowance,
-               status: row.status
-           });
+            completeTravelHistory.push(result[i]);
         }
     }
 
@@ -56,6 +49,23 @@ function historyController($scope, travelApplicationApi) {
                 $scope.travelHistory.push(completeTravelHistory[i]);
             }
         }
+        $scope.travelHistory.sort(function(a, b) {
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(b.travelDate.date) - new Date(a.travelDate.date);
+        });
+    }
+
+    $scope.viewApplicationDetails = function(requestId) {
+        request = {};
+        for (i = 0; i < $scope.travelHistory.length; i++) {
+            element = $scope.travelHistory[i];
+            if (element.id == requestId) {
+                request = element;
+                break;
+            }
+        }
+        modals.open("travel-history-detail-modal", {info: request}, true)
     }
 
     $scope.init();
