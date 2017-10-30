@@ -33,25 +33,5 @@ public class AddressValidationService {
             e.printStackTrace();
         }
         return sageResponse;
-//        JsonParser parser = new JsonParser();
-//        JsonObject jsonResponse = parser.parse(resp).getAsJsonObject();
-//        String status = jsonResponse.get("status").getAsString();
-//        String source = jsonResponse.get("source").getAsString();
-//
-//        JsonObject addressObject = jsonResponse.getAsJsonObject("address");
-//
-//        String addr1 = jsonResponse.getAsJsonObject("address").get("addr1").getAsString();
-//        String addr2 = jsonResponse.getAsJsonObject("address").get("addr2").getAsString();
-//        String cityR = jsonResponse.getAsJsonObject("address").get("city").getAsString();
-//        String stateR = jsonResponse.getAsJsonObject("address").get("state").getAsString();
-//        String zip5 = jsonResponse.getAsJsonObject("address").get("zip5").getAsString();
-//        String zip4 = jsonResponse.getAsJsonObject("address").get("zip4").getAsString();
-//        Address address = new Address(addr1, addr2, cityR, stateR, zip5, zip4);
-//
-//        boolean validated = jsonResponse.get("validated").getAsBoolean();
-//        int statusCode = jsonResponse.get("statusCode").getAsInt();
-//        String description = jsonResponse.get("description").getAsString();
-//
-//        return new SageResponse(status, source, address, validated, statusCode, description);
     }
 }
