@@ -36,7 +36,6 @@ public final class TravelAppAllowances {
         this.registrationFee = TravelAllowanceUtils.round(new BigDecimal(registrationFee));
     }
 
-    // TODO only round when returning values??? TESTS!
     public BigDecimal total() {
         return gsaAllowance.total().add(mileage).add(tolls).add(parking)
                 .add(alternate).add(registrationFee);
