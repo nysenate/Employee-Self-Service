@@ -1,8 +1,6 @@
 package gov.nysenate.ess.travel.application.model;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
-import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowance;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,8 +10,7 @@ public class TravelApplication {
 
     private int id;
     private Employee applicant;
-    private GsaAllowance gsaAllowance;
-    private TransportationAllowance transportationAllowance;
+    private TravelAppAllowances allowances;
     private Itinerary itinerary;
     private ModeOfTransportation modeOfTransportation;
     private TravelApplicationStatus status;
@@ -26,8 +23,7 @@ public class TravelApplication {
     private TravelApplication(Builder builder) {
         this.id = builder.id;
         this.applicant = builder.applicant;
-        this.gsaAllowance = builder.gsaAllowance;
-        this.transportationAllowance = builder.transportationAllowance;
+        this.allowances = builder.allowances;
         this.itinerary = builder.itinerary;
         this.status = builder.status;
         this.createdBy = builder.createdBy;
@@ -42,7 +38,7 @@ public class TravelApplication {
      * @return
      */
     public BigDecimal totalAllowance() {
-        return gsaAllowance.total().add(transportationAllowance.total());
+        return null;
     }
 
     /**
@@ -66,12 +62,8 @@ public class TravelApplication {
         return applicant;
     }
 
-    public GsaAllowance getGsaAllowance() {
-        return gsaAllowance;
-    }
-
-    public TransportationAllowance getTransportationAllowance() {
-        return transportationAllowance;
+    public TravelAppAllowances getAllowances() {
+        return allowances;
     }
 
     public Itinerary getItinerary() {
@@ -109,8 +101,7 @@ public class TravelApplication {
     public static class Builder {
         private int id;
         private Employee applicant;
-        private GsaAllowance gsaAllowance;
-        private TransportationAllowance transportationAllowance;
+        private TravelAppAllowances allowances;
         private Itinerary itinerary;
         private ModeOfTransportation modeOfTransportation;
         private TravelApplicationStatus status;
@@ -133,13 +124,8 @@ public class TravelApplication {
             return this;
         }
 
-        public Builder setGsaAllowance(GsaAllowance gsaAllowance) {
-            this.gsaAllowance = gsaAllowance;
-            return this;
-        }
-
-        public Builder setTransportationAllowance(TransportationAllowance transportationAllowance) {
-            this.transportationAllowance = transportationAllowance;
+        public Builder setAllowances(TravelAppAllowances allowances) {
+            this.allowances = allowances;
             return this;
         }
 

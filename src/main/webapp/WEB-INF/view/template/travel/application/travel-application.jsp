@@ -60,19 +60,19 @@
         <div class="grid padding-10">
           <div class="col-6-12 padding-bottom-5">
             <label class="travel-allowance-label">Tolls:</label>
-            <input ng-model="app.transportationAllowance.tolls" type="number" step="0.01" min="0">
+            <input ng-model="app.allowances.tolls" type="number" step="0.01" min="0">
           </div>
           <div class="col-6-12 padding-bottom-5">
             <label class="travel-allowance-label">Parking:</label>
-            <input ng-model="app.parkingAllowance" type="number" step="0.01" min="0">
+            <input ng-model="app.allowances.parking" type="number" step="0.01" min="0">
           </div>
           <div class="col-6-12">
             <label class="travel-allowance-label">Taxi/Bus/Subway:</label>
-            <input ng-model="app.alternateTravelAllowance" type="number" step="0.01" min="0">
+            <input ng-model="app.allowances.alternate" type="number" step="0.01" min="0">
           </div>
           <div class="col-6-12">
             <label class="travel-allowance-label">Registration Fee:</label>
-            <input ng-model="app.registrationFeeAllowance" type="number" step="0.01" min="0">
+            <input ng-model="app.allowances.registrationFee" type="number" step="0.01" min="0">
           </div>
         </div>
 
@@ -114,19 +114,19 @@
             <label class="travel-allowance-label">Mode of Transportation: </label>
             {{app.modeOfTransportation}}
             <label class="travel-allowance-label">Meals: </label>
-            {{app.gsaAllowance.meals | currency}}
+            {{app.allowances.gsa.meals | currency}}
             <label class="travel-allowance-label">Lodging: </label>
-            {{app.gsaAllowance.lodging | currency}}
+            {{app.allowances.gsa.lodging | currency}}
             <label class="travel-allowance-label">Mileage: </label>
-            {{app.transportationAllowance.mileage | currency}}
+            {{app.allowances.mileage | currency}}
             <label class="travel-allowance-label">Tolls: </label>
-            {{app.transportationAllowance.tolls | currency}}
+            {{app.allowances.tolls | currency}}
              <label class="travel-allowance-label">Parking: </label>
-            {{app.parkingAllowance | currency}}
+            {{app.allowances.parking | currency}}
              <label class="travel-allowance-label">Taxi/Bus/Subway: </label>
-            {{app.alternateTravelAllowance | currency}}
+            {{app.allowances.alternate | currency}}
              <label class="travel-allowance-label">Registration Fee: </label>
-            {{app.registrationFeeAllowance | currency}}
+            {{app.allowances.registrationFee | currency}}
           </div>
         </div>
         <div style="margin-top: 40px;">

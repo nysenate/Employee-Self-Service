@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.application.dao;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
-import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowance;
 import gov.nysenate.ess.travel.application.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -79,8 +78,7 @@ public class InMemoryTravelApplicationDao {
         return TravelApplication.Builder()
                 .setId(id)
                 .setApplicant(employeeInfoService.getEmployee(11168))
-                .setGsaAllowance(randomGsaAllowance())
-                .setTransportationAllowance(randomTransportationAllowance())
+                .setAllowances(randomAllowances())
                 .setItinerary(itinerary())
                 .setModeOfTransportation(ModeOfTransportation.PERSONAL_AUTO)
                 .setStatus(status)
@@ -103,9 +101,10 @@ public class InMemoryTravelApplicationDao {
                 String.valueOf(randomWithRange(0, 12.00)));
     }
 
-    private TransportationAllowance randomTransportationAllowance() {
-        return new TransportationAllowance(String.valueOf(randomWithRange(0, 150.00)),
-                String.valueOf(randomWithRange(0, 40.00)));
+    private TravelAppAllowances randomAllowances() {
+        return new TravelAppAllowances(randomGsaAllowance(), String.valueOf(randomWithRange(0, 150.00)),
+                String.valueOf(randomWithRange(0, 40.00)), String.valueOf(randomWithRange(0, 150.00)),
+                String.valueOf(randomWithRange(0, 150.00)), String.valueOf(randomWithRange(0, 150.00)));
     }
 
     private double randomWithRange(double min, double max)

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.allowance.transportation;
+package gov.nysenate.ess.travel.allowance.mileage;
 
 import gov.nysenate.ess.core.dao.base.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

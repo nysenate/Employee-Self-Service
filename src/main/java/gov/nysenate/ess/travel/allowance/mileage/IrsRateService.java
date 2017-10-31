@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.allowance.transportation;
+package gov.nysenate.ess.travel.allowance.mileage;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

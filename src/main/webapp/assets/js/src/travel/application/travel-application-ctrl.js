@@ -12,6 +12,18 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi, 
     $scope.state = '';
     $scope.app = {
         applicant: undefined,
+        allowances: {
+            gsa: {
+                meals: 0,
+                lodging: 0,
+                incidental: 0
+            },
+            mileage: 0,
+            tolls: 0,
+            parking: 0,
+            alternate: 0,
+            registrationFee: 0
+        },
         itinerary: {
             origin: undefined,
             destinations: {
@@ -19,12 +31,6 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi, 
             }
         },
         modeOfTransportation: undefined,
-        transportationAllowance: {
-            tolls: 0
-        },
-        parkingAllowance: 0,
-        alternateTravelAllowance: 0,
-        registrationFeeAllowance: 0,
         purposeOfTravel: ''
     };
 
@@ -79,11 +85,11 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi, 
     $scope.initReviewAndSubmit = function () {
         gsaApi.save($scope.app.itinerary, function (response) {
             console.log(response);
-            $scope.app.gsaAllowance = response.result;
+            $scope.app.allowances.gsa = response.result;
         });
 
         transportationApi.save($scope.app.itinerary, function (response) {
-            $scope.app.transportationAllowance.mileage = response.result.mileage;
+            $scope.app.allowances.mileage = response.result.mileage;
         });
     };
 

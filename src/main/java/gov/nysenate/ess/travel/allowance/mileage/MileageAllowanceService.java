@@ -1,22 +1,25 @@
-package gov.nysenate.ess.travel.allowance.transportation;
+package gov.nysenate.ess.travel.allowance.mileage;
 
 import gov.nysenate.ess.travel.application.model.*;
 import gov.nysenate.ess.travel.maps.MapsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 import java.util.ArrayList;
 
 @Service
-public class TransportationAllowanceService {
-    @Autowired
-    MapsService mapsService;
+public class MileageAllowanceService {
 
     @Autowired
-    IrsRateDao irsRateDao;
+    private MapsService mapsService;
 
-    public TransportationAllowance updateTravelAllowance(Itinerary itinerary) {
+    @Autowired
+    private IrsRateDao irsRateDao;
+
+    public BigDecimal calculateMileageAllowance(Itinerary itinerary) {
         List<TravelDestination> travelDestinations = itinerary.getTravelDestinations();
         String[] destinations = new String[travelDestinations.size()];
 
@@ -25,12 +28,11 @@ public class TransportationAllowanceService {
             destinations[i] = td.getAddress().toString();
         }
         double milesTraveled = mapsService.getTripDistance(itinerary.getOrigin().toString(), destinations);
-        double mileageAllowance = 0;
+        BigDecimal mileageAllowance = new BigDecimal(0);
         if (mapsService.getDistanceOut(itinerary.getOrigin().toString(), destinations) > 35) {
-            mileageAllowance = milesTraveled * irsRateDao.getIrsRate() / 100;
+            mileageAllowance = BigDecimal.valueOf(milesTraveled).multiply(BigDecimal.valueOf(irsRateDao.getIrsRate() / 100));
         }
 
-        return new TransportationAllowance(mileageAllowance + "", "0");
+        return mileageAllowance;
     }
-    //TODO figure out how to estimate tolls
 }

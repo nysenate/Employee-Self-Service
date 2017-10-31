@@ -2,8 +2,6 @@ package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
-import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowanceView;
 import gov.nysenate.ess.travel.application.model.TravelApplication;
 import gov.nysenate.ess.travel.application.model.TravelApplicationStatus;
 
@@ -14,9 +12,8 @@ public class TravelApplicationView implements ViewObject {
 
     private int id;
     private EmployeeView applicant;
+    private TravelAppAllowancesView allowances;
     private String modeOfTransportation;
-    private GsaAllowanceView gsaAllowance;
-    private TransportationAllowanceView transportationAllowance;
     private String totalAllowance;
     private ItineraryView itinerary;
     private String status;
@@ -31,8 +28,7 @@ public class TravelApplicationView implements ViewObject {
         // TODO: Prob need null checks here
         this.id = ta.getId();
         this.applicant = new EmployeeView(ta.getApplicant());
-        this.gsaAllowance = new GsaAllowanceView(ta.getGsaAllowance());
-        this.transportationAllowance = new TransportationAllowanceView(ta.getTransportationAllowance());
+        this.allowances = new TravelAppAllowancesView(ta.getAllowances());
         this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
         this.status = ta.getStatus().name();
@@ -47,8 +43,7 @@ public class TravelApplicationView implements ViewObject {
         return TravelApplication.Builder()
                 .setId(id)
                 .setApplicant(applicant.toEmployee())
-                .setGsaAllowance(gsaAllowance.toGsaAllowance())
-                .setTransportationAllowance(transportationAllowance.toTransportationAllowance())
+                .setAllowances(allowances.toTravelAppAllowances())
                 .setItinerary(itinerary.toItinerary())
                 .setStatus(TravelApplicationStatus.valueOf(status))
                 .setCreatedBy(createdBy.toEmployee())
@@ -70,12 +65,8 @@ public class TravelApplicationView implements ViewObject {
         return modeOfTransportation;
     }
 
-    public GsaAllowanceView getGsaAllowance() {
-        return gsaAllowance;
-    }
-
-    public TransportationAllowanceView getTransportationAllowance() {
-        return transportationAllowance;
+    public TravelAppAllowancesView getAllowances() {
+        return allowances;
     }
 
     public String getTotalAllowance() {

@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.allowance.transportation.IrsRateService;
+import gov.nysenate.ess.travel.allowance.mileage.IrsRateService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
