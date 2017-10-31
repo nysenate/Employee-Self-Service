@@ -2,7 +2,8 @@ package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
+import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
+import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowanceView;
 import gov.nysenate.ess.travel.application.model.TravelApplication;
 import gov.nysenate.ess.travel.application.model.TravelApplicationStatus;
 

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application.model;
+package gov.nysenate.ess.travel.allowance.transportation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

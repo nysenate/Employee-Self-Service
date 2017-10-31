@@ -1,7 +1,7 @@
-package gov.nysenate.ess.travel.application.view;
+package gov.nysenate.ess.travel.allowance.gsa;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
 
 public class GsaAllowanceView implements ViewObject {
 

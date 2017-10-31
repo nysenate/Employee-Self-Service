@@ -2,11 +2,11 @@ package gov.nysenate.ess.travel.application.dao;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowance;
 import gov.nysenate.ess.travel.application.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.TransactionStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

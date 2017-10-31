@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.maps;
+package gov.nysenate.ess.travel.addressvalidation;
 
 import gov.nysenate.ess.core.model.unit.Address;
 

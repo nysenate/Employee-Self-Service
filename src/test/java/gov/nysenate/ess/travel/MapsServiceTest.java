@@ -1,19 +1,11 @@
 package gov.nysenate.ess.travel;
 
 import gov.nysenate.ess.core.BaseTest;
-import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.application.dao.IrsRateDao;
-import gov.nysenate.ess.travel.application.model.Itinerary;
-import gov.nysenate.ess.travel.application.model.TravelDestination;
 import gov.nysenate.ess.travel.maps.MapsService;
 import gov.nysenate.ess.web.SillyTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Category(SillyTest.class)
 public class MapsServiceTest extends BaseTest {

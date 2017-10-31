@@ -1,13 +1,7 @@
-package gov.nysenate.ess.travel.maps;
+package gov.nysenate.ess.travel.addressvalidation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import gov.nysenate.ess.core.config.JacksonConfig;
-import gov.nysenate.ess.core.model.unit.Address;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

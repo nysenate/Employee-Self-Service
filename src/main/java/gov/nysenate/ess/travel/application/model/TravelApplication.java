@@ -1,6 +1,8 @@
 package gov.nysenate.ess.travel.application.model;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowance;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

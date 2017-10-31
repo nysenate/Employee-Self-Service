@@ -1,10 +1,10 @@
-package gov.nysenate.ess.travel.gsa.dao;
+package gov.nysenate.ess.travel.allowance.gsa.dao;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.travel.application.model.MealIncidentalRate;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;

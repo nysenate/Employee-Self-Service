@@ -1,6 +1,6 @@
-package gov.nysenate.ess.travel.gsa.dao;
+package gov.nysenate.ess.travel.allowance.gsa.dao;
 
-import gov.nysenate.ess.travel.application.model.MealIncidentalRate;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
 
 public interface MealIncidentalRatesDao {
 

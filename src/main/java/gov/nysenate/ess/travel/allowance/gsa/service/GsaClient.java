@@ -1,9 +1,9 @@
-package gov.nysenate.ess.travel.request.model;
+package gov.nysenate.ess.travel.allowance.gsa.service;
 
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import gov.nysenate.ess.travel.application.model.MealIncidentalRates;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRates;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;

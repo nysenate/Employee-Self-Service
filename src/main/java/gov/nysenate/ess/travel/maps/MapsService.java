@@ -2,14 +2,9 @@ package gov.nysenate.ess.travel.maps;
 
 import com.google.maps.*;
 import com.google.maps.model.*;
-import gov.nysenate.ess.travel.application.dao.IrsRateDao;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.Date;
 
 @Service
 public class MapsService {

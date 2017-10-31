@@ -2,9 +2,7 @@ package gov.nysenate.ess.travel;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
-import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.maps.AddressValidationCtrl;
-import gov.nysenate.ess.travel.maps.AddressValidationService;
+import gov.nysenate.ess.travel.addressvalidation.AddressValidationService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;

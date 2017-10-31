@@ -1,10 +1,9 @@
-package gov.nysenate.ess.travel.gsa.service;
+package gov.nysenate.ess.travel.allowance.gsa.service;
 
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.application.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
-import gov.nysenate.ess.travel.request.model.GsaClient;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

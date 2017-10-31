@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.request.model.GsaClient;
+import gov.nysenate.ess.travel.allowance.gsa.service.GsaClient;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

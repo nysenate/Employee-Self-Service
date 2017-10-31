@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application.model;
+package gov.nysenate.ess.travel.allowance.gsa.model;
 
 public enum MealIncidentalRates {
     $51(11, 23, 0),

@@ -1,10 +1,8 @@
-package gov.nysenate.ess.travel.travelallowance;
+package gov.nysenate.ess.travel.allowance.transportation;
 
-import gov.nysenate.ess.travel.application.dao.IrsRateDao;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

@@ -1,8 +1,7 @@
-package gov.nysenate.ess.travel.gsa.service;
+package gov.nysenate.ess.travel.allowance.gsa.service;
 
-import gov.nysenate.ess.travel.gsa.dao.MealIncidentalRatesDao;
-import gov.nysenate.ess.travel.gsa.dao.SqlMealIncidentalRatesDao;
-import gov.nysenate.ess.travel.application.model.MealIncidentalRate;
+import gov.nysenate.ess.travel.allowance.gsa.dao.MealIncidentalRatesDao;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;

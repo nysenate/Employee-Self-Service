@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application.dao;
+package gov.nysenate.ess.travel.allowance.transportation;
 
 import gov.nysenate.ess.core.dao.base.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

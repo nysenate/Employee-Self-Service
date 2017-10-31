@@ -1,9 +1,7 @@
-package gov.nysenate.ess.travel.maps;
+package gov.nysenate.ess.travel.addressvalidation;
 
-import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.unit.Address;
 
 public class SageResponseView implements ViewObject {
     private String status;

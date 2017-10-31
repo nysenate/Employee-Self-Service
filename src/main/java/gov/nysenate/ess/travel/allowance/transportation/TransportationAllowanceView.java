@@ -1,7 +1,7 @@
-package gov.nysenate.ess.travel.application.view;
+package gov.nysenate.ess.travel.allowance.transportation;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.model.TransportationAllowance;
+import gov.nysenate.ess.travel.allowance.transportation.TransportationAllowance;
 
 public class TransportationAllowanceView implements ViewObject {
 

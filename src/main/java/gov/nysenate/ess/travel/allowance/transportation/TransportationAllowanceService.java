@@ -1,6 +1,5 @@
-package gov.nysenate.ess.travel.travelallowance;
+package gov.nysenate.ess.travel.allowance.transportation;
 
-import gov.nysenate.ess.travel.application.dao.IrsRateDao;
 import gov.nysenate.ess.travel.application.model.*;
 import gov.nysenate.ess.travel.maps.MapsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Service
-public class TravelAllowanceService {
+public class TransportationAllowanceService {
     @Autowired
     MapsService mapsService;
 

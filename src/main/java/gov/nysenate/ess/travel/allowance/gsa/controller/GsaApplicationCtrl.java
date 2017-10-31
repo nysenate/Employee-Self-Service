@@ -1,22 +1,18 @@
-package gov.nysenate.ess.travel.gsa.controller;
+package gov.nysenate.ess.travel.allowance.gsa.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.travel.application.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
-import gov.nysenate.ess.travel.application.view.GsaAllowanceView;
+import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
 import gov.nysenate.ess.travel.application.view.ItineraryView;
-import gov.nysenate.ess.travel.gsa.service.GsaAllowanceService;
+import gov.nysenate.ess.travel.allowance.gsa.service.GsaAllowanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "travel/gsa/travel-gsa")
