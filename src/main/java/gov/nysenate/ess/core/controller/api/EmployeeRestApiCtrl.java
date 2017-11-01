@@ -79,7 +79,7 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      *
      * @return {@link ListViewResponse<EmployeeSearchView>}
      */
-    @RequestMapping(value = "", method = {GET, HEAD})
+    @RequestMapping(value = "/active", method = {GET, HEAD})
     public ListViewResponse<EmployeeSearchView> getAllEmployees(
             @RequestParam(defaultValue = "false") boolean activeOnly) {
 
