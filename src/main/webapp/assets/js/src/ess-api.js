@@ -77,6 +77,10 @@ essApi.factory('AccrualPeriodApi', ['$resource', 'appProps', function($resource,
     return $resource(appProps.apiPath + '/accruals');
 }]);
 
+essApi.factory('AccrualActiveYearsApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + '/accruals/active-years');
+}]);
+
 essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/accruals/history');
 }]);

@@ -7,6 +7,7 @@ package gov.nysenate.ess.time.model.auth;
  */
 public enum TimePermissionObject {
     ACCRUAL,
+    ACCRUAL_ACTIVE_YEARS,
     ALLOWANCE,
     ATTENDANCE_RECORDS,
     MISC_LEAVE_GRANT,

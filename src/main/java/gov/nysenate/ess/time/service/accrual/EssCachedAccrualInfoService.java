@@ -1,20 +1,22 @@
 package gov.nysenate.ess.time.service.accrual;
 
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.period.PayPeriodService;
-import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.transaction.TransactionHistory;
+import gov.nysenate.ess.core.service.base.CachingService;
+import gov.nysenate.ess.core.service.cache.EhCacheManageService;
+import gov.nysenate.ess.core.service.period.PayPeriodService;
+import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
+import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.accrual.AccrualDao;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;
-import gov.nysenate.ess.core.model.cache.ContentCache;
-import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -27,6 +29,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A service that provides accrual information
@@ -40,6 +43,8 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
     @Autowired private AttendanceDao attendanceDao;
 
     @Autowired private PayPeriodService payPeriodService;
+
+    @Autowired private EmpTransactionService transService;
 
     @Autowired private EhCacheManageService cacheManageService;
     @Autowired private EventBus eventBus;
@@ -109,6 +114,37 @@ public class EssCachedAccrualInfoService implements AccrualInfoService, CachingS
     public List<PayPeriod> getOpenPayPeriods(PayPeriodType type, Integer empId, SortOrder dateOrder) {
         RangeSet<LocalDate> openDates = attendanceDao.getOpenDates(empId);
         return openDates.isEmpty() ? Collections.emptyList() : payPeriodService.getPayPeriods(type, openDates.span(), dateOrder);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public SortedSet<Integer> getAccrualYears(int empId) {
+        TransactionHistory transHistory = transService.getTransHistory(empId);
+
+        RangeSet<LocalDate> accrualAllowedDates = transHistory.getAccrualDates();
+        RangeSet<LocalDate> employedTimeEntryDates = transHistory.getPerStatusDates(
+                perStat -> perStat.isEmployed() & perStat.isTimeEntryRequired());
+        RangeSet<LocalDate> annualEmpDates = transHistory.getPayTypeDates(PayType::isBiweekly);
+        RangeSet<LocalDate> nonSenatorDates = transHistory.getSenatorDates().complement();
+        RangeSet<LocalDate> notFuture = ImmutableRangeSet.of(Range.atMost(LocalDate.now()));
+
+        RangeSet<LocalDate> accrualDates = RangeUtils.intersection(Arrays.asList(
+                accrualAllowedDates, employedTimeEntryDates, annualEmpDates, nonSenatorDates, notFuture));
+
+        RangeSet<Integer> yearRanges = TreeRangeSet.create();
+        accrualDates.asRanges().stream()
+                .map(range -> DateUtils.toYearRange(range, false))
+                .forEach(yearRanges::add);
+
+        return yearRanges.asRanges().stream()
+                .peek(range -> {
+                    if (!(range.hasLowerBound() && range.hasUpperBound())) {
+                        throw new IllegalStateException("Accrual state for " + empId + " is unbounded");
+                    }
+                })
+                .map(RangeUtils::getCounter)
+                .flatMap(Streams::stream)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     /* --- Caching Service Implemented Methods --- */
