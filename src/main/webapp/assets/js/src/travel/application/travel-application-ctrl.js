@@ -1,17 +1,17 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
-                     ['$scope', 'appProps', 'modals', 'LocationService', 'TravelGsaAllowanceApi', 'TravelTransportationAllowanceApi',
-                      travelAppController]);
+                     ['$scope', 'appProps', 'modals', 'TravelGsaAllowanceApi', 'TravelMileageAllowanceApi',
+                      'TravelApplicationApi', travelAppController]);
 
-function travelAppController($scope, appProps, modals, locationService, gsaApi, transportationApi) {
+function travelAppController($scope, appProps, modals, gsaApi, mileageAllowanceApi, travelApplicationApi) {
 
     /* --- Container Page --- */
 
     const STATES = ['LOCATION_SELECTION', 'METHOD_AND_PURPOSE', 'REVIEW_AND_SUBMIT'];
     $scope.state = '';
     $scope.app = {
-        applicant: undefined,
+        applicantEmpId: undefined,
         allowances: {
             gsa: {
                 meals: 0,
@@ -36,7 +36,7 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi, 
 
     function init() {
         $scope.state = STATES[0];
-        $scope.app.applicant = appProps.user;
+        $scope.app.applicantEmpId = appProps.user.employeeId;
     }
 
     init();
@@ -88,12 +88,14 @@ function travelAppController($scope, appProps, modals, locationService, gsaApi, 
             $scope.app.allowances.gsa = response.result;
         });
 
-        transportationApi.save($scope.app.itinerary, function (response) {
+        mileageAllowanceApi.save($scope.app.itinerary, function (response) {
             $scope.app.allowances.mileage = response.result.mileage;
         });
     };
 
     $scope.submitApplication = function () {
-        console.log("Submitting app");
+        travelApplicationApi.save($scope.app, function () {
+            console.log("Done Submitting app");
+        });
     };
 }

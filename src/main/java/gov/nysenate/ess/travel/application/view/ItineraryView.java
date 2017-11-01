@@ -12,7 +12,7 @@ public class ItineraryView implements ViewObject {
     private AddressView origin;
     private ListView<TravelDestinationView> destinations;
 
-    public ItineraryView() {
+    private ItineraryView() {
     }
 
     public ItineraryView(Itinerary itinerary) {

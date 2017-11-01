@@ -13,6 +13,9 @@ public class TravelAppAllowancesView implements ViewObject {
     private String alternate;
     private String registrationFee;
 
+    private TravelAppAllowancesView() {
+    }
+
     public TravelAppAllowancesView(TravelAppAllowances allowances) {
        this.gsa = new GsaAllowanceView(allowances.getGsaAllowance());
        this.mileage = allowances.getMileage().toString();

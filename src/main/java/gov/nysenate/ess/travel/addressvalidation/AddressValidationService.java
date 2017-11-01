@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.addressvalidation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.nysenate.ess.core.model.unit.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -27,5 +28,9 @@ public class AddressValidationService {
             e.printStackTrace();
         }
         return sageResponse;
+    }
+
+    public SageResponse validateAddress(Address address) {
+       return validateAddress(address.getAddr1(), address.getCity(), address.getState());
     }
 }

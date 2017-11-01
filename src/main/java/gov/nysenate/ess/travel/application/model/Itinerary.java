@@ -18,6 +18,7 @@ public class Itinerary {
     private List<TravelDestination> destinations;
 
     public Itinerary(Address origin, List<TravelDestination> destinations) {
+        // TODO check address's are not empty
         checkArgument(!destinations.isEmpty(), "Itinerary requires a non empty destination list.");
         this.origin = checkNotNull(origin, "Itinerary requires non null origin");
         this.destinations = destinations;

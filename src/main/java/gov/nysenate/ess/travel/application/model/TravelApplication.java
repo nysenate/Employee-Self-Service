@@ -14,6 +14,7 @@ public class TravelApplication {
     private Itinerary itinerary;
     private ModeOfTransportation modeOfTransportation;
     private TravelApplicationStatus status;
+    private String purposeOfTravel;
 
     private Employee createdBy;
     private LocalDateTime createdDateTime;
@@ -26,6 +27,7 @@ public class TravelApplication {
         this.allowances = builder.allowances;
         this.itinerary = builder.itinerary;
         this.status = builder.status;
+        this.purposeOfTravel = builder.purposeOfTravel;
         this.createdBy = builder.createdBy;
         this.createdDateTime = builder.createdDateTime;
         this.modifiedBy = builder.modifiedBy;
@@ -78,6 +80,10 @@ public class TravelApplication {
         return status;
     }
 
+    public String getPurposeOfTravel() {
+        return purposeOfTravel;
+    }
+
     public Employee getCreatedBy() {
         return createdBy;
     }
@@ -105,6 +111,8 @@ public class TravelApplication {
         private Itinerary itinerary;
         private ModeOfTransportation modeOfTransportation;
         private TravelApplicationStatus status;
+        private String purposeOfTravel;
+
         private Employee createdBy;
         private LocalDateTime createdDateTime;
         private Employee modifiedBy;
@@ -141,6 +149,11 @@ public class TravelApplication {
 
         public Builder setStatus(TravelApplicationStatus status) {
             this.status = status;
+            return this;
+        }
+
+        public Builder setPurposeOfTravel(String purposeOfTravel) {
+            this.purposeOfTravel = purposeOfTravel;
             return this;
         }
 

@@ -16,6 +16,7 @@ public class TravelApplicationView implements ViewObject {
     private String modeOfTransportation;
     private String totalAllowance;
     private ItineraryView itinerary;
+    private String purposeOfTravel;
     private String status;
     private String travelDate;
 
@@ -24,6 +25,9 @@ public class TravelApplicationView implements ViewObject {
     private EmployeeView modifiedBy;
     private String modifiedDateTime;
 
+    private TravelApplicationView() {
+    }
+
     public TravelApplicationView(TravelApplication ta) {
         // TODO: Prob need null checks here
         this.id = ta.getId();
@@ -31,6 +35,7 @@ public class TravelApplicationView implements ViewObject {
         this.allowances = new TravelAppAllowancesView(ta.getAllowances());
         this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
+        this.purposeOfTravel = ta.getPurposeOfTravel();
         this.status = ta.getStatus().name();
         this.travelDate = ta.travelStartDate().format(DateTimeFormatter.ISO_DATE);
         this.createdBy = new EmployeeView(ta.getCreatedBy());
@@ -39,18 +44,18 @@ public class TravelApplicationView implements ViewObject {
         this.modifiedDateTime = ta.getModifiedDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
-    public TravelApplication toTravelApplication() {
+    public TravelApplication.Builder toTravelApplicationBuilder() {
         return TravelApplication.Builder()
                 .setId(id)
                 .setApplicant(applicant.toEmployee())
                 .setAllowances(allowances.toTravelAppAllowances())
                 .setItinerary(itinerary.toItinerary())
                 .setStatus(TravelApplicationStatus.valueOf(status))
+                .setPurposeOfTravel(purposeOfTravel)
                 .setCreatedBy(createdBy.toEmployee())
                 .setCreatedDateTime(LocalDateTime.parse(createdDateTime, DateTimeFormatter.ISO_DATE_TIME))
                 .setModifiedBy(modifiedBy.toEmployee())
-                .setModifiedDateTime(LocalDateTime.parse(modifiedDateTime, DateTimeFormatter.ISO_DATE_TIME))
-                .build();
+                .setModifiedDateTime(LocalDateTime.parse(modifiedDateTime, DateTimeFormatter.ISO_DATE_TIME));
     }
 
     public int getId() {
@@ -79,6 +84,10 @@ public class TravelApplicationView implements ViewObject {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getPurposeOfTravel() {
+        return purposeOfTravel;
     }
 
     public String getTravelDate() {

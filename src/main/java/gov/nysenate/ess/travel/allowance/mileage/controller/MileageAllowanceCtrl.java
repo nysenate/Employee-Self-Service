@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "travel/transportation-allowance")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "travel/mileage-allowance")
 public class MileageAllowanceCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(MileageAllowanceCtrl.class);
@@ -24,7 +24,7 @@ public class MileageAllowanceCtrl extends BaseRestApiCtrl {
     @Autowired private MileageAllowanceService mileageAllowanceService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse calculateTravelAllowance(@RequestBody ItineraryView itineraryView) {
+    public BaseResponse calculateMileageAllowance(@RequestBody ItineraryView itineraryView) {
         Itinerary itinerary = itineraryView.toItinerary();
 
         BigDecimal mileageAllowance = mileageAllowanceService.calculateMileageAllowance(itinerary);

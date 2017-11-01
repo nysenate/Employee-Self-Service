@@ -14,7 +14,7 @@ public class TravelDestinationView implements ViewObject {
     private String departureDate;
     private AddressView address;
 
-    public TravelDestinationView() {
+    private TravelDestinationView() {
     }
 
     public TravelDestinationView(TravelDestination td) {

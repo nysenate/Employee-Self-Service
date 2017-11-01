@@ -52,6 +52,8 @@ public class GsaAllowanceServiceTest {
         assertEquals(gsaAllowance.getLodging().toBigInteger().intValueExact(), 116 + 115);
     }
 
+    // TODO Tests for multiple destinations (destinations should have different rates)
+
     private GsaAllowance createGsaAllowance(LocalDate arrival, LocalDate departure) {
         TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress);
         List<TravelDestination> travelDestinations = Arrays.asList(travelDestination);

@@ -10,6 +10,9 @@ public class GsaAllowanceView implements ViewObject {
     private String incidental;
     private String total;
 
+    private GsaAllowanceView() {
+    }
+
     public GsaAllowanceView(GsaAllowance gsa) {
         this.meals = gsa.getMeals().toString();
         this.lodging = gsa.getLodging().toString();
