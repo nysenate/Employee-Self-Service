@@ -5,6 +5,9 @@ import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
 
 import java.math.BigDecimal;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public final class TravelAppAllowances {
 
     private final GsaAllowance gsaAllowance;
@@ -17,7 +20,12 @@ public final class TravelAppAllowances {
     public TravelAppAllowances(GsaAllowance gsaAllowance, BigDecimal mileage,
                                BigDecimal tolls, BigDecimal parking,
                                BigDecimal alternate, BigDecimal registrationFee) {
-        this.gsaAllowance = gsaAllowance;
+        checkArgument(checkNotNull(mileage).signum() >= 0);
+        checkArgument(checkNotNull(tolls).signum() >= 0);
+        checkArgument(checkNotNull(parking).signum() >= 0);
+        checkArgument(checkNotNull(alternate).signum() >= 0);
+        checkArgument(checkNotNull(registrationFee).signum() >= 0);
+        this.gsaAllowance = checkNotNull(gsaAllowance);
         this.mileage = TravelAllowanceUtils.round(mileage);
         this.tolls = TravelAllowanceUtils.round(tolls);
         this.parking = TravelAllowanceUtils.round(parking);
@@ -28,12 +36,8 @@ public final class TravelAppAllowances {
     public TravelAppAllowances(GsaAllowance gsaAllowance, String mileage,
                                String tolls, String parking,
                                String alternate, String registrationFee) {
-        this.gsaAllowance = gsaAllowance;
-        this.mileage = TravelAllowanceUtils.round(new BigDecimal(mileage));
-        this.tolls = TravelAllowanceUtils.round(new BigDecimal(tolls));
-        this.parking = TravelAllowanceUtils.round(new BigDecimal(parking));
-        this.alternate = TravelAllowanceUtils.round(new BigDecimal(alternate));
-        this.registrationFee = TravelAllowanceUtils.round(new BigDecimal(registrationFee));
+        this(gsaAllowance, new BigDecimal(mileage), new BigDecimal(tolls),
+                new BigDecimal(parking), new BigDecimal(alternate), new BigDecimal(registrationFee));
     }
 
     public BigDecimal total() {
