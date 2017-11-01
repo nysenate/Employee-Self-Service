@@ -3,7 +3,9 @@ package gov.nysenate.ess.travel.allowance.gsa.model;
 import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class GsaAllowance {
 
@@ -11,17 +13,24 @@ public final class GsaAllowance {
     private final BigDecimal lodging;
     private final BigDecimal incidental;
 
-    public GsaAllowance(String meals, String lodging, String incidental) {
-        this.meals = TravelAllowanceUtils.round(new BigDecimal(meals));
-        this.lodging = TravelAllowanceUtils.round(new BigDecimal(lodging));
-        this.incidental = TravelAllowanceUtils.round(new BigDecimal(incidental));
-    }
-
-    public GsaAllowance(BigDecimal meals, BigDecimal lodging,
-                        BigDecimal incidental) {
+    /**
+     * Construct a GsaAllowance.<br>
+     * GsaAllowance requirements are enforced by the constructor:<br>
+     *   - params cannot be null.<br>
+     *   - params must evaluate to a {@code BigDecimal} > 0.<br>
+     *   - {@code BigDecimals} are rounded to the nearest 2 decimal places.<br>
+     */
+    public GsaAllowance(BigDecimal meals, BigDecimal lodging, BigDecimal incidental) {
+        checkArgument(checkNotNull(meals).signum() >= 0);
+        checkArgument(checkNotNull(lodging).signum() >= 0);
+        checkArgument(checkNotNull(incidental).signum() >= 0);
         this.meals = TravelAllowanceUtils.round(meals);
         this.lodging = TravelAllowanceUtils.round(lodging);
         this.incidental = TravelAllowanceUtils.round(incidental);
+    }
+
+    public GsaAllowance(String meals, String lodging, String incidental) {
+        this(new BigDecimal(meals), new BigDecimal(lodging), new BigDecimal(incidental));
     }
 
     public BigDecimal total() {

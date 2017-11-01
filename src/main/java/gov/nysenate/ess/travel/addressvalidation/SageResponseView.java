@@ -18,7 +18,7 @@ public class SageResponseView implements ViewObject {
         this.status = sageResponse.getStatus();
         this.source = sageResponse.getSource();
         this.messages = sageResponse.getMessages();
-        this.address = new AddressView(sageResponse.getAddress());
+        this.address = new AddressView(sageResponse.getAddress()); // TODO check sageResponse.getAddress() is not null.
         this.validated = sageResponse.isValidated();
         this.statusCode = sageResponse.getStatusCode();
         this.description = sageResponse.getDescription();
