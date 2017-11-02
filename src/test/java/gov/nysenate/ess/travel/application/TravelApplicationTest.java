@@ -22,7 +22,7 @@ public class TravelApplicationTest {
         Employee emp = new Employee();
         emp.setEmployeeId(1);
 
-        TravelAppAllowances allowances =  new TravelAppAllowances(
+        TravelAllowances allowances =  new TravelAllowances(
                 new GsaAllowance("0", "0", "0"), "0", "0", "0", "0", "0");
 
         Address address = new Address("101 Washington Ave", "Albany", "NY", "12210");

@@ -19,7 +19,7 @@ public class GsaAllowanceService {
         int lodgingAllowance = 0;
         int incidentalAllowance = 0;
 
-        List<TravelDestination> travelDestinations = itinerary.getTravelDestinations();
+        List<TravelDestination> travelDestinations = itinerary.getDestinations();
         for (TravelDestination travelDestination : travelDestinations) {
             LocalDate departure = travelDestination.getDepartureDate();
             LocalDate arrival = travelDestination.getArrivalDate();

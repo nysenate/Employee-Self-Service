@@ -13,7 +13,7 @@ public class TravelApplication {
 
     private int id;
     private Employee applicant;
-    private TravelAppAllowances allowances;
+    private TravelAllowances allowances;
     private Itinerary itinerary;
     private ModeOfTransportation modeOfTransportation;
     private TravelApplicationStatus status;
@@ -57,11 +57,11 @@ public class TravelApplication {
      * Used in the UI as an identifier for a trip.
      */
     public LocalDate travelStartDate() {
-        return itinerary.getTravelDestinations().get(0).getArrivalDate();
+        return itinerary.getDestinations().get(0).getArrivalDate();
     }
 
     public LocalDate travelEndDate() {
-        return itinerary.getTravelDestinations().get(itinerary.getTravelDestinations().size() - 1)
+        return itinerary.getDestinations().get(itinerary.getDestinations().size() - 1)
                 .getDepartureDate();
     }
 
@@ -73,7 +73,7 @@ public class TravelApplication {
         return applicant;
     }
 
-    public TravelAppAllowances getAllowances() {
+    public TravelAllowances getAllowances() {
         return allowances;
     }
 
@@ -116,7 +116,7 @@ public class TravelApplication {
     public static class Builder {
         private int id;
         private Employee applicant;
-        private TravelAppAllowances allowances;
+        private TravelAllowances allowances;
         private Itinerary itinerary;
         private ModeOfTransportation modeOfTransportation;
         private TravelApplicationStatus status;
@@ -141,7 +141,7 @@ public class TravelApplication {
             return this;
         }
 
-        public Builder setAllowances(TravelAppAllowances allowances) {
+        public Builder setAllowances(TravelAllowances allowances) {
             this.allowances = allowances;
             return this;
         }

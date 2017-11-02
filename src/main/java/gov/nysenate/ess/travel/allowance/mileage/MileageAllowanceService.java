@@ -20,11 +20,11 @@ public class MileageAllowanceService {
     private IrsRateDao irsRateDao;
 
     public BigDecimal calculateMileageAllowance(Itinerary itinerary) {
-        List<TravelDestination> travelDestinations = itinerary.getTravelDestinations();
+        List<TravelDestination> travelDestinations = itinerary.getDestinations();
         String[] destinations = new String[travelDestinations.size()];
 
         for (int i = 0; i < destinations.length; i++) {
-            TravelDestination td = itinerary.getTravelDestinations().get(i);
+            TravelDestination td = itinerary.getDestinations().get(i);
             destinations[i] = td.getAddress().toString();
         }
         double milesTraveled = mapsService.getTripDistance(itinerary.getOrigin().toString(), destinations);

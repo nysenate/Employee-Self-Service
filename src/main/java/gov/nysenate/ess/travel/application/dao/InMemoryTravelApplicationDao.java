@@ -101,8 +101,8 @@ public class InMemoryTravelApplicationDao {
                 String.valueOf(randomWithRange(0, 12.00)));
     }
 
-    private TravelAppAllowances randomAllowances() {
-        return new TravelAppAllowances(randomGsaAllowance(), String.valueOf(randomWithRange(0, 150.00)),
+    private TravelAllowances randomAllowances() {
+        return new TravelAllowances(randomGsaAllowance(), String.valueOf(randomWithRange(0, 150.00)),
                 String.valueOf(randomWithRange(0, 40.00)), String.valueOf(randomWithRange(0, 150.00)),
                 String.valueOf(randomWithRange(0, 150.00)), String.valueOf(randomWithRange(0, 150.00)));
     }

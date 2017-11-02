@@ -2,9 +2,9 @@ package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
-import gov.nysenate.ess.travel.application.model.TravelAppAllowances;
+import gov.nysenate.ess.travel.application.model.TravelAllowances;
 
-public class TravelAppAllowancesView implements ViewObject {
+public class TravelAllowancesView implements ViewObject {
 
     private GsaAllowanceView gsa;
     private String mileage;
@@ -13,10 +13,10 @@ public class TravelAppAllowancesView implements ViewObject {
     private String alternate;
     private String registrationFee;
 
-    private TravelAppAllowancesView() {
+    private TravelAllowancesView() {
     }
 
-    public TravelAppAllowancesView(TravelAppAllowances allowances) {
+    public TravelAllowancesView(TravelAllowances allowances) {
        this.gsa = new GsaAllowanceView(allowances.getGsaAllowance());
        this.mileage = allowances.getMileage().toString();
        this.tolls = allowances.getTolls().toString();
@@ -25,8 +25,8 @@ public class TravelAppAllowancesView implements ViewObject {
        this.registrationFee = allowances.getRegistrationFee().toString();
     }
 
-    public TravelAppAllowances toTravelAppAllowances() {
-        return new TravelAppAllowances(gsa.toGsaAllowance(), mileage,
+    public TravelAllowances toTravelAllowances() {
+        return new TravelAllowances(gsa.toGsaAllowance(), mileage,
                 tolls, parking, alternate, registrationFee);
     }
 

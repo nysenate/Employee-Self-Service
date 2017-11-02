@@ -12,7 +12,7 @@ public class TravelApplicationView implements ViewObject {
 
     private int id;
     private EmployeeView applicant;
-    private TravelAppAllowancesView allowances;
+    private TravelAllowancesView allowances;
     private String modeOfTransportation;
     private String totalAllowance;
     private ItineraryView itinerary;
@@ -32,7 +32,7 @@ public class TravelApplicationView implements ViewObject {
         // TODO: Prob need null checks here
         this.id = ta.getId();
         this.applicant = new EmployeeView(ta.getApplicant());
-        this.allowances = new TravelAppAllowancesView(ta.getAllowances());
+        this.allowances = new TravelAllowancesView(ta.getAllowances());
         this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
         this.purposeOfTravel = ta.getPurposeOfTravel();
@@ -48,7 +48,7 @@ public class TravelApplicationView implements ViewObject {
         return TravelApplication.Builder()
                 .setId(id)
                 .setApplicant(applicant.toEmployee())
-                .setAllowances(allowances.toTravelAppAllowances())
+                .setAllowances(allowances.toTravelAllowances())
                 .setItinerary(itinerary.toItinerary())
                 .setStatus(TravelApplicationStatus.valueOf(status))
                 .setPurposeOfTravel(purposeOfTravel)
@@ -70,7 +70,7 @@ public class TravelApplicationView implements ViewObject {
         return modeOfTransportation;
     }
 
-    public TravelAppAllowancesView getAllowances() {
+    public TravelAllowancesView getAllowances() {
         return allowances;
     }
 

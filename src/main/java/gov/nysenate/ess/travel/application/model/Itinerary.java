@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application.model;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.unit.Address;
 
@@ -15,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class Itinerary {
 
     private final Address origin;
-    private final List<TravelDestination> destinations;
+    private final ImmutableList<TravelDestination> destinations;
 
     public Itinerary(Address origin, List<TravelDestination> destinations) {
         checkNotNull(origin, "Itinerary requires non null origin");
@@ -23,7 +24,7 @@ public final class Itinerary {
         checkArgument(!origin.isEmpty());
         checkArgument(!destinations.isEmpty(), "Itinerary requires a non empty destination list.");
         this.origin = origin;
-        this.destinations = destinations;
+        this.destinations = ImmutableList.copyOf(destinations);
     }
 
     /**
@@ -43,7 +44,33 @@ public final class Itinerary {
         return origin;
     }
 
-    public List<TravelDestination> getTravelDestinations() {
+    public ImmutableList<TravelDestination> getDestinations() {
         return destinations;
+    }
+
+    @Override
+    public String toString() {
+        return "Itinerary{" +
+                "origin=" + origin +
+                ", destinations=" + destinations +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Itinerary itinerary = (Itinerary) o;
+
+        if (origin != null ? !origin.equals(itinerary.origin) : itinerary.origin != null) return false;
+        return destinations != null ? destinations.equals(itinerary.destinations) : itinerary.destinations == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = origin != null ? origin.hashCode() : 0;
+        result = 31 * result + (destinations != null ? destinations.hashCode() : 0);
+        return result;
     }
 }

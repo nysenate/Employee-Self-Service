@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class TravelAppAllowances {
+public final class TravelAllowances {
 
     private final GsaAllowance gsaAllowance;
     private final BigDecimal mileage;
@@ -17,9 +17,9 @@ public final class TravelAppAllowances {
     private final BigDecimal alternate; // Bus, subway, train
     private final BigDecimal registrationFee;
 
-    public TravelAppAllowances(GsaAllowance gsaAllowance, BigDecimal mileage,
-                               BigDecimal tolls, BigDecimal parking,
-                               BigDecimal alternate, BigDecimal registrationFee) {
+    public TravelAllowances(GsaAllowance gsaAllowance, BigDecimal mileage,
+                            BigDecimal tolls, BigDecimal parking,
+                            BigDecimal alternate, BigDecimal registrationFee) {
         checkArgument(checkNotNull(mileage).signum() >= 0);
         checkArgument(checkNotNull(tolls).signum() >= 0);
         checkArgument(checkNotNull(parking).signum() >= 0);
@@ -33,9 +33,9 @@ public final class TravelAppAllowances {
         this.registrationFee = TravelAllowanceUtils.round(registrationFee);
     }
 
-    public TravelAppAllowances(GsaAllowance gsaAllowance, String mileage,
-                               String tolls, String parking,
-                               String alternate, String registrationFee) {
+    public TravelAllowances(GsaAllowance gsaAllowance, String mileage,
+                            String tolls, String parking,
+                            String alternate, String registrationFee) {
         this(gsaAllowance, new BigDecimal(mileage), new BigDecimal(tolls),
                 new BigDecimal(parking), new BigDecimal(alternate), new BigDecimal(registrationFee));
     }
@@ -71,7 +71,7 @@ public final class TravelAppAllowances {
 
     @Override
     public String toString() {
-        return "TravelAppAllowances{" +
+        return "TravelAllowances{" +
                 "gsaAllowance=" + gsaAllowance +
                 ", mileage=" + mileage +
                 ", tolls=" + tolls +
@@ -86,7 +86,7 @@ public final class TravelAppAllowances {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TravelAppAllowances that = (TravelAppAllowances) o;
+        TravelAllowances that = (TravelAllowances) o;
 
         if (gsaAllowance != null ? !gsaAllowance.equals(that.gsaAllowance) : that.gsaAllowance != null) return false;
         if (mileage != null ? !mileage.equals(that.mileage) : that.mileage != null) return false;

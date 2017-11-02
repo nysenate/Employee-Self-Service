@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application;
 
-import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.addressvalidation.AddressValidationService;
 import gov.nysenate.ess.travel.application.model.TravelApplication;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
@@ -24,7 +23,7 @@ public class TravelApplicationValidator {
 
     private void validateItinerary(TravelApplication app) {
         addressValidationService.validateAddress(app.getItinerary().getOrigin());
-        for (TravelDestination td : app.getItinerary().getTravelDestinations()) {
+        for (TravelDestination td : app.getItinerary().getDestinations()) {
             addressValidationService.validateAddress(td.getAddress());
         }
     }

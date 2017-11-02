@@ -17,7 +17,7 @@ public class ItineraryView implements ViewObject {
 
     public ItineraryView(Itinerary itinerary) {
         this.origin = new AddressView(itinerary.getOrigin());
-        this.destinations = ListView.of(itinerary.getTravelDestinations().stream()
+        this.destinations = ListView.of(itinerary.getDestinations().stream()
                 .map(TravelDestinationView::new)
                 .collect(Collectors.toList()));
     }
