@@ -49,7 +49,7 @@ public class TravelApplication {
      * @return
      */
     public BigDecimal totalAllowance() {
-        return null;
+        return allowances.total();
     }
 
     /**
