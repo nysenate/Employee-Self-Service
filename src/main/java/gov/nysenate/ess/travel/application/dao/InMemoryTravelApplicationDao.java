@@ -82,6 +82,7 @@ public class InMemoryTravelApplicationDao {
                 .setItinerary(itinerary())
                 .setModeOfTransportation(ModeOfTransportation.PERSONAL_AUTO)
                 .setStatus(status)
+                .setCreatedBy(employeeInfoService.getEmployee(11168))
                 .setCreatedDateTime(LocalDateTime.now())
                 .setModifiedDateTime(LocalDateTime.now())
                 .build();
