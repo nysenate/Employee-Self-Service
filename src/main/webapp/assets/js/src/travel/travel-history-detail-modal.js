@@ -17,8 +17,4 @@ function travelDetailCtrl($scope, modals) {
     $scope.exit = function () {
         modals.resolve();
     };
-
-    $scope.cancel = function() {
-        modals.reject();
-    }
 }

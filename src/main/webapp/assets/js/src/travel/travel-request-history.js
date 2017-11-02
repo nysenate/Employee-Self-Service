@@ -65,7 +65,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
                 break;
             }
         }
-        modals.open("travel-history-detail-modal", {info: request}, true)
+        modals.open("travel-history-detail-modal", {info: request}, true).catch(function() {})
     }
 
     $scope.init();
