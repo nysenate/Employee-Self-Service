@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class TravelApplication {
 
     private int id;
@@ -22,6 +25,12 @@ public class TravelApplication {
     private LocalDateTime modifiedDateTime;
 
     private TravelApplication(Builder builder) {
+        checkNotNull(builder.applicant);
+        checkNotNull(builder.allowances);
+        checkNotNull(builder.modeOfTransportation);
+        checkNotNull(builder.itinerary);
+        checkNotNull(builder.createdBy);
+        checkArgument(!builder.applicant.isEmpty());
         this.id = builder.id;
         this.applicant = builder.applicant;
         this.allowances = builder.allowances;
