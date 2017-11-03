@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.unit.Address;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -32,12 +33,36 @@ public final class Itinerary {
      * @return A list of addresses in the order they will be traveled.
      */
     public List<Address> travelRoute() {
-        List<Address> route = Lists.newArrayList(origin);
-        for (TravelDestination destination : destinations) {
+        List<Address> route = Lists.newArrayList(getOrigin());
+        for (TravelDestination destination : getDestinations()) {
             route.add(destination.getAddress());
         }
-        route.add(origin);
+        route.add(getOrigin());
         return route;
+    }
+
+    /**
+     * The planned start date of the trip.
+     * @return
+     */
+    public LocalDate startDate() {
+        return firstDestination().getArrivalDate();
+    }
+
+    private TravelDestination firstDestination() {
+       return getDestinations().get(0);
+    }
+
+    /**
+     * The planned end date of the trip.
+     * @return
+     */
+    public LocalDate endDate() {
+       return lastDestination().getDepartureDate();
+    }
+
+    private TravelDestination lastDestination() {
+        return getDestinations().get(getDestinations().size() - 1);
     }
 
     public Address getOrigin() {

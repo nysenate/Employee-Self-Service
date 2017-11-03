@@ -34,7 +34,7 @@ public final class GsaAllowance {
     }
 
     public BigDecimal total() {
-        return meals.add(lodging).add(incidental);
+        return getMeals().add(getLodging()).add(getIncidental());
     }
 
     public BigDecimal getMeals() {

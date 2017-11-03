@@ -49,20 +49,21 @@ public class TravelApplication {
      * @return
      */
     public BigDecimal totalAllowance() {
-        return allowances.total();
+        return getAllowances().total();
     }
 
     /**
      * The date the applicant will arrive at their first destination.
-     * Used in the UI as an identifier for a trip.
      */
     public LocalDate travelStartDate() {
-        return itinerary.getDestinations().get(0).getArrivalDate();
+        return getItinerary().startDate();
     }
 
+    /**
+     * The date the applicant will depart from their final destination.
+     */
     public LocalDate travelEndDate() {
-        return itinerary.getDestinations().get(itinerary.getDestinations().size() - 1)
-                .getDepartureDate();
+        return getItinerary().endDate();
     }
 
     public int getId() {

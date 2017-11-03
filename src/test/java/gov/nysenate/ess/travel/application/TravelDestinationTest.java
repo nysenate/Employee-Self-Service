@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application;
 
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
@@ -7,12 +8,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @Category(UnitTest.class)
 public class TravelDestinationTest {
 
     private LocalDate validDate = LocalDate.now();
     private Address validAddress = new Address("101 Washington Ave", "Albany", "NY", "12210");
+
+    /** --- Constructor Tests --- */
 
     @Test (expected = NullPointerException.class)
     public void nullArrivalDate_isInvalid() {
@@ -42,5 +48,55 @@ public class TravelDestinationTest {
     @Test
     public void arrivalDateEqualsDepartureDate_valid() {
         new TravelDestination(LocalDate.now(), LocalDate.now(), validAddress);
+    }
+
+    /** --- Method Tests --- */
+
+    @Test
+    public void singleDayStay_hasOneDayOfStay() {
+        TravelDestination destination = new TravelDestination(validDate, validDate, validAddress);
+        List actual = destination.datesOfStay();
+        List expected = Lists.newArrayList(validDate);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void weekStay_daysOfStayIncludeEntireWeek() {
+        TravelDestination destination = new TravelDestination(validDate, validDate.plusDays(7), validAddress);
+        List actual = destination.datesOfStay();
+        List expected = Lists.newArrayList(validDate, validDate.plusDays(1), validDate.plusDays(2),
+                validDate.plusDays(3),validDate.plusDays(4), validDate.plusDays(5), validDate.plusDays(6),
+                validDate.plusDays(7));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void singleDayStay_isOneDay() {
+        TravelDestination destination = new TravelDestination(validDate, validDate, validAddress);
+        assertEquals(1, destination.numDays());
+    }
+
+    @Test
+    public void weekStay_is8Days() {
+        TravelDestination destination = new TravelDestination(validDate, validDate.plusDays(7), validAddress);
+        assertEquals(8, destination.numDays());
+    }
+
+    @Test (expected = ArithmeticException.class)
+    public void lengthOfStayGreaterThanMaxInt_throwException() {
+        TravelDestination destination = new TravelDestination(LocalDate.MIN, validDate, validAddress);
+        destination.numDays();
+    }
+
+    @Test
+    public void singleDayStay_hasZeroNights() {
+        TravelDestination destination = new TravelDestination(validDate, validDate, validAddress);
+        assertEquals(0, destination.numNights());
+    }
+
+    @Test
+    public void weekStay_is7Nights() {
+        TravelDestination destination = new TravelDestination(validDate, validDate.plusDays(7), validAddress);
+        assertEquals(7, destination.numNights());
     }
 }

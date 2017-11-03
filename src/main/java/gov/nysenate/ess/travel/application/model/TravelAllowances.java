@@ -41,8 +41,8 @@ public final class TravelAllowances {
     }
 
     public BigDecimal total() {
-        return gsaAllowance.total().add(mileage).add(tolls).add(parking)
-                .add(alternate).add(registrationFee);
+        return getGsaAllowance().total().add(getMileage()).add(getTolls()).add(getParking())
+                .add(getAlternate()).add(getRegistrationFee());
     }
 
     public GsaAllowance getGsaAllowance() {
