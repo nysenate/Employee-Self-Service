@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application;
+package gov.nysenate.ess.travel.unit.application;
 
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.UnitTest;

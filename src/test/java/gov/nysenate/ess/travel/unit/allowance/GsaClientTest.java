@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel;
+package gov.nysenate.ess.travel.unit.allowance;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.allowance.gsa.service.GsaClient;

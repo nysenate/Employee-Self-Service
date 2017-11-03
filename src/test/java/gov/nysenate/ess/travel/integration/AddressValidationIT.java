@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel;
+package gov.nysenate.ess.travel.integration;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @Category(IntegrationTest.class)
-public class AddressValidationTest extends BaseTest{
+public class AddressValidationIT extends BaseTest{
 
     @Autowired
     AddressValidationService addressValidationService;

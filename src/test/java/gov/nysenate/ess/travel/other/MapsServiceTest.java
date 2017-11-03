@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel;
+package gov.nysenate.ess.travel.other;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.travel.maps.MapsService;
