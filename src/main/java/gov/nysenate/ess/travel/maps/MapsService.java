@@ -2,12 +2,15 @@ package gov.nysenate.ess.travel.maps;
 
 import com.google.maps.*;
 import com.google.maps.model.*;
+import gov.nysenate.ess.core.model.unit.Address;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
-public class MapsService {
+public class MapsService implements MapInterface {
 
     @Value("${google.maps.apiKey}") private String apiKey;
 
@@ -17,10 +20,10 @@ public class MapsService {
      * @param destination Address where trip terminates
      * @return Distance between the origin and destination in miles
      */
-    private double getDistance(String origin, String destination) {
+    private double getDistance(Address origin, Address destination) {
         GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
-        String[] origins = new String[] {origin};
-        String[] destinations = new String[] {destination};
+        String[] origins = new String[] {origin.toString()};
+        String[] destinations = new String[] {destination.toString()};
         double totalDist = 0;
         try {
             DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
@@ -44,42 +47,25 @@ public class MapsService {
 
     /**
      * Assume that the traveler visits all destinations in order and then returns to the origin
-     * @param origin Address where trip originates
-     * @param destinations List of addresses, in order, of stops along the trip
+     * @param travelRoute List of addresses, in order, of stops along the trip from origin
+     *                    to all destinations and back to origin
      * @return Total distance traveled over the trip in miles
      */
-    public  double getTripDistance(String origin, String[] destinations) {
+    public TripDistance getTripDistance(List<Address> travelRoute) {
+        TripDistance tripDistance = new TripDistance();
         double totalDist = 0;
-        String from = origin;
-        String to = "";
-        for (String dest : destinations) {
-            to = dest;
+        Address from;
+        Address to;
+        for (int i = 0; i < travelRoute.size()-1; i++) {
+            if (i == travelRoute.size()-2) {
+                tripDistance.setTripDistanceOut(totalDist);
+            }
+            from = travelRoute.get(i);
+            to = travelRoute.get(i+1);
             totalDist += getDistance(from, to);
-            from = to;
         }
-        //add the return from last destination to the origin
-        totalDist += getDistance(destinations[destinations.length-1], origin);
-        return totalDist;
-    }
-
-    /**
-     * Does not include the return trip.  Useful for determining how many miles
-     * the traveler went in one direction.
-     * @param origin
-     * @param destinations
-     * @return
-     */
-    public double getDistanceOut(String origin, String[] destinations) {
-        double totalDist = 0;
-        String from = origin;
-        String to = "";
-        for (String dest : destinations) {
-            to = dest;
-            totalDist += getDistance(from, to);
-            from = to;
-        }
-        //add the return from last destination to the origin
-        return totalDist;
+        tripDistance.setTripDistanceTotal(totalDist);
+        return tripDistance;
     }
 
     /**
