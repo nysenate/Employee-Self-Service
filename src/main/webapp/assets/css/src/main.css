@@ -1859,11 +1859,25 @@ input[type="number"] {
 .padding-left-10 {
   padding-left: 10px;
 }
+.padding-bottom-5 {
+  padding-bottom: 5px;
+}
+.padding-bottom-10 {
+  padding-bottom: 10px;
+}
 .clearfix {
   clear: both;
+  content: "";
+  display: table;
 }
 .width-100 {
   width: 100%;
+}
+.width-90 {
+  width: 90%;
+}
+.width-50 {
+  width: 50%;
 }
 .hidden {
   display: none;
@@ -3096,6 +3110,10 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-state-focus {
   background: lightgrey;
+}
+/** Show google maps address autocomplete over modals */
+.pac-container {
+  z-index: 1051 !important;
 }
 /** Login Page
 ----------------*/
@@ -5205,6 +5223,18 @@ record-review-modal,
     border-bottom: 1px solid black;
   }
 }
+.travel-location-div {
+  clear: both;
+  content: "";
+  display: table;
+  margin: 10px auto;
+  padding: 5px;
+  height: 50px;
+  text-align: center;
+  line-height: 20px;
+  background: #E8E8E8;
+  border-radius: 5px;
+}
 .travel-table {
   width: 100%;
   text-align: center !important;
@@ -5225,6 +5255,14 @@ record-review-modal,
 }
 .travel-table tbody tr td {
   padding: 10px;
+}
+.travel-allowance-label {
+  display: inline-block;
+  width: 120px;
+  text-align: right;
+}
+.travel-gray-bottom-border {
+  border-bottom: 1px solid darkgray;
 }
 /**
 * Styles for ESS Help Pages
