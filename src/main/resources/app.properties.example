@@ -177,6 +177,9 @@ scheduler.supply.sfms_synchronization.enabled = false
 # Determines when to run the supply SFMS synchronization process
 scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 
+# Updates travel application values taken from the web
+scheduler.travel.scrape.cron = 0 0 2 * * *
+
 # --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs
