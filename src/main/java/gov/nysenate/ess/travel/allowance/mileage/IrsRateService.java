@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.allowance.mileage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,9 +20,7 @@ public class IrsRateService {
         return Double.parseDouble(rate);
     }
 
-    /**
-     * Needs to run once a day to make sure the IRS travel rate is kept current
-     */
+    @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate() {
         double webVal = -1;
         try {
