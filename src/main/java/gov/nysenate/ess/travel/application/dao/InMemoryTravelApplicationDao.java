@@ -85,6 +85,7 @@ public class InMemoryTravelApplicationDao {
                 .setCreatedBy(employeeInfoService.getEmployee(11168))
                 .setCreatedDateTime(LocalDateTime.now())
                 .setModifiedDateTime(LocalDateTime.now())
+                .setPurposeOfTravel("Went somewhere for something....maybe a conference?  Who knows.")
                 .build();
     }
 
