@@ -5,14 +5,13 @@
 
   <div>
     <div class="content-container content-controls">
-      <p class="content-info">Grant another supervisor application privileges to review
-        and/or approve your travel needs.</p>
+      <p class="content-info">Grant another person to request a travel request for you</p>
       <div class="padding-10">
         <table class="simple-table">
           <thead>
           <tr>
             <th>#</th>
-            <th>Supervisor</th>
+            <th>Requestor</th>
             <th>Status</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -22,23 +21,33 @@
             <tr>
               <td>1</td>
               <td>
-                <select ng-init="selectedGrantee = grantees[0]"
-                      ng-model="selectedGrantee"
+                <select ng-init="granteeInfo.selectedGrantee = grantees[0]"
+                      ng-model="granteeInfo.selectedGrantee"
                       ng-options="fullName for fullName in grantees | orderBy:'toString()'"></select>
               </td>
-              <td></td>
-              <td ng-class="{'half-opacity': selectedGrantee !== ''}">
+              <td>
+                <input id="requestor-permanent-box" type="checkbox" ng-model="granteeInfo.permanent"
+                       ng-disabled="granteeInfo.startDate || granteeInfo.endDate">
+                <label for="requestor-permanent-box">Permanent?</label>
+              </td>
+              <td>
                 <div class="horizontal-input-group">
-                  <input id="grant-start-date-{{$index}}" type="checkbox" />
-                  <label for="grant-start-date-{{$index}}">Set Start Date</label>
-                  <input style="width:100px" type="text" datepicker/>
+                  <input id="grant-start-date" ng-checked="granteeInfo.startDate"
+                         ng-disabled="granteeInfo.permanent === true" type="checkbox" ng-click="setStartDate()"/>
+                  <label for="grant-start-date">Set Start Date</label>
+                  <input ng-model="granteeInfo.startDate" to-date="granteeInfo.endDate"
+                         ng-disabled="!grantee.startDate"
+                         style="width:100px" type="text" datepicker/>
                 </div>
               </td>
-              <td ng-class="{'half-opacity': selectedGrantee !== ''}">
+              <td>
                 <div class="horizontal-input-group">
-                  <input id="grant-end-date-{{$index}}" ng-checked="grantee.grantEnd" type="checkbox" />
-                  <label for="grant-end-date-{{$index}}">Set End Date</label>
-                  <input style="width:100px" type="text" datepicker/>
+                  <input id="grant-end-date" ng-checked="granteeInfo.endDate"
+                         ng-disabled="granteeInfo.permanent === true" type="checkbox" ng-click="setEndDate()"/>
+                  <label for="grant-end-date">Set End Date</label>
+                  <input
+                         ng-model="granteeInfo.endDate" from-date="granteeInfo.startDate"
+                         style="width:100px" type="text" datepicker/>
                 </div>
               </td>
             </tr>
@@ -46,7 +55,7 @@
         </table>
 
 
-        <p>You picked: {{selectedGrantee}}</p>
+        <p>You picked: {{granteeInfo.selectedGrantee}} from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}</p>
       </div>
     </div>
   </div>
