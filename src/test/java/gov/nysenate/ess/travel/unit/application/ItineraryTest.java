@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.Itinerary;
+import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +23,12 @@ public class ItineraryTest {
     private List<TravelDestination> validDestinations;
     private Address eagleStreet = new Address("24 Eagle Street", "Albany", "NY", "12207");
     private Address southLakeStreet = new Address("100 South Lake Street", "Albany", "NY", "12208");
+    private static ModeOfTransportation personalAuto = ModeOfTransportation.PERSONAL_AUTO;
 
     @Before
     public void before() {
        validDestinations = new ArrayList<>();
-       validDestinations.add(new TravelDestination(LocalDate.now(), LocalDate.now(), validAddress));
+       validDestinations.add(new TravelDestination(LocalDate.now(), LocalDate.now(), validAddress, personalAuto));
     }
 
     /** --- Constructor Tests --- */
@@ -55,8 +57,8 @@ public class ItineraryTest {
 
     @Test
     public void canComputeFullRouteOfTravel() {
-        TravelDestination dest1 = new TravelDestination(LocalDate.now(), LocalDate.now(), eagleStreet);
-        TravelDestination dest2 = new TravelDestination(LocalDate.now(), LocalDate.now(), southLakeStreet);
+        TravelDestination dest1 = new TravelDestination(LocalDate.now(), LocalDate.now(), eagleStreet, personalAuto);
+        TravelDestination dest2 = new TravelDestination(LocalDate.now(), LocalDate.now(), southLakeStreet, personalAuto);
 
         Itinerary itinerary = new Itinerary(validAddress, Lists.newArrayList(dest1, dest2));
         List<Address> actualRoute = itinerary.travelRoute();
@@ -71,9 +73,9 @@ public class ItineraryTest {
         assertEquals(LocalDate.now(), itinerary.endDate());
 
         TravelDestination dest1 = new TravelDestination(LocalDate.now().plusDays(1),
-                LocalDate.now().plusDays(3), eagleStreet);
+                LocalDate.now().plusDays(3), eagleStreet, personalAuto);
         TravelDestination dest2 = new TravelDestination(LocalDate.now().plusDays(3),
-                LocalDate.now().plusDays(5), southLakeStreet);
+                LocalDate.now().plusDays(5), southLakeStreet, personalAuto);
         itinerary = new Itinerary(validAddress, Lists.newArrayList(dest1, dest2));
         assertEquals(LocalDate.now().plusDays(1), itinerary.startDate());
         assertEquals(LocalDate.now().plusDays(5), itinerary.endDate());

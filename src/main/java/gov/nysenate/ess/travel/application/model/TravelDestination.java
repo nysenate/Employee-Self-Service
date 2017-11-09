@@ -21,9 +21,16 @@ public final class TravelDestination {
     private final LocalDate arrivalDate;
     private final LocalDate departureDate;
     private final Address address;
+    private final ModeOfTransportation modeOfTransportation;
+    private final boolean isWaypoint;
 
-    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate,
-                             Address address) {
+    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate, Address address,
+                             ModeOfTransportation modeOfTransportation) {
+        this(arrivalDate, departureDate, address, modeOfTransportation, false);
+    }
+
+    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate, Address address,
+                             ModeOfTransportation modeOfTransportation, boolean isWaypoint) {
         checkNotNull(arrivalDate);
         checkNotNull(departureDate);
         checkNotNull(address);
@@ -32,6 +39,8 @@ public final class TravelDestination {
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.address = address;
+        this.modeOfTransportation = modeOfTransportation;
+        this.isWaypoint = isWaypoint;
     }
 
     /**
@@ -71,5 +80,13 @@ public final class TravelDestination {
 
     public Address getAddress() {
         return address;
+    }
+
+    public ModeOfTransportation getModeOfTransportation() {
+        return modeOfTransportation;
+    }
+
+    public boolean isWaypoint() {
+        return isWaypoint;
     }
 }

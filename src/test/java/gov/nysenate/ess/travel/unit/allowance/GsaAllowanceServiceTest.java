@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
+import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import gov.nysenate.ess.travel.allowance.gsa.service.GsaAllowanceService;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class GsaAllowanceServiceTest {
     // TODO Tests for multiple destinations (destinations should have different rates)
 
     private GsaAllowance createGsaAllowance(LocalDate arrival, LocalDate departure) {
-        TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress);
+        TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress, ModeOfTransportation.PERSONAL_AUTO);
         List<TravelDestination> travelDestinations = Arrays.asList(travelDestination);
 
         GsaAllowanceService gsaAllowanceService = new GsaAllowanceService();

@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.Itinerary;
+import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
 import gov.nysenate.ess.travel.application.view.ItineraryView;
@@ -32,7 +33,7 @@ public class GsaApplicationCtrlIT extends BaseTest {
         LocalDate arrival = LocalDate.of(2017, Month.SEPTEMBER, 30);
         LocalDate departure = LocalDate.of(2017, Month.OCTOBER, 2);
 
-        TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress);
+        TravelDestination travelDestination = new TravelDestination(arrival, departure, toAddress, ModeOfTransportation.PERSONAL_AUTO);
         List<TravelDestination> travelDestinations = Arrays.asList(travelDestination);
 
         Itinerary itinerary = new Itinerary(fromAddress, travelDestinations);

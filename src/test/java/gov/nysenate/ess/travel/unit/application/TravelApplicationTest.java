@@ -27,7 +27,7 @@ public class TravelApplicationTest {
 
         Address address = new Address("101 Washington Ave", "Albany", "NY", "12210");
         Itinerary itinerary = new Itinerary(address, Lists.newArrayList(new TravelDestination(
-                LocalDate.now(), LocalDate.now(), address)));
+                LocalDate.now(), LocalDate.now(), address, ModeOfTransportation.PERSONAL_AUTO)));
 
         builder = TravelApplication.Builder()
                 .setApplicant(emp)
