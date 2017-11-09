@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,15 +18,14 @@ public class MapsServiceTest extends BaseTest {
     MapsService mapsService;
 
     Address origin = new Address("515 Loudon Road Loudonville, NY, 12211");
-    List<Address> destinations = Arrays.asList(new Address[] {
-            new Address("515 Loudon Road Loudonville, NY, 12211"),
-            new Address("Bombers Burrito Bar, 258 Lark St, Albany, NY 12210"),
-            new Address("Times Union Center, 51 S Pearl St, Albany, NY 12207"),
-            new Address("515 Loudon Road Loudonville, NY, 12211")
-    });
 
     @Test
     public void testGetDistance() {
+        ArrayList<Address> destinations = new ArrayList<>();
+        destinations.add(new Address("515 Loudon Road Loudonville, NY, 12211"));
+        destinations.add(new Address("Bombers Burrito Bar, 258 Lark St, Albany, NY 12210"));
+        destinations.add(new Address("Times Union Center, 51 S Pearl St, Albany, NY 12207"));
+        destinations.add(new Address("515 Loudon Road Loudonville, NY, 12211"));
         mapsService.getTripDistance(destinations);
     }
 }
