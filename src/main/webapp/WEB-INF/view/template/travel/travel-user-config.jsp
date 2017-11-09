@@ -27,25 +27,26 @@
               </td>
               <td>
                 <input id="requestor-permanent-box" type="checkbox" ng-model="granteeInfo.permanent"
-                       ng-disabled="granteeInfo.startDate || granteeInfo.endDate">
+                       ng-disabled="granteeInfo.startDate || granteeInfo.endDate" ng-click="setPermanent()">
                 <label for="requestor-permanent-box">Permanent?</label>
               </td>
               <td>
+
                 <div class="horizontal-input-group">
                   <input id="grant-start-date" ng-checked="granteeInfo.startDate"
-                         ng-disabled="granteeInfo.permanent === true" type="checkbox" ng-click="setStartDate()"/>
+                         ng-disabled="granteeInfo.permanent" type="checkbox" ng-click="setStartDate()"/>
                   <label for="grant-start-date">Set Start Date</label>
                   <input ng-model="granteeInfo.startDate" to-date="granteeInfo.endDate"
-                         ng-disabled="!grantee.startDate"
+                         ng-disabled="granteeInfo.permanent"
                          style="width:100px" type="text" datepicker/>
                 </div>
               </td>
               <td>
                 <div class="horizontal-input-group">
                   <input id="grant-end-date" ng-checked="granteeInfo.endDate"
-                         ng-disabled="granteeInfo.permanent === true" type="checkbox" ng-click="setEndDate()"/>
+                         ng-disabled="granteeInfo.permanent" type="checkbox" ng-click="setEndDate()"/>
                   <label for="grant-end-date">Set End Date</label>
-                  <input
+                  <input ng-disabled="granteeInfo.permanent"
                          ng-model="granteeInfo.endDate" from-date="granteeInfo.startDate"
                          style="width:100px" type="text" datepicker/>
                 </div>
@@ -54,6 +55,11 @@
           </tbody>
         </table>
 
+        <hr/>
+        <div class="content-info" style="text-align: center;">
+          <input type="button" class="time-neutral-button" value="Discard Changes" ng-click="reset()"/>
+          <input type="button" class="submit-button" ng-click="saveGrants()" value="Grant Requestor Access"/>
+        </div>
 
         <p>You picked: {{granteeInfo.selectedGrantee}} from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}</p>
       </div>

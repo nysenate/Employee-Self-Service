@@ -19,6 +19,12 @@ import java.util.List;
 @Transactional
 public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealIncidentalRatesDao {
 
+    public MealIncidentalRate[] getMealIncidentalRates(){
+        String sql = SqlMealIncidentalRateQuery.GET_RATES.getSql(schemaMap());
+
+        return null;
+    }
+
     @Override
     public void insertMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
         List<SqlParameterSource> paramList = new ArrayList<>();
@@ -45,6 +51,9 @@ public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealInciden
     }
 
     private enum SqlMealIncidentalRateQuery implements BasicSqlQuery {
+        GET_RATES(
+                "SELECT * FROM ${travelSchema}.meal_incidental_rates"),
+
         INSERT_RATE(
                 "INSERT INTO ${travelSchema}.meal_incidental_rates \n" +
                         "VALUES (:totalCost, :breakfastCost, :dinnerCost, :incidentalCost)"

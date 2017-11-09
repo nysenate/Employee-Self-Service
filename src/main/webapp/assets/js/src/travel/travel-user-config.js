@@ -11,8 +11,8 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
 
         $scope.granteeInfo = {
             selectedGrantee: null,
-            startDate: null,
             granted: false,
+            startDate: null,
             endDate: null,
             permanent: false
         };
@@ -38,14 +38,47 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
         });
     };
 
+    $scope.saveGrants = function(){
+       var error = true;
+
+        if($scope.granteeInfo.selectedGrantee){
+           if(($scope.granteeInfo.permanent) || ($scope.granteeInfo.startDate && $scope.granteeInfo.endDate)) {
+               error = false;
+           }
+       }
+
+       if(error === true) {
+           console.log('error');
+           console.log($scope.granteeInfo.selectedGrantee);
+           console.log($scope.granteeInfo.startDate);
+           console.log($scope.granteeInfo.endDate);
+       }
+    };
+
+    $scope.setPermanent = function(){
+        if($scope.granteeInfo.permanent){
+            $scope.granteeInfo.startDate = moment().format('MM/DD/YYYY');
+
+            // TODO: make this permanent
+            $scope.granteeInfo.endDate = moment().add({years: 1}).format('MM/DD/YYYY');
+        }
+        else {
+            $scope.granteeInfo.startDate = null;
+            $scope.granteeInfo.endDate = null;
+        }
+    };
+
     $scope.setStartDate = function(){
-        $scope.granteeInfo.startDate = $scope.granteeInfo.startDate ? null : moment().format('MM/DD/YYYY');
+        $scope.granteeInfo.startDate = moment().format('MM/DD/YYYY');
     };
 
     $scope.setEndDate = function(){
-        $scope.granteeInfo.endDate = $scope.granteeInfo.endDate ? null : moment().format('MM/DD/YYYY');
+        $scope.granteeInfo.endDate = moment().format('MM/DD/YYYY');
+    };
+
+    $scope.reset = function() {
+        $scope.init();
     };
 
     $scope.init();
-    console.log($scope.grantees);
 }
