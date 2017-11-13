@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.addressvalidation;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.unit.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class DistrictAssignmentCtrl extends BaseRestApiCtrl{
     public BaseResponse assignDistrict(@RequestParam String addr1,
                                        @RequestParam String city,
                                        @RequestParam String state) {
-        return new ViewObjectResponse<>(new DistrictResponseView(districtAssignmentService.assignDistrict(addr1, city, state)));
+        return new ViewObjectResponse<>(new DistrictResponseView(
+                districtAssignmentService.assignDistrict (new Address(addr1, city, state, ""))
+        ));
     }
 }
