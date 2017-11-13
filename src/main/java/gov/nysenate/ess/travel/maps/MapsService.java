@@ -15,43 +15,12 @@ public class MapsService implements MapInterface {
     @Value("${google.maps.apiKey}") private String apiKey;
 
     /**
-     *
-     * @param origin Address where trip originates
-     * @param destination Address where trip terminates
-     * @return Distance between the origin and destination in miles
-     */
-    private double getDistance(Address origin, Address destination) {
-        GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
-        String[] origins = new String[] {origin.toString()};
-        String[] destinations = new String[] {destination.toString()};
-        double totalDist = 0;
-        try {
-            DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
-                    .departureTime(DateTime.now())
-                    .trafficModel(TrafficModel.OPTIMISTIC)
-                    .units(Unit.IMPERIAL)
-                    .await();
-            DistanceMatrixRow[] rows = request.rows;
-            for (DistanceMatrixRow d : rows) {
-                for (DistanceMatrixElement el : d.elements) {
-                    totalDist += Double.parseDouble(el.distance.humanReadable.replaceAll("[^\\d.]", ""));
-                }
-            }
-            return totalDist;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    /**
      * Assume that the traveler visits all destinations in order and then returns to the origin
      * @param travelRoute List of addresses, in order, of stops along the trip from origin
      *                    to all destinations and back to origin
      * @return Total distance traveled over the trip in miles
      */
-    public TripDistance getTripDistance(List<Address> travelRoute) {
+    public TripDistance getTripDistance(List<Address> travelRoute) throws Exception{
         TripDistance tripDistance = new TripDistance();
         double totalDist = 0;
         Address from;
@@ -66,6 +35,31 @@ public class MapsService implements MapInterface {
         }
         tripDistance.setTripDistanceTotal(totalDist);
         return tripDistance;
+    }
+
+    /**
+     *
+     * @param origin Address where trip originates
+     * @param destination Address where trip terminates
+     * @return Distance between the origin and destination in miles
+     */
+    private double getDistance(Address origin, Address destination) throws Exception{
+        GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
+        String[] origins = new String[] {origin.toString()};
+        String[] destinations = new String[] {destination.toString()};
+        double totalDist = 0;
+        DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
+                .departureTime(DateTime.now())
+                .trafficModel(TrafficModel.OPTIMISTIC)
+                .units(Unit.IMPERIAL)
+                .await();
+        DistanceMatrixRow[] rows = request.rows;
+        for (DistanceMatrixRow d : rows) {
+            for (DistanceMatrixElement el : d.elements) {
+                totalDist += Double.parseDouble(el.distance.humanReadable.replaceAll("[^\\d.]", ""));
+            }
+        }
+        return totalDist;
     }
 
     /**

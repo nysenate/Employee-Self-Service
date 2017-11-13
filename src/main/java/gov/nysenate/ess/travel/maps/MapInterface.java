@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MapInterface {
 
-    public TripDistance getTripDistance(List<Address> travelRoute);
+    public TripDistance getTripDistance(List<Address> travelRoute) throws Exception;
 }
