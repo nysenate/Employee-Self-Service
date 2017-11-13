@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @XmlRootElement(name = "payPeriod")
 public class PayPeriodView implements ViewObject
 {
-    protected int payPeriodNum;
+    protected String payPeriodNum;
     protected LocalDate startDate;
     protected LocalDate endDate;
     protected String type;
@@ -58,7 +58,7 @@ public class PayPeriodView implements ViewObject
     }
 
     @XmlElement
-    public int getPayPeriodNum() {
+    public String getPayPeriodNum() {
         return payPeriodNum;
     }
 

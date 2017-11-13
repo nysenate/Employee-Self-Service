@@ -1,12 +1,13 @@
 package gov.nysenate.ess.time.model.allowances;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
+import gov.nysenate.ess.core.model.payroll.PayType;
+import gov.nysenate.ess.core.model.payroll.SalaryRec;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
-import gov.nysenate.ess.core.model.payroll.SalaryRec;
-import gov.nysenate.ess.core.model.payroll.PayType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,6 +17,9 @@ public class AllowanceUsage {
 
     protected int empId;
     protected int year;
+
+    /** Sets the period of usage from the beginning of the year to this date */
+    protected LocalDate endDate;
 
     /** The amount of money allowed for the year */
     protected BigDecimal yearlyAllowance = BigDecimal.ZERO;
@@ -35,9 +39,22 @@ public class AllowanceUsage {
     /** The employees salary recs over the year */
     protected RangeMap<LocalDate, SalaryRec> salaryRecMap = TreeRangeMap.create();
 
-    public AllowanceUsage(int empId, int year) {
+    public AllowanceUsage(int empId, int year, LocalDate endDate) {
         this.empId = empId;
         this.year = year;
+        this.endDate = endDate;
+    }
+
+    public AllowanceUsage(AllowanceUsage other) {
+        this.empId = other.empId;
+        this.year = other.year;
+        this.endDate = other.endDate;
+        this.yearlyAllowance = other.yearlyAllowance;
+        this.baseMoneyUsed = other.baseMoneyUsed;
+        this.recordMoneyUsed = other.recordMoneyUsed;
+        this.baseHoursUsed = other.baseHoursUsed;
+        this.recordHoursUsed = other.recordHoursUsed;
+        this.salaryRecMap.putAll(other.salaryRecMap);
     }
 
     /** --- Functional Getters / Setters --- */
@@ -50,7 +67,8 @@ public class AllowanceUsage {
         return baseHoursUsed.add(recordHoursUsed);
     }
 
-    public void addSalaryRecs(Collection<SalaryRec> salaryRecs) {
+    public void setSalaryRecs(Collection<SalaryRec> salaryRecs) {
+        salaryRecMap.clear();
         salaryRecs.forEach(rec -> salaryRecMap.put(rec.getEffectiveRange(), rec));
     }
 
@@ -85,6 +103,15 @@ public class AllowanceUsage {
         }
         BigDecimal workHours = entry.getWorkHours().orElse(BigDecimal.ZERO);
         return workHours.multiply(salaryForDay.getSalaryRate());
+    }
+
+    /**
+     * Get a range of the effective dates of this {@link AllowanceUsage}
+     *
+     * @return Range<LocalDate>
+     */
+    public Range<LocalDate> getEffectiveRange() {
+        return Range.closedOpen(LocalDate.ofYearDay(year, 1), endDate);
     }
 
     /** --- Getters / Setters --- */
@@ -143,5 +170,9 @@ public class AllowanceUsage {
 
     public void setRecordHoursUsed(BigDecimal recordHoursUsed) {
         this.recordHoursUsed = recordHoursUsed;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
     }
 }

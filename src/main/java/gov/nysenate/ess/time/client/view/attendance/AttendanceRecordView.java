@@ -20,7 +20,7 @@ public class AttendanceRecordView extends AttendanceHoursView {
     protected LocalDate beginDate;
     protected LocalDate endDate;
     protected Integer year;
-    protected Integer payPeriodNum;
+    protected String payPeriodNum;
     protected LocalDateTime postDate;
     protected LocalDateTime originalDate;
     protected LocalDateTime updateDate;
@@ -77,7 +77,7 @@ public class AttendanceRecordView extends AttendanceHoursView {
     }
 
     @XmlElement
-    public Integer getPayPeriodNum() {
+    public String getPayPeriodNum() {
         return payPeriodNum;
     }
 

@@ -16,7 +16,7 @@ public class AttendanceRecord extends AttendanceHours {
     protected LocalDate beginDate;
     protected LocalDate endDate;
     protected Year year;
-    protected Integer payPeriodNum;
+    protected String payPeriodNum;
     protected LocalDateTime postDate;
     protected LocalDateTime createdDate;
     protected LocalDateTime updatedDate;
@@ -40,10 +40,6 @@ public class AttendanceRecord extends AttendanceHours {
 
     public Range<LocalDate> getDateRange() {
         return Range.closedOpen(beginDate, endDate.plusDays(1));
-    }
-
-    public void setPayPeriodNum(String payPeriodNum) {
-        setPayPeriodNum(Integer.parseInt(payPeriodNum.replaceAll("[^\\d]", "")));
     }
 
     /** --- Getters / Setters --- */
@@ -132,11 +128,11 @@ public class AttendanceRecord extends AttendanceHours {
         this.expectedDays = expectedDays;
     }
 
-    public Integer getPayPeriodNum() {
+    public String getPayPeriodNum() {
         return payPeriodNum;
     }
 
-    public void setPayPeriodNum(Integer payPeriodNum) {
+    public void setPayPeriodNum(String payPeriodNum) {
         this.payPeriodNum = payPeriodNum;
     }
 }
