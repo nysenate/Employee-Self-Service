@@ -19,10 +19,12 @@ import java.util.List;
 @Transactional
 public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealIncidentalRatesDao {
 
+    @Override
     public MealIncidentalRate[] getMealIncidentalRates(){
         String sql = SqlMealIncidentalRateQuery.GET_RATES.getSql(schemaMap());
 
-        return null;
+        List<MealIncidentalRate> rates = localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
+        return (MealIncidentalRate[]) rates.toArray();
     }
 
     @Override
@@ -48,6 +50,8 @@ public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealInciden
     public synchronized void updateMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
         String sql = SqlMealIncidentalRateQuery.TRUNCATE_TABLE.getSql(schemaMap());
         localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
+
+        insertMealIncidentalRates(mealIncidentalRates);
     }
 
     private enum SqlMealIncidentalRateQuery implements BasicSqlQuery {

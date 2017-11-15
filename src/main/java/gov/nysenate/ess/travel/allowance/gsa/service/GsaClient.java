@@ -43,7 +43,8 @@ public class GsaClient {
         if (fiscalYear < NOW.getYear()) {
             records = null;
             throw new IllegalArgumentException();
-        } else {
+        }
+        else {
             String responseBody = null;
             try {
                 responseBody = httpClient.execute(httpget, responseHandler);
