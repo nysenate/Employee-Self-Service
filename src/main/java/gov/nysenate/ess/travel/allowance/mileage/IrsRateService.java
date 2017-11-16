@@ -29,7 +29,7 @@ public class IrsRateService {
             //do nothing
         }
         double dbVal = irsRateDao.getIrsRate();
-        if (dbVal == -2.0) {
+        if (dbVal == -2) {  //nothing in the table
             irsRateDao.insertIrsRate(webVal);
         }
         else if (webVal != dbVal) {
