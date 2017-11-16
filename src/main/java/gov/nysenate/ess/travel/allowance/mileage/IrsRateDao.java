@@ -4,11 +4,18 @@ import gov.nysenate.ess.core.dao.base.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
 public class IrsRateDao extends SqlBaseDao {
+
+    public void insertIrsRate(double rate) {
+        MapSqlParameterSource params = new MapSqlParameterSource("rate", rate);
+        String sql = IrsRateDao.SqlIrsRateQuery.INSERT_IRS_RATE.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
 
     public void updateIrsRate(double rate) {
         MapSqlParameterSource params = new MapSqlParameterSource("rate", rate);
@@ -25,13 +32,17 @@ public class IrsRateDao extends SqlBaseDao {
             rate = localNamedJdbc.query(sql, mapper).get(0);
         }
         catch(IndexOutOfBoundsException e){
-            rate = -1;
+            rate = -2;
         }
         return rate;
     }
 
     private enum SqlIrsRateQuery implements BasicSqlQuery {
 
+        INSERT_IRS_RATE(
+                "INSERT INTO ${travelSchema}.irs_rate\n" +
+                "VALUES (:rate)"
+        ),
         UPDATE_IRS_RATE(
                 "UPDATE ${travelSchema}.irs_rate\n" +
                 "SET irs_travel_rate = :rate"
