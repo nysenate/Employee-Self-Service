@@ -3,6 +3,7 @@ essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi
 
 function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
 
+    $scope.dataLoaded = false;
     $scope.empId = appProps.user.employeeId;
 
     console.log(ActiveEmployeeApi.get({activeOnly: true}));
@@ -30,6 +31,7 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
             return ActiveEmployeeApi.get({activeOnly: true}, function (resp) {
             }).$promise;
         }).then(function (resp) {
+            $scope.dataLoaded = true;
             return ActiveEmployeeApi.get({activeOnly: true}, function (resp) {
             }).$promise;
         }).catch(function (resp) {

@@ -5,7 +5,7 @@
 
   <div>
     <div class="content-container content-controls">
-      <p class="content-info">Grant another person to request a travel request for you</p>
+      <p class="content-info">Grant another person the ability to file a travel request for you</p>
       <div class="padding-10">
         <table class="simple-table">
           <thead>
@@ -21,13 +21,16 @@
             <tr>
               <td>1</td>
               <td>
-                <select ng-init="granteeInfo.selectedGrantee = grantees[0]"
+                <select ng-init="granteeInfo.selectedGrantee = null"
+                        ng-if="dataLoaded"
                       ng-model="granteeInfo.selectedGrantee"
                       ng-options="fullName for fullName in grantees | orderBy:'toString()'"></select>
+
+                <p style="width:220px; height:30px; margin:0; vertical-align:middle;" ng-if="dataLoaded == false">Loading.......</p>
               </td>
               <td>
                 <input id="requestor-permanent-box" type="checkbox" ng-model="granteeInfo.permanent"
-                       ng-disabled="granteeInfo.startDate || granteeInfo.endDate" ng-click="setPermanent()">
+                       ng-click="setPermanent()">
                 <label for="requestor-permanent-box">Permanent?</label>
               </td>
               <td>
