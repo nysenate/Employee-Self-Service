@@ -28,7 +28,12 @@ public class IrsRateService {
         } catch (IOException e) {
             //do nothing
         }
-        double dbVal = irsRateDao.getIrsRate();
+        double dbVal = -2;
+        try {
+            dbVal = irsRateDao.getIrsRate();
+        } catch(Exception e) {
+            //do nothing
+        }
         if (webVal != dbVal) {
             irsRateDao.updateIrsRate(webVal);
         }
