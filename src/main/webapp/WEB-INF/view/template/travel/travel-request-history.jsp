@@ -22,7 +22,7 @@
     </div>
     <div class="content-container">
       <div class="padding-10">
-        <table class="travel-table">
+        <table class="travel-table travel-hover">
           <thead>
             <tr>
               <th>Travel Date</th>
