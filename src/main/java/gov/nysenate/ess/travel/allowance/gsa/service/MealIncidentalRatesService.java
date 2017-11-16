@@ -27,7 +27,7 @@ public class MealIncidentalRatesService {
         }
     }
 
-    public MealIncidentalRate[] scrapeMealIncidentalRates() {
+    private MealIncidentalRate[] scrapeMealIncidentalRates() {
         Document document = null;
         try {
             document = Jsoup.connect("https://www.gsa.gov/travel/plan-book/per-diem-rates/meals-and-incidental-expenses-mie-breakdown").get();

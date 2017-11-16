@@ -19,7 +19,15 @@ public class IrsRateDao extends SqlBaseDao {
     public double getIrsRate() {
         String sql = IrsRateDao.SqlIrsRateQuery.GET_IRS_RATE.getSql(schemaMap());
         IrsRateDao.IrsRateMapper mapper = new IrsRateMapper();
-        return localNamedJdbc.query(sql, mapper).get(0);
+
+        double rate;
+        try {
+            rate = localNamedJdbc.query(sql, mapper).get(0);
+        }
+        catch(IndexOutOfBoundsException e){
+            rate = -1;
+        }
+        return rate;
     }
 
     private enum SqlIrsRateQuery implements BasicSqlQuery {

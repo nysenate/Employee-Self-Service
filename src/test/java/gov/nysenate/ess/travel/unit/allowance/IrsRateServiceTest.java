@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.allowance.mileage.IrsRateService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
@@ -15,9 +16,11 @@ public class IrsRateServiceTest extends BaseTest {
 
     // TODO: This should use mocks instead of really scraping the IRS website.
 
+    @Autowired IrsRateService irsRateService;
+
     @Test
     public void scrapeIrsSite() throws IOException {
-        IrsRateService irsRateService = new IrsRateService();
+        irsRateService.scrapeAndUpdate();
         double val = irsRateService.webScrapeIrsRate();
         assertEquals(val + "", "53.5");
     }

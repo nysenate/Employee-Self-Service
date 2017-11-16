@@ -16,15 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-@Transactional
+@Transactional(value = "localTxManager")
 public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealIncidentalRatesDao {
 
     @Override
-    public MealIncidentalRate[] getMealIncidentalRates(){
+    public MealIncidentalRate[] getMealIncidentalRates() {
         String sql = SqlMealIncidentalRateQuery.GET_RATES.getSql(schemaMap());
 
         List<MealIncidentalRate> rates = localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
-        return (MealIncidentalRate[]) rates.toArray();
+        MealIncidentalRate[] mealIncidentalRates = new MealIncidentalRate[rates.size()];
+        for (int i = 0; i < rates.size(); i++) {
+            mealIncidentalRates[i] = rates.get(i);
+        }
+        return mealIncidentalRates;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealInciden
     @Transactional(value = "localTxManager")
     public synchronized void updateMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
         String sql = SqlMealIncidentalRateQuery.TRUNCATE_TABLE.getSql(schemaMap());
-        localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
+        localJdbc.execute(sql);
 
         insertMealIncidentalRates(mealIncidentalRates);
     }
@@ -63,7 +67,7 @@ public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealInciden
                         "VALUES (:totalCost, :breakfastCost, :dinnerCost, :incidentalCost)"
         ),
         TRUNCATE_TABLE(
-                "TRUNCATE ${travelSchema}.meal_incidental_rates"
+                "TRUNCATE TABLE ${travelSchema}.meal_incidental_rates"
         );
 
         private String sql;
