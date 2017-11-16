@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.allowance.gsa.service;
 
-import gov.nysenate.ess.travel.allowance.gsa.dao.SqlMealIncidentalRatesDao;
+import gov.nysenate.ess.travel.allowance.gsa.dao.MealIncidentalRatesDao;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,15 +15,15 @@ import java.util.Arrays;
 @Service
 public class MealIncidentalRatesService {
 
-    @Autowired SqlMealIncidentalRatesDao sqlMealIncidentalRatesDao;
+    @Autowired MealIncidentalRatesDao mealIncidentalRatesDao;
 
     @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate(){
         MealIncidentalRate[] scrapedValues = scrapeMealIncidentalRates();
-        MealIncidentalRate[] dbValues = sqlMealIncidentalRatesDao.getMealIncidentalRates();
+        MealIncidentalRate[] dbValues = mealIncidentalRatesDao.getMealIncidentalRates();
 
         if(!Arrays.equals(scrapedValues, dbValues)){
-            sqlMealIncidentalRatesDao.updateMealIncidentalRates(scrapedValues);
+            mealIncidentalRatesDao.updateMealIncidentalRates(scrapedValues);
         }
     }
 
