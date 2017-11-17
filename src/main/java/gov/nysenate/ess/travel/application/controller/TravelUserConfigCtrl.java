@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/user/config")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/user/config")
 public class TravelUserConfigCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(TravelUserConfigCtrl.class);
+
+
 
     @RequestMapping(value = "", method = {RequestMethod.GET, RequestMethod.HEAD}, params = "empId")
     public BaseResponse getConfig(@RequestParam(required = true) Integer empId[]){
