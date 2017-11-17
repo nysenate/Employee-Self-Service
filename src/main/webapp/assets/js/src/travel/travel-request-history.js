@@ -13,7 +13,8 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     }
 
     $scope.init = function() {
-        var empId = 11168;
+        var empId = 11168;  //for testing purposes
+        //var empId = appProps.empId;
         var status = 'APPROVED';
         var params = {
             empId: empId,
