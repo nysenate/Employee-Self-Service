@@ -24,7 +24,7 @@
                 <select ng-init="granteeInfo.selectedGrantee = null"
                         ng-if="dataLoaded"
                       ng-model="granteeInfo.selectedGrantee"
-                      ng-options="fullName for fullName in grantees | orderBy:'toString()'"></select>
+                      ng-options="employee as employee.fullName for employee in grantees | orderBy:'fullName'"></select>
 
                 <p class="travel-loading" ng-if="dataLoaded == false">Loading...</p>
               </td>
@@ -64,7 +64,8 @@
           <input type="button" class="submit-button" ng-disabled="formNotFilledOut()" ng-click="saveGrants()" value="Grant Requester Access"/>
         </div>
 
-        <p>You picked: {{granteeInfo.selectedGrantee}} from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}</p>
+        <p>You picked: {{granteeInfo.selectedGrantee.fullName}} with id of {{granteeInfo.selectedGrantee.empId}}
+          from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}</p>
       </div>
     </div>
   </div>

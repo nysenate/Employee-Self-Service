@@ -1,7 +1,7 @@
 var essTravel = angular.module('essTravel');
-essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi', userConfigCtrl]);
+essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi', 'TravelUserConfigApi', userConfigCtrl]);
 
-function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
+function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi) {
 
     $scope.dataLoaded = false;
     $scope.empId = appProps.user.employeeId;
@@ -21,10 +21,7 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
 
         ActiveEmployeeApi.get({activeOnly: true}, function (resp) {
             if (resp.success) {
-                angular.forEach(resp.employees, function (employee) {
-                    var fullName = employee.fullName;
-                    $scope.grantees.push(fullName);
-                });
+                $scope.grantees = resp.employees;
             }
         }).$promise.then(function (resp) {
             // Link up with any existing grants
@@ -38,12 +35,28 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
             modals.open('500', {details: resp});
             console.log(resp);
         });
+        TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
+            if (resp.success) {
+                console.log(resp.employee);
+            }
+        }).$promise.then(function (resp) {
+            // Link up with any existing grants
+            return TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
+            }).$promise;
+        }).then(function (resp) {
+            $scope.dataLoaded = true;
+            return TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
+            }).$promise;
+        }).catch(function (resp) {
+            modals.open('500', {details: resp});
+            console.log(resp);
+        });
     };
 
     $scope.formNotFilledOut = function() {
         return !($scope.granteeInfo.selectedGrantee &&
             ($scope.granteeInfo.permanent || ($scope.granteeInfo.startDate && $scope.granteeInfo.endDate)));
-    }
+    };
 
     $scope.saveGrants = function(){
         //hook up to database
