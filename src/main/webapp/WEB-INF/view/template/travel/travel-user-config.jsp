@@ -11,7 +11,7 @@
           <thead>
           <tr>
             <th>#</th>
-            <th>Requestor</th>
+            <th>Requester</th>
             <th>Status</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -26,12 +26,12 @@
                       ng-model="granteeInfo.selectedGrantee"
                       ng-options="fullName for fullName in grantees | orderBy:'toString()'"></select>
 
-                <p style="width:220px; height:30px; margin:0; vertical-align:middle;" ng-if="dataLoaded == false">Loading.......</p>
+                <p class="travel-loading" ng-if="dataLoaded == false">Loading...</p>
               </td>
               <td>
-                <input id="requestor-permanent-box" type="checkbox" ng-model="granteeInfo.permanent"
+                <input id="requester-permanent-box" type="checkbox" ng-model="granteeInfo.permanent"
                        ng-click="setPermanent()">
-                <label for="requestor-permanent-box">Permanent?</label>
+                <label for="requester-permanent-box">Permanent?</label>
               </td>
               <td>
 
@@ -61,7 +61,7 @@
         <hr/>
         <div class="content-info" style="text-align: center;">
           <input type="button" class="time-neutral-button" value="Discard Changes" ng-click="reset()"/>
-          <input type="button" class="submit-button" ng-click="saveGrants()" value="Grant Requestor Access"/>
+          <input type="button" class="submit-button" ng-disabled="formNotFilledOut()" ng-click="saveGrants()" value="Grant Requester Access"/>
         </div>
 
         <p>You picked: {{granteeInfo.selectedGrantee}} from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}</p>

@@ -40,21 +40,13 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
         });
     };
 
+    $scope.formNotFilledOut = function() {
+        return !($scope.granteeInfo.selectedGrantee &&
+            ($scope.granteeInfo.permanent || ($scope.granteeInfo.startDate && $scope.granteeInfo.endDate)));
+    }
+
     $scope.saveGrants = function(){
-       var error = true;
-
-        if($scope.granteeInfo.selectedGrantee){
-           if(($scope.granteeInfo.permanent) || ($scope.granteeInfo.startDate && $scope.granteeInfo.endDate)) {
-               error = false;
-           }
-       }
-
-       if(error === true) {
-           console.log('error');
-           console.log($scope.granteeInfo.selectedGrantee);
-           console.log($scope.granteeInfo.startDate);
-           console.log($scope.granteeInfo.endDate);
-       }
+        //hook up to database
     };
 
     $scope.setPermanent = function(){
@@ -79,7 +71,13 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi) {
     };
 
     $scope.reset = function() {
-        $scope.init();
+        $scope.granteeInfo = {
+            selectedGrantee: null,
+            granted: false,
+            startDate: null,
+            endDate: null,
+            permanent: false
+        };
     };
 
     $scope.init();
