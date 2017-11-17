@@ -60,6 +60,7 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
 
     $scope.saveGrants = function(){
         //hook up to database
+
     };
 
     $scope.setPermanent = function(){
