@@ -35,7 +35,7 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
             modals.open('500', {details: resp});
             console.log(resp);
         });
-        TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
+        TravelUserConfigApi.get({empId: $scope.empId}, function (resp) {
             if (resp.success) {
                 console.log(resp.employee);
             }

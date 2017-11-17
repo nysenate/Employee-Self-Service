@@ -15,4 +15,20 @@ public class EmployeeRequestorInfo {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    public int getEmpId() {
+        return empId;
+    }
+
+    public int getRequestorId() {
+        return requestorId;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
 }

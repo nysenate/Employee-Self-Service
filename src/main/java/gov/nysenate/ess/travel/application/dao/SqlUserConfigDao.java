@@ -7,13 +7,11 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.travel.application.model.EmployeeRequestorInfo;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
-@Transactional(value = "localTxManager")
 public class SqlUserConfigDao extends SqlBaseDao {
 
    public EmployeeRequestorInfo getRequestorInfoById(int empId){
