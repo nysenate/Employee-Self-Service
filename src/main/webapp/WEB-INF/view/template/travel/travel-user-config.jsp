@@ -7,7 +7,7 @@
     <div class="content-container content-controls">
       <p class="content-info">Grant another person the ability to file a travel request for you</p>
       <div class="padding-10">
-        <b>Current Requester:</b> {{granteeInfo.selectedGrantee}}, from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}
+        <b>Current Requester:</b> {{granteeInfo.selectedGrantee.fullName}}, from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}
       </div>
       <div class="padding-10">
         <table class="simple-table">

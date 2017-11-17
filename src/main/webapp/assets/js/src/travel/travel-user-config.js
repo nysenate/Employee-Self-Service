@@ -44,7 +44,6 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
             return TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
             }).$promise;
         }).then(function (resp) {
-            $scope.dataLoaded = true;
             return TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
             }).$promise;
         }).catch(function (resp) {
