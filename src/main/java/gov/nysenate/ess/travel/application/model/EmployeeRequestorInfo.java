@@ -9,6 +9,10 @@ public class EmployeeRequestorInfo {
     private Date startDate;
     private Date endDate;
 
+    public EmployeeRequestorInfo(int empId) {
+        this.empId = empId;
+    }
+
     public EmployeeRequestorInfo(int empId, int requestorId, Date startDate, Date endDate) {
         this.empId = empId;
         this.requestorId = requestorId;

@@ -6,8 +6,8 @@
   <div>
     <div class="content-container content-controls">
       <p class="content-info">Grant another person the ability to file a travel request for you</p>
-      <div class="padding-10">
-        <b>Current Requester:</b> {{granteeInfo.selectedGrantee.fullName}}, from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}
+      <div class="padding-10" ng-show="currentGrantee.startDate">
+        <b>Current Requester:</b> {{currentGrantee.requestorId}}, from {{currentGrantee.startDate}} to {{currentGrantee.endDate}}
       </div>
       <div class="padding-10">
         <table class="simple-table">
@@ -24,8 +24,7 @@
             <tr>
               <td>1</td>
               <td>
-                <select ng-init="granteeInfo.selectedGrantee = null"
-                        ng-if="dataLoaded"
+                <select ng-if="dataLoaded"
                       ng-model="granteeInfo.selectedGrantee"
                       ng-options="employee as employee.fullName for employee in grantees | orderBy:'fullName'"></select>
 
@@ -37,6 +36,8 @@
                 <label for="requester-permanent-box">Permanent?</label>
               </td>
               <td>
+
+                <!-- TODO to-date and from-date are not working. Able to select end date before start-->
 
                 <div class="horizontal-input-group">
                   <input id="grant-start-date" ng-checked="granteeInfo.startDate"
@@ -66,9 +67,6 @@
           <input type="button" class="time-neutral-button" value="Discard Changes" ng-click="reset()"/>
           <input type="button" class="submit-button" ng-disabled="formNotFilledOut()" ng-click="saveGrants()" value="Grant Requester Access"/>
         </div>
-
-        <p>You picked: {{granteeInfo.selectedGrantee.fullName}} with id of {{granteeInfo.selectedGrantee.empId}}
-          from {{granteeInfo.startDate}} to {{granteeInfo.endDate}}</p>
       </div>
     </div>
   </div>

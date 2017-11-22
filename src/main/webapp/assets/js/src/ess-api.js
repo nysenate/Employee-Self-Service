@@ -227,6 +227,10 @@ essApi.factory('TravelMileageAllowanceApi', ['$resource', 'appProps', function (
 essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/user/config')
 }]);
+
+essApi.factory('TravelUserConfigSaveApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/user/config/save')
+}]);
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {

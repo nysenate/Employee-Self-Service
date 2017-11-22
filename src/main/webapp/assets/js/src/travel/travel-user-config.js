@@ -1,22 +1,22 @@
 var essTravel = angular.module('essTravel');
-essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi', 'TravelUserConfigApi', userConfigCtrl]);
+essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi', 'TravelUserConfigApi', 'TravelUserConfigSaveApi', 'modals', userConfigCtrl]);
 
-function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi) {
+function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi, TravelUserConfigSaveApi, modals) {
 
     $scope.dataLoaded = false;
     $scope.empId = appProps.user.employeeId;
 
-    console.log(ActiveEmployeeApi.get({activeOnly: true}));
-
     $scope.init = function () {
+
+        $scope.currentGrantee = null;
 
         $scope.granteeInfo = {
             selectedGrantee: null,
-            granted: false,
             startDate: null,
             endDate: null,
             permanent: false
         };
+
         $scope.grantees = [];  // Stores an ordered list of the supervisors.
 
         ActiveEmployeeApi.get({activeOnly: true}, function (resp) {
@@ -35,16 +35,17 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
             modals.open('500', {details: resp});
             console.log(resp);
         });
+
         TravelUserConfigApi.get({empId: $scope.empId}, function (resp) {
             if (resp.success) {
-                console.log(resp.employee);
+                $scope.currentGrantee = resp.result;
             }
         }).$promise.then(function (resp) {
             // Link up with any existing grants
-            return TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
+            return TravelUserConfigApi.get({empId: $scope.empId}, function (resp) {
             }).$promise;
         }).then(function (resp) {
-            return TravelUserConfigApi.get({empId: $scope.empId, detail: true}, function (resp) {
+            return TravelUserConfigApi.get({empId: $scope.empId}, function (resp) {
             }).$promise;
         }).catch(function (resp) {
             modals.open('500', {details: resp});
@@ -58,8 +59,21 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
     };
 
     $scope.saveGrants = function(){
-        //hook up to database
+        console.log('saving');
 
+        var params = {
+            empId: $scope.empId,
+            requestorId: $scope.granteeInfo.selectedGrantee.empId,
+            startDate: $scope.granteeInfo.startDate,
+            endDate: $scope.granteeInfo.endDate
+        };
+
+        TravelUserConfigSaveApi.save(params, {}, function(resp){
+            console.log(resp);
+        }, function(resp){
+            modals.open('500', {details: resp});
+            console.log(resp);
+        });
     };
 
     $scope.setPermanent = function(){
