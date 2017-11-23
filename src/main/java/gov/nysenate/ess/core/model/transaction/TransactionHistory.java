@@ -345,10 +345,15 @@ public class TransactionHistory
     public TreeMap<LocalDate, String> getEffectiveEntriesDuring(String key, Range<LocalDate> dateRange, boolean skipNulls) {
         TreeMap<LocalDate, String> values = Maps.newTreeMap();
         String lastValue = null;
+        dateRange = dateRange.canonical(DateUtils.getLocalDateDiscreteDomain());
         Optional<ImmutablePair<LocalDate, String>> firstEntry = getLatestEntryOf(key, DateUtils.startOfDateRange(dateRange), skipNulls);
         if (firstEntry.isPresent()) {
             values.put(firstEntry.get().getLeft(), firstEntry.get().getRight());
             lastValue = firstEntry.get().getRight();
+        }
+        // If an empty range is do not attempt to get effective entries, return initial entry only
+        if (dateRange.isEmpty()) {
+            return values;
         }
         NavigableMap<LocalDate, Map<String, String>> subMap =
             recordSnapshots.subMap(DateUtils.startOfDateRange(dateRange), false, DateUtils.endOfDateRange(dateRange), true);
