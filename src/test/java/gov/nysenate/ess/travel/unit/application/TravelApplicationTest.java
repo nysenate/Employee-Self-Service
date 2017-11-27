@@ -33,7 +33,6 @@ public class TravelApplicationTest {
                 .setApplicant(emp)
                 .setAllowances(allowances)
                 .setItinerary(itinerary)
-                .setModeOfTransportation(ModeOfTransportation.PERSONAL_AUTO)
                 .setCreatedBy(emp);
     }
 
@@ -50,11 +49,6 @@ public class TravelApplicationTest {
     @Test(expected = NullPointerException.class)
     public void nullAllowances_isInvalid() {
         builder.setAllowances(null).build();
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void nullModeOfTransportation_isInvalid() {
-        builder.setModeOfTransportation(null).build();
     }
 
     @Test(expected = NullPointerException.class)

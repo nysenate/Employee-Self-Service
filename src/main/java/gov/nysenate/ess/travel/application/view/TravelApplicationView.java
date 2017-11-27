@@ -13,7 +13,6 @@ public class TravelApplicationView implements ViewObject {
     private int id;
     private EmployeeView applicant;
     private TravelAllowancesView allowances;
-    private String modeOfTransportation;
     private String totalAllowance;
     private ItineraryView itinerary;
     private String purposeOfTravel;
@@ -64,10 +63,6 @@ public class TravelApplicationView implements ViewObject {
 
     public EmployeeView getApplicant() {
         return applicant;
-    }
-
-    public String getModeOfTransportation() {
-        return modeOfTransportation;
     }
 
     public TravelAllowancesView getAllowances() {

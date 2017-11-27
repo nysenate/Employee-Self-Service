@@ -11,7 +11,6 @@ public class NewTravelApplicationView implements ViewObject {
 
     private int applicantEmpId;
     private TravelAllowancesView allowances;
-    private String modeOfTransportation;
     private ItineraryView itinerary;
     private String purposeOfTravel;
 
@@ -22,7 +21,6 @@ public class NewTravelApplicationView implements ViewObject {
         return TravelApplication.Builder()
                 .setAllowances(allowances.toTravelAllowances())
                 .setItinerary(itinerary.toItinerary())
-                .setModeOfTransportation(ModeOfTransportation.of(modeOfTransportation))
                 .setPurposeOfTravel(purposeOfTravel);
     }
 
@@ -33,10 +31,6 @@ public class NewTravelApplicationView implements ViewObject {
 
     public TravelAllowancesView getAllowances() {
         return allowances;
-    }
-
-    public String getModeOfTransportation() {
-        return modeOfTransportation;
     }
 
     public ItineraryView getItinerary() {

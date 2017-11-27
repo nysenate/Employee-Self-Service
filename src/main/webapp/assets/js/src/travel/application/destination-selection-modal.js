@@ -13,11 +13,14 @@ function destSelectionCtrl($scope, modals) {
 
     const DATEPICKER_FORMAT = 'MM-DD-YYYY';
     const ISO_FORMAT = 'YYYY-MM-DD';
+    $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Train', 'Airplane', 'Other'];
 
     $scope.destination = {
         address: undefined,
         arrivalDate: undefined,
-        departureDate: undefined
+        departureDate: undefined,
+        modeOfTransportation: modals.params().defaultModeOfTransportation,
+        isWaypoint: false
     };
 
     $scope.addressCallback = function(address) {
@@ -28,6 +31,7 @@ function destSelectionCtrl($scope, modals) {
         return $scope.destination.address !== undefined
             &&  $scope.destination.arrivalDate !== undefined
             && $scope.destination.departureDate !== undefined
+            && $scope.destination.modeOfTransportation !== undefined
     };
 
     $scope.submit = function () {

@@ -80,7 +80,6 @@ public class InMemoryTravelApplicationDao {
                 .setApplicant(employeeInfoService.getEmployee(11168))
                 .setAllowances(randomAllowances())
                 .setItinerary(itinerary())
-                .setModeOfTransportation(ModeOfTransportation.PERSONAL_AUTO)
                 .setStatus(status)
                 .setCreatedBy(employeeInfoService.getEmployee(11168))
                 .setCreatedDateTime(LocalDateTime.now())

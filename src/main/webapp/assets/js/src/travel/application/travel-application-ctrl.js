@@ -30,7 +30,6 @@ function travelAppController($scope, appProps, modals, gsaApi, mileageAllowanceA
                 items: []
             }
         },
-        modeOfTransportation: undefined,
         purposeOfTravel: ''
     };
 
@@ -48,7 +47,13 @@ function travelAppController($scope, appProps, modals, gsaApi, mileageAllowanceA
     };
 
     $scope.addDestinationOnClick = function() {
-        modals.open('destination-selection-modal')
+        var params = {
+            defaultModeOfTransportation: undefined
+        };
+        if ($scope.app.itinerary.destinations.items.length > 0) {
+            params.defaultModeOfTransportation = $scope.app.itinerary.destinations.items[$scope.app.itinerary.destinations.items.length - 1].modeOfTransportation
+        }
+        modals.open('destination-selection-modal', params)
             .then(function (destination) {
                 $scope.app.itinerary.destinations.items.push(destination);
             });
@@ -65,11 +70,12 @@ function travelAppController($scope, appProps, modals, gsaApi, mileageAllowanceA
 
     $scope.toMethodAndPurpose = function() {
         $scope.state = STATES[1];
+        console.log($scope.app);
     };
 
     /* --- Method and Purpose --- */
 
-    $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Train', 'Airplane', 'Other'];
+    // $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Train', 'Airplane', 'Other'];
 
     $scope.methodAndPurposeCompleted = function () {
         return $scope.app.modeOfTransportation;
@@ -83,6 +89,7 @@ function travelAppController($scope, appProps, modals, gsaApi, mileageAllowanceA
     /* --- Review and Submit --- */
 
     $scope.initReviewAndSubmit = function () {
+        console.log($scope.app.itinerary);
         gsaApi.save($scope.app.itinerary, function (response) {
             console.log(response);
             $scope.app.allowances.gsa = response.result;

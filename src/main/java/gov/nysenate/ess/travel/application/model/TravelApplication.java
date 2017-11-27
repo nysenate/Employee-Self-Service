@@ -15,7 +15,6 @@ public class TravelApplication {
     private Employee applicant;
     private TravelAllowances allowances;
     private Itinerary itinerary;
-    private ModeOfTransportation modeOfTransportation;
     private TravelApplicationStatus status;
     private String purposeOfTravel;
 
@@ -27,7 +26,6 @@ public class TravelApplication {
     private TravelApplication(Builder builder) {
         checkNotNull(builder.applicant);
         checkNotNull(builder.allowances);
-        checkNotNull(builder.modeOfTransportation);
         checkNotNull(builder.itinerary);
         checkNotNull(builder.createdBy);
         checkArgument(!builder.applicant.isEmpty());
@@ -41,7 +39,6 @@ public class TravelApplication {
         this.createdDateTime = builder.createdDateTime;
         this.modifiedBy = builder.modifiedBy;
         this.modifiedDateTime = builder.modifiedDateTime;
-        this.modeOfTransportation = builder.modeOfTransportation;
     }
 
     /**
@@ -82,10 +79,6 @@ public class TravelApplication {
         return itinerary;
     }
 
-    public ModeOfTransportation getModeOfTransportation() {
-        return modeOfTransportation;
-    }
-
     public TravelApplicationStatus getStatus() {
         return status;
     }
@@ -119,7 +112,6 @@ public class TravelApplication {
         private Employee applicant;
         private TravelAllowances allowances;
         private Itinerary itinerary;
-        private ModeOfTransportation modeOfTransportation;
         private TravelApplicationStatus status;
         private String purposeOfTravel;
 
@@ -149,11 +141,6 @@ public class TravelApplication {
 
         public Builder setItinerary(Itinerary itinerary) {
             this.itinerary = itinerary;
-            return this;
-        }
-
-        public Builder setModeOfTransportation(ModeOfTransportation modeOfTransportation) {
-            this.modeOfTransportation = modeOfTransportation;
             return this;
         }
 

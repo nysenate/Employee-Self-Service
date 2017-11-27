@@ -45,6 +45,14 @@ public class TravelDestinationView implements ViewObject {
         return address;
     }
 
+    public String getModeOfTransportation() {
+        return modeOfTransportation;
+    }
+
+    public boolean isWaypoint() {
+        return isWaypoint;
+    }
+
     @Override
     public String getViewType() {
         return "travel-destination";
