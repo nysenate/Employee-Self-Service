@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 @XmlRootElement
 @JsonSerialize(using = ListView.ListViewJsonSerializer.class)
@@ -18,17 +18,17 @@ public class ListView<ViewType> implements ViewObject
 {
     @XmlElement public final ImmutableList<ViewType> items;
 
-    public static <ViewType extends ViewObject> ListView<ViewType> of(List<ViewType> items) {
+    public static <ViewType extends ViewObject> ListView<ViewType> of(Collection<ViewType> items) {
         return new ListView<>(items);
     }
-    public static ListView<String> ofStringList(List<String> items) {
+    public static ListView<String> ofStringList(Collection<String> items) {
         return new ListView<>(items);
     }
-    public static ListView<Integer> ofIntList(List<Integer> items) {
+    public static ListView<Integer> ofIntList(Collection<Integer> items) {
         return new ListView<>(items);
     }
 
-    private ListView(List<ViewType> items) {
+    private ListView(Collection<ViewType> items) {
         this.items = items != null ? ImmutableList.copyOf(items) : ImmutableList.of();
     }
 

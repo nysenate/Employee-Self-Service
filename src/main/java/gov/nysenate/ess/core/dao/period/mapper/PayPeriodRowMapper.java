@@ -20,7 +20,7 @@ public class PayPeriodRowMapper extends BaseRowMapper<PayPeriod>
         PayPeriod period = new PayPeriod();
         period.setActive(getStatusFromCode(rs.getString(pfx + "CDSTATUS")));
         period.setType(PayPeriodType.valueOf(rs.getString(pfx + "CDPERIOD")));
-        period.setPayPeriodNum(rs.getInt(pfx + "NUPERIOD"));
+        period.setPayPeriodNum(rs.getString(pfx + "NUPERIOD"));
         period.setStartDate(getLocalDateFromRs(rs, pfx + "DTBEGIN"));
         period.setEndDate(getLocalDateFromRs(rs, pfx + "DTEND"));
         return period;

@@ -1,14 +1,14 @@
 package gov.nysenate.ess.time.service.accrual;
 
 import com.google.common.collect.ImmutableSortedMap;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.model.accrual.AnnualAccSummary;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.SortedSet;
 
 public interface AccrualInfoService
 {
@@ -35,5 +35,13 @@ public interface AccrualInfoService
     List<PayPeriod> getActiveAttendancePeriods(int empId, LocalDate endDate, SortOrder dateOrder);
 
     List<PayPeriod> getOpenPayPeriods(PayPeriodType type, Integer empId, SortOrder dateOrder);
+
+    /**
+     * Get a set of years during which the employee is accruing leave at any time
+     *
+     * @param empId int - employee id
+     * @return SortedSet<Integer>
+     */
+    SortedSet<Integer> getAccrualYears(int empId);
 
 }

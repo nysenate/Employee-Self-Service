@@ -1,1 +1,1 @@
-gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><cki><ck fm=\"Available Programs\" to=\"List Current and Previous Orders\" num=\"41\"/><ck fm=\"Get Access to ESS\" to=\"ess_help_guide.pdf\" num=\"6\"/></cki>";
+gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><cki><ck fm=\"Available Programs\" to=\"Enter and Submit a Requisition Form\" num=\"41\"/><ck fm=\"Display a Previous Shopping Cart Not Submitted\" to=\"ess_help_guide.pdf\" num=\"8\"/></cki>";

@@ -8,7 +8,6 @@ import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
 import org.apache.shiro.authz.Permission;
 import org.springframework.stereotype.Service;
 
-import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.ACCRUAL_PAGES;
 import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.ATTENDANCE_RECORD_PAGES;
 
 /**
@@ -41,7 +40,6 @@ public class EssTimeSenatorPermissionFactory implements PermissionFactory {
     public ImmutableList<Permission> getNonSenatorPermissions() {
         return ImmutableList.<Permission>builder()
                 .add(ATTENDANCE_RECORD_PAGES.getPermission())
-                .add(ACCRUAL_PAGES.getPermission())
                 .build();
     }
 

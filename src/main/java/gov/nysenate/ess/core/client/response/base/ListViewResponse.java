@@ -11,7 +11,7 @@ import gov.nysenate.ess.core.util.LimitOffset;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 @JsonSerialize(using = ListViewResponse.ListViewResponseJsonSerializer.class)
 public class ListViewResponse<ViewType> extends PaginationResponse
@@ -32,32 +32,32 @@ public class ListViewResponse<ViewType> extends PaginationResponse
         }
     }
 
-    public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(List<ViewType> items) {
+    public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(Collection<ViewType> items) {
         return of(items, null,  items.size(), new LimitOffset(items.size()));
     }
 
-    public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(List<ViewType> items, String resultFieldName) {
+    public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(Collection<ViewType> items, String resultFieldName) {
         return of(items, resultFieldName, items.size(), new LimitOffset(items.size()));
     }
 
-    public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(List<ViewType> items, int total, LimitOffset limOff) {
+    public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(Collection<ViewType> items, int total, LimitOffset limOff) {
         return of(items, null, total, limOff);
     }
 
     public static <ViewType extends ViewObject> ListViewResponse<ViewType> of(
-        List<ViewType> items, String resultFieldName, int total, LimitOffset limitOffset) {
+        Collection<ViewType> items, String resultFieldName, int total, LimitOffset limitOffset) {
         return new ListViewResponse<>(ListView.of(items), resultFieldName, total, limitOffset);
     }
 
-    public static ListViewResponse<String> ofStringList(List<String> items, String resultFieldName, int total, LimitOffset limitOffset) {
+    public static ListViewResponse<String> ofStringList(Collection<String> items, String resultFieldName, int total, LimitOffset limitOffset) {
         return new ListViewResponse<>(ListView.ofStringList(items), resultFieldName, total, limitOffset);
     }
 
-    public static ListViewResponse<Integer> ofIntList(List<Integer> items, String resultFieldName) {
+    public static ListViewResponse<Integer> ofIntList(Collection<Integer> items, String resultFieldName) {
         return new ListViewResponse<>(ListView.ofIntList(items), resultFieldName, items.size(), new LimitOffset(items.size()));
     }
 
-    public static ListViewResponse<Integer> ofIntList(List<Integer> items, String resultFieldName, int total, LimitOffset limitOffset) {
+    public static ListViewResponse<Integer> ofIntList(Collection<Integer> items, String resultFieldName, int total, LimitOffset limitOffset) {
         return new ListViewResponse<>(ListView.ofIntList(items), resultFieldName, total, limitOffset);
     }
 

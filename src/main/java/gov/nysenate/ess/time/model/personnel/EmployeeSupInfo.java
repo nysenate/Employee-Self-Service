@@ -150,7 +150,25 @@ public class EmployeeSupInfo
         result.startDate = ObjectUtils.min(this.startDate, other.startDate);
         result.endDate = ObjectUtils.max(this.endDate, other.endDate);
         result.supStartDate = ObjectUtils.min(this.supStartDate, other.supStartDate);
-        result.supEndDate = ObjectUtils.max(this.supEndDate, other.supEndDate);
+
+        /**
+         *   Take the later Supervisor End Date between the two records.
+         *      * For Supervisor End Dates, nulls should be considered later
+         *      * If Supervisor End Date is null, use the null value (not the future date replacing the null for comparison)
+         */
+
+        //result.supEndDate = ObjectUtils.max( Optional.of(this.supEndDate).orElse(DateUtils.THE_FUTURE) , Optional.of(other.supEndDate).orElse(DateUtils.THE_FUTURE) );
+
+        LocalDate supEndDateCur = ObjectUtils.defaultIfNull(this.supEndDate, DateUtils.THE_FUTURE);
+        LocalDate supEndDateOther = ObjectUtils.defaultIfNull(other.supEndDate, DateUtils.THE_FUTURE);
+
+        if (supEndDateCur.isBefore(supEndDateOther)) {
+            result.supEndDate = other.supEndDate;
+        }
+        else {
+            result.supEndDate = this.supEndDate;
+        }
+
         return result;
     }
 

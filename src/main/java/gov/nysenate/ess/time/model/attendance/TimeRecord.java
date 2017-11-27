@@ -276,6 +276,17 @@ public class TimeRecord implements Comparable<TimeRecord>
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Get the pay period number.
+     *
+     * @return String
+     */
+    public String getPayPeriodNum() {
+        return Optional.ofNullable(payPeriod)
+                .map(PayPeriod::getPayPeriodNum)
+                .orElse(null);
+    }
+
     /** --- Basic Getters/Setters --- */
 
     public BigInteger getTimeRecordId() {

@@ -14,10 +14,10 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
     $scope.specialInstructions = null;
 
     $scope.init = function () {
-        var destination = destinationService.getDestination();
-        if (destination != null) {
-            $scope.destinationCode = destination.code;
-            $scope.destinationDescription = destination.locationDescription || "";
+        var savedDest = destinationService.getDestination();
+        if (savedDest != null) {
+            $scope.destination = savedDest;
+            $scope.destinationDescription = savedDest.locationDescription || "";
         }
         supplyCart.initializeCart();
         displayedLineItems = angular.copy(supplyCart.getLineItems());
@@ -50,7 +50,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         var params = {
             customerId: appProps.user.employeeId,
             lineItems: supplyCart.getCartItems(),
-            destinationId: $scope.destinationCode + "-W",
+            destinationId: $scope.destination.locId,
             deliveryMethod: deliveryMethod,
             specialInstructions: $scope.specialInstructions
         };

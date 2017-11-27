@@ -147,7 +147,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 accrualDao.getPeriodAccruals(empId, endDate, LimitOffset.ALL, SortOrder.ASC);
 
         // Get existing accrual records
-        TreeMap<PayPeriod, PeriodAccSummary> resultMap = getRelevantAccruals(periodAccruals, periodSet);
+        TreeMap<PayPeriod, PeriodAccSummary> resultMap = getRelevantAccruals(empId, periodAccruals, periodSet);
 
         // Get a set of pay periods that need to be computed
         TreeSet<PayPeriod> remainingPeriods = getMissingPeriods(resultMap, periodSet);
@@ -259,14 +259,19 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
     /**
      * Return period accruals that intersect with the given set of pay periods
+     * @param empId int - Employee id
      * @param periodAccruals TreeMap<PayPeriod, PeriodAccSummary>
      * @param payPeriods desired pay periods
      * @return TreeMap<PayPeriod, PeriodAccSummary>
      */
-    private TreeMap<PayPeriod, PeriodAccSummary> getRelevantAccruals(
+    private TreeMap<PayPeriod, PeriodAccSummary> getRelevantAccruals(int empId,
             TreeMap<PayPeriod, PeriodAccSummary> periodAccruals, SortedSet<PayPeriod> payPeriods) {
+        RangeSet<LocalDate> employedAnnualEmploymentDates =
+                getEmployedAnnualEmploymentDates(empTransService.getTransHistory(empId));
         return periodAccruals.values().stream()
                 .filter(perAccSumm -> payPeriods.contains(perAccSumm.getPayPeriod()))
+                .filter(perAccSumm ->
+                        employedAnnualEmploymentDates.intersects(perAccSumm.getPayPeriod().getDateRange()))
                 .peek(perAccSumm -> perAccSumm.setExpectedTotalHours(
                         txExpectedHoursService.getExpectedHours(perAccSumm.getEmpId(), perAccSumm.getPayPeriod())))
                 .collect(Collectors.toMap(PeriodAccSummary::getPayPeriod, Function.identity(),

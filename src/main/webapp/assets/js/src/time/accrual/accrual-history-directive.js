@@ -1,11 +1,11 @@
 
 angular.module('essTime')
     .directive('accrualHistory', ['$timeout', '$rootScope', 'appProps', 'modals',
-                                  'AccrualHistoryApi', 'EmpInfoApi', 'ActiveYearsTimeRecordsApi',
+                                  'AccrualHistoryApi', 'EmpInfoApi', 'AccrualActiveYearsApi',
                                   accrualHistoryDirective]);
 
 function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
-                                 AccrualHistoryApi, EmpInfoApi, ActiveYearsTimeRecordsApi) {
+                                 AccrualHistoryApi, EmpInfoApi, AccrualActiveYearsApi) {
     return {
         scope: {
             /**
@@ -105,7 +105,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                 var params = {empId: $scope.empId};
                 console.debug('getting active years', params);
                 $scope.request.empActiveYears = true;
-                ActiveYearsTimeRecordsApi.get(params,
+                AccrualActiveYearsApi.get(params,
                     function onSuccess(resp) {
                         $scope.activeYears = resp.years.reverse();
                         // Filter active years if looking at someone else's record
@@ -157,11 +157,10 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                 AccrualHistoryApi.get(params,
                     function onSuccess (resp) {
                         $scope.error = null;
-                        // Filter out projection records and order in reverse chronological
+                        // Filter out record that shouldn't be shown and order in reverse chronological
                         $scope.accSummaries[year] = resp.result
-                            .filter(function(acc) {
-                                return !acc.computed || acc.submitted;
-                            }).reverse();
+                            .filter(shouldDisplayRecord)
+                            .reverse();
                     }, function onFail (resp) {
                         modals.open('500', {details: resp});
                         console.error('error loading accrual history', resp);
@@ -236,6 +235,26 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
              */
             function clearAccSummaries () {
                 $scope.accSummaries = {};
+            }
+
+            /**
+             * Predicate returning true iff the given accrual record should be displayed
+             * @param accrualRecord
+             */
+            function shouldDisplayRecord(accrualRecord) {
+                var displayRecord = true;
+
+                // Record must be non-computed or be covered by submitted timesheets
+                displayRecord = displayRecord && (!accrualRecord.computed || accrualRecord.submitted);
+
+                if (accrualRecord.empState) {
+                    // Employee must not be temporary
+                    displayRecord = displayRecord && accrualRecord.empState.payType !== 'TE';
+                    // Employee must be active
+                    displayRecord = displayRecord && accrualRecord.empState.employeeActive;
+                }
+
+                return displayRecord;
             }
 
             /* --- Angular smart table hacks --- */

@@ -27,7 +27,7 @@
       <div class="content-info" style="border-bottom: none;">
         <div class="padding-10" style="display: flex; justify-content: space-between;">
           <div style="display: inline-block;">
-            <span class="supply-text">Destination: </span>{{destinationCode}} ({{destinationDescription}})
+            <span class="supply-text">Destination: </span>{{destination.locId}} ({{destinationDescription}})
           </div>
         </div>
       </div>
