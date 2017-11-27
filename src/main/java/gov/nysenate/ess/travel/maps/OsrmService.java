@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.maps;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gov.nysenate.ess.core.model.unit.Address;
@@ -17,14 +18,6 @@ public class OsrmService implements MapInterface {
 
         List<String> tripRouteCoordinates = addressesToCoordinates(tripRoute);
 
-        tripDistance.setTripDistanceTotal(getResponse(tripRouteCoordinates));
-        tripRouteCoordinates.remove(tripRouteCoordinates.size() - 1);
-        tripDistance.setTripDistanceOut(getResponse(tripRouteCoordinates));
-
-        return tripDistance;
-    }
-
-    private double getResponse(List<String> tripRouteCoordinates) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://router.project-osrm.org/route/v1/driving/";
         for (int i = 0; i < tripRouteCoordinates.size(); i++) {
@@ -41,11 +34,18 @@ public class OsrmService implements MapInterface {
 
             // returns distance in meters
             // divide by 1609.344 to get miles
-            return jsonObject.get("routes").getAsJsonArray().get(0).getAsJsonObject().get("distance").getAsDouble() / 1609.344;
+            double totalDist = jsonObject.get("routes").getAsJsonArray().get(0).getAsJsonObject().get("distance").getAsDouble() / 1609.344;
+            tripDistance.setTripDistanceTotal(totalDist);
+
+            // get distance between last destination and the trip origin
+            JsonArray legs = jsonObject.get("routes").getAsJsonArray().get(0).getAsJsonObject().get("legs").getAsJsonArray();
+            double distOut = totalDist - legs.get(legs.size()-1).getAsJsonObject().get("distance").getAsDouble() / 1609.344;
+            tripDistance.setTripDistanceOut(distOut);
         } catch (Exception e) {
             e.printStackTrace();
-            return 0;
+            return null;
         }
+        return tripDistance;
     }
 
     private List<String> addressesToCoordinates(List<Address> addresses) {

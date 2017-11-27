@@ -23,5 +23,6 @@ public class OsrmServiceTest extends BaseTest {
         destinations.add(new Address("Chicken Joe's Albany, 486 Yates St, Albany, NY 12208"));
         destinations.add(new Address("515 Loudon Road Loudonville, NY, 12211"));
         System.out.println(osrmService.getTripDistance(destinations).getTripDistanceTotal());
+        System.out.println(osrmService.getTripDistance(destinations).getTripDistanceOut());
     }
 }
