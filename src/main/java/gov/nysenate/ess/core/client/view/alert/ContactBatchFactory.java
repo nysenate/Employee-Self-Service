@@ -69,11 +69,31 @@ public class ContactBatchFactory {
     private static BatchContactList createBatchContactList(Set<Employee> employees, Map<Integer, AlertInfo> alertInfoMap) {
         BatchContactList contactList = new BatchContactList();
         for (Employee emp: employees) {
-            if (emp.getUid() != null) {
+            if (isEmployeeInitialized(emp)) {
                 contactList.addContact(createContact(emp, alertInfoMap.get(emp.getEmployeeId())));
             }
         }
         return contactList;
+    }
+
+    /**
+     * Don't include employees in the dump if their information is incomplete in our system.
+     * This should only include new employees while their info is being populated.
+     *
+     * @return true if this employee has been completely entered into our system, false otherwise.
+     * An initialized employee should have a Uid, name, job title, resp center, resp center head,
+     * agency, and work address.
+     */
+    private static boolean isEmployeeInitialized(Employee emp) {
+        return emp.getUid() != null
+                && emp.getFirstName() != null
+                && emp.getLastName() != null
+                && emp.getJobTitle() != null
+                && emp.getRespCenter() != null
+                && emp.getRespCenter().getHead() != null
+                && emp.getRespCenter().getAgency() != null
+                && emp.getWorkLocation() != null
+                && emp.getWorkLocation().getAddress() != null;
     }
 
     private static Contact createContact(Employee emp, AlertInfo alertInfo) {
