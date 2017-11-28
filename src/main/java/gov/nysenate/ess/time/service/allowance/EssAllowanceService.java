@@ -149,29 +149,30 @@ public class EssAllowanceService implements AllowanceService {
                                                             TransactionHistory transHistory,
                                                             LocalDate beforeDate) {
         int year = allowanceUsage.getYear();
-        Range<LocalDate> yearRange = DateUtils.yearDateRange(year);
 
         List<HourlyWorkPayment> payments = getHourlyPayments(year, transHistory);
 
-        // Generate a range set including all dates where the employee was not a temporary employee
-        RangeSet<LocalDate> nonTempEmploymentDates = transHistory.getPayTypeDates(payType -> payType != PayType.TE);
+        RangeSet<LocalDate> tempEmploymentDates = transHistory.getPayTypeDates(payType -> payType == PayType.TE);
+        RangeSet<LocalDate> activeEmploymentDates = transHistory.getActiveDates();
 
-        // Initialize unpaid dates as entire year, paid dates will be removed as we iterate through payments
-        RangeSet<LocalDate> unpaidDates = TreeRangeSet.create();
-        unpaidDates.add(yearRange);
-        // Remove all dates from beforeDate on
-        unpaidDates.remove(Range.atLeast(beforeDate));
-        // Remove all dates where the employee was not a temporary employee
-        unpaidDates.removeAll(nonTempEmploymentDates);
+        // Initialize unpaid dates as all TE employed dates in the year before beforeDate
+        RangeSet<LocalDate> unpaidDates = RangeUtils.intersection(Arrays.asList(
+                ImmutableRangeSet.of(DateUtils.yearDateRange(year)),
+                ImmutableRangeSet.of(Range.lessThan(beforeDate)),
+                tempEmploymentDates,
+                activeEmploymentDates
+        ));
 
         BigDecimal hoursPaid = ZERO;
         BigDecimal moneyPaid = ZERO;
 
         // Add up hourly work payments to get the total hours/money paid for the year
         for (HourlyWorkPayment payment : payments) {
-            unpaidDates.remove(payment.getWorkingRange());
-            hoursPaid = hoursPaid.add(payment.getHoursPaid());
-            moneyPaid = moneyPaid.add(payment.getMoneyPaidForYear(year));
+            if (payment.getEndDate().isBefore(beforeDate)) {
+                unpaidDates.remove(payment.getWorkingRange());
+                hoursPaid = hoursPaid.add(payment.getHoursPaid());
+                moneyPaid = moneyPaid.add(payment.getMoneyPaidForYear(year));
+            }
         }
         allowanceUsage.setBaseHoursUsed(hoursPaid);
         allowanceUsage.setBaseMoneyUsed(moneyPaid);
@@ -255,12 +256,19 @@ public class EssAllowanceService implements AllowanceService {
 
         attendRecs.stream()
                 .filter(record -> unpaidDates.encloses(record.getDateRange()))
-                .forEach(record -> getAttendRecordAllowanceUsage(allowanceUsage, record));
-        for (AttendanceRecord attendRec : attendRecs) {
-            Pair<BigDecimal, BigDecimal> usage = getAttendRecordAllowanceUsage(allowanceUsage, attendRec);
-            allowanceUsage.setRecordHoursUsed(allowanceUsage.getRecordHoursUsed().add(usage.getLeft()));
-            allowanceUsage.setRecordMoneyUsed(allowanceUsage.getRecordMoneyUsed().add(usage.getRight()));
-        }
+                .forEach(record -> applyAttendRecordAllowanceUsage(record, allowanceUsage));
+    }
+
+    /**
+     * Applies hours from an attendance record to the given allowance usage
+     *
+     * @param attendRecord {@link AttendanceRecord}
+     * @param allowanceUsage {@link AllowanceUsage}
+     */
+    private void applyAttendRecordAllowanceUsage(AttendanceRecord attendRecord, AllowanceUsage allowanceUsage) {
+        Pair<BigDecimal, BigDecimal> usage = getAttendRecordAllowanceUsage(allowanceUsage, attendRecord);
+        allowanceUsage.setRecordHoursUsed(allowanceUsage.getRecordHoursUsed().add(usage.getLeft()));
+        allowanceUsage.setRecordMoneyUsed(allowanceUsage.getRecordMoneyUsed().add(usage.getRight()));
     }
 
     /**
