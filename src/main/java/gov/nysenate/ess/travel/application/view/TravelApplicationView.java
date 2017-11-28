@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class TravelApplicationView implements ViewObject {
 
     private int id;
-    private EmployeeView applicant;
+    private EmployeeView traveler;
     private TravelAllowancesView allowances;
     private String totalAllowance;
     private ItineraryView itinerary;
@@ -30,7 +30,7 @@ public class TravelApplicationView implements ViewObject {
     public TravelApplicationView(TravelApplication ta) {
         // TODO: Prob need null checks here
         this.id = ta.getId();
-        this.applicant = new EmployeeView(ta.getApplicant());
+        this.traveler = new EmployeeView(ta.getTraveler());
         this.allowances = new TravelAllowancesView(ta.getAllowances());
         this.totalAllowance = ta.totalAllowance().toString();
         this.itinerary = new ItineraryView(ta.getItinerary());
@@ -46,7 +46,7 @@ public class TravelApplicationView implements ViewObject {
     public TravelApplication.Builder toTravelApplicationBuilder() {
         return TravelApplication.Builder()
                 .setId(id)
-                .setApplicant(applicant.toEmployee())
+                .setTraveler(traveler.toEmployee())
                 .setAllowances(allowances.toTravelAllowances())
                 .setItinerary(itinerary.toItinerary())
                 .setStatus(TravelApplicationStatus.valueOf(status))
@@ -61,8 +61,8 @@ public class TravelApplicationView implements ViewObject {
         return id;
     }
 
-    public EmployeeView getApplicant() {
-        return applicant;
+    public EmployeeView getTraveler() {
+        return traveler;
     }
 
     public TravelAllowancesView getAllowances() {

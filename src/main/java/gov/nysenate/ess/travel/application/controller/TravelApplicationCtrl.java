@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.application.controller;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.travel.application.model.TravelApplication;
@@ -17,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,9 +35,14 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitTravelApplication(@RequestBody NewTravelApplicationView newTravelApp) {
         // TODO check permissions, subject has permission to create an app for newTravelApp.applicantEmpId.
+        // - Verify logged in user can submit application for traveler
         TravelApplication app = newTravelApp.toTravelApplicationBuilder()
-                .setApplicant(employeeInfoService.getEmployee(newTravelApp.getApplicantEmpId()))
+                .setTraveler(employeeInfoService.getEmployee(newTravelApp.getTravelerEmpId()))
                 .setCreatedBy(employeeInfoService.getEmployee(ShiroUtils.getAuthenticatedEmpId()))
+                .setCreatedDateTime(LocalDateTime.now())
+                .setModifiedBy(employeeInfoService.getEmployee(newTravelApp.getTravelerEmpId()))
+                .setModifiedDateTime(LocalDateTime.now())
+                .setStatus(TravelApplicationStatus.SUBMITTED)
                 .build();
 
         travelAppService.submitTravelApplication(app);

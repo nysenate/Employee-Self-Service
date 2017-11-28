@@ -19,7 +19,7 @@ function destSelectionCtrl($scope, modals) {
         address: undefined,
         arrivalDate: undefined,
         departureDate: undefined,
-        modeOfTransportation: modals.params().defaultModeOfTransportation,
+        modeOfTransportation: undefined,
         isWaypoint: false
     };
 
@@ -44,4 +44,15 @@ function destSelectionCtrl($scope, modals) {
     $scope.cancel = function () {
         modals.reject();
     };
+
+    $scope.init = function() {
+        if (modals.params().destination) {
+            $scope.destination = modals.params().destination;
+        }
+        else if(modals.params().defaultModeOfTransportation) {
+            $scope.destination.modeOfTransportation = modals.params().defaultModeOfTransportation;
+        }
+    };
+
+    $scope.init();
 }

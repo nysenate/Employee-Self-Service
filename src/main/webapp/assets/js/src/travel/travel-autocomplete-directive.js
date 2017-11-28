@@ -17,17 +17,19 @@ essTravel.directive('travelAutocomplete', ['appProps', function (appProps) {
     return {
         restrict: 'A',
         scope: {
-            callback: '&'
+            callback: '&',
+            address: '@'
         },
         link: function ($scope, $elem, $attrs) {
             var element = $elem[0];
             var autocomplete = new google.maps.places.Autocomplete(
-                element, { types: ['geocode'] });
+                element, { types: ['address'] });
 
             autocomplete.addListener('place_changed', function() {
                 var address = {};
                 var place = autocomplete.getPlace();
 
+                address.formatted_address = place.formatted_address; // TODO cant use this, wont have it once saved to back end.
                 address.addr1 = parseAddress1(place);
                 address.city = parseCity(place);
                 address.state = parseState(place);
@@ -35,6 +37,11 @@ essTravel.directive('travelAutocomplete', ['appProps', function (appProps) {
 
                 $scope.callback({address: address});
             });
+
+            // TODO init autocomplete with address attr. Below code does not work
+            if ($attrs.address) {
+                autocomplete.notify("place_changed", $attrs.address);
+            }
 
             function parseAddress1(place) {
                 return getTypeName(place, 'street_number') + ' ' + getTypeName(place, 'route');

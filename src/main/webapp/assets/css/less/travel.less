@@ -9,15 +9,35 @@
 }
 
 .travel-location-div {
-  .clearfix;
+  display: inline-block;
+  width: 80%;
   margin: 10px auto;
   padding: 5px;
   height: 50px;
   text-align: center;
   line-height: 20px;
-  background: #E8E8E8;
+  background: #F6F6F6;
   border-radius: 5px;
+  div {
+    width: calc(80% / 3);
+    display:inline-block;
+    text-align: center;
+    vertical-align: top;
+  }
 }
+
+.travel-location-edit {
+  position: relative;
+  display: inline-block;
+  div {
+    position: absolute;
+    display: inline-block;
+    height: 0px;
+    width: 0px;
+    cursor: pointer;
+  }
+}
+
 
 .travel-table {
   width: 100%;
@@ -50,6 +70,7 @@
   display: inline-block;
   width: 120px;
   text-align: right;
+  margin-bottom: 10px;
 }
 
 .travel-gray-bottom-border {

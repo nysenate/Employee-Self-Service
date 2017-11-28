@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelApplication;
 
 /**
@@ -9,7 +8,7 @@ import gov.nysenate.ess.travel.application.model.TravelApplication;
  */
 public class NewTravelApplicationView implements ViewObject {
 
-    private int applicantEmpId;
+    private int travelerEmpId;
     private TravelAllowancesView allowances;
     private ItineraryView itinerary;
     private String purposeOfTravel;
@@ -25,8 +24,8 @@ public class NewTravelApplicationView implements ViewObject {
     }
 
 
-    public int getApplicantEmpId() {
-        return applicantEmpId;
+    public int getTravelerEmpId() {
+        return travelerEmpId;
     }
 
     public TravelAllowancesView getAllowances() {

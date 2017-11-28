@@ -38,7 +38,7 @@ public class InMemoryTravelApplicationDao {
 
     public List<TravelApplication> getTravelApplicationsByEmpId(int empId) {
         return travelApplications.stream()
-                .filter(r -> r.getApplicant().getEmployeeId() == empId)
+                .filter(r -> r.getTraveler().getEmployeeId() == empId)
                 .collect(Collectors.toList());
     }
 
@@ -77,7 +77,7 @@ public class InMemoryTravelApplicationDao {
     private TravelApplication stubApplication(int id, TravelApplicationStatus status) {
         return TravelApplication.Builder()
                 .setId(id)
-                .setApplicant(employeeInfoService.getEmployee(11168))
+                .setTraveler(employeeInfoService.getEmployee(11168))
                 .setAllowances(randomAllowances())
                 .setItinerary(itinerary())
                 .setStatus(status)

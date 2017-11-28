@@ -30,7 +30,7 @@ public class TravelApplicationTest {
                 LocalDate.now(), LocalDate.now(), address, ModeOfTransportation.PERSONAL_AUTO)));
 
         builder = TravelApplication.Builder()
-                .setApplicant(emp)
+                .setTraveler(emp)
                 .setAllowances(allowances)
                 .setItinerary(itinerary)
                 .setCreatedBy(emp);
@@ -38,12 +38,12 @@ public class TravelApplicationTest {
 
     @Test(expected = NullPointerException.class)
     public void nullApplicant_isInvalid() {
-        builder.setApplicant(null).build();
+        builder.setTraveler(null).build();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void emptyApplicant_isInvalid() {
-        builder.setApplicant(new Employee()).build();
+        builder.setTraveler(new Employee()).build();
     }
 
     @Test(expected = NullPointerException.class)

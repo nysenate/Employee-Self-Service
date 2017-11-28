@@ -12,25 +12,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class TravelApplication {
 
     private int id;
-    private Employee applicant;
+    private Employee traveler;
     private TravelAllowances allowances;
     private Itinerary itinerary;
     private TravelApplicationStatus status;
     private String purposeOfTravel;
 
+    // Do we need createdBy, createdByDateTime? What use case requires this?
     private Employee createdBy;
     private LocalDateTime createdDateTime;
     private Employee modifiedBy;
     private LocalDateTime modifiedDateTime;
 
     private TravelApplication(Builder builder) {
-        checkNotNull(builder.applicant);
+        checkNotNull(builder.traveler);
         checkNotNull(builder.allowances);
         checkNotNull(builder.itinerary);
         checkNotNull(builder.createdBy);
-        checkArgument(!builder.applicant.isEmpty());
+        checkArgument(!builder.traveler.isEmpty());
         this.id = builder.id;
-        this.applicant = builder.applicant;
+        this.traveler = builder.traveler;
         this.allowances = builder.allowances;
         this.itinerary = builder.itinerary;
         this.status = builder.status;
@@ -67,8 +68,8 @@ public class TravelApplication {
         return id;
     }
 
-    public Employee getApplicant() {
-        return applicant;
+    public Employee getTraveler() {
+        return traveler;
     }
 
     public TravelAllowances getAllowances() {
@@ -109,7 +110,7 @@ public class TravelApplication {
 
     public static class Builder {
         private int id;
-        private Employee applicant;
+        private Employee traveler;
         private TravelAllowances allowances;
         private Itinerary itinerary;
         private TravelApplicationStatus status;
@@ -129,8 +130,8 @@ public class TravelApplication {
             return this;
         }
 
-        public Builder setApplicant(Employee applicant) {
-            this.applicant = applicant;
+        public Builder setTraveler(Employee traveler) {
+            this.traveler = traveler;
             return this;
         }
 
