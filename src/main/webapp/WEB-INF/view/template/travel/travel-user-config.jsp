@@ -5,7 +5,7 @@
 
   <div>
     <div class="content-container content-controls">
-      <p class="content-info">Grant another person the ability to file a travel request for you</p>
+      <div class="content-info bold">Grant another person the ability to file a travel request for you</div>
       <div class="padding-10" ng-show="currentGrantee.startDate">
         <b>Current Requester:</b> {{currentGrantee.requestorId}}, from {{currentGrantee.startDate}} to {{currentGrantee.endDate}}
       </div>
@@ -36,15 +36,12 @@
                 <label for="requester-permanent-box">Permanent?</label>
               </td>
               <td>
-
-                <!-- TODO to-date and from-date are not working. Able to select end date before start-->
-
                 <div class="horizontal-input-group">
                   <input id="grant-start-date" ng-checked="granteeInfo.startDate"
                          ng-disabled="granteeInfo.permanent" type="checkbox" ng-click="setStartDate()"/>
                   <label for="grant-start-date">Set Start Date</label>
                   <input ng-model="granteeInfo.startDate" to-date="granteeInfo.endDate"
-                         ng-disabled="granteeInfo.permanent"
+                         ng-disabled="granteeInfo.permanent" id="requester-start-datepicker"
                          style="width:100px" type="text" datepicker/>
                 </div>
               </td>
@@ -53,7 +50,7 @@
                   <input id="grant-end-date" ng-checked="granteeInfo.endDate"
                          ng-disabled="granteeInfo.permanent" type="checkbox" ng-click="setEndDate()"/>
                   <label for="grant-end-date">Set End Date</label>
-                  <input ng-disabled="granteeInfo.permanent"
+                  <input ng-disabled="granteeInfo.permanent" id="requester-end-datepicker"
                          ng-model="granteeInfo.endDate" from-date="granteeInfo.startDate"
                          style="width:100px" type="text" datepicker/>
                 </div>
@@ -64,8 +61,9 @@
 
         <hr/>
         <div class="content-info" style="text-align: center;">
-          <input type="button" class="time-neutral-button" value="Discard Changes" ng-click="reset()"/>
+          <input type="button" class="neutral-button" value="Discard Changes" ng-click="reset()"/>
           <input type="button" class="submit-button" ng-disabled="formNotFilledOut()" ng-click="saveGrants()" value="Grant Requester Access"/>
+          <input type="button" class="reject-button" ng-show="currentGrantee.startDate" ng-click="deleteRequester()" value="Delete Requester"/>
         </div>
       </div>
     </div>

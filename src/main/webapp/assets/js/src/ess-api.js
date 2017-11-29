@@ -231,6 +231,11 @@ essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resou
 essApi.factory('TravelUserConfigSaveApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/user/config/save')
 }]);
+
+essApi.factory('TravelUserConfigDeleteApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/user/config/delete')
+}]);
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {

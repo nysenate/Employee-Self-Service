@@ -41,8 +41,14 @@ public class TravelUserConfigCtrl extends BaseRestApiCtrl {
     public BaseResponse updateOrInsertRequestor(@RequestParam int empId,
                                                 @RequestParam int requestorId,
                                                 @RequestParam Date startDate,
-                                                @RequestParam Date endDate) {
+                                                @RequestParam(required = false) Date endDate) {
         sqlUserConfigDao.updateRequestorInfoById(empId, requestorId, startDate, endDate);
         return new SimpleResponse(true, "Requestor has been updated", "updated requestor");
+    }
+
+    @RequestMapping(value = "/delete", method = POST)
+    public BaseResponse deleteRequesterById(@RequestParam int empId){
+        sqlUserConfigDao.deleteRequesterById(empId);
+        return new SimpleResponse(true, "Requester has been deleted", "deleted requester");
     }
 }

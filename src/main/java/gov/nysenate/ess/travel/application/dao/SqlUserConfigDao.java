@@ -57,6 +57,17 @@ public class SqlUserConfigDao extends SqlBaseDao {
        localNamedJdbc.batchUpdate(sql, batchParams);
    }
 
+    public void deleteRequesterById(int empId) {
+       MapSqlParameterSource params = new MapSqlParameterSource().addValue("empId", empId);
+       List<SqlParameterSource> paramList = new ArrayList<>();
+       paramList.add(params);
+
+       String sql = SqlUserConfigDaoQuery.DELETE_REQUESTER_INFO.getSql(schemaMap());
+       SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
+       batchParams = paramList.toArray(batchParams);
+       localNamedJdbc.batchUpdate(sql, batchParams);
+    }
+
     private enum SqlUserConfigDaoQuery implements BasicSqlQuery {
         GET_REQUESTOR_INFO(
                 "SELECT * FROM ${travelSchema}.travel_requestors WHERE emp_id=:empId"
@@ -69,6 +80,10 @@ public class SqlUserConfigDao extends SqlBaseDao {
         INSERT_REQUESTOR_INFO(
                 "INSERT INTO ${travelSchema}.travel_requestors\n" +
                         "VALUES (:empId, :requestorId, :startDate, :endDate)"
+        ),
+        DELETE_REQUESTER_INFO(
+                "DELETE FROM ${travelSchema}.travel_requestors\n" +
+                        "WHERE emp_id=:empId"
         );
 
 

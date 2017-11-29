@@ -1,7 +1,9 @@
 var essTravel = angular.module('essTravel');
-essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi', 'TravelUserConfigApi', 'TravelUserConfigSaveApi', 'modals', userConfigCtrl]);
+essTravel.controller('UserConfigCtrl', ['$scope', 'appProps', 'ActiveEmployeeApi', 'TravelUserConfigApi',
+                                        'TravelUserConfigSaveApi', 'TravelUserConfigDeleteApi', 'modals', userConfigCtrl]);
 
-function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi, TravelUserConfigSaveApi, modals) {
+function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi, TravelUserConfigSaveApi,
+                        TravelUserConfigDeleteApi, modals) {
 
     $scope.dataLoaded = false;
     $scope.empId = appProps.user.employeeId;
@@ -39,6 +41,18 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
         TravelUserConfigApi.get({empId: $scope.empId}, function (resp) {
             if (resp.success) {
                 $scope.currentGrantee = resp.result;
+                console.log(resp.result);
+
+                if(resp.result.startDate != null) {
+                    $('#requester-start-datepicker').val(moment(resp.result.startDate).format('MM/DD/YYYY'));
+                }
+                if(resp.result.endDate == null){
+                    $scope.granteeInfo.permanent = true;
+                }
+                else {
+                    $('#requester-end-datepicker').val(moment(resp.result.endDate).format('MM/DD/YYYY'));
+                }
+
             }
         }).$promise.then(function (resp) {
             // Link up with any existing grants
@@ -54,13 +68,17 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
     };
 
     $scope.formNotFilledOut = function() {
-        return !($scope.granteeInfo.selectedGrantee &&
-            ($scope.granteeInfo.permanent || ($scope.granteeInfo.startDate && $scope.granteeInfo.endDate)));
+        return !($scope.granteeInfo.selectedGrantee && $scope.granteeInfo.startDate
+            && ($scope.granteeInfo.permanent || $scope.granteeInfo.endDate));
+    };
+
+    $scope.deleteRequester = function(){
+        TravelUserConfigDeleteApi.save({empId: $scope.empId}, {}, function(resp){
+            console.log(resp);
+        });
     };
 
     $scope.saveGrants = function(){
-        console.log('saving');
-
         var params = {
             empId: $scope.empId,
             requestorId: $scope.granteeInfo.selectedGrantee.empId,
@@ -79,9 +97,7 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
     $scope.setPermanent = function(){
         if($scope.granteeInfo.permanent){
             $scope.granteeInfo.startDate = moment().format('MM/DD/YYYY');
-
-            // TODO: make this permanent
-            $scope.granteeInfo.endDate = moment().add({years: 1}).format('MM/DD/YYYY');
+            $scope.granteeInfo.endDate = null;
         }
         else {
             $scope.granteeInfo.startDate = null;
@@ -90,16 +106,26 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
     };
 
     $scope.setStartDate = function(){
-        $scope.granteeInfo.startDate = moment().format('MM/DD/YYYY');
+        if(document.getElementById('grant-start-date').checked) {
+            $scope.granteeInfo.startDate = moment().format('MM/DD/YYYY');
+        }
+        else {
+            $scope.granteeInfo.startDate = null;
+        }
     };
 
     $scope.setEndDate = function(){
-        $scope.granteeInfo.endDate = moment().format('MM/DD/YYYY');
+        if(document.getElementById('grant-end-date').checked) {
+            $scope.granteeInfo.endDate = moment().format('MM/DD/YYYY');
+        }
+        else {
+            $scope.granteeInfo.endDate = null;
+        }
     };
 
     $scope.reset = function() {
         $scope.granteeInfo = {
-            selectedGrantee: null,
+            selectedGrantee: $scope.currentGrantee.empId,
             granted: false,
             startDate: null,
             endDate: null,
