@@ -3,7 +3,8 @@ package gov.nysenate.ess.travel.allowance.gsa.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRates;
+import gov.nysenate.ess.travel.allowance.gsa.dao.SqlMealIncidentalRatesDao;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -29,7 +30,7 @@ public class GsaClient {
     };
 
     private JsonObject records;
-    private MealIncidentalRates mealIncidentalRates;
+    private MealIncidentalRate mealIncidentalRate;
     private int lodging;
 
     public GsaClient(int fiscalYear, String zipcode) {
@@ -56,8 +57,16 @@ public class GsaClient {
             records = jsonParser.parse(responseBody).getAsJsonObject();
             records = records.get("result").getAsJsonObject().get("records").getAsJsonArray().get(0).getAsJsonObject();
 
-            String meals = records.get("Meals").getAsString();
-            mealIncidentalRates = Enum.valueOf(MealIncidentalRates.class, "$" + meals);
+            int meals = records.get("Meals").getAsInt();
+
+            SqlMealIncidentalRatesDao sqlMealIncidentalRatesDao = new SqlMealIncidentalRatesDao();
+            MealIncidentalRate[] dbRates = sqlMealIncidentalRatesDao.getMealIncidentalRates();
+            for (MealIncidentalRate dbRate : dbRates) {
+                if(meals == dbRate.getTotalCost()){
+                    mealIncidentalRate = dbRate;
+                    break;
+                }
+            }
         }
 
         try {
@@ -79,18 +88,14 @@ public class GsaClient {
     }
 
     public int getBreakfastCost() {
-        return mealIncidentalRates.getBreakfastCost();
+        return mealIncidentalRate.getBreakfastCost();
     }
 
     public int getDinnerCost() {
-        return mealIncidentalRates.getDinnerCost();
+        return mealIncidentalRate.getDinnerCost();
     }
 
     public int getIncidentalCost() {
-        return mealIncidentalRates.getIncidentalCost();
-    }
-
-    public JsonObject getRecords() {
-        return records;
+        return mealIncidentalRate.getIncidentalCost();
     }
 }

@@ -91,8 +91,8 @@ public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealInciden
 
         @Override
         public MealIncidentalRate mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new MealIncidentalRate(rs.getInt("totalCost"), rs.getInt("breakfastCost"),
-                    rs.getInt("dinnerCost"), rs.getInt("incidentalCost"));
+            return new MealIncidentalRate(rs.getInt("total_cost"), rs.getInt("breakfast_cost"),
+                    rs.getInt("dinner_cost"), rs.getInt("incidental_cost"));
         }
     }
 }
