@@ -71,34 +71,4 @@ public class TravelDestinationTest {
                 validDate.plusDays(7));
         assertEquals(expected, actual);
     }
-
-    @Test
-    public void singleDayStay_isOneDay() {
-        TravelDestination destination = new TravelDestination(validDate, validDate, validAddress, personalAuto);
-        assertEquals(1, destination.numDays());
-    }
-
-    @Test
-    public void weekStay_is8Days() {
-        TravelDestination destination = new TravelDestination(validDate, validDate.plusDays(7), validAddress, personalAuto);
-        assertEquals(8, destination.numDays());
-    }
-
-    @Test (expected = ArithmeticException.class)
-    public void lengthOfStayGreaterThanMaxInt_throwException() {
-        TravelDestination destination = new TravelDestination(LocalDate.MIN, validDate, validAddress, personalAuto);
-        destination.numDays();
-    }
-
-    @Test
-    public void singleDayStay_hasZeroNights() {
-        TravelDestination destination = new TravelDestination(validDate, validDate, validAddress, personalAuto);
-        assertEquals(0, destination.numNights());
-    }
-
-    @Test
-    public void weekStay_is7Nights() {
-        TravelDestination destination = new TravelDestination(validDate, validDate.plusDays(7), validAddress, personalAuto);
-        assertEquals(7, destination.numNights());
-    }
 }

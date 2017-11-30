@@ -56,20 +56,6 @@ public final class TravelDestination {
         return dates;
     }
 
-    /**
-     * @return The number of days at a destination.
-     */
-    public int numDays() {
-        return numNights() + 1;
-    }
-
-    /**
-     * @return The number of nights at a destination.
-     */
-    public int numNights() {
-        return toIntExact(DAYS.between(getArrivalDate(), getDepartureDate()));
-    }
-
     public LocalDate getArrivalDate() {
         return arrivalDate;
     }

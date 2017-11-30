@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 @Service
@@ -13,6 +14,12 @@ public class IrsRateService {
 
     @Autowired
     IrsRateDao irsRateDao;
+
+    @PostConstruct
+    public void postConstruct() {
+        // Ensure the database has an initialized value.
+        this.scrapeAndUpdate();
+    }
 
     public double webScrapeIrsRate() throws IOException{
         Document doc = Jsoup.connect("https://www.irs.gov/tax-professionals/standard-mileage-rates").get();

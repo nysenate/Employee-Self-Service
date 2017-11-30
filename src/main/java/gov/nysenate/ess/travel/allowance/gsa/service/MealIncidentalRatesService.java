@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -16,6 +17,12 @@ import java.util.Arrays;
 public class MealIncidentalRatesService {
 
     @Autowired MealIncidentalRatesDao mealIncidentalRatesDao;
+
+    @PostConstruct
+    public void postConstruct() {
+        // Ensure the database has an initialized value.
+        this.scrapeAndUpdate();
+    }
 
     @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate(){
