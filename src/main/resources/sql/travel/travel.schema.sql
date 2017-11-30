@@ -44,14 +44,27 @@ ALTER TABLE irs_rate OWNER TO postgres;
 --
 
 CREATE TABLE meal_incidental_rates (
-    "totalCost" money NOT NULL,
-    "breakfastCost" money NOT NULL,
-    "diinnerCost" money NOT NULL,
-    "incidentalCost" money NOT NULL
+    "total_cost" integer NOT NULL,
+    "breakfast_cost" integer NOT NULL,
+    "dinner_cost" integer NOT NULL,
+    "incidental_cost" integer NOT NULL
 );
 
 
 ALTER TABLE meal_incidental_rates OWNER TO postgres;
+
+--
+-- Name: travel_requestors; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel_requestors (
+    emp_id integer NOT NULL,
+    requestor_id integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date
+);
+
+ALTER TABLE travel_requestors OWNER TO postgres;
 
 --
 -- Name: irs_rate_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
@@ -62,12 +75,18 @@ ALTER TABLE ONLY irs_rate
 
 
 --
--- Name: meal_incidental_rates_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+-- Name: meal_inc_rates_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
 --
 
 ALTER TABLE ONLY meal_incidental_rates
-    ADD CONSTRAINT meal_incidental_rates_pkey PRIMARY KEY ("totalCost");
+    ADD CONSTRAINT meal_incidental_rates_pkey PRIMARY KEY ("total_cost");
 
+--
+-- Name: travel_requestors_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel_requestors
+    ADD CONSTRAINT travel_requestors_pkey PRIMARY KEY (emp_id);
 
 --
 -- PostgreSQL database dump complete
