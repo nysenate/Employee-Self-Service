@@ -16,6 +16,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Category(SillyTest.class)
+@Transactional
 public class TimeRecordDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordDaoTest.class);
@@ -51,7 +53,7 @@ public class TimeRecordDaoTest extends BaseTest
         testRecord.setEndDate(trEndDate);
 
         testRecord.setRespHeadCode("STSBAC");
-        testRecord.setPayPeriod(new PayPeriod(PayPeriodType.AF, trStartDate, trEndDate, 10, true));
+        testRecord.setPayPeriod(new PayPeriod(PayPeriodType.AF, trStartDate, trEndDate, "10", true));
 
         for (LocalDate date = trStartDate; !date.isAfter(trEndDate); date = date.plusDays(1)) {
             testRecord.addTimeEntry(new TimeEntry(testRecord, PayType.RA, date));

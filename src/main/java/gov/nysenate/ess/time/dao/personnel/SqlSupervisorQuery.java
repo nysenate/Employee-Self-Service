@@ -47,7 +47,10 @@ public enum SqlSupervisorQuery implements BasicSqlQuery
         "        FROM ${masterSchema}.PD21PTXNCODE code\n" +
         "        JOIN (\n" +
         "            SELECT NUXREFEM, NUCHANGE, DTTXNUPDATE,\n" +
-        "              ROW_NUMBER() OVER (PARTITION BY NUXREFEM ORDER BY DTEFFECT ASC) AS rn\n" +
+        "              ROW_NUMBER() OVER (" +
+        "                 PARTITION BY NUXREFEM " +
+        "                 ORDER BY DTEFFECT ASC, DTTXNORIGIN ASC" +
+        "              ) AS rn\n" +
         "            FROM ${masterSchema}.PD21PTXNCODE\n" +
         "            WHERE CDSTATUS = 'A'\n" +
         "              AND CDTRANSTYP = 'PER'\n" +

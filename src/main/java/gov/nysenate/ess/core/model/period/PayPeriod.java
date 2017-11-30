@@ -26,7 +26,7 @@ public class PayPeriod implements Comparable<PayPeriod>
     protected LocalDate endDate;
 
     /** A number that is attributed to the pay period that typically rolls over after a fiscal year. */
-    protected int payPeriodNum;
+    protected String payPeriodNum;
 
     /** Indicates if this pay period is set as active in the backing store. */
     protected boolean active;
@@ -35,7 +35,7 @@ public class PayPeriod implements Comparable<PayPeriod>
 
     public PayPeriod() {}
 
-    public PayPeriod(PayPeriodType type, LocalDate startDate, LocalDate endDate, int payPeriodNum, boolean active) {
+    public PayPeriod(PayPeriodType type, LocalDate startDate, LocalDate endDate, String payPeriodNum, boolean active) {
         this.type = type;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -190,11 +190,11 @@ public class PayPeriod implements Comparable<PayPeriod>
         this.endDate = endDate;
     }
 
-    public int getPayPeriodNum() {
+    public String getPayPeriodNum() {
         return payPeriodNum;
     }
 
-    public void setPayPeriodNum(int payPeriodNum) {
+    public void setPayPeriodNum(String payPeriodNum) {
         this.payPeriodNum = payPeriodNum;
     }
 

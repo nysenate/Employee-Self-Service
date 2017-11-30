@@ -20,7 +20,12 @@ import java.util.Optional;
 @Service
 public class TxDockHoursService  implements DockHoursService {
 
-    @Autowired private DockHoursDao dockHoursDao;
+    private final DockHoursDao dockHoursDao;
+
+    @Autowired
+    public TxDockHoursService(DockHoursDao dockHoursDao) {
+        this.dockHoursDao = dockHoursDao;
+    }
 
     /**
      * Return the Total Docked Hours within a specified date range. Since docked hours

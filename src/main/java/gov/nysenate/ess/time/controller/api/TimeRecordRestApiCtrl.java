@@ -17,7 +17,6 @@ import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.client.response.InvalidTimeRecordResponse;
@@ -54,6 +53,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static gov.nysenate.ess.core.util.OutputUtils.toJson;
 import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.TIME_RECORD_MANAGEMENT;
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static java.util.stream.Collectors.toList;
@@ -234,7 +234,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         // Ensure empId -> beginDate mapping is valid
         if (empIdList.size() != beginDateList.size()) {
             throw new InvalidRequestParamEx(
-                    OutputUtils.toJson(ImmutableMap.of("empId", empId, "beginDate", beginDate)),
+                    toJson(ImmutableMap.of("empId", empId, "beginDate", beginDate)),
                     "empId, beginDate", "Integer, String",
                     "must pass the same number of 'empId' and 'beginDate' parameters"
             );
@@ -351,6 +351,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(InvalidTimeRecordException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleInvalidTimeRecordException(InvalidTimeRecordException ex) {
+        logger.warn(ex.getMessage() + "\n" + toJson(ex.getDetectedErrors()));
         return new InvalidTimeRecordResponse(getTimeRecordView(ex.getTimeRecord()), ex.getDetectedErrors());
     }
 
@@ -362,7 +363,9 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(TimeRecordNotFoundEidBeginDateEx.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleTimeRecordNotFoundEidBeginDateEx(TimeRecordNotFoundEidBeginDateEx ex) {
-        return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND, new TimeRecordNotFoundData(ex));
+        TimeRecordNotFoundData timeRecordNotFoundData = new TimeRecordNotFoundData(ex);
+        logger.warn(ex.getMessage());
+        return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND, timeRecordNotFoundData);
     }
 
     /**
@@ -373,6 +376,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(TimeRecordNotFoundException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleTimeRecordNotFoundEx(TimeRecordNotFoundException ex) {
+        logger.warn(ex.getMessage());
         return new ViewObjectErrorResponse(ErrorCode.TIME_RECORD_NOT_FOUND,
                 Objects.toString(ex.getTimeRecordId()));
     }
@@ -385,6 +389,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ExceptionHandler(TimeRecordCreationNotPermittedEx.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleTimeRecordCreationNotPermittedEx(TimeRecordCreationNotPermittedEx ex) {
+        logger.warn(ex.getMessage());
         return new ViewObjectErrorResponse(ErrorCode.CANNOT_CREATE_NEW_RECORD,
                 new TimeRecordCreationNotPermittedData(ex));
     }

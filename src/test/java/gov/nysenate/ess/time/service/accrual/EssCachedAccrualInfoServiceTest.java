@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.SortedSet;
 
 @Category(SillyTest.class)
 public class EssCachedAccrualInfoServiceTest extends BaseTest
@@ -57,5 +58,14 @@ public class EssCachedAccrualInfoServiceTest extends BaseTest
         sw.stop();
         logger.info("{}", sw.getTime());
         logger.info("{}", OutputUtils.toJson(accrualInfoService.getActiveAttendancePeriods(10976, LocalDate.now(), SortOrder.ASC)));
+    }
+
+    @Test
+    public void getAccrualYearsTest() {
+        int empId = 4117;
+
+        SortedSet<Integer> accrualYears = accrualInfoService.getAccrualYears(empId);
+
+        logger.info("{}", accrualYears);
     }
 }

@@ -124,6 +124,7 @@ about_employee_self_service\first_topic.htm
 example_screens_my_info\z12_example_paycheck_history.htm
 example_screens_my_info\z13_example_current_info.htm
 example_screens_my_info\z14_example_payroll_calendar.htm
+example_screens_my_info\z15_example_emergency_alert_info.htm
 example_screens_supply\z15_example_supply_requisition_form.htm
 example_screens_supply\z16_example_order_history.htm
 example_screens_supply\z17_example_shopping_cart.htm
@@ -157,6 +158,7 @@ my_attendance_supervisors\sa7b_project_accrual_balances_for_employee_under_a_sup
 my_attendance_supervisors\sa8_temporarily_transfer_your_supervisor_privileges.htm
 my_information\i1_view_your_employee_profile.htm
 my_information\i2_view_and_print_paycheck_history.htm
+my_information\i3_set_up_your_senate_emergency_alert_info.htm
 supply\sup1_enter_and_submit_a_requisition_form.htm
 supply\sup2_display_a_previous_shopping_cart_not_submitted.htm
 supply\sup3_list_current_and_previous_orders.htm
@@ -205,6 +207,7 @@ pix_grant_supervisor_access.jpg
 pix_icon_pdf_helpguide.jpg
 pix_text_requisition_form_destination_change.jpg
 pix_attendance_history.jpg
+pix_text_emergency_alert_info.jpg
 pix_text_choose_delivery_method.jpg
 pix_text_employee_accrual_history_all_supervisors.jpg
 pix_employee_accrual_projections.jpg
@@ -217,6 +220,7 @@ pix_review_time_records.jpg
 pix_payroll_calendar.jpg
 pix_paycheck_history.jpg
 pix_attendance_record_entry_rasa.jpg
+pix_emergency_alert_info.jpg
 pix_text_correct_time_record_supervisor_disapproved.jpg
 pix_text_print_ta_report.jpg
 pix_display_previous_shop_cart_not_submitted.jpg
@@ -247,6 +251,7 @@ whxdata\package_16_xml.js
 whxdata\package_17_xml.js
 whxdata\package_18_xml.js
 whxdata\package_19_xml.js
+whxdata\package_20_xml.js
 whxdata\packageindex_xml.js
 whxdata\synonym.xml
 whxdata\synonym_xml.js
@@ -283,6 +288,8 @@ whgdata\whlstt14.htm
 whgdata\whlstt15.htm
 whgdata\whlstt16.htm
 whgdata\whlstt17.htm
+whgdata\whlstt18.htm
+whgdata\whlstt19.htm
 whgdata\whlsti0.htm
 whgdata\whlstfl0.htm
 whgdata\whlstfl1.htm

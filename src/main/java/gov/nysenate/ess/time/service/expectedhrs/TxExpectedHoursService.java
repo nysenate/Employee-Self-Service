@@ -14,7 +14,7 @@ import gov.nysenate.ess.time.model.EssTimeConstants;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
-import gov.nysenate.ess.time.service.personnel.TxDockHoursService;
+import gov.nysenate.ess.time.service.personnel.DockHoursService;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +35,21 @@ import java.util.Arrays;
  */
 @Service
 public class TxExpectedHoursService implements ExpectedHoursService {
+
     private static final Logger logger = LoggerFactory.getLogger(TxExpectedHoursService.class);
 
+    private final EmpTransactionService empTransactionService;
+    private final AllowanceService allowanceService;
+    private final DockHoursService txDockHoursService;
 
-    @Autowired EmpTransactionService empTransactionService;
-    @Autowired AllowanceService allowanceService;
-    @Autowired TxDockHoursService txDockHoursService;
+    @Autowired
+    public TxExpectedHoursService(EmpTransactionService empTransactionService,
+                                  AllowanceService allowanceService,
+                                  DockHoursService dockHoursService) {
+        this.empTransactionService = empTransactionService;
+        this.allowanceService = allowanceService;
+        this.txDockHoursService = dockHoursService;
+    }
 
     /**
      * Returns the Year to Date Expected Hours up to a specified Pay Period.
@@ -64,7 +73,9 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
         // Hours.
 
-        expectedHours.add(allowanceService.getAllowanceUsage(empId, payPeriod.getStartDate()).getHoursUsed());
+        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, payPeriod.getStartDate()).getHoursUsed();
+
+        expectedHours = expectedHours.add(tempHours);
 
         expectedHours = AccrualUtils.roundExpectedHours(expectedHours);
 

@@ -101,11 +101,11 @@
     <ess-notification level="info" title="No Accrual History">
       <p>
         <span ng-show="isUser()">You have</span>
-        <span ng-hide="isUser()">{{empSupInfo.fullName}} has</span>
+        <span ng-hide="isUser()">{{empSupInfo.empFirstName}} {{empSupInfo.empLastName}} has</span>
         no accrual records.
       </p>
       <p ng-show="empSupInfo.senator">
-        {{empSupInfo.fullName}} is a Senator and does not currently accrue time.
+        {{empSupInfo.firstName}} {{empSupInfo.lastName}} is a Senator and does not currently accrue time.
       </p>
     </ess-notification>
   </div>

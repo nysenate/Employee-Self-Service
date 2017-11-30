@@ -15,6 +15,7 @@ import gov.nysenate.ess.time.service.accrual.AccrualComputeService;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ACCRUAL;
+import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ACCRUAL_ACTIVE_YEARS;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
@@ -36,8 +39,17 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
 {
     private static final Logger logger = LoggerFactory.getLogger(AccrualRestApiCtrl.class);
 
-    @Autowired private AccrualComputeService accrualService;
+    @Autowired private AccrualComputeService accrualComputeService;
+    @Autowired private AccrualInfoService accrualInfoService;
     @Autowired private PayPeriodService payPeriodService;
+
+    @RequestMapping("/active-years")
+    public BaseResponse getActiveAccrualYears(@RequestParam int empId) {
+        checkPermission(new EssTimePermission(empId, ACCRUAL_ACTIVE_YEARS, GET, Range.singleton(LocalDate.now())));
+
+        SortedSet<Integer> accrualYears = accrualInfoService.getAccrualYears(empId);
+        return ListViewResponse.ofIntList(accrualYears, "years");
+    }
 
     @RequestMapping("")
     public BaseResponse getAccruals(@RequestParam int empId, @RequestParam String beforeDate) {
@@ -46,7 +58,7 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
         checkPermission(new EssTimePermission( empId, ACCRUAL, GET, Range.singleton(beforeLocalDate)));
 
         PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, beforeLocalDate);
-        AccrualsAvailable accrualsAvailable = accrualService.getAccrualsAvailable(empId, payPeriod);
+        AccrualsAvailable accrualsAvailable = accrualComputeService.getAccrualsAvailable(empId, payPeriod);
         return new ViewObjectResponse<>(new AccrualsAvailableView(accrualsAvailable));
     }
 
@@ -60,7 +72,7 @@ public class AccrualRestApiCtrl extends BaseRestApiCtrl
 
         List<PayPeriod> periods =
             payPeriodService.getPayPeriods(PayPeriodType.AF, dateRange, SortOrder.ASC);
-        TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualService.getAccruals(empId, periods);
+        TreeMap<PayPeriod, PeriodAccSummary> accruals = accrualComputeService.getAccruals(empId, periods);
         return ListViewResponse.of(accruals.values().stream().map(AccrualsView::new).collect(Collectors.toList()));
     }
 }

@@ -84,111 +84,110 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
             throw new SupervisorException("Failed to retrieve matching employees for supId: " + supId, ex);
         }
 
+        if (res.isEmpty()) {
+            throw new SupervisorMissingEmpsEx(supId);
+        }
+
         /*
          * The transactions for the matching employees need to be processed to determine if they
          * are still under the given supervisor.
          */
-        if (!res.isEmpty()) {
-            PrimarySupEmpGroup empGroup = new PrimarySupEmpGroup(supId);
-            HashMultimap<Integer, EmployeeSupInfo> primaryEmps = HashMultimap.create();
+        HashMultimap<Integer, EmployeeSupInfo> primaryEmps = HashMultimap.create();
 
-            Map<Integer, LocalDate> possiblePrimaryEmps = new HashMap<>();
+        Map<Integer, LocalDate> possiblePrimaryEmps = new HashMap<>();
 
-            for (Map<String,Object> colMap : res) {
-                logger.trace(colMap.toString());
+        for (Map<String,Object> colMap : res) {
+            logger.trace(colMap.toString());
 
-                int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
-                TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
-                PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
+            int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
+            TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
+            PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
 
-                LocalDate effectDate = getDateCol(colMap, "DTEFFECT");
+            LocalDate effectDate = getDateCol(colMap, "DTEFFECT");
 
-                int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
-                boolean empTerminated = false;
+            int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
+            boolean empTerminated = false;
 
-                if (colMap.get("NUXREFSV") == null || !StringUtils.isNumeric(colMap.get("NUXREFSV").toString())) {
-                    continue;
-                }
+            if (colMap.get("NUXREFSV") == null || !StringUtils.isNumeric(colMap.get("NUXREFSV").toString())) {
+                continue;
+            }
 
-                int currSupId = Integer.parseInt(colMap.get("NUXREFSV").toString());
+            int currSupId = Integer.parseInt(colMap.get("NUXREFSV").toString());
 
-                EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
-                empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
-                empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
-                boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
-                empSupInfo.setSenator(senator);
-                PayType payType = null;
-                String payTypeVal = Objects.toString(colMap.get("CDPAYTYPE"));
-                try {
-                    payType = PayType.valueOf(payTypeVal);
-                } catch (IllegalArgumentException ex) {
-                    logger.warn("Illegal Pay type value supplied: " + payTypeVal, ex);
-                }
-                empSupInfo.setPayType(payType);
+            EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
+            empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
+            empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
+            boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
+            empSupInfo.setSenator(senator);
+            PayType payType = null;
+            String payTypeVal = Objects.toString(colMap.get("CDPAYTYPE"));
+            try {
+                payType = PayType.valueOf(payTypeVal);
+            } catch (IllegalArgumentException ex) {
+                logger.warn("Illegal Pay type value supplied: " + payTypeVal, ex);
+            }
+            empSupInfo.setPayType(payType);
 
-                if (transType.equals(EMP)) {
-                    empTerminated = true;
+            if (transType.equals(EMP)) {
+                empTerminated = true;
 
-                    // Unless the employee is retiring, the effective retirement will start the next day
-                    if (perStatus != PersonnelStatus.RETD) {
-                        effectDate = effectDate.plusDays(1);
-                    }
-                    empSupInfo.setSupEndDate(effectDate);
-                }
-                else {
-                    empSupInfo.setSupStartDate(effectDate);
-                }
+                // Offset the effect date depending on the personnel status
+                effectDate = effectDate.plusDays(perStatus.getEffectDateOffset());
+                empSupInfo.setSupEndDate(effectDate);
+            }
+            else {
+                empSupInfo.setSupStartDate(effectDate);
+            }
 
+            /*
+             * The first rank record for a given empId contains latest transaction that took effect
+             * before/on the given 'end' date.
+             */
+            if (rank == 1) {
                 /*
-                 * The first rank record for a given empId contains latest transaction that took effect
-                 * before/on the given 'end' date.
+                 * Add the employee to their supervisor's respective group if:
+                 *  - the employee is not the supervisor
+                 *  - their supervisor id matches the given 'supId'
+                 *  - the employee is not currently terminated
                  */
-                if (rank == 1) {
-                    /*
-                     * Add the employee to their supervisor's respective group if:
-                     *  - the employee is not the supervisor
-                     *  - their supervisor id matches the given 'supId'
-                     *  - the employee is not currently terminated
-                     */
-                    if (empId != supId && currSupId == supId && !empTerminated) {
-                        primaryEmps.put(empId, empSupInfo);
+                if (empId != supId && currSupId == supId && !empTerminated) {
+                    addSupEmpGroup(primaryEmps, empSupInfo);
+                }
+                possiblePrimaryEmps.put(empId, effectDate);
+            }
+            else {
+                /*
+                 * Process the records of employees that had a supervisor change during the date range.
+                 * If a supervisor match is found to occur on/before the 'start' date, we add them to their
+                 * respective supervisor group. Otherwise if we can't find a match and the effect date has
+                 * occurred before the 'start' date, we know that they don't belong in the group for this range.
+                 */
+                if (possiblePrimaryEmps.containsKey(empId)) {
+                    if (currSupId == supId && !empTerminated) {
+                        empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
+
+                        // Add the employee only if it is not the supervisor,
+                        // and the effective date range is non-empty
+                        if (!(empId == supId || empSupInfo.getEffectiveDateRange().isEmpty())) {
+                            addSupEmpGroup(primaryEmps, empSupInfo);
+                        }
+                        possiblePrimaryEmps.remove(empId);
                     }
                     possiblePrimaryEmps.put(empId, effectDate);
                 }
-                else {
-                    /*
-                     * Process the records of employees that had a supervisor change during the date range.
-                     * If a supervisor match is found to occur on/before the 'start' date, we add them to their
-                     * respective supervisor group. Otherwise if we can't find a match and the effect date has
-                     * occurred before the 'start' date, we know that they don't belong in the group for this range.
-                     */
-                    if (possiblePrimaryEmps.containsKey(empId)) {
-                        if (currSupId == supId && !empTerminated) {
-                            empSupInfo.setSupEndDate(possiblePrimaryEmps.get(empId));
-
-                            // Add the employee only if it is not the supervisor,
-                            // and the effective date range is non-empty
-                            if (!(empId == supId || empSupInfo.getEffectiveDateRange().isEmpty())) {
-                                primaryEmps.put(empId, empSupInfo);
-                            }
-                            possiblePrimaryEmps.remove(empId);
-                        }
-                        possiblePrimaryEmps.put(empId, effectDate);
-                    }
-                    // Indicates that the supervisor had this employee for
-                    // at least one additional period of time
-                    // In this case add another possible primary Emp
-                    else if (primaryEmps.containsKey(empId) &&
-                            (empTerminated || currSupId != supId)) {
-                        possiblePrimaryEmps.put(empId, effectDate);
-                    }
+                // Indicates that the supervisor had this employee for
+                // at least one additional period of time
+                // In this case add another possible primary Emp
+                else if (primaryEmps.containsKey(empId) &&
+                        (empTerminated || currSupId != supId)) {
+                    possiblePrimaryEmps.put(empId, effectDate);
                 }
             }
-
-            empGroup.setPrimaryEmployees(primaryEmps);
-            return empGroup;
         }
-        throw new SupervisorMissingEmpsEx(supId);
+
+        PrimarySupEmpGroup empGroup = new PrimarySupEmpGroup(supId);
+        empGroup.setPrimaryEmployees(primaryEmps);
+        return empGroup;
     }
 
     /**{@inheritDoc} */
@@ -259,15 +258,23 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
                 .orElse(null);
     }
 
-    private String getEmpGroup(String groupVal, Integer supId) {
-        if (!Objects.equals(groupVal, overrideLabel)) {
-            return groupVal;
+    /**
+     * Adds a {@link EmployeeSupInfo} to the employee map.
+     * Looks for {@link EmployeeSupInfo} that are equal with intersecting dates and merges them.
+     */
+    private static void addSupEmpGroup(HashMultimap<Integer, EmployeeSupInfo> map, EmployeeSupInfo employeeSupInfo) {
+        // If there are existing emp sup infos, see if they can be merged
+        if (map.containsKey(employeeSupInfo.getEmpId())) {
+            Set<EmployeeSupInfo> employeeSupInfos = map.get(employeeSupInfo.getEmpId());
+            for (Iterator<EmployeeSupInfo> itr = employeeSupInfos.iterator(); itr.hasNext(); ) {
+                EmployeeSupInfo existingEsi = itr.next();
+                if (employeeSupInfo.isConnected(existingEsi)) {
+                    employeeSupInfo = employeeSupInfo.merge(existingEsi);
+                    itr.remove();
+                }
+            }
         }
-
-        if (supId == null) {
-            return empOverrideLabel;
-        }
-
-        return supOverrideLabel;
+        map.put(employeeSupInfo.getEmpId(), employeeSupInfo);
     }
+
 }

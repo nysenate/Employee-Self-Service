@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,13 +42,20 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
         List<Location> locations;
         // If a supply employee, can deliver to any location.
         if (getSubject().isPermitted("supply:employee")) {
-            locations = locationDao.getLocations();
+            locations = workLocationsIn(locationDao.getLocations());
         } else {
             Employee employee = employeeService.getEmployee(empId);
-            locations = locationDao.getLocationsByResponsibilityHead(employee.getRespCenter().getHead());
+            locations = workLocationsIn(locationDao.getLocationsByResponsibilityHead(employee.getRespCenter().getHead()));
         }
         return ListViewResponse.of(locations.stream()
                                             .map(LocationView::new)
                                             .collect(Collectors.toList()));
+    }
+
+    private List<Location> workLocationsIn(List<Location> locations) {
+        return locations
+                .stream()
+                .filter(loc -> loc.getLocId().getType() == LocationType.WORK)
+                .collect(Collectors.toList());
     }
 }
