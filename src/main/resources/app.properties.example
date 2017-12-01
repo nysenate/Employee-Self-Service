@@ -219,3 +219,9 @@ supply.requisition.notification.list =
 # --- Google Maps Configuration -------------------------------------------------------
 google.maps.apiKey =
 
+# --- Travel Integration links --------------------------------------------------------
+# Link for GSA
+travel.gsa.link = https://inventory.data.gov/api/action/datastore_search?resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b
+
+# Link for IRS
+travel.irs.link = https://www.irs.gov/tax-professionals/standard-mileage-rates

@@ -14,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.time.Month;
 public class GsaClient {
 
     @Autowired MealIncidentalRatesDao sqlMealIncidentalRatesDao;
+    @Value("${travel.gsa.link}") private String gsaLink;
 
     private static final ResponseHandler<String> responseHandler = response -> {
         int status = response.getStatusLine().getStatusCode();
@@ -45,14 +47,9 @@ public class GsaClient {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         URI uri = null;
-        /*HttpGet httpget = new HttpGet("https://inventory.data.gov/api/action/datastore_search?" +
-                "resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b&filters=%7B%22" +
-                "FiscalYear%22:%22" + fiscalYear + "%22,%22" +
-                "Zip%22:%22" + zipcode + "%22%7D"); */
 
         try {
-            uri = new URIBuilder("https://inventory.data.gov/api/action/datastore_search?" +
-            "resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b")
+            uri = new URIBuilder(gsaLink)
                     .addParameter("filters", "{\"FiscalYear\":\"" + fiscalYear + "\",\"Zip\":\"" + zipcode + "\"}").build();
         } catch (URISyntaxException e) {
             e.printStackTrace();
