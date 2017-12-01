@@ -24,7 +24,6 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
         ActiveEmployeeApi.get({activeOnly: true}, function (resp) {
             if (resp.success) {
                 $scope.grantees = resp.employees;
-                console.log(resp.employees)
             }
         }).$promise.then(function (resp) {
             // Link up with any existing grants
@@ -44,9 +43,16 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
                 $scope.currentGrantee = resp.result;
                 console.log(resp.result);
 
-                EmpInfoApi.get({empId: $scope.empId}, function(resp){
+                EmpInfoApi.get({empId: $scope.currentGrantee.empId}, function(resp){
                     if(resp.success) {
-                        console.log(resp.employee);
+                        console.log(resp.employee.fullName);
+                        for(var i = 0, length = $scope.grantees.length; i < length; i++){
+                            var grantee = $scope.grantees;
+                            if(grantee.fullName == resp.employee.fullName){
+                                console.log(grantee);
+                                break;
+                            }
+                        }
                     }
                 });
                 $scope.granteeInfo.startDate = moment(resp.result.startDate).format('MM/DD/YYYY');
