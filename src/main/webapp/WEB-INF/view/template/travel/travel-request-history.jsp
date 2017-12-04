@@ -37,7 +37,7 @@
                 pagination-id="travel-history-pagination"
                 ng-click="viewApplicationDetails(row.id)">
               <td>{{row.travelDate | date:'M/d/yyyy'}}</td>
-              <td>{{row.applicant.lastName}}</td>
+              <td>{{row.traveler.lastName}}</td>
               <td>{{row.itinerary.destinations[0].address.city}}</td>
               <td>{{'$' + row.totalAllowance}}</td>
               <td>{{row.status}}</td>

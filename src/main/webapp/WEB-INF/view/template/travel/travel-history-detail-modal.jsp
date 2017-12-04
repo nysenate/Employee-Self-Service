@@ -1,6 +1,6 @@
 <div class="text-align-center padding-10">
   <div class="travel-gray-bottom-border clearfix padding-10 width-100">
-    <p class="col-6-12 bold">{{requestInfo.applicant.fullName}}</p>
+    <p class="col-6-12 bold">{{requestInfo.traveler.fullName}}</p>
     <p class="col-6-12"><span class="bold">Status:</span> {{requestInfo.status}}</p>
   </div>
   <div class="travel-gray-bottom-border clearfix padding-10 width-100">
