@@ -3,7 +3,7 @@ package gov.nysenate.ess.travel.allowance.gsa.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import gov.nysenate.ess.travel.allowance.gsa.dao.SqlMealIncidentalRatesDao;
+import gov.nysenate.ess.travel.allowance.gsa.dao.MealIncidentalRatesDao;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -12,12 +12,23 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+@Component
 public class GsaClient {
+
+    @Autowired MealIncidentalRatesDao sqlMealIncidentalRatesDao;
+    @Value("${travel.gsa.link}") private String gsaLink;
 
     private static final ResponseHandler<String> responseHandler = response -> {
         int status = response.getStatusLine().getStatusCode();
@@ -33,12 +44,22 @@ public class GsaClient {
     private MealIncidentalRate mealIncidentalRate;
     private int lodging;
 
-    public GsaClient(int fiscalYear, String zipcode) {
+    public void scrapeGsa(int fiscalYear, String zipcode){
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("https://inventory.data.gov/api/action/datastore_search?" +
-                "resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b&filters=%7B%22" +
-                "FiscalYear%22:%22" + fiscalYear + "%22,%22" +
-                "Zip%22:%22" + zipcode + "%22%7D");
+
+        URI uri = null;
+
+        try {
+            URL url = new URL("https://inventory.data.gov/api/action/datastore_search?" +
+                    "resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b" +
+                    "&filters=%7B%22FiscalYear%22:%22" + fiscalYear + "%22,%22Zip%22:%22" + zipcode + "%22%7D");
+            uri = url.toURI();
+            System.out.println(uri.toString());
+        } catch (MalformedURLException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        HttpGet httpget = new HttpGet(uri);
 
         LocalDateTime NOW = LocalDateTime.now();
         if (fiscalYear < NOW.getYear()) {
@@ -59,7 +80,6 @@ public class GsaClient {
 
             int meals = records.get("Meals").getAsInt();
 
-            SqlMealIncidentalRatesDao sqlMealIncidentalRatesDao = new SqlMealIncidentalRatesDao();
             MealIncidentalRate[] dbRates = sqlMealIncidentalRatesDao.getMealIncidentalRates();
             for (MealIncidentalRate dbRate : dbRates) {
                 if(meals == dbRate.getTotalCost()){

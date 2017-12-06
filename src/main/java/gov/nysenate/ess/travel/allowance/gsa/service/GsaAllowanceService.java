@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,6 +15,8 @@ import java.util.List;
 @Service
 public class GsaAllowanceService {
 
+    @Autowired GsaClient client;
+
     public GsaAllowance computeAllowance(Itinerary itinerary) {
         int mealAllowance = 0;
         int lodgingAllowance = 0;
@@ -21,13 +24,16 @@ public class GsaAllowanceService {
 
         List<TravelDestination> travelDestinations = itinerary.getDestinations();
         for (TravelDestination travelDestination : travelDestinations) {
+            if (travelDestination.isWaypoint()) {
+                continue;
+            }
             LocalDate departure = travelDestination.getDepartureDate();
             LocalDate arrival = travelDestination.getArrivalDate();
             Address destinationAddress = travelDestination.getAddress();
 
             LocalDate currentDate = travelDestination.getArrivalDate();
 
-            GsaClient client = new GsaClient(getFiscalYear(currentDate), destinationAddress.getZip5());
+            client.scrapeGsa(getFiscalYear(currentDate), destinationAddress.getZip5());
             client.setLodging(currentDate.getMonth());
 
             int daysThere = (int) ChronoUnit.DAYS.between(arrival, departure) + 1;
@@ -62,7 +68,7 @@ public class GsaAllowanceService {
 
     private GsaClient handleIfNewMonth(LocalDate arrival, LocalDate currentDate, GsaClient client, Address destinationAddress) {
         if (currentDate.getMonth() != arrival.getMonth()) {
-            client = new GsaClient(getFiscalYear(currentDate), destinationAddress.getZip5());
+            client.scrapeGsa(getFiscalYear(currentDate), destinationAddress.getZip5());
             client.setLodging(currentDate.getMonth());
         }
 

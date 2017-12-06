@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.allowance.mileage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +13,8 @@ import java.io.IOException;
 @Service
 public class IrsRateService {
 
-    @Autowired
-    IrsRateDao irsRateDao;
+    @Autowired private IrsRateDao irsRateDao;
+    @Value("${travel.irs.link}") private String irsLink;
 
     @PostConstruct
     public void postConstruct() {
@@ -22,7 +23,7 @@ public class IrsRateService {
     }
 
     public double webScrapeIrsRate() throws IOException{
-        Document doc = Jsoup.connect("https://www.irs.gov/tax-professionals/standard-mileage-rates").get();
+        Document doc = Jsoup.connect(irsLink).get();
         String rate = doc.select("article table tbody tr td").get(1).text();
         return Double.parseDouble(rate);
     }
