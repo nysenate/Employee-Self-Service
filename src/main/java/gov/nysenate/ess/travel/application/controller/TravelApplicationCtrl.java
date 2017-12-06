@@ -50,10 +50,8 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "")
-    public BaseResponse searchTravelApplications(@RequestParam int empId,
-                                                 @RequestParam String status) {
-        TravelApplicationStatus appStatus = TravelApplicationStatus.valueOf(status);
-        List<TravelApplication> apps = travelAppService.searchTravelApplications(empId, appStatus);
+    public BaseResponse searchTravelApplications(@RequestParam int empId) {
+        List<TravelApplication> apps = travelAppService.getTravelApplicationsByEmpId(empId);
         List<TravelApplicationView> appViews = travelApplicationsToViews(apps);
         return ListViewResponse.of(appViews);
     }

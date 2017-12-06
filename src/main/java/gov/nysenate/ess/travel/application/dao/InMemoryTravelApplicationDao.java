@@ -30,12 +30,6 @@ public class InMemoryTravelApplicationDao {
         travelApplications.add(travelApplication);
     }
 
-    public List<TravelApplication> searchTravelApplications(int empId, TravelApplicationStatus status) {
-       return getTravelApplicationsByEmpId(empId).stream()
-               .filter(getTravelApplicationsByStatus(status)::contains)
-               .collect(Collectors.toList());
-    }
-
     public List<TravelApplication> getTravelApplicationsByEmpId(int empId) {
         return travelApplications.stream()
                 .filter(r -> r.getTraveler().getEmployeeId() == empId)

@@ -10,15 +10,13 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     $scope.date = {
         from: moment().subtract(1, 'month').format(DATE_FORMAT),
         to: moment().format(DATE_FORMAT)
-    }
+    };
 
     $scope.init = function() {
         var empId = 11168;  //for testing purposes
         //TODO: var empId = appProps.empId;
-        var status = 'APPROVED';
         var params = {
-            empId: empId,
-            status: status
+            empId: empId
         };
         return travelApplicationApi.get(params, onSuccess, onFail);
 
@@ -55,7 +53,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
             // to get a value that is either negative, positive, or zero.
             return new Date(b.travelDate.date) - new Date(a.travelDate.date);
         });
-    }
+    };
 
     $scope.viewApplicationDetails = function(requestId) {
         request = {};
@@ -67,7 +65,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
             }
         }
         modals.open("travel-history-detail-modal", {info: request}, true).catch(function() {})
-    }
+    };
 
     $scope.init();
 }

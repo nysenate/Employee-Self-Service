@@ -28,13 +28,6 @@ public class TravelApplicationService {
         travelAppDao.saveTravelApplication(travelApplication);
     }
 
-    /**
-     * Get travel applications for the given empId and status.
-     */
-    public List<TravelApplication> searchTravelApplications(int empId, TravelApplicationStatus status) {
-        return travelAppDao.searchTravelApplications(empId, status);
-    }
-
     public List<TravelApplication> getTravelApplicationsByEmpId(int empId) {
         return travelAppDao.getTravelApplicationsByEmpId(empId);
     }

@@ -3,9 +3,11 @@
 
 <c:choose>
     <c:when test="${runtimeLevel eq 'dev'}">
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-autocomplete-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/destination-selection-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-user-config.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-application.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-request-history.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-application-history.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/travel-manage-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-history-detail-modal.js?v=${releaseVersion}"></script>
     </c:when>
