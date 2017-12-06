@@ -7,13 +7,13 @@ var essTravel = angular.module('essTravel');
  * (serializable to an AddressView.java) returned.
  *
  * Example:
- * <input travel-autocomplete callback="setAddress(address)" placeholder="Enter Origin Address" type="text" size="30">
+ * <input travel-address-autocomplete callback="setAddress(address)" placeholder="Enter Origin Address" type="text" size="30">
  *
  * Notes:
  *     - The callback function is required to have the 'address' param.
  *     - Only works on input elements.
  */
-essTravel.directive('travelAutocomplete', ['appProps', function (appProps) {
+essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps) {
     return {
         restrict: 'A',
         scope: {

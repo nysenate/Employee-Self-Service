@@ -18,7 +18,7 @@
           <div style="margin-top: 40px;">
             <h4>Departure (From)</h4>
             <div class="margin-10">
-              <input travel-autocomplete callback="setOrigin(address)" placeholder="200 State St, Albany NY 12210" type="text" size="45">
+              <input travel-address-autocomplete callback="setOrigin(address)" placeholder="200 State St, Albany NY 12210" type="text" size="45">
             </div>
           </div>
 
