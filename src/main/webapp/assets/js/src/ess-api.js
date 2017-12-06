@@ -216,10 +216,6 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
     return $resource(appProps.apiPath + '/travel/travel-application.json')
 }]);
 
-essApi.factory('TravelActiveApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/travel-application/active')
-}]);
-
 essApi.factory('TravelGsaAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/gsa')
 }]);

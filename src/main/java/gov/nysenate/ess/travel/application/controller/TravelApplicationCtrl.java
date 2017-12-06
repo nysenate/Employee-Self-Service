@@ -58,18 +58,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appViews);
     }
 
-    /**
-     * Get Travel applications that are currently active.
-     * @return Travel applications for an employee that are either scheduled
-     * in the future or currently ongoing.
-     */
-    @RequestMapping(value = "/active")
-    public BaseResponse byTravelEndDate(@RequestParam int empId) {
-        List<TravelApplication> apps = travelAppService.activeApplications(empId);
-        List<TravelApplicationView> appViews = travelApplicationsToViews(apps);
-        return ListViewResponse.of(appViews);
-    }
-
     private List<TravelApplicationView> travelApplicationsToViews(List<TravelApplication> apps) {
         return apps.stream()
                 .map(TravelApplicationView::new)

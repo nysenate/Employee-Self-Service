@@ -39,7 +39,4 @@ public class TravelApplicationService {
         return travelAppDao.getTravelApplicationsByEmpId(empId);
     }
 
-    public List<TravelApplication> activeApplications(int empId) {
-        return travelAppDao.activeApplications(empId, LocalDate.now());
-    }
 }
