@@ -9,7 +9,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -18,8 +17,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -49,9 +50,12 @@ public class GsaClient {
         URI uri = null;
 
         try {
-            uri = new URIBuilder(gsaLink)
-                    .addParameter("filters", "{\"FiscalYear\":\"" + fiscalYear + "\",\"Zip\":\"" + zipcode + "\"}").build();
-        } catch (URISyntaxException e) {
+            URL url = new URL("https://inventory.data.gov/api/action/datastore_search?" +
+                    "resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b" +
+                    "&filters=%7B%22FiscalYear%22:%22" + fiscalYear + "%22,%22Zip%22:%22" + zipcode + "%22%7D");
+            uri = url.toURI();
+            System.out.println(uri.toString());
+        } catch (MalformedURLException | URISyntaxException e) {
             e.printStackTrace();
         }
 

@@ -33,6 +33,7 @@ public class GsaAllowanceService {
 
             LocalDate currentDate = travelDestination.getArrivalDate();
 
+            client.scrapeGsa(getFiscalYear(currentDate), destinationAddress.getZip5());
             client.setLodging(currentDate.getMonth());
 
             int daysThere = (int) ChronoUnit.DAYS.between(arrival, departure) + 1;

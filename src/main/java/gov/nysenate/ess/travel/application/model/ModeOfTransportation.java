@@ -18,6 +18,7 @@ public enum ModeOfTransportation {
 
     public static ModeOfTransportation of(String displayName) {
         ModeOfTransportation mot = map.get(displayName);
+        mot = ModeOfTransportation.valueOf(displayName);
         if (mot == null) {
             throw new IllegalArgumentException("Invalid display name: " + displayName);
         }

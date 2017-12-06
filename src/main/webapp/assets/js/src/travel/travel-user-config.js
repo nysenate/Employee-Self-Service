@@ -19,7 +19,7 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
             permanent: false
         };
 
-        $scope.grantees = [];  // Stores an ordered list of the supervisors.
+        $scope.grantees = [];
 
         ActiveEmployeeApi.get({activeOnly: true}, function (resp) {
             if (resp.success) {
@@ -43,9 +43,11 @@ function userConfigCtrl($scope, appProps, ActiveEmployeeApi, TravelUserConfigApi
                 $scope.currentGrantee = resp.result;
                 console.log(resp.result);
 
+                // TODO change $scope.currentGrantee.empId -> $scope.currentGrantee.requestorId
                 EmpInfoApi.get({empId: $scope.currentGrantee.empId}, function(resp){
                     if(resp.success) {
-                        console.log(resp.employee.fullName);
+                        console.log(resp.employee);
+                        console.log($scope.grantees);
                         for(var i = 0, length = $scope.grantees.length; i < length; i++){
                             var grantee = $scope.grantees;
                             if(grantee.fullName == resp.employee.fullName){

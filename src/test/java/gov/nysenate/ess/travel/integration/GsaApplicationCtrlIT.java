@@ -3,14 +3,14 @@ package gov.nysenate.ess.travel.integration;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
-import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
+import gov.nysenate.ess.travel.allowance.gsa.controller.GsaApplicationCtrl;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
-import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
 import gov.nysenate.ess.travel.application.view.ItineraryView;
-import gov.nysenate.ess.travel.allowance.gsa.controller.GsaApplicationCtrl;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +40,9 @@ public class GsaApplicationCtrlIT extends BaseTest {
         ItineraryView itineraryView = new ItineraryView(itinerary);
 
         BaseResponse baseResponse = gsaApplicationCtrl.searchGsa(itineraryView);
-        ListViewResponse listView = (ListViewResponse) baseResponse;
+        ViewObjectResponse viewObjectResponse = (ViewObjectResponse) baseResponse;
 
-        GsaAllowanceView gsaAllowanceView = (GsaAllowanceView) listView.result.items.get(0);
+        GsaAllowanceView gsaAllowanceView = (GsaAllowanceView) viewObjectResponse.result;
         System.out.println(gsaAllowanceView.getMeals());
     }
 }
