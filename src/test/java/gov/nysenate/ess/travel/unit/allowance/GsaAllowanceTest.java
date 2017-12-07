@@ -51,7 +51,7 @@ public class GsaAllowanceTest {
     public void testTotal() {
         GsaAllowance gsa = new GsaAllowance("0.3333333", "2.333333");
         BigDecimal actual = gsa.total();
-        BigDecimal expected = new BigDecimal("987654323.66");
+        BigDecimal expected = new BigDecimal("2.66");
         assertEquals(expected, actual);
     }
 }
