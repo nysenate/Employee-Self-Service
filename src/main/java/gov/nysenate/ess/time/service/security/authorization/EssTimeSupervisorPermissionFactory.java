@@ -100,6 +100,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
                 new EssTimePermission(empId, ACCRUAL,                   GET,    effectiveRange),
                 new EssTimePermission(empId, ACCRUAL_ACTIVE_YEARS,      GET,    Range.all()),
                 new EssTimePermission(empId, ALLOWANCE,                 GET,    getEffectiveYearRange(effectiveRange)),
+                new EssTimePermission(empId, ALLOWANCE_ACTIVE_YEARS,    GET,    Range.all()),
                 new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,  GET,    Range.all()),
                 new EssTimePermission(empId, TIME_RECORDS,              GET,    effectiveRange)
         );

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.time.controller.api;
 
+import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
@@ -16,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ALLOWANCE;
+import static gov.nysenate.ess.time.model.auth.TimePermissionObject.ALLOWANCE_ACTIVE_YEARS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
@@ -98,5 +102,26 @@ public class AllowanceRestApiCtrl extends BaseRestApiCtrl
                 .collect(toList());
 
         return ListViewResponse.of(perAllowUsageViews);
+    }
+
+    /**
+     * Get Active Allowance Years Api
+     * ------------------------------
+     *
+     * Get a list of years for which the employee has an allowance:
+     * (GET) /api/v1/allowances/period[.json]
+     *
+     * Request Params:
+     * @param empId int - required - Employee id for retrieved allowance years
+     *
+     * @return {@link ListViewResponse<Integer>}
+     *  A list of years for which the employee has an allowance
+     */
+    @RequestMapping(value = "/active-years", method = {GET, HEAD}, produces = "application/json")
+    public ListViewResponse<Integer> getActiveAccrualYears(@RequestParam int empId) {
+        checkPermission(new EssTimePermission(empId, ALLOWANCE_ACTIVE_YEARS, GET, Range.singleton(LocalDate.now())));
+
+        SortedSet<Integer> allowanceYears = allowanceService.getAllowanceYears(empId);
+        return ListViewResponse.ofIntList(allowanceYears, "years");
     }
 }
