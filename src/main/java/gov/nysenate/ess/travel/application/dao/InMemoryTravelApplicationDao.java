@@ -98,8 +98,7 @@ public class InMemoryTravelApplicationDao {
 
     private GsaAllowance randomGsaAllowance() {
         return new GsaAllowance(String.valueOf(randomWithRange(0, 25.00)),
-                String.valueOf(randomWithRange(0, 375.00)),
-                String.valueOf(randomWithRange(0, 12.00)));
+                String.valueOf(randomWithRange(0, 375.00)));
     }
 
     private TravelAllowances randomAllowances() {
