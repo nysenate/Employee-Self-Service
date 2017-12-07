@@ -24,7 +24,7 @@ public class TravelDestinationView implements ViewObject {
         this.arrivalDate = td.getArrivalDate().format(ISO_DATE);
         this.departureDate = td.getDepartureDate().format(ISO_DATE);
         this.address = new AddressView(td.getAddress());
-        this.modeOfTransportation = td.getModeOfTransportation().name();
+        this.modeOfTransportation = td.getModeOfTransportation().getDisplayName();
         this.isWaypoint = td.isWaypoint();
     }
 
