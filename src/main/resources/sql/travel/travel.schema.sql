@@ -33,6 +33,8 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE irs_rate (
+    start_date date NOT NULL,
+    end_date date NOT NULL,
     irs_travel_rate double precision NOT NULL
 );
 
@@ -71,7 +73,7 @@ ALTER TABLE travel_requestors OWNER TO postgres;
 --
 
 ALTER TABLE ONLY irs_rate
-    ADD CONSTRAINT irs_rate_pkey PRIMARY KEY (irs_travel_rate);
+    ADD CONSTRAINT irs_rate_pkey PRIMARY KEY (start_date);
 
 
 --
