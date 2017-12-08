@@ -36,6 +36,7 @@ public class GsaAllowanceService {
             client.setLodging(currentDate.getMonth());
 
             int daysThere = (int) ChronoUnit.DAYS.between(arrival, departure) + 1;
+            travelDestination.setTravelDays(client, currentDate, daysThere);
 
             for (int i = 1; i < daysThere; i++) {
                 mealAllowance += client.getBreakfastCost();
