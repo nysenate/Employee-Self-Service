@@ -9,10 +9,27 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
 
     /* --- Container Page --- */
 
-    const STATES = ['LOCATION_SELECTION', 'METHOD_AND_PURPOSE', 'REVIEW_AND_SUBMIT'];
-    $scope.state = '';
+    // Actions that can be performed by each page of the application.
+    $scope.ACTIONS = {
+        CANCEL: 5,
+        BACK: 10,
+        NEXT: 15
+    };
+
+    $scope.STATES = {
+        PURPOSE: 5,
+        ORIGIN: 10,
+        DESTINATION: 15,
+        LOCATION_ALLOWANCES: 20,
+        OTHER_ALLOWANCES: 25,
+        REVIEW: 30,
+        EDIT: 35
+    };
+
+    $scope.pageState = undefined; // Controls which page is displayed to the user, must be one of $scope.STATES, but should not be EDIT.
     $scope.app = {
-        travelerEmpId: undefined,
+        appState: undefined, // The state of the application, i.e. what page we are on.
+        traveler: undefined,
         allowances: {
             gsa: {
                 meals: 0,
@@ -35,11 +52,111 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
     };
 
     function init() {
-        $scope.state = STATES[0];
-        $scope.app.travelerEmpId = appProps.user.employeeId;
+        $scope.pageState = $scope.STATES.PURPOSE;
+        $scope.app.appState = $scope.STATES.PURPOSE;
+        $scope.app.traveler = appProps.user;
     }
 
     init();
+
+    /**
+     * Updates the app.pageState and $scope.pageState after an action has occurred.
+     * @param action
+     */
+    function updateStates(action) {
+        if (action === $scope.ACTIONS.CANCEL) {
+            handleCancelAction();
+        }
+        else if(action === $scope.ACTIONS.BACK) {
+            handleBackAction();
+        }
+        else if(action === $scope.ACTIONS.NEXT) {
+            handleNextAction();
+        }
+    }
+
+    function handleCancelAction() {
+        // TODO: Implement
+    }
+
+    function handleBackAction() {
+        switch ($scope.app.appState) {
+            case $scope.STATES.PURPOSE:
+                // TODO: Cancel order? Should Back be valid on first page?
+                break;
+            case $scope.STATES.ORIGIN:
+                $scope.app.appState = $scope.STATES.PURPOSE;
+                $scope.pageState = $scope.STATES.PURPOSE;
+                break;
+            case $scope.STATES.DESTINATION:
+                $scope.app.appState = $scope.STATES.ORIGIN;
+                $scope.pageState = $scope.STATES.ORIGIN;
+                break;
+            case $scope.STATES.LOCATION_ALLOWANCES:
+                $scope.app.appState = $scope.STATES.DESTINATION;
+                $scope.pageState = $scope.STATES.DESTINATION;
+                break;
+            case $scope.STATES.OTHER_ALLOWANCES:
+                $scope.app.appState = $scope.STATES.LOCATION_ALLOWANCES;
+                $scope.pageState = $scope.STATES.LOCATION_ALLOWANCES;
+                break;
+            case $scope.STATES.REVIEW:
+                $scope.app.appState = $scope.STATES.OTHER_ALLOWANCES;
+                $scope.pageState = $scope.STATES.OTHER_ALLOWANCES;
+                break;
+            case $scope.STATES.EDIT:
+                $scope.pageState = $scope.STATES.REVIEW;
+                break;
+        }
+    }
+
+    function handleNextAction() {
+        switch ($scope.app.appState) {
+            case $scope.STATES.PURPOSE:
+                $scope.app.appState = $scope.STATES.ORIGIN;
+                $scope.pageState = $scope.STATES.ORIGIN;
+                break;
+            case $scope.STATES.ORIGIN:
+                $scope.app.appState = $scope.STATES.DESTINATION;
+                $scope.pageState = $scope.STATES.DESTINATION;
+                break;
+            case $scope.STATES.DESTINATION:
+                $scope.app.appState = $scope.STATES.LOCATION_ALLOWANCES;
+                $scope.pageState = $scope.STATES.LOCATION_ALLOWANCES;
+                break;
+            case $scope.STATES.LOCATION_ALLOWANCES:
+                $scope.app.appState = $scope.STATES.OTHER_ALLOWANCES;
+                $scope.pageState = $scope.STATES.OTHER_ALLOWANCES;
+                break;
+            case $scope.STATES.OTHER_ALLOWANCES:
+                $scope.app.appState = $scope.STATES.REVIEW;
+                $scope.pageState = $scope.STATES.REVIEW;
+                break;
+            case $scope.STATES.REVIEW:
+                // TODO: Submit application
+                break;
+            case $scope.STATES.EDIT:
+                $scope.pageState = $scope.STATES.REVIEW;
+                break;
+        }
+    }
+
+    $scope.purposeCallBack = function (purpose, action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.purposeOfTravel = purpose;
+        }
+        updateStates(action);
+    };
+
+    $scope.originCallBack = function (origin, action) {
+         if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.origin = origin;
+        }
+        updateStates(action);
+    };
+
+
+
 
     /* --- Location Selection --- */
 
@@ -146,3 +263,25 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         $scope.state = STATES[1];
     }
 }
+
+essTravel.directive('travelApplicationPurpose', ['appProps', function (appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-purpose',
+        scope: true,
+        link: function ($scope, $elem, $attrs) {
+            // Copy current purpose of travel for use in this directive.
+            $scope.purposeOfTravel = angular.copy($scope.app.purposeOfTravel);
+        }
+    }
+}]);
+
+essTravel.directive('travelApplicationOrigin', ['appProps', function (appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-origin',
+        scope: true,
+        link: function ($scope, $elem, $attrs) {
+            // Copy current origin for use in this directive.
+            $scope.origin = angular.copy($scope.app.origin);
+        }
+    }
+}]);

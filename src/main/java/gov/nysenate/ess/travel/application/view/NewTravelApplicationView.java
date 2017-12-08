@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelApplication;
 
 /**

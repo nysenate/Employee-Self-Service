@@ -4,9 +4,20 @@
   </div>
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
-      Travel application for: {{app.applicant.firstName}} {{app.applicant.lastName}}
+      Travel application for: <span class="bold">{{app.traveler.firstName}} {{app.traveler.lastName}}</span>
     </div>
   </div>
+
+  <div ng-if="pageState === STATES.PURPOSE">
+    <travel-application-purpose></travel-application-purpose>
+  </div>
+
+  <div ng-if="pageState === STATES.ORIGIN">
+    <travel-application-origin></travel-application-origin>
+  </div>
+
+
+
 
   <div class="content-container">
     <div class="content-info" style="padding-bottom: 40px;">
