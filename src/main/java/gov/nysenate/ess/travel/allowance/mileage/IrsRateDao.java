@@ -4,32 +4,31 @@ import gov.nysenate.ess.core.dao.base.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 @Repository
 public class IrsRateDao extends SqlBaseDao {
 
-    public void insertIrsRate(double rate) {
+    public void insertIrsRate(String startDate, String endDate, double rate) {
         MapSqlParameterSource params = new MapSqlParameterSource("rate", rate);
+        params.addValue("startDate", Date.valueOf(startDate));
+        params.addValue("endDate", Date.valueOf(endDate));
         String sql = IrsRateDao.SqlIrsRateQuery.INSERT_IRS_RATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
-    public void updateIrsRate(double rate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("rate", rate);
-        String sql = IrsRateDao.SqlIrsRateQuery.UPDATE_IRS_RATE.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
-    }
-
-    public double getIrsRate() {
+    public double getIrsRate(LocalDate queryDate) {
+        MapSqlParameterSource params = new MapSqlParameterSource("queryDate", Date.valueOf(queryDate));
         String sql = IrsRateDao.SqlIrsRateQuery.GET_IRS_RATE.getSql(schemaMap());
         IrsRateDao.IrsRateMapper mapper = new IrsRateMapper();
 
         double rate;
         try {
-            rate = localNamedJdbc.query(sql, mapper).get(0);
+            rate = localNamedJdbc.query(sql, params, mapper).get(0);
         }
         catch(IndexOutOfBoundsException e){
             rate = -2;
@@ -41,15 +40,12 @@ public class IrsRateDao extends SqlBaseDao {
 
         INSERT_IRS_RATE(
                 "INSERT INTO ${travelSchema}.irs_rate\n" +
-                "VALUES (:rate)"
-        ),
-        UPDATE_IRS_RATE(
-                "UPDATE ${travelSchema}.irs_rate\n" +
-                "SET irs_travel_rate = :rate"
+                "VALUES (:startDate, :endDate, :rate)"
         ),
         GET_IRS_RATE(
                 "SELECT irs_travel_rate\n" +
-                "FROM ${travelSchema}.irs_rate"
+                "FROM ${travelSchema}.irs_rate\n" +
+                "WHERE start_date <= :queryDate and end_date >= :queryDate"
         );
 
         SqlIrsRateQuery(String sql) {
