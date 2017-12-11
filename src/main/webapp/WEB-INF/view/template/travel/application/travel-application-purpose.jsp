@@ -8,9 +8,9 @@
   </div>
   <div class="margin-top-20">
     <input type="button" class="neutral-button" value="Back"
-           ng-click="purposeCallBack(purposeOfTravel, ACTIONS.BACK)">
+           ng-click="purposeCallback(purposeOfTravel, ACTIONS.BACK)">
     <input type="button" class="submit-button"
            value="Next"
-           ng-click="purposeCallBack(purposeOfTravel, ACTIONS.NEXT)">
+           ng-click="purposeCallback(purposeOfTravel, ACTIONS.NEXT)">
   </div>
 </div>

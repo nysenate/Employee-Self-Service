@@ -16,6 +16,20 @@
     <travel-application-origin></travel-application-origin>
   </div>
 
+  <div ng-if="pageState === STATES.DESTINATION">
+    <travel-application-destination></travel-application-destination>
+  </div>
+
+  <div ng-if="pageState === STATES.ALLOWANCES">
+    <travel-application-allowances></travel-application-allowances>
+  </div>
+
+  <div ng-if="pageState === STATES.REVIEW">
+    <travel-application-review></travel-application-review>
+  </div>
+
+
+
 
 
 

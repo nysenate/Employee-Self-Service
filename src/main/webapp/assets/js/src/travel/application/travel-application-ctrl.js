@@ -20,8 +20,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         PURPOSE: 5,
         ORIGIN: 10,
         DESTINATION: 15,
-        LOCATION_ALLOWANCES: 20,
-        OTHER_ALLOWANCES: 25,
+        ALLOWANCES: 25,
         REVIEW: 30,
         EDIT: 35
     };
@@ -64,6 +63,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
      * @param action
      */
     function updateStates(action) {
+        console.log($scope.app);
         if (action === $scope.ACTIONS.CANCEL) {
             handleCancelAction();
         }
@@ -92,17 +92,13 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
                 $scope.app.appState = $scope.STATES.ORIGIN;
                 $scope.pageState = $scope.STATES.ORIGIN;
                 break;
-            case $scope.STATES.LOCATION_ALLOWANCES:
+            case $scope.STATES.ALLOWANCES:
                 $scope.app.appState = $scope.STATES.DESTINATION;
                 $scope.pageState = $scope.STATES.DESTINATION;
                 break;
-            case $scope.STATES.OTHER_ALLOWANCES:
-                $scope.app.appState = $scope.STATES.LOCATION_ALLOWANCES;
-                $scope.pageState = $scope.STATES.LOCATION_ALLOWANCES;
-                break;
             case $scope.STATES.REVIEW:
-                $scope.app.appState = $scope.STATES.OTHER_ALLOWANCES;
-                $scope.pageState = $scope.STATES.OTHER_ALLOWANCES;
+                $scope.app.appState = $scope.STATES.ALLOWANCES;
+                $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
             case $scope.STATES.EDIT:
                 $scope.pageState = $scope.STATES.REVIEW;
@@ -121,14 +117,10 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
                 $scope.pageState = $scope.STATES.DESTINATION;
                 break;
             case $scope.STATES.DESTINATION:
-                $scope.app.appState = $scope.STATES.LOCATION_ALLOWANCES;
-                $scope.pageState = $scope.STATES.LOCATION_ALLOWANCES;
+                $scope.app.appState = $scope.STATES.ALLOWANCES;
+                $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
-            case $scope.STATES.LOCATION_ALLOWANCES:
-                $scope.app.appState = $scope.STATES.OTHER_ALLOWANCES;
-                $scope.pageState = $scope.STATES.OTHER_ALLOWANCES;
-                break;
-            case $scope.STATES.OTHER_ALLOWANCES:
+            case $scope.STATES.ALLOWANCES:
                 $scope.app.appState = $scope.STATES.REVIEW;
                 $scope.pageState = $scope.STATES.REVIEW;
                 break;
@@ -141,16 +133,31 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         }
     }
 
-    $scope.purposeCallBack = function (purpose, action) {
+    $scope.purposeCallback = function (purpose, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.app.purposeOfTravel = purpose;
         }
         updateStates(action);
     };
 
-    $scope.originCallBack = function (origin, action) {
-         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.origin = origin;
+    $scope.originCallback = function (origin, action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.itinerary.origin = origin;
+        }
+        updateStates(action);
+    };
+
+    $scope.destinationCallback = function (destinations, action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.itinerary.destinations.items = destinations;
+        }
+        updateStates(action);
+    };
+
+    $scope.allowancesCallback = function (destinations, allowances, action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.allowances = allowances;
+            $scope.app.itinerary.destinations.items = destinations;
         }
         updateStates(action);
     };
@@ -158,40 +165,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
 
 
 
+
     /* --- Location Selection --- */
 
-    $scope.setOrigin = function (address) {
-        $scope.app.itinerary.origin = address;
-    };
-
-    $scope.addDestinationOnClick = function() {
-        var params = {
-            defaultModeOfTransportation: undefined
-        };
-        if ($scope.app.itinerary.destinations.items.length > 0) {
-            params.defaultModeOfTransportation = $scope.app.itinerary.destinations.items[$scope.app.itinerary.destinations.items.length - 1].modeOfTransportation
-        }
-        modals.open('destination-selection-modal', params)
-            .then(function (destination) {
-                $scope.app.itinerary.destinations.items.push(destination);
-            });
-    };
-
-    $scope.editDestination = function (dest) {
-        var params = {
-            destination: dest,
-            defaultModeOfTransportation: undefined
-        };
-        modals.open('destination-selection-modal', params)
-            .then(function (destination) {
-                dest = destination;
-            });
-    };
-
-    $scope.removeDestination = function(dest) {
-        var index = $scope.app.itinerary.destinations.items.indexOf(dest);
-        $scope.app.itinerary.destinations.items.splice(index, 1);
-    };
 
     $scope.locationsCompleted = function() {
         return $scope.app.itinerary.origin && $scope.app.itinerary.destinations.items.length > 0;
@@ -281,7 +257,91 @@ essTravel.directive('travelApplicationOrigin', ['appProps', function (appProps) 
         scope: true,
         link: function ($scope, $elem, $attrs) {
             // Copy current origin for use in this directive.
-            $scope.origin = angular.copy($scope.app.origin);
+            $scope.origin = angular.copy($scope.app.itinerary.origin);
+
+            $scope.setOrigin = function (address) {
+                $scope.origin = address;
+            };
+        }
+    }
+}]);
+
+
+essTravel.directive('travelApplicationDestination', ['appProps', 'modals', function (appProps, modals) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-destination',
+        scope: true,
+        link: function ($scope, $elem, $attrs) {
+            // Copy current destinations for use in this directive. So old values are not overwritten on cancel.
+            $scope.destinations = angular.copy($scope.app.itinerary.destinations.items);
+
+            $scope.editDestination = function (dest) {
+                var params = {
+                    destination: dest,
+                    defaultModeOfTransportation: undefined
+                };
+                modals.open('destination-selection-modal', params)
+                    .then(function (destination) {
+                        dest = destination;
+                    });
+            };
+
+            $scope.removeDestination = function(dest) {
+                var index = $scope.destinations.indexOf(dest);
+                $scope.destinations.splice(index, 1);
+            };
+
+            $scope.addDestinationOnClick = function() {
+                var params = {
+                    defaultModeOfTransportation: undefined
+                };
+                if ($scope.destinations.length > 0) {
+                    params.defaultModeOfTransportation = $scope.destinations[$scope.destinations.length - 1].modeOfTransportation
+                }
+                modals.open('destination-selection-modal', params)
+                    .then(function (destination) {
+                        $scope.destinations.push(destination);
+                    });
+            };
+        }
+    }
+}]);
+
+essTravel.directive('travelApplicationAllowances', ['appProps', function (appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-allowances',
+        scope: true,
+        link: function ($scope, $elem, $attrs) {
+            $scope.allowances = angular.copy($scope.app.allowances);
+
+            $scope.destinations = angular.copy($scope.app.itinerary.destinations.items);
+            // Initialize default reimbursement selections.
+            $scope.destinations.forEach(function (dest) {
+                // Mileage
+                if (dest.modeOfTransportation === 'Personal Auto') {
+                    dest.requestMileage = true;
+                }
+
+                // Meals
+                dest.requestMeals = true;
+
+                // Lodging
+                var arrival = moment(dest.arrivalDate);
+                var departure = moment(dest.departureDate);
+                if (Math.abs(arrival.diff(departure, 'days')) > 0) {
+                    dest.requestLodging = true;
+                }
+            });
+        }
+    }
+}]);
+
+essTravel.directive('travelApplicationReview', ['appProps', function (appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-review',
+        scope: true,
+        link: function ($scope, $elem, $attrs) {
+
         }
     }
 }]);
