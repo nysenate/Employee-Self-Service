@@ -56,7 +56,7 @@ public class MileageAllowanceServiceTest extends BaseTest{
         Itinerary itinerary = new Itinerary(new Address("100 South Swan Street", "Albany", "NY", "12210"), dests);
 
         BigDecimal mileage = mileageAllowanceService.calculateMileageAllowance(itinerary);
-        assertEquals(round(mileage), "56.12");
+        assertEquals(round(mileage), "56.13");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class MileageAllowanceServiceTest extends BaseTest{
         Itinerary itinerary = new Itinerary(new Address("100 South Swan Street", "Albany", "NY", "12210"), dests);
 
         BigDecimal mileage = mileageAllowanceService.calculateMileageAllowance(itinerary);
-        assertEquals(round(mileage), "61.90");
+        assertEquals(round(mileage), "61.89");
     }
 
 

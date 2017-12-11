@@ -36,6 +36,31 @@ public class IrsRateDao extends SqlBaseDao {
         return rate;
     }
 
+    public int getNumRows() {
+        String sql = SqlIrsRateQuery.GET_NUM_ROWS.getSql(schemaMap());
+        IrsRateDao.NumRowsMapper mapper = new NumRowsMapper();
+
+        int numRows;
+        try {
+            numRows = localNamedJdbc.query(sql, mapper).get(0);
+        }
+        catch(IndexOutOfBoundsException e){
+            numRows = 0;
+        }
+        return numRows;
+    }
+
+    public void deleteValues() {
+        String sql = SqlIrsRateQuery.DELETE_TABLE_VALUES.getSql(schemaMap());
+
+        try {
+            localNamedJdbc.execute(sql, PreparedStatement::execute);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private enum SqlIrsRateQuery implements BasicSqlQuery {
 
         INSERT_IRS_RATE(
@@ -46,6 +71,13 @@ public class IrsRateDao extends SqlBaseDao {
                 "SELECT irs_travel_rate\n" +
                 "FROM ${travelSchema}.irs_rate\n" +
                 "WHERE start_date <= :queryDate and end_date >= :queryDate"
+        ),
+        GET_NUM_ROWS(
+                "SELECT count(*)\n" +
+                "FROM ${travelSchema}.irs_rate"
+        ),
+        DELETE_TABLE_VALUES(
+                "DELETE FROM ${travelSchema}.irs_rate"
         );
 
         SqlIrsRateQuery(String sql) {
@@ -71,6 +103,14 @@ public class IrsRateDao extends SqlBaseDao {
         @Override
         public Double mapRow(ResultSet resultSet, int i) throws SQLException {
             return resultSet.getDouble("irs_travel_rate");
+        }
+    }
+
+    private class NumRowsMapper extends BaseRowMapper<Integer> {
+
+        @Override
+        public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+            return resultSet.getInt("count");
         }
     }
 }

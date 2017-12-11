@@ -24,10 +24,12 @@ public class IrsRateService {
     @PostConstruct
     public void postConstruct() {
         // Ensure the database has an initialized value.
-        try {
-            this.initializeDatabase();
-        } catch (IOException e ) {
-            e.printStackTrace();
+        if (irsRateDao.getNumRows() == 0) {
+            try {
+                this.initializeDatabase();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -113,12 +115,12 @@ public class IrsRateService {
 
     @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate() {
-        double webVal = -1;
         try {
-            webVal = webScrapeIrsRate();
+            webScrapeIrsRate();  //verifies that we can access the IRS website
+            irsRateDao.deleteValues();
+            initializeDatabase();
         } catch (IOException e) {
-            //do nothing
+            e.printStackTrace();
         }
-        double dbVal = irsRateDao.getIrsRate(LocalDate.now());
     }
 }
