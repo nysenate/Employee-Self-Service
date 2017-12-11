@@ -2,32 +2,102 @@
 <div class="content-container text-align-center padding-bottom-10">
   <div>
     <h4 class="content-info">Review</h4>
-    <p>
-      Purpose of Travel.
-      <br/>
-      {{app.purposeOfTravel}}
-    </p>
-    <%--Purpose of travel--%>
-    <textarea disabled ng-model="purposeOfTravel" cols="80" rows="6" placeholder="Why will you be traveling?"></textarea>
 
+    <div class="grid grid-pad">
 
-    <%--Allowances--%>
-    <div class="grid padding-10">
-      <div class="col-6-12 padding-bottom-10">
-        <label class="travel-allowance-label">Tolls:</label>
-        <input ng-model="app.allowances.tolls" type="number" step="0.01" min="0">
+      <%--Purpose--%>
+      <div class="col-4-12">
+        Purpose of Travel
       </div>
-      <div class="col-6-12 padding-bottom-10">
-        <label class="travel-allowance-label">Parking:</label>
-        <input ng-model="app.allowances.parking" type="number" step="0.01" min="0">
+      <div class="col-8-12">
+        {{app.purposeOfTravel}}
       </div>
-      <div class="col-6-12">
-        <label class="travel-allowance-label">Taxi/Bus/Subway:</label>
-        <input ng-model="app.allowances.alternate" type="number" step="0.01" min="0">
+
+      <%--Origin--%>
+      <div class="col-4-12">
+        Departure (Origin)
       </div>
-      <div class="col-6-12">
-        <label class="travel-allowance-label">Registration Fee:</label>
-        <input ng-model="app.allowances.registrationFee" type="number" step="0.01" min="0">
+      <div class="col-8-12">
+        <div class="travel-location-div">
+          <div>
+            {{app.itinerary.origin.addr1}}<br/>
+            <span ng-if="app.itinerary.origin.addr2.length <= 0">{{app.itinerary.origin.addr2}}<br/></span>
+            {{app.itinerary.origin.city}} {{app.itinerary.origin.state}} {{app.itinerary.origin.zip5}}
+          </div>
+        </div>
+      </div>
+
+      <%--Destinations--%>
+      <div ng-repeat="dest in app.itinerary.destinations.items">
+        <div ng-if="$index === 0" class="col-4-12">
+          Destination (To)
+        </div>
+        <div ng-if="$index !== 0" class="col-4-12">
+          &nbsp
+        </div>
+        <div class="col-8-12">
+          <div class="travel-location-div">
+            <div style="float: left; font-size: 0.8em;">
+              Arrival Date: {{dest.arrivalDate | date: 'shortDate'}}<br/>
+              Departure Date: {{dest.departureDate | date: 'shortDate'}}
+            </div>
+
+            <div>
+              {{dest.address.addr1}}<br/>
+              <span ng-if="dest.address.addr2.length <= 0">{{dest.address.addr2}}<br/></span>
+              {{dest.address.city}} {{dest.address.state}} {{dest.address.zip5}}
+            </div>
+
+            <div style="float: right; font-size: 0.8em;">
+              Mode of Transportation: <br/>
+              {{dest.modeOfTransportation}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%--Allowances--%>
+      <div class="col-4-12">
+        Mileage
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.mileage | currency}}}
+      </div>
+      <div class="col-4-12">
+        Meals
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.gsa.meals | currency}}
+      </div>
+      <div class="col-4-12">
+        Lodging
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.gsa.lodging | currency}}
+      </div>
+      <div class="col-4-12">
+        Tolls
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.tolls | currency}}
+      </div>
+      <div class="col-4-12">
+        Parking
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.parking | currency}}
+      </div>
+      <div class="col-4-12">
+        Taxi/Bus/Subway
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.alternate | currency}}
+      </div>
+      <div class="col-4-12">
+        Registration Fee
+      </div>
+      <div class="col-8-12">
+        {{app.allowances.registrationFee | currency}}
       </div>
     </div>
 
@@ -35,9 +105,9 @@
 
   <div class="margin-top-20">
     <input type="button" class="neutral-button" value="Back"
-           ng-click="allowancesCallback(purposeOfTravel, ACTIONS.BACK)">
+           ng-click="reviewCallback(ACTIONS.BACK)">
     <input type="button" class="submit-button"
            value="Next"
-           ng-click="allowancesCallback(purposeOfTravel, ACTIONS.NEXT)">
+           ng-click="reviewCallback(ACTIONS.NEXT)">
   </div>
 </div>

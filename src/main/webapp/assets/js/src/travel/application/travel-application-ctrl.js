@@ -162,6 +162,16 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         updateStates(action);
     };
 
+    $scope.reviewCallback = function (action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            // Submit?
+        }
+        updateStates(action);
+    };
+
+
+
+
 
 
 
@@ -336,12 +346,39 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
     }
 }]);
 
-essTravel.directive('travelApplicationReview', ['appProps', function (appProps) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-review',
-        scope: true,
-        link: function ($scope, $elem, $attrs) {
+essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'TravelGsaAllowanceApi',
+                                                'TravelMileageAllowanceApi', function (appProps, $q, modals, gsaApi, mileageAllowanceApi) {
+        return {
+            templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-review',
+            scope: true,
+            link: function ($scope, $elem, $attrs) {
 
+                var promises = [];
+                modals.open('calculating-allowances');
+
+                promises.push(gsaApi.save($scope.app.itinerary, function (response) {
+                    $scope.app.allowances.gsa = response.result;
+                }).$promise);
+
+                promises.push(mileageAllowanceApi.save($scope.app.itinerary, function (response) {
+                    $scope.app.allowances.mileage = response.result.mileage;
+                }).$promise);
+
+                $q.all(promises)
+                    .then(function () {
+                        sumAllowances();
+                        modals.resolve({});
+                    });
+
+                function sumAllowances() {
+                    $scope.app.allowances.total = parseFloat($scope.app.allowances.gsa.meals)
+                        + parseFloat($scope.app.allowances.gsa.lodging)
+                        + parseFloat($scope.app.allowances.mileage)
+                        + $scope.app.allowances.tolls
+                        + $scope.app.allowances.parking
+                        + $scope.app.allowances.alternate
+                        + $scope.app.allowances.registrationFee;
+                }
+            }
         }
-    }
-}]);
+    }]);
