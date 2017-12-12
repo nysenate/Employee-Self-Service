@@ -35,8 +35,8 @@ public class SupervisorEmpGroupTest
             supOverrideEmployees.put(3000, 3001 + i, new EmployeeSupInfo(3001 + i, 3000));
         }
         empGroup.setPrimaryEmployees(primaryEmployees);
-        empGroup.setOverrideEmployees(overrideEmployees);
-        empGroup.setSupOverrideEmployees(supOverrideEmployees);
+        empGroup.setOverrideEmployees(overrideEmployees.values());
+        empGroup.setSupOverrideEmployees(supOverrideEmployees.values());
 
         int totalEmployees = 40;
         assertEquals(totalEmployees, empGroup.getDirectEmployeeSupInfos().size());

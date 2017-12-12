@@ -74,12 +74,23 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
         return ImmutableMultimap.copyOf(overrideEmployees);
     }
 
-    public void setOverrideEmployees(Multimap<Integer, EmployeeSupInfo> overrideEmployees) {
-        this.overrideEmployees = HashMultimap.create(overrideEmployees);
+    public void setSupOverrideEmployees(Collection<EmployeeSupInfo> supOverrideEmployees) {
+        this.supOverrideEmployees = HashBasedTable.create();
+        supOverrideEmployees.forEach(this::addSupOverrideEmployee);
     }
 
     public void addSupOverrideEmployee(EmployeeSupInfo empSupInfo) {
+        // Prevent the supervisor from getting themselves as an employee
+        // This happens often when an employee is given an override for their own supervisor
+        if (empSupInfo.getEmpId() == supervisorId) {
+            return;
+        }
         this.supOverrideEmployees.put(empSupInfo.getSupId(), empSupInfo.getEmpId(), empSupInfo);
+    }
+
+    public void setOverrideEmployees(Collection<EmployeeSupInfo> overrideEmployees) {
+        this.overrideEmployees = HashMultimap.create();
+        overrideEmployees.forEach(this::addOverrideEmployee);
     }
 
     public void addOverrideEmployee(EmployeeSupInfo employeeSupInfo) {
@@ -121,9 +132,5 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
 
     public Table<Integer, Integer, EmployeeSupInfo> getSupOverrideEmployees() {
         return supOverrideEmployees;
-    }
-
-    public void setSupOverrideEmployees(Table<Integer, Integer, EmployeeSupInfo> supOverrideEmployees) {
-        this.supOverrideEmployees = supOverrideEmployees;
     }
 }
