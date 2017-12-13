@@ -14,7 +14,7 @@ import java.util.Objects;
 public class PayPeriod implements Comparable<PayPeriod>
 {
     /** The expected number of days in a full pay period. */
-    public static int DEFAULT_PAY_PERIOD_DAYS = 14;
+    public static final int DEFAULT_PAY_PERIOD_DAYS = 14;
 
     /** The type of pay period. The one we deal with most is Attendance Fiscal (AF). */
     protected PayPeriodType type;
@@ -130,6 +130,21 @@ public class PayPeriod implements Comparable<PayPeriod>
         return endDate.getYear();
     }
 
+    /**
+     * Return the pay period number, but add a letter designator if it is a split pay period.
+     *
+     * @return String
+     */
+    public String getPayPeriodNum() {
+        if (isEndOfYearSplit()) {
+            return payPeriodNum.concat("A");
+        }
+        if (isStartOfYearSplit()) {
+            return payPeriodNum.concat("B");
+        }
+        return payPeriodNum;
+    }
+
     /** --- Overrides --- */
 
     @Override
@@ -188,10 +203,6 @@ public class PayPeriod implements Comparable<PayPeriod>
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public String getPayPeriodNum() {
-        return payPeriodNum;
     }
 
     public void setPayPeriodNum(String payPeriodNum) {

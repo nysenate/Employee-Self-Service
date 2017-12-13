@@ -5,6 +5,7 @@ import gov.nysenate.ess.time.model.allowances.PeriodAllowanceUsage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * @author Sam Stouffer
@@ -13,6 +14,15 @@ import java.util.List;
  */
 public interface AllowanceService
 {
+
+    /**
+     * Gets a set of years for which the employee is an active temp employee with an allowance.
+     *
+     * @param empId int employee id
+     * @return SortedSet<Integer>
+     */
+    SortedSet<Integer> getAllowanceYears(int empId);
+
     /**
      * Gets the allowance usage for a single employee over a given year.
      *

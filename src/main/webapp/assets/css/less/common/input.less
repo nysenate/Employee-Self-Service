@@ -13,20 +13,24 @@
   justify-content: space-around;
 }
 
-input[type="button"].submit-button {
-  .styled-button(@green, white);
-}
+input[type="button"],
+input[type="submit"] {
 
-input[type="button"].reject-button {
-  .styled-button(@redorange, white);
-}
+  &.submit-button {
+    .styled-button(@green, white);
+  }
 
-input[type="button"].neutral-button {
-  .styled-button(lighten(@gray, 5%), white);
-}
+  &.reject-button {
+    .styled-button(@redorange, white);
+  }
 
-input[type="button"].time-neutral-button {
-  .styled-button(@teal, white);
+  &.neutral-button {
+    .styled-button(lighten(@gray, 5%), white);
+  }
+
+  &.time-neutral-button {
+    .styled-button(@teal, white);
+  }
 }
 
 input[type="text"],

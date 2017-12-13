@@ -103,7 +103,8 @@ essApp.config(function($routeProvider, $locationProvider) {
     });
 
     $routeProvider.when(ctxPath + '/time/personnel/search', {
-        templateUrl: ctxPath + '/template/time/personnel/search'
+        templateUrl: ctxPath + '/template/time/personnel/search',
+        reloadOnSearch: false
     });
 
     /** Test */

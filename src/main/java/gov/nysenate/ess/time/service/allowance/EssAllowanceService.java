@@ -60,6 +60,18 @@ public class EssAllowanceService implements AllowanceService {
 
     /** {@inheritDoc} */
     @Override
+    public SortedSet<Integer> getAllowanceYears(int empId) {
+        RangeSet<LocalDate> allowanceDates = getAllowanceDates(empId);
+        allowanceDates.remove(Range.atLeast(LocalDate.now().plusDays(1)));  // Cut off the future
+        return allowanceDates.asRanges().stream()
+                .map(dateRange -> DateUtils.toYearRange(dateRange, false))
+                .map(yearRange -> ContiguousSet.create(yearRange, DiscreteDomain.integers()))
+                .flatMap(Collection::stream)
+                .collect(toCollection(TreeSet::new));
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public AllowanceUsage getAllowanceUsage(int empId, int year) {
         return getAllowanceUsage(empId, LocalDate.ofYearDay(year + 1, 1), false);
     }
@@ -152,15 +164,11 @@ public class EssAllowanceService implements AllowanceService {
 
         List<HourlyWorkPayment> payments = getHourlyPayments(year, transHistory);
 
-        RangeSet<LocalDate> tempEmploymentDates = transHistory.getPayTypeDates(payType -> payType == PayType.TE);
-        RangeSet<LocalDate> activeEmploymentDates = transHistory.getActiveDates();
-
         // Initialize unpaid dates as all TE employed dates in the year before beforeDate
         RangeSet<LocalDate> unpaidDates = RangeUtils.intersection(Arrays.asList(
                 ImmutableRangeSet.of(DateUtils.yearDateRange(year)),
                 ImmutableRangeSet.of(Range.lessThan(beforeDate)),
-                tempEmploymentDates,
-                activeEmploymentDates
+                getAllowanceDates(allowanceUsage.getEmpId())
         ));
 
         BigDecimal hoursPaid = ZERO;
@@ -347,6 +355,7 @@ public class EssAllowanceService implements AllowanceService {
 
     /**
      * Gets a set of pay periods in the given year for which the employee is an active temporary employee.
+     * Excludes future dates.
      *
      * @param empId int
      * @param year int
@@ -354,7 +363,10 @@ public class EssAllowanceService implements AllowanceService {
      */
     private SortedSet<PayPeriod> getTempPeriods(int empId, int year) {
         RangeSet<LocalDate> allowanceDates = getAllowanceDates(empId);
-        RangeSet<LocalDate> yearDates = ImmutableRangeSet.of(DateUtils.yearDateRange(year));
+        RangeSet<LocalDate> yearDates = ImmutableRangeSet.of(Range.closedOpen(
+                LocalDate.ofYearDay(year, 1),
+                LocalDate.now().plusDays(1)
+        ));
 
         RangeSet<LocalDate> applicableDates = RangeUtils.intersection(yearDates, allowanceDates);
 

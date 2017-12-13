@@ -268,7 +268,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                     return;
                 }
                 count = isNaN(count) ? 0 : count;
-                $(".detail-acc-history-table").floatThead('reflow');
+                $(".accrual-table").floatThead('reflow');
                 $timeout(function () {
                     reflowTable(count + 1)
                 }, 5);

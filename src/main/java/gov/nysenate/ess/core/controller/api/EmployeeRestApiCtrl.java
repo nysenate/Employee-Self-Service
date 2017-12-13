@@ -12,8 +12,8 @@ import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
+import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +44,6 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
 
     @Autowired protected EmployeeDao employeeDao;
     @Autowired private EmployeeInfoService empInfoService;
-    @Autowired private EssPermissionService permissionService;
 
     /**
      * Get Employee Info API
@@ -100,15 +100,32 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      *
      * Usage:       (GET) /api/v1/employees/active
      *
+     * Request Params:
+     * @param term String - The search term
+     * @param empId int - default 0 - an optional param that overrides term and will return an employee
+     *              with the given employee id, if one exists
      * @return {@link ListViewResponse<EmployeeSearchView>}
      */
     @RequestMapping(value = "/search", method = {GET, HEAD})
     public ListViewResponse<EmployeeSearchView> searchEmployees(
             @RequestParam(defaultValue = "") String term,
+            @RequestParam(defaultValue = "0") int empId,
             WebRequest request) {
 
         LimitOffset limitOffset = getLimitOffset(request, 10);
-        PaginatedList<Employee> empSearchResults = empInfoService.searchEmployees(term, limitOffset);
+        PaginatedList<Employee> empSearchResults;
+
+        // If a > 0 emp id is passed in, override term search and return that employee
+        if (empId > 0) {
+            List<Employee> employeeList = new ArrayList<>();
+            try {
+                Employee employee = empInfoService.getEmployee(empId);
+                employeeList.add(employee);
+            } catch (EmployeeNotFoundEx ignored) {}
+            empSearchResults = new PaginatedList<>(employeeList.size(), LimitOffset.ALL, employeeList);
+        } else {
+            empSearchResults = empInfoService.searchEmployees(term, limitOffset);
+        }
 
         List<EmployeeSearchView> employeeViewList = empSearchResults.getResults().stream()
                 .map(EmployeeSearchView::new)

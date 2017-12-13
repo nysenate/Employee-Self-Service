@@ -139,8 +139,17 @@ essApi.factory('EmpTransactionTimelineApi', ['$resource', 'appProps', function($
 
 /** --- Allowance API --- */
 
+
+essApi.factory('AllowanceActiveYearsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/allowances/active-years');
+}]);
+
 essApi.factory('AllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/allowances');
+}]);
+
+essApi.factory('PeriodAllowanceUsageApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/allowances/period');
 }]);
 
 /** --- Misc Leave Type Grant API --- */
