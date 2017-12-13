@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 import java.util.ArrayList;
@@ -55,7 +56,9 @@ public class MileageAllowanceService {
 
         BigDecimal mileageAllowance = new BigDecimal(0);
         if (tripDistance.getTripDistanceOut() > 35) {
-            mileageAllowance = BigDecimal.valueOf(tripDistance.getTripDistanceTotal()).multiply(BigDecimal.valueOf(irsRateDao.getIrsRate() / 100));
+            LocalDate travelDate = itinerary.startDate();
+            mileageAllowance = BigDecimal.valueOf(tripDistance.getTripDistanceTotal())
+                    .multiply(BigDecimal.valueOf(irsRateDao.getIrsRate(travelDate) / 100));
         }
 
         return mileageAllowance;

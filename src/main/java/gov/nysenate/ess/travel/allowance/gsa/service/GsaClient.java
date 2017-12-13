@@ -23,6 +23,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 @Component
 public class GsaClient {
@@ -101,9 +103,7 @@ public class GsaClient {
     }
 
     public void setLodging(Month month) {
-        String monthString = month.toString();
-        monthString = monthString.substring(0, 3);
-        monthString = monthString.substring(0, 1).toUpperCase() + monthString.substring(1).toLowerCase();
+        String monthString = month.getDisplayName(TextStyle.SHORT, Locale.US);
         lodging = records.get(monthString).getAsInt();
     }
 
@@ -113,9 +113,5 @@ public class GsaClient {
 
     public int getDinnerCost() {
         return mealIncidentalRate.getDinnerCost();
-    }
-
-    public int getIncidentalCost() {
-        return mealIncidentalRate.getIncidentalCost();
     }
 }

@@ -24,6 +24,10 @@ public enum ModeOfTransportation {
         return mot;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
     private static final Map<String, ModeOfTransportation> map = new HashMap<>(values().length, 1);
 
     static {

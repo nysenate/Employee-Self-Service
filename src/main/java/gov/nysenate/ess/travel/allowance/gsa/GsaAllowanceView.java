@@ -7,7 +7,6 @@ public class GsaAllowanceView implements ViewObject {
 
     private String meals;
     private String lodging;
-    private String incidental;
     private String total;
 
     private GsaAllowanceView() {
@@ -16,12 +15,11 @@ public class GsaAllowanceView implements ViewObject {
     public GsaAllowanceView(GsaAllowance gsa) {
         this.meals = gsa.getMeals().toString();
         this.lodging = gsa.getLodging().toString();
-        this.incidental = gsa.getIncidental().toString();
         this.total = gsa.total().toString();
     }
 
     public GsaAllowance toGsaAllowance() {
-        return new GsaAllowance(meals, lodging, incidental);
+        return new GsaAllowance(meals, lodging);
     }
 
     public String getMeals() {
@@ -30,10 +28,6 @@ public class GsaAllowanceView implements ViewObject {
 
     public String getLodging() {
         return lodging;
-    }
-
-    public String getIncidental() {
-        return incidental;
     }
 
     public String getTotal() {

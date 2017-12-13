@@ -20,7 +20,6 @@ public class GsaAllowanceService {
     public GsaAllowance computeAllowance(Itinerary itinerary) {
         int mealAllowance = 0;
         int lodgingAllowance = 0;
-        int incidentalAllowance = 0;
 
         List<TravelDestination> travelDestinations = itinerary.getDestinations();
         for (TravelDestination travelDestination : travelDestinations) {
@@ -37,42 +36,30 @@ public class GsaAllowanceService {
             client.setLodging(currentDate.getMonth());
 
             int daysThere = (int) ChronoUnit.DAYS.between(arrival, departure) + 1;
+            travelDestination.setTravelDays(client, currentDate, daysThere);
 
-            // Same day
-            if (daysThere == 1) {
+            for (int i = 1; i < daysThere; i++) {
                 mealAllowance += client.getBreakfastCost();
                 mealAllowance += client.getDinnerCost();
-                incidentalAllowance += client.getIncidentalCost();
+
+                lodgingAllowance += client.getLodging();
+
+                currentDate = currentDate.plusDays(1);
+                handleIfNewMonth(arrival, currentDate, destinationAddress);
             }
-            // More than one day
-            else {
-                // Handles every but the last day
-                for (int i = 1; i < daysThere; i++) {
-                    mealAllowance += client.getBreakfastCost();
-                    mealAllowance += client.getDinnerCost();
 
-                    lodgingAllowance += client.getLodging();
-                    incidentalAllowance += client.getIncidentalCost();
-
-                    currentDate = currentDate.plusDays(1);
-                    client = handleIfNewMonth(arrival, currentDate, client, destinationAddress);
-                }
-
-                mealAllowance += client.getBreakfastCost();
-                mealAllowance += client.getDinnerCost();
-            }
+            mealAllowance += client.getBreakfastCost();
+            mealAllowance += client.getDinnerCost();
         }
 
-        return new GsaAllowance(String.valueOf(mealAllowance), String.valueOf(lodgingAllowance), String.valueOf(incidentalAllowance));
+        return new GsaAllowance(String.valueOf(mealAllowance), String.valueOf(lodgingAllowance));
     }
 
-    private GsaClient handleIfNewMonth(LocalDate arrival, LocalDate currentDate, GsaClient client, Address destinationAddress) {
+    private void handleIfNewMonth(LocalDate arrival, LocalDate currentDate, Address destinationAddress) {
         if (currentDate.getMonth() != arrival.getMonth()) {
             client.scrapeGsa(getFiscalYear(currentDate), destinationAddress.getZip5());
             client.setLodging(currentDate.getMonth());
         }
-
-        return client;
     }
 
     private int getFiscalYear(LocalDate date) {

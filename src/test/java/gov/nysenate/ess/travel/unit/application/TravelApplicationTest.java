@@ -23,7 +23,7 @@ public class TravelApplicationTest {
         emp.setEmployeeId(1);
 
         TravelAllowances allowances =  new TravelAllowances(
-                new GsaAllowance("0", "0", "0"), "0", "0", "0", "0", "0");
+                new GsaAllowance("0", "0"), "0", "0", "0", "0", "0");
 
         Address address = new Address("101 Washington Ave", "Albany", "NY", "12210");
         Itinerary itinerary = new Itinerary(address, Lists.newArrayList(new TravelDestination(

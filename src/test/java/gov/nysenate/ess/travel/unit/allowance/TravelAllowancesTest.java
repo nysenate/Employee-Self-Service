@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 @Category(UnitTest.class)
 public class TravelAllowancesTest {
 
-    private static final GsaAllowance GSA = new GsaAllowance("0", "0", "0");
+    private static final GsaAllowance GSA = new GsaAllowance("0", "0");
 
     @Test (expected = NullPointerException.class)
     public void nullValues_areInvalid() {
@@ -42,7 +42,7 @@ public class TravelAllowancesTest {
 
     @Test
     public void totalSumsAllAllowances() {
-        TravelAllowances allowances = new TravelAllowances(new GsaAllowance("2.25", "0", "0"),"1.00", "3.50", "7.25", "0", "0");
+        TravelAllowances allowances = new TravelAllowances(new GsaAllowance("2.25", "0"),"1.00", "3.50", "7.25", "0", "0");
         assertEquals("14.00", allowances.total().toString());
     }
 }

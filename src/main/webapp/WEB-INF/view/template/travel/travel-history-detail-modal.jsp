@@ -15,10 +15,6 @@
           <td>{{ '$' + requestInfo.allowances.gsa.lodging}}</td>
         </tr>
         <tr>
-          <td>Incidentals</td>
-          <td>{{ '$' + requestInfo.allowances.gsa.incidental}}</td>
-        </tr>
-        <tr>
           <td>Registration Fee</td>
           <td>{{ '$' + requestInfo.allowances.registrationFee}}</td>
         </tr>
