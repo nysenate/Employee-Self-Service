@@ -1,13 +1,58 @@
 
 angular.module('essTime')
-    .controller('EmployeeSearchCtrl', ['$scope', 'modals', 'AllowanceUtils',
-                                       'AccrualPeriodApi', 'AllowanceApi', employeeSearchCtrl])
+    .controller('EmployeeSearchCtrl', ['$scope', 'AccrualActiveYearsApi', 'AccrualPeriodApi',
+                                       'AllowanceActiveYearsApi', 'AllowanceUtils', 'AllowanceApi',
+                                       employeeSearchCtrl])
 ;
 
-function employeeSearchCtrl($scope, modals, allowanceUtils, accrualPeriodApi, allowanceApi) {
+function employeeSearchCtrl($scope, accrualActiveYearsApi, accrualPeriodApi,
+                            allowanceActiveYearsApi, allowanceUtils, allowanceApi) {
 
-    $scope.$watch('selectedEmp', getAccruals);
-    $scope.$watch('selectedEmp', getAllowance);
+    $scope.$watch('selectedEmp', onSelectedEmpChange);
+
+    function onSelectedEmpChange() {
+        getAccrualYears();
+        getAccruals();
+        getAllowanceYears();
+        getAllowance();
+    }
+
+    function getAccrualYears() {
+        $scope.showAccrualHistory = false;
+        $scope.showAccruals = false;
+
+        if (!$scope.selectedEmp) {
+            return;
+        }
+
+        var params = {empId: $scope.selectedEmp.empId};
+
+        accrualActiveYearsApi.get(params, onSuccess, $scope.handleErrorResponse);
+
+        function onSuccess(response) {
+            $scope.showAccrualHistory = response.years && response.years.length > 0;
+            $scope.showAccruals = $scope.showAccrualHistory &&
+                response.years.indexOf(moment().year()) >= 0 &&
+                $scope.selectedEmp.payType !== 'TE' &&
+                !$scope.selectedEmp.senator;
+        }
+    }
+
+    function getAllowanceYears() {
+        $scope.showAllowanceHistory = false;
+
+        if (!$scope.selectedEmp) {
+            return;
+        }
+
+        var params = {empId: $scope.selectedEmp.empId};
+
+        allowanceActiveYearsApi.get(params, onSuccess, $scope.handleErrorResponse);
+
+        function onSuccess(response) {
+            $scope.showAllowanceHistory = response.years && response.years.length > 0;
+        }
+    }
 
     function getAccruals () {
         $scope.accruals = null;
@@ -25,18 +70,13 @@ function employeeSearchCtrl($scope, modals, allowanceUtils, accrualPeriodApi, al
         };
 
         $scope.loadingAccruals = true;
-        accrualPeriodApi.get(params, onSuccess, onFail)
+        accrualPeriodApi.get(params, onSuccess, $scope.handleErrorResponse)
             .$promise.finally(function () {
                 $scope.loadingAccruals = false;
             });
 
         function onSuccess (resp) {
             $scope.accruals = resp.result;
-        }
-
-        function onFail (resp) {
-            modals.open('500', {details: resp});
-            console.error(resp);
         }
 
     }
@@ -57,7 +97,7 @@ function employeeSearchCtrl($scope, modals, allowanceUtils, accrualPeriodApi, al
         };
 
         $scope.loadingAllowance = true;
-        allowanceApi.get(params, onSuccess, onFail)
+        allowanceApi.get(params, onSuccess, $scope.handleErrorResponse)
             .$promise.finally( function () {
                 $scope.loadingAllowance = false;
             });
@@ -70,11 +110,5 @@ function employeeSearchCtrl($scope, modals, allowanceUtils, accrualPeriodApi, al
                 endDate: moment('3000-01-01')
             });
         }
-
-        function onFail (resp) {
-            modals.open('500', {details: resp});
-            console.error(resp);
-        }
-
     }
 }

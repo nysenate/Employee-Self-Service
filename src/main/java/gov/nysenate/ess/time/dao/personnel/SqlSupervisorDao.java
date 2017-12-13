@@ -11,7 +11,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionInfo;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.dao.personnel.mapper.SupervisorOverrideRowMapper;
 import gov.nysenate.ess.time.model.personnel.*;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataRetrievalFailureException;
@@ -31,11 +30,6 @@ import static gov.nysenate.ess.core.model.transaction.TransactionCode.EMP;
 public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlSupervisorDao.class);
-
-    private static final String primaryLabel = "PRIMARY";
-    private static final String overrideLabel = "OVERRIDE";
-    private static final String supOverrideLabel = "SUP_OVR";
-    private static final String empOverrideLabel = "EMP_OVR";
 
     /**{@inheritDoc} */
     @Override
@@ -97,40 +91,32 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
         Map<Integer, LocalDate> possiblePrimaryEmps = new HashMap<>();
 
         for (Map<String,Object> colMap : res) {
-            logger.trace(colMap.toString());
 
-            int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
-            TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
-            PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
-
-            LocalDate effectDate = getDateCol(colMap, "DTEFFECT");
-
-            int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
-            boolean empTerminated = false;
-
-            if (colMap.get("NUXREFSV") == null || !StringUtils.isNumeric(colMap.get("NUXREFSV").toString())) {
+            EmployeeSupInfo empSupInfo;
+            try {
+                empSupInfo = extractEmployeeSupInfo(colMap);
+            } catch (EmpSupInfoNullValEx ex) {
+                // If there is a null value for an employee, set a warning message and ignore the employee.
+                // This is expected, as employee data is set gradually during the appoint process
+                if (!"NUXREFSV".equals(ex.field)) {
+                    logger.warn(ex.getMessage());
+                }
                 continue;
             }
 
-            int currSupId = Integer.parseInt(colMap.get("NUXREFSV").toString());
+            int empId = empSupInfo.getEmpId();
+            int currSupId = empSupInfo.getSupId();
+            int rank = Integer.parseInt(colMap.get("TRANS_RANK").toString());
+            LocalDate effectDate = getDateCol(colMap, "DTEFFECT");
 
-            EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
-            empSupInfo.setEmpLastName(colMap.get("FFNALAST").toString());
-            empSupInfo.setEmpFirstName(colMap.get("FFNAFIRST").toString());
-            boolean senator = Agency.SENATOR_AGENCY_CODE.equals(colMap.get("CDAGENCY"));
-            empSupInfo.setSenator(senator);
-            PayType payType = null;
-            String payTypeVal = Objects.toString(colMap.get("CDPAYTYPE"));
-            try {
-                payType = PayType.valueOf(payTypeVal);
-            } catch (IllegalArgumentException ex) {
-                logger.warn("Illegal Pay type value supplied: " + payTypeVal, ex);
-            }
-            empSupInfo.setPayType(payType);
+            TransactionCode transType = TransactionCode.valueOf(colMap.get("CDTRANS").toString());
+
+            boolean empTerminated = false;
 
             if (transType.equals(EMP)) {
                 empTerminated = true;
 
+                PersonnelStatus perStatus = PersonnelStatus.valueOf(colMap.get("CDSTATPER").toString());
                 // Offset the effect date depending on the personnel status
                 effectDate = effectDate.plusDays(perStatus.getEffectDateOffset());
                 empSupInfo.setSupEndDate(effectDate);
@@ -275,6 +261,51 @@ public class SqlSupervisorDao extends SqlBaseDao implements SupervisorDao
             }
         }
         map.put(employeeSupInfo.getEmpId(), employeeSupInfo);
+    }
+
+    /**
+     * Generates an {@link EmployeeSupInfo} from a supervisor query result set.
+     */
+    private EmployeeSupInfo extractEmployeeSupInfo(Map<String, Object> colMap) throws EmpSupInfoNullValEx {
+        int empId = Integer.parseInt(colMap.get("NUXREFEM").toString());
+
+        int currSupId = Integer.parseInt(getColVal(empId, "NUXREFSV", colMap));
+
+        EmployeeSupInfo empSupInfo = new EmployeeSupInfo(empId, currSupId);
+
+        empSupInfo.setEmpLastName(getColVal(empId, "FFNALAST", colMap));
+        empSupInfo.setEmpFirstName(getColVal(empId, "FFNAFIRST", colMap));
+
+        String agencyCode = getColVal(empId, "CDAGENCY", colMap);
+        empSupInfo.setSenator(Agency.SENATOR_AGENCY_CODE.equals(agencyCode));
+
+        String payTypeVal = getColVal(empId, "CDPAYTYPE", colMap);
+        empSupInfo.setPayType(PayType.valueOf(payTypeVal));
+
+        return empSupInfo;
+    }
+
+    /**
+     * Attempts to extract a value from the supervisor query result map.
+     * If the value is null, an exception is thrown.
+     */
+    private String getColVal(int empId, String field, Map<String, Object> colMap) throws EmpSupInfoNullValEx {
+        Object value = colMap.get(field);
+        if (value == null) {
+            throw new EmpSupInfoNullValEx(empId, field);
+        }
+        return value.toString();
+    }
+
+    private class EmpSupInfoNullValEx extends Exception {
+        private final int empId;
+        private final String field;
+
+        EmpSupInfoNullValEx(int empId, String field) {
+            super("Employee #" + empId + " has null value for " + field);
+            this.empId = empId;
+            this.field = field;
+        }
     }
 
 }

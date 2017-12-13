@@ -1,8 +1,9 @@
 angular.module('essTime')
-    .directive('employeeSearch', ['appProps', 'modals', 'EmployeeSearchApi', 'EmpInfoApi', 'PaginationModel',
+    .directive('employeeSearch', ['appProps', 'modals', 'LocationService',
+                                  'EmployeeSearchApi', 'EmpInfoApi', 'PaginationModel',
                                   employeeSearchDirective]);
 
-function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi, paginationModel) {
+function employeeSearchDirective(appProps, modals, locationService, employeeSearchApi, empInfoApi, paginationModel) {
     return {
         scope: {
             selectedEmp: '=?'
@@ -10,10 +11,15 @@ function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi
         restrict: 'E',
         templateUrl: appProps.ctxPath + '/template/time/personnel/employee-search-directive',
         link: function ($scope, $elem, $attrs) {
+            var EMP_ID_PARAM = 'empId';
+            var TERM_PARAM = 'term';
+
             $scope.selectedEmp = null;
             $scope.empInfo = null;
-            $scope.searchTerm = "";
+            $scope.searchTerm = locationService.getSearchParam(TERM_PARAM) || "";
             $scope.searchResults = [];
+
+            var empId = parseInt(locationService.getSearchParam(EMP_ID_PARAM) || NaN);
 
             var pagination = angular.copy(paginationModel);
             pagination.itemsPerPage = 50;
@@ -47,6 +53,7 @@ function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi
             $scope.selectEmp = function (emp) {
                 $scope.selectedEmp = emp;
                 getEmpInfo();
+                locationService.setSearchParam(EMP_ID_PARAM, emp.empId);
             };
 
             /**
@@ -55,6 +62,9 @@ function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi
             $scope.clearSelectedEmp = function () {
                 $scope.selectedEmp = null;
                 $scope.empInfo = null;
+                empId = NaN;
+                locationService.setSearchParam(EMP_ID_PARAM);
+                getSearchResults();
             };
 
             /* --- Api Methods --- */
@@ -63,6 +73,7 @@ function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi
                 $scope.loadingEmps = true;
                 var params = {
                     term: $scope.searchTerm,
+                    empId: validEmpId() ? empId : 0,
                     limit: pagination.getLimit(),
                     offset: pagination.getOffset()
                 };
@@ -70,13 +81,20 @@ function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi
                     .$promise.finally(function () {
                         $scope.loadingEmps = false;
                     });
+
                 function onSuccess(resp) {
                     console.log('Got employee search results');
                     resp.employees.forEach(function (emp) {
                         $scope.searchResults.push(emp);
                     });
                     pagination.setTotalItems(resp.total);
+
+                    if (validEmpId() && $scope.searchResults.length > 0) {
+                        $scope.selectEmp($scope.searchResults[0]);
+                        empId = NaN;
+                    }
                 }
+
                 function onFail(resp) {
                     console.error('Failed to get active employees', resp);
                     modals.open('500', {details: resp});
@@ -111,7 +129,12 @@ function employeeSearchDirective(appProps, modals, employeeSearchApi, empInfoApi
             function newSearch() {
                 $scope.searchResults = [];
                 pagination.reset();
+                locationService.setSearchParam(TERM_PARAM, $scope.searchTerm, /\S/.test($scope.searchTerm));
                 return getSearchResults();
+            }
+
+            function validEmpId() {
+                return !isNaN(parseInt(empId)) && empId > 0;
             }
 
         }

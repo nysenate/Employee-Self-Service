@@ -9,6 +9,7 @@ public enum TimePermissionObject {
     ACCRUAL,
     ACCRUAL_ACTIVE_YEARS,
     ALLOWANCE,
+    ALLOWANCE_ACTIVE_YEARS,
     ATTENDANCE_RECORDS,
     MISC_LEAVE_GRANT,
     PAYCHECK,

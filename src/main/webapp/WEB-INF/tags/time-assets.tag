@@ -62,6 +62,8 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/allowance/allowance-bar-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/allowance/allowance-history-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/allowance/allowance-status-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/allowance/allowance-utils.js?v=${releaseVersion}"></script>

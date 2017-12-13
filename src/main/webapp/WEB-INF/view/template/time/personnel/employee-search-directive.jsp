@@ -4,6 +4,8 @@
   <div class="content-container">
     <div class="content-info" ng-hide="selectedEmp">
       <input type="search" class="employee-search-bar"
+             tabindex="1"
+             autofocus
              ng-model="searchTerm"
              ng-model-options="{debounce: 300}"
              placeholder="Search for an employee">
