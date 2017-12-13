@@ -13,7 +13,8 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
     $scope.ACTIONS = {
         CANCEL: 5,
         BACK: 10,
-        NEXT: 15
+        NEXT: 15,
+        EDIT: 20
     };
 
     $scope.STATES = {
@@ -61,8 +62,10 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
     /**
      * Updates the app.pageState and $scope.pageState after an action has occurred.
      * @param action
+     * @param editField (optional) A $scope.STATE value representing the field/page
+     *                  the user wants to edit.
      */
-    function updateStates(action) {
+    function updateStates(action, editField) {
         console.log($scope.app);
         if (action === $scope.ACTIONS.CANCEL) {
             handleCancelAction();
@@ -72,6 +75,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         }
         else if(action === $scope.ACTIONS.NEXT) {
             handleNextAction();
+        }
+        else if(action === $scope.ACTIONS.EDIT) {
+            handleEditAction(editField);
         }
     }
 
@@ -133,6 +139,11 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         }
     }
 
+    function handleEditAction(editField) {
+        $scope.app.appState = $scope.STATES.EDIT;
+        $scope.pageState = editField
+    }
+
     $scope.purposeCallback = function (purpose, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.app.purposeOfTravel = purpose;
@@ -162,11 +173,15 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
         updateStates(action);
     };
 
-    $scope.reviewCallback = function (action) {
+    /**
+     * @param action
+     * @param editField (optional) The field/page the user has requested to edit.
+     */
+    $scope.reviewCallback = function (action, editField) {
         if (action === $scope.ACTIONS.NEXT) {
             // Submit?
         }
-        updateStates(action);
+        updateStates(action, editField);
     };
 }
 
@@ -299,6 +314,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                         + $scope.app.allowances.alternate
                         + $scope.app.allowances.registrationFee;
                 }
+
             }
         }
     }]);

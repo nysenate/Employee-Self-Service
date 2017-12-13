@@ -42,7 +42,7 @@
 
     <hr class="width-90">
     <p class="margin-top-40">
-      Estimate other expenses.
+      Other expenses.
     </p>
     <div class="grid padding-10">
       <div class="col-6-12 padding-bottom-10">
