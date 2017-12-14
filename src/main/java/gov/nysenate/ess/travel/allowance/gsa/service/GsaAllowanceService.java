@@ -1,76 +1,63 @@
 package gov.nysenate.ess.travel.allowance.gsa.service;
 
-import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaResponse;
+import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 public class GsaAllowanceService {
 
-    @Autowired GsaClient client;
+    private GsaClient client;
+    private MealIncidentalRatesService mealRatesService;
 
-    public GsaAllowance computeAllowance(Itinerary itinerary) {
-        int mealAllowance = 0;
-        int lodgingAllowance = 0;
-
-        List<TravelDestination> travelDestinations = itinerary.getDestinations();
-        for (TravelDestination travelDestination : travelDestinations) {
-            if (travelDestination.isWaypoint()) {
-                continue;
-            }
-            LocalDate departure = travelDestination.getDepartureDate();
-            LocalDate arrival = travelDestination.getArrivalDate();
-            Address destinationAddress = travelDestination.getAddress();
-
-            LocalDate currentDate = travelDestination.getArrivalDate();
-
-            client.scrapeGsa(getFiscalYear(currentDate), destinationAddress.getZip5());
-            client.setLodging(currentDate.getMonth());
-
-            int daysThere = (int) ChronoUnit.DAYS.between(arrival, departure) + 1;
-            travelDestination.setTravelDays(client, currentDate, daysThere);
-
-            for (int i = 1; i < daysThere; i++) {
-                mealAllowance += client.getBreakfastCost();
-                mealAllowance += client.getDinnerCost();
-
-                lodgingAllowance += client.getLodging();
-
-                currentDate = currentDate.plusDays(1);
-                handleIfNewMonth(arrival, currentDate, destinationAddress);
-            }
-
-            mealAllowance += client.getBreakfastCost();
-            mealAllowance += client.getDinnerCost();
-        }
-
-        return new GsaAllowance(String.valueOf(mealAllowance), String.valueOf(lodgingAllowance));
+    @Autowired
+    public GsaAllowanceService(GsaClient client, MealIncidentalRatesService mealIncidentalRatesService) {
+        this.client = client;
+        this.mealRatesService = mealIncidentalRatesService;
     }
 
-    private void handleIfNewMonth(LocalDate arrival, LocalDate currentDate, Address destinationAddress) {
-        if (currentDate.getMonth() != arrival.getMonth()) {
-            client.scrapeGsa(getFiscalYear(currentDate), destinationAddress.getZip5());
-            client.setLodging(currentDate.getMonth());
+    public LodgingAllowance calculateLodging(Itinerary itinerary) throws IOException {
+        BigDecimal lodging = BigDecimal.ZERO;
+        for (TravelDestination destination: itinerary.getDestinations()) {
+            lodging.add(lodgingForDestination(destination));
         }
+        return new LodgingAllowance(lodging);
     }
 
-    private int getFiscalYear(LocalDate date) {
-        int year = date.getYear();
-        int month = date.getMonthValue();
-
-        int fiscalYear = year;
-        if (month >= Month.OCTOBER.getValue()) {
-            fiscalYear++;
+    private BigDecimal lodgingForDestination(TravelDestination destination) throws IOException {
+        BigDecimal lodging = BigDecimal.ZERO;
+        for (LocalDate date: destination.getNightsOfStay()) {
+            GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
+            lodging.add(res.getLodging(date.getMonth()));
         }
+        return lodging;
+    }
 
-        return fiscalYear;
+    public MealAllowance calculateMealAllowance(Itinerary itinerary) throws IOException {
+        BigDecimal meals = BigDecimal.ZERO;
+        for (TravelDestination destination: itinerary.getDestinations()) {
+            meals.add(mealsForDestination(destination));
+        }
+        return new MealAllowance(meals);
+    }
+
+    private BigDecimal mealsForDestination(TravelDestination destination) throws IOException {
+        BigDecimal meals = BigDecimal.ZERO;
+        for (LocalDate date: destination.getDatesOfStay()) {
+            GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
+            String mealRow = res.getMealRow();
+            // TODO: localMealDao.getBreakfast(zip, mealRow);
+            // TODO: localMealDao.getDinner(zip, mealRow);
+            // meals.add(breakfast, dinner)
+        }
+        return meals;
     }
 }

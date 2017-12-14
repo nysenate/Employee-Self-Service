@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.unit.allowance;
+package gov.nysenate.ess.travel.integration.allowances;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.time.LocalDate;
+
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
@@ -14,14 +17,13 @@ public class GsaClientIT extends BaseTest {
 
     @Autowired GsaClient client;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void incorrectFiscalYear() {
-        client.scrapeGsa(0, "12110");
-    }
+//    @Test(expected = IllegalArgumentException.class)
+//    public void incorrectFiscalYear() {
+//        client.get(0, "12110");
+//    }
 
     @Test
-    public void correctFiscalYear(){
-        client.scrapeGsa(2018, "12110");
-        assertEquals(client.getBreakfastCost(), 13);
+    public void correctFiscalYear() throws IOException {
+        client.queryGsa(LocalDate.now(), "10036");
     }
 }

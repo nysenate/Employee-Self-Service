@@ -21,7 +21,9 @@ public class MealIncidentalRatesService {
     @PostConstruct
     public void postConstruct() {
         // Ensure the database has an initialized value.
-        this.scrapeAndUpdate();
+
+        // Stop this scrape for now, gsa website is blocking us...
+//        this.scrapeAndUpdate();
     }
 
     @Scheduled(cron = "${scheduler.travel.scrape.cron}")

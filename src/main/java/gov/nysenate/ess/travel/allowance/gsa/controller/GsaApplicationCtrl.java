@@ -26,8 +26,9 @@ public class GsaApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse searchGsa(@RequestBody ItineraryView itineraryView) {
         Itinerary itinerary = itineraryView.toItinerary();
 
-        GsaAllowance gsaAllowance = gsaAllowanceService.computeAllowance(itinerary);
-        GsaAllowanceView gsaAllowanceView = new GsaAllowanceView(gsaAllowance);
-        return new ViewObjectResponse<>(gsaAllowanceView);
+//        GsaAllowance gsaAllowance = gsaAllowanceService.computeAllowance(itinerary);
+//        GsaAllowanceView gsaAllowanceView = new GsaAllowanceView(gsaAllowance);
+//        return new ViewObjectResponse<>(gsaAllowanceView);
+        return null;
     }
 }
