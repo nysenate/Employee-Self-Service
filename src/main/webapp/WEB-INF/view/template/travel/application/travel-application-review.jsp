@@ -39,23 +39,7 @@
           &nbsp
         </div>
         <div class="col-8-12 margin-top-20">
-          <div class="travel-location-div">
-            <div style="float: left; font-size: 0.8em;">
-              Arrival Date: {{dest.arrivalDate | date: 'shortDate'}}<br/>
-              Departure Date: {{dest.departureDate | date: 'shortDate'}}
-            </div>
-
-            <div>
-              {{dest.address.addr1}}<br/>
-              <span ng-if="dest.address.addr2.length <= 0">{{dest.address.addr2}}<br/></span>
-              {{dest.address.city}} {{dest.address.state}} {{dest.address.zip5}}
-            </div>
-
-            <div style="float: right; font-size: 0.8em;">
-              Mode of Transportation: <br/>
-              {{dest.modeOfTransportation}}
-            </div>
-          </div>
+          <travel-destination-directive destination="dest"></travel-destination-directive>
         </div>
       </div>
 

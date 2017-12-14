@@ -5,39 +5,13 @@
       Add all destinations of your trip.
     </p>
     <div ng-repeat="dest in destinations">
-      <div>
-        <div class="travel-location-div">
-          <div style="float: left; font-size: 0.8em;">
-            Arrival Date: {{dest.arrivalDate | date: 'shortDate'}}<br/>
-            Departure Date: {{dest.departureDate | date: 'shortDate'}}
-          </div>
-
-          <div>
-            {{dest.address.addr1}}<br/>
-            <span ng-if="dest.address.addr2.length <= 0">{{dest.address.addr2}}<br/></span>
-            {{dest.address.city}} {{dest.address.state}} {{dest.address.zip5}}
-          </div>
-
-          <div style="float: right; font-size: 0.8em;">
-            Mode of Transportation: <br/>
-            {{dest.modeOfTransportation}}
-          </div>
-        </div>
-
-        <div class="travel-location-edit">
-          <div class="icon-edit"
-               title="Edit Destination"
-               ng-click="editDestination(dest)">
-          </div>
-          <div class="icon-trash" style="right: -20px;"
-               title="Delete Destination"
-               ng-click="removeDestination(dest)">
-          </div>
-        </div>
-
+      <div style="width: 80%; margin: 20px; display:inline-block;">
+        <travel-destination-directive destination="dest"></travel-destination-directive>
       </div>
-
+      <span ng-click="editDestination(dest)" class="icon-edit margin-10" title="Edit destination"></span>
+      <span ng-click="removeDestination(dest)" class="icon-trash margin-10" title="Delete destination"></span>
     </div>
+
     <div class="clearfix width-100">
       <input type="button" class="submit-button"
              value="Add Destination"
