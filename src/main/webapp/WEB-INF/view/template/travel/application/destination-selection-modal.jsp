@@ -17,12 +17,6 @@
                 ng-options="mode for mode in MODES_OF_TRANSPORTATION"></select>
       </label>
     </div>
-    <div>
-      <label>Waypoint </label>
-      <span title="Waypoints are temporary stops on the way to your primary destination. Waypoints are not eligible for meal or lodging reimbursements, but are eligible for transportation reimbursements"
-            class="icon-help-with-circle"></span>
-      <input type="checkbox">
-    </div>
   </div>
   <div class="padding-top-10 text-align-center">
     <input type="button" class="neutral-button"

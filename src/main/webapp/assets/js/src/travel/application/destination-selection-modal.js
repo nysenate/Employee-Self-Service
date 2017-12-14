@@ -19,8 +19,7 @@ function destSelectionCtrl($scope, modals) {
         address: undefined,
         arrivalDate: undefined,
         departureDate: undefined,
-        modeOfTransportation: undefined,
-        isWaypoint: false
+        modeOfTransportation: undefined
     };
 
     $scope.addressCallback = function(address) {
