@@ -1,5 +1,6 @@
 package gov.nysenate.ess.web.filter;
 
+import gov.nysenate.ess.core.config.RuntimeLevel;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
 import org.apache.shiro.SecurityUtils;
@@ -8,17 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This filter is responsible for setting attributes on the servlet request that are commonly used
@@ -27,38 +23,43 @@ import java.util.Set;
 @Component("commonAttributeFilter")
 public class CommonAttributeFilter implements Filter
 {
-    @Autowired
-    private Environment env;
 
     private static final Logger logger = LoggerFactory.getLogger(CommonAttributeFilter.class);
-    private static Set<String> runtimeLevels = new HashSet<>(Arrays.asList("dev", "test", "prod"));
 
     /** Attribute keys */
-    public static String CONTEXT_PATH_ATTRIBUTE = "ctxPath";
-    public static String RUNTIME_LEVEL_ATTRIBUTE = "runtimeLevel";
-    public static String LOGIN_URL_ATTRIBUTE = "loginUrl";
-    public static String IMAGE_URL_ATTRIBUTE = "imageUrl";
-    public static String TIMEOUT_ATTRIBUTE = "timeoutExempt";
-    public static String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
-    public static String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
-    public static String IS_SENATOR_ATTRIBUTE = "isSenator";
-    public static String IS_SUPERVISOR_ATTRIBUTE = "isSupervisor";
-    @Value("${runtime.level}") private String runtimeLevel;
-    @Value("${login.url}") private String loginUrl;
-    @Value("${image.url}")
-    private String imageUrl;
-    @Value("${application.version}")
-    private String releaseVersion;
+    private static final String CONTEXT_PATH_ATTRIBUTE = "ctxPath";
+    private static final String RUNTIME_LEVEL_ATTRIBUTE = "runtimeLevel";
+    private static final String LOGIN_URL_ATTRIBUTE = "loginUrl";
+    private static final String IMAGE_URL_ATTRIBUTE = "imageUrl";
+    private static final String TIMEOUT_ATTRIBUTE = "timeoutExempt";
+    private static final String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
+    private static final String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
+
+    private final XsrfValidator xsrfValidator;
+
+    private final RuntimeLevel runtimeLevel;
+
+    private final String loginUrl;
+    private final String imageUrl;
+    private final String releaseVersion;
 
     @Autowired
-    private XsrfValidator xsrfValidator;
-
-    public CommonAttributeFilter() {}
+    public CommonAttributeFilter(XsrfValidator xsrfValidator,
+                                 @Value("${runtime.level}") String runtimeLevel,
+                                 @Value("${login.url}") String loginUrl,
+                                 @Value("${image.url}") String imageUrl,
+                                 @Value("${application.version}") String releaseVersion
+    ) {
+        this.xsrfValidator = xsrfValidator;
+        this.runtimeLevel = RuntimeLevel.of(runtimeLevel);
+        this.loginUrl = loginUrl;
+        this.imageUrl = imageUrl;
+        this.releaseVersion = releaseVersion;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         logger.trace("CommonAttributeFilter processing url {}", httpServletRequest.getRequestURI());
         if (((HttpServletRequest) request).getSession().isNew())
             return;
@@ -89,14 +90,7 @@ public class CommonAttributeFilter implements Filter
     }
 
     private void setRuntimeLevelAttribute(ServletRequest request) {
-        String level = "prod";
-        if (runtimeLevel != null && runtimeLevels.contains(runtimeLevel.toLowerCase())) {
-            level = runtimeLevel.toLowerCase();
-        }
-        else {
-            logger.error("The runtime level string is empty! Assuming prod. Please ensure it is set in app.properties.");
-        }
-        request.setAttribute(RUNTIME_LEVEL_ATTRIBUTE, level);
+        request.setAttribute(RUNTIME_LEVEL_ATTRIBUTE, runtimeLevel.name().toLowerCase());
     }
 
     private void setLoginUrlAttribute(ServletRequest request) {

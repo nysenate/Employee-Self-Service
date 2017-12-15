@@ -105,6 +105,11 @@ mail.smtp.from =
 
 mail.debug = false
 
+# If test mode is enabled, all mail addresses will be overridden,
+# redirecting all mail to the configured address
+mail.test.enabled = true
+mail.test.address =
+
 # --- Eh Cache Configuration --------------------------------------------------
 
 # The amount of memory to allocate to Eh Cache for all heap based caches (MB).
