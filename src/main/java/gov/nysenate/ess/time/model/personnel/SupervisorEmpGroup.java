@@ -1,13 +1,9 @@
 package gov.nysenate.ess.time.model.personnel;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Range;
+import com.google.common.collect.*;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,10 +16,10 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
 {
 
     /** Collection of employee overrides */
-    private Collection<EmployeeSupInfo> overrideEmployees = new LinkedList<>();
+    private Multimap<Integer, EmployeeSupInfo> overrideEmployees = HashMultimap.create();
 
     /** Collection of supervisor overrides */
-    private Collection<EmployeeSupInfo> supOverrideEmployees = new LinkedList<>();
+    private Multimap<Integer, EmployeeSupInfo> supOverrideEmployees = HashMultimap.create();
 
     public SupervisorEmpGroup() {
         super();
@@ -36,8 +32,8 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     @SuppressWarnings("IncompleteCopyConstructor")
     public SupervisorEmpGroup(SupervisorEmpGroup supEmpGroup) {
         super(supEmpGroup);
-        this.overrideEmployees = new LinkedList<>(supEmpGroup.overrideEmployees);
-        this.supOverrideEmployees = new LinkedList<>(supEmpGroup.supOverrideEmployees);
+        this.overrideEmployees = HashMultimap.create(supEmpGroup.overrideEmployees);
+        this.supOverrideEmployees = HashMultimap.create(supEmpGroup.supOverrideEmployees);
     }
 
     /* --- Functional Getters / Setters --- */
@@ -49,8 +45,8 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     public ImmutableSet<EmployeeSupInfo> getDirectEmployeeSupInfos() {
         return ImmutableSet.<EmployeeSupInfo>builder()
                 .addAll(this.primaryEmployees.values())
-                .addAll(this.overrideEmployees)
-                .addAll(this.supOverrideEmployees)
+                .addAll(this.overrideEmployees.values())
+                .addAll(this.supOverrideEmployees.values())
                 .build();
     }
 
@@ -67,15 +63,15 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     }
 
     public ImmutableCollection<EmployeeSupInfo> getOverrideEmployees() {
-        return ImmutableList.copyOf(overrideEmployees);
+        return ImmutableList.copyOf(overrideEmployees.values());
     }
 
     public ImmutableCollection<EmployeeSupInfo> getSupOverrideInfos() {
-        return ImmutableList.copyOf(supOverrideEmployees);
+        return ImmutableList.copyOf(supOverrideEmployees.values());
     }
 
     public void setSupOverrideEmployees(Collection<EmployeeSupInfo> supOverrideEmployees) {
-        this.supOverrideEmployees = new LinkedList<>();
+        this.supOverrideEmployees = HashMultimap.create();
         supOverrideEmployees.forEach(this::addSupOverrideEmployee);
     }
 
@@ -85,16 +81,16 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
         if (empSupInfo.getEmpId() == this.supervisorId) {
             return;
         }
-        supOverrideEmployees.add(empSupInfo);
+        supOverrideEmployees.put(empSupInfo.getEmpId(), empSupInfo);
     }
 
     public void setOverrideEmployees(Collection<EmployeeSupInfo> overrideEmployees) {
-        this.overrideEmployees = new LinkedList<>();
+        this.overrideEmployees = HashMultimap.create();
         overrideEmployees.forEach(this::addOverrideEmployee);
     }
 
     public void addOverrideEmployee(EmployeeSupInfo employeeSupInfo) {
-        this.overrideEmployees.add(employeeSupInfo);
+        this.overrideEmployees.put(employeeSupInfo.getEmpId(), employeeSupInfo);
     }
 
     /* --- Overrides --- */
@@ -109,15 +105,15 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     @Override
     public boolean hasEmployeeDuringRange(int empId, Range<LocalDate> dateRange) {
         return super.hasEmployeeDuringRange(empId, dateRange) ||
-                anySupInfoInRange(this.overrideEmployees, dateRange) ||
-                anySupInfoInRange(this.supOverrideEmployees, dateRange);
+                anySupInfoInRange(this.overrideEmployees.get(empId), dateRange) ||
+                anySupInfoInRange(this.supOverrideEmployees.get(empId), dateRange);
     }
 
     @Override
     public void filterEmpInfos() {
         super.filterEmpInfos();
 
-        setSupOverrideEmployees(filterEmployeeSupInfos(supOverrideEmployees));
-        setOverrideEmployees(filterEmployeeSupInfos(overrideEmployees));
+        setSupOverrideEmployees(filterEmployeeSupInfos(supOverrideEmployees.values()));
+        setOverrideEmployees(filterEmployeeSupInfos(overrideEmployees.values()));
     }
 }

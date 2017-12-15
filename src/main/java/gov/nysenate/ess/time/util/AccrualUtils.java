@@ -28,6 +28,18 @@ public final class AccrualUtils {
     }
 
     /**
+     * Gets the number of work hours expected for a single day,
+     * given the number of total hours expected for a year.
+     *
+     * @param minTotalHours BigDecimal
+     * @return BigDecimal
+     */
+    public static BigDecimal getHoursPerDay(BigDecimal minTotalHours) {
+        BigDecimal hoursPerDay = minTotalHours.divide(MAX_DAYS_PER_YEAR, FOUR_DIGITS_MAX);
+        return roundExpectedHours(hoursPerDay);
+    }
+
+    /**
      * Round a sick or vacation accrual value
      * @param hours BigDecimal - sick/vacation hours or rate
      * @return BigDecimal - rounded value
