@@ -1146,7 +1146,8 @@ a:hover {
   display: flex;
   justify-content: space-around;
 }
-input[type="button"].submit-button {
+input[type="button"].submit-button,
+input[type="submit"].submit-button {
   padding: 5px 10px;
   background: #799933;
   color: white;
@@ -1155,20 +1156,26 @@ input[type="button"].submit-button {
   border-bottom-style: solid;
 }
 input[type="button"].submit-button.inactive,
-input[type="button"].submit-button[disabled="disabled"] {
+input[type="submit"].submit-button.inactive,
+input[type="button"].submit-button[disabled="disabled"],
+input[type="submit"].submit-button[disabled="disabled"] {
   color: #333;
   border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
 input[type="button"].submit-button.inactive:hover,
-input[type="button"].submit-button[disabled="disabled"]:hover {
+input[type="submit"].submit-button.inactive:hover,
+input[type="button"].submit-button[disabled="disabled"]:hover,
+input[type="submit"].submit-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-input[type="button"].submit-button:hover {
+input[type="button"].submit-button:hover,
+input[type="submit"].submit-button:hover {
   background: #81ad1f;
 }
-input[type="button"].reject-button {
+input[type="button"].reject-button,
+input[type="submit"].reject-button {
   padding: 5px 10px;
   background: #e64727;
   color: white;
@@ -1177,20 +1184,26 @@ input[type="button"].reject-button {
   border-bottom-style: solid;
 }
 input[type="button"].reject-button.inactive,
-input[type="button"].reject-button[disabled="disabled"] {
+input[type="submit"].reject-button.inactive,
+input[type="button"].reject-button[disabled="disabled"],
+input[type="submit"].reject-button[disabled="disabled"] {
   color: #333;
   border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
 input[type="button"].reject-button.inactive:hover,
-input[type="button"].reject-button[disabled="disabled"]:hover {
+input[type="submit"].reject-button.inactive:hover,
+input[type="button"].reject-button[disabled="disabled"]:hover,
+input[type="submit"].reject-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-input[type="button"].reject-button:hover {
+input[type="button"].reject-button:hover,
+input[type="submit"].reject-button:hover {
   background: #fe370f;
 }
-input[type="button"].neutral-button {
+input[type="button"].neutral-button,
+input[type="submit"].neutral-button {
   padding: 5px 10px;
   background: #8d8d8d;
   color: white;
@@ -1199,20 +1212,26 @@ input[type="button"].neutral-button {
   border-bottom-style: solid;
 }
 input[type="button"].neutral-button.inactive,
-input[type="button"].neutral-button[disabled="disabled"] {
+input[type="submit"].neutral-button.inactive,
+input[type="button"].neutral-button[disabled="disabled"],
+input[type="submit"].neutral-button[disabled="disabled"] {
   color: #333;
   border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
 input[type="button"].neutral-button.inactive:hover,
-input[type="button"].neutral-button[disabled="disabled"]:hover {
+input[type="submit"].neutral-button.inactive:hover,
+input[type="button"].neutral-button[disabled="disabled"]:hover,
+input[type="submit"].neutral-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-input[type="button"].neutral-button:hover {
+input[type="button"].neutral-button:hover,
+input[type="submit"].neutral-button:hover {
   background: #a47676;
 }
-input[type="button"].time-neutral-button {
+input[type="button"].time-neutral-button,
+input[type="submit"].time-neutral-button {
   padding: 5px 10px;
   background: #006B80;
   color: white;
@@ -1221,17 +1240,22 @@ input[type="button"].time-neutral-button {
   border-bottom-style: solid;
 }
 input[type="button"].time-neutral-button.inactive,
-input[type="button"].time-neutral-button[disabled="disabled"] {
+input[type="submit"].time-neutral-button.inactive,
+input[type="button"].time-neutral-button[disabled="disabled"],
+input[type="submit"].time-neutral-button[disabled="disabled"] {
   color: #333;
   border-color: transparent;
   cursor: not-allowed;
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
 input[type="button"].time-neutral-button.inactive:hover,
-input[type="button"].time-neutral-button[disabled="disabled"]:hover {
+input[type="submit"].time-neutral-button.inactive:hover,
+input[type="button"].time-neutral-button[disabled="disabled"]:hover,
+input[type="submit"].time-neutral-button[disabled="disabled"]:hover {
   background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
 }
-input[type="button"].time-neutral-button:hover {
+input[type="button"].time-neutral-button:hover,
+input[type="submit"].time-neutral-button:hover {
   background: #006b80;
 }
 input[type="text"],
@@ -4800,128 +4824,125 @@ table.attendance-entry-sub-table.small-text tbody tr td {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d4ff60', endColorstr='#B8E3EB', GradientType=1);
   /* IE6-9 fallback on horizontal gradient */
 }
-/** --- Accrual History Page --- */
-.accruals-table,
-.detail-acc-history-table,
-#accrual-usage-details-table {
+/* --- Hours Table --- */
+/* A template for accrual and allowance tables */
+.hours-table {
+  margin: 10px;
   width: 860px;
 }
-.accruals-table thead,
-.detail-acc-history-table thead,
-#accrual-usage-details-table thead {
+.hours-table thead {
   background: white;
 }
-.accruals-table thead tr,
-.detail-acc-history-table thead tr,
-#accrual-usage-details-table thead tr {
+.hours-table thead tr {
   border: 0;
 }
-.accruals-table thead tr th,
-.detail-acc-history-table thead tr th,
-#accrual-usage-details-table thead tr th {
+.hours-table thead tr th {
   border: 0;
   padding: 8px;
 }
-.accruals-table thead tr:last-of-type,
-.detail-acc-history-table thead tr:last-of-type,
-#accrual-usage-details-table thead tr:last-of-type {
+.hours-table thead tr:last-of-type {
   border-bottom: 1px solid #006B80;
 }
-.accruals-table tbody tr:nth-child(even),
-.detail-acc-history-table tbody tr:nth-child(even),
-#accrual-usage-details-table tbody tr:nth-child(even) {
+.hours-table tbody tr:nth-child(even) {
   background: rgba(51, 51, 51, 0.05);
 }
-.accruals-table tbody tr.highlighted,
-.detail-acc-history-table tbody tr.highlighted,
-#accrual-usage-details-table tbody tr.highlighted {
+.hours-table tbody tr.highlighted {
   border: 1px solid #006B80;
   border-left-width: 3px;
 }
-.accruals-table tbody tr.valid:hover,
-.detail-acc-history-table tbody tr.valid:hover,
-#accrual-usage-details-table tbody tr.valid:hover {
+.hours-table tbody tr:not(.invalid):hover {
   background: rgba(51, 51, 51, 0.1);
   cursor: pointer;
 }
-.accruals-table tbody tr td,
-.detail-acc-history-table tbody tr td,
-#accrual-usage-details-table tbody tr td {
+.hours-table tbody tr td {
   border: 0;
   border-right: 1px solid #eee;
   text-align: center;
   padding: 8px;
 }
-.accruals-table tbody tr td.accrual-hours,
-.detail-acc-history-table tbody tr td.accrual-hours,
-#accrual-usage-details-table tbody tr td.accrual-hours {
+.hours-table tbody tr td input {
+  width: 50px;
+}
+.hours-table tbody tr td input.invalid {
+  background: #FFBCBC;
+}
+/** --- Accrual Table --- */
+.accrual-table {
+  margin: 10px;
+  width: 860px;
+}
+.accrual-table thead {
+  background: white;
+}
+.accrual-table thead tr {
+  border: 0;
+}
+.accrual-table thead tr th {
+  border: 0;
+  padding: 8px;
+}
+.accrual-table thead tr:last-of-type {
+  border-bottom: 1px solid #006B80;
+}
+.accrual-table tbody tr:nth-child(even) {
+  background: rgba(51, 51, 51, 0.05);
+}
+.accrual-table tbody tr.highlighted {
+  border: 1px solid #006B80;
+  border-left-width: 3px;
+}
+.accrual-table tbody tr:not(.invalid):hover {
+  background: rgba(51, 51, 51, 0.1);
+  cursor: pointer;
+}
+.accrual-table tbody tr td {
+  border: 0;
+  border-right: 1px solid #eee;
+  text-align: center;
+  padding: 8px;
+}
+.accrual-table tbody tr td input {
+  width: 50px;
+}
+.accrual-table tbody tr td input.invalid {
+  background: #FFBCBC;
+}
+.accrual-table td.accrual-hours {
   border: 0;
   color: #333;
 }
-.accruals-table tbody tr td.accrual-hours.personal,
-.detail-acc-history-table tbody tr td.accrual-hours.personal,
-#accrual-usage-details-table tbody tr td.accrual-hours.personal {
+.accrual-table td.accrual-hours.personal {
   background: rgba(65, 150, 167, 0.1);
 }
-.accruals-table tbody tr td.accrual-hours.sick,
-.detail-acc-history-table tbody tr td.accrual-hours.sick,
-#accrual-usage-details-table tbody tr td.accrual-hours.sick {
+.accrual-table td.accrual-hours.sick {
   background: rgba(209, 149, 37, 0.1);
 }
-.accruals-table tbody tr td.accrual-hours.vacation,
-.detail-acc-history-table tbody tr td.accrual-hours.vacation,
-#accrual-usage-details-table tbody tr td.accrual-hours.vacation {
+.accrual-table td.accrual-hours.vacation {
   background: rgba(121, 153, 51, 0.1);
 }
-.accruals-table tbody tr td.available-hours,
-.detail-acc-history-table tbody tr td.available-hours,
-#accrual-usage-details-table tbody tr td.available-hours {
+.accrual-table td.available-hours {
   font-weight: bold;
 }
-.accruals-table tbody tr td.available-hours.personal,
-.detail-acc-history-table tbody tr td.available-hours.personal,
-#accrual-usage-details-table tbody tr td.available-hours.personal {
+.accrual-table td.available-hours.personal {
   background: rgba(65, 150, 167, 0.2);
 }
-.accruals-table tbody tr td.available-hours.personal.changed,
-.detail-acc-history-table tbody tr td.available-hours.personal.changed,
-#accrual-usage-details-table tbody tr td.available-hours.personal.changed {
+.accrual-table td.available-hours.personal.changed {
   color: #4196A7;
 }
-.accruals-table tbody tr td.available-hours.sick,
-.detail-acc-history-table tbody tr td.available-hours.sick,
-#accrual-usage-details-table tbody tr td.available-hours.sick {
+.accrual-table td.available-hours.sick {
   background: rgba(209, 149, 37, 0.2);
 }
-.accruals-table tbody tr td.available-hours.sick.changed,
-.detail-acc-history-table tbody tr td.available-hours.sick.changed,
-#accrual-usage-details-table tbody tr td.available-hours.sick.changed {
+.accrual-table td.available-hours.sick.changed {
   color: #d19525;
 }
-.accruals-table tbody tr td.available-hours.vacation,
-.detail-acc-history-table tbody tr td.available-hours.vacation,
-#accrual-usage-details-table tbody tr td.available-hours.vacation {
+.accrual-table td.available-hours.vacation {
   background: rgba(121, 153, 51, 0.2);
 }
-.accruals-table tbody tr td.available-hours.vacation.changed,
-.detail-acc-history-table tbody tr td.available-hours.vacation.changed,
-#accrual-usage-details-table tbody tr td.available-hours.vacation.changed {
+.accrual-table td.available-hours.vacation.changed {
   color: #799933;
 }
-.accruals-table tbody tr td.available-hours:not(.changed),
-.detail-acc-history-table tbody tr td.available-hours:not(.changed),
-#accrual-usage-details-table tbody tr td.available-hours:not(.changed) {
+.accrual-table td.available-hours:not(.changed) {
   transition: color 0.25s ease-out;
-}
-.accruals-table tbody tr td input,
-.detail-acc-history-table tbody tr td input,
-#accrual-usage-details-table tbody tr td input {
-  width: 50px;
-}
-.accruals-table tbody tr td input.invalid,
-.detail-acc-history-table tbody tr td input.invalid,
-#accrual-usage-details-table tbody tr td input.invalid {
-  background: #FFBCBC;
 }
 /** --- Accrual Detail Modal --- */
 table.accrual-detail-table {
@@ -4955,6 +4976,55 @@ div.accrual-detail-table-container h4.content-info:not(:first-of-type) {
 }
 .accrual-detail-info .accrual-report-link {
   text-align: center;
+}
+/* --- Allowance Table --- */
+.allowance-table {
+  margin: 10px;
+  width: 860px;
+  width: auto;
+  margin: auto;
+}
+.allowance-table thead {
+  background: white;
+}
+.allowance-table thead tr {
+  border: 0;
+}
+.allowance-table thead tr th {
+  border: 0;
+  padding: 8px;
+}
+.allowance-table thead tr:last-of-type {
+  border-bottom: 1px solid #006B80;
+}
+.allowance-table tbody tr:nth-child(even) {
+  background: rgba(51, 51, 51, 0.05);
+}
+.allowance-table tbody tr.highlighted {
+  border: 1px solid #006B80;
+  border-left-width: 3px;
+}
+.allowance-table tbody tr:not(.invalid):hover {
+  background: rgba(51, 51, 51, 0.1);
+  cursor: pointer;
+}
+.allowance-table tbody tr td {
+  border: 0;
+  border-right: 1px solid #eee;
+  text-align: center;
+  padding: 8px;
+}
+.allowance-table tbody tr td input {
+  width: 50px;
+}
+.allowance-table tbody tr td input.invalid {
+  background: #FFBCBC;
+}
+.print-allowance-usage {
+  text-align: center;
+}
+.print-allowance-usage input {
+  margin-bottom: 5px;
 }
 /** --- Manage Employee Records Page --- */
 .record-manage-controls {
@@ -5141,6 +5211,12 @@ record-review-modal,
   font-weight: bold;
 }
 /** --- Employee Search Page --- */
+.employee-search-page-notification .ess-notification {
+  margin-top: 20px;
+}
+#employee-search-page allowance-bar > * {
+  margin-top: 20px;
+}
 .employee-search-directive .employee-search-bar {
   width: 20em;
   font-size: 16px;

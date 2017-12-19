@@ -3,7 +3,8 @@ package gov.nysenate.ess.time.model.personnel;
 import com.google.common.collect.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -14,14 +15,11 @@ import java.util.stream.Collectors;
 public class SupervisorEmpGroup extends PrimarySupEmpGroup
 {
 
-    /** Override employees are specific employees that this supervisor was given access to.
-     *  Mapping of empId -> EmployeeSupInfo */
-    protected Multimap<Integer, EmployeeSupInfo> overrideEmployees = HashMultimap.create();
+    /** Collection of employee overrides */
+    private Multimap<Integer, EmployeeSupInfo> overrideEmployees = HashMultimap.create();
 
-    /** Supervisor override employees are all the primary employees for the supervisors that
-     *  granted override access.
-     *  Mapping of the (override granter supId, empId) -> EmployeeInfo */
-    protected Table<Integer, Integer, EmployeeSupInfo> supOverrideEmployees = HashBasedTable.create();
+    /** Collection of supervisor overrides */
+    private Multimap<Integer, EmployeeSupInfo> supOverrideEmployees = HashMultimap.create();
 
     public SupervisorEmpGroup() {
         super();
@@ -31,10 +29,11 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
         super(primarySupEmpGroup);
     }
 
+    @SuppressWarnings("IncompleteCopyConstructor")
     public SupervisorEmpGroup(SupervisorEmpGroup supEmpGroup) {
         super(supEmpGroup);
         this.overrideEmployees = HashMultimap.create(supEmpGroup.overrideEmployees);
-        this.supOverrideEmployees = HashBasedTable.create(supEmpGroup.supOverrideEmployees);
+        this.supOverrideEmployees = HashMultimap.create(supEmpGroup.supOverrideEmployees);
     }
 
     /* --- Functional Getters / Setters --- */
@@ -63,29 +62,26 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
                 ));
     }
 
-    /**
-     * Get overridden employees granted by the given supervisor id
-     */
-    public Map<Integer, EmployeeSupInfo> getSupOverrideEmployees(int supId) {
-        return supOverrideEmployees.rowMap().get(supId);
+    public ImmutableCollection<EmployeeSupInfo> getOverrideEmployees() {
+        return ImmutableList.copyOf(overrideEmployees.values());
     }
 
-    public ImmutableMultimap<Integer, EmployeeSupInfo> getOverrideEmployees() {
-        return ImmutableMultimap.copyOf(overrideEmployees);
+    public ImmutableCollection<EmployeeSupInfo> getSupOverrideInfos() {
+        return ImmutableList.copyOf(supOverrideEmployees.values());
     }
 
     public void setSupOverrideEmployees(Collection<EmployeeSupInfo> supOverrideEmployees) {
-        this.supOverrideEmployees = HashBasedTable.create();
+        this.supOverrideEmployees = HashMultimap.create();
         supOverrideEmployees.forEach(this::addSupOverrideEmployee);
     }
 
     public void addSupOverrideEmployee(EmployeeSupInfo empSupInfo) {
         // Prevent the supervisor from getting themselves as an employee
         // This happens often when an employee is given an override for their own supervisor
-        if (empSupInfo.getEmpId() == supervisorId) {
+        if (empSupInfo.getEmpId() == this.supervisorId) {
             return;
         }
-        this.supOverrideEmployees.put(empSupInfo.getSupId(), empSupInfo.getEmpId(), empSupInfo);
+        supOverrideEmployees.put(empSupInfo.getEmpId(), empSupInfo);
     }
 
     public void setOverrideEmployees(Collection<EmployeeSupInfo> overrideEmployees) {
@@ -110,27 +106,14 @@ public class SupervisorEmpGroup extends PrimarySupEmpGroup
     public boolean hasEmployeeDuringRange(int empId, Range<LocalDate> dateRange) {
         return super.hasEmployeeDuringRange(empId, dateRange) ||
                 anySupInfoInRange(this.overrideEmployees.get(empId), dateRange) ||
-                anySupInfoInRange(this.supOverrideEmployees.column(empId).values(), dateRange);
+                anySupInfoInRange(this.supOverrideEmployees.get(empId), dateRange);
     }
 
     @Override
     public void filterEmpInfos() {
         super.filterEmpInfos();
 
-        Table<Integer, Integer, EmployeeSupInfo> newSupOverrideEmps = HashBasedTable.create();
-        filterEmployeeSupInfos(supOverrideEmployees.values())
-                .forEach(esi -> newSupOverrideEmps.put(esi.getSupId(), esi.getEmpId(), esi));
-        this.supOverrideEmployees = newSupOverrideEmps;
-
-        Multimap<Integer, EmployeeSupInfo> newOverrideEmps = HashMultimap.create();
-        filterEmployeeSupInfos(overrideEmployees.values())
-                .forEach(esi -> newOverrideEmps.put(esi.getEmpId(), esi));
-        this.overrideEmployees = newOverrideEmps;
-    }
-
-    /* --- Basic Getters / Setters --- */
-
-    public Table<Integer, Integer, EmployeeSupInfo> getSupOverrideEmployees() {
-        return supOverrideEmployees;
+        setSupOverrideEmployees(filterEmployeeSupInfos(supOverrideEmployees.values()));
+        setOverrideEmployees(filterEmployeeSupInfos(overrideEmployees.values()));
     }
 }

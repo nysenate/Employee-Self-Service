@@ -10,7 +10,6 @@ import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
-import gov.nysenate.ess.time.model.EssTimeConstants;
 import gov.nysenate.ess.time.model.expectedhrs.ExpectedHours;
 import gov.nysenate.ess.time.model.expectedhrs.InvalidExpectedHourDatesEx;
 import gov.nysenate.ess.time.service.allowance.AllowanceService;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.Arrays;
 
@@ -184,15 +182,12 @@ public class TxExpectedHoursService implements ExpectedHoursService {
      * @param dateRange Range<LocalDate> - Date Range to get expected hours for
      * @return ImmutableRangeSet<LocalDate>
      */
-
     private BigDecimal getExpectedHours(Range<LocalDate> dateRange, BigDecimal minHours) {
 
         BigDecimal numberOfWeekdays = new BigDecimal(DateUtils.getNumberOfWeekdays(dateRange));
-        MathContext mc = new MathContext(3);
-        BigDecimal hoursPerDay = minHours.divide(EssTimeConstants.MAX_DAYS_PER_YEAR, mc);
+        BigDecimal hoursPerDay = AccrualUtils.getHoursPerDay(minHours);
         BigDecimal rawExpectedHours = hoursPerDay.multiply(numberOfWeekdays);
-        BigDecimal roundedExpectedHours =  AccrualUtils.roundExpectedHours(rawExpectedHours);
 
-        return roundedExpectedHours;
+        return AccrualUtils.roundExpectedHours(rawExpectedHours);
     }
 }
