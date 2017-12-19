@@ -66,7 +66,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     @Autowired private PayPeriodService payPeriodService;
     @Autowired private AccrualInfoService accrualInfoService;
     @Autowired private EmpTransactionService empTransService;
-    @Autowired private TxExpectedHoursService txExpectedHoursService;
+    @Autowired private TxExpectedHoursService expHoursService;
     @Autowired private EmployeeInfoService empInfoService;
 
     /* --- Implemented Methods --- */
@@ -273,7 +273,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 .filter(perAccSumm ->
                         employedAnnualEmploymentDates.intersects(perAccSumm.getPayPeriod().getDateRange()))
                 .peek(perAccSumm -> perAccSumm.setExpectedTotalHours(
-                        txExpectedHoursService.getExpectedHours(perAccSumm.getEmpId(), perAccSumm.getPayPeriod())))
+                        expHoursService.getExpectedHours(perAccSumm.getEmpId(), perAccSumm.getPayPeriod())))
                 .collect(Collectors.toMap(PeriodAccSummary::getPayPeriod, Function.identity(),
                         (a, b) -> b, TreeMap::new));
     }
@@ -396,6 +396,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             accrualState.setEndDate(fromDate);
         }
 
+        PayPeriod payPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate);
+
         // Create a date range from the end date to the first day after the end date
         // This is done so that the initial values are used if the employee was not active on the end date
         Range<LocalDate> initialRange =
@@ -403,7 +405,8 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
 
         // Set the expected YTD hours from the last PD23ACCUSAGE record
         if (periodAccSum.isPresent()) {
-            accrualState.setYtdHoursExpected(txExpectedHoursService.getExpectedHours(transHistory.getEmployeeId(), payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate)));
+            BigDecimal ytdExpectedHours = expHoursService.getExpectedHours(transHistory.getEmployeeId(), payPeriod);
+            accrualState.setYtdHoursExpected(ytdExpectedHours);
         }
         else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
@@ -429,11 +432,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
         // If the employee was not allowed to accrue during the gap period, don't increment accruals
-        if (!accrualAllowedDates.intersects(gapPeriodRange)) {
-            accrualState.setEmpAccruing(false);
-        } else {
-            accrualState.setEmpAccruing(true);
-        }
+        accrualState.setEmpAccruing(accrualAllowedDates.intersects(gapPeriodRange));
 
         // TODO if min total hours changes mid pay period,
         //   the period total hours need to be calculated according to rate of total hours / 260
