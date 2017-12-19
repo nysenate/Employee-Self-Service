@@ -58,26 +58,10 @@ public class TxExpectedHoursService implements ExpectedHoursService {
      */
     @Override
     public BigDecimal getExpectedHours(int empId, PayPeriod payPeriod) {
-        TransactionHistory transHistory = empTransactionService.getTransHistory(empId);
 
-        LocalDate startOfYear = LocalDate.ofYearDay(payPeriod.getYear(), 1);
+        ExpectedHours expectedHours = getExpectedHours(empId, payPeriod.getDateRange());
 
-        Range<LocalDate>  upToPayPeriodRange =  Range.closedOpen(startOfYear, payPeriod.getEndDate().plusDays(1));
-
-        BigDecimal expectedHours = getExpectedHours(transHistory, upToPayPeriodRange);
-
-        // Add any Temporary Actual Hours to the Expected Hours within the year prior to the given Pay Period.
-        // Currently, the Temporary Hours included are only the Submitted Hours. RA/SA Hours include unsubmitted hours.
-        // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
-        // Hours.
-
-        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, payPeriod.getStartDate()).getHoursUsed();
-
-        expectedHours = expectedHours.add(tempHours);
-
-        expectedHours = AccrualUtils.roundExpectedHours(expectedHours);
-
-        return expectedHours;
+        return expectedHours.getYtdHoursExpected();
     }
 
     @Override
@@ -96,7 +80,15 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         Range<LocalDate> yearToDate = Range.closedOpen(LocalDate.ofYearDay(year, 1), beginDate);
 
         BigDecimal yearlyHoursExpected = transactionHistory.getEffectiveMinHours(dateRange).lastEntry().getValue();
+
         BigDecimal ytdHoursExpected = getExpectedHours(transactionHistory, yearToDate);
+        // Add any Temporary Actual Hours to the Expected Hours within the year prior to the given Pay Period.
+        // Currently, the Temporary Hours included are only the Submitted Hours. RA/SA Hours include unsubmitted hours.
+        // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
+        // Hours.
+        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, beginDate).getHoursUsed();
+        ytdHoursExpected = AccrualUtils.roundExpectedHours(ytdHoursExpected.add(tempHours));
+
         BigDecimal periodHoursExpected = getExpectedHours(transactionHistory, dateRange);
 
         return new ExpectedHours(beginDate, endDate, yearlyHoursExpected, ytdHoursExpected, periodHoursExpected);
@@ -177,10 +169,10 @@ public class TxExpectedHoursService implements ExpectedHoursService {
     }
 
     /**
-     * Returns the expected hours for a given date range based on the Minimum Hours for the yeear.
+     * Returns the expected hours for a given date range based on the Minimum Hours for the year.
      *
      * @param dateRange Range<LocalDate> - Date Range to get expected hours for
-     * @return ImmutableRangeSet<LocalDate>
+     * @return BigDecimal
      */
     private BigDecimal getExpectedHours(Range<LocalDate> dateRange, BigDecimal minHours) {
 

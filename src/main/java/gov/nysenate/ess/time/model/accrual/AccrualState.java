@@ -5,7 +5,6 @@ import com.google.common.collect.TreeRangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.time.util.AccrualUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -14,10 +13,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.StreamSupport;
 
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
-import static gov.nysenate.ess.time.model.EssTimeConstants.HOURS_PER_DAY;
 
 /**
  * This class is intended for use within the accrual dao layer. It contains the necessary information
@@ -129,13 +126,20 @@ public class AccrualState extends AccrualSummary
      * Get the number hours the employee is required to work during the given pay period
      */
     private BigDecimal getExpectedHoursForPeriod() {
+        BigDecimal hoursPerDay = AccrualUtils.getHoursPerDay(minTotalHours);
+        BigDecimal numWorkDays = new BigDecimal(getNumWorkDays());
+
+        return AccrualUtils.roundExpectedHours(hoursPerDay.multiply(numWorkDays));
+    }
+
+    /**
+     * Get the number of expected work days in this period
+     * @return long
+     */
+    private long getNumWorkDays() {
         return expectedDates.asRanges().stream()
-                .map(RangeUtils::getDateRangeIterator)
-                .map(iterator -> (Iterable<LocalDate>) () -> iterator)
-                .flatMap(iterable -> StreamSupport.stream(iterable.spliterator(), false))
-                .filter(DateUtils::isWeekday)
-                .map(day -> HOURS_PER_DAY.multiply(getProratePercentage()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(DateUtils::getNumberOfWeekdays)
+                .reduce(0L, Long::sum);
     }
 
     /**

@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 import static gov.nysenate.ess.time.model.EssTimeConstants.*;
 
 /**
- * Utility methods for accruals
+ * Utility methods for accruals and expected hours
  */
 public final class AccrualUtils {
 
@@ -28,15 +28,29 @@ public final class AccrualUtils {
     }
 
     /**
+     * Get the number of hours an employee is expected to work in a pay period,
+     * given the number of hours expected for a whole year.
+     *
+     * @param minTotalHours BigDecimal
+     * @return BigDecimal
+     */
+    public static BigDecimal getHoursPerPeriod(BigDecimal minTotalHours) {
+        BigDecimal rawHoursPerDay = minTotalHours.divide(MAX_DAYS_PER_YEAR, FOUR_DIGITS_MAX);
+        BigDecimal rawHoursPerPeriod = rawHoursPerDay.multiply(BigDecimal.TEN);
+        return roundExpectedHours(rawHoursPerPeriod);
+    }
+
+    /**
      * Gets the number of work hours expected for a single day,
      * given the number of total hours expected for a year.
+     * This value is not rounded.
      *
      * @param minTotalHours BigDecimal
      * @return BigDecimal
      */
     public static BigDecimal getHoursPerDay(BigDecimal minTotalHours) {
-        BigDecimal hoursPerDay = minTotalHours.divide(MAX_DAYS_PER_YEAR, FOUR_DIGITS_MAX);
-        return roundExpectedHours(hoursPerDay);
+        BigDecimal hoursPerPeriod = getHoursPerPeriod(minTotalHours);
+        return hoursPerPeriod.divide(BigDecimal.TEN, FOUR_DIGITS_MAX);
     }
 
     /**
