@@ -5,7 +5,6 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -47,21 +46,6 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         this.empTransactionService = empTransactionService;
         this.allowanceService = allowanceService;
         this.txDockHoursService = dockHoursService;
-    }
-
-    /**
-     * Returns the Year to Date Expected Hours up to a specified Pay Period.
-     *
-     * @param empId int - Employee id
-     * @param payPeriod PayPeriod - Pay Period to compute YTD Expected hours up to
-     * @return BigDecimal
-     */
-    @Override
-    public BigDecimal getExpectedHours(int empId, PayPeriod payPeriod) {
-
-        ExpectedHours expectedHours = getExpectedHours(empId, payPeriod.getDateRange());
-
-        return expectedHours.getYtdHoursExpected();
     }
 
     @Override
