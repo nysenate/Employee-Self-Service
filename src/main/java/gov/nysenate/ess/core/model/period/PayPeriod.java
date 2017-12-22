@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.model.period;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.util.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -31,7 +32,7 @@ public class PayPeriod implements Comparable<PayPeriod>
     /** Indicates if this pay period is set as active in the backing store. */
     protected boolean active;
 
-    /** --- Constructors --- */
+    /* --- Constructors --- */
 
     public PayPeriod() {}
 
@@ -39,11 +40,11 @@ public class PayPeriod implements Comparable<PayPeriod>
         this.type = type;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.payPeriodNum = payPeriodNum;
+        setPayPeriodNum(payPeriodNum);
         this.active = active;
     }
 
-    /** --- Functional Getters/Setters --- */
+/* --- Functional Getters/Setters --- */
 
     /**
      * Returns the number of days between the start date and end date (inclusive) of this pay period.
@@ -145,7 +146,16 @@ public class PayPeriod implements Comparable<PayPeriod>
         return payPeriodNum;
     }
 
-    /** --- Overrides --- */
+    /**
+     * Store the pay period num as just the raw number, (in case the letter designator is included)
+     *
+     * @param payPeriodNum String
+     */
+    public void setPayPeriodNum(String payPeriodNum) {
+        this.payPeriodNum = StringUtils.replacePattern(payPeriodNum, "[^0-9]", "");
+    }
+
+    /* --- Overrides --- */
 
     @Override
     public int hashCode() {
@@ -179,7 +189,7 @@ public class PayPeriod implements Comparable<PayPeriod>
             .result();
     }
 
-    /** --- Basic Getters/Setters --- */
+    /* --- Basic Getters/Setters --- */
 
     public PayPeriodType getType() {
         return type;
@@ -203,10 +213,6 @@ public class PayPeriod implements Comparable<PayPeriod>
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public void setPayPeriodNum(String payPeriodNum) {
-        this.payPeriodNum = payPeriodNum;
     }
 
     public boolean isActive() {
