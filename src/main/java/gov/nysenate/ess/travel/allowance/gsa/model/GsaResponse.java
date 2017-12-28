@@ -25,4 +25,12 @@ public final class GsaResponse {
     public String getMealRow() {
         return mealRow;
     }
+
+    public int getFiscalYear() {
+        return fiscalYear;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
 }

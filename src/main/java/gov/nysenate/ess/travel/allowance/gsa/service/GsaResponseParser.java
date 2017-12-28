@@ -24,7 +24,8 @@ public class GsaResponseParser {
 
     /**
      * Parses the json text received from the GSA API into a {@link GsaResponse}.
-     * @param json
+     * This method only handles successful responses, errors should be checked for before use.
+     * @param json A json string containing the raw text response from a GSA Api call.
      * @return
      * @throws IOException
      */
