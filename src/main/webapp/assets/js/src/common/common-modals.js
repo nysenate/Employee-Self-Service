@@ -20,7 +20,7 @@ function progressModal () {
 function confirmModal (modals) {
     return {
         template:
-        '<div class="confirm-modal">' +
+        '<div class="confirm-modal {{level}}">' +
           '<h3 class="content-info" ng-bind="title"></h3>' +
           '<div class="confirmation-message">' +
             '<h4 ng-show="confirmMessage" ng-bind="confirmMessage"></h4>' +
@@ -47,6 +47,8 @@ function confirmModal (modals) {
         $scope.rejectable = $attrs.rejectable === 'true';
 
         $scope.title = $attrs.title;
+
+        $scope.level = $attrs.level || 'info';
 
         $scope.confirmMessage = $attrs.confirmMessage;
 

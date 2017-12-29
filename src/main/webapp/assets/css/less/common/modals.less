@@ -101,6 +101,14 @@
 }
 
 .confirm-modal {
+  &.error {
+    h3 {
+      color: @redorange;
+    }
+    .input-container input[type="button"].time-neutral-button {
+      &:extend(input[type="button"].reject-button);
+    }
+  }
   h3 {
     margin-bottom: 0;
   }
