@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
 import gov.nysenate.ess.travel.application.view.ItineraryView;
@@ -26,9 +27,6 @@ public class GsaApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse searchGsa(@RequestBody ItineraryView itineraryView) {
         Itinerary itinerary = itineraryView.toItinerary();
 
-//        GsaAllowance gsaAllowance = gsaAllowanceService.computeAllowance(itinerary);
-//        GsaAllowanceView gsaAllowanceView = new GsaAllowanceView(gsaAllowance);
-//        return new ViewObjectResponse<>(gsaAllowanceView);
         return null;
     }
 }

@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.allowance.gsa.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.travel.allowance.gsa.model.GsaResponse;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaResponseId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ public class GsaResponseParser {
         Map<Month, BigDecimal> lodgingRates = parseLodgingRates(record);
         String mealRow = record.get("Meals").asText();
 
-        return new GsaResponse(fiscalYear, zip, lodgingRates, mealRow);
+        return new GsaResponse(new GsaResponseId(fiscalYear, zip), lodgingRates, mealRow);
     }
 
     private Map<Month, BigDecimal> parseLodgingRates(JsonNode record) {

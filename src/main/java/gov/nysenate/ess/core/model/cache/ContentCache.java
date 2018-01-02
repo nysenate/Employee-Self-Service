@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.model.cache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.travel.allowance.gsa.model.GsaResponseId;
 
 import java.util.Arrays;
 
@@ -20,7 +21,8 @@ public enum ContentCache
     TRANSACTION(Integer.class),
     SUPERVISOR_EMP_GROUP(Integer.class),
     ACTIVE_TIME_RECORDS(Integer.class),
-    LOCATION(String.class)
+    LOCATION(String.class),
+    GSA_API(GsaResponseId.class)
     ;
 
     private Class<?> keyType;
