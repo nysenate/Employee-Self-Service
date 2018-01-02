@@ -38,9 +38,9 @@ public class GsaResponseParser {
         int fiscalYear = record.get("FiscalYear").asInt();
         String zip = record.get("Zip").asText();
         Map<Month, BigDecimal> lodgingRates = parseLodgingRates(record);
-        String mealRow = record.get("Meals").asText();
+        String mealTier = record.get("Meals").asText();
 
-        return new GsaResponse(new GsaResponseId(fiscalYear, zip), lodgingRates, mealRow);
+        return new GsaResponse(new GsaResponseId(fiscalYear, zip), lodgingRates, mealTier);
     }
 
     private Map<Month, BigDecimal> parseLodgingRates(JsonNode record) {

@@ -31,7 +31,7 @@ public class GsaResponseParserTest {
 
         assertEquals(2018, res.getFiscalYear());
         assertEquals("10036", res.getZipcode());
-        assertEquals("74", res.getMealRow());
+        assertEquals("74", res.getMealTier());
 
         assertEquals(new BigDecimal("164"), res.getLodging(Month.JANUARY));
         assertEquals(new BigDecimal("164"), res.getLodging(Month.FEBRUARY));

@@ -7,22 +7,25 @@ import java.util.Objects;
 
 public final class GsaResponse {
 
+    /** Contains the fiscal year and zip code this response is for. */
     private final GsaResponseId id;
+    /** Map of {@link Month} to the lodging rate for that month.*/
     private final Map<Month, BigDecimal> lodgingRates;
-    private final String mealRow;
+    /** The meal and incidental expense tier/row to use for meal rates. */
+    private final String mealTier;
 
-    public GsaResponse(GsaResponseId id, Map<Month, BigDecimal> lodgingRates, String mealRow) {
+    public GsaResponse(GsaResponseId id, Map<Month, BigDecimal> lodgingRates, String mealTier) {
         this.id = id;
         this.lodgingRates = lodgingRates;
-        this.mealRow = mealRow;
+        this.mealTier = mealTier;
     }
 
     public BigDecimal getLodging(Month month) {
         return lodgingRates.get(month);
     }
 
-    public String getMealRow() {
-        return mealRow;
+    public String getMealTier() {
+        return mealTier;
     }
 
     public int getFiscalYear() {
@@ -44,11 +47,11 @@ public final class GsaResponse {
         GsaResponse that = (GsaResponse) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(lodgingRates, that.lodgingRates) &&
-                Objects.equals(mealRow, that.mealRow);
+                Objects.equals(mealTier, that.mealTier);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lodgingRates, mealRow);
+        return Objects.hash(id, lodgingRates, mealTier);
     }
 }

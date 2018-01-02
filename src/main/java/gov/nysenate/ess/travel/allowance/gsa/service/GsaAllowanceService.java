@@ -16,12 +16,12 @@ import java.time.LocalDate;
 public class GsaAllowanceService {
 
     private GsaClient client;
-    private MealIncidentalRatesService mealRatesService;
+    private MealRatesService mealRatesService;
 
     @Autowired
-    public GsaAllowanceService(GsaClient client, MealIncidentalRatesService mealIncidentalRatesService) {
+    public GsaAllowanceService(GsaClient client, MealRatesService mealRatesService) {
         this.client = client;
-        this.mealRatesService = mealIncidentalRatesService;
+        this.mealRatesService = mealRatesService;
     }
 
     public LodgingAllowance calculateLodging(Itinerary itinerary) throws IOException {
@@ -53,7 +53,7 @@ public class GsaAllowanceService {
         BigDecimal meals = BigDecimal.ZERO;
         for (LocalDate date: destination.getDatesOfStay()) {
             GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
-            String mealRow = res.getMealRow();
+            String mealTier = res.getMealTier();
             // TODO: localMealDao.getBreakfast(zip, mealRow);
             // TODO: localMealDao.getDinner(zip, mealRow);
             // meals.add(breakfast, dinner)

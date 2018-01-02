@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealRate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -20,42 +20,42 @@ import java.util.List;
 public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealIncidentalRatesDao {
 
     @Override
-    public MealIncidentalRate[] getMealIncidentalRates() {
+    public MealRate[] getMealIncidentalRates() {
         String sql = SqlMealIncidentalRateQuery.GET_RATES.getSql(schemaMap());
 
-        List<MealIncidentalRate> rates = localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
-        MealIncidentalRate[] mealIncidentalRates = new MealIncidentalRate[rates.size()];
+        List<MealRate> rates = localNamedJdbc.query(sql, new MealIncidentalRateRowMapper());
+        MealRate[] mealRates = new MealRate[rates.size()];
         for (int i = 0; i < rates.size(); i++) {
-            mealIncidentalRates[i] = rates.get(i);
+            mealRates[i] = rates.get(i);
         }
-        return mealIncidentalRates;
+        return mealRates;
     }
 
     @Override
-    public void insertMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
-        List<SqlParameterSource> paramList = new ArrayList<>();
-        for (MealIncidentalRate mealIncidentalRate : mealIncidentalRates) {
-            MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("totalCost", mealIncidentalRate.getTotalCost())
-                    .addValue("breakfastCost", mealIncidentalRate.getBreakfastCost())
-                    .addValue("dinnerCost", mealIncidentalRate.getDinnerCost())
-                    .addValue("incidentalCost", mealIncidentalRate.getIncidentalCost());
-            paramList.add(params);
-        }
-
-        String sql = SqlMealIncidentalRateQuery.INSERT_RATE.getSql(schemaMap());
-        SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
-        batchParams = paramList.toArray(batchParams);
-        localNamedJdbc.batchUpdate(sql, batchParams);
+    public void insertMealIncidentalRates(MealRate[] mealRates) {
+//        List<SqlParameterSource> paramList = new ArrayList<>();
+//        for (MealRate mealRate : mealRates) {
+//            MapSqlParameterSource params = new MapSqlParameterSource()
+//                    .addValue("totalCost", mealRate.getTotalCost())
+//                    .addValue("breakfastCost", mealRate.getBreakfast())
+//                    .addValue("dinnerCost", mealRate.getDinner())
+//                    .addValue("incidentalCost", mealRate.getIncidental());
+//            paramList.add(params);
+//        }
+//
+//        String sql = SqlMealIncidentalRateQuery.INSERT_RATE.getSql(schemaMap());
+//        SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
+//        batchParams = paramList.toArray(batchParams);
+//        localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
     @Override
     @Transactional(value = "localTxManager")
-    public synchronized void updateMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates) {
+    public synchronized void updateMealIncidentalRates(MealRate[] mealRates) {
         String sql = SqlMealIncidentalRateQuery.TRUNCATE_TABLE.getSql(schemaMap());
         localJdbc.execute(sql);
 
-        insertMealIncidentalRates(mealIncidentalRates);
+        insertMealIncidentalRates(mealRates);
     }
 
     private enum SqlMealIncidentalRateQuery implements BasicSqlQuery {
@@ -87,12 +87,13 @@ public class SqlMealIncidentalRatesDao extends SqlBaseDao implements MealInciden
         }
     }
 
-    private class MealIncidentalRateRowMapper extends BaseRowMapper<MealIncidentalRate> {
+    private class MealIncidentalRateRowMapper extends BaseRowMapper<MealRate> {
 
         @Override
-        public MealIncidentalRate mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new MealIncidentalRate(rs.getInt("total_cost"), rs.getInt("breakfast_cost"),
-                    rs.getInt("dinner_cost"), rs.getInt("incidental_cost"));
+        public MealRate mapRow(ResultSet rs, int rowNum) throws SQLException {
+//            return new MealRate(rs.getInt("total_cost"), rs.getInt("breakfast_cost"),
+//                    rs.getInt("dinner_cost"), rs.getInt("incidental_cost"));
+            return null;
         }
     }
 }

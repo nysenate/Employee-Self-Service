@@ -1,12 +1,12 @@
 package gov.nysenate.ess.travel.allowance.gsa.dao;
 
-import gov.nysenate.ess.travel.allowance.gsa.model.MealIncidentalRate;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealRate;
 
 public interface MealIncidentalRatesDao {
 
-    MealIncidentalRate[] getMealIncidentalRates();
+    MealRate[] getMealIncidentalRates();
 
-    void insertMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates);
+    void insertMealIncidentalRates(MealRate[] mealRates);
 
-    void updateMealIncidentalRates(MealIncidentalRate[] mealIncidentalRates);
+    void updateMealIncidentalRates(MealRate[] mealRates);
 }
