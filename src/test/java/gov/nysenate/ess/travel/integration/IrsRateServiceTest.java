@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.unit.allowance;
+package gov.nysenate.ess.travel.integration;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.UnitTest;

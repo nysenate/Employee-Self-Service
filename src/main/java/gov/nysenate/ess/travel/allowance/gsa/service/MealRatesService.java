@@ -12,17 +12,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @Service
 public class MealRatesService {
 
-    private MealRatesParser mealRatesParser;
+    private MealTiersParser mealTiersParser;
     private MealIncidentalRatesDao mealIncidentalRatesDao;
 
     @Autowired
-    public MealRatesService(MealIncidentalRatesDao mealIncidentalRatesDao, MealRatesParser mealRatesParser) {
+    public MealRatesService(MealIncidentalRatesDao mealIncidentalRatesDao, MealTiersParser mealTiersParser) {
         this.mealIncidentalRatesDao = mealIncidentalRatesDao;
-        this.mealRatesParser = mealRatesParser;
+        this.mealTiersParser = mealTiersParser;
     }
 
     @Scheduled(cron = "${scheduler.travel.scrape.cron}")
@@ -49,6 +50,6 @@ public class MealRatesService {
             content = EntityUtils.toString(response.getEntity());
         }
 
-        return mealRatesParser.scrapeMealRates(content);
+        return new MealRate(LocalDate.now(), null, mealTiersParser.parseMealTiers(content));
     }
 }
