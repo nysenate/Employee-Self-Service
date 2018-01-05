@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.allowance.gsa.service;
 
 import gov.nysenate.ess.travel.allowance.gsa.model.GsaResponse;
 import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.LodgingNight;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
@@ -25,20 +26,24 @@ public class GsaAllowanceService {
     }
 
     public LodgingAllowance calculateLodging(Itinerary itinerary) throws IOException {
-        BigDecimal lodging = BigDecimal.ZERO;
+        LodgingAllowance lodgingAllowance = new LodgingAllowance();
         for (TravelDestination destination: itinerary.getDestinations()) {
-            lodging.add(lodgingForDestination(destination));
+            lodgingAllowance = lodgingAllowance.add(lodgingForDestination(destination));
         }
-        return new LodgingAllowance(lodging);
+        return lodgingAllowance;
     }
 
-    private BigDecimal lodgingForDestination(TravelDestination destination) throws IOException {
-        BigDecimal lodging = BigDecimal.ZERO;
+    private LodgingAllowance lodgingForDestination(TravelDestination destination) throws IOException {
+        LodgingAllowance allowance = new LodgingAllowance();
         for (LocalDate date: destination.getNightsOfStay()) {
-            GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
-            lodging.add(res.getLodging(date.getMonth()));
+            allowance.addNight(createLodgingNight(destination, date));
         }
-        return lodging;
+        return allowance;
+    }
+
+    private LodgingNight createLodgingNight(TravelDestination destination, LocalDate date) throws IOException {
+        GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
+        return new LodgingNight(date, destination.getAddress(), res.getLodging(date));
     }
 
     public MealAllowance calculateMealAllowance(Itinerary itinerary) throws IOException {

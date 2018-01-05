@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.allowance.gsa.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.Map;
 import java.util.Objects;
@@ -20,8 +21,8 @@ public final class GsaResponse {
         this.mealTier = mealTier;
     }
 
-    public BigDecimal getLodging(Month month) {
-        return lodgingRates.get(month);
+    public BigDecimal getLodging(LocalDate date) {
+        return lodgingRates.get(date.getMonth());
     }
 
     public String getMealTier() {

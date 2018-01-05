@@ -1,8 +1,6 @@
 package gov.nysenate.ess.travel.application.model;
 
-import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.allowance.gsa.service.GsaClient;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,7 +23,6 @@ public final class TravelDestination {
     private final Address address;
     private final ModeOfTransportation modeOfTransportation;
     private final boolean isWaypoint;
-    private List<TravelDay> travelDays;
 
     public TravelDestination(LocalDate arrivalDate, LocalDate departureDate, Address address,
                              ModeOfTransportation modeOfTransportation) {
@@ -44,23 +41,7 @@ public final class TravelDestination {
         this.address = address;
         this.modeOfTransportation = modeOfTransportation;
         this.isWaypoint = isWaypoint;
-        this.travelDays = new ArrayList<>();
     }
-
-//    public void setTravelDays(GsaClient client, LocalDate currentDate, int daysThere) {
-//        travelDays = new ArrayList<>(daysThere);
-//        for (int i = 0; i < daysThere; i++) {
-//            TravelDay travelDay = new TravelDay(currentDate, client.getBreakfastCost(), client.getDinnerCost());
-//            travelDays.add(travelDay);
-//            currentDate = currentDate.plusDays(1);
-//        }
-//
-//        if(daysThere > 1){
-//            for (int i = 0; i < daysThere - 1; i++) {
-//               travelDays.get(i).setLodging(client.getLodging());
-//            }
-//        }
-//    }
 
     /**
      * @return A List containing all dates at this location.

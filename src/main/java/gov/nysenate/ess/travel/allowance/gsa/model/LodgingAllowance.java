@@ -1,18 +1,65 @@
 package gov.nysenate.ess.travel.allowance.gsa.model;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LodgingAllowance {
 
-    private BigDecimal lodging;
+    private final ImmutableSet<LodgingNight> nights;
 
-    // Map<TravelDestionation, Map<NightOfStay, allowance>> blehh
+    public LodgingAllowance() {
+        nights = ImmutableSet.of();
+    }
 
-    public LodgingAllowance(BigDecimal lodging) {
-        checkArgument(checkNotNull(lodging).signum() >= 0);
-        this.lodging = lodging;
+    public LodgingAllowance(Set<LodgingNight> nights) {
+        this.nights = ImmutableSet.copyOf(nights);
+    }
+
+    public LodgingAllowance(ImmutableSet<LodgingNight> nights) {
+        this.nights = nights;
+    }
+
+    public LodgingAllowance add(LodgingAllowance allowance) {
+        return new LodgingAllowance(ImmutableSet.<LodgingNight>builder()
+                .addAll(getNights())
+                .addAll(allowance.getNights())
+                .build());
+    }
+
+    public LodgingAllowance addNight(LodgingNight night) {
+        return new LodgingAllowance(ImmutableSet.<LodgingNight>builder()
+                .addAll(getNights())
+                .add(night)
+                .build());
+    }
+
+    public BigDecimal getTotal() {
+        return getNights().stream()
+                .map(LodgingNight::getRate)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public ImmutableSet<LodgingNight> getNights() {
+        return nights;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LodgingAllowance that = (LodgingAllowance) o;
+        return Objects.equals(nights, that.nights);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nights);
     }
 }
