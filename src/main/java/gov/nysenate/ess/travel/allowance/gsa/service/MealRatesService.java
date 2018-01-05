@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.allowance.gsa.service;
 
+import gov.nysenate.ess.core.util.HttpUtils;
 import gov.nysenate.ess.travel.allowance.gsa.dao.MealRatesDao;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealRates;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -38,19 +39,8 @@ public class MealRatesService {
     }
 
     private MealRates scrapeMealTiers() throws IOException {
-        // TODO: similar code to httpget in GsaClient. Make into utility?
-        String content;
         String url = "http://www.gsa.gov/mie";
-        HttpGet httpget = new HttpGet(url);
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(httpget)) {
-
-            if (response.getStatusLine().getStatusCode() != 200) {
-                // TODO
-            }
-            content = EntityUtils.toString(response.getEntity());
-        }
-
+        String content = HttpUtils.urlToString(url);
         return mealRatesParser.parseMealRates(content);
     }
 }
