@@ -5,7 +5,6 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeMap;
 import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -49,37 +48,6 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         this.txDockHoursService = dockHoursService;
     }
 
-    /**
-     * Returns the Year to Date Expected Hours up to a specified Pay Period.
-     *
-     * @param empId int - Employee id
-     * @param payPeriod PayPeriod - Pay Period to compute YTD Expected hours up to
-     * @return BigDecimal
-     */
-    @Override
-    public BigDecimal getExpectedHours(int empId, PayPeriod payPeriod) {
-        TransactionHistory transHistory = empTransactionService.getTransHistory(empId);
-
-        LocalDate startOfYear = LocalDate.ofYearDay(payPeriod.getYear(), 1);
-
-        Range<LocalDate>  upToPayPeriodRange =  Range.closedOpen(startOfYear, payPeriod.getEndDate().plusDays(1));
-
-        BigDecimal expectedHours = getExpectedHours(transHistory, upToPayPeriodRange);
-
-        // Add any Temporary Actual Hours to the Expected Hours within the year prior to the given Pay Period.
-        // Currently, the Temporary Hours included are only the Submitted Hours. RA/SA Hours include unsubmitted hours.
-        // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
-        // Hours.
-
-        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, payPeriod.getStartDate()).getHoursUsed();
-
-        expectedHours = expectedHours.add(tempHours);
-
-        expectedHours = AccrualUtils.roundExpectedHours(expectedHours);
-
-        return expectedHours;
-    }
-
     @Override
     public ExpectedHours getExpectedHours(int empId, Range<LocalDate> dateRange) throws InvalidExpectedHourDatesEx {
         dateRange = dateRange.canonical(DateUtils.getLocalDateDiscreteDomain());
@@ -96,7 +64,15 @@ public class TxExpectedHoursService implements ExpectedHoursService {
         Range<LocalDate> yearToDate = Range.closedOpen(LocalDate.ofYearDay(year, 1), beginDate);
 
         BigDecimal yearlyHoursExpected = transactionHistory.getEffectiveMinHours(dateRange).lastEntry().getValue();
+
         BigDecimal ytdHoursExpected = getExpectedHours(transactionHistory, yearToDate);
+        // Add any Temporary Actual Hours to the Expected Hours within the year prior to the given Pay Period.
+        // Currently, the Temporary Hours included are only the Submitted Hours. RA/SA Hours include unsubmitted hours.
+        // If including only Submitted Temporary Hours becomes an issue, then we may need to include all Temporary
+        // Hours.
+        BigDecimal tempHours = allowanceService.getAllowanceUsage(empId, beginDate).getHoursUsed();
+        ytdHoursExpected = AccrualUtils.roundExpectedHours(ytdHoursExpected.add(tempHours));
+
         BigDecimal periodHoursExpected = getExpectedHours(transactionHistory, dateRange);
 
         return new ExpectedHours(beginDate, endDate, yearlyHoursExpected, ytdHoursExpected, periodHoursExpected);
@@ -177,10 +153,10 @@ public class TxExpectedHoursService implements ExpectedHoursService {
     }
 
     /**
-     * Returns the expected hours for a given date range based on the Minimum Hours for the yeear.
+     * Returns the expected hours for a given date range based on the Minimum Hours for the year.
      *
      * @param dateRange Range<LocalDate> - Date Range to get expected hours for
-     * @return ImmutableRangeSet<LocalDate>
+     * @return BigDecimal
      */
     private BigDecimal getExpectedHours(Range<LocalDate> dateRange, BigDecimal minHours) {
 

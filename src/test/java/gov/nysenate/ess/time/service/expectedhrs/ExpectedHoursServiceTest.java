@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static gov.nysenate.ess.core.model.period.PayPeriodType.AF;
@@ -32,10 +31,11 @@ public class ExpectedHoursServiceTest extends BaseTest {
         PayPeriod period = periodService.getPayPeriod(AF, date);
         Range<LocalDate> dateRange = period.getDateRange();
 
-        BigDecimal expectedHourValue = expectedHoursService.getExpectedHours(12393, period);
+        ExpectedHours periodExpectedHours = expectedHoursService.getExpectedHours(12393, period);
         ExpectedHours expectedHours = expectedHoursService.getExpectedHours(empId, dateRange);
 
 
-        logger.info("\nBd method: {}\nex method: {}", expectedHourValue, expectedHours.getYtdHoursExpected());
+        logger.info("\nBd method: {}\nex method: {}",
+                periodExpectedHours.getYtdHoursExpected(), expectedHours.getYtdHoursExpected());
     }
 }

@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
+
 /**
  * {@inheritDoc}
  * Uses Freemarker {@link Template templates} and {@link SendMailService}
@@ -42,9 +44,15 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
 
     /** {@inheritDoc} */
     @Override
-    public void sendEmailReminders(Integer supId, Multimap<Integer, LocalDate> recordDates) {
+    public void sendEmailReminders(Integer supId, Multimap<Integer, LocalDate> recordDates) throws InactiveEmployeeEmailEx {
         // Group records by employee
         Multimap<Integer, TimeRecord> timeRecordMultimap = timeRecordService.getTimeRecords(recordDates);
+
+        Set<Employee> inactiveEmployees = getInactiveEmployees(recordDates);
+        if (!inactiveEmployees.isEmpty()) {
+            throw new InactiveEmployeeEmailEx(inactiveEmployees);
+        }
+
         // Generate messages for each employee
         ArrayList<MimeMessage> messages =
                 timeRecordMultimap.asMap().entrySet().stream()
@@ -95,5 +103,18 @@ public class EssRecordReminderEmailService implements RecordReminderEmailService
             throw new EssTemplateException(emailTemplateName, ex);
         }
         return out.toString();
+    }
+
+    /**
+     * Detects any inactive employees in the map of empId -> record date and returns them as a set.
+     *
+     * @param recordDates Multimap<Integer, LocalDate>
+     * @return {@link Set<Employee>}
+     */
+    private Set<Employee> getInactiveEmployees(Multimap<Integer, LocalDate> recordDates) {
+        return recordDates.keySet().stream()
+                .map(empInfoService::getEmployee)
+                .filter(emp -> !emp.isActive())
+                .collect(toSet());
     }
 }

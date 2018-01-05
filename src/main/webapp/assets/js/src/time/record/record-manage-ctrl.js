@@ -32,6 +32,8 @@ function recordManageCtrl($scope, $q, $filter,
             emailReminder: false
         },
 
+        inactiveEmps: [],
+
         /** Mapping of selected record indices by status code, e,g {'SUBMITTED' : { 1:true, 2:true }} */
         selectedIndices: angular.copy(initialSelectedIndices)
     };
@@ -171,11 +173,21 @@ function recordManageCtrl($scope, $q, $filter,
         return reminderApi.save(params, {},
             function onSuccess() {
                 console.log('time record reminders sent.');
-            },
-            function (errorData) {
-                console.error('reminder post', errorData);
+                // Close 'record-reminder-posting' modal
                 modals.rejectAll();
-                modals.open('500', {details: errorData});
+                modals.open('record-reminder-posted', true)
+            },
+            function (response) {
+                modals.rejectAll();
+                var errorCode = ((response || {}).data || {}).errorCode;
+                if (errorCode === 'EMPLOYEE_INACTIVE') {
+                    console.warn('Attempt to remind inactive employees:', response);
+                    $scope.state.inactiveEmps = response.data.errorData;
+                    modals.open('inactive-employee-email');
+                } else {
+                    console.error('Error posting time record reminder:', response);
+                    modals.open('500', {details: response});
+                }
             }).$promise
     }
 
