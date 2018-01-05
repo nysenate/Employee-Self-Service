@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 
 @Category(SillyTest.class)
-public class MealRateServiceTest extends BaseTest{
+public class MealRatesServiceTest extends BaseTest{
 
     @Autowired MealRatesService service;
 

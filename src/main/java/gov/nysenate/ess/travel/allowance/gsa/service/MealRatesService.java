@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.allowance.gsa.service;
 
-import gov.nysenate.ess.travel.allowance.gsa.dao.MealIncidentalRatesDao;
-import gov.nysenate.ess.travel.allowance.gsa.model.MealRate;
+import gov.nysenate.ess.travel.allowance.gsa.dao.MealRatesDao;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealRates;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -17,26 +17,27 @@ import java.time.LocalDate;
 @Service
 public class MealRatesService {
 
-    private MealTiersParser mealTiersParser;
-    private MealIncidentalRatesDao mealIncidentalRatesDao;
+    private MealRatesParser mealRatesParser;
+    private MealRatesDao mealRatesDao;
 
     @Autowired
-    public MealRatesService(MealIncidentalRatesDao mealIncidentalRatesDao, MealTiersParser mealTiersParser) {
-        this.mealIncidentalRatesDao = mealIncidentalRatesDao;
-        this.mealTiersParser = mealTiersParser;
+    public MealRatesService(MealRatesDao mealRatesDao, MealRatesParser mealRatesParser) {
+        this.mealRatesDao = mealRatesDao;
+        this.mealRatesParser = mealRatesParser;
     }
 
     @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate() throws IOException {
-        MealRate scrapedValues = this.scrapeMealRates();
-        MealRate[] dbValues = mealIncidentalRatesDao.getMealIncidentalRates();
+        MealRates scrapedRates = scrapeMealTiers();
+        MealRates currentRates = mealRatesDao.getMealRates(LocalDate.now());
 
-//        if(!Arrays.equals(scrapedValues, dbValues)){
-//            mealIncidentalRatesDao.updateMealIncidentalRates(scrapedValues);
-//        }
+        if (!scrapedRates.equals(currentRates)) {
+            // TODO Further verification of scraped data?
+            mealRatesDao.insertMealRates(scrapedRates, LocalDate.now());
+        }
     }
 
-    private MealRate scrapeMealRates() throws IOException {
+    private MealRates scrapeMealTiers() throws IOException {
         // TODO: similar code to httpget in GsaClient. Make into utility?
         String content;
         String url = "http://www.gsa.gov/mie";
@@ -50,6 +51,6 @@ public class MealRatesService {
             content = EntityUtils.toString(response.getEntity());
         }
 
-        return new MealRate(LocalDate.now(), null, mealTiersParser.parseMealTiers(content));
+        return mealRatesParser.parseMealRates(content);
     }
 }

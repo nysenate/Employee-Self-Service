@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.allowance.gsa.service;
 
+import gov.nysenate.ess.travel.allowance.gsa.model.MealRates;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealTier;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,26 +9,26 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class MealTiersParser {
+public class MealRatesParser {
 
     /**
-     * Parses a Map of {@link MealTier}'s from the gsa
-     * Meal and Incidental expenses webpage html.
+     * Parses a Set of MealTiers from the GSA Meal and Incidental expenses webpage html.
      * Webpage available at: http://www.gsa.gov/mie
      *
      * @param content
      * @return
      */
-    public Map<String, MealTier> parseMealTiers(String content) {
+    public MealRates parseMealRates(String content) {
         Document document = Jsoup.parse(content);
         Elements rows = document.select("table tbody tr:has(td)");
-        return rows.stream()
+        return new MealRates(rows.stream()
                 .map(this::createTierFromRow)
-                .collect(Collectors.toMap(MealTier::getTier, Function.identity()));
+                .collect(Collectors.toSet()));
     }
 
     private MealTier createTierFromRow(Element row) {

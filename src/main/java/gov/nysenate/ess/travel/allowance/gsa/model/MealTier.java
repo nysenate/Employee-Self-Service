@@ -30,19 +30,19 @@ public class MealTier {
         return tier;
     }
 
-    protected BigDecimal getBreakfast() {
+    public BigDecimal getBreakfast() {
         return breakfast;
     }
 
-    protected BigDecimal getLunch() {
+    public BigDecimal getLunch() {
         return lunch;
     }
 
-    protected BigDecimal getDinner() {
+    public BigDecimal getDinner() {
         return dinner;
     }
 
-    protected BigDecimal getIncidental() {
+    public BigDecimal getIncidental() {
         return incidental;
     }
 

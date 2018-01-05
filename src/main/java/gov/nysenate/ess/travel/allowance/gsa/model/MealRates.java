@@ -1,30 +1,26 @@
 package gov.nysenate.ess.travel.allowance.gsa.model;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Contains all tiers of meal reimbursement.
- * These tiers are effective between startDate and endDate.
  */
-public class MealRate {
+public class MealRates {
 
-    // TODO do we need the id?
-    private int id;
-    /** The start date this meal rate is valid for. */
-    private final LocalDate startDate;
-    /** The end date this meal rate is valid for. Will be null if this is the currently valid MealRate. */
-    private final LocalDate endDate;
     private final ImmutableMap<String, MealTier> tiers;
 
-    public MealRate(LocalDate startDate, LocalDate endDate, Map<String, MealTier> tiers) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.tiers = ImmutableMap.copyOf(tiers);
+    public MealRates(Set<MealTier> tiers) {
+        this.tiers = ImmutableMap.copyOf(tiers.stream()
+                .collect(Collectors.toMap(MealTier::getTier, Function.identity())));
     }
 
     /**
@@ -40,19 +36,20 @@ public class MealRate {
         return mealTier.getBreakfast().add(mealTier.getDinner());
     }
 
+    public ImmutableCollection<MealTier> getTiers() {
+        return tiers.values();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealRate mealRate = (MealRate) o;
-        return id == mealRate.id &&
-                Objects.equals(startDate, mealRate.startDate) &&
-                Objects.equals(endDate, mealRate.endDate) &&
-                Objects.equals(tiers, mealRate.tiers);
+        MealRates mealRates = (MealRates) o;
+        return Objects.equals(tiers, mealRates.tiers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startDate, endDate, tiers);
+        return Objects.hash(tiers);
     }
 }
