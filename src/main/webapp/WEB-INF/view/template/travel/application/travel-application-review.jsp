@@ -56,14 +56,14 @@
         <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
       </div>
       <div class="col-8-12 margin-top-20">
-        {{app.allowances.gsa.meals | currency}}
+        {{app.allowances.meals.total | currency}}
       </div>
       <div class="col-4-12 margin-top-20">
         Lodging
         <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
       </div>
       <div class="col-8-12 margin-top-20">
-        {{app.allowances.gsa.lodging | currency}}
+        {{app.allowances.lodging.total | currency}}
       </div>
       <div class="col-4-12 margin-top-20">
         Tolls

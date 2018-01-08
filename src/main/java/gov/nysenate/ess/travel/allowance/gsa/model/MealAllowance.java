@@ -3,11 +3,16 @@ package gov.nysenate.ess.travel.allowance.gsa.model;
 import com.google.common.collect.ImmutableSet;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Contains a {@link MealDay} for each day at each location in a travel application.
+ * All info used to compute the meal allowance is contained within this object.
+ */
 public class MealAllowance {
 
     private final ImmutableSet<MealDay> mealDays;
@@ -46,5 +51,18 @@ public class MealAllowance {
 
     public ImmutableSet<MealDay> getMealDays() {
         return mealDays;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MealAllowance that = (MealAllowance) o;
+        return Objects.equals(mealDays, that.mealDays);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mealDays);
     }
 }

@@ -1,20 +1,20 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
-                     ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelGsaAllowanceApi',
+                     ['$scope', '$q', 'appProps', 'modals', 'LocationService',
                       'TravelMileageAllowanceApi', 'TravelApplicationApi', travelAppController]);
 
-function travelAppController($scope, $q, appProps, modals, locationService, gsaApi,
+function travelAppController($scope, $q, appProps, modals, locationService,
                              mileageAllowanceApi, travelApplicationApi) {
 
     /* --- Container Page --- */
 
     // Actions that can be performed by each page of the application.
     $scope.ACTIONS = {
-        CANCEL: 5,
-        BACK: 10,
-        NEXT: 15,
-        EDIT: 20
+        CANCEL: 5, // Cancel the entire application.
+        BACK: 10, // Go back to previous step of application.
+        NEXT: 15, // Go to next step of application
+        EDIT: 20 // Edit the field selected. Used in review page, activates page corresponding to the field to be edited.
     };
 
     $scope.STATES = {
@@ -28,7 +28,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
 
     $scope.pageState = undefined; // Controls which page is displayed to the user, must be one of $scope.STATES, but should not be EDIT.
     $scope.app = {
-        appState: undefined, // The state of the application, i.e. what page we are on.
+        // The state of the application, i.e. what page we are on.
+        // Unless returning to a page for editing, then appState = EDIT.
+        appState: undefined,
         traveler: undefined,
         allowances: {
             gsa: {
@@ -185,6 +187,15 @@ function travelAppController($scope, $q, appProps, modals, locationService, gsaA
     };
 }
 
+/**
+ * --- Page Directives ---
+ *
+ * Page Directives should not directly modify model data in the parent controller.
+ * They make copies of any data that the page will support editing of,
+ * and any edits can be saved through the directives own callback method in the parent controller.
+ *
+ */
+
 essTravel.directive('travelApplicationPurpose', ['appProps', function (appProps) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-purpose',
@@ -281,18 +292,23 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
     }
 }]);
 
-essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'TravelGsaAllowanceApi',
-                                                'TravelMileageAllowanceApi', function (appProps, $q, modals, gsaApi, mileageAllowanceApi) {
+essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'TravelMealsAllowanceApi', 'TravelLodgingAllowanceApi',
+                                                'TravelMileageAllowanceApi', function (appProps, $q, modals, mealsApi, lodgingApi, mileageAllowanceApi) {
         return {
             templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-review',
             scope: true,
             link: function ($scope, $elem, $attrs) {
 
+                // Display calculating allowances modal until all api calls are completed.
                 var promises = [];
                 modals.open('calculating-allowances');
 
-                promises.push(gsaApi.save($scope.app.itinerary, function (response) {
-                    $scope.app.allowances.gsa = response.result;
+                promises.push(mealsApi.save($scope.app.itinerary, function (response) {
+                    $scope.app.allowances.meals = response.result;
+                }).$promise);
+
+                promises.push(lodgingApi.save($scope.app.itinerary, function (response) {
+                    $scope.app.allowances.lodging = response.result;
                 }).$promise);
 
                 promises.push(mileageAllowanceApi.save($scope.app.itinerary, function (response) {
@@ -306,8 +322,8 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                     });
 
                 function sumAllowances() {
-                    $scope.app.allowances.total = parseFloat($scope.app.allowances.gsa.meals)
-                        + parseFloat($scope.app.allowances.gsa.lodging)
+                    $scope.app.allowances.total = parseFloat($scope.app.allowances.meals.total)
+                        + parseFloat($scope.app.allowances.lodging.total)
                         + parseFloat($scope.app.allowances.mileage)
                         + $scope.app.allowances.tolls
                         + $scope.app.allowances.parking

@@ -22,6 +22,12 @@ public class GsaAllowanceService {
         this.mealRatesDao = mealRatesDao;
     }
 
+    /**
+     * Calculates the {@link LodgingAllowance} for a {@link Itinerary}.
+     * @param itinerary The Itinerary for a travel application.
+     * @return
+     * @throws IOException
+     */
     public LodgingAllowance calculateLodging(Itinerary itinerary) throws IOException {
         LodgingAllowance lodgingAllowance = new LodgingAllowance();
         for (TravelDestination destination: itinerary.getDestinations()) {
@@ -33,7 +39,7 @@ public class GsaAllowanceService {
     private LodgingAllowance lodgingForDestination(TravelDestination destination) throws IOException {
         LodgingAllowance allowance = new LodgingAllowance();
         for (LocalDate date: destination.getNightsOfStay()) {
-            allowance.addNight(createLodgingNight(destination, date));
+            allowance = allowance.addNight(createLodgingNight(destination, date));
         }
         return allowance;
     }
@@ -43,10 +49,16 @@ public class GsaAllowanceService {
         return new LodgingNight(date, destination.getAddress(), res.getLodging(date));
     }
 
+    /**
+     * Calculates the {@link MealAllowance} for a {@link Itinerary}.
+     * @param itinerary
+     * @return
+     * @throws IOException
+     */
     public MealAllowance calculateMealAllowance(Itinerary itinerary) throws IOException {
         MealAllowance allowance = new MealAllowance();
         for (TravelDestination destination: itinerary.getDestinations()) {
-            allowance.add(mealsForDestination(destination));
+            allowance = allowance.add(mealsForDestination(destination));
         }
         return allowance;
     }
@@ -54,12 +66,15 @@ public class GsaAllowanceService {
     private MealAllowance mealsForDestination(TravelDestination destination) throws IOException {
         MealAllowance allowance = new MealAllowance();
         for (LocalDate date: destination.getDatesOfStay()) {
-            GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
-            String mealTier = res.getMealTier();
-            MealRates mealRates = mealRatesDao.getMealRates(date);
-            MealTier tier = mealRates.getTier(mealTier);
-            allowance.addMealDay(new MealDay(date, destination.getAddress(), tier));
+            allowance = allowance.addMealDay(createMealDay(destination, date));
         }
         return allowance;
+    }
+
+    private MealDay createMealDay(TravelDestination destination, LocalDate date) throws IOException {
+        GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
+        String mealTier = res.getMealTier();
+        MealRates mealRates = mealRatesDao.getMealRates(date);
+        return new MealDay(date, destination.getAddress(), mealRates.getTier(mealTier));
     }
 }

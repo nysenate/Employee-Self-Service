@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Contains the {@link MealTier} effective for a {@link #date} and {@link #address}.
+ */
 public class MealDay {
 
     private final LocalDate date;

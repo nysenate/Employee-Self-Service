@@ -48,6 +48,6 @@ public class MealTierView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "meal-rate";
+        return "meal-tier";
     }
 }

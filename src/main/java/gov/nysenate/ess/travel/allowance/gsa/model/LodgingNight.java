@@ -7,6 +7,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Contains the info used to calculate a single nights lodging rate.
+ *
+ * The {@link #rate} is the lodging rate for {@link #address} on {@link #date}.
+ */
 public class LodgingNight {
 
     private final LocalDate date;

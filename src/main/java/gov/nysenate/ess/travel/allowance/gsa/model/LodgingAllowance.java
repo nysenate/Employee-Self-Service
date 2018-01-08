@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Contains a {@link LodgingNight} for all nights of a trip.
+ */
 public class LodgingAllowance {
 
     private final ImmutableSet<LodgingNight> nights;

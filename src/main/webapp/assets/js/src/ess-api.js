@@ -225,8 +225,12 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
     return $resource(appProps.apiPath + '/travel/travel-application.json')
 }]);
 
-essApi.factory('TravelGsaAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/gsa')
+essApi.factory('TravelMealsAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/gsa/meals')
+}]);
+
+essApi.factory('TravelLodgingAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/gsa/lodging')
 }]);
 
 essApi.factory('TravelMileageAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
