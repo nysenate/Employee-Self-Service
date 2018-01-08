@@ -16,13 +16,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 @Service
-public class MealRatesService {
+public class MealRatesSrapeService {
 
     private MealRatesParser mealRatesParser;
     private MealRatesDao mealRatesDao;
 
     @Autowired
-    public MealRatesService(MealRatesDao mealRatesDao, MealRatesParser mealRatesParser) {
+    public MealRatesSrapeService(MealRatesDao mealRatesDao, MealRatesParser mealRatesParser) {
         this.mealRatesDao = mealRatesDao;
         this.mealRatesParser = mealRatesParser;
     }

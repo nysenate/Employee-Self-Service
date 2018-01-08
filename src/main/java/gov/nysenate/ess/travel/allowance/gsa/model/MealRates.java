@@ -23,17 +23,8 @@ public class MealRates {
                 .collect(Collectors.toMap(MealTier::getTier, Function.identity())));
     }
 
-    /**
-     * The senate allows reimbursement for breakfast and dinner
-     * for every day of travel. Does not allow reimbursement for
-     * lunch or incidental.
-     * @param tier The meal tier use in the daily rate calculation.
-     * @return
-     */
-    // TODO note, this may change, may need to separate breakfast and dinner values? maybe return MealTier?
-    public BigDecimal getDailySenateRate(String tier) {
-        MealTier mealTier = tiers.get(tier);
-        return mealTier.getBreakfast().add(mealTier.getDinner());
+    public MealTier getTier(String mealTier) {
+        return tiers.get(mealTier);
     }
 
     public ImmutableCollection<MealTier> getTiers() {

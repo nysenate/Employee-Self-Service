@@ -1,28 +1,25 @@
 package gov.nysenate.ess.travel.allowance.gsa.service;
 
-import gov.nysenate.ess.travel.allowance.gsa.model.GsaResponse;
-import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
-import gov.nysenate.ess.travel.allowance.gsa.model.LodgingNight;
-import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.dao.MealRatesDao;
+import gov.nysenate.ess.travel.allowance.gsa.model.*;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Service
 public class GsaAllowanceService {
 
     private GsaClient client;
-    private MealRatesService mealRatesService;
+    private MealRatesDao mealRatesDao;
 
     @Autowired
-    public GsaAllowanceService(GsaClient client, MealRatesService mealRatesService) {
+    public GsaAllowanceService(GsaClient client, MealRatesDao mealRatesDao) {
         this.client = client;
-        this.mealRatesService = mealRatesService;
+        this.mealRatesDao = mealRatesDao;
     }
 
     public LodgingAllowance calculateLodging(Itinerary itinerary) throws IOException {
@@ -47,22 +44,22 @@ public class GsaAllowanceService {
     }
 
     public MealAllowance calculateMealAllowance(Itinerary itinerary) throws IOException {
-        BigDecimal meals = BigDecimal.ZERO;
+        MealAllowance allowance = new MealAllowance();
         for (TravelDestination destination: itinerary.getDestinations()) {
-            meals.add(mealsForDestination(destination));
+            allowance.add(mealsForDestination(destination));
         }
-        return new MealAllowance(meals);
+        return allowance;
     }
 
-    private BigDecimal mealsForDestination(TravelDestination destination) throws IOException {
-        BigDecimal meals = BigDecimal.ZERO;
+    private MealAllowance mealsForDestination(TravelDestination destination) throws IOException {
+        MealAllowance allowance = new MealAllowance();
         for (LocalDate date: destination.getDatesOfStay()) {
             GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
             String mealTier = res.getMealTier();
-            // TODO: localMealDao.getBreakfast(zip, mealRow);
-            // TODO: localMealDao.getDinner(zip, mealRow);
-            // meals.add(breakfast, dinner)
+            MealRates mealRates = mealRatesDao.getMealRates(date);
+            MealTier tier = mealRates.getTier(mealTier);
+            allowance.addMealDay(new MealDay(date, destination.getAddress(), tier));
         }
-        return meals;
+        return allowance;
     }
 }
