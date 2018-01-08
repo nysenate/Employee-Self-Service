@@ -11,6 +11,9 @@ public class MealTierView implements ViewObject {
     private String dinner;
     private String incidental;
 
+    public MealTierView() {
+    }
+
     public MealTierView(MealTier mealTier) {
         this.tier = mealTier.getTier();
         this.breakfast = mealTier.getBreakfast().toString();

@@ -4,7 +4,8 @@ import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
 import gov.nysenate.ess.travel.application.model.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class TravelApplicationTest {
         emp.setEmployeeId(1);
 
         TravelAllowances allowances =  new TravelAllowances(
-                new GsaAllowance("0", "0"), "0", "0", "0", "0", "0");
+                new MealAllowance(), new LodgingAllowance(), "0", "0", "0", "0", "0");
 
         Address address = new Address("101 Washington Ave", "Albany", "NY", "12210");
         Itinerary itinerary = new Itinerary(address, Lists.newArrayList(new TravelDestination(

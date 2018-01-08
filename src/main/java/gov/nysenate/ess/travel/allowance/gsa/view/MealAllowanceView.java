@@ -11,6 +11,9 @@ public class MealAllowanceView implements ViewObject {
     private String total;
     private Set<MealDayView> mealDays;
 
+    public MealAllowanceView() {
+    }
+
     public MealAllowanceView(MealAllowance mealAllowance) {
         this.total = mealAllowance.getTotal().toString();
         mealDays = mealAllowance.getMealDays().stream()

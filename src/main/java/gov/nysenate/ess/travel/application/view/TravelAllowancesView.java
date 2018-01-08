@@ -1,12 +1,14 @@
 package gov.nysenate.ess.travel.application.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.allowance.gsa.GsaAllowanceView;
+import gov.nysenate.ess.travel.allowance.gsa.view.LodgingAllowanceView;
+import gov.nysenate.ess.travel.allowance.gsa.view.MealAllowanceView;
 import gov.nysenate.ess.travel.application.model.TravelAllowances;
 
 public class TravelAllowancesView implements ViewObject {
 
-    private GsaAllowanceView gsa;
+    private MealAllowanceView meals;
+    private LodgingAllowanceView lodging;
     private String mileage;
     private String tolls;
     private String parking;
@@ -17,21 +19,26 @@ public class TravelAllowancesView implements ViewObject {
     }
 
     public TravelAllowancesView(TravelAllowances allowances) {
-       this.gsa = new GsaAllowanceView(allowances.getGsaAllowance());
-       this.mileage = allowances.getMileage().toString();
-       this.tolls = allowances.getTolls().toString();
-       this.parking = allowances.getParking().toString();
-       this.alternate = allowances.getAlternate().toString();
-       this.registrationFee = allowances.getRegistrationFee().toString();
+        this.meals = new MealAllowanceView(allowances.getMealAllowance());
+        this.lodging = new LodgingAllowanceView(allowances.getLodgingAllowance());
+        this.mileage = allowances.getMileage().toString();
+        this.tolls = allowances.getTolls().toString();
+        this.parking = allowances.getParking().toString();
+        this.alternate = allowances.getAlternate().toString();
+        this.registrationFee = allowances.getRegistrationFee().toString();
     }
 
     public TravelAllowances toTravelAllowances() {
-        return new TravelAllowances(gsa.toGsaAllowance(), mileage,
-                tolls, parking, alternate, registrationFee);
+        return new TravelAllowances(meals.toMealAllowance(), lodging.toLodgingAllowance(),
+                mileage, tolls, parking, alternate, registrationFee);
     }
 
-    public GsaAllowanceView getGsa() {
-        return gsa;
+    public MealAllowanceView getMeals() {
+        return meals;
+    }
+
+    public LodgingAllowanceView getLodging() {
+        return lodging;
     }
 
     public String getMileage() {

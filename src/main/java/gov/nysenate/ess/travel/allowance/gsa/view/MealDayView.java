@@ -16,6 +16,9 @@ public class MealDayView implements ViewObject {
     // The max rate reimbursed by the Senate for this day.
     private String senateRate;
 
+    public MealDayView() {
+    }
+
     public MealDayView(MealDay mealDay) {
         this.date = mealDay.getDate().format(ISO_DATE);
         this.address = new AddressView(mealDay.getAddress());

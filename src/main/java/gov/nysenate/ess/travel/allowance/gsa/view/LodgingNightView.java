@@ -15,6 +15,9 @@ public class LodgingNightView implements ViewObject {
     private AddressView address;
     private String rate;
 
+    public LodgingNightView() {
+    }
+
     public LodgingNightView(LodgingNight night) {
         this.date = night.getDate().format(ISO_DATE);
         this.address = new AddressView(night.getAddress());

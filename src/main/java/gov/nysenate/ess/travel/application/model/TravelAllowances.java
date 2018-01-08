@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.model;
 
-import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
 import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
 
 import java.math.BigDecimal;
@@ -10,22 +11,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TravelAllowances {
 
-    private final GsaAllowance gsaAllowance;
+    private final MealAllowance mealAllowance;
+    private final LodgingAllowance lodgingAllowance;
     private final BigDecimal mileage;
     private final BigDecimal tolls;
     private final BigDecimal parking;
     private final BigDecimal alternate; // Bus, subway, train
     private final BigDecimal registrationFee;
 
-    public TravelAllowances(GsaAllowance gsaAllowance, BigDecimal mileage,
-                            BigDecimal tolls, BigDecimal parking,
+    public TravelAllowances(MealAllowance mealAllowance, LodgingAllowance lodgingAllowance,
+                            BigDecimal mileage, BigDecimal tolls, BigDecimal parking,
                             BigDecimal alternate, BigDecimal registrationFee) {
         checkArgument(checkNotNull(mileage).signum() >= 0);
         checkArgument(checkNotNull(tolls).signum() >= 0);
         checkArgument(checkNotNull(parking).signum() >= 0);
         checkArgument(checkNotNull(alternate).signum() >= 0);
         checkArgument(checkNotNull(registrationFee).signum() >= 0);
-        this.gsaAllowance = checkNotNull(gsaAllowance);
+        this.mealAllowance = checkNotNull(mealAllowance);
+        this.lodgingAllowance = checkNotNull(lodgingAllowance);
         this.mileage = TravelAllowanceUtils.round(mileage);
         this.tolls = TravelAllowanceUtils.round(tolls);
         this.parking = TravelAllowanceUtils.round(parking);
@@ -33,20 +36,24 @@ public final class TravelAllowances {
         this.registrationFee = TravelAllowanceUtils.round(registrationFee);
     }
 
-    public TravelAllowances(GsaAllowance gsaAllowance, String mileage,
-                            String tolls, String parking,
+    public TravelAllowances(MealAllowance mealAllowance, LodgingAllowance lodgingAllowance,
+                            String mileage, String tolls, String parking,
                             String alternate, String registrationFee) {
-        this(gsaAllowance, new BigDecimal(mileage), new BigDecimal(tolls),
+        this(mealAllowance, lodgingAllowance, new BigDecimal(mileage), new BigDecimal(tolls),
                 new BigDecimal(parking), new BigDecimal(alternate), new BigDecimal(registrationFee));
     }
 
     public BigDecimal total() {
-        return getGsaAllowance().total().add(getMileage()).add(getTolls()).add(getParking())
-                .add(getAlternate()).add(getRegistrationFee());
+        return mealAllowance.getTotal().add(lodgingAllowance.getTotal()).add(getMileage())
+                .add(getTolls()).add(getParking()).add(getAlternate()).add(getRegistrationFee());
     }
 
-    public GsaAllowance getGsaAllowance() {
-        return gsaAllowance;
+    public MealAllowance getMealAllowance() {
+        return mealAllowance;
+    }
+
+    public LodgingAllowance getLodgingAllowance() {
+        return lodgingAllowance;
     }
 
     public BigDecimal getMileage() {
@@ -67,43 +74,5 @@ public final class TravelAllowances {
 
     public BigDecimal getRegistrationFee() {
         return registrationFee;
-    }
-
-    @Override
-    public String toString() {
-        return "TravelAllowances{" +
-                "gsaAllowance=" + gsaAllowance +
-                ", mileage=" + mileage +
-                ", tolls=" + tolls +
-                ", parking=" + parking +
-                ", alternate=" + alternate +
-                ", registrationFee=" + registrationFee +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TravelAllowances that = (TravelAllowances) o;
-
-        if (gsaAllowance != null ? !gsaAllowance.equals(that.gsaAllowance) : that.gsaAllowance != null) return false;
-        if (mileage != null ? !mileage.equals(that.mileage) : that.mileage != null) return false;
-        if (tolls != null ? !tolls.equals(that.tolls) : that.tolls != null) return false;
-        if (parking != null ? !parking.equals(that.parking) : that.parking != null) return false;
-        if (alternate != null ? !alternate.equals(that.alternate) : that.alternate != null) return false;
-        return registrationFee != null ? registrationFee.equals(that.registrationFee) : that.registrationFee == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = gsaAllowance != null ? gsaAllowance.hashCode() : 0;
-        result = 31 * result + (mileage != null ? mileage.hashCode() : 0);
-        result = 31 * result + (tolls != null ? tolls.hashCode() : 0);
-        result = 31 * result + (parking != null ? parking.hashCode() : 0);
-        result = 31 * result + (alternate != null ? alternate.hashCode() : 0);
-        result = 31 * result + (registrationFee != null ? registrationFee.hashCode() : 0);
-        return result;
     }
 }

@@ -2,7 +2,8 @@ package gov.nysenate.ess.travel.application.dao;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.allowance.gsa.model.GsaAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
+import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
 import gov.nysenate.ess.travel.application.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -83,13 +84,8 @@ public class InMemoryTravelApplicationDao {
         return new Itinerary(new Address("88 Central Ave", "Albany", "NY", "12222"), tds);
     }
 
-    private GsaAllowance randomGsaAllowance() {
-        return new GsaAllowance(String.valueOf(randomWithRange(0, 25.00)),
-                String.valueOf(randomWithRange(0, 375.00)));
-    }
-
     private TravelAllowances randomAllowances() {
-        return new TravelAllowances(randomGsaAllowance(), String.valueOf(randomWithRange(0, 150.00)),
+        return new TravelAllowances(new MealAllowance(), new LodgingAllowance(), String.valueOf(randomWithRange(0, 150.00)),
                 String.valueOf(randomWithRange(0, 40.00)), String.valueOf(randomWithRange(0, 150.00)),
                 String.valueOf(randomWithRange(0, 150.00)), String.valueOf(randomWithRange(0, 150.00)));
     }

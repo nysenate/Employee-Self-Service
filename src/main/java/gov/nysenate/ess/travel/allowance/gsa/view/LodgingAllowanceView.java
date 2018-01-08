@@ -11,6 +11,9 @@ public class LodgingAllowanceView implements ViewObject {
     private String total;
     private Set<LodgingNightView> lodgingNights;
 
+    public LodgingAllowanceView() {
+    }
+
     public LodgingAllowanceView(LodgingAllowance allowance) {
         this.total = allowance.getTotal().toString();
         lodgingNights = allowance.getNights().stream()
