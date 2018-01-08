@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
+import gov.nysenate.ess.core.client.view.SimpleEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
@@ -39,6 +40,7 @@ import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordExce
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationNotPermittedEx;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationValidator;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
+import gov.nysenate.ess.time.service.notification.InactiveEmployeeEmailEx;
 import gov.nysenate.ess.time.service.notification.RecordReminderEmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +55,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static gov.nysenate.ess.core.client.response.error.ErrorCode.EMPLOYEE_INACTIVE;
 import static gov.nysenate.ess.core.util.OutputUtils.toJson;
 import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.TIME_RECORD_MANAGEMENT;
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -95,8 +99,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
                                        @RequestParam(required = false) String from,
                                        @RequestParam(required = false) String to,
                                        @RequestParam(required = false) String[] status) {
-        /**
-         * permission check occurs in {@link TimeRecordRestApiCtrl#getRecords(Set, Range, Set)}
+        /*
+          permission check occurs in {@link TimeRecordRestApiCtrl#getRecords(Set, Range, Set)}
          */
         return getRecordResponse(
                 getRecords(empId, from, to, status), false);
@@ -218,9 +222,12 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * e.g. <code>{empId: [11423, 11168], beginDate: ['2016-07-28', '2016-08-11', '2016-08-11']}</code>
      *  will result in <code>{11423: ['2016-07-28', '2016-08-11'], 11168: ['2016-08-11']}</code>
      * This will send an email to each employee for the records with the begin dates mapped to that employee
+     *
      * @param empId Integer[] - employee ids
      * @param beginDate String[] - ISO 8601 formatted date - time record begin dates
+     *
      * @return {@link SimpleResponse} indicating message send success
+     * @see #handleInactiveEmployeeEmailEx(InactiveEmployeeEmailEx) for handling cases where passed in emps are inactive
      */
     @RequestMapping(value = "/reminder", method = POST)
     public BaseResponse sendReminderEmails(@RequestParam Integer[] empId,
@@ -394,7 +401,25 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
                 new TimeRecordCreationNotPermittedData(ex));
     }
 
-    /** --- Internal Methods --- */
+    /**
+     * Handle cases where a supervisor attempts to send a reminder email to an inactive employee
+     * @param ex {@link InactiveEmployeeEmailEx}
+     * @return {@link ViewObjectErrorResponse<ListViewResponse<SimpleEmployeeView>>>}
+     */
+    @ExceptionHandler(InactiveEmployeeEmailEx.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ViewObjectErrorResponse handleInactiveEmployeeEmailEx(InactiveEmployeeEmailEx ex) {
+        logger.warn(ex.getMessage());
+
+        ListView<SimpleEmployeeView> inactiveEmpViewList = ex.getEmployees().stream()
+                .map(SimpleEmployeeView::new)
+                .collect(collectingAndThen(toList(), ListView::of));
+
+
+        return new ViewObjectErrorResponse(EMPLOYEE_INACTIVE, inactiveEmpViewList);
+    }
+
+    /* --- Internal Methods --- */
 
     private ListMultimap<Integer, TimeRecord> getRecords(Set<Integer> empIds, Range<LocalDate> dateRange,
                                                          Set<TimeRecordStatus> statuses) {

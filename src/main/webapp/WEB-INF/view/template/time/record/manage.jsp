@@ -238,5 +238,20 @@
            reject-button="Resume Review" reject-class="submit-button">
       </div>
     </modal>
+    <modal modal-id="inactive-employee-email">
+      <div confirm-modal
+           title="Inactive Employees"
+           level="error">
+        <p>
+          The requested reminders could not be sent because the following employees are no longer active:
+        </p>
+        <ul class="inactive-employee-email-list">
+          <li ng-repeat="employee in state.inactiveEmps" ng-bind="employee.fullName"></li>
+        </ul>
+        <p>
+          Please contact Senate Personnel at (518) 455-3376.
+        </p>
+      </div>
+    </modal>
   </div>
 </div>
