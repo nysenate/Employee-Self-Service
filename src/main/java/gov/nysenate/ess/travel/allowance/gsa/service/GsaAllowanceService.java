@@ -73,8 +73,7 @@ public class GsaAllowanceService {
 
     private MealDay createMealDay(TravelDestination destination, LocalDate date) throws IOException {
         GsaResponse res = client.queryGsa(date, destination.getAddress().getZip5());
-        String mealTier = res.getMealTier();
         MealRates mealRates = mealRatesDao.getMealRates(date);
-        return new MealDay(date, destination.getAddress(), mealRates.getTier(mealTier));
+        return new MealDay(date, destination.getAddress(), mealRates.getTier(res.getMealTier()));
     }
 }

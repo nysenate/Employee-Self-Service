@@ -2,10 +2,16 @@ package gov.nysenate.ess.travel.application.model;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.allowance.mileage.model.Leg;
+import gov.nysenate.ess.travel.allowance.mileage.model.Route;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,16 +35,24 @@ public final class Itinerary {
     }
 
     /**
-     * The travel route represented by this Itinerary.
-     * @return A list of addresses in the order they will be traveled.
+     * Calculates the route of travel that is eligible for mileage reimbursement.
+     * @return
      */
-    public List<Address> travelRoute() {
-        List<Address> route = Lists.newArrayList(getOrigin());
-        for (TravelDestination destination : getDestinations()) {
-            route.add(destination.getAddress());
+    public Route getReimbursableRoute() {
+        Set<Leg> outboundLegs = new HashSet<>();
+        Address from = getOrigin();
+        for (Address to : destinationAddresses()) {
+            outboundLegs.add(new Leg(from, to));
+            from = to;
         }
-        route.add(getOrigin());
-        return route;
+        Set<Leg> returnLegs = Sets.newHashSet(new Leg(lastDestination().getAddress(), getOrigin()));
+        return new Route(outboundLegs, returnLegs);
+    }
+
+    private Set<Address> destinationAddresses() {
+        return destinations.stream()
+                .map(TravelDestination::getAddress)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -65,10 +79,16 @@ public final class Itinerary {
         return getDestinations().get(getDestinations().size() - 1);
     }
 
+    /**
+     * @return The origin {@link Address}.
+     */
     public Address getOrigin() {
         return origin;
     }
 
+    /**
+     * @return A ImmutableList of {@link TravelDestination}
+     */
     public ImmutableList<TravelDestination> getDestinations() {
         return destinations;
     }

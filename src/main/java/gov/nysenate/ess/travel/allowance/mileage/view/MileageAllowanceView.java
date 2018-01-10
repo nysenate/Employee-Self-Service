@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.allowance.mileage;
+package gov.nysenate.ess.travel.allowance.mileage.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 

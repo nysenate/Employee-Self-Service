@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.allowance.mileage;
+package gov.nysenate.ess.travel.allowance.mileage.dao;
 
 import gov.nysenate.ess.core.dao.base.*;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -21,8 +21,8 @@ public class IrsRateDao extends SqlBaseDao {
         localNamedJdbc.update(sql, params);
     }
 
-    public double getIrsRate(LocalDate queryDate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("queryDate", Date.valueOf(queryDate));
+    public double getIrsRate(LocalDate date) {
+        MapSqlParameterSource params = new MapSqlParameterSource("date", Date.valueOf(date));
         String sql = IrsRateDao.SqlIrsRateQuery.GET_IRS_RATE.getSql(schemaMap());
         IrsRateDao.IrsRateMapper mapper = new IrsRateMapper();
 
@@ -70,7 +70,7 @@ public class IrsRateDao extends SqlBaseDao {
         GET_IRS_RATE(
                 "SELECT irs_travel_rate\n" +
                 "FROM ${travelSchema}.irs_rate\n" +
-                "WHERE start_date <= :queryDate and end_date >= :queryDate"
+                "WHERE date BETWEEN start_date and end_date"
         ),
         GET_NUM_ROWS(
                 "SELECT count(*)\n" +

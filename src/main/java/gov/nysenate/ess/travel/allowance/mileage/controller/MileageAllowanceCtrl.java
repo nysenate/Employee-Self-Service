@@ -3,10 +3,10 @@ package gov.nysenate.ess.travel.allowance.mileage.controller;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.travel.allowance.mileage.MileageAllowanceView;
+import gov.nysenate.ess.travel.allowance.mileage.view.MileageAllowanceView;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.view.ItineraryView;
-import gov.nysenate.ess.travel.allowance.mileage.MileageAllowanceService;
+import gov.nysenate.ess.travel.allowance.mileage.service.MileageAllowanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,8 @@ public class MileageAllowanceCtrl extends BaseRestApiCtrl {
     public BaseResponse calculateMileageAllowance(@RequestBody ItineraryView itineraryView) {
         Itinerary itinerary = itineraryView.toItinerary();
 
-        BigDecimal mileageAllowance = mileageAllowanceService.calculateMileageAllowance(itinerary);
-        return new ViewObjectResponse<>(new MileageAllowanceView(mileageAllowance));
+        return null;
+//        BigDecimal mileageAllowance = mileageAllowanceService.calculateMileageAllowance(itinerary);
+//        return new ViewObjectResponse<>(new MileageAllowanceView(mileageAllowance));
     }
 }

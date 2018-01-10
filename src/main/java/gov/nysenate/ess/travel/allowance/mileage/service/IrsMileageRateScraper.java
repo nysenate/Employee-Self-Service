@@ -1,39 +1,35 @@
-package gov.nysenate.ess.travel.allowance.mileage;
+package gov.nysenate.ess.travel.allowance.mileage.service;
 
+import gov.nysenate.ess.travel.allowance.mileage.dao.IrsRateDao;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Designed to scrape the IRS Mileage rates from
+ * https://www.irs.gov/tax-professionals/standard-mileage-rates
+ *
+ * Unfortunately, the IRS does not update this page often enough to be useful.
+ * It is currently Jan 9, 2018 and the rates for 2018 have not yet been added.
+ * 2018 rates are only available via a news release.
+ * Because of this, updating of the IRS Rate will have to be a manual process for now.
+ */
 @Service
-public class IrsRateService {
+public class IrsMileageRateScraper {
 
     @Autowired private IrsRateDao irsRateDao;
     @Value("${travel.irs.link}") private String irsLink;
 
-    @PostConstruct
-    public void postConstruct() {
-        // Ensure the database has an initialized value.
-        if (irsRateDao.getNumRows() == 0) {
-            try {
-                this.initializeDatabase();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void initializeDatabase() throws IOException {
+    private void initializeDatabase() throws IOException {
         Document doc = Jsoup.connect(irsLink).get();
         Elements rows = doc.select("article table tbody tr");
         for (Element e : rows) {
@@ -113,7 +109,10 @@ public class IrsRateService {
         return Double.parseDouble(rate);
     }
 
-    @Scheduled(cron = "${scheduler.travel.scrape.cron}")
+    /**
+     * This currently wont work because the website we scrape is not updated in a timely manner.
+     */
+//    @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate() {
         try {
             webScrapeIrsRate();  //verifies that we can access the IRS website
