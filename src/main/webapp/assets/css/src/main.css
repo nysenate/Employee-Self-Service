@@ -1175,7 +1175,8 @@ input[type="submit"].submit-button:hover {
   background: #81ad1f;
 }
 input[type="button"].reject-button,
-input[type="submit"].reject-button {
+input[type="submit"].reject-button,
+.confirm-modal.error .input-container input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #e64727;
   color: white;
@@ -1571,6 +1572,9 @@ input[type="number"] {
   height: auto;
   width: 400px;
   text-align: center;
+}
+.confirm-modal.error h3 {
+  color: #e64727;
 }
 .confirm-modal h3 {
   margin-bottom: 0;
@@ -5166,6 +5170,10 @@ record-review-modal,
 }
 #record-reminder-prompt table.reminder-records tr td:first-child {
   padding-right: 5px;
+}
+ul.inactive-employee-email-list {
+  text-align: center;
+  padding: 0;
 }
 /* --- Employee Select Directive --- */
 .employee-select .content-info {
