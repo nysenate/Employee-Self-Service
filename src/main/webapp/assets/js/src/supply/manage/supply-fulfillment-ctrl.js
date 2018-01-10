@@ -103,7 +103,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getPendingShipments() {
         var params = {
             status: "PENDING",
-            from: moment.unix(1).format()
+            from: moment.unix(1).format(),
+            limit: 'ALL',
+            offset: 0
         };
         $scope.pendingSearch.response = requisitionApi.get(params);
         return $scope.pendingSearch.response.$promise
@@ -120,7 +122,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getProcessingShipments() {
         var params = {
             status: "PROCESSING",
-            from: moment.unix(1).format()
+            from: moment.unix(1).format(),
+            limit: 'ALL',
+            offset: 0
         };
         $scope.processingSearch.response = requisitionApi.get(params);
         return $scope.processingSearch.response.$promise
@@ -137,7 +141,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getCompletedShipments() {
         var params = {
             status: "COMPLETED",
-            from: moment.unix(1).format()
+            from: moment.unix(1).format(),
+            limit: 'ALL',
+            offset: 0
         };
         $scope.completedSearch.response = requisitionApi.get(params);
         return $scope.completedSearch.response.$promise
@@ -155,7 +161,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         var params = {
             status: "APPROVED",
             from: moment().startOf('day').format(),
-            dateField: "approved_date_time"
+            dateField: "approved_date_time",
+            limit: 'ALL',
+            offset: 0
         };
         $scope.approvedSearch.response = requisitionApi.get(params);
         return $scope.approvedSearch.response.$promise
@@ -176,7 +184,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             to: moment().startOf('day').format(),
             status: "APPROVED",
             dateField: "approved_date_time",
-            savedInSfms: false
+            savedInSfms: false,
+            limit: 'ALL',
+            offset: 0
         };
         $scope.syncFailedSearch.response = requisitionApi.get(params);
         return $scope.syncFailedSearch.response.$promise
@@ -206,7 +216,9 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         var params = {
             status: "REJECTED",
             from: moment().startOf('day').format(),
-            dateField: "rejected_date_time"
+            dateField: "rejected_date_time",
+            limit: 'ALL',
+            offset: 0
         };
         $scope.canceledSearch.response = requisitionApi.get(params);
         return $scope.canceledSearch.response.$promise

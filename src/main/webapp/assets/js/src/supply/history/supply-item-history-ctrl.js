@@ -96,6 +96,7 @@ function supplyItemHistoryCtrl($scope, $q, supplyUtils, requisitionApi, location
             from: moment($scope.filters.date.from, DATE_FORMAT).startOf('day').format(),
             to: moment($scope.filters.date.to, DATE_FORMAT).endOf('day').format(),
             limit: 'ALL',
+            offset: 0,
             location: $scope.filters.location.selected,
             itemId: $scope.filters.item.codeToId[$scope.filters.item.selected]
         };
