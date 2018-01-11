@@ -9,7 +9,7 @@ import java.util.Objects;
 public class ReimbursableLeg {
 
     private final Leg leg;
-    /** The driving distance of this Leg in miles. */
+    /** The driving distance of this Leg in miles. Rounded to the nearest tenth. */
     private final BigDecimal distance;
 
     public ReimbursableLeg(Leg leg, BigDecimal distance) {
@@ -17,15 +17,11 @@ public class ReimbursableLeg {
         this.distance = distance;
     }
 
-    public Leg getLeg() {
+    protected Leg getLeg() {
         return leg;
     }
 
-    /**
-     * Returns the driving distance in miles.
-     * @return
-     */
-    public BigDecimal getDistance() {
+    protected BigDecimal getDistance() {
         return distance;
     }
 

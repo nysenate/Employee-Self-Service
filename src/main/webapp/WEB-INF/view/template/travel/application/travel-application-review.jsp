@@ -49,7 +49,7 @@
         <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
       </div>
       <div class="col-8-12 margin-top-20">
-        {{app.allowances.mileage | currency}}
+        {{app.allowances.mileage.total | currency}}
       </div>
       <div class="col-4-12 margin-top-20">
         Meals

@@ -5,6 +5,9 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Contains collections containing the outbound and return legs of a travel request.
+ */
 public class Route {
 
     // Legs making up the trip to the destinations.

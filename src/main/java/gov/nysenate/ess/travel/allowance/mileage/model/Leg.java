@@ -4,6 +4,9 @@ import gov.nysenate.ess.core.model.unit.Address;
 
 import java.util.Objects;
 
+/**
+ * Represents a single leg of a travel application.
+ */
 public class Leg {
 
     private final Address from;

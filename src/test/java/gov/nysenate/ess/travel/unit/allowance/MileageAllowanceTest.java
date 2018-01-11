@@ -28,35 +28,35 @@ public class MileageAllowanceTest {
     }
 
     @Test
-    public void emptyTrip_ZeroReimbursement() {
+    public void emptyTrip_ZeroAllowance() {
         MileageAllowance allowance = new MileageAllowance(new BigDecimal("0.50"));
-        assertEquals(new BigDecimal("0.00"), allowance.getReimbursement());
+        assertEquals(new BigDecimal("0.00"), allowance.getAllowance());
     }
 
     @Test
-    public void outboundLessThan35Miles_ZeroReimbursement() {
+    public void outboundLessThan35Miles_ZeroAllowance() {
         MileageAllowance allowance = new MileageAllowance(new BigDecimal("0.50"));
         allowance = allowance.addOutboundLeg(new ReimbursableLeg(stubLeg, new BigDecimal("34.9")));
-        allowance = allowance.addReturnLeg(new ReimbursableLeg(stubLeg, new BigDecimal("34.9")));
-        assertEquals(new BigDecimal("0.00"), allowance.getReimbursement());
+        allowance = allowance.addReturnLeg(new ReimbursableLeg(stubLeg, new BigDecimal("40.0")));
+        assertEquals(new BigDecimal("0.00"), allowance.getAllowance());
     }
 
     @Test
-    public void outboundOver35Miles_EntireTripReimbursable() {
+    public void outboundOver35Miles_HasAllowance() {
         MileageAllowance allowance = new MileageAllowance(new BigDecimal("0.50"));
         allowance = allowance.addOutboundLeg(new ReimbursableLeg(stubLeg, new BigDecimal("35.0")));
-        allowance = allowance.addReturnLeg(new ReimbursableLeg(stubLeg, new BigDecimal("35.0")));
-        assertEquals(new BigDecimal("35.00"), allowance.getReimbursement());
+        allowance = allowance.addReturnLeg(new ReimbursableLeg(stubLeg, new BigDecimal("30.0")));
+        assertEquals(new BigDecimal("32.50"), allowance.getAllowance());
     }
 
     @Test
-    public void testReimbursementOnMultiLegTrip() {
+    public void testAllowanceOnMultiLegTrip() {
         MileageAllowance allowance = new MileageAllowance(new BigDecimal("0.50"));
         allowance = allowance.addOutboundLeg(new ReimbursableLeg(stubLeg, new BigDecimal("10.5")));
         allowance = allowance.addOutboundLeg(new ReimbursableLeg(stubLeg, new BigDecimal("33.3")));
         allowance = allowance.addOutboundLeg(new ReimbursableLeg(stubLeg, new BigDecimal("2.7")));
 
         allowance = allowance.addReturnLeg(new ReimbursableLeg(stubLeg, new BigDecimal("13.1")));
-        assertEquals(new BigDecimal("29.80"), allowance.getReimbursement());
+        assertEquals(new BigDecimal("29.80"), allowance.getAllowance());
     }
 }

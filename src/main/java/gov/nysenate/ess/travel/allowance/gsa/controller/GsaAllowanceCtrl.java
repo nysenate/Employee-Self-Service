@@ -2,7 +2,6 @@ package gov.nysenate.ess.travel.allowance.gsa.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
@@ -20,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "travel/gsa/travel-gsa")
-public class GsaApplicationCtrl extends BaseRestApiCtrl {
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/gsa")
+public class GsaAllowanceCtrl extends BaseRestApiCtrl {
 
-    private static final Logger logger = LoggerFactory.getLogger(GsaApplicationCtrl.class);
+    private static final Logger logger = LoggerFactory.getLogger(GsaAllowanceCtrl.class);
 
     @Autowired private GsaAllowanceService gsaService;
 
