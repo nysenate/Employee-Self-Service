@@ -8,13 +8,16 @@ import gov.nysenate.ess.travel.addressvalidation.DistrictAssignmentService;
 import gov.nysenate.ess.travel.allowance.mileage.dao.IrsRateDao;
 import gov.nysenate.ess.travel.allowance.mileage.model.Leg;
 import gov.nysenate.ess.travel.allowance.mileage.model.MileageAllowance;
+import gov.nysenate.ess.travel.allowance.mileage.model.ReimbursableLeg;
 import gov.nysenate.ess.travel.allowance.mileage.model.Route;
 import gov.nysenate.ess.travel.application.model.*;
 import gov.nysenate.ess.travel.maps.GoogleMapsService;
+import gov.nysenate.ess.travel.utils.UnitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,15 +45,23 @@ public class MileageAllowanceService {
      * @throws IOException
      */
     public MileageAllowance calculateMileageAllowance(Itinerary itinerary) throws InterruptedException, ApiException, IOException {
-        MileageAllowance allowance = new MileageAllowance();
+        MileageAllowance allowance = new MileageAllowance(getIrsRate(itinerary));
         Route route = itinerary.getReimbursableRoute();
         for (Leg leg : route.getOutboundLegs()) {
-            allowance = allowance.addOutboundLeg(leg, googleMapsService.getLegDistance(leg));
+            allowance = allowance.addOutboundLeg(calculateReimbursableLeg(leg));
         }
         for (Leg leg : route.getReturnLegs()) {
-            allowance = allowance.addReturnLeg(leg, googleMapsService.getLegDistance(leg));
+            allowance = allowance.addReturnLeg(calculateReimbursableLeg(leg));
         }
         return allowance;
+    }
+
+    private ReimbursableLeg calculateReimbursableLeg(Leg leg) throws InterruptedException, ApiException, IOException {
+        return new ReimbursableLeg(leg, UnitUtils.metersToMiles(googleMapsService.getLegDistance(leg)));
+    }
+
+    private BigDecimal getIrsRate(Itinerary itinerary) {
+        return BigDecimal.valueOf(irsRateDao.getIrsRate(itinerary.startDate()));
     }
 
     /**

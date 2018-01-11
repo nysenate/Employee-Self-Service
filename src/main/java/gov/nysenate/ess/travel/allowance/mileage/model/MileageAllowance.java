@@ -1,43 +1,79 @@
 package gov.nysenate.ess.travel.allowance.mileage.model;
 
+import com.google.common.collect.ImmutableSet;
 
-import com.google.common.collect.ImmutableMap;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.maps.internal.ratelimiter.Preconditions.checkNotNull;
 
 public class MileageAllowance {
 
-    private final ImmutableMap<Leg, Long> outboundLegDistances;
-    private final ImmutableMap<Leg, Long> returnLegDistances;
+    /** The outbound driving distance in miles that must be met to be reimbursed for mileage. */
+    private static final BigDecimal REIMBURSEMENT_THRESHOLD = new BigDecimal("35.0");
+    /**The IRS Rate valid at this travel app start date */
+    private final BigDecimal rate;
+    private final ImmutableSet<ReimbursableLeg> outboundLegs;
+    private final ImmutableSet<ReimbursableLeg> returnLegs;
 
-    public MileageAllowance() {
-        outboundLegDistances = ImmutableMap.of();
-        returnLegDistances = ImmutableMap.of();
+    public MileageAllowance(BigDecimal rate) {
+        this(rate, ImmutableSet.of(), ImmutableSet.of());
     }
 
-    public MileageAllowance(ImmutableMap<Leg, Long> outboundLegDistances,
-                            ImmutableMap<Leg, Long> returnLegDistances) {
-        this.outboundLegDistances = outboundLegDistances;
-        this.returnLegDistances = returnLegDistances;
+    public MileageAllowance(BigDecimal rate,
+                            ImmutableSet<ReimbursableLeg> outboundLegs,
+                            ImmutableSet<ReimbursableLeg> returnLegs) {
+        checkArgument(checkNotNull(rate).signum() >= 0);
+        this.rate = rate;
+        this.outboundLegs = outboundLegs;
+        this.returnLegs = returnLegs;
     }
 
-    public MileageAllowance addOutboundLeg(Leg leg, Long distance) {
-        return new MileageAllowance(copyToBuilder(getOutboundLegDistances()).put(leg, distance).build(),
-                getReturnLegDistances());
+    public BigDecimal getReimbursement() {
+        if (outboundDistanceBelowThreshold()) {
+            return new BigDecimal("0.00");
+        }
+        return totalDistance().multiply(getRate()).setScale(2, RoundingMode.HALF_UP);
     }
 
-    public MileageAllowance addReturnLeg(Leg leg, Long distance) {
-        return new MileageAllowance(getOutboundLegDistances(),
-                copyToBuilder(getReturnLegDistances()).put(leg, distance).build());
+    private boolean outboundDistanceBelowThreshold() {
+        return getLegsDistance(getOutboundLegs()).compareTo(REIMBURSEMENT_THRESHOLD) == -1;
     }
 
-    public ImmutableMap<Leg, Long> getOutboundLegDistances() {
-        return outboundLegDistances;
+    private BigDecimal getLegsDistance(ImmutableSet<ReimbursableLeg> legs) {
+        return legs.stream()
+                .map(ReimbursableLeg::getDistance)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public ImmutableMap<Leg, Long> getReturnLegDistances() {
-        return returnLegDistances;
+    private BigDecimal totalDistance() {
+        return getLegsDistance(getOutboundLegs()).add(getLegsDistance(getReturnLegs()));
     }
 
-    private ImmutableMap.Builder<Leg, Long> copyToBuilder(ImmutableMap<Leg, Long> map) {
-        return ImmutableMap.<Leg, Long>builder().putAll(map);
+    public MileageAllowance addOutboundLeg(ReimbursableLeg leg) {
+        return new MileageAllowance(
+                getRate(),
+                ImmutableSet.<ReimbursableLeg>builder().addAll(getOutboundLegs()).add(leg).build(),
+                getReturnLegs());
+    }
+
+    public MileageAllowance addReturnLeg(ReimbursableLeg leg) {
+        return new MileageAllowance(
+                getRate(),
+                getOutboundLegs(),
+                ImmutableSet.<ReimbursableLeg>builder().addAll(getReturnLegs()).add(leg).build());
+    }
+
+    public BigDecimal getRate() {
+        return rate;
+    }
+
+    public ImmutableSet<ReimbursableLeg> getOutboundLegs() {
+        return outboundLegs;
+    }
+
+    public ImmutableSet<ReimbursableLeg> getReturnLegs() {
+        return returnLegs;
     }
 }
