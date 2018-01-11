@@ -312,7 +312,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 }).$promise);
 
                 promises.push(mileageAllowanceApi.save($scope.app.itinerary, function (response) {
-                    $scope.app.allowances.mileage = response.result.mileage;
+                    $scope.app.allowances.mileage = response.result;
                 }).$promise);
 
                 $q.all(promises)

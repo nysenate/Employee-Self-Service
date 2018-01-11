@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.addressvalidation.DistrictAssignmentService;
-import gov.nysenate.ess.travel.allowance.mileage.dao.IrsRateDao;
+import gov.nysenate.ess.travel.allowance.mileage.dao.IrsMileageRateDao;
 import gov.nysenate.ess.travel.allowance.mileage.model.Leg;
 import gov.nysenate.ess.travel.allowance.mileage.model.MileageAllowance;
 import gov.nysenate.ess.travel.allowance.mileage.model.ReimbursableLeg;
@@ -28,7 +28,7 @@ public class MileageAllowanceService {
     private GoogleMapsService googleMapsService;
 
     @Autowired
-    private IrsRateDao irsRateDao;
+    private IrsMileageRateDao irsMileageRateDao;
 
     @Autowired
     private DistrictAssignmentService districtAssignmentService;
@@ -61,7 +61,7 @@ public class MileageAllowanceService {
     }
 
     private BigDecimal getIrsRate(Itinerary itinerary) {
-        return BigDecimal.valueOf(irsRateDao.getIrsRate(itinerary.startDate()));
+        return irsMileageRateDao.getIrsRate(itinerary.startDate());
     }
 
     /**

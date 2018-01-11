@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.allowance.mileage.service;
 
-import gov.nysenate.ess.travel.allowance.mileage.dao.IrsRateDao;
+import gov.nysenate.ess.travel.allowance.mileage.dao.IrsMileageRateDao;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,8 +8,8 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
 @Service
 public class IrsMileageRateScraper {
 
-    @Autowired private IrsRateDao irsRateDao;
+    @Autowired private IrsMileageRateDao irsMileageRateDao;
     @Value("${travel.irs.url}") private String irsLink;
 
     private void initializeDatabase() throws IOException {
@@ -38,13 +38,13 @@ public class IrsMileageRateScraper {
             if (date.length() == 4) {
                 String startDate = date + "-01-01";
                 String endDate = date + "-12-31";
-                irsRateDao.insertIrsRate(startDate, endDate, rate);
+                irsMileageRateDao.insertIrsRate(startDate, endDate, String.valueOf(rate));
             }
             else {
                 List<String> dates = parseDate(date);
                 String startDate = dates.get(0);
                 String endDate = dates.get(1);
-                irsRateDao.insertIrsRate(startDate, endDate, rate);
+                irsMileageRateDao.insertIrsRate(startDate, endDate, String.valueOf(rate));
             }
         }
     }
@@ -114,12 +114,13 @@ public class IrsMileageRateScraper {
      */
 //    @Scheduled(cron = "${scheduler.travel.scrape.cron}")
     public void scrapeAndUpdate() {
-        try {
-            webScrapeIrsRate();  //verifies that we can access the IRS website
-            irsRateDao.deleteValues();
-            initializeDatabase();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        throw new NotImplementedException();
+//        try {
+//            webScrapeIrsRate();  //verifies that we can access the IRS website
+//            irsMileageRateDao.deleteValues();
+//            initializeDatabase();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
