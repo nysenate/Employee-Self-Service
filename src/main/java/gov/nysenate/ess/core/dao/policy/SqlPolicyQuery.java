@@ -7,17 +7,17 @@ public enum SqlPolicyQuery implements BasicSqlQuery {
 
     GET_ALL_ACTIVE_POLICIES_SQL(
         "SELECT * FROM ess.policy \n" +
-                "WHERE active = true;"
+                "WHERE active = true"
     ),
 
     GET_POLICY_BY_ID_SQL(
             "SELECT * FROM ess.policy \n" +
-                    "WHERE id = ?"
+                    "WHERE id = :policyId"
     ),
 
     INSERT_POLICY_SQL(
         "INSERT INTO ess.policy (title, link, active, effective_date_time)\n" +
-                "VALUES (?, ?, ?, ?);"
+                "VALUES (?, ?, ?, ?)"
     ),
 
     GET_ALL_ACKNOWLEDGEMENTS(
@@ -26,12 +26,12 @@ public enum SqlPolicyQuery implements BasicSqlQuery {
 
     GET_ACK_BY_ID(
             "SELECT * FROM ess.acknowledgement \n" +
-                    "WHERE emp_id = ? AND policy_id = ?;"
+                    "WHERE emp_id = ? AND policy_id = ?"
     ),
 
     INSERT_ACK_SQL(
         "INSERT INTO ess.acknowledgement (emp_id, policy_id, timestamp)\n" +
-                "VALUES (2,1,'1/11/18');"
+                "VALUES (2,1,'1/11/18')"
     );
 
 
