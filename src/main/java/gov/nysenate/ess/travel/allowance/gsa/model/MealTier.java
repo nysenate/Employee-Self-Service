@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.allowance.gsa.model;
 
-import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
+import gov.nysenate.ess.travel.utils.UnitUtils;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -22,10 +22,10 @@ public class MealTier {
 
     public MealTier(String tier, String breakfast, String lunch, String dinner, String incidental) {
         this.tier = tier;
-        this.breakfast = TravelAllowanceUtils.round(new BigDecimal(breakfast));
-        this.lunch = TravelAllowanceUtils.round(new BigDecimal(lunch));
-        this.dinner = TravelAllowanceUtils.round(new BigDecimal(dinner));
-        this.incidental = TravelAllowanceUtils.round(new BigDecimal(incidental));
+        this.breakfast = UnitUtils.roundToHundredth(new BigDecimal(breakfast));
+        this.lunch = UnitUtils.roundToHundredth(new BigDecimal(lunch));
+        this.dinner = UnitUtils.roundToHundredth(new BigDecimal(dinner));
+        this.incidental = UnitUtils.roundToHundredth(new BigDecimal(incidental));
     }
 
     public String getTier() {

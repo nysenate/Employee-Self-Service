@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.allowance.gsa.model;
 
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
+import gov.nysenate.ess.travel.utils.UnitUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,7 +21,7 @@ public class LodgingNight {
     public LodgingNight(LocalDate date, Address address, BigDecimal rate) {
         this.date = date;
         this.address = address;
-        this.rate = TravelAllowanceUtils.round(rate);
+        this.rate = UnitUtils.roundToHundredth(rate);
     }
 
     public LocalDate getDate() {

@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.application.model;
 
 import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
-import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
+import gov.nysenate.ess.travel.utils.UnitUtils;
 
 import java.math.BigDecimal;
 
@@ -29,11 +29,11 @@ public final class TravelAllowances {
         checkArgument(checkNotNull(registrationFee).signum() >= 0);
         this.mealAllowance = checkNotNull(mealAllowance);
         this.lodgingAllowance = checkNotNull(lodgingAllowance);
-        this.mileage = TravelAllowanceUtils.round(mileage);
-        this.tolls = TravelAllowanceUtils.round(tolls);
-        this.parking = TravelAllowanceUtils.round(parking);
-        this.alternate = TravelAllowanceUtils.round(alternate);
-        this.registrationFee = TravelAllowanceUtils.round(registrationFee);
+        this.mileage = UnitUtils.roundToHundredth(mileage);
+        this.tolls = UnitUtils.roundToHundredth(tolls);
+        this.parking = UnitUtils.roundToHundredth(parking);
+        this.alternate = UnitUtils.roundToHundredth(alternate);
+        this.registrationFee = UnitUtils.roundToHundredth(registrationFee);
     }
 
     public TravelAllowances(MealAllowance mealAllowance, LodgingAllowance lodgingAllowance,

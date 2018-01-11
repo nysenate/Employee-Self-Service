@@ -11,9 +11,26 @@ public class UnitUtils {
      * @return
      */
     public static BigDecimal metersToMiles(long meters) {
-        int SCALE = 1;
         BigDecimal METERS_PER_MILE = new BigDecimal("1609.344");
-        BigDecimal miles = BigDecimal.valueOf(meters).divide(METERS_PER_MILE, SCALE, RoundingMode.HALF_UP);
-        return miles;
+        // Round to tenth. Rounded needed when dividing.
+        return BigDecimal.valueOf(meters).divide(METERS_PER_MILE, 1, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Rounds a big decimal to 2 digits using the rounding mode for monetary transactions.
+     * e.g. - 1.114 -> 1.11
+     *      - 1.115 -> 1.12
+     */
+    public static BigDecimal roundToHundredth(BigDecimal d) {
+        return d.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Rounds a big decimal to 1 digit.
+     * e.g. - 1.44 -> 1.4
+     *      - 1.45 -> 1.5
+     */
+    public static BigDecimal roundToTenth(BigDecimal d) {
+        return d.setScale(1, RoundingMode.HALF_UP);
     }
 }
