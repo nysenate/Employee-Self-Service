@@ -11,16 +11,16 @@ public class PolicyView implements ViewObject {
     private String link;
     private Boolean active;
     private Integer policyId;
-    private LocalDateTime year;
+    private LocalDateTime effectiveDateTime;
 
     public PolicyView() {}
 
-    public PolicyView(String title, String link, Boolean active, Integer policyId, LocalDateTime year) {
+    public PolicyView(String title, String link, Boolean active, Integer policyId, LocalDateTime effectiveDateTime) {
         this.title = title;
         this.link = link;
         this.active = active;
         this.policyId = policyId;
-        this.year = year;
+        this.effectiveDateTime = effectiveDateTime;
     }
 
     public String getTitle() {
@@ -55,12 +55,12 @@ public class PolicyView implements ViewObject {
         this.policyId = policyId;
     }
 
-    public LocalDateTime getYear() {
-        return year;
+    public LocalDateTime getEffectiveDateTime() {
+        return effectiveDateTime;
     }
 
-    public void setYear(LocalDateTime year) {
-        this.year = year;
+    public void setEffectiveDateTime(LocalDateTime effectiveDateTime) {
+        this.effectiveDateTime = effectiveDateTime;
     }
 
     @Override
