@@ -2,12 +2,16 @@ package gov.nysenate.ess.core.client.view.policy;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class PolicyView implements ViewObject {
 
     private String title;
     private String link;
     private Boolean active;
     private Integer policyId;
+    private LocalDateTime year;
 
     public PolicyView() {}
 
@@ -48,6 +52,14 @@ public class PolicyView implements ViewObject {
 
     public void setPolicyId(Integer policyId) {
         this.policyId = policyId;
+    }
+
+    public LocalDateTime getYear() {
+        return year;
+    }
+
+    public void setYear(LocalDateTime year) {
+        this.year = year;
     }
 
     @Override

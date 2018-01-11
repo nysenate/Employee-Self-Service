@@ -1,11 +1,14 @@
 package gov.nysenate.ess.core.model.policy;
 
+import java.time.LocalDateTime;
+
 public class Policy {
 
     private String title;
     private String link;
     private Boolean active;
     private Integer policyId;
+    private LocalDateTime year;
 
     public Policy() {}
 
@@ -46,5 +49,13 @@ public class Policy {
 
     public void setPolicyId(Integer policyId) {
         this.policyId = policyId;
+    }
+
+    public LocalDateTime getYear() {
+        return year;
+    }
+
+    public void setYear(LocalDateTime year) {
+        this.year = year;
     }
 }
