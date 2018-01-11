@@ -30,7 +30,9 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
             status: "APPROVED",
             from: moment().startOf('day').format(),
             to: moment().format(),
-            dateField: "approved_date_time"
+            dateField: "approved_date_time",
+            offset: 0,
+            limit: 'ALL'
         };
         $scope.reconcilableSearch.response = requisitionApi.get(params, function(response) {
             $scope.reconcilableSearch.matches = response.result;
