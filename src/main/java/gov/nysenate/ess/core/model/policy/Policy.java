@@ -5,16 +5,16 @@ import java.time.LocalDateTime;
 public class Policy {
 
     private String title;
-    private String link;
+    private String filename;
     private Boolean active;
     private Integer policyId;
     private LocalDateTime effectiveDateTime;
 
     public Policy() {}
 
-    public Policy(String title, String link, Boolean active, Integer policyId, LocalDateTime effectiveDateTime) {
+    public Policy(String title, String filename, Boolean active, Integer policyId, LocalDateTime effectiveDateTime) {
         this.title = title;
-        this.link = link;
+        this.filename = filename;
         this.active = active;
         this.policyId = policyId;
         this.effectiveDateTime = effectiveDateTime;
@@ -28,12 +28,12 @@ public class Policy {
         this.title = title;
     }
 
-    public String getLink() {
-        return link;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     public Boolean getActive() {

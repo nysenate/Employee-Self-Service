@@ -1,69 +1,60 @@
 package gov.nysenate.ess.core.client.view.policy;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.policy.Policy;
 
-import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
+@XmlRootElement
 public class PolicyView implements ViewObject {
 
+    private static final String policyDir = "/assets/policies/";
+
     private String title;
-    private String link;
+    private String url;
     private Boolean active;
     private Integer policyId;
     private LocalDateTime effectiveDateTime;
 
-    public PolicyView() {}
+    protected PolicyView() {}
 
-    public PolicyView(String title, String link, Boolean active, Integer policyId, LocalDateTime effectiveDateTime) {
-        this.title = title;
-        this.link = link;
-        this.active = active;
-        this.policyId = policyId;
-        this.effectiveDateTime = effectiveDateTime;
+    public PolicyView(Policy policy, String ctxPath) {
+        this.title = policy.getTitle();
+        this.url = ctxPath + policyDir + policy.getFilename();
+        this.active = policy.getActive();
+        this.policyId = policy.getPolicyId();
+        this.effectiveDateTime = policy.getEffectiveDateTime();
     }
 
+    @XmlElement
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    @XmlElement
+    public String getUrl() {
+        return url;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
+    @XmlElement
     public Boolean getActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
+    @XmlElement
     public Integer getPolicyId() {
         return policyId;
     }
 
-    public void setPolicyId(Integer policyId) {
-        this.policyId = policyId;
-    }
-
+    @XmlElement
     public LocalDateTime getEffectiveDateTime() {
         return effectiveDateTime;
     }
 
-    public void setEffectiveDateTime(LocalDateTime effectiveDateTime) {
-        this.effectiveDateTime = effectiveDateTime;
-    }
-
     @Override
+    @XmlElement
     public String getViewType() {
         return "policy";
     }
