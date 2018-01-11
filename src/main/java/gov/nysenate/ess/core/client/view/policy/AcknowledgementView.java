@@ -1,48 +1,44 @@
 package gov.nysenate.ess.core.client.view.policy;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.policy.Acknowledgement;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
+@XmlRootElement
 public class AcknowledgementView implements ViewObject {
 
     private Integer empId;
     private Integer policyId;
     private LocalDateTime timestamp;
 
-    public AcknowledgementView() {}
+    protected AcknowledgementView() {}
 
-    public AcknowledgementView(Integer empId, Integer policyId, LocalDateTime timestamp) {
-        this.empId = empId;
-        this.policyId = policyId;
-        this.timestamp = timestamp;
+    public AcknowledgementView(Acknowledgement ack) {
+        this.empId = ack.getEmpId();
+        this.policyId = ack.getPolicyId();
+        this.timestamp = ack.getTimestamp();
     }
 
+    @XmlElement
     public Integer getEmpId() {
         return empId;
     }
 
-    public void setEmpId(Integer empId) {
-        this.empId = empId;
-    }
-
+    @XmlElement
     public Integer getPolicyId() {
         return policyId;
     }
 
-    public void setPolicyId(Integer policyId) {
-        this.policyId = policyId;
-    }
-
+    @XmlElement
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     @Override
+    @XmlElement
     public String getViewType() {
         return "acknowledgement";
     }
