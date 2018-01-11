@@ -15,11 +15,12 @@ public class PolicyView implements ViewObject {
 
     public PolicyView() {}
 
-    public PolicyView(String title, String link, Boolean active, Integer policyId) {
+    public PolicyView(String title, String link, Boolean active, Integer policyId, LocalDateTime year) {
         this.title = title;
         this.link = link;
         this.active = active;
         this.policyId = policyId;
+        this.year = year;
     }
 
     public String getTitle() {

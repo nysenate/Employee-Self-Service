@@ -12,11 +12,12 @@ public class Policy {
 
     public Policy() {}
 
-    public Policy(String title, String link, Boolean active, Integer policyId) {
+    public Policy(String title, String link, Boolean active, Integer policyId, LocalDateTime year) {
         this.title = title;
         this.link = link;
         this.active = active;
         this.policyId = policyId;
+        this.year = year;
     }
 
     public String getTitle() {
