@@ -27,7 +27,7 @@ import java.util.List;
 public class IrsMileageRateScraper {
 
     @Autowired private IrsRateDao irsRateDao;
-    @Value("${travel.irs.link}") private String irsLink;
+    @Value("${travel.irs.url}") private String irsLink;
 
     private void initializeDatabase() throws IOException {
         Document doc = Jsoup.connect(irsLink).get();

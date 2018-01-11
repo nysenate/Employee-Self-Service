@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.addressvalidation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.model.unit.Address;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,12 +12,18 @@ import java.io.IOException;
 @Service
 public class AddressValidationService {
 
+    private String sageBaseUrl;
+    private ObjectMapper jsonObjectMapper;
+
     @Autowired
-    ObjectMapper jsonObjectMapper;
+    public AddressValidationService(@Value("${sage.api.url}") String sageBaseUrl, ObjectMapper jsonObjectMapper) {
+        this.sageBaseUrl = sageBaseUrl;
+        this.jsonObjectMapper = jsonObjectMapper;
+    }
 
     public SageResponse validateAddress(String addr, String city, String state) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://pubgeo.nysenate.gov/api/v2/address/validate?" +
+        String url = sageBaseUrl + "/address/validate?" +
                 "addr1=" + addr + "&" +
                 "city="  + city + "&" +
                 "state=" + state;

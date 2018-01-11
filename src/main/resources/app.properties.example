@@ -222,11 +222,14 @@ supply.requisition.notification.list =
 
 
 # --- Google Maps Configuration -------------------------------------------------------
-google.maps.apiKey =
+google.maps.api.key =
 
 # --- Travel Integration links --------------------------------------------------------
-# Link for GSA
-travel.gsa.link = https://inventory.data.gov/api/action/datastore_search?resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b&filters=
+# GSA API base url
+travel.gsa.api.url = https://inventory.data.gov/api/action/datastore_search?resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b&filters=
 
-# Link for IRS
-travel.irs.link = https://www.irs.gov/tax-professionals/standard-mileage-rates
+# Url used to scrape IRS mileage rates
+travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
+
+# Sage API base url
+sage.api.url = https://pubgeo.nysenate.gov/api/v2

@@ -16,7 +16,7 @@ import java.io.IOException;
 @Service
 public class GoogleMapsService implements MapService {
 
-    @Value("${google.maps.apiKey}") private String apiKey;
+    @Value("${google.maps.api.key}") private String apiKey;
 
     /**
      * Gets the distance for a single leg of the trip.

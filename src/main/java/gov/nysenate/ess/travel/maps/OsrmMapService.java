@@ -6,6 +6,8 @@ import com.google.gson.JsonParser;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.allowance.mileage.model.Leg;
 import gov.nysenate.ess.travel.application.model.Itinerary;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -19,6 +21,13 @@ import java.util.*;
  */
 @Service
 public class OsrmMapService implements MapService {
+
+    private String sageBaseUrl;
+
+    @Autowired
+    public OsrmMapService(@Value("${sage.api.url}") String sageBaseUrl) {
+        this.sageBaseUrl = sageBaseUrl;
+    }
 
     /**
      * TODO Implement!
@@ -75,7 +84,7 @@ public class OsrmMapService implements MapService {
         RestTemplate restTemplate = new RestTemplate();
         ArrayList<String> coordinates = new ArrayList<>();
         for (Address address: addresses) {
-            String url = "https://pubgeo.nysenate.gov/api/v2/geo/geocode?";
+            String url = this.sageBaseUrl + "/geo/geocode?";
             url += "addr1=" + address.getAddr1();
             url += "&city=" + address.getCity();
             url += "&state=" + address.getState();

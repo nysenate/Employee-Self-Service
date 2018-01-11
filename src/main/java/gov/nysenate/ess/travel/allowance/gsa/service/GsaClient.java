@@ -42,7 +42,7 @@ public class GsaClient implements CachingService<GsaResponseId> {
     private volatile Cache gsaCache;
 
     @Autowired
-    public GsaClient(@Value("${travel.gsa.link}") String baseUrl, GsaResponseParser gsaResponseParser,
+    public GsaClient(@Value("${travel.gsa.api.url}") String baseUrl, GsaResponseParser gsaResponseParser,
                      EventBus eventBus, EhCacheManageService cacheManageService) {
         this.baseUrl = baseUrl;
         this.gsaResponseParser = gsaResponseParser;
