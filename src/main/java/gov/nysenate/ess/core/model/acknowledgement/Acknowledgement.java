@@ -1,18 +1,18 @@
-package gov.nysenate.ess.core.model.policy;
+package gov.nysenate.ess.core.model.acknowledgement;
 
 import java.time.LocalDateTime;
 
 public class Acknowledgement {
 
     private Integer empId;
-    private Integer policyId;
+    private Integer ackDocId;
     private LocalDateTime timestamp;
 
     public Acknowledgement() {}
 
-    public Acknowledgement(Integer empId, Integer policyId,LocalDateTime timestamp) {
+    public Acknowledgement(Integer empId, Integer ackDocId, LocalDateTime timestamp) {
         this.empId = empId;
-        this.policyId = policyId;
+        this.ackDocId = ackDocId;
         this.timestamp = timestamp;
     }
 
@@ -24,12 +24,12 @@ public class Acknowledgement {
         this.empId = empId;
     }
 
-    public Integer getPolicyId() {
-        return policyId;
+    public Integer getAckDocId() {
+        return ackDocId;
     }
 
-    public void setPolicyId(Integer policyId) {
-        this.policyId = policyId;
+    public void setAckDocId(Integer ackDocId) {
+        this.ackDocId = ackDocId;
     }
 
     public LocalDateTime getTimestamp() {

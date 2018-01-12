@@ -94,23 +94,25 @@ ALTER TABLE ONLY user_roles
     ADD CONSTRAINT user_roles_pkey PRIMARY KEY (id);
 
 --
---Create tables for ESS policy and set Primary Keys
+--Create tables for ESS acknowledgement and set Primary Keys
 --
-CREATE TABLE ess.policy (
-    policy_id   SERIAL PRIMARY KEY,
+CREATE TABLE ess.ack_doc (
+    id   SERIAL PRIMARY KEY,
     title       VARCHAR(250),
-    filename        VARCHAR(250),
+    filename    VARCHAR(250),
     active      BOOLEAN,
     effective_date_time       VARCHAR(40)
 );
 
 CREATE TABLE ess.acknowledgement (
     emp_id      INTEGER,
-    policy_id    INTEGER REFERENCES ess.policy,
-    timestamp       VARCHAR(40)
+    ack_doc_id  INTEGER REFERENCES ess.ack_doc (id),
+    timestamp   VARCHAR(40)
 );
 
-ALTER TABLE ess.acknowledgement ADD PRIMARY KEY (emp_id,policy_id);
+ALTER TABLE ess.acknowledgement
+    ADD PRIMARY KEY (emp_id, ack_doc_id);
+
 
 --
 -- Add permissions for all roles.

@@ -1,31 +1,31 @@
-package gov.nysenate.ess.core.client.view.policy;
+package gov.nysenate.ess.core.client.view.acknowledgement;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.policy.Policy;
+import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
 @XmlRootElement
-public class PolicyView implements ViewObject {
+public class AckDocView implements ViewObject {
 
-    private static final String policyDir = "/assets/policies/";
+    private static final String ackDocDir = "/assets/ack_docs/";
 
     private String title;
     private String path;
     private Boolean active;
-    private Integer policyId;
+    private Integer id;
     private LocalDateTime effectiveDateTime;
 
-    protected PolicyView() {}
+    protected AckDocView() {}
 
-    public PolicyView(Policy policy) {
-        this.title = policy.getTitle();
-        this.path = policyDir + policy.getFilename();
-        this.active = policy.getActive();
-        this.policyId = policy.getPolicyId();
-        this.effectiveDateTime = policy.getEffectiveDateTime();
+    public AckDocView(AckDoc ackDoc) {
+        this.title = ackDoc.getTitle();
+        this.path = ackDocDir + ackDoc.getFilename();
+        this.active = ackDoc.getActive();
+        this.id = ackDoc.getId();
+        this.effectiveDateTime = ackDoc.getEffectiveDateTime();
     }
 
     @XmlElement
@@ -44,8 +44,8 @@ public class PolicyView implements ViewObject {
     }
 
     @XmlElement
-    public Integer getPolicyId() {
-        return policyId;
+    public Integer getId() {
+        return id;
     }
 
     @XmlElement
@@ -56,6 +56,6 @@ public class PolicyView implements ViewObject {
     @Override
     @XmlElement
     public String getViewType() {
-        return "policy";
+        return "ack_doc";
     }
 }

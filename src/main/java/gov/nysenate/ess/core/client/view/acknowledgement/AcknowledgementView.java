@@ -1,7 +1,7 @@
-package gov.nysenate.ess.core.client.view.policy;
+package gov.nysenate.ess.core.client.view.acknowledgement;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.policy.Acknowledgement;
+import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 public class AcknowledgementView implements ViewObject {
 
     private Integer empId;
-    private Integer policyId;
+    private Integer ackDocId;
     private LocalDateTime timestamp;
 
     protected AcknowledgementView() {}
 
     public AcknowledgementView(Acknowledgement ack) {
         this.empId = ack.getEmpId();
-        this.policyId = ack.getPolicyId();
+        this.ackDocId = ack.getAckDocId();
         this.timestamp = ack.getTimestamp();
     }
 
@@ -28,8 +28,8 @@ public class AcknowledgementView implements ViewObject {
     }
 
     @XmlElement
-    public Integer getPolicyId() {
-        return policyId;
+    public Integer getAckDocId() {
+        return ackDocId;
     }
 
     @XmlElement

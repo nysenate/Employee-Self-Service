@@ -1,22 +1,22 @@
-package gov.nysenate.ess.core.model.policy;
+package gov.nysenate.ess.core.model.acknowledgement;
 
 import java.time.LocalDateTime;
 
-public class Policy {
+public class AckDoc {
 
     private String title;
     private String filename;
     private Boolean active;
-    private Integer policyId;
+    private Integer id;
     private LocalDateTime effectiveDateTime;
 
-    public Policy() {}
+    public AckDoc() {}
 
-    public Policy(String title, String filename, Boolean active, Integer policyId, LocalDateTime effectiveDateTime) {
+    public AckDoc(String title, String filename, Boolean active, Integer id, LocalDateTime effectiveDateTime) {
         this.title = title;
         this.filename = filename;
         this.active = active;
-        this.policyId = policyId;
+        this.id = id;
         this.effectiveDateTime = effectiveDateTime;
     }
 
@@ -44,12 +44,12 @@ public class Policy {
         this.active = active;
     }
 
-    public Integer getPolicyId() {
-        return policyId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setPolicyId(Integer policyId) {
-        this.policyId = policyId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public LocalDateTime getEffectiveDateTime() {
