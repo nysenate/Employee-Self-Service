@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.dao.acknowledgement;
 import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
 import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
 
-import java.util.Set;
+import java.util.List;
 
 public interface AcknowlegdementDocumentDao {
 
@@ -25,9 +25,9 @@ public interface AcknowlegdementDocumentDao {
     /**
      * Gets a set of all active AckDocs
      *
-     * @return {@link Set<AckDoc>}
+     * @return {@link List<AckDoc>}
      */
-    Set<AckDoc> getActiveAckDocs();
+    List<AckDoc> getActiveAckDocs();
 
     /**
      * Gets an Acknowledgement from an employee id and an ackDocId
@@ -48,8 +48,8 @@ public interface AcknowlegdementDocumentDao {
     /**
      * Gets all acknowledgements in the database
      *
-     * @return {@link Set<Acknowledgement>}
+     * @return {@link List<Acknowledgement>}
      */
-    Set<Acknowledgement> getAllAcknowledgements();
+    List<Acknowledgement> getAllAcknowledgements();
 
 }

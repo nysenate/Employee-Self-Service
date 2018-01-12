@@ -6,12 +6,13 @@ import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
 import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class AckDocDao extends SqlBaseDao implements AcknowlegdementDocumentDao {
@@ -19,7 +20,7 @@ public class AckDocDao extends SqlBaseDao implements AcknowlegdementDocumentDao 
     private static final Logger logger = LoggerFactory.getLogger(AckDocDao.class);
 
     public AckDoc getAckDoc(int ackDocId) {
-        AckDoc ackDoc;
+        AckDoc ackDoc = new AckDoc();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("ackDocId", ackDocId);
         try {
@@ -27,31 +28,77 @@ public class AckDocDao extends SqlBaseDao implements AcknowlegdementDocumentDao 
                     SqlAckDocQuery.GET_ACK_DOC_BY_ID_SQL.getSql(schemaMap()), params, getAckDocRowMapper());
         }
         catch (DataRetrievalFailureException ex) {
-            throw new EmployeeNotFoundEx("No matching ack doc record for ackDocId: " + ackDocId);
+            logger.error("No matching ack doc record for ackDocId: " + ackDocId + "\n" + ex.toString());
         }
         return ackDoc;
     }
 
     public void insertAckDoc(AckDoc ackDoc) {
-
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title",ackDoc.getTitle());
+        params.addValue("filename",ackDoc.getFilename());
+        params.addValue("active",ackDoc.getActive());
+        params.addValue("effectiveDateTime",ackDoc.getEffectiveDateTime());
+        try {
+            localNamedJdbc.update(SqlAckDocQuery.INSERT_ACK_DOC_SQL.getSql(),params);
+        }
+        catch (DataAccessResourceFailureException e) {
+            logger.error("Could not insert AckDoc into the DB \n " + e.getMessage());
+        }
     }
 
-    public Set<AckDoc> getActiveAckDocs() {
-        return new HashSet<>();
+    public List<AckDoc> getActiveAckDocs() {
+        List<AckDoc> activeAckDocsList = new ArrayList<>();
+        try {
+            activeAckDocsList = localNamedJdbc.query(SqlAckDocQuery.GET_ALL_ACTIVE_ACK_DOCS_SQL.getSql(), getAckDocRowMapper());
+        }
+        catch (DataRetrievalFailureException ex) {
+            logger.error("No AckDocs could be retrieved \n" + ex.toString());
+        }
+        return activeAckDocsList;
     }
 
 
 
     public Acknowledgement getAcknowledgementById(int empId, int ackDocId) {
-        return new Acknowledgement();
+        Acknowledgement acknowledgement = new Acknowledgement();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("ackDocId", ackDocId);
+        params.addValue("empId",empId);
+        try {
+            acknowledgement = localNamedJdbc.queryForObject(
+                    SqlAckDocQuery.GET_ACK_BY_ID.getSql(schemaMap()), params, getAcknowledgementRowMapper());
+        }
+        catch (DataRetrievalFailureException ex) {
+            throw new EmployeeNotFoundEx("No matching ack doc record for ackDocId: " + ackDocId + empId);
+        }
+
+        return acknowledgement;
     }
 
     public void insertAcknowledgement(Acknowledgement acknowledgement) {
-
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("empId",acknowledgement.getEmpId());
+        params.addValue("ack_doc",acknowledgement.getAckDocId());
+        params.addValue("timestamp",acknowledgement.getTimestamp());
+        try {
+            localNamedJdbc.update(SqlAckDocQuery.INSERT_ACK_SQL.getSql(),params);
+        }
+        catch (Exception e) {
+            logger.error("Could Not insert Acknowledgement with id " + acknowledgement.getEmpId()
+                    + acknowledgement.getAckDocId() + "\n" + e.getMessage());
+        }
     }
 
-    public Set<Acknowledgement> getAllAcknowledgements() {
-        return new HashSet<>();
+    public List<Acknowledgement> getAllAcknowledgements() {
+        List<Acknowledgement> allAcknowlegdements = new ArrayList<>();
+        try {
+            allAcknowlegdements = localNamedJdbc.query(SqlAckDocQuery.GET_ALL_ACKNOWLEDGEMENTS.getSql(), getAcknowledgementRowMapper());
+        }
+        catch (DataRetrievalFailureException ex) {
+            logger.error("No acknowledgements could be retrieved \n " + ex.toString());
+        }
+        return allAcknowlegdements;
     }
 
 
