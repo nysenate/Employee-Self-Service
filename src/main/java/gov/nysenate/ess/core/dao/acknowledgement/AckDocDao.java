@@ -10,8 +10,8 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Repository
 public class AckDocDao extends SqlBaseDao {
@@ -36,8 +36,8 @@ public class AckDocDao extends SqlBaseDao {
 
     }
 
-    public List<AckDoc> getActiveAckDocs() {
-        return new ArrayList<>();
+    public Set<AckDoc> getActiveAckDocs() {
+        return new HashSet<>();
     }
 
 
@@ -50,8 +50,8 @@ public class AckDocDao extends SqlBaseDao {
 
     }
 
-    public List<Acknowledgement> getAllAcknowledgements() {
-        return new ArrayList<>();
+    public Set<Acknowledgement> getAllAcknowledgements() {
+        return new HashSet<>();
     }
 
 
