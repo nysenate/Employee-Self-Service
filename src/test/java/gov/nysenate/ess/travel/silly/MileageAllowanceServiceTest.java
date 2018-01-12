@@ -1,13 +1,13 @@
-package gov.nysenate.ess.travel.integration;
+package gov.nysenate.ess.travel.silly;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
+import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.ModeOfTransportation;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
 import gov.nysenate.ess.travel.allowance.mileage.service.MileageAllowanceService;
-import gov.nysenate.ess.travel.utils.TravelAllowanceUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
+@Category(SillyTest.class)
 public class MileageAllowanceServiceTest extends BaseTest{
-//
+
 //    @Autowired
 //    MileageAllowanceService mileageAllowanceService;
 //

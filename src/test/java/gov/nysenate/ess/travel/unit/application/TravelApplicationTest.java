@@ -6,11 +6,13 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
+import gov.nysenate.ess.travel.allowance.mileage.model.MileageAllowance;
 import gov.nysenate.ess.travel.application.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Category(UnitTest.class)
@@ -23,8 +25,8 @@ public class TravelApplicationTest {
         Employee emp = new Employee();
         emp.setEmployeeId(1);
 
-        TravelAllowances allowances =  new TravelAllowances(
-                new MealAllowance(), new LodgingAllowance(), "0", "0", "0", "0", "0");
+        TravelAllowances allowances =  new TravelAllowances(new MealAllowance(),
+                new LodgingAllowance(), new MileageAllowance(new BigDecimal("0")), "0", "0", "0", "0");
 
         Address address = new Address("101 Washington Ave", "Albany", "NY", "12210");
         Itinerary itinerary = new Itinerary(address, Lists.newArrayList(new TravelDestination(

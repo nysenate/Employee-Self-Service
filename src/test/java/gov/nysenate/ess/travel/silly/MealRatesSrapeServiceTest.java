@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.other;
+package gov.nysenate.ess.travel.silly;
 
 
 import gov.nysenate.ess.core.BaseTest;

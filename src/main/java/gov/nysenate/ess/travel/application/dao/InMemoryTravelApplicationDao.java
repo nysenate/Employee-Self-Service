@@ -4,10 +4,12 @@ import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.allowance.gsa.model.LodgingAllowance;
 import gov.nysenate.ess.travel.allowance.gsa.model.MealAllowance;
+import gov.nysenate.ess.travel.allowance.mileage.model.MileageAllowance;
 import gov.nysenate.ess.travel.application.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -85,7 +87,7 @@ public class InMemoryTravelApplicationDao {
     }
 
     private TravelAllowances randomAllowances() {
-        return new TravelAllowances(new MealAllowance(), new LodgingAllowance(), String.valueOf(randomWithRange(0, 150.00)),
+        return new TravelAllowances(new MealAllowance(), new LodgingAllowance(), new MileageAllowance(new BigDecimal("0.50")),
                 String.valueOf(randomWithRange(0, 40.00)), String.valueOf(randomWithRange(0, 150.00)),
                 String.valueOf(randomWithRange(0, 150.00)), String.valueOf(randomWithRange(0, 150.00)));
     }

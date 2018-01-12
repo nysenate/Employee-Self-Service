@@ -1,7 +1,8 @@
-package gov.nysenate.ess.travel.integration;
+package gov.nysenate.ess.travel.silly;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
+import gov.nysenate.ess.core.annotation.SillyTest;
 import gov.nysenate.ess.travel.addressvalidation.AddressValidationService;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.Assert.assertEquals;
 
 
-@Category(IntegrationTest.class)
+@Category(SillyTest.class)
 public class AddressValidationIT extends BaseTest{
 
     @Autowired

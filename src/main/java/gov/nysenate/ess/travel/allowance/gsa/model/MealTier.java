@@ -49,6 +49,17 @@ public class MealTier {
     }
 
     @Override
+    public String toString() {
+        return "MealTier{" +
+                "tier='" + tier + '\'' +
+                ", breakfast=" + breakfast +
+                ", lunch=" + lunch +
+                ", dinner=" + dinner +
+                ", incidental=" + incidental +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
