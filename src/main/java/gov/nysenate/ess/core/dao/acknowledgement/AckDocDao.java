@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Repository
-public class AckDocDao extends SqlBaseDao {
+public class AckDocDao extends SqlBaseDao implements AcknowlegdementDocumentDao {
 
     private static final Logger logger = LoggerFactory.getLogger(AckDocDao.class);
 
