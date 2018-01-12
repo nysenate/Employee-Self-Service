@@ -12,8 +12,6 @@ public class AcknowledgementRowMapper extends BaseRowMapper<Acknowledgement> {
 
     private String pfx = "";
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     public AcknowledgementRowMapper(String pfx) {
         this.pfx = pfx;
     }
@@ -23,7 +21,7 @@ public class AcknowledgementRowMapper extends BaseRowMapper<Acknowledgement> {
         Acknowledgement acknowledgement = new Acknowledgement();
         acknowledgement.setEmpId(rs.getInt(pfx + "emp_id"));
         acknowledgement.setAckDocId(rs.getInt(pfx + "ack_doc_id"));
-        acknowledgement.setTimestamp(LocalDateTime.parse(rs.getString(pfx + "timestamp") , formatter));
+        acknowledgement.setTimestamp(getLocalDateTimeFromRs(rs,"timestamp"));
         return acknowledgement;
     }
 

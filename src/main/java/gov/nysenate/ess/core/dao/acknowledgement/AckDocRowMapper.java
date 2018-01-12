@@ -12,8 +12,6 @@ public class AckDocRowMapper extends BaseRowMapper<AckDoc> {
 
     private String pfx = "";
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     public AckDocRowMapper(String pfx) {
         this.pfx = pfx;
     }
@@ -25,7 +23,7 @@ public class AckDocRowMapper extends BaseRowMapper<AckDoc> {
         ackDoc.setTitle(rs.getString(pfx + "title"));
         ackDoc.setFilename(rs.getString(pfx + "filename"));
         ackDoc.setActive(rs.getBoolean(pfx + "active"));
-        ackDoc.setEffectiveDateTime(LocalDateTime.parse(rs.getString(pfx + "effective_date_time") , formatter));
+        ackDoc.setEffectiveDateTime(getLocalDateTimeFromRs(rs,"effective_date_time"));
         return ackDoc;
     }
 }
