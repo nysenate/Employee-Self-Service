@@ -98,16 +98,16 @@ ALTER TABLE ONLY user_roles
 --
 CREATE TABLE ess.ack_doc (
     id   SERIAL PRIMARY KEY,
-    title       VARCHAR(250),
-    filename    VARCHAR(250),
+    title       text,
+    filename    text,
     active      BOOLEAN,
-    effective_date_time       VARCHAR(40)
+    effective_date_time      TIMESTAMP without TIME ZONE
 );
 
 CREATE TABLE ess.acknowledgement (
     emp_id      INTEGER,
     ack_doc_id  INTEGER REFERENCES ess.ack_doc (id),
-    timestamp   VARCHAR(40)
+    timestamp   TIMESTAMP without TIME ZONE
 );
 
 ALTER TABLE ess.acknowledgement
