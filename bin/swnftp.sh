@@ -10,6 +10,7 @@
 # Revised: 2017-08-30 - added --no-xml and --no-ftp options
 # Revised: 2017-12-20 - added better logging and error checking
 # Revised: 2018-01-11 - moved essApi.sh here; esshost removed from swn config
+# Revised: 2018-01-12 - trap and display errors from essApi.sh
 #
 
 prog=`basename $0`
@@ -98,10 +99,12 @@ elif [ "$xml_file" ]; then
   cat "$xml_file" | $xml_filter >"$tmpdir/$tmpfile"
 else
   logdt "Requesting an XML export of the contact data from ESS"
-  { $script_dir/essApi.sh eax --no-auth 2>/dev/null || exit 1; } | $xml_filter >"$tmpdir/$tmpfile"
+  set -o pipefail
+  $script_dir/essApi.sh eax --no-auth | $xml_filter >"$tmpdir/$tmpfile"
 
-  if [ ! -r "$tmpdir/$tmpfile" ]; then
+  if [ $? -ne 0 -o ! -r "$tmpdir/$tmpfile" ]; then
     echo "$prog: $tmpfile: Failed to write the XML dump file" >&2
+    rm -f "$tmpdir/$tmpfile"
     exit 1
   elif head -c 13 "$tmpdir/$tmpfile" | egrep -q '^(<contactBatch|<[?]xml)'; then
     :
