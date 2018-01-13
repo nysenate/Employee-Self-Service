@@ -1,7 +1,7 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-    ['$scope', 'SupplyRequisitionApi', 'LocationService', 'modals', '$window', '$timeout', supplyReconciliationController]);
+    ['$scope', 'SupplyRequisitionApi', 'LocationService', 'SupplyUtils', 'modals', '$window', '$timeout', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, requisitionApi, locationService, modals, $window, $timeout) {
+function supplyReconciliationController($scope, requisitionApi, locationService, supplyUtils, modals, $window, $timeout) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
@@ -49,6 +49,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
                     }
                 })
             });
+            $scope.reconcilableSearch.items = supplyUtils.alphabetizeItemsByCommodityCode($scope.reconcilableSearch.items);
         }, function(response) {
             $scope.reconcilableSearch.matches = [];
             $scope.reconcilableSearch.items = [];
