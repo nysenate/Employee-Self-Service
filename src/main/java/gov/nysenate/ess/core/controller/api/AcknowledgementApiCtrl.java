@@ -1,7 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -13,16 +11,16 @@ import gov.nysenate.ess.core.dao.acknowledgement.AckDocDao;
 import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
 import gov.nysenate.ess.core.model.acknowledgement.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
+import gov.nysenate.ess.core.model.acknowledgement.DuplicateAckEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
-import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -32,19 +30,11 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
 
     @Autowired private AckDocDao ackDocDao;
 
-    private static final ImmutableSet<Integer> dummyAckDocIds = ImmutableSet.of(1,2,3,4);
-    private static AckDoc getDummyAckDoc(int id) {
-        return new AckDoc("AckDoc " + id + " Blahblah blah Blahblahblah 1111",
-                "dummy.pdf", true, id, LocalDateTime.now());
-    }
-
     // GET A LIST OF ALL DOCUMENTS
     @RequestMapping(value = "/documents", method = {GET, HEAD})
     public ListViewResponse<AckDocView> getActiveAckDocs() {
 
-        List<AckDoc> ackDocs = dummyAckDocIds.stream()
-                .map(AcknowledgementApiCtrl::getDummyAckDoc)
-                .collect(toList());
+        List<AckDoc> ackDocs = ackDocDao.getActiveAckDocs();
 
         List<AckDocView> ackDocViews = ackDocs.stream()
                 .map(AckDocView::new)
@@ -56,10 +46,8 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     //GET A SPECIFIC ACK DOK BY ID
     @RequestMapping(value = "/documents/{ackDocId:\\d+}", method = {GET, HEAD})
     public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) {
-        if (!dummyAckDocIds.contains(ackDocId)) {
-            throw new AckDocNotFoundEx(ackDocId);
-        }
-        AckDoc ackDoc = getDummyAckDoc(ackDocId);
+        //check id exists
+        AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
         AckDocView ackDocView = new AckDocView(ackDoc);
         return new ViewObjectResponse<>(ackDocView, "document");
     }
@@ -69,10 +57,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     public ListViewResponse<AcknowledgementView> getAcknowledgements(@RequestParam int empId) {
         checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, GET));
 
-        List<Acknowledgement> acknowledgements = ImmutableList.<Acknowledgement>builder()
-                .add(new Acknowledgement(empId, 1, LocalDateTime.now()))
-                .add(new Acknowledgement(empId, 2, LocalDateTime.now()))
-                .build();
+        List<Acknowledgement> acknowledgements = ackDocDao.getAllAcknowledgementsForEmp(empId);
 
         List<AcknowledgementView> ackViews = acknowledgements.stream()
                 .map(AcknowledgementView::new)
@@ -87,10 +72,16 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
                                               @RequestParam int ackDocId) {
         checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, POST));
 
-        // TODO replace these verifications with security checks and better validation
-        if (!dummyAckDocIds.contains(ackDocId)) {
-            throw new InvalidRequestParamEx(String.valueOf(ackDocId), "ackDocId", "int",
-                    "testtttttttttt");
+        //check id if exists. Will throw an AckNotFoundEx if the document does not exist
+        AckDoc userRequestedAckDoc = ackDocDao.getAckDoc(ackDocId);
+
+        //cant ack same doc twice throw error
+        List<Acknowledgement> acknowledgements = ackDocDao.getAllAcknowledgementsForEmp(empId);
+
+        for(Acknowledgement acknowledgement: acknowledgements) {
+            if (acknowledgement.getAckDocId() == ackDocId && acknowledgement.getEmpId() == empId) {
+                throw new DuplicateAckEx(ackDocId);
+            }
         }
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
@@ -103,6 +94,13 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public ViewObjectErrorResponse handleAckDocNotFoundEx(AckDocNotFoundEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.ACK_DOC_NOT_FOUND, ex.getAckDocid());
+    }
+
+    @ExceptionHandler(DuplicateAckEx.class)
+    @ResponseStatus(value = BAD_REQUEST)
+    @ResponseBody
+    public ViewObjectErrorResponse handleDuplicateAckEx(DuplicateAckEx ex) {
+        return new ViewObjectErrorResponse(ErrorCode.DUPLICATE_ACK, ex.getAckDocid());
     }
 
 }
