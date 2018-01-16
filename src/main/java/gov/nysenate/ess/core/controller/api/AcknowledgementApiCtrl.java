@@ -85,13 +85,9 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/acks", method = POST)
     public SimpleResponse acknowledgeDocument(@RequestParam int empId,
                                               @RequestParam int ackDocId) {
-        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, GET));
+        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, POST));
 
         // TODO replace these verifications with security checks and better validation
-//        if (ShiroUtils.getAuthenticatedEmpId() != empId) {
-//            throw new InvalidRequestParamEx(String.valueOf(empId), "empId", "int",
-//                    "testtttttttttt");
-//        }
         if (!dummyAckDocIds.contains(ackDocId)) {
             throw new InvalidRequestParamEx(String.valueOf(ackDocId), "ackDocId", "int",
                     "testtttttttttt");
