@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -72,10 +73,15 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
     }
 
     public List<Acknowledgement> getAllAcknowledgementsForEmp(int empId) {
-        List<Acknowledgement> allAcknowledgements;
+        List<Acknowledgement> allAcknowledgements = new ArrayList<>();
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("empId",empId);
-        allAcknowledgements = localNamedJdbc.query(SqlAckDocQuery.GET_ALL_ACKNOWLEDGEMENTS.getSql(), params ,getAcknowledgementRowMapper());
+        try {
+            allAcknowledgements = localNamedJdbc.query(SqlAckDocQuery.GET_ALL_ACKNOWLEDGEMENTS.getSql(), params ,getAcknowledgementRowMapper());
+        }
+        catch (EmptyResultDataAccessException ex) {
+            logger.info("No acknowledgemnts found for emp: " + empId);
+        }
         return allAcknowledgements;
     }
 
