@@ -5,36 +5,37 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-import gov.nysenate.ess.core.client.view.acknowledgement.AcknowledgementView;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.acknowledgement.AckDocView;
+import gov.nysenate.ess.core.client.view.acknowledgement.AcknowledgementView;
 import gov.nysenate.ess.core.dao.acknowledgement.AckDocDao;
+import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgement.AckDocNotFoundEx;
+import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
-import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
-import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
-import gov.nysenate.ess.core.util.ShiroUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/acknowledgement")
 public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
 
-    @Autowired AckDocDao ackDocDao;
+    @Autowired private AckDocDao ackDocDao;
 
     private static final ImmutableSet<Integer> dummyAckDocIds = ImmutableSet.of(1,2,3,4);
     private static AckDoc getDummyAckDoc(int id) {
-        return new AckDoc("AckDoc " + id, "dummy.pdf", true, id, LocalDateTime.now());
+        return new AckDoc("AckDoc " + id + " Blahblah blah Blahblahblah 1111",
+                "dummy.pdf", true, id, LocalDateTime.now());
     }
 
     // GET A LIST OF ALL DOCUMENTS
@@ -56,8 +57,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/documents/{ackDocId:\\d+}", method = {GET, HEAD})
     public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) {
         if (!dummyAckDocIds.contains(ackDocId)) {
-            throw new InvalidRequestParamEx(String.valueOf(ackDocId), "ackDocId", "int",
-                    "testtttttttttt");
+            throw new AckDocNotFoundEx(ackDocId);
         }
         AckDoc ackDoc = getDummyAckDoc(ackDocId);
         AckDocView ackDocView = new AckDocView(ackDoc);
@@ -94,6 +94,15 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
         }
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
+    }
+
+    /* --- Exception Handlers --- */
+
+    @ExceptionHandler(AckDocNotFoundEx.class)
+    @ResponseStatus(value = NOT_FOUND)
+    @ResponseBody
+    public ViewObjectErrorResponse handleAckDocNotFoundEx(AckDocNotFoundEx ex) {
+        return new ViewObjectErrorResponse(ErrorCode.ACK_DOC_NOT_FOUND, ex.getAckDocid());
     }
 
 }

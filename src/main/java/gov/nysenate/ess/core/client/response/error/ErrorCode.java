@@ -9,6 +9,7 @@ public enum ErrorCode
     EMPLOYEE_NOT_FOUND(4, "The requested employee was not found"),
     INVALID_ALERT_INFO(5, "The submitted alert info contains invalid data"),
     EMPLOYEE_INACTIVE(6, "Attempt to take action on one or more employees that are inactive."),
+    ACK_DOC_NOT_FOUND(7, "The requested acknowledged document was not found."),
 
     /** Time Errors */
     INVALID_TIME_RECORD(101, "The provided time record contained invalid data"),
