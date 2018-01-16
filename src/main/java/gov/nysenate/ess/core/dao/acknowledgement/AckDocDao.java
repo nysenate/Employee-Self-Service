@@ -54,4 +54,11 @@ public interface AckDocDao {
      */
     List<Acknowledgement> getAllAcknowledgements();
 
+    /**
+     * Gets all acknowledgements in the database for a specified employee
+     *
+     * @return {@link List<Acknowledgement>}
+     */
+    List<Acknowledgement> getAllAcknowledgementsForEmp(int empId);
+
 }

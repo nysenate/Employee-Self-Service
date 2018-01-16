@@ -71,6 +71,14 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         return allAcknowledgements;
     }
 
+    public List<Acknowledgement> getAllAcknowledgementsForEmp(int empId) {
+        List<Acknowledgement> allAcknowledgements;
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("empId",empId);
+        allAcknowledgements = localNamedJdbc.query(SqlAckDocQuery.GET_ALL_ACKNOWLEDGEMENTS.getSql(), params ,getAcknowledgementRowMapper());
+        return allAcknowledgements;
+    }
+
 
 
     /** Returns an AckDocRowMapper that's configured for use in this dao */

@@ -24,9 +24,14 @@ public enum SqlAckDocQuery implements BasicSqlQuery {
             "SELECT * FROM ${essSchema}.acknowledgement"
     ),
 
+    GET_ALL_ACKNOWLEDGEMENTS_FOR_EMPLOYEE(
+            "SELECT * FROM ${essSchema}.acknowledgement \n" +
+                    "WHERE emp_id = :empId"
+    ),
+
     GET_ACK_BY_ID(
             "SELECT * FROM ${essSchema}.acknowledgement \n" +
-                    "WHERE emp_id = :empid AND ack_doc_id = :ackDocId"
+                    "WHERE emp_id = :empId AND ack_doc_id = :ackDocId"
     ),
 
     INSERT_ACK_SQL(
