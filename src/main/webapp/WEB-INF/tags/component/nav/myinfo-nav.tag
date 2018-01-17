@@ -8,6 +8,7 @@
     <ul class="sub-topic-list">
         <li class="sub-topic"><a href="${ctxPath}/myinfo/personnel/summary">Current Info</a></li>
         <li class="sub-topic"><a href="${ctxPath}/myinfo/personnel/emergency-alert-info">Emergency Alert Info</a></li>
+        <li class="sub-topic"><a href="${ctxPath}/myinfo/personnel/acknowledgement">Acknowledge Documents</a></li>
     </ul>
     <h3 class="main-topic">Payroll</h3>
     <ul class="sub-topic-list">

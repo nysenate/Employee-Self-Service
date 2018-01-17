@@ -8,6 +8,10 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/alert-ctrl.js"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/acknowledgement-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-view-ctrl.js"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/transaction-history-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/transaction-history-filters.js"></script>
