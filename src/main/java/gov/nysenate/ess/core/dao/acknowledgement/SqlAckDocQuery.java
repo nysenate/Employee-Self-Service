@@ -7,7 +7,7 @@ public enum SqlAckDocQuery implements BasicSqlQuery {
 
     GET_ALL_ACTIVE_ACK_DOCS_SQL(
         "SELECT * FROM ${essSchema}.ack_doc \n" +
-                "WHERE active = true"
+                "WHERE active = true and effective_date_time < now()"
     ),
 
     GET_ACK_DOC_BY_ID_SQL(
