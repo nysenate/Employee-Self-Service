@@ -17,6 +17,7 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -73,7 +74,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
         checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, POST));
 
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
-        AckDoc userRequestedAckDoc = ackDocDao.getAckDoc(ackDocId);
+        ackDocDao.getAckDoc(ackDocId);
 
         //cant ack same doc twice throw error
         List<Acknowledgement> acknowledgements = ackDocDao.getAllAcknowledgementsForEmp(empId);
@@ -83,6 +84,9 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
                 throw new DuplicateAckEx(ackDocId);
             }
         }
+
+        // Save the ack doc
+        ackDocDao.insertAcknowledgement(new Acknowledgement(empId, ackDocId, LocalDateTime.now()));
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
