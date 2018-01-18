@@ -17,7 +17,7 @@ public class AckDocView implements ViewObject {
     @Value("${data.dir}")
     private String dataDir;
 
-    private static final String ackDocDir = "/assets/ack_docs/";
+    private static final String ackDocDir = "/ack_docs/";
 
     private String title;
     private String path;
@@ -30,7 +30,7 @@ public class AckDocView implements ViewObject {
 
     public AckDocView(AckDoc ackDoc) {
         this.title = ackDoc.getTitle();
-        this.path = ackDocDir + ackDoc.getFilename();
+        this.path = dataDir + ackDocDir + ackDoc.getFilename();
         this.active = ackDoc.getActive();
         this.id = ackDoc.getId();
         this.effectiveDateTime = ackDoc.getEffectiveDateTime();
