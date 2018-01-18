@@ -15,6 +15,7 @@ import gov.nysenate.ess.core.model.acknowledgement.DuplicateAckEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/acknowledgement")
 public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
 
+
+    @Value("${data.dir}")
+    private String dataDir;
+
     @Autowired private AckDocDao ackDocDao;
 
     // GET A LIST OF ALL DOCUMENTS
@@ -38,7 +43,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
         List<AckDoc> ackDocs = ackDocDao.getActiveAckDocs();
 
         List<AckDocView> ackDocViews = ackDocs.stream()
-                .map(AckDocView::new)
+                .map(ackDoc -> new AckDocView(ackDoc, dataDir))
                 .collect(toList());
 
         return ListViewResponse.of(ackDocViews, "documents");
@@ -49,7 +54,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) {
         //check id exists
         AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
-        AckDocView ackDocView = new AckDocView(ackDoc);
+        AckDocView ackDocView = new AckDocView(ackDoc, dataDir);
         return new ViewObjectResponse<>(ackDocView, "document");
     }
 

@@ -7,7 +7,7 @@ runtime.level = dev
 
 # --- Data Directory -------------------------------------------------
 
-data.dir = "/data/ess/"
+data.dir = /data/ess/
 
 # --- Domain Configuration ----------------------------------------------------
 
