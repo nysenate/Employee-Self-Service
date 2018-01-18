@@ -50,6 +50,7 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
     $scope.acknowledgeDocument = function () {
         postAcknowledgement()
             .then(function () {
+                $scope.updateAckBadge();
                 return modals.open('acknowledge-success');
             })
             .then(function () {
