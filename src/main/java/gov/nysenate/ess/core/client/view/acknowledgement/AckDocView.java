@@ -2,13 +2,20 @@ package gov.nysenate.ess.core.client.view.acknowledgement;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @XmlRootElement
 public class AckDocView implements ViewObject {
+
+    @Value("${data.dir}")
+    private String dataDir;
 
     private static final String ackDocDir = "/assets/ack_docs/";
 
@@ -18,7 +25,8 @@ public class AckDocView implements ViewObject {
     private Integer id;
     private LocalDateTime effectiveDateTime;
 
-    protected AckDocView() {}
+    protected AckDocView() {
+    }
 
     public AckDocView(AckDoc ackDoc) {
         this.title = ackDoc.getTitle();
@@ -57,5 +65,10 @@ public class AckDocView implements ViewObject {
     @XmlElement
     public String getViewType() {
         return "ack_doc";
+    }
+
+    public int getPageCount() throws IOException {
+        PDDocument doc = PDDocument.load( new File(dataDir + path)); // requires full path
+        return doc.getNumberOfPages();
     }
 }
