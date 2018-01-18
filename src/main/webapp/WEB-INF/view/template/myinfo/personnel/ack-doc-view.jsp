@@ -30,9 +30,21 @@
     </iframe>
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
+      <p class="content-info acknowledgement-text">
+        I hereby acknowledge receipt of the New York State Senate document
+        {{state.document.title}} and state that I have read the same.  I
+        understand that compliance is a condition of employment and that violation
+        of any policy could subject me to penalties including, but not limited to,
+        loss of privileges to use Senate technologies, demotion, suspension or
+        termination.<br>
+        <br>
+        In addition for purposes of submitting this acknowledgment, the username
+        and password is the electronic signature of the employee. As liability
+        attaches, the employee should ensure that his or her username and password
+        is securely kept and used.
+      </p>
       <input type="button" class="submit-button"
-             title="I have read the policy and click here to confirm my acceptance of the same"
-             value="I have read the policy and click here to confirm my acceptance of the same"
+             title="I Agree" value="I Agree"
              ng-click="acknowledgeDocument()">
     </div>
 
