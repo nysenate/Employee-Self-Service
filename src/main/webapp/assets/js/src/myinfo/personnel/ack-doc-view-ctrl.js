@@ -16,6 +16,8 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
+        docHeight: 500,
+        docRead: false,
 
         request: {
             document: false,
@@ -47,6 +49,10 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
         return loading;
     };
 
+    /**
+     * Post an acknowledgement that the doc has been read.
+     * Reload the page if successful and prompt the user with navigation options.
+     */
     $scope.acknowledgeDocument = function () {
         postAcknowledgement()
             .then(function () {
@@ -56,6 +62,13 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
             .then(function () {
                 $location.url($scope.ackDocPageUrl)
             })
+    };
+
+    /**
+     * Sets docRead to true to indicate that the document has been read
+     */
+    $scope.markDocRead = function () {
+        $scope.state.docRead = true;
     };
 
     /* --- Request Methods --- */
@@ -79,6 +92,8 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
         function onSuccess(resp) {
             $scope.state.document = resp.document;
             $scope.state.docFound = true;
+            $scope.state.docRead = false;
+            setDocEmbedHeight();
         }
 
         function onFail(resp) {
@@ -141,6 +156,11 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
         } else {
             $scope.state.acknowledged = false
         }
+    }
+
+    function setDocEmbedHeight() {
+        var pages = $scope.state.document.pageCount;
+        $scope.state.docHeight = 1136 * pages - 4;
     }
 
     init();

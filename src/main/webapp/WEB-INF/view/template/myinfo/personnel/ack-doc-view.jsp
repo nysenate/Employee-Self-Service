@@ -25,9 +25,12 @@
       </a>
     </div>
 
-    <iframe id="ack-doc-iframe"
-            src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
-    </iframe>
+    <div id="ack-doc-container" on-scroll-to-bottom="markDocRead()">
+      <div id="ack-doc-scroll-cover" ng-style="{'height': state.docHeight + 'px' }"></div>
+      <embed id="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
+              src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
+      </embed>
+    </div>
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
       <p class="content-info acknowledgement-text">
@@ -44,7 +47,9 @@
         is securely kept and used.
       </p>
       <input type="button" class="submit-button"
-             title="I Agree" value="I Agree"
+             title="{{state.docRead ? 'I Agree' : 'You must read the entire document to agree'}}"
+             value="I Agree"
+             ng-disabled="!state.docRead"
              ng-click="acknowledgeDocument()">
     </div>
 

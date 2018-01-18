@@ -123,15 +123,30 @@
   color: rgba(34,34,34,0.5);
 }
 
-iframe#ack-doc-iframe {
+#ack-doc-container {
+  position: relative;
   width: 840px;
   height: 500px;
-  margin: 10px 20px 20px;
+  margin: 10px 20px;
+  overflow-y: auto;
+  border: 2px inset;
+}
+
+#ack-doc-scroll-cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.01);
+}
+
+#ack-doc-embed {
+  width: 100%;
 }
 
 .ack-doc-button-container {
   text-align: center;
   padding-bottom: 20px;
+  margin-bottom: 20px;
 
   .acknowledgement-text {
     font-weight: bold;
