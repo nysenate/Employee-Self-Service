@@ -5,6 +5,10 @@
 # Runtime level (dev/test/prod)
 runtime.level = dev
 
+# --- Data Directory -------------------------------------------------
+
+data.dir = "/data/ess/"
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain url and context path that ess is hosted on (used for generating links)
