@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.acknowledgement.AckDocView;
 import gov.nysenate.ess.core.client.view.acknowledgement.AcknowledgementView;
+import gov.nysenate.ess.core.client.view.acknowledgement.DetailedAckDocView;
 import gov.nysenate.ess.core.dao.acknowledgement.AckDocDao;
 import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
 import gov.nysenate.ess.core.model.acknowledgement.AckDocNotFoundEx;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,11 +53,11 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
 
     //GET A SPECIFIC ACK DOK BY ID
     @RequestMapping(value = "/documents/{ackDocId:\\d+}", method = {GET, HEAD})
-    public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) {
+    public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) throws IOException {
         //check id exists
         AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
-        AckDocView ackDocView = new AckDocView(ackDoc, dataDir);
-        return new ViewObjectResponse<>(ackDocView, "document");
+        DetailedAckDocView detailedAckDocView = new DetailedAckDocView(ackDoc, dataDir);
+        return new ViewObjectResponse<>(detailedAckDocView, "document");
     }
 
     //GET A LIST OF ACKS
