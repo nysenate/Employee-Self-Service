@@ -70,9 +70,20 @@ public class AckDocView implements ViewObject {
         return "ack_doc";
     }
 
-    public int getPageCount() throws IOException {
-        // requires full path
-        PDDocument doc = PDDocument.load( new File(dataDir + "/" + ackDocDir + "/" + filename));
-        return doc.getNumberOfPages();
+    public float[] getPageCount() throws IOException {
+        //max width, cumulative height
+        PDDocument doc = PDDocument.load( new File(dataDir + "/" + ackDocDir + "/" + filename)); // requires full path
+        float width = doc.getPage(0).getMediaBox().getWidth();
+        float height = 0;
+        for (int i = 0; i < doc.getNumberOfPages(); i++) {
+            if (doc.getPage(i).getMediaBox().getWidth() > width) {
+                width = doc.getPage(i).getMediaBox().getWidth();
+            }
+            height += doc.getPage(i).getMediaBox().getHeight();
+        }
+        float[] dimensions = new float[2];
+        dimensions[0] = width;
+        dimensions[1] = height;
+        return dimensions;
     }
 }
