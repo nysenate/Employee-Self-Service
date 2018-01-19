@@ -7,7 +7,7 @@
 
   <div loader-indicator class="loader" ng-show="isLoading()"></div>
 
-  <div class="content-container" ng-if="!isLoading()">
+  <div class="content-container ack-doc-container" ng-if="!isLoading()">
 
     <p class="content-info" ng-hide="state.acknowledged">
       Please read the document below.  Scroll to the end and then click the acceptance button.
@@ -25,7 +25,7 @@
       </a>
     </div>
 
-    <div id="ack-doc-container" on-scroll-to-bottom="markDocRead()">
+    <div id="ack-doc-embed-container" on-scroll-to-bottom="markDocRead()">
       <div id="ack-doc-scroll-cover" ng-style="{'height': state.docHeight + 'px' }"></div>
       <embed id="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
               src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
@@ -35,7 +35,8 @@
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
       <p class="content-info acknowledgement-text">
         I hereby acknowledge receipt of the New York State Senate document
-        {{state.document.title}} and state that I have read the same.  I
+        <span ng-bind="state.document.title" class="ack-doc-title"></span>
+        and state that I have read the same.  I
         understand that compliance is a condition of employment and that violation
         of any policy could subject me to penalties including, but not limited to,
         loss of privileges to use Senate technologies, demotion, suspension or

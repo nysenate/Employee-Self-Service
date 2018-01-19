@@ -123,7 +123,11 @@
   color: rgba(34,34,34,0.5);
 }
 
-#ack-doc-container {
+.ack-doc-container {
+  padding-bottom: 10px;
+}
+
+#ack-doc-embed-container {
   position: relative;
   width: 840px;
   height: 500px;
@@ -145,14 +149,18 @@
 
 .ack-doc-button-container {
   text-align: center;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 
   .acknowledgement-text {
-    font-weight: bold;
     padding-left: 3em;
     padding-right: 3em;
+    margin-bottom: 20px;
+
     text-align: left;
+
+    .ack-doc-title {
+      font-weight: bold;
+    }
   }
 }
 
