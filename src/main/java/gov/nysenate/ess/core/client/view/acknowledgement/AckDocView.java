@@ -71,7 +71,7 @@ public class AckDocView implements ViewObject {
     }
 
     public int getPageCount() throws IOException {
-        PDDocument doc = PDDocument.load( new File(dataDir + path)); // requires full path
+        PDDocument doc = PDDocument.load( new File(dataDir + "/" + ackDocDir + "/" + filename)); // requires full path
         int numOfPages = doc.getNumberOfPages();
         if( doc != null )
         {
