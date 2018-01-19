@@ -33,10 +33,23 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
 
 
-    @Value("${data.dir}")
-    private String dataDir;
+    /** The directory where ack docs are stored in the file system */
+    private String ackDocDir;
+    /** The uri path where ack docs are requested */
+    private String ackDocResPath;
 
-    @Autowired private AckDocDao ackDocDao;
+    private final AckDocDao ackDocDao;
+
+    @Autowired
+    public AcknowledgementApiCtrl(AckDocDao ackDocDao,
+                                  @Value("${data.dir}") String dataDir,
+                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
+                                  @Value("${resource.path}") String resPath
+    ) {
+        this.ackDocDao = ackDocDao;
+        this.ackDocDir = dataDir + ackDocSubdir;
+        this.ackDocResPath = resPath + ackDocSubdir;
+    }
 
     // GET A LIST OF ALL DOCUMENTS
     @RequestMapping(value = "/documents", method = {GET, HEAD})
@@ -45,7 +58,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
         List<AckDoc> ackDocs = ackDocDao.getActiveAckDocs();
 
         List<AckDocView> ackDocViews = ackDocs.stream()
-                .map(ackDoc -> new AckDocView(ackDoc, dataDir))
+                .map(ackDoc -> new AckDocView(ackDoc, ackDocResPath))
                 .collect(toList());
 
         return ListViewResponse.of(ackDocViews, "documents");
@@ -56,7 +69,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) throws IOException {
         //check id exists
         AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
-        DetailedAckDocView detailedAckDocView = new DetailedAckDocView(ackDoc, dataDir);
+        DetailedAckDocView detailedAckDocView = new DetailedAckDocView(ackDoc, ackDocResPath, ackDocDir);
         return new ViewObjectResponse<>(detailedAckDocView, "document");
     }
 
@@ -86,7 +99,7 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
         //cant ack same doc twice throw error
         List<Acknowledgement> acknowledgements = ackDocDao.getAllAcknowledgementsForEmp(empId);
 
-        for(Acknowledgement acknowledgement: acknowledgements) {
+        for (Acknowledgement acknowledgement : acknowledgements) {
             if (acknowledgement.getAckDocId() == ackDocId && acknowledgement.getEmpId() == empId) {
                 throw new DuplicateAckEx(ackDocId);
             }

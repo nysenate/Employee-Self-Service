@@ -3,58 +3,50 @@ package gov.nysenate.ess.core.client.view.acknowledgement;
 import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.io.File;
 import java.io.IOException;
 
 public class DetailedAckDocView extends AckDocView{
 
-    private static final String ackDocDir = "ack_docs";
     private int pageCount;
-    private float width;
-    private float height;
+    private float maxWidth;
+    private float totalHeight;
 
-    public DetailedAckDocView(AckDoc ackDoc, String dataDir) throws IOException {
-        super(ackDoc,dataDir);
+    public DetailedAckDocView(AckDoc ackDoc, String ackDocResPath, String ackDocDir) throws IOException {
+        super(ackDoc, ackDocResPath);
         // requires full path
-        PDDocument doc = PDDocument.load( new File(dataDir + "/" + ackDocDir + "/" + ackDoc.getFilename()));
+        PDDocument doc = PDDocument.load(new File(ackDocDir + ackDoc.getFilename()));
         pageCount = doc.getNumberOfPages();
-        width = doc.getPage(0).getMediaBox().getWidth();
-        height = 0;
+        maxWidth = 0;
+        totalHeight = 0;
         //max width, cumulative height
         for (int i = 0; i < doc.getNumberOfPages(); i++) {
-            if (doc.getPage(i).getMediaBox().getWidth() > width) {
-                width = doc.getPage(i).getMediaBox().getWidth();
+            if (doc.getPage(i).getMediaBox().getWidth() > maxWidth) {
+                maxWidth = doc.getPage(i).getMediaBox().getWidth();
             }
-            height += doc.getPage(i).getMediaBox().getHeight();
+            totalHeight += doc.getPage(i).getMediaBox().getHeight();
         }
-        if( doc != null )
-        {
-            doc.close();
-        }
+        doc.close();
     }
 
     @Override
+    public String getViewType() {
+        return super.getViewType() + "-detailed";
+    }
+
+    @XmlElement
     public int getPageCount() {
         return pageCount;
     }
 
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
+    @XmlElement
+    public float getMaxWidth() {
+        return maxWidth;
     }
 
-    public float getWidth() {
-        return width;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
+    @XmlElement
+    public float getTotalHeight() {
+        return totalHeight;
     }
 }
