@@ -27,9 +27,15 @@
 
     <div id="ack-doc-embed-container" on-scroll-to-bottom="markDocRead()">
       <div id="ack-doc-scroll-cover" ng-style="{'height': state.docHeight + 'px' }"></div>
-      <iframe id="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
+      <!-- Use an frame tag for edge.  Edge doesn't support iframes, but embed works better on other browsers -->
+      <iframe class="ack-doc-embed" ng-style="{'height': state.docHeight + 'px' }"
+              ng-if="isEdge()"
               src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
       </iframe>
+      <embed class="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
+             ng-if="!isEdge()"
+             src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
+      </embed>
     </div>
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">

@@ -1,11 +1,11 @@
 (function () {
 
 angular.module('essMyInfo')
-    .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location',
+    .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', 'bowser',
                                    'appProps', 'modals', 'AckDocApi', 'AcknowledgementApi',
                                         acknowledgementCtrl]);
 
-function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, modals, documentApi, ackApi) {
+function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appProps, modals, documentApi, ackApi) {
 
     $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgement';
 
@@ -33,6 +33,7 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
                    getDocument(),
                    getAcknowledgements()
                ]).then(processAcknowledgement);
+        console.log(bowser.name);
     }
 
     /* --- Display methods --- */
@@ -69,6 +70,14 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
      */
     $scope.markDocRead = function () {
         $scope.state.docRead = true;
+    };
+
+    /**
+     * Indicates if the current browser is edge
+     * @return {*}
+     */
+    $scope.isEdge = function () {
+        return bowser.msedge;
     };
 
     /* --- Request Methods --- */
@@ -159,8 +168,13 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, appProps, moda
     }
 
     function setDocEmbedHeight() {
+        var document = $scope.state.document;
+        var width = 840;
+        var heightFactor = document.totalHeight / document.maxWidth;
         var pages = $scope.state.document.pageCount;
-        $scope.state.docHeight = 1136 * pages - 4;
+        $scope.state.docHeight = width * heightFactor;
+
+        console.log('pages', pages, 'hf', heightFactor);
     }
 
     init();
