@@ -27,9 +27,9 @@
 
     <div id="ack-doc-embed-container" on-scroll-to-bottom="markDocRead()">
       <div id="ack-doc-scroll-cover" ng-style="{'height': state.docHeight + 'px' }"></div>
-      <embed id="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
+      <iframe id="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
               src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
-      </embed>
+      </iframe>
     </div>
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
