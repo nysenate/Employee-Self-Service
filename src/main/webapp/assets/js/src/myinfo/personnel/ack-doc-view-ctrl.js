@@ -73,11 +73,22 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appPro
     };
 
     /**
-     * Indicates if the current browser is edge
+     * Indicates if an iframe should be used instead of embed tag
+     * Some browsers do not support embed, while others work better with embed vs iframe.
      * @return {*}
      */
-    $scope.isEdge = function () {
+    $scope.useIframe = function () {
+        // Microsoft edge doesn't support embed
         return bowser.msedge;
+    };
+
+    /**
+     * Indicates if an overlay should be placed over the embedded pdf.
+     * In some browsers, you cannot scroll the parent container when th
+     * @return {boolean|*}
+     */
+    $scope.useOverlay = function () {
+        return bowser.chrome;
     };
 
     /* --- Request Methods --- */
