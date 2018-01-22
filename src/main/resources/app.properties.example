@@ -159,7 +159,7 @@ cache.poll.delay.accruals = 60000
 # --- URL Configuration -------------------------------------------------------
 
 # The url path to be used for accessing resources (css/js)
-resource.path = /assets/**
+resource.path = /assets/
 
 # The directory in which the actual css/js subdirectories are contained
 resource.location = /assets/
