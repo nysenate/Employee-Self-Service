@@ -3433,7 +3433,7 @@ badge,
 #alert-info-page .alert-info-form h3 {
   text-align: center;
 }
-/** --- Acknowledgement Page --- */
+/** --- Acknowledgment Page --- */
 .ack-doc-display {
   width: 40em;
   margin: auto;
@@ -3451,7 +3451,7 @@ badge,
 .ack-doc-list-item-ack-date {
   color: rgba(34, 34, 34, 0.5);
 }
-.acknowledgement-instructions {
+.acknowledgment-instructions {
   text-align: left;
 }
 .ack-doc-container {
@@ -3478,13 +3478,13 @@ badge,
   text-align: center;
   margin-bottom: 10px;
 }
-.ack-doc-button-container .acknowledgement-text {
+.ack-doc-button-container .acknowledgment-text {
   padding-left: 3em;
   padding-right: 3em;
   margin-bottom: 20px;
   text-align: left;
 }
-.ack-doc-button-container .acknowledgement-text .ack-doc-title {
+.ack-doc-button-container .acknowledgment-text .ack-doc-title {
   font-weight: bold;
 }
 .ack-doc-view-nav {
