@@ -9,16 +9,28 @@
 
   <div class="content-container ack-doc-container" ng-if="!isLoading()">
 
-    <p class="content-info" ng-hide="state.acknowledged">
-      Please read the document below.  Scroll to the end and then click the acceptance button.
-    </p>
+    <div class="content-info" ng-hide="state.acknowledged">
+      <h3>Instructions</h3>
+      <ul class="acknowledgement-instructions">
+        <li>Please review the following policy/document, using the scroll bar to advance.</li>
+        <li>Click "Open Printable View" to open a separate tab to print the document if desired.</li>
+        <li>
+          After reviewing the entire document, read the acknowledgment at the bottom of the screen
+          and indicate your agreement by clicking the "I Agree" button.
+        </li>
+        <li class="bold-text">
+          You must read the entire document for the "I Agree" button to become available.
+        </li>
+      </ul>
+
+    </div>
     <p class="content-info" ng-show="state.acknowledged">
-      You acknowledged this document on {{state.ackTimestamp | moment:'LL'}}
+      You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
     </p>
 
     <div class="ack-doc-view-nav">
       <a ng-href="{{ackDocPageUrl}}">
-        Return to Acknowledge Documents page
+        Return to Acknowledgements page
       </a>
       <a ng-href="{{ctxPath + state.document.path}}" target="_blank">
         Open Printable View
@@ -40,7 +52,7 @@
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
       <p class="content-info acknowledgement-text">
-        I hereby acknowledge receipt of the New York State Senate document
+        I hereby acknowledge receipt of the New York State Senate
         <span ng-bind="state.document.title" class="ack-doc-title"></span>
         and state that I have read the same.  I
         understand that compliance is a condition of employment and that violation
@@ -63,9 +75,9 @@
   </div>
   <div modal-container>
     <modal modal-id="acknowledge-success">
-      <div confirm-modal rejectable="true" title="Document Acknowledged"
-           confirm-message="You have successfully acknowledged the document."
-           resolve-button="Return to Acknowledge Documents" resolve-class="time-neutral-button"
+      <div confirm-modal rejectable="true" title="Acknowledgement Complete"
+           confirm-message="You have successfully acknowledged this policy/document."
+           resolve-button="Return to Acknowledgements" resolve-class="time-neutral-button"
            reject-button="Remain Here" reject-class="time-neutral-button">
       </div>
     </modal>
