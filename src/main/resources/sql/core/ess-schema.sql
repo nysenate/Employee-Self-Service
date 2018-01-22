@@ -94,7 +94,7 @@ ALTER TABLE ONLY user_roles
     ADD CONSTRAINT user_roles_pkey PRIMARY KEY (id);
 
 --
---Create tables for ESS acknowledgement and set Primary Keys
+--Create tables for ESS acknowledgment and set Primary Keys
 --
 CREATE TABLE ess.ack_doc (
     id   SERIAL PRIMARY KEY,
@@ -104,13 +104,13 @@ CREATE TABLE ess.ack_doc (
     effective_date_time      TIMESTAMP without TIME ZONE
 );
 
-CREATE TABLE ess.acknowledgement (
+CREATE TABLE ess.acknowledgment (
     emp_id      INTEGER,
     ack_doc_id  INTEGER REFERENCES ess.ack_doc (id),
     timestamp   TIMESTAMP without TIME ZONE
 );
 
-ALTER TABLE ess.acknowledgement
+ALTER TABLE ess.acknowledgment
     ADD PRIMARY KEY (emp_id, ack_doc_id);
 
 

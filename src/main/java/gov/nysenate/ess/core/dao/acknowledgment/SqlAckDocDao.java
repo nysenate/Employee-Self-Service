@@ -1,9 +1,9 @@
-package gov.nysenate.ess.core.dao.acknowledgement;
+package gov.nysenate.ess.core.dao.acknowledgment;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
-import gov.nysenate.ess.core.model.acknowledgement.AckDocNotFoundEx;
-import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
+import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static gov.nysenate.ess.core.dao.acknowledgement.SqlAckDocQuery.*;
+import static gov.nysenate.ess.core.dao.acknowledgment.SqlAckDocQuery.*;
 
 @Repository
 public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
@@ -48,31 +48,31 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
 
 
 
-    public Acknowledgement getAcknowledgementById(int empId, int ackDocId) {
+    public Acknowledgment getAcknowledgmentById(int empId, int ackDocId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("ackDocId", ackDocId);
         params.addValue("empId", empId);
         return localNamedJdbc.queryForObject(
-                GET_ACK_BY_ID.getSql(schemaMap()), params, getAcknowledgementRowMapper());
+                GET_ACK_BY_ID.getSql(schemaMap()), params, getAcknowledgmentRowMapper());
     }
 
-    public void insertAcknowledgement(Acknowledgement acknowledgement) {
+    public void insertAcknowledgment(Acknowledgment acknowledgment) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("empId", acknowledgement.getEmpId());
-        params.addValue("ack_doc", acknowledgement.getAckDocId());
-        params.addValue("timestamp", toDate(acknowledgement.getTimestamp()));
+        params.addValue("empId", acknowledgment.getEmpId());
+        params.addValue("ack_doc", acknowledgment.getAckDocId());
+        params.addValue("timestamp", toDate(acknowledgment.getTimestamp()));
         localNamedJdbc.update(INSERT_ACK_SQL.getSql(schemaMap()),params);
 
     }
 
-    public List<Acknowledgement> getAllAcknowledgements() {
-        return localNamedJdbc.query(GET_ALL_ACKNOWLEDGEMENTS.getSql(schemaMap()), getAcknowledgementRowMapper());
+    public List<Acknowledgment> getAllAcknowledgments() {
+        return localNamedJdbc.query(GET_ALL_ACKNOWLEDGMENTS.getSql(schemaMap()), getAcknowledgmentRowMapper());
     }
 
-    public List<Acknowledgement> getAllAcknowledgementsForEmp(int empId) {
+    public List<Acknowledgment> getAllAcknowledgmentsForEmp(int empId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("empId",empId);
-        return localNamedJdbc.query(GET_ALL_ACKNOWLEDGEMENTS_FOR_EMPLOYEE.getSql(schemaMap()), params ,getAcknowledgementRowMapper());
+        return localNamedJdbc.query(GET_ALL_ACKNOWLEDGMENTS_FOR_EMPLOYEE.getSql(schemaMap()), params ,getAcknowledgmentRowMapper());
     }
 
 
@@ -83,8 +83,8 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
     }
 
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
-    private static AcknowledgementRowMapper getAcknowledgementRowMapper() {
-        return new AcknowledgementRowMapper("");
+    private static AcknowledgmentRowMapper getAcknowledgmentRowMapper() {
+        return new AcknowledgmentRowMapper("");
     }
 
 }

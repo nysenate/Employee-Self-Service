@@ -1,10 +1,10 @@
 (function () {
 
 angular.module('essMyInfo')
-    .controller('AcknowledgementCtrl', ['$scope', '$q', 'appProps', 'modals', 'AckDocApi', 'AcknowledgementApi',
-                                   acknowledgementCtrl]);
+    .controller('AcknowledgmentCtrl', ['$scope', '$q', 'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
+                                   acknowledgmentCtrl]);
 
-function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) {
+function acknowledgmentCtrl($scope, $q, appProps, modals, documentApi, ackApi) {
 
     var initialState = {
         documents: {
@@ -12,7 +12,7 @@ function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) 
             acknowledged: [],
             unacknowledged: []
         },
-        acknowledgements: {},
+        acknowledgments: {},
 
         request: {
             documents: false,
@@ -24,7 +24,7 @@ function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) 
         $scope.state = angular.copy(initialState);
         $q.all([
             getDocuments(),
-            getAcknowledgements()
+            getAcknowledgments()
         ]).then(sortDocuments);
 
     }
@@ -48,11 +48,11 @@ function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) 
      * @param doc
      */
     $scope.getAcknowledgedDate = function (doc) {
-        var acknowledgement = $scope.state.acknowledgements[doc.id];
-        if (acknowledgement) {
-            return acknowledgement.timestamp;
+        var acknowledgment = $scope.state.acknowledgments[doc.id];
+        if (acknowledgment) {
+            return acknowledgment.timestamp;
         } else {
-            throw "No acknowledgement for doc " + doc.id + ": " + doc.title;
+            throw "No acknowledgment for doc " + doc.id + ": " + doc.title;
         }
     };
 
@@ -85,10 +85,10 @@ function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) 
     }
 
     /**
-     * Get all acknowledgements for the currently authenticated employee.
+     * Get all acknowledgments for the currently authenticated employee.
      */
-    function getAcknowledgements() {
-        $scope.state.acknowledgements = {};
+    function getAcknowledgments() {
+        $scope.state.acknowledgments = {};
 
         var params = {
             empId: appProps.user.employeeId
@@ -101,8 +101,8 @@ function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) 
         });
 
         function onSuccess(resp) {
-            angular.forEach(resp.acknowledgements, function (ack) {
-                $scope.state.acknowledgements[ack.ackDocId] = ack;
+            angular.forEach(resp.acknowledgments, function (ack) {
+                $scope.state.acknowledgments[ack.ackDocId] = ack;
             });
         }
     }
@@ -114,7 +114,7 @@ function acknowledgementCtrl($scope, $q, appProps, modals, documentApi, ackApi) 
 
         while (documents.unsorted.length > 0) {
             var doc = documents.unsorted.shift();
-            if ($scope.state.acknowledgements[doc.id]) {
+            if ($scope.state.acknowledgments[doc.id]) {
                 documents.acknowledged.push(doc);
             } else {
                 documents.unacknowledged.push(doc);

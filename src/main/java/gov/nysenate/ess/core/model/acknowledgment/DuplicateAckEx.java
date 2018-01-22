@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.model.acknowledgement;
+package gov.nysenate.ess.core.model.acknowledgment;
 
 /**
  * An exception thrown when an {@link AckDoc} has already been acknowledged.

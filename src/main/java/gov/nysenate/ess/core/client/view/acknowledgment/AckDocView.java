@@ -1,7 +1,7 @@
-package gov.nysenate.ess.core.client.view.acknowledgement;
+package gov.nysenate.ess.core.client.view.acknowledgment;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

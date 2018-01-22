@@ -1,16 +1,16 @@
-package gov.nysenate.ess.core.model.acknowledgement;
+package gov.nysenate.ess.core.model.acknowledgment;
 
 import java.time.LocalDateTime;
 
-public class Acknowledgement {
+public class Acknowledgment {
 
     private Integer empId;
     private Integer ackDocId;
     private LocalDateTime timestamp;
 
-    public Acknowledgement() {}
+    public Acknowledgment() {}
 
-    public Acknowledgement(Integer empId, Integer ackDocId, LocalDateTime timestamp) {
+    public Acknowledgment(Integer empId, Integer ackDocId, LocalDateTime timestamp) {
         this.empId = empId;
         this.ackDocId = ackDocId;
         this.timestamp = timestamp;

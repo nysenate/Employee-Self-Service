@@ -3,7 +3,7 @@ var essTime = angular.module('essMyInfo');
 /**
  * The wrapping controller that is the parent of the nav menu and view content.
  */
-essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'AckDocApi', 'AcknowledgementApi',
+essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'AckDocApi', 'AcknowledgmentApi',
    function($scope, $q, appProps, badgeService, ackDocApi, ackApi) {
 
        $scope.updateAckBadge = function () {
@@ -21,7 +21,7 @@ essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService',
            $q.all(requests).then(setCount);
 
            function setAcks(resp) {
-               angular.forEach(resp.acknowledgements, function (ack) {
+               angular.forEach(resp.acknowledgments, function (ack) {
                    acks[ack.ackDocId] = ack;
                });
            }

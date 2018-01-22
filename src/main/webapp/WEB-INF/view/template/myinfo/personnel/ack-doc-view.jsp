@@ -11,7 +11,7 @@
 
     <div class="content-info" ng-hide="state.acknowledged">
       <h3>Instructions</h3>
-      <ul class="acknowledgement-instructions">
+      <ul class="acknowledgment-instructions">
         <li>Please review the following policy/document, using the scroll bar to advance.</li>
         <li>Click "Open Printable View" to open a separate tab to print the document if desired.</li>
         <li>
@@ -30,7 +30,7 @@
 
     <div class="ack-doc-view-nav">
       <a ng-href="{{ackDocPageUrl}}">
-        Return to Acknowledgements page
+        Return to Acknowledgments page
       </a>
       <a ng-href="{{ctxPath + state.document.path}}" target="_blank">
         Open Printable View
@@ -51,7 +51,7 @@
     </div>
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
-      <p class="content-info acknowledgement-text">
+      <p class="content-info acknowledgment-text">
         I hereby acknowledge receipt of the New York State Senate
         <span ng-bind="state.document.title" class="ack-doc-title"></span>
         and state that I have read the same.  I
@@ -75,9 +75,9 @@
   </div>
   <div modal-container>
     <modal modal-id="acknowledge-success">
-      <div confirm-modal rejectable="true" title="Acknowledgement Complete"
+      <div confirm-modal rejectable="true" title="Acknowledgment Complete"
            confirm-message="You have successfully acknowledged this policy/document."
-           resolve-button="Return to Acknowledgements" resolve-class="time-neutral-button"
+           resolve-button="Return to Acknowledgments" resolve-class="time-neutral-button"
            reject-button="Remain Here" reject-class="time-neutral-button">
       </div>
     </modal>

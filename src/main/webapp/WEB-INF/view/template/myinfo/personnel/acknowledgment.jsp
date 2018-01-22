@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<section ng-controller="AcknowledgementCtrl">
+<section ng-controller="AcknowledgmentCtrl">
   <div class="my-info-hero">
-    <h2>Acknowledgements</h2>
+    <h2>Acknowledgments</h2>
   </div>
 
   <div loader-indicator class="loader" ng-show="isLoading()"></div>
@@ -11,14 +11,14 @@
 
     <ess-notification level="info" title="No Active Documents" ng-hide="anyAckDocs()">
       <p>
-        There are no active policies/documents for acknowledgement.<br>
+        There are no active policies/documents for acknowledgment.<br>
         Please contact the STS Helpline at (518) 455-2011 with any questions or concerns.
       </p>
     </ess-notification>
 
     <div ng-show="anyAckDocs()">
       <p class="content-info">
-        Listed below are Policies/Documents which require your review and acknowledgment annually.<br>
+        Listed below are policies/documents which require your review and acknowledgment annually.<br>
         Failure to respond may result in the holding of your paycheck.<br>
         Contact the Personnel Office (518-455-3376) if you have any questions.
       </p>
@@ -26,10 +26,10 @@
       <div class="ack-doc-display">
 
         <div ng-show="state.documents.unacknowledged.length > 0">
-          <h2>Pending Acknowledgements</h2>
+          <h2>Pending Acknowledgments</h2>
           <ul class="unacknowledged-doc-list">
             <li ng-repeat="doc in state.documents.unacknowledged">
-              <a ng-href="{{ctxPath}}/myinfo/personnel/acknowledgements/{{doc.id}}">
+              <a ng-href="{{ctxPath}}/myinfo/personnel/acknowledgments/{{doc.id}}">
                 <p class="ack-doc-list-item">{{doc.title}}</p>
               </a>
             </li>
@@ -37,10 +37,10 @@
         </div>
 
         <div ng-show="state.documents.acknowledged.length > 0">
-          <h2>Completed Acknowledgements</h2>
+          <h2>Completed Acknowledgments</h2>
           <ul>
             <li ng-repeat="doc in state.documents.acknowledged">
-              <a ng-href="{{ctxPath}}/myinfo/personnel/acknowledgements/{{doc.id}}">
+              <a ng-href="{{ctxPath}}/myinfo/personnel/acknowledgments/{{doc.id}}">
                 <p class="ack-doc-list-item">
                   {{doc.title}}
                   <span class="ack-doc-list-item-ack-date">

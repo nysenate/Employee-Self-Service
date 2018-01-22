@@ -5,14 +5,14 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
-import gov.nysenate.ess.core.client.view.acknowledgement.AckDocView;
-import gov.nysenate.ess.core.client.view.acknowledgement.AcknowledgementView;
-import gov.nysenate.ess.core.client.view.acknowledgement.DetailedAckDocView;
-import gov.nysenate.ess.core.dao.acknowledgement.AckDocDao;
-import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
-import gov.nysenate.ess.core.model.acknowledgement.AckDocNotFoundEx;
-import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
-import gov.nysenate.ess.core.model.acknowledgement.DuplicateAckEx;
+import gov.nysenate.ess.core.client.view.acknowledgment.AckDocView;
+import gov.nysenate.ess.core.client.view.acknowledgment.AcknowledgmentView;
+import gov.nysenate.ess.core.client.view.acknowledgment.DetailedAckDocView;
+import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
+import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
+import gov.nysenate.ess.core.model.acknowledgment.DuplicateAckEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/acknowledgement")
-public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/acknowledgment")
+public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
 
     /** The directory where ack docs are stored in the file system */
@@ -41,10 +41,10 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
     private final AckDocDao ackDocDao;
 
     @Autowired
-    public AcknowledgementApiCtrl(AckDocDao ackDocDao,
-                                  @Value("${data.dir}") String dataDir,
-                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
-                                  @Value("${resource.path}") String resPath
+    public AcknowledgmentApiCtrl(AckDocDao ackDocDao,
+                                 @Value("${data.dir}") String dataDir,
+                                 @Value("${data.ackdoc_subdir}") String ackDocSubdir,
+                                 @Value("${resource.path}") String resPath
     ) {
         this.ackDocDao = ackDocDao;
         this.ackDocDir = dataDir + ackDocSubdir;
@@ -75,38 +75,38 @@ public class AcknowledgementApiCtrl extends BaseRestApiCtrl {
 
     //GET A LIST OF ACKS
     @RequestMapping(value = "/acks", method = {GET, HEAD})
-    public ListViewResponse<AcknowledgementView> getAcknowledgements(@RequestParam int empId) {
-        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, GET));
+    public ListViewResponse<AcknowledgmentView> getAcknowledgments(@RequestParam int empId) {
+        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGMENT, GET));
 
-        List<Acknowledgement> acknowledgements = ackDocDao.getAllAcknowledgementsForEmp(empId);
+        List<Acknowledgment> acknowledgments = ackDocDao.getAllAcknowledgmentsForEmp(empId);
 
-        List<AcknowledgementView> ackViews = acknowledgements.stream()
-                .map(AcknowledgementView::new)
+        List<AcknowledgmentView> ackViews = acknowledgments.stream()
+                .map(AcknowledgmentView::new)
                 .collect(toList());
 
-        return ListViewResponse.of(ackViews, "acknowledgements");
+        return ListViewResponse.of(ackViews, "acknowledgments");
     }
 
     //POST AN ACK FROM THE USER ON AN ACK DOC
     @RequestMapping(value = "/acks", method = POST)
     public SimpleResponse acknowledgeDocument(@RequestParam int empId,
                                               @RequestParam int ackDocId) {
-        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGEMENT, POST));
+        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGMENT, POST));
 
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
         ackDocDao.getAckDoc(ackDocId);
 
         //cant ack same doc twice throw error
-        List<Acknowledgement> acknowledgements = ackDocDao.getAllAcknowledgementsForEmp(empId);
+        List<Acknowledgment> acknowledgments = ackDocDao.getAllAcknowledgmentsForEmp(empId);
 
-        for (Acknowledgement acknowledgement : acknowledgements) {
-            if (acknowledgement.getAckDocId() == ackDocId && acknowledgement.getEmpId() == empId) {
+        for (Acknowledgment acknowledgment : acknowledgments) {
+            if (acknowledgment.getAckDocId() == ackDocId && acknowledgment.getEmpId() == empId) {
                 throw new DuplicateAckEx(ackDocId);
             }
         }
 
         // Save the ack doc
-        ackDocDao.insertAcknowledgement(new Acknowledgement(empId, ackDocId, LocalDateTime.now()));
+        ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now()));
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }

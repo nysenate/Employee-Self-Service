@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.model.acknowledgement;
+package gov.nysenate.ess.core.model.acknowledgment;
 
 import java.time.LocalDateTime;
 

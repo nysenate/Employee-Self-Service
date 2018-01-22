@@ -119,16 +119,16 @@ essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, ap
     return $resource(appProps.apiPath + '/alert-info');
 }]);
 
-/** --- Acknowledgement API --- */
+/** --- Acknowledgment API --- */
 
 essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgement/documents/:ackDocId', {
+    return $resource(appProps.apiPath + '/acknowledgment/documents/:ackDocId', {
             ackDocId: '@ackDocId'
         });
 }]);
 
-essApi.factory('AcknowledgementApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgement/acks');
+essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/acknowledgment/acks');
 }]);
 
 /** --- Transaction API --- */

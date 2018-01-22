@@ -2,17 +2,17 @@
 
 angular.module('essMyInfo')
     .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', 'bowser',
-                                   'appProps', 'modals', 'AckDocApi', 'AcknowledgementApi',
-                                        acknowledgementCtrl]);
+                                   'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
+                                        acknowledgmentCtrl]);
 
-function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appProps, modals, documentApi, ackApi) {
+function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProps, modals, documentApi, ackApi) {
 
-    $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgement';
+    $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgments';
 
     var initialState = {
         docId: null,
         document: null,
-        acknowledgements: {},
+        acknowledgments: {},
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
@@ -31,8 +31,8 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appPro
         $scope.state.docId = $routeParams.ackDocId;
         $q.all([
                    getDocument(),
-                   getAcknowledgements()
-               ]).then(processAcknowledgement);
+                   getAcknowledgments()
+               ]).then(processAcknowledgment);
         console.log(bowser.name);
     }
 
@@ -51,11 +51,11 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appPro
     };
 
     /**
-     * Post an acknowledgement that the doc has been read.
+     * Post an acknowledgment that the doc has been read.
      * Reload the page if successful and prompt the user with navigation options.
      */
     $scope.acknowledgeDocument = function () {
-        postAcknowledgement()
+        postAcknowledgment()
             .then(function () {
                 $scope.updateAckBadge();
                 return modals.open('acknowledge-success');
@@ -128,10 +128,10 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appPro
     }
 
     /**
-     * Get all acknowledgements for the currently authenticated employee.
+     * Get all acknowledgments for the currently authenticated employee.
      */
-    function getAcknowledgements() {
-        $scope.state.acknowledgements = {};
+    function getAcknowledgments() {
+        $scope.state.acknowledgments = {};
 
         var params = {
             empId: appProps.user.employeeId
@@ -144,13 +144,13 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appPro
             });
 
         function onSuccess(resp) {
-            angular.forEach(resp.acknowledgements, function (ack) {
-                $scope.state.acknowledgements[ack.ackDocId] = ack;
+            angular.forEach(resp.acknowledgments, function (ack) {
+                $scope.state.acknowledgments[ack.ackDocId] = ack;
             });
         }
     }
 
-    function postAcknowledgement() {
+    function postAcknowledgment() {
         var params = {
             empId: appProps.user.employeeId,
             ackDocId: $scope.state.document.id
@@ -164,13 +164,13 @@ function acknowledgementCtrl($scope, $routeParams, $q, $location, bowser, appPro
     }
 
     /**
-     * Determine whether the document was acknowledged based on received acknowledgements
+     * Determine whether the document was acknowledged based on received acknowledgments
      */
-    function processAcknowledgement() {
-        var acknowledgements = $scope.state.acknowledgements;
+    function processAcknowledgment() {
+        var acknowledgments = $scope.state.acknowledgments;
         var docId = $scope.state.document.id;
-        if (acknowledgements.hasOwnProperty(docId)) {
-            var ack = acknowledgements[docId];
+        if (acknowledgments.hasOwnProperty(docId)) {
+            var ack = acknowledgments[docId];
             $scope.state.ackTimestamp = ack.timestamp;
             $scope.state.acknowledged = true
         } else {

@@ -1,22 +1,22 @@
-package gov.nysenate.ess.core.client.view.acknowledgement;
+package gov.nysenate.ess.core.client.view.acknowledgment;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.acknowledgement.Acknowledgement;
+import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
 @XmlRootElement
-public class AcknowledgementView implements ViewObject {
+public class AcknowledgmentView implements ViewObject {
 
     private Integer empId;
     private Integer ackDocId;
     private LocalDateTime timestamp;
 
-    protected AcknowledgementView() {}
+    protected AcknowledgmentView() {}
 
-    public AcknowledgementView(Acknowledgement ack) {
+    public AcknowledgmentView(Acknowledgment ack) {
         this.empId = ack.getEmpId();
         this.ackDocId = ack.getAckDocId();
         this.timestamp = ack.getTimestamp();
@@ -40,6 +40,6 @@ public class AcknowledgementView implements ViewObject {
     @Override
     @XmlElement
     public String getViewType() {
-        return "acknowledgement";
+        return "acknowledgment";
     }
 }

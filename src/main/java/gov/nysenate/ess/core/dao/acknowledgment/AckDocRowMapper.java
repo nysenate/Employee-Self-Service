@@ -1,12 +1,10 @@
-package gov.nysenate.ess.core.dao.acknowledgement;
+package gov.nysenate.ess.core.dao.acknowledgment;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
-import gov.nysenate.ess.core.model.acknowledgement.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class AckDocRowMapper extends BaseRowMapper<AckDoc> {
 
