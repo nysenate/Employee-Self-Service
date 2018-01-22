@@ -18,11 +18,11 @@ public class LodgingAllowance {
     private final ImmutableSet<LodgingNight> nights;
 
     public LodgingAllowance() {
-        nights = ImmutableSet.of();
+        this(ImmutableSet.of());
     }
 
     public LodgingAllowance(Set<LodgingNight> nights) {
-        this.nights = ImmutableSet.copyOf(nights);
+        this(ImmutableSet.copyOf(nights));
     }
 
     public LodgingAllowance(ImmutableSet<LodgingNight> nights) {

@@ -79,11 +79,11 @@ public class InMemoryTravelApplicationDao {
     }
 
     private Itinerary itinerary() {
-        List<TravelDestination> tds = new ArrayList<>();
         LocalDate arrival = LocalDate.now().minusDays(10).plusDays((int)randomWithRange(0, 30));
-        tds.add(new TravelDestination(arrival, arrival.plusDays((int)randomWithRange(1, 5)),
-                new Address("100 Washington Ave", "Albany", "NY", "12222"), ModeOfTransportation.PERSONAL_AUTO, false));
-        return new Itinerary(new Address("88 Central Ave", "Albany", "NY", "12222"), tds);
+        TravelDestination dest = new TravelDestination(arrival, arrival.plusDays((int)randomWithRange(1, 5)),
+                new Address("100 Washington Ave", "Albany", "NY", "12222"));
+        return new Itinerary(new Address("88 Central Ave", "Albany", "NY", "12222"))
+                .addDestination(dest, new TravelDestinationOptions(ModeOfTransportation.PERSONAL_AUTO));
     }
 
     private TravelAllowances randomAllowances() {

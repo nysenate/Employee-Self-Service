@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.unit.application;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -29,8 +30,10 @@ public class TravelApplicationTest {
                 new LodgingAllowance(), new MileageAllowance(new BigDecimal("0")), "0", "0", "0", "0");
 
         Address address = new Address("101 Washington Ave", "Albany", "NY", "12210");
-        Itinerary itinerary = new Itinerary(address, Lists.newArrayList(new TravelDestination(
-                LocalDate.now(), LocalDate.now(), address, ModeOfTransportation.PERSONAL_AUTO)));
+        Itinerary itinerary = new Itinerary(address);
+        itinerary = itinerary.addDestination(
+                new TravelDestination(LocalDate.now(), LocalDate.now(), address),
+                new TravelDestinationOptions(ModeOfTransportation.PERSONAL_AUTO));
 
         builder = TravelApplication.Builder()
                 .setTraveler(emp)

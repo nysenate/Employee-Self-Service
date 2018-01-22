@@ -14,8 +14,6 @@ public class TravelDestinationView implements ViewObject {
     private String arrivalDate;
     private String departureDate;
     private AddressView address;
-    private String modeOfTransportation;
-    private boolean isWaypoint;
 
     private TravelDestinationView() {
     }
@@ -24,13 +22,11 @@ public class TravelDestinationView implements ViewObject {
         this.arrivalDate = td.getArrivalDate().format(ISO_DATE);
         this.departureDate = td.getDepartureDate().format(ISO_DATE);
         this.address = new AddressView(td.getAddress());
-        this.modeOfTransportation = td.getModeOfTransportation().getDisplayName();
-        this.isWaypoint = td.isWaypoint();
     }
 
     public TravelDestination toTravelDestination() {
-        return new TravelDestination(LocalDate.parse(arrivalDate, ISO_DATE), LocalDate.parse(departureDate, ISO_DATE),
-                address.toAddress(), ModeOfTransportation.of(modeOfTransportation), isWaypoint);
+        return new TravelDestination(LocalDate.parse(arrivalDate, ISO_DATE),
+                LocalDate.parse(departureDate, ISO_DATE), address.toAddress());
     }
 
     public String getArrivalDate() {
@@ -43,14 +39,6 @@ public class TravelDestinationView implements ViewObject {
 
     public AddressView getAddress() {
         return address;
-    }
-
-    public String getModeOfTransportation() {
-        return modeOfTransportation;
-    }
-
-    public boolean isWaypoint() {
-        return isWaypoint;
     }
 
     @Override

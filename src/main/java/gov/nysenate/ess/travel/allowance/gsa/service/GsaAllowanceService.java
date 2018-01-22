@@ -30,7 +30,7 @@ public class GsaAllowanceService {
      */
     public LodgingAllowance calculateLodging(Itinerary itinerary) throws IOException {
         LodgingAllowance lodgingAllowance = new LodgingAllowance();
-        for (TravelDestination destination: itinerary.getDestinations()) {
+        for (TravelDestination destination: itinerary.getLodgingRequestedDestinations()) {
             lodgingAllowance = lodgingAllowance.add(lodgingForDestination(destination));
         }
         return lodgingAllowance;
@@ -57,7 +57,7 @@ public class GsaAllowanceService {
      */
     public MealAllowance calculateMealAllowance(Itinerary itinerary) throws IOException {
         MealAllowance allowance = new MealAllowance();
-        for (TravelDestination destination: itinerary.getDestinations()) {
+        for (TravelDestination destination: itinerary.getMealsRequestedDestinations()) {
             allowance = allowance.add(mealsForDestination(destination));
         }
         return allowance;

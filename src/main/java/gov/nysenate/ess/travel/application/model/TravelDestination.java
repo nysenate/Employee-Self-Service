@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.unit.Address;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,24 +14,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a single destination in a travel request.
- * Each destination requires an address, arrival, and departure time
- * to be used in GSA meal and lodging allowance calculations.
  */
 public final class TravelDestination {
 
     private final LocalDate arrivalDate;
     private final LocalDate departureDate;
     private final Address address;
-    private final ModeOfTransportation modeOfTransportation;
-    private final boolean isWaypoint;
 
-    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate, Address address,
-                             ModeOfTransportation modeOfTransportation) {
-        this(arrivalDate, departureDate, address, modeOfTransportation, false);
-    }
-
-    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate, Address address,
-                             ModeOfTransportation modeOfTransportation, boolean isWaypoint) {
+    public TravelDestination(LocalDate arrivalDate, LocalDate departureDate, Address address) {
         checkNotNull(arrivalDate);
         checkNotNull(departureDate);
         checkNotNull(address);
@@ -39,8 +30,6 @@ public final class TravelDestination {
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.address = address;
-        this.modeOfTransportation = modeOfTransportation;
-        this.isWaypoint = isWaypoint;
     }
 
     /**
@@ -75,11 +64,27 @@ public final class TravelDestination {
         return address;
     }
 
-    public ModeOfTransportation getModeOfTransportation() {
-        return modeOfTransportation;
+    @Override
+    public String toString() {
+        return "TravelDestination{" +
+                "arrivalDate=" + arrivalDate +
+                ", departureDate=" + departureDate +
+                ", address=" + address +
+                '}';
     }
 
-    public boolean isWaypoint() {
-        return isWaypoint;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TravelDestination that = (TravelDestination) o;
+        return Objects.equals(arrivalDate, that.arrivalDate) &&
+                Objects.equals(departureDate, that.departureDate) &&
+                Objects.equals(address, that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arrivalDate, departureDate, address);
     }
 }
