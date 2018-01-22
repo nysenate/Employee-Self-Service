@@ -3086,6 +3086,10 @@ button.ui-button::-moz-focus-inner {
   }
 }
 /** --- Badge Directive --- */
+badge,
+[badge] {
+  cursor: default;
+}
 .badge {
   background: #006B80;
   padding: 5px;
@@ -3428,6 +3432,66 @@ button.ui-button::-moz-focus-inner {
 }
 #alert-info-page .alert-info-form h3 {
   text-align: center;
+}
+/** --- Acknowledgement Page --- */
+.ack-doc-display {
+  width: 40em;
+  margin: auto;
+  padding-bottom: 1em;
+}
+.ack-doc-display h2 {
+  margin-top: 30px;
+}
+.unacknowledged-doc-list .ack-doc-list-item {
+  font-weight: bold;
+}
+.ack-doc-list-item:hover {
+  background: #fafafa;
+}
+.ack-doc-list-item-ack-date {
+  color: rgba(34, 34, 34, 0.5);
+}
+.acknowledgement-instructions {
+  text-align: left;
+}
+.ack-doc-container {
+  padding-bottom: 10px;
+}
+#ack-doc-embed-container {
+  position: relative;
+  width: 840px;
+  height: 500px;
+  margin: 10px 20px;
+  overflow-y: auto;
+  border: 2px inset;
+}
+#ack-doc-scroll-cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.01);
+}
+.ack-doc-embed {
+  width: 100%;
+}
+.ack-doc-button-container {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.ack-doc-button-container .acknowledgement-text {
+  padding-left: 3em;
+  padding-right: 3em;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.ack-doc-button-container .acknowledgement-text .ack-doc-title {
+  font-weight: bold;
+}
+.ack-doc-view-nav {
+  margin: 10px 20px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 /** --- Paycheck History Page --- */
 @media print {
