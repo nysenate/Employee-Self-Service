@@ -90,6 +90,17 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
         return bowser.chrome;
     };
 
+    /**
+     * Returns true if the embedded pdf document should be hidden.
+     *
+     * This is intended for IE, where embedded pdfs are always in front of all other elements,
+     * causing the pdf to block modal windows.
+     * This function will return true if a modal is open and the user is using IE.
+     */
+    $scope.hideEmbed = function () {
+        return bowser.msie && modals.isOpen();
+    };
+
     /* --- Request Methods --- */
 
     /**

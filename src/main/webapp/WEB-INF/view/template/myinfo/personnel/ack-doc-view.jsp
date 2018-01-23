@@ -14,12 +14,13 @@
       <ul class="acknowledgment-instructions">
         <li>
           Please review the following policy/document, using the scroll bar to advance.
-       </li>
+        </li>
         <li>
           If desired, click "Open Printable View" to open a separate tab to print the document.
         </li>
         <li>
-          After reviewing the entire document, read the acknowledgment at the bottom of the screen and indicate your agreement by clicking the "I Agree" button.
+          After reviewing the entire document, read the acknowledgment at the bottom of the screen
+          and indicate your agreement by clicking the "I Agree" button.
         </li>
         <li class="bold-text">
           You must scroll to the end of the document for the "I Agree" button to become available.
@@ -40,14 +41,17 @@
     </div>
 
     <div id="ack-doc-embed-container" on-scroll-to-bottom="markDocRead()">
+      <!-- Some browsers require an overlay
+           or else they cannot mouse wheel scroll the container while hovering the embedded pdf -->
       <div id="ack-doc-scroll-cover" ng-if="useOverlay()" ng-style="{'height': state.docHeight + 'px' }"></div>
-      <!-- Use an frame tag for edge.  Edge doesn't support iframes, but embed works better on other browsers -->
+
+      <!-- Use an iframe tag for certain browsers that need it.  Others perform better with embed -->
       <iframe class="ack-doc-embed" ng-style="{'height': state.docHeight + 'px' }"
               ng-if="useIframe()"
               src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
       </iframe>
       <embed class="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
-             ng-if="!useIframe()"
+             ng-if="!useIframe()" ng-hide="hideEmbed()"
              src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
       </embed>
     </div>
