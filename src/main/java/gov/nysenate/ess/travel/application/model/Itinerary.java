@@ -75,7 +75,7 @@ public final class Itinerary {
 
 
     /**
-     * @return A set of all {@link TravelDestination}'s where the traveler
+     * @return A set of {@link TravelDestination}'s where the traveler
      * has requested lodging reimbursement.
      */
     public Set<TravelDestination> getLodgingRequestedDestinations() {
@@ -85,11 +85,22 @@ public final class Itinerary {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * @return A set of {@link TravelDestination}'s where the traveler has
+     * requested meal reimbursement.
+     */
     public Set<TravelDestination> getMealsRequestedDestinations() {
         return destinationsToOptions.entrySet().stream()
                 .filter(m -> m.getValue().isRequestMeals())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * @return A list of all destinations.
+     */
+    public List<TravelDestination> getDestinations() {
+        return destinationsToOptions.keySet().asList();
     }
 
     /**
@@ -106,7 +117,6 @@ public final class Itinerary {
 
     /**
      * The planned end date of the trip.
-     * @return
      */
     public LocalDate endDate() {
        return lastDestination().getDepartureDate();
@@ -124,6 +134,12 @@ public final class Itinerary {
         return origin;
     }
 
+    /**
+     * Get destinations to options map.
+     */
+    public ImmutableMap<TravelDestination, TravelDestinationOptions> getDestinationsToOptions() {
+        return destinationsToOptions;
+    }
 
     @Override
     public String toString() {
@@ -146,10 +162,4 @@ public final class Itinerary {
     public int hashCode() {
         return Objects.hash(origin, destinationsToOptions);
     }
-
-    // TODO;
-    public List<TravelDestination> getDestinations() {
-        return null;
-    }
-
 }

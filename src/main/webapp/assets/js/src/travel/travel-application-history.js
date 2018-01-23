@@ -34,6 +34,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     function parseResponse(resp) {
         result = resp.result;
         for (var i = 0; i < result.length; i++) {
+            console.log(result[i]);
             completeTravelHistory.push(result[i]);
         }
     }

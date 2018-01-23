@@ -8,6 +8,9 @@ public class LegView implements ViewObject {
     private AddressView from;
     private AddressView to;
 
+    public LegView() {
+    }
+
     public LegView(Leg leg) {
         this.from = new AddressView(leg.getFrom());
         this.to = new AddressView(leg.getTo());

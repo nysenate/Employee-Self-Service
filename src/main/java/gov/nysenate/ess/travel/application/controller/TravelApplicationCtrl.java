@@ -40,7 +40,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .setTraveler(employeeInfoService.getEmployee(newTravelApp.getTravelerEmpId()))
                 .setCreatedBy(employeeInfoService.getEmployee(ShiroUtils.getAuthenticatedEmpId()))
                 .setCreatedDateTime(LocalDateTime.now())
-                .setModifiedBy(employeeInfoService.getEmployee(newTravelApp.getTravelerEmpId()))
+                .setModifiedBy(employeeInfoService.getEmployee(ShiroUtils.getAuthenticatedEmpId()))
                 .setModifiedDateTime(LocalDateTime.now())
                 .setStatus(TravelApplicationStatus.SUBMITTED)
                 .build();

@@ -14,9 +14,10 @@ function travelAppController($scope, $q, appProps, modals, locationService,
         CANCEL: 5, // Cancel the entire application.
         BACK: 10, // Go back to previous step of application.
         NEXT: 15, // Go to next step of application
-        EDIT: 20 // Edit the field selected. Used in review page, activates page corresponding to the field to be edited.
+        EDIT: 20 // Edit the field selected. Used in review page, activates the page corresponding to the field to be edited.
     };
 
+    // Each state represents a different step of the application.
     $scope.STATES = {
         PURPOSE: 5,
         ORIGIN: 10,
@@ -28,17 +29,14 @@ function travelAppController($scope, $q, appProps, modals, locationService,
 
     $scope.pageState = undefined; // Controls which page is displayed to the user, must be one of $scope.STATES, but should not be EDIT.
     $scope.app = {
-        // The state of the application, i.e. what page we are on.
-        // Unless returning to a page for editing, then appState = EDIT.
+        // The state of the application, usually the same as $scope.pageState, unless returning to a page for editing
+        // in that case appState == EDIT and pageState == the page who's data is being edited.
         appState: undefined,
-        traveler: undefined,
+        travelerEmpId: undefined,
         allowances: {
-            gsa: {
-                meals: 0,
-                lodging: 0,
-                incidental: 0
-            },
-            mileage: 0,
+            meals: {},
+            lodging: {},
+            mileage: {},
             tolls: 0,
             parking: 0,
             alternate: 0,
@@ -56,7 +54,7 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;
         $scope.app.appState = $scope.STATES.PURPOSE;
-        $scope.app.traveler = appProps.user;
+        $scope.app.travelerEmpId = appProps.user.employeeId;
     }
 
     init();
@@ -177,11 +175,13 @@ function travelAppController($scope, $q, appProps, modals, locationService,
 
     /**
      * @param action
-     * @param editField (optional) The field/page the user has requested to edit.
+     * @param editField (optional) The field/page the user has requested to edit. Must be one of $scope.STATES.
      */
     $scope.reviewCallback = function (action, editField) {
         if (action === $scope.ACTIONS.NEXT) {
-            // Submit?
+            travelApplicationApi.save({}, $scope.app, function (response) {
+                console.log(response);
+            })
         }
         updateStates(action, editField);
     };
@@ -192,8 +192,9 @@ function travelAppController($scope, $q, appProps, modals, locationService,
  *
  * Page Directives should not directly modify model data in the parent controller.
  * They make copies of any data that the page will support editing of,
- * and any edits can be saved through the directives own callback method in the parent controller.
+ * and modifications can be saved later through the directives callback method in the parent controller.
  *
+ * Copying model data ensures that modifications are not made until the user clicks the 'Next' or 'Save' buttons.
  */
 
 essTravel.directive('travelApplicationPurpose', ['appProps', function (appProps) {
@@ -228,7 +229,7 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-destination',
         scope: true,
         link: function ($scope, $elem, $attrs) {
-            // Copy current destinations for use in this directive. So old values are not overwritten on cancel.
+            // Copy current destinations for use in this directive.
             $scope.destinations = angular.copy($scope.app.itinerary.destinations.items);
 
             $scope.editDestination = function (dest) {
@@ -252,6 +253,7 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
                     defaultModeOfTransportation: undefined
                 };
                 if ($scope.destinations.length > 0) {
+                    // Use ModeOfTransportation from previous destination if exists.
                     params.defaultModeOfTransportation = $scope.destinations[$scope.destinations.length - 1].modeOfTransportation
                 }
                 modals.open('destination-selection-modal', params)
@@ -273,19 +275,25 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
             $scope.destinations = angular.copy($scope.app.itinerary.destinations.items);
             // Initialize default reimbursement selections.
             $scope.destinations.forEach(function (dest) {
-                // Mileage
-                if (dest.modeOfTransportation === 'Personal Auto') {
-                    dest.requestMileage = true;
+                if (dest.requestMileage === undefined) {
+                    // Init Mileage
+                    if (dest.modeOfTransportation === 'Personal Auto') {
+                        dest.requestMileage = true;
+                    }
                 }
 
-                // Meals
-                dest.requestMeals = true;
+                if (dest.requestMeals === undefined) {
+                    // Init Meals
+                    dest.requestMeals = true;
+                }
 
-                // Lodging
-                var arrival = moment(dest.arrivalDate);
-                var departure = moment(dest.departureDate);
-                if (Math.abs(arrival.diff(departure, 'days')) > 0) {
-                    dest.requestLodging = true;
+                if (dest.requestLodging === undefined) {
+                    // Init Lodging
+                    var arrival = moment(dest.arrivalDate);
+                    var departure = moment(dest.departureDate);
+                    if (Math.abs(arrival.diff(departure, 'days')) > 0) {
+                        dest.requestLodging = true;
+                    }
                 }
             });
         }

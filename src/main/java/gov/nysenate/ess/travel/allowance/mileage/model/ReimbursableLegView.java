@@ -9,6 +9,9 @@ public class ReimbursableLegView implements ViewObject {
     private LegView leg;
     private String distance;
 
+    public ReimbursableLegView() {
+    }
+
     public ReimbursableLegView(ReimbursableLeg leg) {
         this.leg = new LegView(leg.getLeg());
         this.distance = leg.getDistance().toString();
