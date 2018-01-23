@@ -12,17 +12,19 @@
     <div class="content-info" ng-hide="state.acknowledged">
       <h3>Instructions</h3>
       <ul class="acknowledgment-instructions">
-        <li>Please review the following policy/document, using the scroll bar to advance.</li>
-        <li>Click "Open Printable View" to open a separate tab to print the document if desired.</li>
         <li>
-          After reviewing the entire document, read the acknowledgment at the bottom of the screen
-          and indicate your agreement by clicking the "I Agree" button.
+          Please review the following policy/document, using the scroll bar to advance.
+       </li>
+        <li>
+          If desired, click "Open Printable View" to open a separate tab to print the document.
+        </li>
+        <li>
+          After reviewing the entire document, read the acknowledgment at the bottom of the screen and indicate your agreement by clicking the "I Agree" button.
         </li>
         <li class="bold-text">
-          You must read the entire document for the "I Agree" button to become available.
+          You must scroll to the end of the document for the "I Agree" button to become available.
         </li>
       </ul>
-
     </div>
     <p class="content-info" ng-show="state.acknowledged">
       You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
