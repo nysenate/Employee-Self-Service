@@ -33,7 +33,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
                    getDocument(),
                    getAcknowledgments()
                ]).then(processAcknowledgment);
-        console.log(bowser.name);
     }
 
     /* --- Display methods --- */
@@ -184,8 +183,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
         var heightFactor = document.totalHeight / document.maxWidth;
         var pages = $scope.state.document.pageCount;
         $scope.state.docHeight = width * heightFactor;
-
-        console.log('pages', pages, 'hf', heightFactor);
     }
 
     init();

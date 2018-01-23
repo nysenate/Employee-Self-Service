@@ -37,7 +37,6 @@ essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService',
                        count++;
                    }
                });
-               console.log('heyo', count);
                badgeService.setBadgeValue('unacknowledgedDocuments', count);
            }
        };

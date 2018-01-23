@@ -73,7 +73,6 @@ function acknowledgmentCtrl($scope, $q, appProps, modals, documentApi, ackApi) {
         $scope.state.documents.unsorted = [];
 
         $scope.state.request.documents = true;
-        console.log('hi');
         return documentApi.get({}, onSuccess, $scope.handleErrorResponse)
             .$promise.finally(function () {
                 $scope.state.request.documents = false;
