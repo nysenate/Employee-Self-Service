@@ -4,6 +4,8 @@ import gov.nysenate.ess.travel.allowance.gsa.dao.MealRatesDao;
 import gov.nysenate.ess.travel.allowance.gsa.model.*;
 import gov.nysenate.ess.travel.application.model.Itinerary;
 import gov.nysenate.ess.travel.application.model.TravelDestination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import java.time.LocalDate;
 
 @Service
 public class GsaAllowanceService {
+
+    private static final Logger logger = LoggerFactory.getLogger(GsaAllowanceService.class);
 
     private GsaClient client;
     private MealRatesDao mealRatesDao;
