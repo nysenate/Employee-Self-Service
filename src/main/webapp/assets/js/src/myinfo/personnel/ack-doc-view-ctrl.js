@@ -50,11 +50,17 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
     };
 
     /**
-     * Post an acknowledgment that the doc has been read.
-     * Reload the page if successful and prompt the user with navigation options.
+     * Initiate the acknowledgement process: (each event requires the previous to occur successfully)
+     * - Display the acknowledge prompt
+     * - Post an acknowledgment that the doc has been read if selected.
+     * - Reload the page if successful and prompt the user with navigation options.
+     * - Go back to the acknowledgements page if the user clicked the return button
      */
     $scope.acknowledgeDocument = function () {
-        postAcknowledgment()
+        modals.open('acknowledge-prompt')
+            .then(function () {
+                return postAcknowledgment()
+            })
             .then(function () {
                 $scope.updateAckBadge();
                 return modals.open('acknowledge-success');

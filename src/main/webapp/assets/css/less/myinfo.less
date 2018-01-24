@@ -153,18 +153,35 @@
 
 .ack-doc-button-container {
   text-align: center;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
+  padding-top: 10px;
 
-  .acknowledgment-text {
-    padding-left: 3em;
-    padding-right: 3em;
-    margin-bottom: 20px;
+  border-top: 1px solid fade(@teal, 25%);
+  border-bottom: 1px solid fade(@teal, 25%);
 
-    text-align: left;
+  .acknowledge-button {
+    position: relative;
+  }
 
-    .ack-doc-title {
-      font-weight: bold;
-    }
+  .acknowledge-button.disabled::after {
+    content: "You must scroll to the end to acknowledge";
+
+    position: absolute;
+    top: 0;
+    right: -23em;
+    color: indianred;
+    font-weight: bold;
+  }
+}
+
+.acknowledgment-text {
+  padding: 0 2em 20px;
+  margin-bottom: 20px;
+
+  text-align: left !important;
+
+  .ack-doc-title {
+    font-weight: bold;
   }
 }
 

@@ -9,24 +9,10 @@
 
   <div class="content-container ack-doc-container" ng-if="!isLoading()">
 
-    <div class="content-info" ng-hide="state.acknowledged">
-      <h3>Instructions</h3>
-      <ul class="acknowledgment-instructions">
-        <li>
-          Please review the following policy/document, using the scroll bar to advance.
-        </li>
-        <li>
-          If desired, click "Open Printable View" to open a separate tab to print the document.
-        </li>
-        <li>
-          After reviewing the entire document, read the acknowledgment at the bottom of the screen
-          and indicate your agreement by clicking the "I Agree" button.
-        </li>
-        <li class="bold-text">
-          You must scroll to the end of the document for the "I Agree" button to become available.
-        </li>
-      </ul>
-    </div>
+    <p class="content-info" ng-hide="state.acknowledged">
+      Please review this policy/document and click the button to acknowledge. <br>
+      <span class="bold-text">You must scroll to the end for the button to become available.</span>
+    </p>
     <p class="content-info" ng-show="state.acknowledged">
       You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
     </p>
@@ -57,29 +43,37 @@
     </div>
 
     <div class="ack-doc-button-container" ng-hide="state.acknowledged">
-      <p class="content-info acknowledgment-text">
-        I hereby acknowledge receipt of the New York State Senate
-        <span ng-bind="state.document.title" class="ack-doc-title"></span>
-        and state that I have read the same.  I
-        understand that compliance is a condition of employment and that violation
-        of any policy could subject me to penalties including, but not limited to,
-        loss of privileges to use Senate technologies, demotion, suspension or
-        termination.<br>
-        <br>
-        In addition for purposes of submitting this acknowledgment, the username
-        and password is the electronic signature of the employee. As liability
-        attaches, the employee should ensure that his or her username and password
-        is securely kept and used.
-      </p>
-      <input type="button" class="submit-button"
-             title="{{state.docRead ? 'I Agree' : 'You must read the entire document to agree'}}"
-             value="I Agree"
-             ng-disabled="!state.docRead"
-             ng-click="acknowledgeDocument()">
+      <span class="acknowledge-button" ng-class="{'disabled': !state.docRead}">
+        <input type="button" class="submit-button"
+               title="{{state.docRead ? 'Acknowledge' : 'You must read the entire document to acknowledge'}}"
+               value="Acknowledge"
+               ng-disabled="!state.docRead"
+               ng-click="acknowledgeDocument()">
+      </span>
     </div>
 
   </div>
   <div modal-container>
+    <modal modal-id="acknowledge-prompt">
+      <div confirm-modal rejectable="true" title="Acknowledge Policy/Document"
+           resolve-button="I Agree"
+           reject-button="Go Back" reject-class="time-neutral-button">
+        <p class="content-info acknowledgment-text">
+          I hereby acknowledge receipt of the New York State Senate
+          <span ng-bind="state.document.title" class="ack-doc-title"></span>
+          and state that I have read the same.  I
+          understand that compliance is a condition of employment and that violation
+          of any policy could subject me to penalties including, but not limited to,
+          loss of privileges to use Senate technologies, demotion, suspension or
+          termination.<br>
+          <br>
+          In addition for purposes of submitting this acknowledgment, the username
+          and password is the electronic signature of the employee. As liability
+          attaches, the employee should ensure that his or her username and password
+          is securely kept and used.
+        </p>
+      </div>
+    </modal>
     <modal modal-id="acknowledge-success">
       <div confirm-modal rejectable="true" title="Acknowledgment Complete"
            confirm-message="You have successfully acknowledged this policy/document."
