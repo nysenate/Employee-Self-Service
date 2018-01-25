@@ -164,11 +164,11 @@
     <table class="ess-table supply-listing-table" ng-show="approvedSearch.matches.length > 0">
       <thead>
       <tr>
+        <th></th>
         <th>Id</th>
         <th>Location</th>
         <th>Employee</th>
         <th>Item Count</th>
-        <th>Order Date</th>
         <th>Approved Date</th>
         <th>Issuing Employee</th>
         <th>Sync Status</th>
@@ -176,11 +176,11 @@
       </thead>
       <tbody>
       <tr ng-repeat="requisition in approvedSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
+        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
         <td>{{distinctItemQuantity(requisition)}}</td>
-        <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
         <td><span class="tick" ng-show="requisition.lastSfmsSyncDateTime && requisition.savedInSfms"></span><span class="cross"  ng-show="requisition.lastSfmsSyncDateTime && !requisition.savedInSfms"></span></td>

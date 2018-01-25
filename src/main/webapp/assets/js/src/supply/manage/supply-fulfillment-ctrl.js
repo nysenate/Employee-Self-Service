@@ -169,12 +169,22 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         return $scope.approvedSearch.response.$promise
             .then(function (response) {
                 $scope.approvedSearch.matches = response.result;
+                sortRequisitionsByIdDesc($scope.approvedSearch.matches);
                 $scope.approvedSearch.error = false;
             })
             .catch(function (errorResponse) {
                 modals.open('500', {details: errorResponse});
                 console.error(errorResponse);
             });
+    }
+
+    function sortRequisitionsByIdDesc(reqs) {
+        reqs.sort(function(a, b){
+            if (a.requisitionId < b.requisitionId) return 1;
+            if (a.requisitionId > b.requisitionId) return -1;
+            return 0;
+        });
+        return reqs;
     }
 
     /** Get all sync failures prior to today. */
