@@ -123,7 +123,9 @@ function supplyItemHistoryCtrl($scope, $q, supplyUtils, requisitionApi, location
                }
            })
         });
-        $scope.result.array = Array.from($scope.result.map.values());
+        $scope.result.map.forEach(function(value, key) {
+            $scope.result.array.push(value);
+        });
     };
 
     function isItemSelectedInFilter(lineItem) {
