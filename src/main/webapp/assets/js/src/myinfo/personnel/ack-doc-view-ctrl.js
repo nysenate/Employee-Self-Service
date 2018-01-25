@@ -1,13 +1,17 @@
 (function () {
 
 angular.module('essMyInfo')
-    .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', 'bowser',
+    .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce', 'bowser',
                                    'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
                                         acknowledgmentCtrl]);
 
-function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProps, modals, documentApi, ackApi) {
+function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce, bowser,
+                            appProps, modals, documentApi, ackApi) {
 
     $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgments';
+
+    /** Flag indicating that the window scroll handler was bound */
+    var windowScrollBound = false;
 
     var initialState = {
         docId: null,
@@ -27,6 +31,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
     };
 
     function init() {
+        bindWindowScrollHandler();
         $scope.state = angular.copy(initialState);
         $scope.state.docId = $routeParams.ackDocId;
         $q.all([
@@ -71,13 +76,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
     };
 
     /**
-     * Sets docRead to true to indicate that the document has been read
-     */
-    $scope.markDocRead = function () {
-        $scope.state.docRead = true;
-    };
-
-    /**
      * Indicates if an iframe should be used instead of embed tag
      * Some browsers do not support embed, while others work better with embed vs iframe.
      * @return {*}
@@ -107,6 +105,13 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
         return bowser.msie && modals.isOpen();
     };
 
+    $scope.getDocUrl = function () {
+        var baseUrl = $scope.ctxPath + $scope.state.document.path;
+        var adobeArgs = '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0';
+        var url = baseUrl + adobeArgs;
+        return $sce.trustAsResourceUrl(url);
+    };
+
     /* --- Request Methods --- */
 
     /**
@@ -130,6 +135,8 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
             $scope.state.docFound = true;
             $scope.state.docRead = false;
             setDocEmbedHeight();
+            // Potentially set the doc as read if the doc happens to fit in the window
+            $timeout(checkIfDocRead, 500);
         }
 
         function onFail(resp) {
@@ -194,12 +201,54 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, bowser, appProp
         }
     }
 
+    /**
+     * Set the height of the embedded document
+     */
     function setDocEmbedHeight() {
         var document = $scope.state.document;
         var width = 840;
         var heightFactor = document.totalHeight / document.maxWidth;
-        var pages = $scope.state.document.pageCount;
         $scope.state.docHeight = width * heightFactor;
+    }
+
+    /**
+     * Bind an event handler to detect when the window has scrolled to the bottom.
+     * Also bind a $destroy handler to remove the bind when this controller is done.
+     */
+    function bindWindowScrollHandler() {
+        if (windowScrollBound) {
+            return;
+        }
+        angular.element($window).on('scroll', checkIfDocRead);
+        $scope.$on('$destroy', function () {
+            angular.element($window).off('scroll', checkIfDocRead);
+        })
+    }
+
+    /**
+     * Checks the window scroll to see if the bottom is in view.
+     *
+     * Sets docRead = true if the window is scrolled all the way down.
+     */
+    function checkIfDocRead () {
+        if (windowAtBottom()) {
+            console.log('Window is scrolled');
+            $scope.state.docRead = true;
+            $scope.$apply();
+        }
+    }
+
+    /**
+     * Returns true if the browser window is scrolled to the bottom
+     */
+    function windowAtBottom () {
+        var windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+        var body = document.body, html = document.documentElement;
+        var docHeight = Math.max(body.scrollHeight, body.offsetHeight,
+                                 html.clientHeight,  html.scrollHeight, html.offsetHeight);
+        var windowBottom = windowHeight + window.pageYOffset;
+
+        return windowBottom >= docHeight;
     }
 
     init();

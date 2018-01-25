@@ -133,14 +133,13 @@
 
 .ack-doc-container {
   padding-bottom: 10px;
+  margin-bottom: 65px;
 }
 
 #ack-doc-embed-container {
   position: relative;
   width: 840px;
-  height: 500px;
   margin: 10px 20px;
-  overflow-y: auto;
   border: 2px inset;
 }
 
@@ -148,20 +147,44 @@
   position: absolute;
   width: 100%;
   height: 100%;
+  z-index: 2;
   background: rgba(0, 0, 0, 0.01);
 }
 
 .ack-doc-embed {
   width: 100%;
+  z-index: 1;
+  position: relative;
+}
+
+.iframe-cover {
+  border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+}
+
+.ack-doc-button-frame {
+  position: fixed;
+  bottom: 0;
+  width: 880px;
+  z-index: 3;
+
+  .iframe-cover {
+    top: 20px;
+  }
 }
 
 .ack-doc-button-container {
   text-align: center;
-  padding-bottom: 10px;
-  padding-top: 10px;
+  padding-bottom: 30px;
+  padding-top: 30px;
 
-  border-top: 1px solid fade(@teal, 25%);
-  border-bottom: 1px solid fade(@teal, 25%);
+  border: 3px solid @green;
+  border-bottom: 0;
 
   .acknowledge-button {
     position: relative;

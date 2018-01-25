@@ -11,7 +11,7 @@
 
     <p class="content-info" ng-hide="state.acknowledged">
       Please review this policy/document and click the button to acknowledge. <br>
-      <span class="bold-text">You must scroll to the end for the button to become available.</span>
+      <span class="bold-text">You must scroll to the end of the page for the button to become available.</span>
     </p>
     <p class="content-info" ng-show="state.acknowledged">
       You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
@@ -26,7 +26,7 @@
       </a>
     </div>
 
-    <div id="ack-doc-embed-container" on-scroll-to-bottom="markDocRead()">
+    <div id="ack-doc-embed-container">
       <!-- Some browsers require an overlay
            or else they cannot mouse wheel scroll the container while hovering the embedded pdf -->
       <div id="ack-doc-scroll-cover" ng-if="useOverlay()" ng-style="{'height': state.docHeight + 'px' }"></div>
@@ -34,22 +34,25 @@
       <!-- Use an iframe tag for certain browsers that need it.  Others perform better with embed -->
       <iframe class="ack-doc-embed" ng-style="{'height': state.docHeight + 'px' }"
               ng-if="useIframe()"
-              src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
+              ng-src="{{getDocUrl()}}">
       </iframe>
       <embed class="ack-doc-embed" type="application/pdf" ng-style="{'height': state.docHeight + 'px' }"
              ng-if="!useIframe()" ng-hide="hideEmbed()"
-             src="{{ctxPath + state.document.path + '#view=fit&toolbar=0&statusbar=0&messages=0&navpanes=0'}}">
+             ng-src="{{getDocUrl()}}">
       </embed>
     </div>
 
-    <div class="ack-doc-button-container" ng-hide="state.acknowledged">
-      <span class="acknowledge-button" ng-class="{'disabled': !state.docRead}">
-        <input type="button" class="submit-button"
-               title="{{state.docRead ? 'Acknowledge' : 'You must read the entire document to acknowledge'}}"
-               value="Acknowledge"
-               ng-disabled="!state.docRead"
-               ng-click="acknowledgeDocument()">
-      </span>
+    <div class="ack-doc-button-frame">
+      <div class="ack-doc-button-container content-container" ng-hide="state.acknowledged">
+        <span class="acknowledge-button" ng-class="{'disabled': !state.docRead}">
+          <input type="button" class="submit-button"
+                 title="{{state.docRead ? 'Acknowledge' : 'You must read the entire document to acknowledge'}}"
+                 value="Acknowledge"
+                 ng-disabled="!state.docRead"
+                 ng-click="acknowledgeDocument()">
+        </span>
+      </div>
+      <iframe class="iframe-cover" src="about:blank" style></iframe>
     </div>
 
   </div>
