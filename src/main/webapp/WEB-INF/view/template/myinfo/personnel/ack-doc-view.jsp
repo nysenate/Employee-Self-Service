@@ -60,7 +60,7 @@
     <modal modal-id="acknowledge-prompt">
       <div confirm-modal rejectable="true" title="Acknowledge Policy/Document"
            resolve-button="I Agree"
-           reject-button="Go Back" reject-class="time-neutral-button">
+           reject-button="Cancel" reject-class="time-neutral-button">
         <p class="content-info acknowledgment-text">
           I hereby acknowledge receipt of the New York State Senate
           <span ng-bind="state.document.title" class="ack-doc-title"></span>
