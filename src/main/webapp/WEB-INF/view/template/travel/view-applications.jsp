@@ -1,10 +1,10 @@
 <div ng-controller="TravelHistoryController">
   <div class="travel-hero">
-    <h2>Travel Request History</h2>
+    <h2>View Applications</h2>
   </div>
   <div class="content-container">
     <div>
-      <h4 class="content-info">Travel Request History</h4>
+      <h4 class="content-info">View Applications by Date</h4>
       <div class="text-align-center">
         <div class="padding-10 inline-block">
           <label class="bold">From:</label>
@@ -33,7 +33,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr dir-paginate="row in travelHistory | orderBy: '-travelDate' : true | itemsPerPage : 5"
+            <tr dir-paginate="row in travelHistory | orderBy: '-travelDate' : true | itemsPerPage : 10"
                 pagination-id="travel-history-pagination"
                 ng-click="viewApplicationDetails(row.id)">
               <td>{{row.travelDate | date:'M/d/yyyy'}}</td>

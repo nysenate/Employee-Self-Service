@@ -32,6 +32,7 @@ function travelAppController($scope, $q, appProps, modals, locationService,
         // The state of the application, usually the same as $scope.pageState, unless returning to a page for editing
         // in that case appState == EDIT and pageState == the page who's data is being edited.
         appState: undefined,
+        traveler: {},
         travelerEmpId: undefined,
         allowances: {
             meals: {},
@@ -54,6 +55,7 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;
         $scope.app.appState = $scope.STATES.PURPOSE;
+        $scope.app.traveler = appProps.user;
         $scope.app.travelerEmpId = appProps.user.employeeId;
     }
 
@@ -179,9 +181,16 @@ function travelAppController($scope, $q, appProps, modals, locationService,
      */
     $scope.reviewCallback = function (action, editField) {
         if (action === $scope.ACTIONS.NEXT) {
-            travelApplicationApi.save({}, $scope.app, function (response) {
-                console.log(response);
-            })
+            modals.open("submit-progress");
+            travelApplicationApi.save({}, $scope.app).$promise
+                .then(function (response) {
+                    modals.resolve({});
+                })
+                .then(function () {
+                    modals.open("submit-results").then(function () {
+                        locationService.go("/travel/application/travel-application", true);
+                    });
+                });
         }
         updateStates(action, editField);
     };
@@ -309,7 +318,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
 
                 // Display calculating allowances modal until all api calls are completed.
                 var promises = [];
-                modals.open('calculating-allowances');
+                modals.open('calculating-allowances-progress');
 
                 promises.push(mealsApi.save($scope.app.itinerary, function (response) {
                     $scope.app.allowances.meals = response.result;

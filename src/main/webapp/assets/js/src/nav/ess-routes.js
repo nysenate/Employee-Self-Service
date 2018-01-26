@@ -167,8 +167,8 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/application/travel-application'
     });
 
-    $routeProvider.when(ctxPath + '/travel/travel-application-history', {
-        templateUrl: ctxPath + '/template/travel/travel-application-history'
+    $routeProvider.when(ctxPath + '/travel/view-applications', {
+        templateUrl: ctxPath + '/template/travel/view-applications'
     });
 
     $routeProvider.when(ctxPath + '/travel/travel-user-config', {

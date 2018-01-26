@@ -9,7 +9,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
 
     $scope.date = {
         from: moment().subtract(1, 'month').format(DATE_FORMAT),
-        to: moment().format(DATE_FORMAT)
+        to: moment().add(6, 'month').format(DATE_FORMAT)
     };
 
     $scope.init = function() {

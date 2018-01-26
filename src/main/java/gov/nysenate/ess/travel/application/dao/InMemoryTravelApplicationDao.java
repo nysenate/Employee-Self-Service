@@ -47,15 +47,9 @@ public class InMemoryTravelApplicationDao {
 
     private void insertStubApplications() {
         int id = 1;
-        for (int i = 0; i < 20; i++) {
-            if (i < 4) {
+        for (int i = 0; i < 3; i++) {
+            if (i < 2) {
                 travelApplications.add(stubApplication(id, TravelApplicationStatus.SUBMITTED));
-            }
-            else if (i < 6) {
-                travelApplications.add(stubApplication(id, TravelApplicationStatus.RETURNED));
-            }
-            else if (i < 10) {
-                travelApplications.add(stubApplication(id, TravelApplicationStatus.REJECTED));
             }
             else {
                 travelApplications.add(stubApplication(id, TravelApplicationStatus.APPROVED));
