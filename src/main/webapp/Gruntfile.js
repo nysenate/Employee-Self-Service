@@ -79,6 +79,7 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
                         '<%= bowerRoot %>/nsPopover/src/nsPopover.js',
                         '<%= bowerRoot %>/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
+                        '<%= bowerRoot %>/angular-bowser/src/angular-bowser.js'
                         ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
@@ -117,9 +118,7 @@ module.exports = function(grunt) {
                     //supply
                     '<%= jsDest %>/ess-supply.min.js': ['<%= jsSource %>/supply/**/*.js'],
                     //time
-                    '<%= jsDest %>/ess-time.min.js': ['<%= jsSource %>/time/**/*.js'],
-                    //travel
-                    '<%= jsDest %>/ess-travel.min.js': ['<%= jsSource %>/travel/**/*.js']
+                    '<%= jsDest %>/ess-time.min.js': ['<%= jsSource %>/time/**/*.js']
                 }
             }
         },

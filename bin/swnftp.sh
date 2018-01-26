@@ -8,9 +8,13 @@
 # Date: 2017-08-16
 # Revised: 2017-08-29 - added configuration file /etc/sendwordnow.cfg
 # Revised: 2017-08-30 - added --no-xml and --no-ftp options
+# Revised: 2017-12-20 - added better logging and error checking
+# Revised: 2018-01-11 - moved essApi.sh here; esshost removed from swn config
+# Revised: 2018-01-12 - trap and display errors from essApi.sh
 #
 
 prog=`basename $0`
+script_dir=`dirname $0`
 tmpfile=ess_batch_contact_export_$$.xml
 timestamp=`date +%Y%m%d%H%M%S`
 swnfile=writing_request_$timestamp.xml
@@ -18,6 +22,11 @@ swnfile=writing_request_$timestamp.xml
 usage() {
   echo "Usage: $prog [--config-file file] [--tmpdir dir] [--keep-tmpfile] [--pretty] [--xmlfile file] [--no-xml | --no-ftp] [--verbose]" >&2
 }
+
+logdt() {
+  echo "[`date +%Y-%m-%d\ %H:%M:%S`] $@"
+}
+
 
 cfgfile=/etc/sendwordnow.cfg
 tmpdir=/tmp
@@ -66,13 +75,15 @@ elif [ "$xml_file" -a ! -r "$xml_file" ]; then
   exit 1
 fi
 
-echo "Reading configuration file [$cfgfile]"
+logdt "About to transfer ESS/Alert contact data to SendWordNow"
+
+logdt "Reading configuration file [$cfgfile]"
 . "$cfgfile"
 
-if [ "$esshost" -a "$swnhost" -a "$swnuser" -a "$swnpass" ]; then
-  echo "Retrieved values for esshost, swnhost, swnuser, and swnpass"
+if [ "$swnhost" -a "$swnuser" -a "$swnpass" ]; then
+  logdt "Retrieved values for swnhost, swnuser, and swnpass"
 else
-  echo "$prog: $cfgfile: Must specify values for esshost, swnhost, swnuser, and swnpass" >&2
+  echo "$prog: $cfgfile: Must specify values for swnhost, swnuser, and swnpass" >&2
   exit 1
 fi
 
@@ -80,20 +91,24 @@ lftp_cmds="mrm *.xml; put $tmpdir/$tmpfile; mv $tmpfile $swnfile; exit"
 lftp_mode="file transfer"
 
 if [ $no_xml -eq 1 ]; then
-  echo "Skipping the XML export from ESS; no XML will be uploaded to SWN"
+  logdt "Skipping the XML export from ESS; no XML will be uploaded to SWN"
   lftp_cmds=
   lftp_mode="interactive"
 elif [ "$xml_file" ]; then
-  echo "Using the provided XML file [$xml_file]"
+  logdt "Using the provided XML file [$xml_file]"
   cat "$xml_file" | $xml_filter >"$tmpdir/$tmpfile"
 else
-  echo "Requesting an XML export of the contact data from ESS"
-  { essApi.sh eax --no-auth --host "$esshost" 2>/dev/null || exit 1; } | $xml_filter >"$tmpdir/$tmpfile"
+  logdt "Requesting an XML export of the contact data from ESS"
+  set -o pipefail
+  $script_dir/essApi.sh eax --no-auth | $xml_filter >"$tmpdir/$tmpfile"
 
-  if [ ! -r "$tmpdir/$tmpfile" ]; then
-    echo "$prog: $tmpfile: ESS host [$esshost] did not export any XML data" >&2
+  if [ $? -ne 0 -o ! -r "$tmpdir/$tmpfile" ]; then
+    echo "$prog: $tmpfile: Failed to write the XML dump file" >&2
+    rm -f "$tmpdir/$tmpfile"
     exit 1
-  elif head -c 13 "$tmpdir/$tmpfile" | egrep -q -v '^(<contactBatch|<[?]xml)'; then
+  elif head -c 13 "$tmpdir/$tmpfile" | egrep -q '^(<contactBatch|<[?]xml)'; then
+    :
+  else
     echo "$prog: $tmpfile: File does not start with <?xml> or <contactBatch> tags" >&2
     [ $keep_tmpfile -eq 1 ] || rm -rf "$tmpdir/$tmpfile"
     exit 1
@@ -101,11 +116,13 @@ else
 fi
 
 if [ $no_ftp -eq 1 ]; then
-  echo "Skipping the SFTP connection to SendWordNow in $lftp_mode mode"
+  logdt "Skipping the SFTP connection to SendWordNow in $lftp_mode mode"
 else
-  echo "Connecting to SendWordNow in $lftp_mode mode"
+  logdt "Connecting to SendWordNow in $lftp_mode mode"
   lftp sftp://"$swnuser":"$swnpass"@"$swnhost" -e "set sftp:auto-confirm y; set sftp:connect-program 'ssh -a -x -oHostKeyAlgorithms=+ssh-dss'; $lftp_cmds"
 fi
 
 [ $keep_tmpfile -eq 1 ] || rm -f "$tmpdir/$tmpfile"
+
+logdt "Finished transferring ESS/Alert contact data to SendWordNow"
 exit 0

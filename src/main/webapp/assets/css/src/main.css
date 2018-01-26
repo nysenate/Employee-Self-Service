@@ -1175,7 +1175,8 @@ input[type="submit"].submit-button:hover {
   background: #81ad1f;
 }
 input[type="button"].reject-button,
-input[type="submit"].reject-button {
+input[type="submit"].reject-button,
+.confirm-modal.error .input-container input[type="button"].time-neutral-button {
   padding: 5px 10px;
   background: #e64727;
   color: white;
@@ -1571,6 +1572,9 @@ input[type="number"] {
   height: auto;
   width: 400px;
   text-align: center;
+}
+.confirm-modal.error h3 {
+  color: #e64727;
 }
 .confirm-modal h3 {
   margin-bottom: 0;
@@ -3096,6 +3100,10 @@ button.ui-button::-moz-focus-inner {
   }
 }
 /** --- Badge Directive --- */
+badge,
+[badge] {
+  cursor: default;
+}
 .badge {
   background: #006B80;
   padding: 5px;
@@ -3442,6 +3450,102 @@ button.ui-button::-moz-focus-inner {
 }
 #alert-info-page .alert-info-form h3 {
   text-align: center;
+}
+/** --- Acknowledgment Page --- */
+.ack-doc-display {
+  width: 45em;
+  margin: auto;
+  padding-bottom: 1em;
+}
+.ack-doc-display h2 {
+  margin-top: 30px;
+}
+.ack-doc-list-item-title {
+  text-decoration: underline;
+}
+.unacknowledged-doc-list .ack-doc-list-item {
+  font-weight: bold;
+}
+.ack-doc-list-item:hover {
+  background: #fafafa;
+}
+.ack-doc-list-item-ack-date {
+  color: rgba(34, 34, 34, 0.5);
+}
+.acknowledgment-instructions {
+  text-align: left;
+}
+.ack-doc-container {
+  padding-bottom: 10px;
+  margin-bottom: 65px;
+}
+#ack-doc-embed-container {
+  position: relative;
+  width: 840px;
+  margin: 10px 20px;
+  border: 2px inset;
+}
+#ack-doc-scroll-cover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.01);
+}
+.ack-doc-embed {
+  width: 100%;
+  z-index: 1;
+  position: relative;
+}
+.iframe-cover {
+  border: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+}
+.ack-doc-button-frame {
+  position: fixed;
+  bottom: 0;
+  width: 880px;
+  z-index: 3;
+}
+.ack-doc-button-frame .iframe-cover {
+  top: 20px;
+}
+.ack-doc-button-container {
+  text-align: center;
+  padding-bottom: 30px;
+  padding-top: 30px;
+  border: 3px solid #799933;
+  border-bottom: 0;
+}
+.ack-doc-button-container .acknowledge-button {
+  position: relative;
+}
+.ack-doc-button-container .acknowledge-button.disabled::after {
+  content: "You must scroll to the end to acknowledge";
+  position: absolute;
+  top: 0;
+  right: -23em;
+  color: indianred;
+  font-weight: bold;
+}
+.acknowledgment-text {
+  padding: 0 2em 20px;
+  margin-bottom: 20px;
+  text-align: left !important;
+}
+.acknowledgment-text .ack-doc-title {
+  font-weight: bold;
+}
+.ack-doc-view-nav {
+  margin: 10px 20px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 /** --- Paycheck History Page --- */
 @media print {
@@ -5184,6 +5288,10 @@ record-review-modal,
 }
 #record-reminder-prompt table.reminder-records tr td:first-child {
   padding-right: 5px;
+}
+ul.inactive-employee-email-list {
+  text-align: center;
+  padding: 0;
 }
 /* --- Employee Select Directive --- */
 .employee-select .content-info {

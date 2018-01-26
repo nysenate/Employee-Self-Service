@@ -8,4 +8,5 @@ package gov.nysenate.ess.core.model.auth;
 public enum CorePermissionObject {
     EMPLOYEE_INFO,
     TRANSACTION_HISTORY,
+    ACKNOWLEDGMENT,
 }

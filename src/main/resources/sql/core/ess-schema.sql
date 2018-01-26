@@ -94,6 +94,27 @@ ALTER TABLE ONLY user_roles
     ADD CONSTRAINT user_roles_pkey PRIMARY KEY (id);
 
 --
+--Create tables for ESS acknowledgment and set Primary Keys
+--
+CREATE TABLE ess.ack_doc (
+    id   SERIAL PRIMARY KEY,
+    title       text,
+    filename    text,
+    active      BOOLEAN,
+    effective_date_time      TIMESTAMP without TIME ZONE
+);
+
+CREATE TABLE ess.acknowledgment (
+    emp_id      INTEGER,
+    ack_doc_id  INTEGER REFERENCES ess.ack_doc (id),
+    timestamp   TIMESTAMP without TIME ZONE
+);
+
+ALTER TABLE ess.acknowledgment
+    ADD PRIMARY KEY (emp_id, ack_doc_id);
+
+
+--
 -- Add permissions for all roles.
 --
 GRANT ALL PRIVILEGES ON SCHEMA ess TO PUBLIC;
