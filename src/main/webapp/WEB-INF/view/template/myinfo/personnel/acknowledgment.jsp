@@ -29,7 +29,7 @@
         <h2>Pending Acknowledgments</h2>
         <ul class="unacknowledged-doc-list">
           <li ng-show="state.documents.unacknowledged.length == 0">
-            You do not have any pending acknowledgements.
+            You do not have any pending acknowledgments.
           </li>
           <li ng-repeat="doc in state.documents.unacknowledged">
             <a ng-href="{{ctxPath}}/myinfo/personnel/acknowledgments/{{doc.id}}">
@@ -44,7 +44,7 @@
         <h2>Completed Acknowledgments</h2>
         <ul>
           <li ng-show="state.documents.acknowledged.length == 0">
-            You do not have any completed acknowledgements.
+            You do not have any completed acknowledgments.
           </li>
           <li ng-repeat="doc in state.documents.acknowledged">
             <a ng-href="{{ctxPath}}/myinfo/personnel/acknowledgments/{{doc.id}}">
