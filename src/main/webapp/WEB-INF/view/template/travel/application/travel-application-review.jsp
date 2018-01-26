@@ -44,59 +44,39 @@
       </div>
 
       <%--Allowances--%>
+
       <div class="col-4-12 margin-top-20">
-        Mileage
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
+        Estimated Expenses
+        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit expenses"></span>
       </div>
       <div class="col-8-12 margin-top-20">
-        {{app.allowances.mileage.total | currency}}
-      </div>
-      <div class="col-4-12 margin-top-20">
-        Meals
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
-      </div>
-      <div class="col-8-12 margin-top-20">
-        {{app.allowances.meals.total | currency}}
-      </div>
-      <div class="col-4-12 margin-top-20">
-        Lodging
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
-      </div>
-      <div class="col-8-12 margin-top-20">
-        {{app.allowances.lodging.total | currency}}
-      </div>
-      <div class="col-4-12 margin-top-20">
-        Tolls
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
-      </div>
-      <div class="col-8-12 margin-top-20">
-        {{app.allowances.tolls | currency}}
-      </div>
-      <div class="col-4-12 margin-top-20">
-        Parking
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
-      </div>
-      <div class="col-8-12 margin-top-20">
-        {{app.allowances.parking | currency}}
-      </div>
-      <div class="col-4-12 margin-top-20">
-        Taxi/Bus/Subway
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
-      </div>
-      <div class="col-8-12 margin-top-20">
-        {{app.allowances.alternate | currency}}
-      </div>
-      <div class="col-4-12 margin-top-20">
-        Registration Fee
-        <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit allowances"></span>
-      </div>
-      <div class="col-8-12 margin-top-20">
-        {{app.allowances.registrationFee | currency}}
+        <div class="col-5-12 margin-5">
+          Meals: {{app.allowances.meals.total | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+          Lodging: {{app.allowances.lodging.total | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+          Mileage: {{app.allowances.mileage.total | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+          Tolls: {{app.allowances.tolls | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+          Parking: {{app.allowances.parking | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+          Taxi/Bus/Subway: {{app.allowances.alternate | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+          Registration Fee: {{app.allowances.registrationFee | currency}}
+        </div>
+        <div class="col-5-12 margin-5">
+
+        </div>
       </div>
     </div>
-
   </div>
-
   <div class="margin-top-20">
     <input type="button" class="neutral-button" value="Back"
            ng-click="reviewCallback(ACTIONS.BACK)">
