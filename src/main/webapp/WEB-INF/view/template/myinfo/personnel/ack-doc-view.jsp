@@ -10,8 +10,9 @@
   <div class="content-container ack-doc-container" ng-if="!isLoading()">
 
     <p class="content-info" ng-hide="state.acknowledged">
-      Please review this policy/document and click the button to acknowledge. <br>
-      <span class="bold-text">You must scroll to the end of the page for the button to become available.</span>
+      Please review this policy/document and click the button to acknowledge it.
+      <br/><span class="bold-text">You must scroll to the end of the page for the button to become available.</span>
+      <br/>If desired, click "Open Printable View" to open a separate tab to print the document.
     </p>
     <p class="content-info" ng-show="state.acknowledged">
       You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
