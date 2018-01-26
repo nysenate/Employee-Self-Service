@@ -5,6 +5,15 @@
 # Runtime level (dev/test/prod)
 runtime.level = dev
 
+# --- Data Directory -------------------------------------------------
+
+# Directory where ess data is stored that is not included in the webapp root
+data.dir = /data/ess/
+
+# Subdirectory where acknowledged documents are stored
+# Used to determine fs location and request routing for ack docs.
+data.ackdoc_subdir = ack_docs/
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain url and context path that ess is hosted on (used for generating links)
@@ -150,7 +159,7 @@ cache.poll.delay.accruals = 60000
 # --- URL Configuration -------------------------------------------------------
 
 # The url path to be used for accessing resources (css/js)
-resource.path = /assets/**
+resource.path = /assets/
 
 # The directory in which the actual css/js subdirectories are contained
 resource.location = /assets/

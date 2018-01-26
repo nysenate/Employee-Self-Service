@@ -4,9 +4,14 @@
 <c:choose>
     <c:when test="${runtimeLevel eq 'dev'}">
         <!-- Personnel -->
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/myinfo/myinfo-ctrl.js"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/myinfo/personnel/summary-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/alert-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/acknowledgment-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-view-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/transaction-history-ctrl.js"></script>
         <script type="text/javascript"
