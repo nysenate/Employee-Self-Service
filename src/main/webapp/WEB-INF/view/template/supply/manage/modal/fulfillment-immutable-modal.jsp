@@ -5,6 +5,7 @@
 <div class="padding-10">
   <div>
     <h3 class="content-info">
+      <span ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"> </span>
       <span ng-if="requisition.status === 'REJECTED'">Rejected</span>
       <span ng-if="requisition.status === 'APPROVED'  && requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime != null">Sync Failed</span>
       <span ng-if="requisition.status === 'APPROVED'  && (requisition.savedInSfms == true || (requisition.savedInSfms == false && requisition.lastSfmsSyncDateTime == null) )">Approved</span>
@@ -52,11 +53,20 @@
       <h4 class="content-info">Location</h4>
       <div>{{requisition.destination.locId}}</div>
 
-      <h4 class="content-info">Ordered Date Time</h4>
-      <div>{{requisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</div>
+      <h4>Delivery Method</h4>
+      <div>{{requisition.deliveryMethod}}</div>
+
+      <h4>Special Instructions</h4>
+      <div
+          ng-if="requisition.specialInstructions === null || requisition.specialInstructions.length === 0">
+        No instructions provided for this requisition.
+      </div>
 
       <h4 class="content-info">Issued By</h4>
       <div>{{requisition.issuer.lastName}}</div>
+
+      <h4 class="content-info">Ordered Date Time</h4>
+      <div>{{requisition.orderedDateTime | date:'MM/dd/yy h:mm a'}}</div>
 
       <h4 class="content-info" ng-show="requisition.status !== 'CANCELED'">Approved Date Time</h4>
       <div>{{requisition.approvedDateTime | date:'MM/dd/yy h:mm a'}}</div>

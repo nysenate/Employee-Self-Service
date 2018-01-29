@@ -48,6 +48,9 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
     @Value("${resource.path}") private String resourcePath;
     @Value("${resource.location}") private String resourceLocation;
 
+    @Value("${data.dir}") private String dataDir;
+    @Value("${data.ackdoc_subdir}") private String ackDocSubdir;
+
     /** Sets paths that should not be intercepted by a controller (e.g css/ js/). */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -56,9 +59,19 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
         }
         else {
             logger.info("Registering resource path {} for files under {}", resourcePath, resourceLocation);
-            registry.addResourceHandler(resourcePath, "/favicon.ico")
+            registry.addResourceHandler(resourcePath + "**", "/favicon.ico")
                     .addResourceLocations(resourceLocation);
-//            registry.addResourceHandler("/favicon.ico").addResourceLocations("/assets/favicon.ico");
+        }
+        // Serve ack docs from external directory
+        if (dataDir == null || resourceLocation == null || ackDocSubdir == null) {
+            logger.warn("Resource path/location for accessing acknowledged documents were not set!");
+        }
+        else {
+            String ackDocDir = dataDir + ackDocSubdir;
+            String ackDocUri = resourcePath + ackDocSubdir;
+            logger.info("Registering resource path {} for files under {}", ackDocUri, ackDocDir);
+            registry.addResourceHandler(ackDocUri + "**")
+                    .addResourceLocations("file:" + ackDocDir);
         }
     }
 

@@ -12,3 +12,5 @@ log4j.logger.com.mchange.v2 = WARN
 log4j.logger.org.apache.shiro=WARN
 log4j.logger.org.apache.jasper=DEBUG
 log4j.logger.net.sf.ehcache.statistics.extended=WARN
+
+log4j.logger.org.apache.pdfbox=FATAL

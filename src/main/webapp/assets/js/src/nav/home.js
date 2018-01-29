@@ -11,6 +11,8 @@ essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$lo
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
 
+        $scope.ctxPath = appProps.ctxPath;
+
         /** Url pointing to help page */
         $scope.helpPageUrl = appProps.ctxPath + '/assets/help/html/index.htm';
 
