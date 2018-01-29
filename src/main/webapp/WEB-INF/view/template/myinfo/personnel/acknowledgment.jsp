@@ -20,7 +20,7 @@
       <p class="content-info">
         Listed below are policies/documents which require your review and acknowledgment annually.<br>
         Click on a document below to proceed.<br>
-        <span class="bold-text">Failure to respond may result in the holding of your paycheck.</span><br>
+        <span class="bold-text">FAILURE TO RESPOND MAY RESULT IN THE HOLDING OF YOUR PAYCHECK.</span><br>
         Contact the Personnel Office (518-455-3376) if you have any questions.
       </p>
 
