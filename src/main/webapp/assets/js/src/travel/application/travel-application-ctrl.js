@@ -335,6 +335,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 $q.all(promises)
                     .then(function () {
                         sumAllowances();
+                        displayMap();
                         modals.resolve({});
                     });
 
@@ -346,6 +347,52 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                         + $scope.app.allowances.parking
                         + $scope.app.allowances.alternate
                         + $scope.app.allowances.registrationFee;
+                }
+
+                function displayMap() {
+                    var map;
+                    var directionsDisplay = new google.maps.DirectionsRenderer();
+                    var directionsService = new google.maps.DirectionsService();
+
+                    // Create map centered on Albany.
+                    var albany = new google.maps.LatLng(42.6680631, -73.8807209);
+                    var mapOptions = {
+                        zoom:9,
+                        center: albany
+                    };
+                    map = new google.maps.Map(document.getElementById('map'), mapOptions);
+                    directionsDisplay.setMap(map);
+
+                    // Create map api parameters.
+                    // All intermediate destinations should be waypoints, final destination should be destination.
+                    var destinations = $scope.app.itinerary.destinations.items;
+                    var origin = $scope.app.itinerary.origin.formatted_address;
+                    var waypoints = [];
+                    angular.forEach(destinations, function (dest, index) {
+                        waypoints.push({location: dest.address.formatted_address});
+                    });
+                    // Last destination should be destination param, not waypoint.
+                    var destination = waypoints.pop().location;
+
+                    // Set params
+                    var request = {
+                        origin: origin,
+                        destination: destination,
+                        waypoints: waypoints,
+                        travelMode: 'DRIVING'
+                    };
+
+                    console.log(request);
+
+                    // Get directions and display on map.
+                    directionsService.route(request, function(result, status) {
+                        if (status == 'OK') {
+                            directionsDisplay.setDirections(result);
+                        }
+                        else {
+                            console.log("Unsuccessful map query, status = " + status);
+                        }
+                    });
                 }
 
             }

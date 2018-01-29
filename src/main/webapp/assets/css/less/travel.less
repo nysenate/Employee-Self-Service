@@ -12,10 +12,18 @@
   .page-hero(@orange, white);
 }
 
-.travel-location-div {
+.travel-button-container {
+  .margin-top-20;
+  padding: 10px;
+  background: #f9f9f9;
+  input[type="button"] {
+    margin-right: 5px;
+  }
+}
+
+@travel-location-box-core: {
   display: inline-block;
   width: 100%;
-  margin: 10px auto;
   padding: 5px;
   height: 50px;
   text-align: center;
@@ -23,10 +31,30 @@
   background: #F6F6F6;
   border-radius: 5px;
   div {
-    width: calc(100% / 3);
     display:inline-block;
     text-align: center;
     vertical-align: top;
+  }
+};
+
+.travel-origin-display-box {
+  @travel-location-box-core();
+}
+
+.travel-destination-display-box {
+  @travel-location-box-core();
+  :nth-child(1) {
+    float: left;
+    width: 25%;
+    font-size: 0.8em;
+  }
+  :nth-child(2) {
+    width: 50%
+  }
+  :nth-child(3) {
+    float: right;
+    width: 25%;
+    font-size: 0.8em;
   }
 }
 
