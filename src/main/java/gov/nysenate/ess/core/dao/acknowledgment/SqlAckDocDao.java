@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
+import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -75,6 +76,11 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         return localNamedJdbc.query(GET_ALL_ACKNOWLEDGMENTS_FOR_EMPLOYEE.getSql(schemaMap()), params ,getAcknowledgmentRowMapper());
     }
 
+    public List<EmpAckReport> getAllAcksForEmpWithTimestampAndDocRef(int empId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("empId",empId);
+        return localNamedJdbc.query(  GET_ALL_ACKS_WITH_TIMESTAMP_AND_DOC_REF.getSql(schemaMap()), params ,getEmpAckReportRowMapper());
+    }
 
 
     /** Returns an AckDocRowMapper that's configured for use in this dao */
@@ -85,6 +91,10 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
     private static AcknowledgmentRowMapper getAcknowledgmentRowMapper() {
         return new AcknowledgmentRowMapper("");
+    }
+
+    private static EmpAckReportRowMapper getEmpAckReportRowMapper() {
+        return new EmpAckReportRowMapper("");
     }
 
 }

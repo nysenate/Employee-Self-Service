@@ -9,18 +9,24 @@ import gov.nysenate.ess.core.client.view.acknowledgment.AckDocView;
 import gov.nysenate.ess.core.client.view.acknowledgment.AcknowledgmentView;
 import gov.nysenate.ess.core.client.view.acknowledgment.DetailedAckDocView;
 import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
-import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
-import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
-import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
-import gov.nysenate.ess.core.model.acknowledgment.DuplicateAckEx;
+import gov.nysenate.ess.core.model.acknowledgment.*;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
+import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -40,13 +46,17 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     private final AckDocDao ackDocDao;
 
+    private final AcknowledgmentReportService ackReportService;
+
     @Autowired
     public AcknowledgmentApiCtrl(AckDocDao ackDocDao,
+                                 AcknowledgmentReportService ackReportService,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
     ) {
         this.ackDocDao = ackDocDao;
+        this.ackReportService = ackReportService;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -111,6 +121,21 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 
+    @RequestMapping(value="/report/acks/all", method = GET)
+    public CsvStreamingResponseBody getAllAcksFromAllEmployees(HttpServletResponse response) {
+        //PERMISSION CHECK AT THE END
+        CsvStreamingResponseBody csvStreamingResponseBody =
+                new CsvStreamingResponseBody(ackReportService.getAllAcksFromEmployees());
+        try {
+            csvStreamingResponseBody.writeTo(response.getOutputStream());
+            //ackReportService.writeCsvFile(ackReportService.getAllAcksFromEmployees(), response);
+        }
+        catch (IOException e) {
+            System.err.println("PROBLEM HAPPENED WHILE WRITING OUT RESPONSE");
+        }
+        return csvStreamingResponseBody;
+    }
+
     /* --- Exception Handlers --- */
 
     @ExceptionHandler(AckDocNotFoundEx.class)
@@ -125,6 +150,22 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public ViewObjectErrorResponse handleDuplicateAckEx(DuplicateAckEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.DUPLICATE_ACK, ex.getAckDocid());
+    }
+
+
+
+    private class CsvStreamingResponseBody implements StreamingResponseBody {
+
+        private ArrayList<EmpAckReport> completeAckReportList;
+
+        public CsvStreamingResponseBody(ArrayList<EmpAckReport> completeAckReportList) {
+            this.completeAckReportList = completeAckReportList;
+        }
+
+        @Override
+        public void writeTo(OutputStream outputStream) throws IOException {
+            ackReportService.writeCsvFile(completeAckReportList,outputStream);
+        }
     }
 
 }
