@@ -76,10 +76,8 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         return localNamedJdbc.query(GET_ALL_ACKNOWLEDGMENTS_FOR_EMPLOYEE.getSql(schemaMap()), params ,getAcknowledgmentRowMapper());
     }
 
-    public List<EmpAckReport> getAllAcksForEmpWithTimestampAndDocRef(int empId) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("empId",empId);
-        return localNamedJdbc.query(  GET_ALL_ACKS_WITH_TIMESTAMP_AND_DOC_REF.getSql(schemaMap()), params ,getEmpAckReportRowMapper());
+    public List<EmpAckReport> getAllAcksForEmpWithTimestampAndDocRef() {
+        return localNamedJdbc.query(  GET_ALL_ACKS_WITH_TIMESTAMP_AND_DOC_REF.getSql(schemaMap()) ,getEmpAckReportRowMapper());
     }
 
 

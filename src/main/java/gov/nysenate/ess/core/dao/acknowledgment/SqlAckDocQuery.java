@@ -42,7 +42,7 @@ public enum SqlAckDocQuery implements BasicSqlQuery {
     GET_ALL_ACKS_WITH_TIMESTAMP_AND_DOC_REF(
       "select a.emp_id, d.title, d.id, a.timestamp\n" +
               "from ${essSchema}.acknowledgment a, ${essSchema}.ack_doc d\n" +
-              "where a.ack_doc_id = d.id and a.emp_id = :empId;"
+              "where a.ack_doc_id = d.id;"
     );
 
 

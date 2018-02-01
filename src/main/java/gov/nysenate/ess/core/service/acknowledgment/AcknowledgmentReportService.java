@@ -25,6 +25,7 @@ public class AcknowledgmentReportService {
 
     /*
     Returns a list of all acknowledgments for each employee
+    Removes emp who have no acks
      */
     public ArrayList<EmpAckReport> getAllAcksFromEmployees() {
         ArrayList<EmpAckReport> completeAckReportList = getAllEmployeesAcks();
@@ -41,11 +42,13 @@ public class AcknowledgmentReportService {
 
         ArrayList<EmpAckReport> completeAckReportList = new ArrayList<>();
 
-        for (Employee emp : employees) {
-            List<EmpAckReport> empAckReports = sqlAckDocDao.getAllAcksForEmpWithTimestampAndDocRef(emp.getEmployeeId());
+        List<EmpAckReport> completeAckReports = sqlAckDocDao.getAllAcksForEmpWithTimestampAndDocRef();
 
+        for (Employee emp : employees) {
             EmpAckReport finalEmpAckReport = new EmpAckReport(emp.getEmployeeId(), emp.getFirstName(),emp.getLastName(),
                     emp.getEmail(),emp.getWorkLocation());
+
+            ArrayList<EmpAckReport> empAckReports = determineEmpAcks(completeAckReports, emp.getEmployeeId());
 
             mergeAcksIntoFinalReport(finalEmpAckReport, empAckReports);
 
@@ -61,6 +64,19 @@ public class AcknowledgmentReportService {
         for (int i=0; i<ackedReports.size();i++) {
             finalReport.getAckedTimeMap().putAll(ackedReports.get(i).getAckedTimeMap());
         }
+    }
+
+    private ArrayList<EmpAckReport> determineEmpAcks(List<EmpAckReport> allAckReports, int empId) {
+        ArrayList<EmpAckReport> empAckReports = new ArrayList<>();
+        Iterator it = allAckReports.iterator();
+        while(it.hasNext()) {
+            EmpAckReport empAckReport = (EmpAckReport) it.next();
+            if (empAckReport.getEmpId() == empId) {
+                empAckReports.add(empAckReport);
+                it.remove();
+            }
+        }
+        return empAckReports;
     }
 
     /*
