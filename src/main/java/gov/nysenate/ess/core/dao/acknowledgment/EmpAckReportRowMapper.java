@@ -18,7 +18,7 @@ public class EmpAckReportRowMapper extends BaseRowMapper<EmpAckReport> {
     public EmpAckReport mapRow(ResultSet rs, int rowNum) throws SQLException {
         EmpAckReport empAckReport = new EmpAckReport();
         empAckReport.setEmpId(rs.getInt(pfx + "emp_id"));
-        empAckReport.getAckedTimeMap().put(rs.getString(pfx + "title"), getLocalDateTimeFromRs(rs, "timestamp"));
+        empAckReport.getAckedTimeMap().put(getLocalDateTimeFromRs(rs, "timestamp"),rs.getString(pfx + "title"));
         return empAckReport;
     }
 }

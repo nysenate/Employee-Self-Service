@@ -4,18 +4,10 @@ import gov.nysenate.ess.core.dao.acknowledgment.SqlAckDocDao;
 import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -83,42 +75,5 @@ public class AcknowledgmentReportService {
                 it.remove();
             }
         }
-    }
-
-    public void writeCsvFile(ArrayList<EmpAckReport> completeAckReportList, OutputStream outputStream) throws IOException {
-
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-        CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
-
-        for (EmpAckReport empAckReport: completeAckReportList) {
-            csvPrinter.printRecord(
-                    empAckReport.getEmpId(),
-                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
-                    empAckReport.getEmail(),
-                    empAckReport.getAckedTimeMap().toString());
-            //for each key get value
-        }
-        csvPrinter.flush();
-        csvPrinter.close();
-    }
-
-    public void writeCsvFile(ArrayList<EmpAckReport> completeAckReportList, HttpServletResponse response) throws IOException {
-
-        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
-
-        for (EmpAckReport empAckReport: completeAckReportList) {
-            csvPrinter.printRecord(
-                    empAckReport.getEmpId(),
-                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
-                    empAckReport.getEmail(),
-                    empAckReport.getAckedTimeMap().toString());
-            //for each key get value
-        }
-        csvPrinter.flush();
-        csvPrinter.close();
     }
 }

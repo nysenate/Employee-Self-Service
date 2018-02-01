@@ -13,20 +13,15 @@ import gov.nysenate.ess.core.model.acknowledgment.*;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -39,9 +34,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
 
-    /** The directory where ack docs are stored in the file system */
+    /**
+     * The directory where ack docs are stored in the file system
+     */
     private String ackDocDir;
-    /** The uri path where ack docs are requested */
+    /**
+     * The uri path where ack docs are requested
+     */
     private String ackDocResPath;
 
     private final AckDocDao ackDocDao;
@@ -121,19 +120,33 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 
-    @RequestMapping(value="/report/acks/all", method = GET)
-    public CsvStreamingResponseBody getAllAcksFromAllEmployees(HttpServletResponse response) {
+    @RequestMapping(value = "/report/acks/all", method = GET)
+    public void getAllAcksFromAllEmployees(HttpServletResponse response) throws IOException {
         //PERMISSION CHECK AT THE END
-        CsvStreamingResponseBody csvStreamingResponseBody =
-                new CsvStreamingResponseBody(ackReportService.getAllAcksFromEmployees());
-        try {
-            csvStreamingResponseBody.writeTo(response.getOutputStream());
-            //ackReportService.writeCsvFile(ackReportService.getAllAcksFromEmployees(), response);
+        String csvFileName = "AllAcknowledgmentsSenateReport" + LocalDateTime.now()+".csv";
+
+        response.setContentType("text/csv");
+        response.setStatus(200);
+
+        // creates mock data
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"",
+                csvFileName);
+        response.setHeader(headerKey, headerValue);
+
+        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
+
+        for (EmpAckReport empAckReport: ackReportService.getAllAcksFromEmployees()) {
+            csvPrinter.printRecord(
+                    empAckReport.getEmpId(),
+                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
+                    empAckReport.getEmail(),
+                    empAckReport.getWorkLocation(),
+                    empAckReport.getAckedTimeMap().toString());
         }
-        catch (IOException e) {
-            System.err.println("PROBLEM HAPPENED WHILE WRITING OUT RESPONSE");
-        }
-        return csvStreamingResponseBody;
+        csvPrinter.close();
     }
 
     /* --- Exception Handlers --- */
@@ -150,22 +163,6 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public ViewObjectErrorResponse handleDuplicateAckEx(DuplicateAckEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.DUPLICATE_ACK, ex.getAckDocid());
-    }
-
-
-
-    private class CsvStreamingResponseBody implements StreamingResponseBody {
-
-        private ArrayList<EmpAckReport> completeAckReportList;
-
-        public CsvStreamingResponseBody(ArrayList<EmpAckReport> completeAckReportList) {
-            this.completeAckReportList = completeAckReportList;
-        }
-
-        @Override
-        public void writeTo(OutputStream outputStream) throws IOException {
-            ackReportService.writeCsvFile(completeAckReportList,outputStream);
-        }
     }
 
 }

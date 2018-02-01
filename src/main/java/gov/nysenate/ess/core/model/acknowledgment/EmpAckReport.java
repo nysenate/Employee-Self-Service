@@ -12,7 +12,7 @@ public class EmpAckReport {
     private String lastName;
     private String email;
     private Location workLocation;
-    private HashMap<String, LocalDateTime> AckedTimeMap = new HashMap<>();
+    private HashMap<LocalDateTime,String > AckedTimeMap = new HashMap<>();
 
     /*
     Constructors
@@ -30,18 +30,18 @@ public class EmpAckReport {
 
     public EmpAckReport(int empId, String ackDocTitle ,LocalDateTime timestamp) {
         this.empId = empId;
-        AckedTimeMap.put(ackDocTitle,timestamp);
+        AckedTimeMap.put(timestamp,ackDocTitle);
     }
 
     /*
     Getters and Setters
      */
 
-    public HashMap<String, LocalDateTime> getAckedTimeMap() {
+    public HashMap<LocalDateTime, String> getAckedTimeMap() {
         return AckedTimeMap;
     }
 
-    public void setAckedTimeMap(HashMap<String, LocalDateTime> ackedTimeMap) {
+    public void setAckedTimeMap(HashMap<LocalDateTime, String> ackedTimeMap) {
         AckedTimeMap = ackedTimeMap;
     }
 
