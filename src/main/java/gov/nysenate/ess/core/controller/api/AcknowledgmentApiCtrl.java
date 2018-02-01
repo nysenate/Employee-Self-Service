@@ -120,6 +120,38 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 
+    //1st Report - ALL ACKS OR NON ACKS FOR EVERY EMPLOYEE
+    @RequestMapping(value = "/report/complete/{title}/{year}", method = GET)
+    public void getCompleteReportForAckDoc(@PathVariable String title, @PathVariable int year,
+                                           HttpServletResponse response) throws IOException {
+        //PERMISSION CHECK AT THE END
+        String csvFileName = title +"_"+ year +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
+
+        response.setContentType("text/csv");
+        response.setStatus(200);
+
+        // creates mock data
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"",
+                csvFileName);
+        response.setHeader(headerKey, headerValue);
+
+        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
+
+        for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocWithTitleAndYear(title,year)) {
+            csvPrinter.printRecord(
+                    empAckReport.getEmpId(),
+                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
+                    empAckReport.getEmail(),
+                    empAckReport.getWorkLocation(),
+                    empAckReport.getAckedTimeMap().toString());
+        }
+        csvPrinter.close();
+    }
+
+    //2nd Report - ALL ACKS FOR EVERY EMPLOYEE (no acks? then youre not in report)
     @RequestMapping(value = "/report/acks/all", method = GET)
     public void getAllAcksFromAllEmployees(HttpServletResponse response) throws IOException {
         //PERMISSION CHECK AT THE END

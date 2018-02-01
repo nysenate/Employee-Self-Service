@@ -57,6 +57,31 @@ public class AcknowledgmentReportService {
         return completeAckReportList;
     }
 
+    /*This corresponds to the 1st report, in which all acks on a single document are reported as well as those who have
+    not acked this document
+     */
+    public ArrayList<EmpAckReport> getAllAcksForAckDocWithTitleAndYear(String title, int year) {
+        Set<Employee> employees = employeeInfoService.getAllEmployees(true);
+        ArrayList<EmpAckReport> completeAckReportList = new ArrayList<>();
+
+        List<EmpAckReport> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForDocWithNameAndYear(title,year);
+
+        for (Employee emp : employees) {
+            EmpAckReport finalEmpAckReport = new EmpAckReport(emp.getEmployeeId(), emp.getFirstName(),emp.getLastName(),
+                    emp.getEmail(),emp.getWorkLocation());
+
+            EmpAckReport empAckReport = determineEmpAck(empsWhoHaveAckedSpecificDoc, emp.getEmployeeId());
+
+            if (!empAckReport.getAckedTimeMap().isEmpty()) {
+                finalEmpAckReport.getAckedTimeMap().putAll(empAckReport.getAckedTimeMap());
+            }
+
+            completeAckReportList.add(finalEmpAckReport);
+        }
+
+        return completeAckReportList;
+    }
+
     /*
     Merge rows of ack reports for a specific employee into the final report for that employee
      */
@@ -77,6 +102,19 @@ public class AcknowledgmentReportService {
             }
         }
         return empAckReports;
+    }
+
+    private EmpAckReport determineEmpAck(List<EmpAckReport> allAckReports, int empId) {
+        EmpAckReport empAckReport = new EmpAckReport();
+        Iterator it = allAckReports.iterator();
+        while(it.hasNext()) {
+            EmpAckReport empAckReportFromAll = (EmpAckReport) it.next();
+            if (empAckReportFromAll.getEmpId() == empId) {
+                empAckReport = empAckReportFromAll;
+                it.remove();
+            }
+        }
+        return empAckReport;
     }
 
     /*
