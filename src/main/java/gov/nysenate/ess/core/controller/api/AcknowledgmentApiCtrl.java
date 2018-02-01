@@ -12,6 +12,7 @@ import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
 import gov.nysenate.ess.core.model.acknowledgment.*;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ACK_REPORT_GENERATION;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -124,7 +126,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/report/complete/{title}/{year}", method = GET)
     public void getCompleteReportForAckDoc(@PathVariable String title, @PathVariable int year,
                                            HttpServletResponse response) throws IOException {
-        //PERMISSION CHECK AT THE END
+
+        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
         String csvFileName = title +"_"+ year +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
 
         response.setContentType("text/csv");
@@ -154,7 +157,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     //2nd Report - ALL ACKS FOR EVERY EMPLOYEE (no acks? then youre not in report)
     @RequestMapping(value = "/report/acks/all", method = GET)
     public void getAllAcksFromAllEmployees(HttpServletResponse response) throws IOException {
-        //PERMISSION CHECK AT THE END
+
+        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
         String csvFileName = "AllAcknowledgmentsSenateReport" + LocalDateTime.now()+".csv";
 
         response.setContentType("text/csv");
