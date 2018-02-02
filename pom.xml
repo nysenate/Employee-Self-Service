@@ -77,6 +77,7 @@
     <commons.io.version>2.4</commons.io.version>
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.validator.version>1.6</commons.validator.version>
+    <commons-csv.version>1.5</commons-csv.version>
     <c3p0.version>0.9.1.2</c3p0.version>
     <eh-cache.version>2.10.0</eh-cache.version>
     <freemarker.version>2.3.23</freemarker.version>
@@ -90,7 +91,7 @@
     <oracle.driver.version>10.2.0.5</oracle.driver.version>
     <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <spring.version>4.1.7.RELEASE</spring.version>
+    <spring.version>4.3.9.RELEASE</spring.version>
     <spring.ldap.version>2.0.3.RELEASE</spring.ldap.version>
     <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
     <woodstox.version>4.4.1</woodstox.version>
@@ -367,6 +368,13 @@
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <version>${org.apache.pdfbox.version}</version>
+    </dependency>
+
+    <!-- Apache Commons-csv -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>${commons-csv.version}</version>
     </dependency>
 
 

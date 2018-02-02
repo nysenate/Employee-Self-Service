@@ -9,20 +9,23 @@ import gov.nysenate.ess.core.client.view.acknowledgment.AckDocView;
 import gov.nysenate.ess.core.client.view.acknowledgment.AcknowledgmentView;
 import gov.nysenate.ess.core.client.view.acknowledgment.DetailedAckDocView;
 import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
-import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
-import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
-import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
-import gov.nysenate.ess.core.model.acknowledgment.DuplicateAckEx;
+import gov.nysenate.ess.core.model.acknowledgment.*;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
+import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ACK_REPORT_GENERATION;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -33,20 +36,28 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
 
-    /** The directory where ack docs are stored in the file system */
+    /**
+     * The directory where ack docs are stored in the file system
+     */
     private String ackDocDir;
-    /** The uri path where ack docs are requested */
+    /**
+     * The uri path where ack docs are requested
+     */
     private String ackDocResPath;
 
     private final AckDocDao ackDocDao;
 
+    private final AcknowledgmentReportService ackReportService;
+
     @Autowired
     public AcknowledgmentApiCtrl(AckDocDao ackDocDao,
+                                 AcknowledgmentReportService ackReportService,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
     ) {
         this.ackDocDao = ackDocDao;
+        this.ackReportService = ackReportService;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -109,6 +120,69 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now()));
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
+    }
+
+    //1st Report - ALL ACKS OR NON ACKS FOR EVERY EMPLOYEE
+    @RequestMapping(value = "/report/complete/{ackDocId}", method = GET)
+    public void getCompleteReportForAckDoc(@PathVariable int ackDocId,
+                                           HttpServletResponse response) throws IOException {
+
+        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
+        String csvFileName = "AckDoc-"+ ackDocId +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
+
+        response.setContentType("text/csv");
+        response.setStatus(200);
+
+        // creates mock data
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"",
+                csvFileName);
+        response.setHeader(headerKey, headerValue);
+
+        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
+
+        for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
+            csvPrinter.printRecord(
+                    empAckReport.getEmpId(),
+                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
+                    empAckReport.getEmail(),
+                    empAckReport.getWorkLocation(),
+                    empAckReport.getAckedTimeMap().toString());
+        }
+        csvPrinter.close();
+    }
+
+    //2nd Report - ALL ACKS FOR EVERY EMPLOYEE (no acks? then youre not in report)
+    @RequestMapping(value = "/report/acks/all", method = GET)
+    public void getAllAcksFromAllEmployees(HttpServletResponse response) throws IOException {
+
+        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
+        String csvFileName = "AllAcknowledgmentsSenateReport" + LocalDateTime.now()+".csv";
+
+        response.setContentType("text/csv");
+        response.setStatus(200);
+
+        // creates mock data
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"",
+                csvFileName);
+        response.setHeader(headerKey, headerValue);
+
+        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
+
+        for (EmpAckReport empAckReport: ackReportService.getAllAcksFromEmployees()) {
+            csvPrinter.printRecord(
+                    empAckReport.getEmpId(),
+                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
+                    empAckReport.getEmail(),
+                    empAckReport.getWorkLocation(),
+                    empAckReport.getAckedTimeMap().toString());
+        }
+        csvPrinter.close();
     }
 
     /* --- Exception Handlers --- */

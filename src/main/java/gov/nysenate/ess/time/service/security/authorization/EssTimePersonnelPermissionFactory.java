@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.EssRole;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static gov.nysenate.ess.core.model.auth.CorePermissionObject.EMPLOYEE_INFO;
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ACK_REPORT_GENERATION;
 import static gov.nysenate.ess.time.model.auth.TimePermissionObject.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -40,6 +42,8 @@ public class EssTimePersonnelPermissionFactory implements PermissionFactory {
     private List<Permission> getPersonnelManagerPermissions() {
         return ImmutableList.of(
                 SimpleTimePermission.PERSONNEL_PAGES.getPermission(),
+
+                SimpleEssPermission.ACK_REPORT_GENERATION.getPermission(),
 
                 new CorePermission(EMPLOYEE_INFO, GET),
 

@@ -67,8 +67,12 @@ public class EssIpAuthzRealm extends AuthorizingRealm {
                 authInfo.addObjectPermissions(adminPermissionFactory.getPermissions(null, ImmutableSet.of(ROLE)));
             }
         }
+        catch(ClassCastException castEx) {
+            logger.debug("Ess IP realm could not retrieve principal for authorization. " +
+                    "This is expected when logging in through the UI.");
+        }
         catch (Exception ex) {
-            logger.info("Ess IP realm could not retrieve principal for authorization.");
+            logger.error("An error occurred during Ip Authorization.");
         }
         return authInfo;
     }

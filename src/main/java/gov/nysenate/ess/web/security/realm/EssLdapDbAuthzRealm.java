@@ -116,8 +116,14 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
         try {
             user = (SenatePerson) principals.getPrimaryPrincipal();
             empId = user.getEmployeeId();
-        } catch (Exception ex) {
-            logger.info("Ess LDAP realm could not retrieve principal for authorization");
+        }
+        catch(ClassCastException castEx) {
+            logger.debug("Ess LDAP realm could not retrieve principal for authorization. " +
+                    "This is expected when accessing the api via a whitelisted ip without logging in.");
+            return authInfo;
+        }
+        catch (Exception ex) {
+            logger.error("An error occured during LDAP Authorization.");
             return authInfo;
         }
 

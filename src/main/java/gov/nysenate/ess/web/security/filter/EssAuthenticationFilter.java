@@ -1,8 +1,10 @@
 package gov.nysenate.ess.web.security.filter;
 
 import gov.nysenate.ess.core.client.response.auth.AuthenticationResponse;
+import gov.nysenate.ess.core.dao.stats.UserAgentDao;
 import gov.nysenate.ess.core.model.auth.AuthenticationStatus;
 import gov.nysenate.ess.core.model.auth.SenateLdapPerson;
+import gov.nysenate.ess.core.model.stats.UserAgentInfo;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
 import gov.nysenate.ess.web.security.realm.EssIpAuthzRealm;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
@@ -14,6 +16,7 @@ import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +46,8 @@ public class EssAuthenticationFilter extends AuthenticationFilter
 
     @Resource(name = "xsrfValidator", description = "Generates/Validates XSRF Tokens")
     private XsrfValidator xsrfValidator;
+
+    @Autowired private UserAgentDao userAgentDao;
 
     /** --- Overrides --- */
 
@@ -198,6 +204,12 @@ public class EssAuthenticationFilter extends AuthenticationFilter
         HttpResponseUtils.writeHttpResponse((HttpServletRequest) request, (HttpServletResponse) response, authResponse);
         response.flushBuffer();
 
+        // Log user agent info
+        userAgentDao.insertUserAgentInfo(new UserAgentInfo(
+                user.getEmployeeId(),
+                ((HttpServletRequest) request).getHeader("User-Agent"),
+                LocalDateTime.now()
+        ));
         logger.debug("Login for user {} was successful.", user);
         return false;
     }

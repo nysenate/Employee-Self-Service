@@ -82,6 +82,7 @@ function supplyItemHistoryCtrl($scope, $q, supplyUtils, requisitionApi, location
     $scope.onFilterChange = function () {
         $scope.loading = true;
         $scope.result.map.clear();
+        $scope.result.array = [];
         getRequisitions()
             .then(parseResults)
             .then(sortResults)
