@@ -349,6 +349,10 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                         + $scope.app.allowances.registrationFee;
                 }
 
+                $scope.displayLodgingDetails = function () {
+                    modals.open('travel-lodging-details-modal', {}, true);
+                };
+
                 function displayMap() {
                     var map;
                     var directionsDisplay = new google.maps.DirectionsRenderer();

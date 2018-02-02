@@ -54,6 +54,8 @@
         </div>
         <div class="col-5-12 margin-5">
           Lodging: {{app.allowances.lodging.total | currency}}
+          <span class="icon-info"
+                ng-click="displayLodgingDetails()"></span>
         </div>
         <div class="col-5-12 margin-5">
           Mileage: {{app.allowances.mileage.total | currency}}

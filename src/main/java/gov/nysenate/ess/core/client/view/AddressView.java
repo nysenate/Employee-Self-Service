@@ -15,6 +15,7 @@ public class AddressView implements ViewObject
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
+    protected String formattedAddress = "";
 
     public AddressView() {}
 
@@ -25,6 +26,7 @@ public class AddressView implements ViewObject
         this.state = address.getState();
         this.zip5 = address.getZip5();
         this.zip4 = address.getZip4();
+        formattedAddress = address.toString();
     }
 
     public Address toAddress() {
@@ -65,5 +67,10 @@ public class AddressView implements ViewObject
     @XmlElement
     public String getZip4() {
         return zip4;
+    }
+
+    @XmlElement
+    public String getFormattedAddress() {
+        return formattedAddress;
     }
 }

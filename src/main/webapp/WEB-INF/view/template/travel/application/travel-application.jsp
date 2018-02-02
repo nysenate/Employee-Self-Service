@@ -46,6 +46,9 @@
            reject-button="Log out of ESS">
       </div>
     </modal>
+    <modal modal-id="travel-lodging-details-modal">
+      <div travel-lodging-details-modal lodging-allowance="app.allowances.lodging"></div>
+    </modal>
   </div>
 
 </div>
