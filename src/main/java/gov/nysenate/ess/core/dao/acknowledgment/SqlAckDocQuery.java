@@ -48,9 +48,7 @@ public enum SqlAckDocQuery implements BasicSqlQuery {
     GET_ALL_ACKS_FOR_DOC_WITH_NAME_AND_YEAR(
       "select a.emp_id, a.timestamp, d.title\n" +
               "from ess.acknowledgment a, ess.ack_doc d\n" +
-              "where a.ack_doc_id = d.id and\n" +
-              "      date_part('year', d.effective_date_time) = :year and\n" +
-              "      d.title = :title;"
+              "where a.ack_doc_id = d.id and d.id = :ackDocId;"
     );
 
 

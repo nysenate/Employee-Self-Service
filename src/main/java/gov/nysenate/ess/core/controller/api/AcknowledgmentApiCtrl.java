@@ -123,12 +123,12 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     //1st Report - ALL ACKS OR NON ACKS FOR EVERY EMPLOYEE
-    @RequestMapping(value = "/report/complete/{title}/{year}", method = GET)
-    public void getCompleteReportForAckDoc(@PathVariable String title, @PathVariable int year,
+    @RequestMapping(value = "/report/complete/{ackDocId}", method = GET)
+    public void getCompleteReportForAckDoc(@PathVariable int ackDocId,
                                            HttpServletResponse response) throws IOException {
 
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        String csvFileName = title +"_"+ year +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
+        String csvFileName = "AckDoc-"+ ackDocId +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
 
         response.setContentType("text/csv");
         response.setStatus(200);
@@ -143,7 +143,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                 .withFirstRecordAsHeader()
                 .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
 
-        for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocWithTitleAndYear(title,year)) {
+        for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
             csvPrinter.printRecord(
                     empAckReport.getEmpId(),
                     empAckReport.getFirstName() + " " + empAckReport.getLastName(),

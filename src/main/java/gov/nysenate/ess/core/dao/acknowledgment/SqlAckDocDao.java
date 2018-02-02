@@ -77,10 +77,9 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
     }
 
     //1st Report
-    public List<EmpAckReport> getAllAcksForDocWithNameAndYear(String title, int year) {
+    public List<EmpAckReport> getAllAcksForAckDocById(int ackDocId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("title",title);
-        params.addValue("year",year);
+        params.addValue("ackDocId",ackDocId);
         return localNamedJdbc.query(GET_ALL_ACKS_FOR_DOC_WITH_NAME_AND_YEAR.getSql(schemaMap()), params ,getEmpAckReportRowMapper());
     }
 

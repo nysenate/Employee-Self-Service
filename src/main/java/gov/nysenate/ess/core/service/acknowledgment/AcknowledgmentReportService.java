@@ -60,11 +60,11 @@ public class AcknowledgmentReportService {
     /*This corresponds to the 1st report, in which all acks on a single document are reported as well as those who have
     not acked this document
      */
-    public ArrayList<EmpAckReport> getAllAcksForAckDocWithTitleAndYear(String title, int year) {
+    public ArrayList<EmpAckReport> getAllAcksForAckDocById(int ackDocId) {
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
         ArrayList<EmpAckReport> completeAckReportList = new ArrayList<>();
 
-        List<EmpAckReport> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForDocWithNameAndYear(title,year);
+        List<EmpAckReport> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForAckDocById(ackDocId);
 
         for (Employee emp : employees) {
             EmpAckReport finalEmpAckReport = new EmpAckReport(emp.getEmployeeId(), emp.getFirstName(),emp.getLastName(),
