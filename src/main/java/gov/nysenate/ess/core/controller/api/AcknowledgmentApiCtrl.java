@@ -1,5 +1,7 @@
 package gov.nysenate.ess.core.controller.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -141,16 +143,20 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         response.setHeader(headerKey, headerValue);
 
         CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
+                .withHeader("EmpId", "Name", "Email", "Resp Center","Document Title",
+                        "Document Effective Date Time", "Acknowledgment"));
 
+        ObjectMapper mapper = OutputUtils.jsonMapper;
         for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
+            JsonNode ackNode = mapper.readTree(OutputUtils.toJson(empAckReport.getAcks().get(0).getAck()));
             csvPrinter.printRecord(
                     empAckReport.getEmployee().getEmployeeId(),
                     empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
                     empAckReport.getEmployee().getEmail(),
                     empAckReport.getEmployee().getRespCenter().getHead().getShortName(),
-                    OutputUtils.toJson(empAckReport.getAcks()));
+                    empAckReport.getAcks().get(0).getAckDoc().getTitle(),
+                    empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime(),
+                    ackNode.get("timestamp"));
         }
         csvPrinter.close();
     }

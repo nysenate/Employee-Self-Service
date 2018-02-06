@@ -68,11 +68,13 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
         ArrayList<EmpAckReport> completeAckReportList = new ArrayList<>();
 
         List<ReportAck> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForAckDocById(ackDocId);
+        AckDoc reuqestedAckDoc = sqlAckDocDao.getAckDoc(ackDocId);
 
 
         for (Employee emp : employees) {
             EmpAckReport finalEmpAckReport = new EmpAckReport(emp);
             ReportAck reportAck = determineEmpAck(empsWhoHaveAckedSpecificDoc, emp.getEmployeeId());
+            reportAck.setAckDoc(reuqestedAckDoc);
             finalEmpAckReport.getAcks().add(reportAck);
             completeAckReportList.add(finalEmpAckReport);
         }
