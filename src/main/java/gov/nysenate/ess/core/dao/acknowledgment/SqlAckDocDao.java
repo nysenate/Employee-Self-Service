@@ -1,10 +1,7 @@
 package gov.nysenate.ess.core.dao.acknowledgment;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
-import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
-import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
-import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
+import gov.nysenate.ess.core.model.acknowledgment.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -90,16 +87,16 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
 
     /** {@inheritDoc} */
     @Override
-    public List<EmpAckReport> getAllAcksForAckDocById(int ackDocId) {
+    public List<ReportAck> getAllAcksForAckDocById(int ackDocId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("ackDocId",ackDocId);
-        return localNamedJdbc.query(GET_ALL_ACKS_FOR_DOC_WITH_NAME_AND_YEAR.getSql(schemaMap()), params ,getEmpAckReportRowMapper());
+        return localNamedJdbc.query(GET_ALL_ACKS_FOR_DOC_WITH_NAME_AND_YEAR.getSql(schemaMap()), params ,getAckReportRowMapper());
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<EmpAckReport> getAllAcksForEmpWithTimestampAndDocRef() {
-        return localNamedJdbc.query(  GET_ALL_ACKS_WITH_TIMESTAMP_AND_DOC_REF.getSql(schemaMap()) ,getEmpAckReportRowMapper());
+    public List<AckDoc> getAllAckDocs() {
+        return localNamedJdbc.query(  GET_ALL_ACK_DOCS.getSql(schemaMap()) ,getAckDocRowMapper());
     }
 
 
@@ -113,8 +110,8 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         return new AcknowledgmentRowMapper("");
     }
 
-    private static EmpAckReportRowMapper getEmpAckReportRowMapper() {
-        return new EmpAckReportRowMapper("");
+    private static ReportAckRowMapper getAckReportRowMapper() {
+        return new ReportAckRowMapper("");
     }
 
 }

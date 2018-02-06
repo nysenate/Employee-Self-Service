@@ -1,9 +1,6 @@
 package gov.nysenate.ess.core.dao.acknowledgment;
 
-import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
-import gov.nysenate.ess.core.model.acknowledgment.AckDocNotFoundEx;
-import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
-import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
+import gov.nysenate.ess.core.model.acknowledgment.*;
 
 import java.util.List;
 
@@ -63,20 +60,19 @@ public interface AckDocDao {
     List<Acknowledgment> getAllAcknowledgmentsForEmp(int empId);
 
     /**
-     * This method returns all acknowledgments for the ackDoc with the reuqested id for all active employees.
+     * This method returns all acknowledgments for the ackDoc with the requested id for all active employees.
      *
-     * {@link EmpAckReport}
+     * {@link ReportAck}
      * @param ackDocId - The id of the ack doc a personnel member would want to generate a report for
-     * @return {@link List<EmpAckReport>} - The list of all acknowlegments in report form for the requested ackdoc
+     * @return {@link List<ReportAck>} - The list of all acknowlegments in report form for the requested ackdoc
      */
-    public List<EmpAckReport> getAllAcksForAckDocById(int ackDocId);
+    public List<ReportAck> getAllAcksForAckDocById(int ackDocId);
 
     /**
-     * This method returns all acknowledgments across ackdocs for all active senate employees
+     * Retrieves all AckDocs whether they are active or not
      *
-     * {@link EmpAckReport}
-     * @return @return {@link List<EmpAckReport>} - The list of all acknowlegments in report form for the requested ackdoc
+     * @return {@link List<AckDoc>}
      */
-    public List<EmpAckReport> getAllAcksForEmpWithTimestampAndDocRef();
+    public List<AckDoc> getAllAckDocs();
 
 }

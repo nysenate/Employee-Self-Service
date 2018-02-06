@@ -3,7 +3,9 @@ package gov.nysenate.ess.core.model.acknowledgment;
 import gov.nysenate.ess.core.model.unit.Location;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class EmpAckReport {
 
@@ -12,7 +14,7 @@ public class EmpAckReport {
     private String lastName;
     private String email;
     private Location workLocation;
-    private HashMap<LocalDateTime,String > AckedTimeMap = new HashMap<>();
+    private List<ReportAck> acks = new ArrayList<ReportAck>();
 
     /*
     Constructors
@@ -28,21 +30,16 @@ public class EmpAckReport {
         this.workLocation = workLocation;
     }
 
-    public EmpAckReport(int empId, String ackDocTitle ,LocalDateTime timestamp) {
-        this.empId = empId;
-        AckedTimeMap.put(timestamp,ackDocTitle);
-    }
-
     /*
     Getters and Setters
      */
 
-    public HashMap<LocalDateTime, String> getAckedTimeMap() {
-        return AckedTimeMap;
+    public List<ReportAck> getAcks() {
+        return acks;
     }
 
-    public void setAckedTimeMap(HashMap<LocalDateTime, String> ackedTimeMap) {
-        AckedTimeMap = ackedTimeMap;
+    public void setAcks(List<ReportAck> acks) {
+        this.acks = acks;
     }
 
     public int getEmpId() {

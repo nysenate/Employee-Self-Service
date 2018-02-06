@@ -1,13 +1,17 @@
 package gov.nysenate.ess.core.service.acknowledgment;
 
 import gov.nysenate.ess.core.dao.acknowledgment.SqlAckDocDao;
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
 import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
+import gov.nysenate.ess.core.model.acknowledgment.ReportAck;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 @Service
@@ -25,40 +29,40 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
 
     /** {@inheritDoc} */
     @Override
-    public ArrayList<EmpAckReport> getAllAcksFromEmployees() {
-        ArrayList<EmpAckReport> completeAckReportList = getAllEmployeesAcks();
-        removeEmpsWithNoAcks(completeAckReportList);
-        return completeAckReportList;
-    }
-
-    /*
-    This corresponds to the 2nd report, in which . W
-    We only care about employees that have acked at least one document
-     */
-
-    /**
-     * All acks from all employees are reported, If an employee did not acknowledge a single document,
-     * then they are excluded from this report
-     * @return {@link ArrayList<EmpAckReport>}
-     */
-    private ArrayList<EmpAckReport> getAllEmployeesAcks() {
+    public EmpAckReport getAllAcksFromEmployee(int empId) {
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
 
-        ArrayList<EmpAckReport> completeAckReportList = new ArrayList<>();
+        EmpAckReport finalEmpAckReport = new EmpAckReport();
 
-        List<EmpAckReport> completeAckReports = sqlAckDocDao.getAllAcksForEmpWithTimestampAndDocRef();
+        List<Acknowledgment> allEmpAcks = sqlAckDocDao.getAllAcknowledgmentsForEmp(empId);
+        List<AckDoc> allAckDocs = sqlAckDocDao.getAllAckDocs();
+        List<ReportAck> reportAcks = new ArrayList<ReportAck>();
 
         for (Employee emp : employees) {
-            EmpAckReport finalEmpAckReport = new EmpAckReport(emp.getEmployeeId(), emp.getFirstName(),emp.getLastName(),
-                    emp.getEmail(),emp.getWorkLocation());
-
-            ArrayList<EmpAckReport> empAckReports = determineEmpAcks(completeAckReports, emp.getEmployeeId());
-
-            mergeAcksIntoFinalReport(finalEmpAckReport, empAckReports);
-
-            completeAckReportList.add(finalEmpAckReport);
+            if (emp.getEmployeeId() == empId) {
+                finalEmpAckReport.setEmpId(emp.getEmployeeId());
+                finalEmpAckReport.setFirstName(emp.getFirstName());
+                finalEmpAckReport.setLastName(emp.getLastName());
+                finalEmpAckReport.setEmail(emp.getEmail());
+                finalEmpAckReport.setWorkLocation(emp.getWorkLocation());
+            }
         }
-        return completeAckReportList;
+
+        for (AckDoc ackDoc: allAckDocs) {
+            reportAcks.add(new ReportAck(empId,ackDoc.getId(),null,ackDoc.getTitle(),ackDoc.getEffectiveDateTime()));
+        }
+
+        for (ReportAck reportAck: reportAcks) {
+            for (Acknowledgment ack: allEmpAcks) {
+                if (ack.getAckDocId() == reportAck.getAckDocId()) {
+                    reportAck.setAckTimestamp(ack.getTimestamp());
+                }
+            }
+        }
+
+        finalEmpAckReport.setAcks(reportAcks);
+
+        return finalEmpAckReport;
     }
 
     /** {@inheritDoc} */
@@ -67,18 +71,13 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
         Set<Employee> employees = employeeInfoService.getAllEmployees(true);
         ArrayList<EmpAckReport> completeAckReportList = new ArrayList<>();
 
-        List<EmpAckReport> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForAckDocById(ackDocId);
+        List<ReportAck> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForAckDocById(ackDocId);
 
         for (Employee emp : employees) {
             EmpAckReport finalEmpAckReport = new EmpAckReport(emp.getEmployeeId(), emp.getFirstName(),emp.getLastName(),
                     emp.getEmail(),emp.getWorkLocation());
-
-            EmpAckReport empAckReport = determineEmpAck(empsWhoHaveAckedSpecificDoc, emp.getEmployeeId());
-
-            if (!empAckReport.getAckedTimeMap().isEmpty()) {
-                finalEmpAckReport.getAckedTimeMap().putAll(empAckReport.getAckedTimeMap());
-            }
-
+            ReportAck reportAck = determineEmpAck(empsWhoHaveAckedSpecificDoc, emp.getEmployeeId());
+            finalEmpAckReport.getAcks().add(reportAck);
             completeAckReportList.add(finalEmpAckReport);
         }
 
@@ -92,10 +91,8 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
      * @param finalReport - The final Report for a given employee
      * @param ackedReports - List of all acknowledgments for that employee
      */
-    private void mergeAcksIntoFinalReport(EmpAckReport finalReport,List<EmpAckReport> ackedReports) {
-        for (int i=0; i<ackedReports.size();i++) {
-            finalReport.getAckedTimeMap().putAll(ackedReports.get(i).getAckedTimeMap());
-        }
+    private void mergeAcksIntoFinalReport(EmpAckReport finalReport,List<ReportAck> ackedReports) {
+        finalReport.setAcks(ackedReports);
     }
 
     /**
@@ -129,32 +126,16 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
      * @param empId The employee id whose EmpAckReport we want to find
      * @return the EmpAckReport of the empid that was passed in
      */
-    private EmpAckReport determineEmpAck(List<EmpAckReport> allAckReports, int empId) {
-        EmpAckReport empAckReport = new EmpAckReport();
+    private ReportAck determineEmpAck(List<ReportAck> allAckReports, int empId) {
+        ReportAck reportAck = new ReportAck();
         Iterator it = allAckReports.iterator();
         while(it.hasNext()) {
-            EmpAckReport empAckReportFromAll = (EmpAckReport) it.next();
-            if (empAckReportFromAll.getEmpId() == empId) {
-                empAckReport = empAckReportFromAll;
+            ReportAck AckReportFromAll = (ReportAck) it.next();
+            if (AckReportFromAll.getEmpId() == empId) {
+                reportAck = AckReportFromAll;
                 it.remove();
             }
         }
-        return empAckReport;
-    }
-
-    /**
-     * This method takes in a list of {@link List<EmpAckReport>}
-     * and removes all employees with no acknowledgments
-     *
-     * @param completeReports List of all employee reports
-     */
-    private void removeEmpsWithNoAcks(List<EmpAckReport> completeReports) {
-        Iterator it = completeReports.iterator();
-        while(it.hasNext()) {
-            EmpAckReport empAckReport = (EmpAckReport) it.next();
-            if (empAckReport.getAckedTimeMap().isEmpty()) {
-                it.remove();
-            }
-        }
+        return reportAck;
     }
 }

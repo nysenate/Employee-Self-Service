@@ -7,12 +7,12 @@ import java.util.ArrayList;
 public interface EssAcknowledgmentReportService {
 
     /**
-     * Returns a list of all acknowledgments for each employee
+     * Returns a list of all acknowledgments for a single employee
      * This list of {@link EmpAckReport} will not contain any employees who have no acknowledgments
      *
      * @return {@link ArrayList<EmpAckReport>}
      */
-    public ArrayList<EmpAckReport> getAllAcksFromEmployees();
+    public EmpAckReport getAllAcksFromEmployee(int empId);
 
     /**
      *All acks on a single document are reported as {@link EmpAckReport},
