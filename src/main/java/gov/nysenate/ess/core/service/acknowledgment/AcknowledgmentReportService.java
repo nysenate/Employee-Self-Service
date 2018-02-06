@@ -40,22 +40,18 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
 
         for (Employee emp : employees) {
             if (emp.getEmployeeId() == empId) {
-                finalEmpAckReport.setEmpId(emp.getEmployeeId());
-                finalEmpAckReport.setFirstName(emp.getFirstName());
-                finalEmpAckReport.setLastName(emp.getLastName());
-                finalEmpAckReport.setEmail(emp.getEmail());
-                finalEmpAckReport.setWorkLocation(emp.getWorkLocation());
+                finalEmpAckReport.setEmployee(emp);
             }
         }
 
         for (AckDoc ackDoc: allAckDocs) {
-            reportAcks.add(new ReportAck(empId,ackDoc.getId(),null,ackDoc.getTitle(),ackDoc.getEffectiveDateTime()));
+            reportAcks.add(new ReportAck(ackDoc,null));
         }
 
         for (ReportAck reportAck: reportAcks) {
             for (Acknowledgment ack: allEmpAcks) {
-                if (ack.getAckDocId() == reportAck.getAckDocId()) {
-                    reportAck.setAckTimestamp(ack.getTimestamp());
+                if (ack.getAckDocId().equals( reportAck.getAckDoc().getId())) {
+                    reportAck.setAck(ack);
                 }
             }
         }
@@ -73,9 +69,9 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
 
         List<ReportAck> empsWhoHaveAckedSpecificDoc = sqlAckDocDao.getAllAcksForAckDocById(ackDocId);
 
+
         for (Employee emp : employees) {
-            EmpAckReport finalEmpAckReport = new EmpAckReport(emp.getEmployeeId(), emp.getFirstName(),emp.getLastName(),
-                    emp.getEmail(),emp.getWorkLocation());
+            EmpAckReport finalEmpAckReport = new EmpAckReport(emp);
             ReportAck reportAck = determineEmpAck(empsWhoHaveAckedSpecificDoc, emp.getEmployeeId());
             finalEmpAckReport.getAcks().add(reportAck);
             completeAckReportList.add(finalEmpAckReport);
@@ -85,53 +81,20 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
     }
 
     /**
-     * Merge ack reports for a specific employee into the final report for that employee
-     *
-     * {@link EmpAckReport}
-     * @param finalReport - The final Report for a given employee
-     * @param ackedReports - List of all acknowledgments for that employee
-     */
-    private void mergeAcksIntoFinalReport(EmpAckReport finalReport,List<ReportAck> ackedReports) {
-        finalReport.setAcks(ackedReports);
-    }
-
-    /**
-     * Finds the employee acknowledgments amongst every other employees acknowledgment
-     * This removes the ack once its found to improve efficiency
-     *
-     * {@link EmpAckReport}
-     * @param allAckReports List of all EmpAckReports
-     * @param empId The employee id whose EmpAckReports we want to find
-     * @returnthe EmpAckReports of the empid that was passed in
-     */
-    private ArrayList<EmpAckReport> determineEmpAcks(List<EmpAckReport> allAckReports, int empId) {
-        ArrayList<EmpAckReport> empAckReports = new ArrayList<>();
-        Iterator it = allAckReports.iterator();
-        while(it.hasNext()) {
-            EmpAckReport empAckReport = (EmpAckReport) it.next();
-            if (empAckReport.getEmpId() == empId) {
-                empAckReports.add(empAckReport);
-                it.remove();
-            }
-        }
-        return empAckReports;
-    }
-
-    /**
      * Finds the employee acknowledgment amongst every other employees acknowledgment
      * This removes the ack once its found to improve efficiency
      *
      * {@link EmpAckReport}
-     * @param allAckReports List of all EmpAckReports
+     * @param allReportAcks List of all EmpAckReports
      * @param empId The employee id whose EmpAckReport we want to find
      * @return the EmpAckReport of the empid that was passed in
      */
-    private ReportAck determineEmpAck(List<ReportAck> allAckReports, int empId) {
+    private ReportAck determineEmpAck(List<ReportAck> allReportAcks, int empId) {
         ReportAck reportAck = new ReportAck();
-        Iterator it = allAckReports.iterator();
+        Iterator it = allReportAcks.iterator();
         while(it.hasNext()) {
             ReportAck AckReportFromAll = (ReportAck) it.next();
-            if (AckReportFromAll.getEmpId() == empId) {
+            if (AckReportFromAll.getAck().getEmpId() == empId) {
                 reportAck = AckReportFromAll;
                 it.remove();
             }

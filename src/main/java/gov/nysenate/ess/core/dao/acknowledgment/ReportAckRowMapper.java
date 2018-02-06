@@ -1,6 +1,8 @@
 package gov.nysenate.ess.core.dao.acknowledgment;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
 import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
 import gov.nysenate.ess.core.model.acknowledgment.ReportAck;
 
@@ -18,11 +20,18 @@ public class ReportAckRowMapper extends BaseRowMapper<ReportAck> {
     @Override
     public ReportAck mapRow(ResultSet rs, int rowNum) throws SQLException {
         ReportAck reportAck = new ReportAck();
-        reportAck.setEmpId(rs.getInt(pfx + "emp_id"));
-        reportAck.setAckTimestamp(getLocalDateTimeFromRs(rs, pfx +"timestamp"));
-        reportAck.setAckDocId(rs.getInt(pfx + "ack_doc_id"));
-        reportAck.setAckDocTitle(rs.getString(pfx + "title"));
-        reportAck.setAckDocEffectiveTime(getLocalDateTimeFromRs(rs, pfx +"effective_date_time"));
+        Acknowledgment ack = new Acknowledgment();
+        AckDoc ackDoc = new AckDoc();
+        ack.setEmpId(rs.getInt(pfx + "emp_id"));
+        ack.setTimestamp(getLocalDateTimeFromRs(rs, pfx +"timestamp"));
+        ack.setAckDocId(rs.getInt(pfx + "ack_doc_id"));
+        ackDoc.setId(rs.getInt(pfx + "ack_doc_id"));
+        ackDoc.setTitle(rs.getString(pfx + "title"));
+        ackDoc.setFilename(rs.getString(pfx + "filename"));
+        ackDoc.setActive(rs.getBoolean(pfx + "active"));
+        ackDoc.setEffectiveDateTime(getLocalDateTimeFromRs(rs, pfx +"effective_date_time"));
+        reportAck.setAck(ack);
+        reportAck.setAckDoc(ackDoc);
         return reportAck;
     }
 }

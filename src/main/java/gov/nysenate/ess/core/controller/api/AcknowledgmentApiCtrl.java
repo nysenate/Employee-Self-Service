@@ -146,10 +146,10 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
         for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
             csvPrinter.printRecord(
-                    empAckReport.getEmpId(),
-                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
-                    empAckReport.getEmail(),
-                    empAckReport.getWorkLocation(),
+                    empAckReport.getEmployee().getEmployeeId(),
+                    empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
+                    empAckReport.getEmployee().getEmail(),
+                    empAckReport.getEmployee().getRespCenter().getHead().getShortName(),
                     OutputUtils.toJson(empAckReport.getAcks()));
         }
         csvPrinter.close();
