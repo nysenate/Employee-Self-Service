@@ -79,7 +79,17 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
             completeAckReportList.add(finalEmpAckReport);
         }
 
+        Collections.sort(completeAckReportList,new RespCenterComparator());
+
         return completeAckReportList;
+    }
+
+    static class RespCenterComparator implements Comparator<EmpAckReport>
+    {
+        public int compare(EmpAckReport reportOne, EmpAckReport reportTwo)
+        {
+            return reportOne.getEmployee().getRespCenter().getHead().getShortName().compareTo(reportTwo.getEmployee().getRespCenter().getHead().getShortName());
+        }
     }
 
     /**
