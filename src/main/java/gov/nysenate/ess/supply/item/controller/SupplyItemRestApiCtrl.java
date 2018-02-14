@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.item.controller;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.unit.LocationId;
@@ -36,6 +37,12 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
         this.locationService = locationService;
     }
 
+    @RequestMapping("/{itemId}")
+    public BaseResponse getSupplyItemById(@PathVariable int itemId) {
+        checkPermission(new WildcardPermission("supply:employee"));
+        return new ViewObjectResponse<>(new SupplyItemView(supplyItemDao.getItemById(itemId)));
+    }
+
     /**
      * Supply Items API.
      * <p>
@@ -56,7 +63,7 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
      * <p>
      * PathVariables: locId - A location id represented by a location code - location type. e.g. A42FB-W
      */
-    @RequestMapping("/{locId}")
+    @RequestMapping("/orderable/{locId}")
     public BaseResponse orderableSupplyItems(@PathVariable String locId) {
         LocationId locationId = LocationId.ofString(locId);
         if (locationService.getLocation(locationId) == null) {

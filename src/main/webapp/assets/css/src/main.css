@@ -4398,6 +4398,26 @@ img.ui-datepicker-trigger {
     color: black;
   }
 }
+.supply-item-print-container-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  font-weight: bold;
+  border-bottom: black solid 2px;
+  margin-bottom: 10px;
+}
+.supply-item-print-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.supply-item-print-item {
+  flex: 1 1 auto;
+}
 /**
 * Styles for ESS Time
 */

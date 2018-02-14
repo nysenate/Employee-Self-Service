@@ -127,6 +127,14 @@ function supplyItemHistoryFactory(requisitionApi) {
          */
         getItemHistories: function () {
             return itemHistories.value;
+        },
+
+        /**
+         * Returns the parameters used in querying these item histories.
+         * @return {{itemId: string, locId: string, from: {}, to: {}}}
+         */
+        getParams: function () {
+            return params;
         }
     };
 

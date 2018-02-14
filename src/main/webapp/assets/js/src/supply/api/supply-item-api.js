@@ -6,7 +6,14 @@ essSupply.factory('SupplyItemApi',
 function supplyItemApi($resource, appProps, modals) {
 
     var itemsApi = $resource(appProps.apiPath + '/supply/items.json');
-    var itemsForLocApi = $resource(appProps.apiPath + '/supply/items/:locId.json', {locId: '@locId'});
+    var itemApi = $resource(appProps.apiPath + '/supply/items/:itemId.json', {itemId: '@itemId'});
+    var itemsForLocApi = $resource(appProps.apiPath + '/supply/items/orderable/:locId.json', {locId: '@locId'});
+
+    function item(itemId) {
+        return itemApi.get({itemId: itemId}).$promise
+            .then(returnResult)
+            .catch(apiError)
+    }
 
     function items() {
         return itemsApi.get().$promise
@@ -32,6 +39,7 @@ function supplyItemApi($resource, appProps, modals) {
     }
 
     return {
+        item: item,
         items: items,
         itemsForLoc: itemsForLoc
     }
