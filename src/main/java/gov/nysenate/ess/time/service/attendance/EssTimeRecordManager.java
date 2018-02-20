@@ -269,10 +269,14 @@ public class EssTimeRecordManager implements TimeRecordManager
         // or the record range has changed, split it
         else if (rangesUnderRecord.size() > 1 ||
                 !rangesUnderRecord.get(0).equals(record.getDateRange())) {
-            return splitRecord(record, rangesUnderRecord);
+            List<TimeRecord> splitRecords = splitRecord(record, rangesUnderRecord);
+            splitRecords.stream()
+                    .peek(this::patchRecordData)
+                    .forEach(this::patchEntries);
+            return splitRecords;
         }
         // otherwise, check the record for inconsistencies and patch it if necessary
-        else if (patchRecordData(record)) {
+        else if (patchRecordData(record) && patchEntries(record)) {
             return Collections.singletonList(record);
         }
         return Collections.emptyList();
@@ -308,7 +312,6 @@ public class EssTimeRecordManager implements TimeRecordManager
             // Adjust the begin and end dates of the existing record to match the first range
             // patch the existing record + entries, ensuring correct supervisor and pay types
             record.setDateRange(rangeIterator.next());
-            patchRecordData(record);
 
             // Prune any existing entries with dates outside of the first range,
             // saving them to be added to any appropriate new records that are created
@@ -360,12 +363,17 @@ public class EssTimeRecordManager implements TimeRecordManager
                 transService.getTransHistory(record.getEmployeeId())
                         .getEffectivePayTypes(Range.all()));
 
-        // Check the pay types for each entry
         for (TimeEntry entry : record.getTimeEntries()) {
+            // Check the pay types for each entry
             PayType correctPayType = payTypes.get(entry.getDate());
             if (!Objects.equals(entry.getPayType(), correctPayType)) {
                 modifiedEntries = true;
                 entry.setPayType(correctPayType);
+            }
+            // Deactivate any entries that do not fall within the record dates
+            if (!record.getDateRange().contains(entry.getDate())) {
+                modifiedEntries = true;
+                entry.setActive(false);
             }
         }
         return modifiedEntries;

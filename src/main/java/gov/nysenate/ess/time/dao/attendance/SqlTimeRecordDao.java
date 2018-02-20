@@ -137,10 +137,18 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         }
         // Insert each entry from the time record
         final Optional<TimeRecord> oldRecord = isUpdate ? Optional.of(getTimeRecord(record.getTimeRecordId())) : Optional.empty();
-        record.getTimeEntries().stream()
-                .filter(entry -> shouldInsert(entry, oldRecord))
-                .peek(entry -> ensureId(entry, oldRecord))
-                .forEach(timeEntryDao::updateTimeEntry);
+
+        for (TimeEntry entry : record.getTimeEntries()) {
+            if (!shouldUpdate(entry, oldRecord)) {
+                continue;
+            }
+            ensureId(entry, oldRecord);
+            timeEntryDao.updateTimeEntry(entry);
+            // Remove the entry from the time record if it is inactive
+            if (!entry.isActive()) {
+                record.removeEntry(entry.getDate());
+            }
+        }
         return true;
     }
 
@@ -257,11 +265,13 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
      * @param oldRecord TimeRecord - a record containing the last saved entry set
      * @return true if the entry is fundamentally different than the equivalent entry in oldRecord
      */
-    private static boolean shouldInsert(TimeEntry entry, Optional<TimeRecord> oldRecord) {
-        return oldRecord
-                .map(rec -> rec.getEntry(entry.getDate()))
+    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> oldRecord) {
+        Optional<TimeEntry> oldEntry = oldRecord.map(rec -> rec.getEntry(entry.getDate()));
+        return oldEntry
+                // Return true if the old record has the entry, and it is different
                 .map(oldEnt -> !oldEnt.equals(entry))
-                .orElse(!entry.isEmpty());
+                // Or the new entry is active and non-empty
+                .orElse(!entry.isEmpty() && entry.isActive());
     }
 
     /**

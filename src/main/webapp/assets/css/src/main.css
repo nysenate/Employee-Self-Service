@@ -4398,6 +4398,62 @@ img.ui-datepicker-trigger {
     color: black;
   }
 }
+.supply-item-print-header-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  font-weight: bold;
+  border-bottom: black solid 2px;
+  margin-bottom: 10px;
+}
+.supply-item-print-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: grey solid 1px;
+}
+.supply-item-print-inner-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.supply-item-print-total {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.supply-item-print-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.supply-item-print-item {
+  flex: 0 1 auto;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+.supply-simple-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.supply-simple-item {
+  flex: 0 0 auto;
+}
 /**
 * Styles for ESS Time
 */
