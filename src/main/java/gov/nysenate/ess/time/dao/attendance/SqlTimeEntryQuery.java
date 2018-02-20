@@ -29,7 +29,7 @@ public enum SqlTimeEntryQuery implements BasicSqlQuery
         "   NUXRMISC = :miscTypeId, CDSTATUS = :status, DECOMMENTS = :empComment,\n" +
         "   CDPAYTYPE = :payType, NUVACATION = :vacationHR, NUPERSONAL = :personalHR,\n" +
         "   NATXNUPDUSER = :lastUser, NAUSER = :lastUser\n" +
-        "WHERE NUXREFEM = :empId AND NUXRDAY = :tSDayId"
+        "WHERE NUXREFEM = :empId AND DTDAY = :dayDate"
     );
 
     private String sql;
