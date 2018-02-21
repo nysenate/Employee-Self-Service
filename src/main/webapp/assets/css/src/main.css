@@ -4425,12 +4425,13 @@ img.ui-datepicker-trigger {
   justify-content: flex-start;
   align-items: flex-start;
 }
-.supply-item-print-total {
+.supply-item-print-total-row {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: flex-start;
+  margin-top: 20px;
 }
 .supply-item-print-container {
   display: flex;
