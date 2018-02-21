@@ -22,6 +22,7 @@
         </div>
       </div>
     </div>
+
     <div class="supply-item-print-header-row">
       <div class="supply-item-print-item" style="width: 100px;">
         Location
@@ -80,7 +81,17 @@
           </div>
         </div>
       </div>
-
+    </div>
+    <div class="supply-item-print-total-row">
+      <div class="supply-item-print-item" style="width: 475px;">
+        &nbsp
+      </div>
+      <div class="supply-item-print-item bold" style="width: 115px; padding-left: 10px; border: black solid; border-width: 1px 0 1px 1px;">
+        Total:
+      </div>
+      <div class="supply-item-print-item bold" style="width: 80px; border: black solid; border-width: 1px 1px 1px 0;">
+        {{getTotalQuantity()}}
+      </div>
     </div>
   </div>
 </div>
