@@ -79,6 +79,7 @@ function supplyItemHistoryFactory(requisitionApi) {
     function apiParams() {
         return {
             status: ["APPROVED"],
+            dateField: "completed_date_time",
             itemId: params.itemId,
             location: params.locId,
             from: params.from,
