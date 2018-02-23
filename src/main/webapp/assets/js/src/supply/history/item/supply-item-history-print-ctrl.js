@@ -4,11 +4,13 @@ essSupply = angular.module('essSupply')
 
 function supplyItemHistoryPrintCtrl($scope, itemHistoryFactory, itemApi, $window, $timeout) {
 
-    $scope.itemHistories = itemHistoryFactory.getItemHistories();
-    $scope.params = itemHistoryFactory.getParams();
+    $scope.itemHistories = [];
+    $scope.params = {};
     $scope.commodityCode = '';
 
     function init() {
+        $scope.itemHistories = itemHistoryFactory.getItemHistories();
+        $scope.params = itemHistoryFactory.getParams();
         if ($scope.params.itemId === 'All') {
            $scope.commodityCode = 'All';
         }
@@ -32,6 +34,14 @@ function supplyItemHistoryPrintCtrl($scope, itemHistoryFactory, itemApi, $window
             }
         });
         return qty;
+    };
+
+    $scope.getTotalQuantity = function() {
+        var total = 0;
+        $scope.itemHistories.forEach(function(i) {
+            total += i.quantity;
+        });
+        return total;
     };
 
     function print() {
