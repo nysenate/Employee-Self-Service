@@ -21,10 +21,13 @@
         <td></td>
         <td class="bold">Total:</td>
         <td></td>
-        <td class="bold">{{mileageAllowance.total | currency}}</td>
+        <td class="bold">{{mileageAllowance.total | currency}}<span ng-if="displayRequirements">*</span></td>
       </tr>
       </tbody>
     </table>
+  </div>
+  <div class="margin-top-20" ng-if="displayRequirements">
+    <p>* The outbound leg of a trip must be greater than 35 miles to qualify for mileage reimbursement.</p>
   </div>
   <div class="travel-button-container">
     <input type="button" class="travel-neutral-button" value="Exit"

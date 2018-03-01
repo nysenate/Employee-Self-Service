@@ -57,13 +57,13 @@
         </div>
         <div class="col-5-12 margin-5">
           Lodging: {{app.allowances.lodging.total | currency}}
-          <span class="icon-info pointer"
+          <span ng-if="app.allowances.lodging.lodgingNights.length > 0" class="icon-info pointer"
                 ng-click="displayLodgingDetails()">
           </span>
         </div>
         <div class="col-5-12 margin-5">
           Mileage: {{app.allowances.mileage.total | currency}}
-           <span class="icon-info pointer"
+           <span ng-if="app.allowances.mileage.outboundLegs.length > 0" class="icon-info pointer"
                 ng-click="displayMileageDetails()">
           </span>
         </div>

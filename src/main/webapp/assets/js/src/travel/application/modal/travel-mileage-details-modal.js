@@ -15,6 +15,8 @@ function mileageDetailsModalCtrl($scope, modals) {
 
     $scope.mileageAllowance.legs = $scope.mileageAllowance.outboundLegs.concat($scope.mileageAllowance.returnLegs);
 
+    $scope.displayRequirements = $scope.mileageAllowance.legs.length > 0 && Number($scope.mileageAllowance.total) === 0;
+
     $scope.closeModal = function() {
         modals.resolve();
     }
