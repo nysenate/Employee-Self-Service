@@ -57,6 +57,10 @@
     <modal modal-id="travel-meal-details-modal">
       <div travel-meal-details-modal meal-allowance="app.allowances.meals"></div>
     </modal>
+
+    <modal modal-id="travel-mileage-details-modal">
+      <div travel-mileage-details-modal mileage-allowance="app.allowances.mileage"></div>
+    </modal>
   </div>
 
 </div>

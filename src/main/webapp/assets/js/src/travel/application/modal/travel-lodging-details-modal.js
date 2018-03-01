@@ -19,8 +19,6 @@ function lodgingDetailsModalCtrl($scope, modals) {
         return 0;
     });
 
-    console.log($scope.lodgingAllowance);
-
     $scope.closeModal = function() {
         modals.resolve();
     }

@@ -63,6 +63,9 @@
         </div>
         <div class="col-5-12 margin-5">
           Mileage: {{app.allowances.mileage.total | currency}}
+           <span class="icon-info pointer"
+                ng-click="displayMileageDetails()">
+          </span>
         </div>
         <div class="col-5-12 margin-5">
           Tolls: {{app.allowances.tolls | currency}}

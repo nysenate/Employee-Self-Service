@@ -1,0 +1,33 @@
+<div class="content-container no-top-margin text-align-center">
+  <h3 class="content-info">Mileage Details</h3>
+  <div class="margin-20">
+    <table class="travel-table">
+      <thead>
+      <tr>
+        <td>From</td>
+        <td>To</td>
+        <td>Miles</td>
+        <td>Rate</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="leg in mileageAllowance.legs">
+        <td>{{leg.leg.from.formattedAddress}}</td>
+        <td>{{leg.leg.to.formattedAddress}}</td>
+        <td>{{leg.distance}}</td>
+        <td>{{mileageAllowance.rate | currency}}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="bold">Total:</td>
+        <td></td>
+        <td class="bold">{{mileageAllowance.total | currency}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="travel-button-container">
+    <input type="button" class="travel-neutral-button" value="Exit"
+           ng-click="closeModal()">
+  </div>
+</div>
