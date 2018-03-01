@@ -353,6 +353,10 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                     modals.open('travel-lodging-details-modal', {}, true);
                 };
 
+                $scope.displayMealDetails = function () {
+                    modals.open('travel-meal-details-modal', {}, true);
+                };
+
                 function displayMap() {
                     var map;
                     var directionsDisplay = new google.maps.DirectionsRenderer();

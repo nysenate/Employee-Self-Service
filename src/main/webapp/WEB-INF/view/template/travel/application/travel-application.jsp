@@ -32,12 +32,15 @@
     <modal modal-id="destination-selection-modal">
       <div destination-selection-modal></div>
     </modal>
+
     <modal modal-id="calculating-allowances-progress">
       <div progress-modal title="Calculating allowances..."></div>
     </modal>
+
     <modal modal-id="submit-progress">
       <div progress-modal title="Submitting travel application..."></div>
     </modal>
+
     <modal modal-id="submit-results">
       <div confirm-modal rejectable="true"
            title="Your travel application has been submitted."
@@ -46,8 +49,13 @@
            reject-button="Log out of ESS">
       </div>
     </modal>
+
     <modal modal-id="travel-lodging-details-modal">
       <div travel-lodging-details-modal lodging-allowance="app.allowances.lodging"></div>
+    </modal>
+
+    <modal modal-id="travel-meal-details-modal">
+      <div travel-meal-details-modal meal-allowance="app.allowances.meals"></div>
     </modal>
   </div>
 

@@ -51,11 +51,15 @@
       <div class="col-8-12 margin-top-20">
         <div class="col-5-12 margin-5">
           Meals: {{app.allowances.meals.total | currency}}
+          <span class="icon-info pointer"
+                ng-click="displayMealDetails()">
+          </span>
         </div>
         <div class="col-5-12 margin-5">
           Lodging: {{app.allowances.lodging.total | currency}}
-          <span class="icon-info"
-                ng-click="displayLodgingDetails()"></span>
+          <span class="icon-info pointer"
+                ng-click="displayLodgingDetails()">
+          </span>
         </div>
         <div class="col-5-12 margin-5">
           Mileage: {{app.allowances.mileage.total | currency}}
