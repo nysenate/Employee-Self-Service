@@ -1,5 +1,7 @@
 package gov.nysenate.ess.core.controller.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -14,6 +16,7 @@ import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
+import gov.nysenate.ess.core.util.OutputUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,49 +143,30 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         response.setHeader(headerKey, headerValue);
 
         CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
+                .withHeader("EmpId", "Name", "Email", "Resp Center","Document Title",
+                        "Document Effective Date Time", "Acknowledgment"));
 
+        ObjectMapper mapper = OutputUtils.jsonMapper;
         for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
+            JsonNode ackNode = mapper.readTree(OutputUtils.toJson(empAckReport.getAcks().get(0).getAck()));
             csvPrinter.printRecord(
-                    empAckReport.getEmpId(),
-                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
-                    empAckReport.getEmail(),
-                    empAckReport.getWorkLocation(),
-                    empAckReport.getAckedTimeMap().toString());
+                    empAckReport.getEmployee().getEmployeeId(),
+                    empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
+                    empAckReport.getEmployee().getEmail(),
+                    empAckReport.getEmployee().getRespCenter().getHead().getShortName(),
+                    empAckReport.getAcks().get(0).getAckDoc().getTitle(),
+                    empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime(),
+                    ackNode.get("timestamp"));
         }
         csvPrinter.close();
     }
 
     //2nd Report - ALL ACKS FOR EVERY EMPLOYEE (no acks? then youre not in report)
-    @RequestMapping(value = "/report/acks/all", method = GET)
-    public void getAllAcksFromAllEmployees(HttpServletResponse response) throws IOException {
-
+    @RequestMapping(value = "/report/acks/emp", method = GET)
+    public String getAllAcksFromEmployee(@RequestParam int empId) {
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        String csvFileName = "AllAcknowledgmentsSenateReport" + LocalDateTime.now()+".csv";
+        return OutputUtils.toJson(ackReportService.getAllAcksFromEmployee(empId));
 
-        response.setContentType("text/csv");
-        response.setStatus(200);
-
-        // creates mock data
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"",
-                csvFileName);
-        response.setHeader(headerKey, headerValue);
-
-        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .withHeader("EmpId", "Name", "Email", "Office","AckedDoc Time"));
-
-        for (EmpAckReport empAckReport: ackReportService.getAllAcksFromEmployees()) {
-            csvPrinter.printRecord(
-                    empAckReport.getEmpId(),
-                    empAckReport.getFirstName() + " " + empAckReport.getLastName(),
-                    empAckReport.getEmail(),
-                    empAckReport.getWorkLocation(),
-                    empAckReport.getAckedTimeMap().toString());
-        }
-        csvPrinter.close();
     }
 
     /* --- Exception Handlers --- */

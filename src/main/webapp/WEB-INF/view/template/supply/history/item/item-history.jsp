@@ -4,9 +4,12 @@
   </div>
 
   <div class="content-container content-controls">
-     <h4 class="content-info supply-text" style="margin-bottom: 0px;">
-      Search item order counts.
-     </h4>
+    <div class="content-info" style="position: relative;">
+      <h4 class="supply-text" style="margin: 0px; text-align:center;">
+        Search item order counts.
+      </h4>
+      <a href="${ctxPath}/supply/history/item-history-print" style="position:absolute; top:11px; right:10px;">Print Report</a>
+    </div>
 
     <div class="grid text-align-center">
       <div class="col-6-12 padding-10">
