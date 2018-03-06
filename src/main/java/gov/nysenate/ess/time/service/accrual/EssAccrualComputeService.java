@@ -468,7 +468,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                 TimeRecord record = timeRecords.remove(0);
                 if (gapPeriod.getDateRange().contains(record.getBeginDate())) {
                     accrualState.addPeriodAccUsage(record.getPeriodAccUsage());
-                    if (record.getScope() != TimeRecordScope.EMPLOYEE) {
+                    if (record.isActive() && record.getScope() != TimeRecordScope.EMPLOYEE) {
                         usesSubmittedRecord = true;
                     }
                 }
