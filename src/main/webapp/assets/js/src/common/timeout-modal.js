@@ -1,7 +1,7 @@
 var essApp = angular.module('ess');
 
-essApp.directive('timeoutModal', ['modals', 'httpTimeoutChecker', '$interval', 'LocationService', 'TimeoutApi', 'appProps',
-    function (modals, httpTimeoutChecker, $interval, locationService, timeoutApi, appProps) {
+essApp.directive('timeoutModal', ['modals', '$interval', 'LocationService', 'TimeoutApi',
+    function (modals, $interval, locationService, TimeoutApi) {
         return {
             template: '<section id="timeout-modal" title="Inactivity Warning">' +
             '<h1>Inactive Session Timeout</h1>' +
@@ -10,27 +10,22 @@ essApp.directive('timeoutModal', ['modals', 'httpTimeoutChecker', '$interval', '
             'Do you want to continue your work?' +
             '</p>' +
             '<div class="button-container">' +
-            '<input type="button" class="reject-button" ng-click="logout()" value="Log out of ESS"/>' +
-            '<input type="button" class="submit-button" ng-click="close()" value="Continue"/>' +
+            '<input type="button" ng-click="logout()" ng-disabled="timeRemaining<=0"\n' +
+                   'class="reject-button" value="Log out of ESS"/>' +
+            '<input type="button" ng-click="close()" ng-disabled="timeRemaining<=0"\n' +
+                   'class="submit-button" value="Continue"/>' +
             '</div>' +
             '</section>',
 
             link: function ($scope, $element, $attrs) {
-                $scope.timeRemaining = 60;
+                $scope.timeRemaining = modals.params().remainingInactivity;
 
                 var countdown = $interval(function () {
                     if ($scope.timeRemaining > 0) {
                         $scope.timeRemaining--;
                     }
                     else {
-                        // log out the user
-                        var params = {
-                            idleTime: -1
-                        };
-                        timeoutApi.get(params, function () {
-                            window.location.replace(appProps.loginUrl);
-                            window.location.reload(true);
-                        });
+                        $scope.logout();
                     }
                 }, 1000);
 
@@ -39,8 +34,9 @@ essApp.directive('timeoutModal', ['modals', 'httpTimeoutChecker', '$interval', '
                 });
 
                 $scope.close = function () {
+                    // send an active ping to reset the timeout
+                    TimeoutApi.save({active: 'true'}, {});
                     modals.reject();
-                    httpTimeoutChecker.modalClosed();
                 };
 
                 $scope.logout = function () {

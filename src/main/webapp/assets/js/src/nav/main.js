@@ -31,8 +31,14 @@ essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$lo
         };
 
         $scope.handleErrorResponse = function (resp) {
-            console.error("Request error:", resp);
-            modals.open('500', {details: resp});
+            var errorCode = (resp.data.status || {}).code;
+            if (errorCode === "UNAUTHENTICATED") {
+                console.error('user unauthenticated, redirecting to login');
+                $location.path(appProps.loginUrl);
+            } else {
+                console.error("Request error:", resp);
+                modals.open('500', {details: resp});
+            }
         };
     }
 ]);

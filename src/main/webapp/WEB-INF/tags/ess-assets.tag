@@ -16,7 +16,7 @@
         <!-- Navigation -->
         <script type="text/javascript" src="${ctxPath}/assets/js/src/nav/ess-nav.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/nav/ess-routes.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/nav/home.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/nav/main.js?v=${releaseVersion}"></script>
 
         <!-- Common Directives -->
         <script type="text/javascript"

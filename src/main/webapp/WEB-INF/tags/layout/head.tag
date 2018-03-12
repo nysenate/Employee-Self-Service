@@ -18,7 +18,6 @@
             imageUrl: '${imageUrl}',
             sessionId: '${sessionId}',
             releaseVersion: '${releaseVersion}',
-            timeoutExempt: '${timeoutExempt}',
             miscLeaves: ${miscLeaves}
         };
         <c:if test="${not empty principalJson}">
