@@ -10,15 +10,21 @@ essApp.directive('timeoutModal', ['modals', '$interval', 'LocationService', 'Tim
             'Do you want to continue your work?' +
             '</p>' +
             '<div class="button-container">' +
-            '<input type="button" ng-click="logout()" ng-disabled="timeRemaining<=0"\n' +
+            '<input type="button" ng-click="logout()" ng-disabled="disableButtons()"\n' +
                    'class="reject-button" value="Log out of ESS"/>' +
-            '<input type="button" ng-click="close()" ng-disabled="timeRemaining<=0"\n' +
+            '<input type="button" ng-click="close()" ng-disabled="disableButtons()"\n' +
                    'class="submit-button" value="Continue"/>' +
             '</div>' +
             '</section>',
 
             link: function ($scope, $element, $attrs) {
+                $scope.sendingPing = false;
+
                 $scope.timeRemaining = modals.params().remainingInactivity;
+
+                // Display less time than is actually available
+                // Reduces risk of attempting to cancel timeout when its too late.
+                $scope.timeRemaining -= 1;
 
                 var countdown = $interval(function () {
                     if ($scope.timeRemaining > 0) {
@@ -33,15 +39,27 @@ essApp.directive('timeoutModal', ['modals', '$interval', 'LocationService', 'Tim
                     $interval.cancel(countdown);
                 });
 
+                /**
+                 * Send an active ping to reset the timeout.
+                 *
+                 * If successful, close the modal.
+                 * If failure, log out.
+                 */
                 $scope.close = function () {
-                    // send an active ping to reset the timeout
-                    TimeoutApi.save({active: 'true'}, {});
-                    modals.reject();
+                    $interval.cancel(countdown);
+                    $scope.sendingPing = true;
+                    var params = {active: true};
+                    var body = {};
+                    TimeoutApi.save(params, body, modals.reject, $scope.logout)
                 };
 
                 $scope.logout = function () {
                     locationService.go('/logout', true);
                 };
+
+                $scope.disableButtons = function () {
+                    return $scope.sendingPing || $scope.timeRemaining <= 0;
+                }
             }
         };
     }]);
