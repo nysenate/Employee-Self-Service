@@ -63,7 +63,7 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
             .then(destinationService.queryDefaultDestination)
             .then(setDestinationCode)
             .then(setToSelectingDestinationState)
-            .catch(loadDestinationsError);
+            .catch($scope.handleErrorResponse);
     }
 
     function setDestinationCode() {
@@ -72,10 +72,6 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     function setToSelectingDestinationState() {
         $scope.state.toSelectingDestination();
-    }
-
-    function loadDestinationsError(response) {
-        modals.open('500', {action: 'get valid order destinations', details: response});
     }
 
     function loadShoppingState() {

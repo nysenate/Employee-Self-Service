@@ -50,10 +50,7 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
         return requisitionApi.get(params, function (response) {
             $scope.shipments = response.result;
             $scope.paginate.setTotalItems(response.total);
-        }, function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        })
+        }, $scope.handleErrorResponse)
     }
 
     function initFilters() {
@@ -99,23 +96,14 @@ function supplyHistoryController($scope, supplyIssuersApi, requisitionApi, itemA
         $scope.paginate.reset();
         getUpdatedOrders().$promise
             .then(doneLoading)
-            .catch(
-                function (errorResponse) {
-                    modals.open('500', {details: errorResponse});
-                    console.error(errorResponse);
-                });
+            .catch($scope.handleErrorResponse);
     };
 
     /** Updates the displayed requisitions whenever the page is changed. */
     $scope.onPageChange = function () {
         $scope.loading = true;
         getUpdatedOrders().$promise
-            .then(doneLoading).catch(
-            function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            }
-        );
+            .then(doneLoading).catch($scope.handleErrorResponse);
     };
 
     /** --- Util methods --- */

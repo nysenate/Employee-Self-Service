@@ -32,8 +32,7 @@ essMyInfo.controller('EmpTransactionHistoryCtrl',
             },
             function(resp) {
                 $scope.state.timeline = false;
-                modals.open('500', {details: resp});
-                console.log(resp);
+                $scope.handleErrorResponse(resp);
                 deferred.reject("Failed to retrieve timeline.");
             });
         return deferred;

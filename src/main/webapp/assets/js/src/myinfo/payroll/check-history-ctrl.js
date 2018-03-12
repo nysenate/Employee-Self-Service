@@ -71,8 +71,7 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                     $scope.checkHistory.searching = false;
                 }, function(response) {
                     $scope.checkHistory.searching = false;
-                    modals.open('500', {details: response});
-                    console.error(response);
+                    $scope.handleErrorResponse(response)
                 })
             };
 
@@ -85,10 +84,7 @@ essMyInfo.controller('EmpCheckHistoryCtrl',
                         console.log('got fiscal years', response);
                         $scope.checkHistory.recordFiscalYears = response.activeYears;
                     },
-                    function onFail(errorResponse) {
-                        modals.open('500', {details: errorResponse});
-                        console.error(response);
-                    }
+                    $scope.handleErrorResponse
                 )
             };
 

@@ -81,10 +81,7 @@ essTime.controller('GrantPrivilegesCtrl', ['$scope', '$http', 'appProps', 'Super
                    }
                    $scope.state.fetched = true;
                }).$promise;
-           }).catch(function (resp) {
-               modals.open('500', {details: resp});
-               console.log(resp);
-           });
+           }).catch($scope.handleErrorResponse);
        };
 
        // Updater
@@ -101,10 +98,7 @@ essTime.controller('GrantPrivilegesCtrl', ['$scope', '$http', 'appProps', 'Super
                    $scope.state.saving = false;
                    $scope.state.modified = false;
                    $scope.state.saved = true;
-               }, function(resp) {
-                   modals.open('500', {details: resp});
-                   console.log(resp);
-               });
+               }, $scope.handleErrorResponse);
            }
        };
 

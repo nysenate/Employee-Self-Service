@@ -97,8 +97,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                             .filter(isValidProjection)
                             .map(initializeProjection);
                     }, function onFail (resp) {
-                        modals.open('500', {details: resp});
-                        console.error(resp);
+                        $scope.handleErrorResponse(resp);
                         $scope.error = {
                             title: "Could not retrieve accrual information.",
                             message: "If you are eligible for accruals please try again later."
@@ -126,9 +125,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
                         $scope.empInfo = empInfo;
                         $scope.isTe = empInfo.payType === 'TE';
                     },
-                    function onFail(errorResponse) {
-                        modals.open('500', errorResponse);
-                    }
+                    $scope.handleErrorResponse
                 ).$promise.finally(function () {
                     $scope.request.empInfo = false;
                 });
