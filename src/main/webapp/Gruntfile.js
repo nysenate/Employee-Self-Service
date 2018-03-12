@@ -98,6 +98,11 @@ module.exports = function(grunt) {
                     sourceMap: true
                 },
                 files: {
+                    //login
+                    '<%= jsDest %>/ess-login.min.js': [
+                        '<%= jsSource %>/auth/login.js',
+                        '<%= jsSource %>/common/ess-notifications.js'
+                    ],
                     // main
                     '<%= jsDest %>/ess.min.js': [
                         '<%= jsSource %>/ess-app.js',
@@ -111,8 +116,6 @@ module.exports = function(grunt) {
                     ],
                     //help
                     '<%= jsDest %>/ess-help.min.js': ['<%= jsSource %>/help/help.js'],
-                    //login
-                    '<%= jsDest %>/ess-login.min.js': ['<%= jsSource %>/auth/login.js'],
                     //myinfo
                     '<%= jsDest %>/ess-myinfo.min.js': ['<%= jsSource %>/myinfo/**/*.js'],
                     //supply
