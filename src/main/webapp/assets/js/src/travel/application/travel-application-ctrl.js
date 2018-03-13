@@ -34,22 +34,15 @@ function travelAppController($scope, $q, appProps, modals, locationService,
         appState: undefined,
         traveler: {},
         travelerEmpId: undefined,
+        purposeOfTravel: '',
+        origin: {},
+        destinations: [],
         allowances: {
-            meals: {},
-            lodging: {},
-            mileage: {},
             tolls: 0,
             parking: 0,
             alternate: 0,
             registrationFee: 0
-        },
-        itinerary: {
-            origin: undefined,
-            destinations: {
-                items: []
-            }
-        },
-        purposeOfTravel: ''
+        }
     };
 
     function init() {
@@ -155,14 +148,14 @@ function travelAppController($scope, $q, appProps, modals, locationService,
 
     $scope.originCallback = function (origin, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.itinerary.origin = origin;
+            $scope.app.origin = origin;
         }
         updateStates(action);
     };
 
     $scope.destinationCallback = function (destinations, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.itinerary.destinations.items = destinations;
+            $scope.app.destinations = destinations;
         }
         updateStates(action);
     };
@@ -170,7 +163,7 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     $scope.allowancesCallback = function (destinations, allowances, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.app.allowances = allowances;
-            $scope.app.itinerary.destinations.items = destinations;
+            $scope.app.destinations= destinations;
         }
         updateStates(action);
     };
@@ -223,7 +216,7 @@ essTravel.directive('travelApplicationOrigin', ['appProps', function (appProps) 
         scope: true,
         link: function ($scope, $elem, $attrs) {
             // Copy current origin for use in this directive.
-            $scope.origin = angular.copy($scope.app.itinerary.origin);
+            $scope.origin = angular.copy($scope.app.origin);
 
             $scope.setOrigin = function (address) {
                 $scope.origin = address;
@@ -239,7 +232,7 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
         scope: true,
         link: function ($scope, $elem, $attrs) {
             // Copy current destinations for use in this directive.
-            $scope.destinations = angular.copy($scope.app.itinerary.destinations.items);
+            $scope.destinations = angular.copy($scope.app.destinations);
 
             $scope.editDestination = function (dest) {
                 var params = {
@@ -281,7 +274,7 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
         link: function ($scope, $elem, $attrs) {
             $scope.allowances = angular.copy($scope.app.allowances);
 
-            $scope.destinations = angular.copy($scope.app.itinerary.destinations.items);
+            $scope.destinations = angular.copy($scope.app.destinations);
             // Initialize default reimbursement selections.
             $scope.destinations.forEach(function (dest) {
                 if (dest.requestMileage === undefined) {
