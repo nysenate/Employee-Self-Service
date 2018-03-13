@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.fixtures;
 
-import gov.nysenate.ess.travel.allowance.gsa.model.MealRates;
-import gov.nysenate.ess.travel.allowance.gsa.model.MealTier;
+import gov.nysenate.ess.travel.meal.MealRates;
+import gov.nysenate.ess.travel.meal.MealTier;
 
 import java.util.HashSet;
 import java.util.Set;
