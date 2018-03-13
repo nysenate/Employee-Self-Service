@@ -71,10 +71,8 @@ function recordHistoryDirective($q, appProps, modals, recordUtils,
                         .reverse();
                     $scope.state.selectedRecYear = $scope.state.recordYears.length > 0
                         ? $scope.state.recordYears[0] : false;
-                }, function(resp) {
-                    modals.open('500', {details: resp});
-                    console.log(resp);
-                }).$promise.finally(function () {
+                }, $scope.handleErrorResponse
+                ).$promise.finally(function () {
                     $scope.state.request.tRecYears = false;
                 });
             }

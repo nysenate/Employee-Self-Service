@@ -96,10 +96,8 @@ function recordDetailsDirective(appProps, modals, accrualApi, allowanceApi, allo
                             $scope.accrual = resp.result;
                             console.log($scope.accrual);
                         }
-                    }, function (resp) {
-                        modals.open('500', {details: resp});
-                        console.error(resp);
-                    }).$promise.finally(function() {
+                    }, $scope.handleErrorResponse)
+                    .$promise.finally(function() {
                         $scope.loadingAccruals = false;
                     });
             }
@@ -116,7 +114,7 @@ function recordDetailsDirective(appProps, modals, accrualApi, allowanceApi, allo
                     year: year
                 };
                 $scope.loadingAllowance = true;
-                return allowanceApi.get(params, onSuccess, onFail)
+                return allowanceApi.get(params, onSuccess, $scope.handleErrorResponse)
                     .$promise.finally(function () {
                         $scope.loadingAllowance = false;
                     });
@@ -128,10 +126,6 @@ function recordDetailsDirective(appProps, modals, accrualApi, allowanceApi, allo
                     }
                     $scope.allowance = resp.result[0];
                     allowanceUtils.computeRemaining($scope.allowance, record);
-                }
-                function onFail (resp) {
-                    modals.open('500', {details: resp});
-                    console.error(resp);
                 }
             }
         }

@@ -80,10 +80,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getSupplyEmployees() {
         supplyEmployeesApi.get(function (response) {
             $scope.supplyEmployees = response.result;
-        }, function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        })
+        }, $scope.handleErrorResponse)
     }
 
     function getLocationStatistics() {
@@ -93,10 +90,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             .then(function (result) {
                 $scope.locationStatistics = result;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     /** Get all pending shipments */
@@ -113,10 +107,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                 $scope.pendingSearch.matches = response.result;
                 $scope.pendingSearch.error = false;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     function getProcessingShipments() {
@@ -132,10 +123,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                 $scope.processingSearch.matches = response.result;
                 $scope.processingSearch.error = false;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     function getCompletedShipments() {
@@ -151,10 +139,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                 $scope.completedSearch.matches = response.result;
                 $scope.completedSearch.error = false;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     function getApprovedShipments() {
@@ -172,10 +157,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                 sortRequisitionsByIdDesc($scope.approvedSearch.matches);
                 $scope.approvedSearch.error = false;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     function sortRequisitionsByIdDesc(reqs) {
@@ -205,10 +187,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                 $scope.syncFailedSearch.matches = removeNewPlaceReq($scope.syncFailedSearch.matches);
                 $scope.syncFailedSearch.error = false;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     /*remove new place req from failed sync*/
@@ -236,10 +215,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
                 $scope.canceledSearch.matches = response.result;
                 $scope.canceledSearch.error = false;
             })
-            .catch(function (errorResponse) {
-                modals.open('500', {details: errorResponse});
-                console.error(errorResponse);
-            });
+            .catch($scope.handleErrorResponse);
     }
 
     /** --- Util methods --- */
@@ -315,8 +291,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         }
         else {
             // Any other server error, display internal error modal.
-            modals.open('500', {details: response});
-            console.log(response);
+            $scope.handleErrorResponse(response);
         }
         return response;
     }

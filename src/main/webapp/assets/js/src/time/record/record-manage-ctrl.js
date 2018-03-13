@@ -99,15 +99,11 @@ function recordManageCtrl($scope, $q, $filter,
             supId: querySupId
         };
         $scope.state.request.records = true;
-        return supRecordsApi.get(params, onSuccess, onFail)
+        return supRecordsApi.get(params, onSuccess, $scope.handleErrorResponse)
             .$promise.finally(function() {$scope.state.request.records = false;});
         function onSuccess(resp) {
             initializeRecords(querySupId, resp.result.items);
             resetSelection();
-        }
-        function onFail(resp) {
-            modals.open('500', {details: resp});
-            console.error(resp);
         }
     }
 
@@ -140,10 +136,8 @@ function recordManageCtrl($scope, $q, $filter,
                             getEmployeeActiveRecords($scope.getSelSupEntry());
                         }
                     });
-            }, function onRejected(resp) {
-                modals.open('500', {details: resp});
-                console.error(resp);
             })
+            .catch($scope.handleErrorResponse)
             .finally(function () {
                 $scope.state.request.recordSubmit = false;
             })
@@ -185,8 +179,7 @@ function recordManageCtrl($scope, $q, $filter,
                     $scope.state.inactiveEmps = response.data.errorData;
                     modals.open('inactive-employee-email');
                 } else {
-                    console.error('Error posting time record reminder:', response);
-                    modals.open('500', {details: response});
+                    $scope.handleErrorResponse(response);
                 }
             }).$promise
     }

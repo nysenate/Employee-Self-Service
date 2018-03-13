@@ -21,10 +21,7 @@ function recordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, time
             $scope.state.recordYears = resp.years.reverse();
             $scope.state.year = $scope.state.recordYears[0];
             $scope.getRecords();
-        }, function (resp) {
-            modals.open('500', {action: 'Get time record history', details: resp});
-            console.error(resp);
-        });
+        }, $scope.handleErrorResponse);
     };
 
     // Settings for floating the time entry table heading
@@ -77,10 +74,8 @@ function recordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, time
         return timeRecordsApi.get(params, function(response) {
             console.log('got time records');
             $scope.state.timesheetRecords = response.result.items[empId];
-        }, function(response) {
-            modals.open('500', {details: response});
-            console.error(response);
-        }).$promise;
+        }, $scope.handleErrorResponse)
+            .$promise;
     };
 
     /**
@@ -96,10 +91,8 @@ function recordHistoryCtrl($scope, $q, appProps, ActiveYearsTimeRecordsApi, time
         return attendanceRecordApi.get(params, function (response) {
             console.log('got attendance records', response.records);
             $scope.state.attendRecords = response.records;
-        }, function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        }).$promise;
+        }, $scope.handleErrorResponse)
+            .$promise;
     };
 
     /** --- Display Methods --- */

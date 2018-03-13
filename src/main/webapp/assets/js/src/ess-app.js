@@ -62,10 +62,6 @@ essCore.run(function unbindBackspace() {
     });
 });
 
-essCore.config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.interceptors.push('httpTimeoutChecker');
-}]);
-
 essCore.config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
     $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache, no-store, max-age=0, must-revalidate';
     $httpProvider.defaults.headers.common['Pragma'] = 'no-cache';

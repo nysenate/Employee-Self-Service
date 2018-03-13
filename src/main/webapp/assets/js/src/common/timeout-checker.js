@@ -1,64 +1,78 @@
-essCore.factory('httpTimeoutChecker', ['appProps', 'modals', '$rootScope', function (appProps, modals, $rootScope) {
-    var isPingInitialized = false;
-    var isTimeoutModalOpen = false;
-    var pingRate = 30;
-    var idleTime = 0;
-    var pingTolerance = 10; // after pinging 10 times failed, consider as session problem, and redirect user to front page
-    /**
-     * Cant use Timeout Api due to circular dependency issues.
-     * essApi depends on essCore which depends on this factory.
-     */
-    function pingServer() {
-        $.ajax({
-                   type: "GET",
-                   url: appProps.apiPath + '/timeout/ping.json?idleTime=' + idleTime,
-                   success: function (data) {
-                       if (data["message"] > 0 && isTimeoutModalOpen === false) {
-                           modals.open('timeout');
-                           isTimeoutModalOpen = true;
-                           $rootScope.$digest();
-                       }
-                   },
-                   error: function (data) {// after pinging 10 times failed, consider as network problem, and redirect user to front page
-                       pingTolerance = pingTolerance-1;
-                    if (pingTolerance < 0) {
-                        window.location.replace(appProps.loginUrl);
-                        window.location.reload(true);
-                    }
-                   }
-               }
-        );
-    }
+/**
+ * Defines functions that ping the server to keep the session alive and warn the user of impending timeout.
+ * These functions are then set to run on an interval.
+ */
+angular.module('ess').run([
+    '$window', '$document', 'appProps', 'modals', 'LocationService', 'TimeoutApi',
+    function ($window, $document, appProps, modals, LocationService, TimeoutApi) {
+        var timeoutModalName = 'timeout';
+        var pingRate = 30;
+        // Will warn the user if the remaining inactivity is under the warning threshold
+        var warningThreshold = 70;
+        // Set to true if the user was active since the last ping
+        // Init as true from login
+        var active = true;
+        // This many consecutive non-401 ping errors will be tolerated before the user is logged out
+        var pingFailTolerance = 10;
+        var failedPings = 0;
 
-    return {
-        request: function (request) {
-            if (globalProps.timeoutExempt == "true") {
-                return request;
-            }
-            if (!isPingInitialized) {
-                var inactivityCheck = setInterval(function () {
-                    idleTime += pingRate;
-                    pingServer();
-                }, pingRate * 1000);
-
-                window.onbeforeunload = function () {
-                    clearInterval(inactivityCheck);
-                };
-
-                $(document).on('change click keydown keypress keyup load resize scroll select submit', function () {
-                    idleTime = 0;
-                });
-
-                isPingInitialized = true;
-            }
-            return request;
-        },
+        function logout () {
+            LocationService.go('/logout', true);
+        }
 
         /**
-         * Called from the timeout modal to notify this factory that the modal has been closed.
+         * Send a ping to the server
          */
-        modalClosed: function () {
-            isTimeoutModalOpen = false;
+        function pingServer() {
+            var params = {
+                active: active
+            };
+            TimeoutApi.save(params, {}, onPingSuccess, onPingFail);
         }
-    };
-}]);
+
+        /**
+         * Process a successful ping by opening the timeout modal if the user is nearing timeout.
+         * @param resp
+         */
+        function onPingSuccess(resp) {
+            failedPings = 0;
+            var remainingInactivity = resp["remainingInactivity"];
+            if (remainingInactivity < 0) {
+                logout();
+            }
+            else if (remainingInactivity <= warningThreshold && !modals.isOpen(timeoutModalName)) {
+                modals.open(timeoutModalName, {remainingInactivity: remainingInactivity});
+            }
+            // reset active flag
+            active = false;
+        }
+
+        /**
+         * Handle an error response from the ping endpoint
+         * @param resp
+         */
+        function onPingFail(resp) {
+            console.log(resp);
+            var errorCode = resp.status;
+            failedPings++;
+            // If the ping reported that the user was unauthenticated or too many failed pings occurred, logout
+            if (errorCode === 401 || failedPings >= pingFailTolerance) {
+                logout();
+            }
+        }
+
+        // Send an initial ping
+        pingServer();
+        // Set interval to ping periodically
+        $window.setInterval(function () {
+            pingServer();
+        }, pingRate * 1000);
+
+        // register activity when the user performs actions
+        $document.on('change click keydown keypress keyup load resize scroll select submit', function () {
+            if (!active && !modals.isOpen(timeoutModalName)) {
+                active = true;
+            }
+        });
+
+    }]);

@@ -21,7 +21,7 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
             .then(printIfRequested)
             .then(generateHistory)
             .then(selectCurrentVersion)
-            .catch(shipmentResourceErrorHandler);
+            .catch($scope.handleErrorResponse);
     };
 
     var highlightMenu = function (fromPage) {
@@ -76,11 +76,6 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
 
     var selectCurrentVersion = function () {
         $scope.selectedVersion = $scope.requisitionHistory.versions[0];
-    };
-
-    var shipmentResourceErrorHandler = function (response) {
-        modals.open('500', {details: response});
-        console.error(response);
     };
 
     $scope.init();
