@@ -44,7 +44,7 @@ function allowanceStatusDirective(appProps, modals, allowanceApi, allowanceUtils
                     year: moment().year()
                 };
                 $scope.request.allowance = true;
-                return allowanceApi.get(params, onSuccess, onFail)
+                return allowanceApi.get(params, onSuccess, $scope.handleErrorResponse)
                     .$promise.finally(function () {
                         $scope.request.allowance = false;
                     });
@@ -61,10 +61,6 @@ function allowanceStatusDirective(appProps, modals, allowanceApi, allowanceUtils
                     };
                     allowanceUtils.computeRemaining($scope.allowance, dateRange);
                     extractCurrentPayType();
-                }
-                function onFail (resp) {
-                    modals.open('500', {details: resp});
-                    console.error(resp);
                 }
             }
 

@@ -85,10 +85,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                         $scope.empInfo = empInfo;
                         $scope.isTe = empInfo.payType === 'TE';
                     },
-                    function onFail(errorResponse) {
-                        console.error('Error retrieving emp info', errorResponse);
-                        modals.open('500', errorResponse);
-                    }
+                    $scope.handleErrorResponse
                 ).$promise.finally(function () {
                     $scope.request.empInfo = false;
                 });
@@ -118,10 +115,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                         }
                         $scope.selectedYear = $scope.activeYears.length > 0 ? $scope.activeYears[0] : false;
                         console.debug('got active years', $scope.activeYears);
-                    }, function onFail(resp) {
-                        modals.open('500', {details: resp});
-                        console.error('error loading employee active years', resp);
-                    }
+                    }, $scope.handleErrorResponse
                 ).$promise.finally(function () {
                     $scope.request.empActiveYears = false;
                 });
@@ -162,8 +156,7 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                             .filter(shouldDisplayRecord)
                             .reverse();
                     }, function onFail (resp) {
-                        modals.open('500', {details: resp});
-                        console.error('error loading accrual history', resp);
+                        $scope.handleErrorResponse(resp);
                         $scope.error = {
                             title: "Could not retrieve accrual information.",
                             message: "If you are eligible for accruals please try again later."

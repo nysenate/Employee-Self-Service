@@ -1,8 +1,4 @@
-<web-app version="2.4"
-	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
-	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
 	<display-name>Senate Electronic Timesheets</display-name>
 
     <error-page>
@@ -10,7 +6,7 @@
         <location>/error/404</location>
     </error-page>
 
-    <session-config>s
+    <session-config>
         <!-- Disables URL-based sessions (no more 'jsessionid' in the URL using Tomcat) -->
         <tracking-mode>COOKIE</tracking-mode>
         <!-- Set the session to never timeout itself -->

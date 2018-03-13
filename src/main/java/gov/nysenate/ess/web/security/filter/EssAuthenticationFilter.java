@@ -16,7 +16,6 @@ import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
@@ -47,7 +46,11 @@ public class EssAuthenticationFilter extends AuthenticationFilter
     @Resource(name = "xsrfValidator", description = "Generates/Validates XSRF Tokens")
     private XsrfValidator xsrfValidator;
 
-    @Autowired private UserAgentDao userAgentDao;
+    private final UserAgentDao userAgentDao;
+
+    public EssAuthenticationFilter(UserAgentDao userAgentDao) {
+        this.userAgentDao = userAgentDao;
+    }
 
     /** --- Overrides --- */
 

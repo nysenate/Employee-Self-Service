@@ -57,9 +57,7 @@ function supplyCartController($scope, storageService, supplyCart, requisitionApi
         requisitionApi.save(params, function (response) {
             supplyCart.reset();
             modals.open('supply-cart-checkout-modal', response);
-        }, function (response) {
-            modals.open('500', {action: 'checkout cart', details: response});
-        });
+        }, $scope.handleErrorResponse);
     };
 
     /** --- Button's --- */

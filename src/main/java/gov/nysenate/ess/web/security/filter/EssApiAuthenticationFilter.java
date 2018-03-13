@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.util.HttpResponseUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.web.security.IpAuthenticationToken;
 import gov.nysenate.ess.web.security.realm.EssIpAuthzRealm;
+import gov.nysenate.ess.web.security.session.SessionTimeoutDao;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -27,6 +28,18 @@ import static gov.nysenate.ess.core.model.auth.AuthorizationStatus.UNAUTHENTICAT
  * If that login fails, write a response informing user they are unauthenticated.
  */
 public class EssApiAuthenticationFilter extends AuthenticationFilter {
+
+    private final SessionTimeoutDao sessionTimeoutDao;
+
+    public EssApiAuthenticationFilter(SessionTimeoutDao sessionTimeoutDao) {
+        this.sessionTimeoutDao = sessionTimeoutDao;
+    }
+
+    @Override
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        return super.isAccessAllowed(request, response, mappedValue)
+                && sessionTimeoutDao.isSessionActive();
+    }
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {

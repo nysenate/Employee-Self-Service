@@ -22,10 +22,7 @@ essTime.controller('PayPeriodCalendarCtrl',
                 return res;
             }, {});
             if (callback) callback();
-        }, function(resp) {
-            modals.open('500', {details: resp});
-            console.log(resp);
-        });
+        }, $scope.handleErrorResponse);
     };
 
     $scope.getHolidays = function(year, callback) {
