@@ -1,8 +1,10 @@
 package gov.nysenate.ess.core.service.acknowledgment;
 
+import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface EssAcknowledgmentReportService {
 
@@ -20,5 +22,17 @@ public interface EssAcknowledgmentReportService {
      * @return {@link ArrayList<EmpAckReport>}
      */
     public ArrayList<EmpAckReport> getAllAcksForAckDocById(int ackDocId);
+
+    /**
+     *Returns a list of Strings corresponding to years there are ack docs on record for
+     * @return {@link List<String>}
+     */
+    public List<String> getAllYearsContainingAckDocs();
+
+    /**
+     *All Ack docs in a specified year are returned
+     * @return {@link List<AckDoc>}
+     */
+    public List<AckDoc> getAllAckDocsInASpecificYear(int year);
 
 }

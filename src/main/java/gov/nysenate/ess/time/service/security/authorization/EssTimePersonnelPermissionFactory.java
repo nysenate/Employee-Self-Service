@@ -41,7 +41,7 @@ public class EssTimePersonnelPermissionFactory implements PermissionFactory {
 
     private List<Permission> getPersonnelManagerPermissions() {
         return ImmutableList.of(
-                SimpleTimePermission.PERSONNEL_PAGES.getPermission(),
+                SimpleEssPermission.PERSONNEL_PAGES.getPermission(),
 
                 SimpleEssPermission.ACK_REPORT_GENERATION.getPermission(),
 

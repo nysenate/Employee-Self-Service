@@ -84,6 +84,18 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
         return completeAckReportList;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<String> getAllYearsContainingAckDocs() {
+        return sqlAckDocDao.getAllYearsContainingAckDocs();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<AckDoc> getAllAckDocsInASpecificYear(int year) {
+        return sqlAckDocDao.getAllAckDocsInASpecificYear(year);
+    }
+
     static class RespCenterComparator implements Comparator<EmpAckReport>
     {
         public int compare(EmpAckReport reportOne, EmpAckReport reportTwo)

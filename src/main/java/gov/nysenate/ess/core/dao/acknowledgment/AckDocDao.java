@@ -75,4 +75,21 @@ public interface AckDocDao {
      */
     public List<AckDoc> getAllAckDocs();
 
+    /**
+     * Retrieves all years that have an ack doc with an effective date time in any year.
+     * For ex. if 2017 has 2 ackdocs and 2018 has 1 ack doc, 2017, and 2018 would be returned
+     *
+     * @return {@link List<String>}
+     */
+    public List<String> getAllYearsContainingAckDocs();
+
+    /**
+     * Retrieves all ack docs that have an effective date time in that year
+     * For ex. if 2017 has 2 ackdocs then both of those ack docs would be returned regardless of
+     * other documents in 2018,19 etc.
+     *
+     * @return {@link List<AckDoc>}
+     */
+    public List<AckDoc> getAllAckDocsInASpecificYear(int year);
+
 }

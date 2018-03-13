@@ -17,7 +17,10 @@ public enum SimpleEssPermission {
     TIMEOUT_EXEMPT("core:timeout-exempt"),
 
     /**Granted to users who should be able to generate out acknowledgment reports */
-    ACK_REPORT_GENERATION("core;ack-report-generation")
+    ACK_REPORT_GENERATION("core;ack-report-generation"),
+
+    /** Granted to select personnel employees, allowing them to view complete employee data */
+    PERSONNEL_PAGES("core:personnel-pages"),
     ;
 
     private String permissionString;
