@@ -65,8 +65,9 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Acknowledgment Api
-     * ---------------
+     * Active Acknowledged Document List API
+     * -------------------------------------
+     *
      * Returns a list of all active ack docs
      *
      * Usage:
@@ -87,8 +88,50 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Acknowledgment Api
-     * ---------------
+     * Ack. Docs For Year API
+     * ----------------------
+     *
+     * Returns all ack docs in a single calendar year regardless of active status.
+     *
+     * Usage:
+     * (GET)    /api/v1/acknowledgment/documents
+     *
+     * Request Params
+     * @param year int - the year for which all ack docs will be retrieved
+     *
+     * @return ListViewResponse<AckDocView>
+     * */
+    @RequestMapping(value="/documents", params = {"year"})
+    public ListViewResponse<AckDocView> getAckDocsForYear(@RequestParam int year) {
+        List<AckDoc> ackDocs = ackDocDao.getAckDocsForYear(year);
+        List<AckDocView> ackDocViews = ackDocs.stream()
+                .map(ackDoc -> new AckDocView(ackDoc, ackDocResPath))
+                .collect(toList());
+        return ListViewResponse.of(ackDocViews, "documents");
+    }
+
+    /**
+     * Acknowledged Document Active Years
+     * ----------------------------------
+     *
+     * Returns a list of all years that contain an ack doc regardless of its active status.
+     *
+     * Usage:
+     * (GET)    /api/v1/acknowledgment/documents/years
+     *
+     *
+     * @return String
+     * */
+    @RequestMapping(value = "/documents/years", method = {GET, HEAD})
+    public ListViewResponse<Integer> getAllYearsContainingAckDocs() {
+        List<Integer> allYearsContainingAckDocs = ackDocDao.getAllYearsContainingAckDocs();
+        return ListViewResponse.ofIntList(allYearsContainingAckDocs, "ackDocYears");
+    }
+
+    /**
+     * Acknowledged Document Api
+     * -------------------------
+     *
      * Returns a specific Ack doc by its ID
      *
      * Usage:
@@ -109,7 +152,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     /**
      * Acknowledgment Api
-     * ---------------
+     * ------------------
+     *
      * Returns a list of all acknowledgments for a single employee
      *
      * Usage:
@@ -131,8 +175,9 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Acknowledgment Api
+     * Acknowledge Api
      * ---------------
+     *
      * Records an acknowledgment from an employee to the database
      *
      * Usage:
@@ -169,8 +214,9 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Acknowledgment Api
-     * ---------------
+     * AckDoc Report Api
+     * -----------------
+     *
      * Generates a csv file containing all active employees acknowledgment status on a particular ackdoc
      * This is the 1st report requested by Personnel
      *
@@ -180,7 +226,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * PathParams
      * @param ackDocId int - the ack doc id that the report is based off of
      * */
-    @RequestMapping(value = "/report/complete/{ackDocId}", method = GET)
+    @RequestMapping(value = "/report/complete/{ackDocId}", method = {GET, HEAD})
     public void getCompleteReportForAckDoc(@PathVariable int ackDocId,
                                            HttpServletResponse response) throws IOException {
 
@@ -216,8 +262,9 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Acknowledgment Api
-     * ---------------
+     * Employee Acknowledgment Report
+     * ------------------------------
+     *
      * Returns a json string of all acknowledgments the employee has acknowledged.
      * This is the 2nd report quested by Personnel
      *
@@ -230,51 +277,11 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/report/acks/emp", method = GET)
+    @RequestMapping(value = "/report/acks/emp", method = {GET, HEAD})
     public String getAllAcksFromEmployee(@RequestParam int empId) {
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
         return OutputUtils.toJson(ackReportService.getAllAcksFromEmployee(empId));
 
-    }
-
-    /**
-     * Acknowledgment Api
-     * ---------------
-     * Returns a json string of all years that contain an ack doc regardless of its active status
-     *
-     * Usage:
-     * (GET)    /api/v1/acknowledgment/report/list/years
-     *
-     *
-     * @return String
-     * */
-    @RequestMapping(value = "/report/list/years", method = GET)
-    public String getAllYearsContainingAckDocs() {
-//        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        return OutputUtils.toJson(ackReportService.getAllYearsContainingAckDocs());
-    }
-
-    /**
-     * Acknowledgment Api
-     * ---------------
-     * Returns all ack docs in a single calendar year regardless of active status
-     *
-     * Usage:
-     * (GET)    /api/v1/acknowledgment/report/list/year/{requestYear}
-     *
-     * Path Params
-     * @param requestYear int - the year for which all ack docs will be retrieved
-     *
-     * @return ListViewResponse<AckDocView>
-     * */
-    @RequestMapping(value="/report/list/year/{requestYear}")
-    public ListViewResponse<AckDocView> getAllAckDocsInASpecificYear(@PathVariable int requestYear) {
-//        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        List<AckDoc> ackDocs = ackReportService.getAllAckDocsInASpecificYear(requestYear);
-        List<AckDocView> ackDocViews = ackDocs.stream()
-                .map(ackDoc -> new AckDocView(ackDoc, ackDocResPath))
-                .collect(toList());
-        return ListViewResponse.of(ackDocViews, "documents");
     }
 
     /* --- Exception Handlers --- */

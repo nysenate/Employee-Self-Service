@@ -51,8 +51,7 @@ public enum SqlAckDocQuery implements BasicSqlQuery {
 
     GET_ALL_YEARS_CONTAINING_ACK_DOCS(
             "SELECT DISTINCT date_part('year', effective_date_time)\n" +
-                    " FROM ${essSchema}.ack_doc\n" +
-                    " GROUP BY date_part('year', effective_date_time)\n" +
+                    "FROM ${essSchema}.ack_doc\n" +
                     "ORDER BY date_part('year', effective_date_time) DESC;"
     ),
 

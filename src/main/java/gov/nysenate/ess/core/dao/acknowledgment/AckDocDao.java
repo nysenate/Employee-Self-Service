@@ -66,14 +66,14 @@ public interface AckDocDao {
      * @param ackDocId - The id of the ack doc a personnel member would want to generate a report for
      * @return {@link List<ReportAck>} - The list of all acknowlegments in report form for the requested ackdoc
      */
-    public List<ReportAck> getAllAcksForAckDocById(int ackDocId);
+    List<ReportAck> getAllAcksForAckDocById(int ackDocId);
 
     /**
      * Retrieves all AckDocs whether they are active or not
      *
      * @return {@link List<AckDoc>}
      */
-    public List<AckDoc> getAllAckDocs();
+    List<AckDoc> getAllAckDocs();
 
     /**
      * Retrieves all years that have an ack doc with an effective date time in any year.
@@ -81,7 +81,7 @@ public interface AckDocDao {
      *
      * @return {@link List<String>}
      */
-    public List<String> getAllYearsContainingAckDocs();
+    List<Integer> getAllYearsContainingAckDocs();
 
     /**
      * Retrieves all ack docs that have an effective date time in that year
@@ -90,6 +90,6 @@ public interface AckDocDao {
      *
      * @return {@link List<AckDoc>}
      */
-    public List<AckDoc> getAllAckDocsInASpecificYear(int year);
+    List<AckDoc> getAckDocsForYear(int year);
 
 }

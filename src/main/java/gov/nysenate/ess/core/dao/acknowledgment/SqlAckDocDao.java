@@ -101,13 +101,13 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
 
     /** {@inheritDoc} */
     @Override
-    public List<String> getAllYearsContainingAckDocs() {
-        return localNamedJdbc.query(  GET_ALL_YEARS_CONTAINING_ACK_DOCS.getSql(schemaMap()) , getYearRowMapper());
+    public List<Integer> getAllYearsContainingAckDocs() {
+        return localNamedJdbc.query(GET_ALL_YEARS_CONTAINING_ACK_DOCS.getSql(schemaMap()) , getYearRowMapper());
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<AckDoc> getAllAckDocsInASpecificYear(int year) {
+    public List<AckDoc> getAckDocsForYear(int year) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("requestYear",year);
         return localNamedJdbc.query(  GET_ALL_ACK_DOCS_IN_A_SPECIFIC_YEAR.getSql(schemaMap()), params ,getAckDocRowMapper());

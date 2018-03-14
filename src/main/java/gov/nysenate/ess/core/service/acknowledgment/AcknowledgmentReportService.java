@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.acknowledgment;
 
-import gov.nysenate.ess.core.dao.acknowledgment.SqlAckDocDao;
+import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
 import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
 import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
@@ -17,15 +17,20 @@ import java.util.*;
 @Service
 public class AcknowledgmentReportService implements EssAcknowledgmentReportService{
 
-    @Autowired
-    EmployeeInfoService employeeInfoService;
-
-    @Autowired
-    SqlAckDocDao sqlAckDocDao;
-
     private static final Logger logger = LoggerFactory.getLogger(AcknowledgmentReportService.class);
 
-    public AcknowledgmentReportService() {}
+    private static final Comparator<EmpAckReport> respCenterComparator = Comparator.comparing(
+            (report) -> report.getEmployee().getRespCenter().getHead().getShortName()
+    );
+
+    private final EmployeeInfoService employeeInfoService;
+    private final AckDocDao sqlAckDocDao;
+
+    @Autowired
+    public AcknowledgmentReportService(EmployeeInfoService employeeInfoService, AckDocDao sqlAckDocDao) {
+        this.employeeInfoService = employeeInfoService;
+        this.sqlAckDocDao = sqlAckDocDao;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -36,7 +41,7 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
 
         List<Acknowledgment> allEmpAcks = sqlAckDocDao.getAllAcknowledgmentsForEmp(empId);
         List<AckDoc> allAckDocs = sqlAckDocDao.getAllAckDocs();
-        List<ReportAck> reportAcks = new ArrayList<ReportAck>();
+        List<ReportAck> reportAcks = new ArrayList<>();
 
         for (Employee emp : employees) {
             if (emp.getEmployeeId() == empId) {
@@ -79,29 +84,9 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
             completeAckReportList.add(finalEmpAckReport);
         }
 
-        Collections.sort(completeAckReportList,new RespCenterComparator());
+        completeAckReportList.sort(respCenterComparator);
 
         return completeAckReportList;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<String> getAllYearsContainingAckDocs() {
-        return sqlAckDocDao.getAllYearsContainingAckDocs();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<AckDoc> getAllAckDocsInASpecificYear(int year) {
-        return sqlAckDocDao.getAllAckDocsInASpecificYear(year);
-    }
-
-    static class RespCenterComparator implements Comparator<EmpAckReport>
-    {
-        public int compare(EmpAckReport reportOne, EmpAckReport reportTwo)
-        {
-            return reportOne.getEmployee().getRespCenter().getHead().getShortName().compareTo(reportTwo.getEmployee().getRespCenter().getHead().getShortName());
-        }
     }
 
     /**
