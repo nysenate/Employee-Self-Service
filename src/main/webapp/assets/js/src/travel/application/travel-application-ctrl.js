@@ -1,11 +1,11 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
-                     ['$scope', '$q', 'appProps', 'modals', 'LocationService',
-                      'TravelMileageAllowanceApi', 'TravelApplicationApi', travelAppController]);
+                     ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
+                      'TravelApplicationApi', travelAppController]);
 
-function travelAppController($scope, $q, appProps, modals, locationService,
-                             mileageAllowanceApi, travelApplicationApi) {
+function travelAppController($scope, $q, appProps, modals, locationService, appInitApi,
+                             travelApplicationApi) {
 
     /* --- Container Page --- */
 
@@ -28,31 +28,24 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     };
 
     $scope.pageState = undefined; // Controls which page is displayed to the user, must be one of $scope.STATES, but should not be EDIT.
-    $scope.app = {
-        // The state of the application, usually the same as $scope.pageState, unless returning to a page for editing
-        // in that case appState == EDIT and pageState == the page who's data is being edited.
-        appState: undefined,
-        traveler: {},
-        travelerEmpId: undefined,
-        purposeOfTravel: '',
-        origin: {},
-        destinations: [],
-        allowances: {
-            tolls: 0,
-            parking: 0,
-            alternate: 0,
-            registrationFee: 0
-        }
-    };
+
+    // The state of the application, usually the same as $scope.pageState, unless returning to a page for editing
+    // in that case appState == EDIT and pageState == the page who's data is being edited.
+    $scope.appState = undefined;
 
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;
-        $scope.app.appState = $scope.STATES.PURPOSE;
-        $scope.app.traveler = appProps.user;
-        $scope.app.travelerEmpId = appProps.user.employeeId;
+        $scope.appState = $scope.STATES.PURPOSE;
+        initApplication(appProps.user.employeeId) ;
     }
 
     init();
+
+    function initApplication(travelerId) {
+        appInitApi.save({id: travelerId}, {}, function (response) {
+            $scope.app = response.result;
+        })
+    }
 
     /**
      * Updates the app.pageState and $scope.pageState after an action has occurred.
@@ -81,24 +74,24 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     }
 
     function handleBackAction() {
-        switch ($scope.app.appState) {
+        switch ($scope.appState) {
             case $scope.STATES.PURPOSE:
                 // TODO: Cancel order? Should Back be valid on first page?
                 break;
             case $scope.STATES.ORIGIN:
-                $scope.app.appState = $scope.STATES.PURPOSE;
+                $scope.appState = $scope.STATES.PURPOSE;
                 $scope.pageState = $scope.STATES.PURPOSE;
                 break;
             case $scope.STATES.DESTINATION:
-                $scope.app.appState = $scope.STATES.ORIGIN;
+                $scope.appState = $scope.STATES.ORIGIN;
                 $scope.pageState = $scope.STATES.ORIGIN;
                 break;
             case $scope.STATES.ALLOWANCES:
-                $scope.app.appState = $scope.STATES.DESTINATION;
+                $scope.appState = $scope.STATES.DESTINATION;
                 $scope.pageState = $scope.STATES.DESTINATION;
                 break;
             case $scope.STATES.REVIEW:
-                $scope.app.appState = $scope.STATES.ALLOWANCES;
+                $scope.appState = $scope.STATES.ALLOWANCES;
                 $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
             case $scope.STATES.EDIT:
@@ -108,21 +101,21 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     }
 
     function handleNextAction() {
-        switch ($scope.app.appState) {
+        switch ($scope.appState) {
             case $scope.STATES.PURPOSE:
-                $scope.app.appState = $scope.STATES.ORIGIN;
+                $scope.appState = $scope.STATES.ORIGIN;
                 $scope.pageState = $scope.STATES.ORIGIN;
                 break;
             case $scope.STATES.ORIGIN:
-                $scope.app.appState = $scope.STATES.DESTINATION;
+                $scope.appState = $scope.STATES.DESTINATION;
                 $scope.pageState = $scope.STATES.DESTINATION;
                 break;
             case $scope.STATES.DESTINATION:
-                $scope.app.appState = $scope.STATES.ALLOWANCES;
+                $scope.appState = $scope.STATES.ALLOWANCES;
                 $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
             case $scope.STATES.ALLOWANCES:
-                $scope.app.appState = $scope.STATES.REVIEW;
+                $scope.appState = $scope.STATES.REVIEW;
                 $scope.pageState = $scope.STATES.REVIEW;
                 break;
             case $scope.STATES.REVIEW:
@@ -135,7 +128,7 @@ function travelAppController($scope, $q, appProps, modals, locationService,
     }
 
     function handleEditAction(editField) {
-        $scope.app.appState = $scope.STATES.EDIT;
+        $scope.appState = $scope.STATES.EDIT;
         $scope.pageState = editField
     }
 
@@ -162,7 +155,10 @@ function travelAppController($scope, $q, appProps, modals, locationService,
 
     $scope.allowancesCallback = function (destinations, allowances, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.allowances = allowances;
+            $scope.app.tollsAllowance = allowances.tollsAllowance.toString();
+            $scope.app.parkingAllowance = allowances.parkingAllowance.toString();
+            $scope.app.alternateAllowance = allowances.alternateAllowance.toString();
+            $scope.app.registrationAllowance = allowances.registrationAllowance.toString();
             $scope.app.destinations= destinations;
         }
         updateStates(action);
@@ -272,29 +268,35 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-allowances',
         scope: true,
         link: function ($scope, $elem, $attrs) {
-            $scope.allowances = angular.copy($scope.app.allowances);
+            $scope.allowances = {
+                tollsAllowance: Number(angular.copy($scope.app.tollsAllowance)),
+                parkingAllowance: Number(angular.copy($scope.app.parkingAllowance)),
+                alternateAllowance: Number(angular.copy($scope.app.alternateAllowance)),
+                registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
+            };
 
             $scope.destinations = angular.copy($scope.app.destinations);
+
             // Initialize default reimbursement selections.
             $scope.destinations.forEach(function (dest) {
-                if (dest.requestMileage === undefined) {
+                if (dest.isMileageRequested === undefined) {
                     // Init Mileage
                     if (dest.modeOfTransportation === 'Personal Auto') {
-                        dest.requestMileage = true;
+                        dest.isMileageRequested = true;
                     }
                 }
 
-                if (dest.requestMeals === undefined) {
+                if (dest.isMealsRequested === undefined) {
                     // Init Meals
-                    dest.requestMeals = true;
+                    dest.isMealsRequested = true;
                 }
 
-                if (dest.requestLodging === undefined) {
+                if (dest.isLodgingRequested === undefined) {
                     // Init Lodging
                     var arrival = moment(dest.arrivalDate);
                     var departure = moment(dest.departureDate);
                     if (Math.abs(arrival.diff(departure, 'days')) > 0) {
-                        dest.requestLodging = true;
+                        dest.isLodgingRequested = true;
                     }
                 }
             });
@@ -302,52 +304,29 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
     }
 }]);
 
-essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'TravelMealsAllowanceApi', 'TravelLodgingAllowanceApi',
-                                                'TravelMileageAllowanceApi', function (appProps, $q, modals, mealsApi, lodgingApi, mileageAllowanceApi) {
+essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'TravelApplicationApi',
+                                                function (appProps, $q, modals, appApi) {
         return {
             templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-review',
             scope: true,
             link: function ($scope, $elem, $attrs) {
 
-                // Display calculating allowances modal until all api calls are completed.
-                var promises = [];
-                modals.open('calculating-allowances-progress');
+                $scope.reviewApp = angular.copy($scope.app);
 
-                promises.push(mealsApi.save($scope.app.itinerary, function (response) {
-                    $scope.app.allowances.meals = response.result;
-                }).$promise);
+                appApi.save({}, $scope.reviewApp, function (response) {
+                    modals.resolve({});
+                    $scope.reviewApp = response.result;
+                    displayMap();
+                });
 
-                promises.push(lodgingApi.save($scope.app.itinerary, function (response) {
-                    $scope.app.allowances.lodging = response.result;
-                }).$promise);
-
-                promises.push(mileageAllowanceApi.save($scope.app.itinerary, function (response) {
-                    $scope.app.allowances.mileage = response.result;
-                }).$promise);
-
-                $q.all(promises)
-                    .then(function () {
-                        sumAllowances();
-                        displayMap();
-                        modals.resolve({});
-                    });
-
-                function sumAllowances() {
-                    $scope.app.allowances.total = parseFloat($scope.app.allowances.meals.total)
-                        + parseFloat($scope.app.allowances.lodging.total)
-                        + parseFloat($scope.app.allowances.mileage)
-                        + $scope.app.allowances.tolls
-                        + $scope.app.allowances.parking
-                        + $scope.app.allowances.alternate
-                        + $scope.app.allowances.registrationFee;
-                }
+                modals.open('calculating-allowances-progress'); // TODO Do we have a generic loading modal?
 
                 $scope.displayLodgingDetails = function () {
                     modals.open('travel-lodging-details-modal', {}, true);
                 };
 
                 $scope.displayMealDetails = function () {
-                    modals.open('travel-meal-details-modal', {}, true);
+                    modals.open('travel-meal-details-modal', {app: $scope.reviewApp}, true);
                 };
 
                 $scope.displayMileageDetails = function () {
@@ -370,8 +349,9 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
 
                     // Create map api parameters.
                     // All intermediate destinations should be waypoints, final destination should be destination.
-                    var destinations = $scope.app.itinerary.destinations.items;
-                    var origin = $scope.app.itinerary.origin.formatted_address;
+                    console.log($scope.reviewApp);
+                    var destinations = $scope.reviewApp.destinations;
+                    var origin = $scope.reviewApp.origin.formatted_address;
                     var waypoints = [];
                     angular.forEach(destinations, function (dest, index) {
                         waypoints.push({location: dest.address.formatted_address});

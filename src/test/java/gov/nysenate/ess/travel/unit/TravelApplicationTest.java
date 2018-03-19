@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.accommodation.Accommodation;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.route.Route;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.fixtures.AccommodationFixture;
@@ -58,7 +58,7 @@ public class TravelApplicationTest {
         Accommodation a1 = AccommodationFixture.twoDayOneNightAccommodation();
         Accommodation a2 = AccommodationFixture.twoDayOneNightAccommodation();
         Route route = RouteFixture.longOneDestinationRoute();
-        TravelApplication app = new TravelApplication(new Employee(), new Employee());
+        TravelApplication app = new TravelApplication(0, new Employee(), new Employee());
         app.setAccommodations(Lists.newArrayList(a1, a2));
         app.setRoute(route);
         return app;

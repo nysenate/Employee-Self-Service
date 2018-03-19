@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.accommodation.Accommodation;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.accommodation.Stay;
 import gov.nysenate.ess.travel.fixtures.AccommodationFixture;
 import org.junit.Test;

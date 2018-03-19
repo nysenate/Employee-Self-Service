@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.accommodation;
 
 import gov.nysenate.ess.travel.meal.MealTier;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.util.Objects;

@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.model.cache;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.travel.gsaclient.GsaResponseId;
+import gov.nysenate.ess.travel.gsa.client.GsaResponseId;
 
 import java.util.Arrays;
 

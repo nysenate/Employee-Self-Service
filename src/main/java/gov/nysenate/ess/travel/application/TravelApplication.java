@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.application;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.accommodation.Accommodation;
 import gov.nysenate.ess.travel.route.Route;
 
@@ -13,6 +13,7 @@ import java.util.Objects;
 
 public class TravelApplication {
 
+    private final long id;
     private Employee traveler;
     private Employee submitter;
     private ImmutableList<Accommodation> accommodations;
@@ -24,17 +25,31 @@ public class TravelApplication {
     private Dollars registration;
     private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
 
-    public TravelApplication(Employee traveler, Employee submitter) {
+    public TravelApplication(long id, Employee traveler, Employee submitter) {
+        this.id = id;
         this.traveler = Objects.requireNonNull(traveler, "Travel Application requires non null traveler.");
         this.submitter = Objects.requireNonNull(submitter, "Travel Application requires non null submitter.");
+        this.accommodations = ImmutableList.of();
+        this.route = Route.EMPTY_ROUTE;
+        this.purposeOfTravel = "";
+        this.tolls = Dollars.ZERO;
+        this.parking = Dollars.ZERO;
+        this.alternate = Dollars.ZERO;
+        this.registration = Dollars.ZERO;
     }
 
+    /**
+     * @return The travel start date or {@code null} if no destinations.
+     */
     public LocalDate startDate() {
-        return getAccommodations().get(0).arrivalDate();
+        return getAccommodations().size() > 0 ? getAccommodations().get(0).arrivalDate() : null;
     }
 
+    /**
+     * @return The travel end date or {@code null} if no destinations.
+     */
     public LocalDate endDate() {
-        return getAccommodations().reverse().get(0).departureDate();
+        return getAccommodations().size() > 0 ? getAccommodations().reverse().get(0).departureDate() : null;
     }
 
     /**
@@ -77,6 +92,10 @@ public class TravelApplication {
                 .add(getParking())
                 .add(getAlternate())
                 .add(getRegistration());
+    }
+
+    public long getId() {
+        return id;
     }
 
     public Employee getTraveler() {

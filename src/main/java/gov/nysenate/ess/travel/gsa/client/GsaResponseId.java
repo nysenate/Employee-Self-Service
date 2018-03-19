@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.gsaclient;
+package gov.nysenate.ess.travel.gsa.client;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.gsaclient;
+package gov.nysenate.ess.travel.gsa.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

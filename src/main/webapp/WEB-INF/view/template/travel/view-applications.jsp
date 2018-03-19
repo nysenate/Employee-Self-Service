@@ -10,13 +10,13 @@
           <label class="bold">From:</label>
           <input datepicker readonly='true' id="dateFrom" style="margin-left: 1px;"
                  ng-model="date.from" to-date="date.to"
-                 ng-change="updateDateRange()"/>
+                 ng-change="applyFilters()"/>
         </div>
         <div class="padding-10 inline-block">
           <label class="bold">To:</label>
           <input datepicker readonly='true' id="dateTo" style="margin-left: 1px;"
                  ng-model="date.to" from-date="date.from"
-                 ng-change="updateDateRange()"/>
+                 ng-change="applyFilters()"/>
         </div>
       </div>
     </div>
@@ -33,14 +33,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr dir-paginate="row in travelHistory | orderBy: '-travelDate' : true | itemsPerPage : 10"
+            <tr dir-paginate="app in apps.filtered | orderBy: '-travelDate' : true | itemsPerPage : 10"
                 pagination-id="travel-history-pagination"
                 ng-click="viewApplicationDetails(row.id)">
-              <td>{{row.travelDate | date:'M/d/yyyy'}}</td>
-              <td>{{row.traveler.lastName}}</td>
-              <td>{{row.itinerary.destinations[0].address.city}}</td>
-              <td>{{'$' + row.totalAllowance}}</td>
-              <td>{{row.status}}</td>
+              <td>{{app.startDate | date:'M/d/yyyy'}}</td>
+              <td>{{app.traveler.lastName}}</td>
+              <td>{{app.destinations[0].address.city}}</td>
+              <td>{{app.totalAllowance | currency}}</td>
+              <td>{{app.status}}</td>
             </tr>
           </tbody>
         </table>

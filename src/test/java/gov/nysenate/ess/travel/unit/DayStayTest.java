@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.unit;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.accommodation.DayStay;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.meal.MealTier;
 import gov.nysenate.ess.travel.fixtures.MealRatesFixture;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.unit;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.accommodation.NightStay;
 import org.junit.Test;
 

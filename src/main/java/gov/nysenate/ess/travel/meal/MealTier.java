@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.meal;
 
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.Objects;
 

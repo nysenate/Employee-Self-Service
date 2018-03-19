@@ -11,13 +11,13 @@
         </div>
 
         <span class="margin-10">
-        <label>Mileage <input type="checkbox" ng-model="dest.requestMileage"></label>
+        <label>Mileage <input type="checkbox" ng-model="dest.isMileageRequested"></label>
       </span>
         <span class="margin-10">
-        <label>Meals <input type="checkbox" ng-model="dest.requestMeals"></label>
+        <label>Meals <input type="checkbox" ng-model="dest.isMealsRequested"></label>
       </span>
         <span class="margin-10">
-        <label>Lodging <input type="checkbox" ng-model="dest.requestLodging"></label>
+        <label>Lodging <input type="checkbox" ng-model="dest.isLodgingRequested"></label>
       </span>
       </div>
     </div>
@@ -31,23 +31,22 @@
       <div class="grid" style="min-width: 0;">
         <div class="col-6-12 padding-bottom-10">
           <label class="travel-allowance-label">Tolls:</label>
-          <input ng-model="allowances.tolls" type="number" step="0.01" min="0" style="width: 5em;">
+          <input ng-model="allowances.tollsAllowance" type="number" step="0.01" min="0" style="width: 5em;">
         </div>
         <div class="col-6-12 padding-bottom-10">
           <label class="travel-allowance-label">Parking:</label>
-          <input ng-model="allowances.parking" type="number" step="0.01" min="0" style="width: 5em;">
+          <input ng-model="allowances.parkingAllowance" type="number" step="0.01" min="0" style="width: 5em;">
         </div>
         <div class="col-6-12">
           <label class="travel-allowance-label">Taxi/Bus/Subway:</label>
-          <input ng-model="allowances.alternate" type="number" step="0.01" min="0" style="width: 5em;">
+          <input ng-model="allowances.alternateAllowance" type="number" step="0.01" min="0" style="width: 5em;">
         </div>
         <div class="col-6-12">
           <label class="travel-allowance-label">Registration Fee:</label>
-          <input ng-model="allowances.registrationFee" type="number" step="0.01" min="0" style="width: 5em;">
+          <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="travel-button-container">

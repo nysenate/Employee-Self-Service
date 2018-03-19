@@ -5,14 +5,21 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 
 public class LegView implements ViewObject {
 
-    private final AddressView from;
-    private final AddressView to;
-    private final String miles;
+    private AddressView from;
+    private AddressView to;
+    private String miles;
+    private String modeOfTransportation;
+    private boolean qualifies; // Does this leg qualify for reimbursement.
+
+    public LegView() {
+    }
 
     public LegView(Leg leg) {
         this.from = new AddressView(leg.getFrom());
         this.to = new AddressView(leg.getTo());
         this.miles = String.valueOf(leg.getMiles());
+        this.modeOfTransportation = leg.getModeOfTransportation().getDisplayName();
+        this.qualifies = leg.qualifies();
     }
 
     public AddressView getFrom() {
@@ -25,6 +32,14 @@ public class LegView implements ViewObject {
 
     public String getMiles() {
         return miles;
+    }
+
+    public String getModeOfTransportation() {
+        return modeOfTransportation;
+    }
+
+    public boolean isQualifies() {
+        return qualifies;
     }
 
     @Override

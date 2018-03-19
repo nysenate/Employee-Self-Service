@@ -2,7 +2,8 @@ package gov.nysenate.ess.travel.route;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 /**
  * The Route is responsible for calculating a mileage allowance.
@@ -10,6 +11,9 @@ import gov.nysenate.ess.travel.Dollars;
  * and user defined options.
  */
 public class Route {
+
+    public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(),
+            new Dollars("0"), false);
 
     private static final double MILEAGE_THRESHOLD = 35.0;
     private final ImmutableList<Leg> outgoingLegs;
@@ -36,6 +40,13 @@ public class Route {
         else {
             return Dollars.ZERO;
         }
+    }
+
+    public Address origin() {
+        if (getOutgoingLegs().size() > 0) {
+            return getOutgoingLegs().get(0).getFrom();
+        }
+        return new Address();
     }
 
     private boolean qualifiesForReimbursement() {

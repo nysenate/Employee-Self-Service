@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.gsaclient;
+package gov.nysenate.ess.travel.gsa.client;
 
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.cache.ContentCache;

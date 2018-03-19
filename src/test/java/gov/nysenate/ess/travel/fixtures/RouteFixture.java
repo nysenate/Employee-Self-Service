@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.fixtures;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.Dollars;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.route.Leg;
 import gov.nysenate.ess.travel.route.ModeOfTransportation;
 import gov.nysenate.ess.travel.route.Route;

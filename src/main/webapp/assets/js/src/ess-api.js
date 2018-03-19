@@ -233,20 +233,12 @@ essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function
 
 /** --- Travel API --- */
 
+essApi.factory('TravelApplicationInitApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/init/:id.json', {id: '@id'})
+}]);
+
 essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/travel-application.json')
-}]);
-
-essApi.factory('TravelMealsAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/gsa/meals')
-}]);
-
-essApi.factory('TravelLodgingAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/gsa/lodging')
-}]);
-
-essApi.factory('TravelMileageAllowanceApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/mileage-allowance')
+    return $resource(appProps.apiPath + '/travel/application.json')
 }]);
 
 essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resource, appProps) {
