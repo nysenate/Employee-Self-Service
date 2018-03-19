@@ -231,7 +231,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                                            HttpServletResponse response) throws IOException {
 
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        String csvFileName = "AckDoc-"+ ackDocId +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
+        AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
+        String csvFileName = ackDoc.getTitle()+"_"+ "SenateAckReport_" + LocalDateTime.now()+".csv";
 
         response.setContentType("text/csv");
         response.setStatus(200);
