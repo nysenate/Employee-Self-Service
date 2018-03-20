@@ -12,13 +12,13 @@ public interface EssAcknowledgmentReportService {
      *
      * @return {@link ArrayList<EmpAckReport>}
      */
-    public EmpAckReport getAllAcksFromEmployee(int empId);
+    EmpAckReport getAllAcksFromEmployee(int empId);
 
     /**
      *All acks on a single document are reported as {@link EmpAckReport},
      * those who have not acked this document are included as well
      * @return {@link ArrayList<EmpAckReport>}
      */
-    public ArrayList<EmpAckReport> getAllAcksForAckDocById(int ackDocId);
+    ArrayList<EmpAckReport> getAllAcksForAckDocById(int ackDocId);
 
 }

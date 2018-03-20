@@ -1,4 +1,5 @@
 <%@ tag import="gov.nysenate.ess.time.model.auth.SimpleTimePermission" %>
+<%@ tag import="gov.nysenate.ess.core.model.auth.SimpleEssPermission" %>
 <%@tag description="Left navigation menu for Time & Attendance screens" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
@@ -43,7 +44,7 @@
       <li class="sub-topic"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>
     </ul>
   </shiro:hasPermission>
-  <shiro:hasPermission name="<%= SimpleTimePermission.PERSONNEL_PAGES.getPermissionString() %>">
+  <shiro:hasPermission name="<%= SimpleEssPermission.PERSONNEL_PAGES.getPermissionString() %>">
     <h3 class="main-topic">Personnel</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/time/personnel/search">Employee Search</a></li>
