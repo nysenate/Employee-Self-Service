@@ -17,8 +17,13 @@
         </li>
         <shiro:hasPermission name="<%= SimpleEssPermission.PERSONNEL_PAGES.getPermissionString() %>">
         <li class="sub-topic">
-            <a href="${ctxPath}/myinfo/personnel/ack-doc-report">Ack. Doc. Report</a>
+            <a href="${ctxPath}/myinfo/personnel/ack-doc-report">Senate Ack. Doc. Report</a>
         </li>
+        </shiro:hasPermission>
+        <shiro:hasPermission name="<%= SimpleEssPermission.PERSONNEL_PAGES.getPermissionString() %>">
+            <li class="sub-topic">
+                <a href="${ctxPath}/myinfo/personnel/emp-ack-doc-report">Emp. Ack. Doc. Report</a>
+            </li>
         </shiro:hasPermission>
     </ul>
     <h3 class="main-topic">Payroll</h3>

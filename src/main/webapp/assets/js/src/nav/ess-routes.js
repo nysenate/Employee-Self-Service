@@ -37,6 +37,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/ack-doc-report'
     });
 
+    $routeProvider.when(ctxPath + '/myinfo/personnel/emp-ack-doc-report', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/emp-ack-doc-report'
+    });
+
     $routeProvider.when(ctxPath + '/myinfo/personnel/transactions', {
         templateUrl: ctxPath + '/template/myinfo/personnel/transactions'
     });

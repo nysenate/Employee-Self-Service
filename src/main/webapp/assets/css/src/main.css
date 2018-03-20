@@ -3540,6 +3540,9 @@ badge,
 .ack-doc-list li:not(:first-of-type) {
   margin-top: 5px;
 }
+#empReportStatus {
+  padding-bottom: 5px;
+}
 /** --- Paycheck History Page --- */
 @media print {
   #paycheck-history .content-controls {

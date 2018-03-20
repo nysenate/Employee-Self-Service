@@ -1,4 +1,4 @@
-angular.module('essTime').directive('employeeSearch', [
+angular.module('ess').directive('employeeSearch', [
     'appProps', 'modals', 'LocationService', 'EmployeeSearchApi', 'EmpInfoApi', 'PaginationModel', 'RestErrorService',
     function (appProps, modals, locationService, employeeSearchApi, empInfoApi, paginationModel, RestErrorService) {
         return {

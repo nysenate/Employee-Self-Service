@@ -2,7 +2,7 @@
 
 <section ng-controller="AckDocReportCtrl" >
   <div class="my-info-hero">
-    <h2>Ack. Doc. Reporting</h2>
+    <h2>Senate Ack. Doc. Report</h2>
   </div>
   <div class="content-container">
     <div class="content-info">
