@@ -1,62 +1,82 @@
-angular.module('essTime')
-    .directive('recordPostSaveModal', ['appProps', 'modals', postSaveModal])
-    .directive('recordSubmitAckModal', ['appProps', 'modals', submitAckModal])
-    .directive('recordFutureEndConfModal', ['appProps', 'modals', futureEndDateConfModal])
-    .directive('recordExpectedHoursModal', ['appProps', 'modals', expectedHoursModal])
-;
+(function () {
 
-function postSaveModal (appProps, modals) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/time/record/record-post-save-modal',
-        link: link
-    };
-    function link ($scope, $elem, $attrs) {
-        var params = modals.params();
-        $scope.submit = params.submit;
-        $scope.resolve = modals.resolve;
-        $scope.reject = modals.reject;
+    angular.module('essTime')
+        .directive('recordPostSaveModal', ['appProps', 'modals', postSaveModal])
+        .directive('recordSubmitAckModal', ['appProps', 'modals', submitAckModal])
+        .directive('recordFutureEndConfModal', ['appProps', 'modals', futureEndDateConfModal])
+        .directive('recordExpectedHoursModal', ['appProps', 'modals', expectedHoursModal])
+        .directive('recordUnsubmittedTeModal', ['appProps', 'modals', recordUnsubmittedTeModal])
+    ;
+
+    function postSaveModal(appProps, modals) {
+        return {
+            templateUrl: appProps.ctxPath + '/template/time/record/record-post-save-modal',
+            link: link
+        };
+
+        function link($scope, $elem, $attrs) {
+            var params = modals.params();
+            $scope.submit = params.submit;
+            $scope.resolve = modals.resolve;
+            $scope.reject = modals.reject;
+        }
     }
-}
 
-function submitAckModal (appProps, modals) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/time/record/record-submit-ack-modal',
-        link: link
-    };
-    function link ($scope, $elem, $attrs) {
-        $scope.resolve = modals.resolve;
-        $scope.reject = modals.reject;
+    function submitAckModal(appProps, modals) {
+        return {
+            templateUrl: appProps.ctxPath + '/template/time/record/record-submit-ack-modal',
+            link: link
+        };
+
+        function link($scope, $elem, $attrs) {
+            $scope.resolve = modals.resolve;
+            $scope.reject = modals.reject;
+        }
     }
-}
 
-function futureEndDateConfModal (appProps, modals) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/time/record/record-future-end-date-conf-modal',
-        link: link
-    };
-    function link ($scope, $elem, $attrs) {
-        $scope.resolve = modals.resolve;
-        $scope.reject = modals.reject;
+    function futureEndDateConfModal(appProps, modals) {
+        return {
+            templateUrl: appProps.ctxPath + '/template/time/record/record-future-end-date-conf-modal',
+            link: link
+        };
+
+        function link($scope, $elem, $attrs) {
+            $scope.resolve = modals.resolve;
+            $scope.reject = modals.reject;
+        }
     }
-}
 
-function expectedHoursModal (appProps, modals) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/time/record/record-expected-hrs-modal',
-        link: link
-    };
-    function link ($scope, $elem, $attrs) {
-        var params = modals.params();
+    function expectedHoursModal(appProps, modals) {
+        return {
+            templateUrl: appProps.ctxPath + '/template/time/record/record-expected-hrs-modal',
+            link: link
+        };
 
-        $scope.serviceYtd = params.serviceYtd;
-        $scope.serviceYtdExpected = params.serviceYtdExpected;
-        $scope.recordHrsExpected = params.recordHrsExpected;
-        $scope.raSaTotal = params.raSaTotal;
+        function link($scope, $elem, $attrs) {
+            var params = modals.params();
 
-        $scope.serviceSurplus = $scope.serviceYtd - $scope.serviceYtdExpected;
-        $scope.expectedDifference = $scope.recordHrsExpected - $scope.raSaTotal;
+            $scope.serviceYtd = params.serviceYtd;
+            $scope.serviceYtdExpected = params.serviceYtdExpected;
+            $scope.recordHrsExpected = params.recordHrsExpected;
+            $scope.raSaTotal = params.raSaTotal;
 
-        $scope.resolve = modals.resolve;
-        $scope.reject = modals.reject;
+            $scope.serviceSurplus = $scope.serviceYtd - $scope.serviceYtdExpected;
+            $scope.expectedDifference = $scope.recordHrsExpected - $scope.raSaTotal;
+
+            $scope.resolve = modals.resolve;
+            $scope.reject = modals.reject;
+        }
     }
-}
+
+    function recordUnsubmittedTeModal (appProps, modals) {
+        return {
+            templateUrl: appProps.ctxPath + '/template/time/record/record-unsubmitted-te-modal',
+            link: link
+        };
+
+        function link($scope, $elem, $attrs) {
+            $scope.records = modals.params().records;
+        }
+    }
+
+})();
