@@ -4632,6 +4632,18 @@ table.time-record-entry-table tbody tr td.today {
   text-align: center;
   margin-top: 10px;
 }
+ul.unsubmitted-te-rec-list {
+  padding: 0;
+  max-height: 20em;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-flow: column wrap;
+}
+ul.unsubmitted-te-rec-list li {
+  margin: 5px;
+  flex-grow: 1;
+}
 /** --- Accruals --- */
 .sick,
 .personal,
