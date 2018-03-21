@@ -349,12 +349,11 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
 
                     // Create map api parameters.
                     // All intermediate destinations should be waypoints, final destination should be destination.
-                    console.log($scope.reviewApp);
                     var destinations = $scope.reviewApp.destinations;
-                    var origin = $scope.reviewApp.origin.formatted_address;
+                    var origin = $scope.reviewApp.origin.formattedAddress;
                     var waypoints = [];
                     angular.forEach(destinations, function (dest, index) {
-                        waypoints.push({location: dest.address.formatted_address});
+                        waypoints.push({location: dest.address.formattedAddress});
                     });
                     // Last destination should be destination param, not waypoint.
                     var destination = waypoints.pop().location;
