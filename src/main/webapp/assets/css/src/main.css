@@ -1259,6 +1259,34 @@ input[type="button"].time-neutral-button:hover,
 input[type="submit"].time-neutral-button:hover {
   background: #006b80;
 }
+input[type="button"].travel-neutral-button,
+input[type="submit"].travel-neutral-button {
+  padding: 5px 10px;
+  background: #d19525;
+  color: white;
+  font-weight: 600;
+  border: 2px none #a6761d;
+  border-bottom-style: solid;
+}
+input[type="button"].travel-neutral-button.inactive,
+input[type="submit"].travel-neutral-button.inactive,
+input[type="button"].travel-neutral-button[disabled="disabled"],
+input[type="submit"].travel-neutral-button[disabled="disabled"] {
+  color: #333;
+  border-color: transparent;
+  cursor: not-allowed;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
+}
+input[type="button"].travel-neutral-button.inactive:hover,
+input[type="submit"].travel-neutral-button.inactive:hover,
+input[type="button"].travel-neutral-button[disabled="disabled"]:hover,
+input[type="submit"].travel-neutral-button[disabled="disabled"]:hover {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
+}
+input[type="button"].travel-neutral-button:hover,
+input[type="submit"].travel-neutral-button:hover {
+  background: #ea9c0c;
+}
 input[type="text"],
 input[type="password"],
 input[type="number"],
@@ -1856,6 +1884,9 @@ input[type="number"] {
 }
 .margin-10 {
   margin: 10px;
+}
+.margin-20 {
+  margin: 20px;
 }
 .margin-10-0 {
   margin: 10px 0;
@@ -5456,6 +5487,9 @@ ul.inactive-employee-email-list {
 /**
  * Styles for ESS Travel
  */
+.pointer {
+  cursor: pointer;
+}
 .travel-hero {
   padding: .3em;
   font-weight: bold;
@@ -5490,17 +5524,56 @@ ul.inactive-employee-email-list {
     border-bottom: 1px solid black;
   }
 }
-.travel-location-div {
-  clear: both;
-  content: "";
-  display: table;
-  margin: 10px auto;
+.travel-button-container {
+  margin-top: 20px !important;
+  padding: 10px;
+  background: #f9f9f9;
+}
+.travel-button-container input[type="button"] {
+  margin-right: 5px;
+}
+.travel-origin-display-box {
+  display: inline-block;
+  width: 100%;
   padding: 5px;
   height: 50px;
   text-align: center;
   line-height: 20px;
-  background: #E8E8E8;
+  background: #F6F6F6;
   border-radius: 5px;
+}
+.travel-origin-display-box div {
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+}
+.travel-destination-display-box {
+  display: inline-block;
+  width: 100%;
+  padding: 5px;
+  height: 50px;
+  text-align: center;
+  line-height: 20px;
+  background: #F6F6F6;
+  border-radius: 5px;
+}
+.travel-destination-display-box div {
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+}
+.travel-destination-display-box :nth-child(1) {
+  float: left;
+  width: 25%;
+  font-size: 0.8em;
+}
+.travel-destination-display-box :nth-child(2) {
+  width: 50%;
+}
+.travel-destination-display-box :nth-child(3) {
+  float: right;
+  width: 25%;
+  font-size: 0.8em;
 }
 .travel-table {
   width: 100%;
@@ -5527,6 +5600,7 @@ ul.inactive-employee-email-list {
   display: inline-block;
   width: 120px;
   text-align: right;
+  margin-bottom: 10px;
 }
 .travel-gray-bottom-border {
   border-bottom: 1px solid rgba(0, 107, 128, 0.25);
