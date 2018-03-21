@@ -11,7 +11,7 @@
         <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.PURPOSE)" class="icon-edit pointer" title="Edit purpose of travel"></span>
       </div>
       <div class="col-8-12 margin-top-20">
-        {{app.purposeOfTravel}}
+        {{reviewApp.purposeOfTravel}}
       </div>
 
       <%--Origin--%>
@@ -22,15 +22,15 @@
       <div class="col-8-12 margin-top-20">
         <div class="travel-origin-display-box">
           <div>
-            {{app.itinerary.origin.addr1}}<br/>
-            <span ng-if="app.itinerary.origin.addr2.length <= 0">{{app.itinerary.origin.addr2}}<br/></span>
-            {{app.itinerary.origin.city}} {{app.itinerary.origin.state}} {{app.itinerary.origin.zip5}}
+            {{reviewApp.origin.addr1}}<br/>
+            <span ng-if="reviewApp.origin.addr2.length <= 0">{{reviewApp.origin.addr2}}<br/></span>
+            {{reviewApp.origin.city}} {{reviewApp.origin.state}} {{reviewApp.origin.zip5}}
           </div>
         </div>
       </div>
 
       <%--Destinations--%>
-      <div ng-repeat="dest in app.itinerary.destinations.items">
+      <div ng-repeat="dest in reviewApp.destinations">
         <div ng-if="$index === 0" class="col-4-12 margin-top-20 bold">
           Destination (To)
           <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.DESTINATION)" class="icon-edit pointer" title="Edit destinations"></span>
@@ -50,34 +50,34 @@
       </div>
       <div class="col-8-12 margin-top-20">
         <div class="col-5-12 margin-5">
-          Meals: {{app.allowances.meals.total | currency}}
+          Meals: {{reviewApp.mealAllowance | currency}}
           <span class="icon-info pointer"
                 ng-click="displayMealDetails()">
           </span>
         </div>
         <div class="col-5-12 margin-5">
-          Lodging: {{app.allowances.lodging.total | currency}}
-          <span ng-if="app.allowances.lodging.lodgingNights.length > 0" class="icon-info pointer"
+          Lodging: {{reviewApp.lodgingAllowance | currency}}
+          <span ng-if="reviewApp.allowances.lodging.lodgingNights.length > 0" class="icon-info pointer"
                 ng-click="displayLodgingDetails()">
           </span>
         </div>
         <div class="col-5-12 margin-5">
-          Mileage: {{app.allowances.mileage.total | currency}}
-           <span ng-if="app.allowances.mileage.outboundLegs.length > 0" class="icon-info pointer"
+          Mileage: {{reviewApp.route.mileageAllowance | currency}}
+           <span ng-if="reviewApp.route.outgoingLegs.length > 0" class="icon-info pointer"
                 ng-click="displayMileageDetails()">
           </span>
         </div>
         <div class="col-5-12 margin-5">
-          Tolls: {{app.allowances.tolls | currency}}
+          Tolls: {{reviewApp.tollsAllowance | currency}}
         </div>
         <div class="col-5-12 margin-5">
-          Parking: {{app.allowances.parking | currency}}
+          Parking: {{reviewApp.parkingAllowance | currency}}
         </div>
         <div class="col-5-12 margin-5">
-          Taxi/Bus/Subway: {{app.allowances.alternate | currency}}
+          Taxi/Bus/Subway: {{reviewApp.alternateAllowance | currency}}
         </div>
         <div class="col-5-12 margin-5">
-          Registration Fee: {{app.allowances.registrationFee | currency}}
+          Registration Fee: {{reviewApp.registrationAllowance | currency}}
         </div>
         <div class="col-5-12 margin-5">
 

@@ -51,15 +51,15 @@
     </modal>
 
     <modal modal-id="travel-lodging-details-modal">
-      <div travel-lodging-details-modal lodging-allowance="app.allowances.lodging"></div>
+      <div travel-lodging-details-modal accommodations="app.accommodations"></div>
     </modal>
 
     <modal modal-id="travel-meal-details-modal">
-      <div travel-meal-details-modal meal-allowance="app.allowances.meals"></div>
+      <div travel-meal-details-modal></div>
     </modal>
 
     <modal modal-id="travel-mileage-details-modal">
-      <div travel-mileage-details-modal mileage-allowance="app.allowances.mileage"></div>
+      <div travel-mileage-details-modal route="app.route"></div>
     </modal>
   </div>
 

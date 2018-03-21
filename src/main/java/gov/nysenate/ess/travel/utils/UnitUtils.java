@@ -19,15 +19,6 @@ public class UnitUtils {
     }
 
     /**
-     * Rounds a big decimal to 2 digits using the rounding mode for monetary transactions.
-     * e.g. - 1.114 -> 1.11
-     *      - 1.115 -> 1.12
-     */
-    public static BigDecimal roundToHundredth(BigDecimal d) {
-        return d.setScale(2, RoundingMode.HALF_UP);
-    }
-
-    /**
      * Rounds a big decimal to 1 digit.
      * e.g. - 1.44 -> 1.4
      *      - 1.45 -> 1.5

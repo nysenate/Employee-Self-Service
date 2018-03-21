@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/address/district")
-public class DistrictAssignmentCtrl extends BaseRestApiCtrl{
+public class DistrictAssignmentCtrl extends BaseRestApiCtrl {
 
     private static final Logger log = LoggerFactory.getLogger(DistrictAssignmentCtrl.class);
 
