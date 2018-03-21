@@ -10,12 +10,12 @@
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/travel/application/travel-application">Travel Application</a></li>
       <li class="sub-topic"><a href="${ctxPath}/travel/view-applications">View Applications</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/travel/travel-user-config">User Configuration</a></li>
+      <%--<li class="sub-topic"><a href="${ctxPath}/travel/travel-user-config">User Configuration</a></li>--%>
     </ul>
-    <h3 class="main-topic">Manage Requests</h3>
-    <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/travel/manage/review-travel-requests">Review Travel Requests</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/travel/manage/travel-manage-history">Travel Request History</a></li>
-    </ul>
+    <%--<h3 class="main-topic">Manage Requests</h3>--%>
+    <%--<ul class="sub-topic-list">--%>
+      <%--<li class="sub-topic"><a href="${ctxPath}/travel/manage/review-travel-requests">Review Travel Requests</a></li>--%>
+      <%--<li class="sub-topic"><a href="${ctxPath}/travel/manage/travel-manage-history">Travel Request History</a></li>--%>
+    <%--</ul>--%>
   </section>
 </div>
