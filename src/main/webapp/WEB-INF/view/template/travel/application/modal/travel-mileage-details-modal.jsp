@@ -12,9 +12,9 @@
       </thead>
       <tbody>
       <tr ng-repeat="leg in mileageAllowance.legs">
-        <td>{{leg.leg.from.formattedAddress}}</td>
-        <td>{{leg.leg.to.formattedAddress}}</td>
-        <td>{{leg.distance}}</td>
+        <td>{{leg.from.formattedAddress}}</td>
+        <td>{{leg.to.formattedAddress}}</td>
+        <td>{{leg.miles}}</td>
         <td>{{mileageAllowance.rate | currency}}</td>
       </tr>
       <tr>

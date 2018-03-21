@@ -322,7 +322,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 modals.open('calculating-allowances-progress'); // TODO Do we have a generic loading modal?
 
                 $scope.displayLodgingDetails = function () {
-                    modals.open('travel-lodging-details-modal', {}, true);
+                    modals.open('travel-lodging-details-modal', {app: $scope.reviewApp}, true);
                 };
 
                 $scope.displayMealDetails = function () {
@@ -330,7 +330,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 };
 
                 $scope.displayMileageDetails = function () {
-                    modals.open('travel-mileage-details-modal', {}, true);
+                    modals.open('travel-mileage-details-modal', {app: $scope.reviewApp}, true);
                 };
 
                 function displayMap() {

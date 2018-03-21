@@ -51,7 +51,7 @@
     </modal>
 
     <modal modal-id="travel-lodging-details-modal">
-      <div travel-lodging-details-modal accommodations="app.accommodations"></div>
+      <div travel-lodging-details-modal></div>
     </modal>
 
     <modal modal-id="travel-meal-details-modal">
@@ -59,7 +59,7 @@
     </modal>
 
     <modal modal-id="travel-mileage-details-modal">
-      <div travel-mileage-details-modal route="app.route"></div>
+      <div travel-mileage-details-modal></div>
     </modal>
   </div>
 

@@ -10,15 +10,15 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="night in lodgingAllowance.lodgingNights">
-        <td>{{night.date | date: 'shortDate'}}</td>
-        <td>{{night.address.formattedAddress}}</td>
-        <td>{{night.rate | currency}}</td>
+      <tr ng-repeat="allowance in lodgingAllowances">
+        <td>{{allowance.date | date: 'shortDate'}}</td>
+        <td>{{allowance.address.formattedAddress}}</td>
+        <td>{{allowance.allowance | currency}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{lodgingAllowance.total | currency}}</td>
+        <td class="bold">{{total | currency}}</td>
       </tr>
       </tbody>
     </table>

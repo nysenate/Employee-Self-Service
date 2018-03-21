@@ -51,19 +51,19 @@
       <div class="col-8-12 margin-top-20">
         <div class="col-5-12 margin-5">
           Meals: {{reviewApp.mealAllowance | currency}}
-          <span class="icon-info pointer"
+          <span ng-if="reviewApp.mealAllowance > 0" class="icon-info pointer"
                 ng-click="displayMealDetails()">
           </span>
         </div>
         <div class="col-5-12 margin-5">
           Lodging: {{reviewApp.lodgingAllowance | currency}}
-          <span ng-if="reviewApp.allowances.lodging.lodgingNights.length > 0" class="icon-info pointer"
+          <span ng-if="reviewApp.lodgingAllowance > 0" class="icon-info pointer"
                 ng-click="displayLodgingDetails()">
           </span>
         </div>
         <div class="col-5-12 margin-5">
           Mileage: {{reviewApp.route.mileageAllowance | currency}}
-           <span ng-if="reviewApp.route.outgoingLegs.length > 0" class="icon-info pointer"
+           <span ng-if="reviewApp.mileageAllowance > 0" class="icon-info pointer"
                 ng-click="displayMileageDetails()">
           </span>
         </div>
