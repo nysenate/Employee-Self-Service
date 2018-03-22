@@ -52,7 +52,7 @@ public class RouteFactory {
         // TODO: improve return legs to stop at any destination where mode of transportation changed from Personal Auto.
         TravelDestination lastDest = destinations.get(destinations.size() - 1);
         Address from = lastDest.getAddress();
-        Address to = destinations.get(0).getAddress();
+        Address to = app.getOrigin().toAddress();
         double returnMiles = mileageService.calculateMileage(from, to);
         List<Leg> returnLegs = Lists.newArrayList(new Leg(from, to, returnMiles, lastDest.getModeOfTransportation()));
 
