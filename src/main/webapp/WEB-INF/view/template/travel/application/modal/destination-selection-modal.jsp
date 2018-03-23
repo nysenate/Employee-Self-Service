@@ -9,7 +9,7 @@
     </div>
     <div class="margin-20">
       <label>Arrival Date: <input datepicker ng-model="destination.arrivalDate" size="13"></label>
-      <label>Departure Date: <input datepicker ng-model="destination.departureDate" size="13"></label>
+      <label>Departure Date: <input datepicker ng-model="destination.departureDate" size="13" from-date="calculateMinToDate()"></label>
     </div>
     <div class="margin-20">
       <label>Mode of Transportation:

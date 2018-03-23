@@ -33,8 +33,8 @@
       <div destination-selection-modal></div>
     </modal>
 
-    <modal modal-id="calculating-allowances-progress">
-      <div progress-modal title="Calculating allowances..."></div>
+    <modal modal-id="review-progress">
+      <div progress-modal title="Loading..."></div>
     </modal>
 
     <modal modal-id="submit-progress">

@@ -231,11 +231,7 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
             $scope.destinations = angular.copy($scope.app.destinations);
 
             $scope.editDestination = function (dest) {
-                var params = {
-                    destination: dest,
-                    defaultModeOfTransportation: undefined
-                };
-                modals.open('destination-selection-modal', params)
+                modals.open('destination-selection-modal', {destination: dest})
                     .then(function (destination) {
                         dest = destination;
                     });
@@ -246,13 +242,16 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
                 $scope.destinations.splice(index, 1);
             };
 
-            $scope.addDestinationOnClick = function() {
+            $scope.addDestination = function() {
                 var params = {
-                    defaultModeOfTransportation: undefined
+                    defaultModeOfTransportation: undefined,
+                    defaultArrivalDate: undefined
                 };
                 if ($scope.destinations.length > 0) {
                     // Use ModeOfTransportation from previous destination if exists.
-                    params.defaultModeOfTransportation = $scope.destinations[$scope.destinations.length - 1].modeOfTransportation
+                    params.defaultModeOfTransportation = $scope.destinations[$scope.destinations.length - 1].modeOfTransportation;
+                    // Default arrivalDate to previous destinations departure date.
+                    params.defaultArrivalDate = $scope.destinations[$scope.destinations.length - 1].departureDate;
                 }
                 modals.open('destination-selection-modal', params)
                     .then(function (destination) {
@@ -311,7 +310,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
             scope: true,
             link: function ($scope, $elem, $attrs) {
 
-                // modals.open('calculating-allowances-progress'); // TODO Do we have a generic loading modal?
+                modals.open('review-progress');
 
                 $scope.reviewApp = angular.copy($scope.app);
 

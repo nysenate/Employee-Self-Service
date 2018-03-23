@@ -15,7 +15,7 @@
     <div class="clearfix width-100 margin-top-20">
       <input type="button" class="submit-button"
              value="Add Destination"
-             ng-click="addDestinationOnClick()">
+             ng-click="addDestination()">
     </div>
   </div>
 

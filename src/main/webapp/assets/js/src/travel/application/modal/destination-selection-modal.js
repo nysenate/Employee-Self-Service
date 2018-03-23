@@ -11,9 +11,9 @@ essTravel.directive('destinationSelectionModal', ['appProps', function (appProps
 
 function destSelectionCtrl($scope, modals) {
 
-    const DATEPICKER_FORMAT = 'MM-DD-YYYY';
+    const DATEPICKER_FORMAT = 'MM/DD/YYYY';
     const ISO_FORMAT = 'YYYY-MM-DD';
-    $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Train', 'Airplane', 'Other'];
+    $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Car Pool', 'Train', 'Airplane', 'Other'];
 
     $scope.destination = {
         address: undefined,
@@ -23,7 +23,10 @@ function destSelectionCtrl($scope, modals) {
     };
 
     $scope.addressCallback = function(address) {
-        $scope.destination.address = address;
+        // Not sure why a digest does not run when updating $scope.destination.address.
+        $scope.$apply(function () {
+            $scope.destination.address = address;
+        });
     };
     
     $scope.allFieldsEntered = function () {
@@ -44,14 +47,40 @@ function destSelectionCtrl($scope, modals) {
         modals.reject();
     };
 
+    $scope.calculateMinToDate = function() {
+        var date = undefined;
+        if ($scope.destination.arrivalDate) {
+            date = $scope.destination.arrivalDate;
+        }
+        return date;
+    };
+
     $scope.init = function() {
         if (modals.params().destination) {
+            // If editing a destination.
             $scope.destination = modals.params().destination;
+            // Convert dates to a datepicker format.
+            $scope.destination.arrivalDate = moment($scope.destination.arrivalDate, ISO_FORMAT).format(DATEPICKER_FORMAT);
+            $scope.destination.departureDate = moment($scope.destination.departureDate, ISO_FORMAT).format(DATEPICKER_FORMAT);
         }
-        else if(modals.params().defaultModeOfTransportation) {
-            $scope.destination.modeOfTransportation = modals.params().defaultModeOfTransportation;
+        else {
+            // Otherwise, we are adding a new destination.
+            $scope.destination.modeOfTransportation = defaultModeOfTransportation();
+            $scope.destination.arrivalDate = defaultArrivalDate();
         }
     };
+
+    function defaultModeOfTransportation() {
+        return modals.params().defaultModeOfTransportation;
+    }
+
+    function defaultArrivalDate() {
+        var date = undefined;
+        if (modals.params().defaultArrivalDate) {
+            date = moment(modals.params().defaultArrivalDate, ISO_FORMAT).format(DATEPICKER_FORMAT);
+        }
+        return date;
+    }
 
     $scope.init();
 }
