@@ -232,7 +232,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
         AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
-        String csvFileName = ackDoc.getTitle()+"_"+ "SenateAckReport_" + LocalDateTime.now()+".csv";
+        String csvFileName = ackDoc.getTitle()+"_"+ "SenateAckReport_" + LocalDateTime.now().withNano(0)+".csv";
 
         response.setContentType("text/csv");
         response.setStatus(200);
@@ -249,15 +249,19 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
-            JsonNode ackNode = mapper.readTree(OutputUtils.toJson(empAckReport.getAcks().get(0).getAck()));
+            LocalDateTime ackedTime = null;
+            if (empAckReport.getAcks().get(0).getAck() != null) {
+                ackedTime = empAckReport.getAcks().get(0).getAck().getTimestamp().withNano(0);
+            }
             csvPrinter.printRecord(
                     empAckReport.getEmployee().getEmployeeId(),
                     empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
                     empAckReport.getEmployee().getEmail(),
                     empAckReport.getEmployee().getRespCenter().getHead().getShortName(),
                     empAckReport.getAcks().get(0).getAckDoc().getTitle(),
-                    empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime(),
-                    ackNode.get("timestamp"));
+                    empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime().withNano(0),
+                    ackedTime);
+
         }
         csvPrinter.close();
     }

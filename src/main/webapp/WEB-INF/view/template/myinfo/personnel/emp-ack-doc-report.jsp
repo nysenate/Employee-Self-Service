@@ -3,7 +3,7 @@
 <section ng-controller="EmpAckDocReportCtrl">
 
   <div class="my-info-hero">
-    <h2>Emp. Ack. Doc. Report</h2>
+    <h2>Employee Report</h2>
   </div>
 
   <div class="content-container">
