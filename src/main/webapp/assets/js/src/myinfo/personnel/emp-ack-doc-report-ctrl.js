@@ -14,6 +14,7 @@
         $scope.$watch('selectedEmp', onSelectedEmpChange);
 
         function onSelectedEmpChange() {
+            $scope.ackStatusesReady = false;
 
             if (!$scope.selectedEmp) {
                 return;
