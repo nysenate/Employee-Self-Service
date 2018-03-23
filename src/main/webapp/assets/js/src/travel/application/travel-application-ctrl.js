@@ -311,6 +311,8 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
             scope: true,
             link: function ($scope, $elem, $attrs) {
 
+                // modals.open('calculating-allowances-progress'); // TODO Do we have a generic loading modal?
+
                 $scope.reviewApp = angular.copy($scope.app);
 
                 appApi.save({}, $scope.reviewApp, function (response) {
@@ -321,7 +323,6 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                     displayMap();
                 });
 
-                modals.open('calculating-allowances-progress'); // TODO Do we have a generic loading modal?
 
                 $scope.displayLodgingDetails = function () {
                     modals.open('travel-lodging-details-modal', {app: $scope.reviewApp}, true);

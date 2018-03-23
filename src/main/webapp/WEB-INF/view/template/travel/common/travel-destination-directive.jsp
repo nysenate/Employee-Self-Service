@@ -7,7 +7,7 @@
 
     <div>
       {{destination.address.addr1}}<br/>
-      <span ng-if="destination.address.addr2.length <= 0">{{destination.address.addr2}}<br/></span>
+      <span ng-if="destination.address.addr2.length > 0">{{destination.address.addr2}}<br/></span>
       {{destination.address.city}} {{destination.address.state}} {{destination.address.zip5}}
     </div>
 

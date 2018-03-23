@@ -23,7 +23,7 @@
         <div class="travel-origin-display-box">
           <div>
             {{reviewApp.origin.addr1}}<br/>
-            <span ng-if="reviewApp.origin.addr2.length <= 0">{{reviewApp.origin.addr2}}<br/></span>
+            <span ng-if="reviewApp.origin.addr2.length > 0">{{reviewApp.origin.addr2}}<br/></span>
             {{reviewApp.origin.city}} {{reviewApp.origin.state}} {{reviewApp.origin.zip5}}
           </div>
         </div>
