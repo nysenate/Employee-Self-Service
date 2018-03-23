@@ -131,6 +131,14 @@ essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/acknowledgment/acks');
 }]);
 
+essApi.factory('AcknowledgmentYearApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/acknowledgment/documents/years');
+}]);
+
+essApi.factory('EmpAckReportApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/acknowledgment/report/acks/emp');
+}]);
+
 /** --- Transaction API --- */
 
 essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {

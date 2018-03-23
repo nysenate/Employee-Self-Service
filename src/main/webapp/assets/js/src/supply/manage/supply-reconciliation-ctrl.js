@@ -54,8 +54,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
             $scope.reconcilableSearch.matches = [];
             $scope.reconcilableSearch.items = [];
             $scope.reconcilableSearch.error = true;
-            modals.open('500', {details: response});
-            console.error(response);
+            $scope.handleErrorResponse(response);
         });
     }
 

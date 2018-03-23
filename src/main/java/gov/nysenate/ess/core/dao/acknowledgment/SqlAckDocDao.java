@@ -99,6 +99,20 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         return localNamedJdbc.query(  GET_ALL_ACK_DOCS.getSql(schemaMap()) ,getAckDocRowMapper());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<Integer> getAllYearsContainingAckDocs() {
+        return localNamedJdbc.query(GET_ALL_YEARS_CONTAINING_ACK_DOCS.getSql(schemaMap()) , getYearRowMapper());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<AckDoc> getAckDocsForYear(int year) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("requestYear",year);
+        return localNamedJdbc.query(  GET_ALL_ACK_DOCS_IN_A_SPECIFIC_YEAR.getSql(schemaMap()), params ,getAckDocRowMapper());
+    }
+
 
     /** Returns an AckDocRowMapper that's configured for use in this dao */
     private static AckDocRowMapper getAckDocRowMapper() {
@@ -113,5 +127,7 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
     private static ReportAckRowMapper getAckReportRowMapper() {
         return new ReportAckRowMapper("");
     }
+
+    private static YearRowMapper getYearRowMapper() {return new YearRowMapper(""); }
 
 }

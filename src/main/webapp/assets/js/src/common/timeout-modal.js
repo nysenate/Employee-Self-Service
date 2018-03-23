@@ -1,7 +1,7 @@
 var essApp = angular.module('ess');
 
-essApp.directive('timeoutModal', ['modals', 'httpTimeoutChecker', '$interval', 'LocationService', 'TimeoutApi', 'appProps',
-    function (modals, httpTimeoutChecker, $interval, locationService, timeoutApi, appProps) {
+essApp.directive('timeoutModal', ['modals', '$interval', 'LocationService', 'TimeoutApi',
+    function (modals, $interval, locationService, TimeoutApi) {
         return {
             template: '<section id="timeout-modal" title="Inactivity Warning">' +
             '<h1>Inactive Session Timeout</h1>' +
@@ -10,27 +10,28 @@ essApp.directive('timeoutModal', ['modals', 'httpTimeoutChecker', '$interval', '
             'Do you want to continue your work?' +
             '</p>' +
             '<div class="button-container">' +
-            '<input type="button" class="reject-button" ng-click="logout()" value="Log out of ESS"/>' +
-            '<input type="button" class="submit-button" ng-click="close()" value="Continue"/>' +
+            '<input type="button" ng-click="logout()" ng-disabled="disableButtons()"\n' +
+                   'class="reject-button" value="Log out of ESS"/>' +
+            '<input type="button" ng-click="close()" ng-disabled="disableButtons()"\n' +
+                   'class="submit-button" value="Continue"/>' +
             '</div>' +
             '</section>',
 
             link: function ($scope, $element, $attrs) {
-                $scope.timeRemaining = 60;
+                $scope.sendingPing = false;
+
+                $scope.timeRemaining = modals.params().remainingInactivity;
+
+                // Display less time than is actually available
+                // Reduces risk of attempting to cancel timeout when its too late.
+                $scope.timeRemaining -= 1;
 
                 var countdown = $interval(function () {
                     if ($scope.timeRemaining > 0) {
                         $scope.timeRemaining--;
                     }
                     else {
-                        // log out the user
-                        var params = {
-                            idleTime: -1
-                        };
-                        timeoutApi.get(params, function () {
-                            window.location.replace(appProps.loginUrl);
-                            window.location.reload(true);
-                        });
+                        $scope.logout();
                     }
                 }, 1000);
 
@@ -38,14 +39,27 @@ essApp.directive('timeoutModal', ['modals', 'httpTimeoutChecker', '$interval', '
                     $interval.cancel(countdown);
                 });
 
+                /**
+                 * Send an active ping to reset the timeout.
+                 *
+                 * If successful, close the modal.
+                 * If failure, log out.
+                 */
                 $scope.close = function () {
-                    modals.reject();
-                    httpTimeoutChecker.modalClosed();
+                    $interval.cancel(countdown);
+                    $scope.sendingPing = true;
+                    var params = {active: true};
+                    var body = {};
+                    TimeoutApi.save(params, body, modals.reject, $scope.logout)
                 };
 
                 $scope.logout = function () {
                     locationService.go('/logout', true);
                 };
+
+                $scope.disableButtons = function () {
+                    return $scope.sendingPing || $scope.timeRemaining <= 0;
+                }
             }
         };
     }]);

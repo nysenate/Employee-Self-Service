@@ -3529,6 +3529,20 @@ badge,
   justify-content: space-between;
   align-items: center;
 }
+.ack-doc-report-link {
+  text-decoration: underline !important;
+  color: blue !important;
+}
+.ack-doc-list {
+  text-align: center;
+  padding: 0;
+}
+.ack-doc-list li:not(:first-of-type) {
+  margin-top: 5px;
+}
+#empReportStatus {
+  padding-bottom: 5px;
+}
 /** --- Paycheck History Page --- */
 @media print {
   #paycheck-history .content-controls {
@@ -4620,6 +4634,18 @@ table.time-record-entry-table tbody tr td.today {
 .content-container h1.time-entry-table-title {
   text-align: center;
   margin-top: 10px;
+}
+ul.unsubmitted-te-rec-list {
+  padding: 0;
+  max-height: 20em;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-flow: column wrap;
+}
+ul.unsubmitted-te-rec-list li {
+  margin: 5px;
+  flex-grow: 1;
 }
 /** --- Accruals --- */
 .sick,

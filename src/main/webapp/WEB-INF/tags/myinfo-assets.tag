@@ -11,6 +11,12 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/acknowledgment-ctrl.js"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-report-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/emp-ack-doc-report-ctrl.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-report-directive.js"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-view-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/transaction-history-ctrl.js"></script>

@@ -1,7 +1,11 @@
 /*! Login Page */
-var essApp = angular.module('ess');
+var loginApp = angular.module('essLogin', ['ngResource']);
 
-essApp.factory('LoginApi', ['$resource', 'appProps', function ($resource, appProps) {
+angular.module('ess', ['essLogin']);
+
+loginApp.constant('appProps', globalProps);
+
+loginApp.factory('LoginApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.ctxPath + appProps.loginUrl, {}, {
         'login': {
             method: 'POST',
@@ -14,8 +18,8 @@ essApp.factory('LoginApi', ['$resource', 'appProps', function ($resource, appPro
     });
 }]);
 
-essApp.controller('LoginController', ['$scope', '$http', '$window', 'appProps', 'LoginApi',
-    function($scope, $http, $window, appProps, LoginApi) {
+loginApp.controller('LoginController', ['$scope', '$http', '$window', 'appProps', 'LoginApi',
+                                        function($scope, $http, $window, appProps, LoginApi) {
     $scope.credentials = {
         username: '',
         password: '',

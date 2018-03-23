@@ -113,9 +113,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                     });
                     linkRecordFromQueryParam();
                 }
-            }, function (response) {    // handle request error
-                modals.open('500', {action: 'get active records', details: response});
-            }).$promise.finally(function() {
+            }, $scope.handleErrorResponse)
+            .$promise.finally(function() {
                 $scope.state.request.records = false;
             });
     };
@@ -191,13 +190,10 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 if (modified) {
                     modals.open('record-modified-dialog')
                         .then($scope.init)
-                        .catch(function () {
-                            modals.open('500', {details: resp});
-                        });
+                        .catch($scope.handleErrorResponse);
                 } else {
-                    modals.open('500', {details: resp});
+                    $scope.handleErrorResponse(resp);
                 }
-                console.error(resp);
             }).$promise.finally(function () {
                 $scope.state.request.save = false;
         });
@@ -220,10 +216,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 if (resp.success) {
                     $scope.state.accrual = resp.result;
                 }
-            }, function (resp) {
-                modals.open('500', {details: resp});
-                console.error(resp);
-            }).$promise.finally(function() {
+            }, $scope.handleErrorResponse)
+            .$promise.finally(function() {
                 $scope.state.request.accruals = false;
             });
         }
@@ -248,15 +242,11 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             endDate: record.endDate
         };
         $scope.state.request.expectedHrs = true;
-        return expectedHoursApi.get(params, onSuccess, onFail)
+        return expectedHoursApi.get(params, onSuccess, $scope.handleErrorResponse)
             .$promise.finally(cleanUp);
 
         function onSuccess (resp) {
             $scope.state.expectedHrs = resp.result;
-        }
-        function onFail (resp) {
-            modals.open('500', {details: resp});
-            console.error(resp);
         }
         function cleanUp() {
             $scope.state.request.expectedHrs = false;
@@ -282,10 +272,8 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                     //console.log('retrieved allowance', allowance.empId, allowance.year);
                     $scope.state.allowances[allowance.year] = allowance;
                 }
-            }, function(resp) {
-                modals.open('500', {details: resp});
-                console.error(resp);
-            }).$promise.finally(function () {
+            }, $scope.handleErrorResponse)
+            .$promise.finally(function () {
                 $scope.state.request.allowances = false;
             });
         }
@@ -297,10 +285,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         var params = {empId: $scope.state.empId};
         miscLeaveGrantApi.get(params, function (response) {
             $scope.state.miscLeaveGrants = response.result;
-        }, function(response) {
-            modals.open('500', {details: response});
-            console.error(response);
-        });
+        }, $scope.handleErrorResponse);
     };
 
     $scope.getHolidays = function () {
@@ -316,10 +301,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 }
             });
             //console.log('retrieved holidays');
-        }, function (response) {
-            modals.open('500', {details: response});
-            console.error(response);
-        });
+        }, $scope.handleErrorResponse);
     };
 
     $scope.createNextRecord = function () {
@@ -337,8 +319,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
         recordCreationApi.save(params, {}, function (response) {
             $scope.init();
         }, function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
+            $scope.handleErrorResponse(errorResponse);
             $scope.state.request.records = false;
         })
     };
@@ -751,6 +732,14 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
 
     function getSubmitDialogs() {
         var submitDialogs = [];
+
+        var prevUnsubmittedTe = getPrevUnsubmittedTe();
+        if (prevUnsubmittedTe && prevUnsubmittedTe.length > 0) {
+            submitDialogs.push(function () {
+                return modals.open("unsubmitted-te-warning", {records: prevUnsubmittedTe}, true);
+            })
+        }
+
         if (!$scope.expectedHoursEntered()) {
             submitDialogs.push(function () {
                 return modals.open("expectedhrs-dialog", {
@@ -813,14 +802,14 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     $scope.preValidation = function() {
         var record = $scope.getSelectedRecord();
         $scope.errorTypes.reset();
-        checkForPrevUnsubmitted(record);
+        checkForPrevUnsubmittedRaSa(record);
     };
 
     /**
      * Check for any unsubmitted salaried records before the given record
      * @param record
      */
-    function checkForPrevUnsubmitted(record) {
+    function checkForPrevUnsubmittedRaSa(record) {
         for (var iRecord in $scope.state.records) {
             var otherRecord = $scope.state.records[iRecord];
             if (moment(otherRecord.beginDate).isBefore(record.beginDate)) {
@@ -832,6 +821,18 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 }
             }
         }
+    }
+
+    /**
+     * Search for and return any unsubmitted temporary time records before the given record.
+     */
+    function getPrevUnsubmittedTe() {
+        var currentRec = $scope.getSelectedRecord();
+        return $scope.state.records
+            .filter(function (rec) {
+                return rec.scope === 'E' &&
+                    moment(rec.beginDate).isBefore(currentRec.beginDate);
+            });
     }
 
     /**

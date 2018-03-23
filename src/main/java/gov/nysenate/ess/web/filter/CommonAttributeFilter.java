@@ -3,8 +3,6 @@ package gov.nysenate.ess.web.filter;
 import gov.nysenate.ess.core.config.RuntimeLevel;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 import gov.nysenate.ess.web.security.xsrf.XsrfValidator;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,6 @@ public class CommonAttributeFilter implements Filter
     private static final String RUNTIME_LEVEL_ATTRIBUTE = "runtimeLevel";
     private static final String LOGIN_URL_ATTRIBUTE = "loginUrl";
     private static final String IMAGE_URL_ATTRIBUTE = "imageUrl";
-    private static final String TIMEOUT_ATTRIBUTE = "timeoutExempt";
     private static final String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
     private static final String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
 
@@ -66,7 +63,6 @@ public class CommonAttributeFilter implements Filter
         if (((HttpServletRequest) request).getSession() == null)
             return;
         setContextPathAttribute(httpServletRequest);
-        setTimeoutAttribute(httpServletRequest);
         setRuntimeLevelAttribute(request);
         setLoginUrlAttribute(request);
         setXsrfTokenAttribute(httpServletRequest);
@@ -78,15 +74,6 @@ public class CommonAttributeFilter implements Filter
 
     private static void setContextPathAttribute(HttpServletRequest httpServletRequest) {
         httpServletRequest.setAttribute(CONTEXT_PATH_ATTRIBUTE, httpServletRequest.getContextPath());
-    }
-
-    private static void setTimeoutAttribute(HttpServletRequest httpServletRequest) {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.isPermitted("core:timeout-exempt"))
-            httpServletRequest.setAttribute(TIMEOUT_ATTRIBUTE, true);
-        else
-            httpServletRequest.setAttribute(TIMEOUT_ATTRIBUTE, false);
-
     }
 
     private void setRuntimeLevelAttribute(ServletRequest request) {

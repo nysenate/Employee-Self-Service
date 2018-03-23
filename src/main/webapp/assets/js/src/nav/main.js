@@ -4,9 +4,9 @@ var essApp = angular.module('ess');
  * The wrapping controller that is the parent of the nav menu and views.
  */
 essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$location', '$window',
-                               'appProps', 'modals',
+                               'appProps', 'modals', 'RestErrorService',
     function($scope, $http, $route, $routeParams, $location, $window,
-             appProps, modals) {
+             appProps, modals, RestErrorService) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
@@ -30,9 +30,10 @@ essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$lo
             $event.preventDefault();    // prevents following of displayed link
         };
 
-        $scope.handleErrorResponse = function (resp) {
-            console.error("Request error:", resp);
-            modals.open('500', {details: resp});
-        };
+        /**
+         * Expose handle error response method for child controllers to use easily.
+         * @type {handleErrorResponse}
+         */
+        $scope.handleErrorResponse = RestErrorService.handleErrorResponse;
     }
 ]);

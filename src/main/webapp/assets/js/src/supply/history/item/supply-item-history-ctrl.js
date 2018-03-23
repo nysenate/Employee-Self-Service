@@ -86,10 +86,8 @@ function supplyItemHistoryCtrl($scope, $q, supplyUtils, locationApi, itemHistory
             moment($scope.filters.date.to, DATE_FORMAT).endOf('day').format()
         ).then(function () {
             $scope.loading = false;
-        }).catch(function (error) {
-            modals.open('500', {details: error}) ;
-            console.error(error);
-        }).finally(function () {
+        }).catch($scope.handleErrorResponse)
+        .finally(function () {
             $scope.result.array = itemHistoryFactory.getItemHistories();
         })
     };

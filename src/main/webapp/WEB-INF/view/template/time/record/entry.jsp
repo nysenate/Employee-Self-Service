@@ -363,5 +363,8 @@
         </p>
       </div>
     </modal>
+    <modal modal-id="unsubmitted-te-warning">
+      <div record-unsubmitted-te-modal=></div>
+    </modal>
   </div>
 </div>

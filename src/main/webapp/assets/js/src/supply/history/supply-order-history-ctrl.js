@@ -58,10 +58,7 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
         };
         return empInfoApi.get(params,function () {
             
-        },function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        }).$promise;
+        }, $scope.handleErrorResponse).$promise;
     }
 
     function getRequisitions(employeeInfoResponse) {
@@ -79,10 +76,8 @@ function supplyOrderHistoryCtrl($scope, appProps, locationService, empInfoApi, o
         };
         return orderHistoryApi.get(params, function (response) {
             $scope.paginate.setTotalItems(response.total);
-        },function (errorResponse) {
-            modals.open('500', {details: errorResponse});
-            console.error(errorResponse);
-        }).$promise;
+        }, $scope.handleErrorResponse)
+            .$promise;
     }
 
     function setRequisitions(orderHistoryResponse) {

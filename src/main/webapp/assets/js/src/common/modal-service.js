@@ -42,6 +42,12 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
             softRejectable: softRejectable === true
         };
 
+        modal.deferred.promise.then(function () {
+            console.log('resolved modal', modalId);
+        }, function () {
+            console.log('rejected modal', modalId);
+        });
+
         modals.unshift(modal);
         $rootScope.$emit("modals.open", modalId);
         return modal.deferred.promise;
@@ -86,7 +92,6 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
         }
 
         modal.deferred.reject(reason);
-        console.log('rejecting modal',modal, reason);
         $rootScope.$emit("modals.close");
     }
 
