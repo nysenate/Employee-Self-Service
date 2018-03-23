@@ -61,6 +61,7 @@ angular.module('ess').directive('employeeSearch', [
                     $scope.empInfo = null;
                     empId = NaN;
                     locationService.setSearchParam(EMP_ID_PARAM);
+                    $scope.$apply();
                     getSearchResults();
                 };
 
