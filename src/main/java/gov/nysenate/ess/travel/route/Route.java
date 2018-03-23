@@ -13,20 +13,17 @@ import gov.nysenate.ess.travel.utils.Dollars;
 public class Route {
 
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(),
-            new Dollars("0"), false);
+            new Dollars("0"));
 
     private static final double MILEAGE_THRESHOLD = 35.0;
     private final ImmutableList<Leg> outgoingLegs;
     private final ImmutableList<Leg> returnLegs;
     private final Dollars mileageRate;
-    private final boolean isMileageRequested;
 
-    public Route(ImmutableList<Leg> outgoingLegs, ImmutableList<Leg> returnLegs,
-                 Dollars mileageRate, boolean isMileageRequested) {
+    public Route(ImmutableList<Leg> outgoingLegs, ImmutableList<Leg> returnLegs, Dollars mileageRate) {
         this.outgoingLegs = outgoingLegs;
         this.returnLegs = returnLegs;
         this.mileageRate = mileageRate;
-        this.isMileageRequested = isMileageRequested;
     }
 
     /**
@@ -50,7 +47,8 @@ public class Route {
     }
 
     private boolean qualifiesForReimbursement() {
-        return isMileageRequested() && outboundQualifyingMiles() > MILEAGE_THRESHOLD;
+//        return isMileageRequested() && outboundQualifyingMiles() > MILEAGE_THRESHOLD;
+        return outboundQualifyingMiles() > MILEAGE_THRESHOLD;
     }
 
     private double outboundQualifyingMiles() {
@@ -89,9 +87,4 @@ public class Route {
     Dollars getMileageRate() {
         return mileageRate;
     }
-
-    boolean isMileageRequested() {
-        return isMileageRequested;
-    }
-
 }

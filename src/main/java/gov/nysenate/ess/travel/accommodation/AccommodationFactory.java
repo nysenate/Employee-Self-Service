@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.accommodation;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Range;
 import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.application.TravelApplicationView;
 import gov.nysenate.ess.travel.application.TravelDestination;
@@ -36,26 +37,38 @@ public class AccommodationFactory {
     private Accommodation createAccommodation(TravelDestinationView destination) throws IOException {
         TravelDestination dest = destination.toTravelDestination();
         List<Stay> stays = new ArrayList<>();
-        LocalDate arrival = dest.getArrivalDate();
-        LocalDate departure = dest.getDepartureDate();
-        LocalDate tmp = arrival;
-        // Add day stays
-        while (tmp.isBefore(departure) || tmp.isEqual(departure)) {
-            MealTier tier = gsaService.fetchMealTier(tmp, dest.getAddress());
-            Stay dayStay = new DayStay(tmp, tier);
-            stays.add(dayStay);
-            tmp = tmp.plusDays(1);
-        }
-
-        // Add night stays
-        tmp = arrival.plusDays(1);
-        while (tmp.isBefore(departure) || tmp.isEqual(departure)) {
-            Dollars lodgingRate = gsaService.fetchLodgingRate(tmp, dest.getAddress());
-            Stay nightStay = new NightStay(tmp, lodgingRate);
-            stays.add(nightStay);
-            tmp = tmp.plusDays(1);
-        }
-
+        stays.addAll(createDateStays(dest));
+        stays.addAll(createNightStays(dest));
         return new Accommodation(dest.getAddress(), ImmutableSet.copyOf(stays), dest.isMealsRequested(), dest.isLodgingRequested());
+    }
+
+    private List<Stay> createDateStays(TravelDestination dest) throws IOException {
+        List<Stay> stays = new ArrayList<>();
+        LocalDate dayOfStay = dest.getArrivalDate();
+        while (dayRange(dest).contains(dayOfStay)) {
+            MealTier tier = gsaService.fetchMealTier(dayOfStay, dest.getAddress());
+            stays.add(new DayStay(dayOfStay, tier));
+            dayOfStay = dayOfStay.plusDays(1);
+        }
+        return stays;
+    }
+
+    private Range<LocalDate> dayRange(TravelDestination dest) {
+        return Range.closed(dest.getArrivalDate(), dest.getDepartureDate());
+    }
+
+    private List<Stay> createNightStays(TravelDestination dest) throws IOException {
+        List<Stay> stays = new ArrayList<>();
+        LocalDate dayOfStay = dest.getArrivalDate().plusDays(1);
+        while(nightRange(dest).contains(dayOfStay)) {
+            Dollars lodgingRate = gsaService.fetchLodgingRate(dayOfStay, dest.getAddress());
+            stays.add(new NightStay(dayOfStay, lodgingRate));
+            dayOfStay = dayOfStay.plusDays(1);
+        }
+        return stays;
+    }
+
+    private Range<LocalDate> nightRange(TravelDestination dest) {
+        return Range.openClosed(dest.getArrivalDate(), dest.getDepartureDate());
     }
 }

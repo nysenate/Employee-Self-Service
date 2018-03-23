@@ -37,33 +37,35 @@ public class RouteTest {
 
     @Test
     public void mileageAllowanceRequiresPersonalAuto() {
-        Route route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.SENATE_VEHICLE, true);
+        Route route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.SENATE_VEHICLE);
         assertEquals(new Dollars("0"), route.mileageAllowance());
 
-        route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.OTHER, true);
+        route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.OTHER);
         assertEquals(new Dollars("0"), route.mileageAllowance());
 
-        route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.AIRPLANE, true);
+        route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.AIRPLANE);
         assertEquals(new Dollars("0"), route.mileageAllowance());
 
-        route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.TRAIN, true);
+        route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.TRAIN);
         assertEquals(new Dollars("0"), route.mileageAllowance());
     }
 
     @Test
     public void mileageAllowanceMustBeRequested() {
-        Route route = RouteFixture.longOneDestinationRoute(ModeOfTransportation.PERSONAL_AUTO, false);
+        Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, false);
+        Leg return1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, false);
+        Route route = new Route(ImmutableList.of(outbound1), ImmutableList.of(return1), MILEAGE_RATE);
         assertEquals(new Dollars("0"), route.mileageAllowance());
     }
 
     @Test
     public void multiModeOfTransporationTrip() {
-        Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO);
-        Leg outbound2 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.CARPOOL);
-        Leg return1 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.CARPOOL);
-        Leg return2 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO);
+        Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, true);
+        Leg outbound2 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.CARPOOL, true);
+        Leg return1 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.CARPOOL, true);
+        Leg return2 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, true);
         Route route = new Route(ImmutableList.of(outbound1, outbound2),
-                ImmutableList.of(return1, return2), MILEAGE_RATE, true);
+                ImmutableList.of(return1, return2), MILEAGE_RATE);
 
         assertEquals(new Dollars("50.00"), route.mileageAllowance());
     }

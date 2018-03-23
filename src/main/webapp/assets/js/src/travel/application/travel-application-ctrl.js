@@ -316,6 +316,8 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 appApi.save({}, $scope.reviewApp, function (response) {
                     modals.resolve({});
                     $scope.reviewApp = response.result;
+                    console.log("Review App:");
+                    console.log($scope.reviewApp);
                     displayMap();
                 });
 

@@ -26,6 +26,8 @@ public class TravelDestinationView implements ViewObject {
     private boolean isMealsRequested;
     @JsonProperty(value="isLodgingRequested")
     private boolean isLodgingRequested;
+    @JsonProperty(value="isMileageRequested")
+    private boolean isMileageRequested;
 
     private TravelDestinationView() {
     }
@@ -40,6 +42,7 @@ public class TravelDestinationView implements ViewObject {
                 .filter(l -> l.getTo().getFormattedAddress().equals(this.address.getFormattedAddress()))
                 .findFirst();
         addressLeg.ifPresent(leg -> modeOfTransportation = leg.getModeOfTransportation());
+        addressLeg.ifPresent(leg -> isMileageRequested = leg.isMileageRequested());
     }
 
     public TravelDestination toTravelDestination() {
@@ -50,6 +53,7 @@ public class TravelDestinationView implements ViewObject {
         dest.setModeOfTransportation(ModeOfTransportation.of(getModeOfTransportation()));
         dest.setMealsRequested(isMealsRequested());
         dest.setLodgingRequested(isLodgingRequested());
+        dest.setMileageRequested(isMileageRequested());
         return dest;
     }
 
@@ -75,6 +79,10 @@ public class TravelDestinationView implements ViewObject {
 
     public boolean isLodgingRequested() {
         return isLodgingRequested;
+    }
+
+    public boolean isMileageRequested() {
+        return isMileageRequested;
     }
 
     @Override

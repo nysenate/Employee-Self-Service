@@ -24,17 +24,4 @@ public abstract class Stay {
     protected LocalDate getDate() {
         return this.date;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Stay stay = (Stay) o;
-        return Objects.equals(date, stay.date);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(date);
-    }
 }

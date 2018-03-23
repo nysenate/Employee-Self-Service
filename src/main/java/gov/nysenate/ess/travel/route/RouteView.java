@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 public class RouteView implements ViewObject{
 
     private String mileageRate;
-    private boolean isMileageRequested;
     private List<LegView> outgoingLegs;
     private List<LegView> returnLegs;
     private String mileageAllowance;
@@ -21,7 +20,6 @@ public class RouteView implements ViewObject{
 
     public RouteView(Route route) {
         mileageRate = route.getMileageRate().toString();
-        isMileageRequested = route.isMileageRequested();
         outgoingLegs = route.getOutgoingLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
@@ -34,10 +32,6 @@ public class RouteView implements ViewObject{
 
     public String getMileageRate() {
         return mileageRate;
-    }
-
-    public boolean isMileageRequested() {
-        return isMileageRequested;
     }
 
     public List<LegView> getOutgoingLegs() {

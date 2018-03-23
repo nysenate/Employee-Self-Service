@@ -9,6 +9,7 @@ public class LegView implements ViewObject {
     private AddressView to;
     private String miles;
     private String modeOfTransportation;
+    private boolean isMileageRequested;
     private boolean qualifies; // Does this leg qualify for reimbursement.
 
     public LegView() {
@@ -19,6 +20,7 @@ public class LegView implements ViewObject {
         this.to = new AddressView(leg.getTo());
         this.miles = String.valueOf(leg.getMiles());
         this.modeOfTransportation = leg.getModeOfTransportation().getDisplayName();
+        this.isMileageRequested = leg.isMileageRequested();
         this.qualifies = leg.qualifies();
     }
 
@@ -36,6 +38,10 @@ public class LegView implements ViewObject {
 
     public String getModeOfTransportation() {
         return modeOfTransportation;
+    }
+
+    public boolean isMileageRequested() {
+        return isMileageRequested;
     }
 
     public boolean isQualifies() {

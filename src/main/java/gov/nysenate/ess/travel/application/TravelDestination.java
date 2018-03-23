@@ -13,6 +13,7 @@ public class TravelDestination {
     private ModeOfTransportation modeOfTransportation;
     private boolean isMealsRequested;
     private boolean isLodgingRequested;
+    private boolean isMileageRequested;
 
     public TravelDestination() {
     }
@@ -63,5 +64,13 @@ public class TravelDestination {
 
     public void setLodgingRequested(boolean lodgingRequested) {
         isLodgingRequested = lodgingRequested;
+    }
+
+    public boolean isMileageRequested() {
+        return isMileageRequested;
+    }
+
+    public void setMileageRequested(boolean mileageRequested) {
+        isMileageRequested = mileageRequested;
     }
 }
