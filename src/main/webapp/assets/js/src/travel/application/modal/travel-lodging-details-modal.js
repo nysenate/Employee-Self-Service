@@ -35,7 +35,10 @@ function lodgingDetailsModalCtrl($scope, modals) {
         var allowances = [];
         angular.forEach(accommodations, function (accommodation) {
             angular.forEach(accommodation.stays, function (stay) {
-                allowances.push(new Allowance(stay.date, accommodation.address, stay.lodgingAllowance))
+                // Only display stays from accommodations where lodging was requested.
+                if (accommodation.isLodgingRequested) {
+                    allowances.push(new Allowance(stay.date, accommodation.address, stay.lodgingAllowance))
+                }
             });
         });
         return allowances;

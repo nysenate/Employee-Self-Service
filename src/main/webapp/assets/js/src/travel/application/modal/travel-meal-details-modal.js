@@ -33,7 +33,10 @@ function mealDetailsModalCtrl($scope, modals) {
         var allowances = [];
         angular.forEach(accommodations, function (accommodation) {
             angular.forEach(accommodation.stays, function (stay) {
-                allowances.push(new Allowance(stay.date, accommodation.address, stay.mealAllowance))
+                // Only display stays from accommodations where meals were requested.
+                if (accommodation.isMealsRequested) {
+                    allowances.push(new Allowance(stay.date, accommodation.address, stay.mealAllowance))
+                }
             });
         });
         return allowances;

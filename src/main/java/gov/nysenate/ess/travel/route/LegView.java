@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.route;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
@@ -9,7 +10,9 @@ public class LegView implements ViewObject {
     private AddressView to;
     private String miles;
     private String modeOfTransportation;
+    @JsonProperty(value="isMileageRequested")
     private boolean isMileageRequested;
+    @JsonProperty(value="qualifies")
     private boolean qualifies; // Does this leg qualify for reimbursement.
 
     public LegView() {

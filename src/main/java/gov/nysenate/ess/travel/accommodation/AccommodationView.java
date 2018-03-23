@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.accommodation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
@@ -10,7 +11,9 @@ import static java.time.format.DateTimeFormatter.*;
 
 public class AccommodationView implements ViewObject {
 
+    @JsonProperty(value="isMealsRequested")
     private boolean isMealsRequested;
+    @JsonProperty(value="isLodgingRequested")
     private boolean isLodingRequested;
     private AddressView address;
     private List<StayView> stays;
