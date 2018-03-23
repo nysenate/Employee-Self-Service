@@ -57,6 +57,7 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
             for (Acknowledgment ack: allEmpAcks) {
                 if (ack.getAckDocId().equals( reportAck.getAckDoc().getId())) {
                     reportAck.setAck(ack);
+                    reportAck.getAck().setTimestamp(reportAck.getAck().getTimestamp().withNano(0));
                 }
             }
         }
