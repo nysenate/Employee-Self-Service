@@ -61,7 +61,6 @@ angular.module('ess').directive('employeeSearch', [
                     $scope.empInfo = null;
                     empId = NaN;
                     locationService.setSearchParam(EMP_ID_PARAM);
-                    $scope.$apply();
                     getSearchResults();
                 };
 
@@ -82,6 +81,7 @@ angular.module('ess').directive('employeeSearch', [
 
                     function onSuccess(resp) {
                         console.log('Got employee search results');
+                        $scope.searchResults = [];
                         resp.employees.forEach(function (emp) {
                             $scope.searchResults.push(emp);
                         });
