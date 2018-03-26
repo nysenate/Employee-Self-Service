@@ -1,6 +1,5 @@
 package gov.nysenate.ess.web.controller.template;
 
-import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.Permission;
@@ -166,7 +165,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
      */
     @RequestMapping(value = "/personnel/search")
     public String getPersonnelPage(HttpServletRequest request, ModelMap modelMap) {
-        final Permission personnelPagePermission = SimpleEssPermission.PERSONNEL_PAGES.getPermission();
+        final Permission personnelPagePermission = SimpleTimePermission.PERSONNEL_PAGES.getPermission();
         if (SecurityUtils.getSubject().isPermitted(personnelPagePermission)) {
             return request.getRequestURI();
         }
