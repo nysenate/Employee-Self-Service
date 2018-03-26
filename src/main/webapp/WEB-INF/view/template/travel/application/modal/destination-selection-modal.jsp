@@ -4,7 +4,7 @@
       <label>Destination:
         <input travel-address-autocomplete
                callback="addressCallback(address)"
-               address="{{destination.address.formatted_address}}"
+               address="{{destination.address.formattedAddress}}"
                placeholder="200 State St, Albany NY 12210" type="text" size="30"></label>
     </div>
     <div class="margin-20">

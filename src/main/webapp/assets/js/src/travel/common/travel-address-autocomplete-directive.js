@@ -11,7 +11,7 @@ var essTravel = angular.module('essTravel');
  *
  * Notes:
  *     - The callback function is required to have the 'address' param.
- *     - Only works on input elements.
+ *     - Only works on text input elements.
  */
 essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps) {
     return {
@@ -29,7 +29,8 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps
                 var address = {};
                 var place = autocomplete.getPlace();
 
-                address.formatted_address = place.formatted_address; // TODO cant use this, wont have it once saved to back end.
+                // Convert place result into address object
+                address.formattedAddress = place.formatted_address;
                 address.addr1 = parseAddress1(place);
                 address.city = parseCity(place);
                 address.state = parseState(place);
@@ -38,9 +39,9 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps
                 $scope.callback({address: address});
             });
 
-            // TODO init autocomplete with address attr. Below code does not work
             if ($attrs.address) {
-                autocomplete.notify("place_changed", $attrs.address);
+                // If a default address is given, initialize with it.
+                element.value = $attrs.address;
             }
 
             function parseAddress1(place) {
