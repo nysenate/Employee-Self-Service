@@ -16,7 +16,7 @@
              badge-id="unacknowledgedDocuments" hide-empty="true"></badge>
     </li>
   </ul>
-  <shiro:hasPermission name="<%= SimpleEssPermission.PERSONNEL_PAGES.getPermissionString() %>">
+  <shiro:hasPermission name="<%= SimpleEssPermission.ACK_REPORT_GENERATION.getPermissionString() %>">
     <h3 class="main-topic">Acknowledgments</h3>
     <ul>
       <li class="sub-topic">
