@@ -33,6 +33,8 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     // in that case appState == EDIT and pageState == the page who's data is being edited.
     $scope.appState = undefined;
 
+    $scope.app = {};
+
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;
         $scope.appState = $scope.STATES.PURPOSE;
