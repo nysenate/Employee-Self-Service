@@ -11,7 +11,6 @@
     <employee-search selected-emp="selectedEmp"></employee-search>
 
     <div id="empReportStatus" ng-if="ackStatusesReady">
-
       <ul class="ack-doc-list">
 
         <li ng-repeat="status in displayAckStatuses">
@@ -19,8 +18,8 @@
         </li>
 
       </ul>
-
     </div>
+
   </div>
 
 </section>
