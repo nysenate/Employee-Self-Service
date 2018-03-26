@@ -6,15 +6,15 @@
 
     function empAckDocReportCtrl($scope, $q, appProps, modals,EmpAckReportApi) {
 
-        $scope.empAckStatuses = [];
-
         $scope.ackStatusesReady = false;
         $scope.displayAckStatuses = [];
 
         $scope.$watch('selectedEmp', onSelectedEmpChange);
 
         function onSelectedEmpChange() {
+            $scope.displayAckStatuses = [];
             $scope.ackStatusesReady = false;
+
 
             if (!$scope.selectedEmp) {
                 return;
@@ -31,13 +31,7 @@
 
             function onSuccess(resp) {
                 angular.forEach(resp.acks, function (ackStatus) {
-                    $scope.empAckStatuses.push(ackStatus);
-                });
-                populateStatuses();
-            }
 
-            function populateStatuses() {
-                angular.forEach($scope.empAckStatuses, function(ackStatus) {
                     var status = ackStatus.ackDoc.title + "-" +
                         new Date(ackStatus.ackDoc.effectiveDateTime).getFullYear() + " ";
                     if (ackStatus.ack == null) {
@@ -49,6 +43,7 @@
                     $scope.displayAckStatuses.push(status);
                 });
                 $scope.ackStatusesReady = true;
+                //console.log($scope.displayAckStatuses);
             }
 
         }

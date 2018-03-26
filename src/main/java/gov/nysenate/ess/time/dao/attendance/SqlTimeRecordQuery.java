@@ -55,9 +55,9 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             GET_TIME_REC_SQL_TEMPLATE.getSql() +
                     "    AND (att.DTCLOSE IS NULL OR att.DTCLOSE > SYSDATE)\n"
     ),
-    GET_ACTIVE_TIME_REC_BY_EMP_IDS(
+    GET_ACTIVE_TIME_REC_BY_EMP_ID(
             GET_ACTIVE_TIME_REC.getSql() +
-                    "    AND (rec.NUXREFEM IN (:empIds))\n"
+                    "    AND rec.NUXREFEM = :empId\n"
     ),
 
     GET_LAST_UPDATE_DATE_TIME(
