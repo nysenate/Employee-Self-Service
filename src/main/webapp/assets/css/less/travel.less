@@ -112,3 +112,107 @@
   display: table-cell;
   vertical-align: middle;
 }
+
+/** Step Indicator */
+
+@stepColor: @white;
+@stepColorHover: @light-teal;
+@stepColorCompleted: @light-teal;
+@textColor: #666;
+@textColorCompleted: #fff;
+
+.step-indicator {
+  margin-bottom: 50px;
+  margin-top: 10px;
+  line-height: 30px;
+}
+
+.step {
+  display: block;
+  float: left;
+  font-weight: bold;
+  background: @stepColor;
+  padding-right: 10px;
+  height: 30px;
+  line-height: 32px;
+  margin-right: 33px;
+  position: relative;
+  text-decoration: none;
+  color: @textColor;
+  cursor: default;
+
+  &:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 0;
+    left: -30px;
+    border: 15px solid transparent;
+    border-color: @stepColor;
+    border-left-color: transparent;
+  }
+
+  &:after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 0;
+    right: -30px;
+    border: 15px solid transparent;
+    border-left-color: @stepColor;
+  }
+
+  &:first-of-type {
+    border-radius: 2px 0 0 2px;
+    padding-left: 15px;
+
+    &:before {
+      display: none;
+    }
+  }
+
+  &:last-of-type {
+    border-radius: 0 2px 2px 0;
+    margin-right: 25px;
+    padding-right: 15px;
+
+    &:after {
+      display: none;
+    }
+  }
+
+  &.completed {
+    background: @stepColorCompleted;
+    color: @textColorCompleted;
+    cursor: pointer;
+
+    &:before {
+      border-color: @stepColorCompleted;
+      border-left-color: transparent;
+    }
+
+    &:after {
+      border-left-color: @stepColorCompleted;
+    }
+
+    &:hover {
+      background: @stepColorHover;
+      border-color: @stepColorHover;
+      color: @textColorCompleted;
+      text-decoration: none;
+
+      &:before {
+        border-color: @stepColorHover;
+        border-left-color: transparent;
+      }
+
+      &:after {
+        border-left-color: @stepColorHover;
+      }
+    }
+  }
+}

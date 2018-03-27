@@ -185,6 +185,28 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }
         updateStates(action, editField);
     };
+
+    $scope.highlightOriginStep = function() {
+        return $scope.appState !== $scope.STATES.PURPOSE
+    };
+
+    $scope.highlightDestinationStep = function() {
+        return $scope.appState === $scope.STATES.DESTINATION
+            || $scope.appState === $scope.STATES.ALLOWANCES
+            || $scope.appState === $scope.STATES.REVIEW
+            || $scope.appState === $scope.STATES.EDIT
+    };
+
+    $scope.highlightExpensesStep = function() {
+        return $scope.appState === $scope.STATES.ALLOWANCES
+            || $scope.appState === $scope.STATES.REVIEW
+            || $scope.appState === $scope.STATES.EDIT
+    };
+
+    $scope.highlightReviewStep = function() {
+        return $scope.appState === $scope.STATES.REVIEW
+            || $scope.appState === $scope.STATES.EDIT
+    };
 }
 
 /**
