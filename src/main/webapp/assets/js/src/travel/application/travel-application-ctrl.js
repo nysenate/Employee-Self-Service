@@ -46,7 +46,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     function initApplication(travelerId) {
         appInitApi.save({id: travelerId}, {}, function (response) {
             $scope.app = response.result;
-        })
+        }, $scope.handleErrorResponse)
     }
 
     /**
@@ -181,7 +181,8 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
                     modals.open("submit-results").then(function () {
                         locationService.go("/travel/application/travel-application", true);
                     });
-                });
+                })
+                .catch($scope.handleErrorResponse);
         }
         updateStates(action, editField);
     };
@@ -344,7 +345,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                     console.log("Review App:");
                     console.log($scope.reviewApp);
                     displayMap();
-                });
+                }, $scope.handleErrorResponse);
 
 
                 $scope.displayLodgingDetails = function () {

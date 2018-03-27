@@ -28,7 +28,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     }
 
     function fetchApplications(empId) {
-        travelApplicationApi.get({empId: empId}, onSuccess, onFail);
+        travelApplicationApi.get({empId: empId}, onSuccess, $scope.handleErrorResponse);
 
         function onSuccess (resp) {
             parseResponse(resp);
@@ -36,11 +36,6 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
             sort($scope.apps.filtered);
             console.log($scope.apps);
             console.log($scope.date);
-        }
-
-        function onFail (resp) {
-            modals.open('500', {details: resp});
-            console.error(resp);
         }
     }
 
