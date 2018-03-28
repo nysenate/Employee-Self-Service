@@ -9,11 +9,11 @@
   </div>
 
   <div class="step-indicator">
-    <a class="step completed">Purpose</a>
-    <a class="step" ng-class="{completed: highlightOriginStep()}">Origin</a>
-    <a class="step" ng-class="{completed: highlightDestinationStep()}">Destination</a>
-    <a class="step" ng-class="{completed: highlightExpensesStep()}">Expenses</a>
-    <a class="step" ng-class="{completed: highlightReviewStep()}">Review</a>
+    <span class="step completed">Purpose</span>
+    <span class="step" ng-class="{completed: highlightOriginStep()}">Origin</span>
+    <span class="step" ng-class="{completed: highlightDestinationStep()}">Destination</span>
+    <span class="step" ng-class="{completed: highlightExpensesStep()}">Expenses</span>
+    <span class="step" ng-class="{completed: highlightReviewStep()}">Review</span>
   </div>
 
   <div ng-if="pageState === STATES.PURPOSE">

@@ -116,8 +116,7 @@
 /** Step Indicator */
 
 @stepColor: @white;
-@stepColorHover: @light-teal;
-@stepColorCompleted: @light-teal;
+@stepColorCompleted: @teal;
 @textColor: #666;
 @textColorCompleted: #fff;
 
@@ -125,6 +124,7 @@
   margin-bottom: 50px;
   margin-top: 10px;
   line-height: 30px;
+  padding-left: 205px; // Center the step indicator.
 }
 
 .step {
@@ -188,7 +188,6 @@
   &.completed {
     background: @stepColorCompleted;
     color: @textColorCompleted;
-    cursor: pointer;
 
     &:before {
       border-color: @stepColorCompleted;
@@ -197,22 +196,6 @@
 
     &:after {
       border-left-color: @stepColorCompleted;
-    }
-
-    &:hover {
-      background: @stepColorHover;
-      border-color: @stepColorHover;
-      color: @textColorCompleted;
-      text-decoration: none;
-
-      &:before {
-        border-color: @stepColorHover;
-        border-left-color: transparent;
-      }
-
-      &:after {
-        border-left-color: @stepColorHover;
-      }
     }
   }
 }
