@@ -35,7 +35,6 @@ public class TravelApplicationView implements ViewObject {
     private String startDate;
     private String endDate;
     private String submittedDateTime;
-    // TODO need isMIleageRequestedField
 
     public TravelApplicationView() {
     }

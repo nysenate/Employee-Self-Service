@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * A wrapper around BigDecimal used to represent dollars.
- * Auto scales and rounds to two digits, must be >= 0.
+ * Auto scales and rounds to two digits.
  */
 public final class Dollars {
 
@@ -20,7 +20,6 @@ public final class Dollars {
     private final BigDecimal dollars;
 
     public Dollars(BigDecimal dollars) {
-        checkArgument(dollars.signum() >= 0);
         dollars = dollars.setScale(SCALE, ROUNDING_MODE);
         this.dollars = dollars;
     }

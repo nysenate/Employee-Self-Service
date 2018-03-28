@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class GsaResponse {
+
     /** Contains the fiscal year and zip code this response is for. */
     private final GsaResponseId id;
     /** Map of {@link Month} to the lodging rate for that month.*/
@@ -26,14 +27,6 @@ public class GsaResponse {
 
     public String getMealTier() {
         return mealTier;
-    }
-
-    public int getFiscalYear() {
-        return id.getFiscalYear();
-    }
-
-    public String getZipcode() {
-        return id.getZipcode();
     }
 
     public GsaResponseId getId() {

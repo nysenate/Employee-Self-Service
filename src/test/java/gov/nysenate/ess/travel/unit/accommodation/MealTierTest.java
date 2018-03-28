@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.unit;
+package gov.nysenate.ess.travel.unit.accommodation;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.utils.Dollars;

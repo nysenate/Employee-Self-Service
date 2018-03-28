@@ -9,6 +9,12 @@ import gov.nysenate.ess.travel.utils.Dollars;
  * The Route is responsible for calculating a mileage allowance.
  * It uses a collection of {@link Leg} representing the planned path of travel
  * and user defined options.
+ *
+ * The return trip goes from the last destination back to the origin, stopping
+ * at all destinations where the Mode of Transportation changed. This is necessary to
+ * correctly count miles if the traveler only drives part way.
+ *
+ * See RouteTest for examples.
  */
 public class Route {
 

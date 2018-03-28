@@ -5,6 +5,10 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * An Accommodation contains a NightStay for each night at an address.
+ * The NightStay contains all info related to lodging allowances for that address and date.
+ */
 public class NightStay extends Stay {
 
     private final Dollars lodgingRate;

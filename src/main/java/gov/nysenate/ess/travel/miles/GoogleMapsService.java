@@ -20,6 +20,11 @@ public class GoogleMapsService implements MapService {
 
     @Value("${google.maps.api.key}") private String apiKey;
 
+    /**
+     * Calculates the driving distance in miles from one address to another.
+     * @param from The starting address.
+     * @param to The ending address.
+     */
     @Override
     public double drivingDistance(Address from, Address to) throws InterruptedException, ApiException, IOException {
         GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();

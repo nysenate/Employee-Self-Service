@@ -5,10 +5,10 @@ import java.util.Map;
 
 public enum ModeOfTransportation {
     PERSONAL_AUTO("Personal Auto"),
+    CARPOOL("Carpool"),
     SENATE_VEHICLE("Senate Vehicle"),
     TRAIN("Train"),
     AIRPLANE("Airplane"),
-    CARPOOL("Carpool"),
     OTHER("Other");
 
     private final String displayName;

@@ -16,11 +16,6 @@ public class DollarsTest {
         Dollars d = new Dollars(dollars);
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void cantBeNegative() {
-        Dollars d = new Dollars("-10");
-    }
-
     @Test
     public void roundsToTwoDecimalPlaces() {
         Dollars d = new Dollars("4.12345");

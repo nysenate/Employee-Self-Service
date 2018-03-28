@@ -18,8 +18,8 @@ import java.util.List;
 /**
  * Uses the OSRM API to calculate driving distance for a trip.
  * Used as a backup datasource if google does not work.
- * TODO Currently not fully implemented. Need to implement getLegDistance and add to MileageAllowanceService.
  */
+// TODO: Update this to work with new interface method.
 @Service
 public class OsrmMapService implements MapService {
 

@@ -18,6 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This factory creates a {@link Route} domain object
+ * from user entered destination info stored in {@link TravelDestinationView TravelDestinationView's}
+ *
+ * The Route created is initialized with the IRS reimbursement rate and
+ * the driving distances for each part of the trip.
+ */
 @Component
 public class RouteFactory {
 

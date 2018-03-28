@@ -16,6 +16,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This factory creates {@link Accommodation} domain objects
+ * from user entered data stored in {@link TravelDestinationView TravelDestinationView's}
+ *
+ * As part of this Accommodation initialization, this factory queries
+ * GSA API endpoints to get meal and lodging data as necessary.
+ */
 @Component
 public class AccommodationFactory {
 

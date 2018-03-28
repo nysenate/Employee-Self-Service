@@ -6,6 +6,10 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * An Accommodation contains a DayStay for each day at an address.
+ * The DayStay contains all info related to meal allowances for that address and date.
+ */
 public class DayStay extends Stay {
 
     private final MealTier tier;

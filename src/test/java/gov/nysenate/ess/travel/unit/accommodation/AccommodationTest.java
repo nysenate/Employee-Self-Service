@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.unit;
+package gov.nysenate.ess.travel.unit.accommodation;
 
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.annotation.UnitTest;
