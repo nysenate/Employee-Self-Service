@@ -102,6 +102,6 @@
            ng-click="reviewCallback(ACTIONS.BACK)">
     <input type="button" class="submit-button"
            value="Next"
-           ng-click="reviewCallback(ACTIONS.NEXT)">
+           ng-click="submitConfirmModal()">
   </div>
 </div>

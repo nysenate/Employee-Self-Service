@@ -263,8 +263,11 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
             };
 
             $scope.removeDestination = function(dest) {
-                var index = $scope.destinations.indexOf(dest);
-                $scope.destinations.splice(index, 1);
+                modals.open('destination-delete-confirm-modal')
+                    .then(function() {
+                        var index = $scope.destinations.indexOf(dest);
+                        $scope.destinations.splice(index, 1);
+                    });
             };
 
             $scope.addDestination = function() {
@@ -358,6 +361,13 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
 
                 $scope.displayMileageDetails = function () {
                     modals.open('travel-mileage-details-modal', {app: $scope.reviewApp}, true);
+                };
+
+                $scope.submitConfirmModal = function () {
+                    modals.open('submit-confirm')
+                        .then(function () {
+                            $scope.reviewCallback($scope.ACTIONS.NEXT);
+                        })
                 };
 
                 function displayMap() {

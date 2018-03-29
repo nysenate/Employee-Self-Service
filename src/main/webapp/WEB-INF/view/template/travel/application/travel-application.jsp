@@ -37,12 +37,34 @@
   </div>
 
   <div modal-container>
+
+    <%-- Destination modals --%>
     <modal modal-id="destination-selection-modal">
       <div destination-selection-modal></div>
     </modal>
 
+    <modal modal-id="destination-delete-confirm-modal">
+      <div confirm-modal
+           rejectable="true"
+           title="Delete destination?"
+           confirm-message="This will delete the selected destination from your travel application."
+           resolve-button="Delete"
+           reject-button="Cancel">
+      </div>
+    </modal>
+
+    <%-- Review Modals --%>
     <modal modal-id="review-progress">
       <div progress-modal title="Loading..."></div>
+    </modal>
+
+    <modal modal-id="submit-confirm">
+      <div confirm-modal rejectable="true"
+           title="Submit Travel Application?"
+           confirm-message="The application will be sent to your department head for review."
+           resolve-button="Submit"
+           reject-button="Cancel">
+      </div>
     </modal>
 
     <modal modal-id="submit-progress">
@@ -58,6 +80,7 @@
       </div>
     </modal>
 
+    <%-- Review detail modals --%>
     <modal modal-id="travel-lodging-details-modal">
       <div travel-lodging-details-modal></div>
     </modal>
