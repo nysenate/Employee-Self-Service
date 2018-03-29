@@ -78,7 +78,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     function handleBackAction() {
         switch ($scope.appState) {
             case $scope.STATES.PURPOSE:
-                // TODO: Cancel order? Should Back be valid on first page?
+                locationService.go("/travel/application/travel-application", true);
                 break;
             case $scope.STATES.ORIGIN:
                 $scope.appState = $scope.STATES.PURPOSE;
@@ -150,9 +150,13 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
 
     $scope.destinationCallback = function (destinations, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.destinations = destinations;
+            $scope.setDestinations(destinations);
         }
         updateStates(action);
+    };
+
+    $scope.setDestinations = function(destinations) {
+        $scope.app.destinations = destinations;
     };
 
     $scope.allowancesCallback = function (destinations, allowances, action) {
@@ -267,6 +271,8 @@ essTravel.directive('travelApplicationDestination', ['appProps', 'modals', funct
                     .then(function() {
                         var index = $scope.destinations.indexOf(dest);
                         $scope.destinations.splice(index, 1);
+                        // Save destinations to application after deleting one.
+                        $scope.setDestinations($scope.destinations);
                     });
             };
 

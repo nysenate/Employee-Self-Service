@@ -23,10 +23,7 @@ function destSelectionCtrl($scope, modals) {
     };
 
     $scope.addressCallback = function(address) {
-        // Not sure why a digest does not run when updating $scope.destination.address.
-        $scope.$apply(function () {
-            $scope.destination.address = address;
-        });
+        $scope.destination.address = address;
     };
     
     $scope.allFieldsEntered = function () {

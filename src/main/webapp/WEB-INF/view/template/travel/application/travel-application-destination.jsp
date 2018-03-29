@@ -24,6 +24,7 @@
            ng-click="destinationCallback(destinations, ACTIONS.BACK)">
     <input type="button" class="submit-button"
            value="Next"
+           ng-disabled="destinations.length == 0"
            ng-click="destinationCallback(destinations, ACTIONS.NEXT)">
   </div>
 </div>

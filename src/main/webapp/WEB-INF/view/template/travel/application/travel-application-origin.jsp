@@ -22,6 +22,7 @@
            ng-click="originCallback(origin, ACTIONS.BACK)">
     <input type="button" class="submit-button"
            value="Next"
+           ng-disabled="origin.formattedAddress.length == 0"
            ng-click="originCallback(origin, ACTIONS.NEXT)">
   </div>
 </div>

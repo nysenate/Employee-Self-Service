@@ -36,7 +36,10 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps
                 address.state = parseState(place);
                 address.zip5 = parseZip5(place);
 
-                $scope.callback({address: address});
+                // Call $apply here because angular does not seem to realize when $scope vars are updated in the callback function.
+                $scope.$apply(function () {
+                    $scope.callback({address: address});
+                });
             });
 
             if ($attrs.address) {

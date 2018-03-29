@@ -10,7 +10,7 @@
         Purpose of Travel
         <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.PURPOSE)" class="icon-edit pointer" title="Edit purpose of travel"></span>
       </div>
-      <div class="col-8-12 margin-top-20">
+      <div class="col-8-12 margin-top-20" style="white-space:pre-wrap;">
         {{reviewApp.purposeOfTravel}}
       </div>
 
@@ -101,7 +101,7 @@
     <input type="button" class="travel-neutral-button" value="Back"
            ng-click="reviewCallback(ACTIONS.BACK)">
     <input type="button" class="submit-button"
-           value="Next"
+           value="Submit"
            ng-click="submitConfirmModal()">
   </div>
 </div>
