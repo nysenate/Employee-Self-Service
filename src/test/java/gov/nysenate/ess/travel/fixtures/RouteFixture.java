@@ -7,9 +7,11 @@ import gov.nysenate.ess.travel.route.Leg;
 import gov.nysenate.ess.travel.route.ModeOfTransportation;
 import gov.nysenate.ess.travel.route.Route;
 
+import java.math.BigDecimal;
+
 public class RouteFixture {
 
-    private static Dollars MILEAGE_RATE = new Dollars("0.50");
+    public static BigDecimal MILEAGE_RATE = new BigDecimal("0.545");
 
     public static Route longOneDestinationRoute(ModeOfTransportation modeOfTransportation) {
         Leg outboundLeg = new Leg(new Address(), new Address(), 200, modeOfTransportation, true);

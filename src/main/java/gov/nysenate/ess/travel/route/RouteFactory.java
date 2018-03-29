@@ -46,7 +46,7 @@ public class RouteFactory {
         List<Leg> rLegs = returnLegs(app.getOrigin().toAddress(), destinations);
 
         return new Route(ImmutableList.copyOf(outgoingLegs), ImmutableList.copyOf(rLegs),
-                new Dollars(irsDao.getIrsRate(destinations.get(0).getArrivalDate())));
+                irsDao.getIrsRate(destinations.get(0).getArrivalDate()));
     }
 
     private List<Leg> outgoingLegs(Address origin, List<TravelDestination> destinations) throws InterruptedException, ApiException, IOException {

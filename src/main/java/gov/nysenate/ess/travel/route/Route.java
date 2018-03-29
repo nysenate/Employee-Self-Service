@@ -5,6 +5,8 @@ import com.google.common.collect.Streams;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
 
+import java.math.BigDecimal;
+
 /**
  * The Route is responsible for calculating a mileage allowance.
  * It uses a collection of {@link Leg} representing the planned path of travel
@@ -19,14 +21,14 @@ import gov.nysenate.ess.travel.utils.Dollars;
 public class Route {
 
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(),
-            new Dollars("0"));
+            new BigDecimal("0"));
 
     private static final double MILEAGE_THRESHOLD = 35.0;
     private final ImmutableList<Leg> outgoingLegs;
     private final ImmutableList<Leg> returnLegs;
-    private final Dollars mileageRate;
+    private final BigDecimal mileageRate;
 
-    public Route(ImmutableList<Leg> outgoingLegs, ImmutableList<Leg> returnLegs, Dollars mileageRate) {
+    public Route(ImmutableList<Leg> outgoingLegs, ImmutableList<Leg> returnLegs, BigDecimal mileageRate) {
         this.outgoingLegs = outgoingLegs;
         this.returnLegs = returnLegs;
         this.mileageRate = mileageRate;
@@ -38,7 +40,7 @@ public class Route {
      */
     public Dollars mileageAllowance() {
         if (qualifiesForReimbursement()) {
-            return getMileageRate().multiply(new Dollars(totalQualifyingMiles()));
+            return new Dollars(getMileageRate().multiply(new BigDecimal(totalQualifyingMiles())));
         }
         else {
             return Dollars.ZERO;
@@ -53,7 +55,6 @@ public class Route {
     }
 
     private boolean qualifiesForReimbursement() {
-//        return isMileageRequested() && outboundQualifyingMiles() > MILEAGE_THRESHOLD;
         return outboundQualifyingMiles() > MILEAGE_THRESHOLD;
     }
 
@@ -90,7 +91,7 @@ public class Route {
         return returnLegs;
     }
 
-    Dollars getMileageRate() {
+    BigDecimal getMileageRate() {
         return mileageRate;
     }
 }

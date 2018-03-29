@@ -15,7 +15,7 @@
         <td>{{leg.from.formattedAddress}}</td>
         <td>{{leg.to.formattedAddress}}</td>
         <td>{{leg.miles}}</td>
-        <td>{{mileageAllowance.rate | currency}}</td>
+        <td>{{mileageAllowance.rate}}</td>
       </tr>
       <tr>
         <td></td>
