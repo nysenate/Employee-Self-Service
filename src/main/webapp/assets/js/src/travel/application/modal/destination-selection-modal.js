@@ -40,6 +40,18 @@ function destSelectionCtrl($scope, modals) {
         // Convert arrival/departure dates to ISO format.
         $scope.destination.arrivalDate = moment($scope.destination.arrivalDate, DATEPICKER_FORMAT).format(ISO_FORMAT);
         $scope.destination.departureDate = moment($scope.destination.departureDate, DATEPICKER_FORMAT).format(ISO_FORMAT);
+
+        // Initialize with default allowance requests
+        $scope.destination.isMealsRequested = true;
+        if ($scope.destination.modeOfTransportation === 'Personal Auto') {
+            $scope.destination.isMileageRequested = true;
+        }
+        var arrival = moment($scope.destination.arrivalDate, ISO_FORMAT);
+        var departure = moment($scope.destination.departureDate, ISO_FORMAT);
+        if (Math.abs(arrival.diff(departure, 'days')) > 0) {
+            $scope.destination.isLodgingRequested = true;
+        }
+
         modals.resolve($scope.destination);
     };
 
@@ -59,7 +71,7 @@ function destSelectionCtrl($scope, modals) {
         if (modals.params().destination) {
             // If editing a destination.
             $scope.destination = modals.params().destination;
-            // Convert dates to a datepicker format.
+            // Convert dates to the datepicker format.
             $scope.destination.arrivalDate = moment($scope.destination.arrivalDate, ISO_FORMAT).format(DATEPICKER_FORMAT);
             $scope.destination.departureDate = moment($scope.destination.departureDate, ISO_FORMAT).format(DATEPICKER_FORMAT);
         }

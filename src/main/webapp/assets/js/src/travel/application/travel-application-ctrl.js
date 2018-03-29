@@ -303,30 +303,6 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
             };
 
             $scope.destinations = angular.copy($scope.app.destinations);
-
-            // Initialize default reimbursement selections.
-            $scope.destinations.forEach(function (dest) {
-                if (dest.isMileageRequested === undefined) {
-                    // Init Mileage
-                    if (dest.modeOfTransportation === 'Personal Auto') {
-                        dest.isMileageRequested = true;
-                    }
-                }
-
-                if (dest.isMealsRequested === undefined) {
-                    // Init Meals
-                    dest.isMealsRequested = true;
-                }
-
-                if (dest.isLodgingRequested === undefined) {
-                    // Init Lodging
-                    var arrival = moment(dest.arrivalDate);
-                    var departure = moment(dest.departureDate);
-                    if (Math.abs(arrival.diff(departure, 'days')) > 0) {
-                        dest.isLodgingRequested = true;
-                    }
-                }
-            });
         }
     }
 }]);
