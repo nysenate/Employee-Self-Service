@@ -2,7 +2,7 @@
   <div>
     <h1 class="content-info">Destination (To)</h1>
     <p class="margin-top-20">
-      Add all destinations of your trip.
+      Add all destinations for your trip.
     </p>
     <div ng-repeat="dest in destinations" class="margin-10">
       <div style="width: 80%; display:inline-block;">

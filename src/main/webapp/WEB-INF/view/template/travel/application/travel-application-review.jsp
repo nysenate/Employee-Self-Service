@@ -51,20 +51,26 @@
       <div class="col-8-12 margin-top-20">
         <div class="col-5-12 margin-5">
           Meals: {{reviewApp.mealAllowance | currency}}
-          <span ng-if="reviewApp.mealAllowance > 0" class="icon-info pointer"
-                ng-click="displayMealDetails()">
+          <span ng-if="reviewApp.mealAllowance > 0"
+                class="icon-info pointer"
+                ng-click="displayMealDetails()"
+                title="View detailed meal expense info">
           </span>
         </div>
         <div class="col-5-12 margin-5">
           Lodging: {{reviewApp.lodgingAllowance | currency}}
-          <span ng-if="reviewApp.lodgingAllowance > 0" class="icon-info pointer"
-                ng-click="displayLodgingDetails()">
+          <span ng-if="reviewApp.lodgingAllowance > 0"
+                class="icon-info pointer"
+                ng-click="displayLodgingDetails()"
+                title="View detailed lodging expense info">
           </span>
         </div>
         <div class="col-5-12 margin-5">
           Mileage: {{reviewApp.route.mileageAllowance | currency}}
-           <span ng-if="reviewApp.mileageAllowance > 0" class="icon-info pointer"
-                ng-click="displayMileageDetails()">
+          <span ng-if="reviewApp.mileageAllowance > 0"
+                class="icon-info pointer"
+                ng-click="displayMileageDetails()"
+                title="View detailed mileage expense info">
           </span>
         </div>
         <div class="col-5-12 margin-5">
