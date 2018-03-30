@@ -7,13 +7,14 @@ essTravel.directive('destinationSelectionModal', ['appProps', function (appProps
         controller: 'DestinationSelectionModalCtrl'
     }
 }])
-    .controller('DestinationSelectionModalCtrl', ['$scope', 'modals', destSelectionCtrl]);
+    .controller('DestinationSelectionModalCtrl', ['$scope', 'modals', 'TravelModeOfTransportationApi', destSelectionCtrl]);
 
-function destSelectionCtrl($scope, modals) {
+function destSelectionCtrl($scope, modals, modeOfTransportationApi) {
 
     const DATEPICKER_FORMAT = 'MM/DD/YYYY';
     const ISO_FORMAT = 'YYYY-MM-DD';
-    $scope.MODES_OF_TRANSPORTATION = ['Personal Auto', 'Senate Vehicle', 'Car Pool', 'Train', 'Airplane', 'Other'];
+
+    $scope.modesOfTransportation = [];
 
     $scope.destination = {
         address: undefined,
@@ -65,6 +66,9 @@ function destSelectionCtrl($scope, modals) {
     };
 
     $scope.init = function() {
+        modeOfTransportationApi.get(function(response) {
+            $scope.modesOfTransportation = response.result;
+        });
         if (modals.params().destination) {
             // If editing a destination.
             $scope.destination = modals.params().destination;

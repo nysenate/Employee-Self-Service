@@ -14,7 +14,7 @@
     <div class="margin-20">
       <label>Mode of Transportation:
         <select ng-model="destination.modeOfTransportation"
-                ng-options="mode for mode in MODES_OF_TRANSPORTATION"></select>
+                ng-options="mode for mode in modesOfTransportation"></select>
       </label>
     </div>
   <div class="travel-button-container">

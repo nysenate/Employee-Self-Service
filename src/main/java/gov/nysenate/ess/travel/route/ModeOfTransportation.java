@@ -4,17 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ModeOfTransportation {
-    PERSONAL_AUTO("Personal Auto"),
-    CARPOOL("Carpool"),
-    SENATE_VEHICLE("Senate Vehicle"),
-    TRAIN("Train"),
-    AIRPLANE("Airplane"),
-    OTHER("Other");
+    PERSONAL_AUTO("Personal Auto", true),
+    SENATE_VEHICLE("Senate Vehicle", false),
+    TRAIN("Train", false),
+    AIRPLANE("Airplane", false),
+    OTHER("Other", false);
 
     private final String displayName;
+    private final boolean isMileageReimbursable;
 
-    ModeOfTransportation(String displayName) {
+    ModeOfTransportation(String displayName, boolean isMileageReimbursable) {
         this.displayName = displayName;
+        this.isMileageReimbursable = isMileageReimbursable;
     }
 
     public static ModeOfTransportation of(String displayName) {
@@ -24,6 +25,11 @@ public enum ModeOfTransportation {
         }
         return mot;
     }
+
+    public boolean qualifiesForMileageReimbursement() {
+        return isMileageReimbursable;
+    }
+
 
     public String getDisplayName() {
         return displayName;

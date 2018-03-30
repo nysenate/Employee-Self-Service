@@ -7,9 +7,6 @@ import java.util.Objects;
 
 public class Leg {
 
-    private static final EnumSet<ModeOfTransportation> QUALIFYING_MOT =
-            EnumSet.of(ModeOfTransportation.PERSONAL_AUTO);
-
     private final Address from;
     private final Address to;
     private final double miles;
@@ -29,7 +26,8 @@ public class Leg {
      * Does this Leg qualify for Mileage Reimbursement.
      */
     boolean qualifies() {
-        return QUALIFYING_MOT.contains(getModeOfTransportation()) && isMileageRequested();
+        return getModeOfTransportation().qualifiesForMileageReimbursement()
+                && isMileageRequested();
     }
 
     Address getFrom() {

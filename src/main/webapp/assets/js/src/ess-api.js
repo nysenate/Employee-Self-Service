@@ -261,6 +261,10 @@ essApi.factory('TravelUserConfigDeleteApi', ['$resource', 'appProps', function (
     return $resource(appProps.apiPath + '/travel/user/config/delete')
 }]);
 
+essApi.factory('TravelModeOfTransportationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/mode-of-transportation.json')
+}]);
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {
