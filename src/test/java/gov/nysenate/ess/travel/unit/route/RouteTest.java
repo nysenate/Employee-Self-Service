@@ -61,8 +61,8 @@ public class RouteTest {
     @Test
     public void multiModeOfTransporationTrip() {
         Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, true);
-        Leg outbound2 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.CARPOOL, true);
-        Leg return1 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.CARPOOL, true);
+        Leg outbound2 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.OTHER, true);
+        Leg return1 = new Leg(new Address(), new Address(), 10, ModeOfTransportation.OTHER, true);
         Leg return2 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, true);
         Route route = new Route(ImmutableList.of(outbound1, outbound2),
                 ImmutableList.of(return1, return2), RouteFixture.MILEAGE_RATE);
