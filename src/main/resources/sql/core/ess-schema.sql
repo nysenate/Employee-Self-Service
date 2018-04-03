@@ -123,6 +123,19 @@ CREATE TABLE user_agent (
     user_agent TEXT
 );
 
+CREATE TYPE ess.mobile_contact_options
+  AS ENUM ('CALLS_ONLY', 'TEXTS_ONLY', 'EVERYTHING');
+
+CREATE TABLE ess.alert_info (
+  employee_id INT PRIMARY KEY NOT NULL,
+  phone_home TEXT,
+  phone_mobile TEXT,
+  phone_alternate TEXT,
+  mobile_options ess.mobile_contact_options NOT NULL DEFAULT 'CALLS_ONLY'::ess.mobile_contact_options,
+  email_personal TEXT,
+  email_alternate TEXT
+);
+
 CREATE INDEX user_agent_emp_id_user_agent_index ON user_agent(emp_id, user_agent);
 CREATE INDEX user_agent_emp_id_login_time_index ON user_agent(emp_id, login_time);
 
