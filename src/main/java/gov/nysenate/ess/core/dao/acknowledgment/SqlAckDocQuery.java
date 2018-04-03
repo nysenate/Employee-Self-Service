@@ -35,8 +35,8 @@ public enum SqlAckDocQuery implements BasicSqlQuery {
     ),
 
     INSERT_ACK_SQL(
-        "INSERT INTO ${essSchema}.acknowledgment (emp_id, ack_doc_id, timestamp)\n" +
-                "VALUES (:empId, :ack_doc, :timestamp)"
+        "INSERT INTO ${essSchema}.acknowledgment (emp_id, ack_doc_id, timestamp, personnel_acked)\n" +
+                "VALUES (:empId, :ack_doc, :timestamp, :personnel_acked)"
     ),
 
     GET_ALL_ACK_DOCS(

@@ -20,6 +20,7 @@ public class AcknowledgmentRowMapper extends BaseRowMapper<Acknowledgment> {
         acknowledgment.setEmpId(rs.getInt(pfx + "emp_id"));
         acknowledgment.setAckDocId(rs.getInt(pfx + "ack_doc_id"));
         acknowledgment.setTimestamp(getLocalDateTimeFromRs(rs,"timestamp"));
+        acknowledgment.setPersonnelAcked(rs.getBoolean("personnel_acked"));
         return acknowledgment;
     }
 

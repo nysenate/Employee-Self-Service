@@ -13,6 +13,7 @@ public class AcknowledgmentView implements ViewObject {
     private Integer empId;
     private Integer ackDocId;
     private LocalDateTime timestamp;
+    private boolean personnelAcked;
 
     protected AcknowledgmentView() {}
 
@@ -20,6 +21,7 @@ public class AcknowledgmentView implements ViewObject {
         this.empId = ack.getEmpId();
         this.ackDocId = ack.getAckDocId();
         this.timestamp = ack.getTimestamp();
+        this.personnelAcked = ack.isPersonnelAcked();
     }
 
     @XmlElement
@@ -36,6 +38,9 @@ public class AcknowledgmentView implements ViewObject {
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+
+    @XmlElement
+    public boolean isPersonnelAcked() {return personnelAcked;}
 
     @Override
     @XmlElement

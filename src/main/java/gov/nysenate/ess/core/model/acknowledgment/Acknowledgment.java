@@ -7,13 +7,24 @@ public class Acknowledgment {
     private Integer empId;
     private Integer ackDocId;
     private LocalDateTime timestamp;
+    private boolean personnelAcked;
 
     public Acknowledgment() {}
 
+    //Creating an Ack this way, means personnel did not override
     public Acknowledgment(Integer empId, Integer ackDocId, LocalDateTime timestamp) {
         this.empId = empId;
         this.ackDocId = ackDocId;
         this.timestamp = timestamp;
+        this.personnelAcked = false;
+    }
+
+    //Creating an Ack this way, means that personnel overide could be true
+    public Acknowledgment(Integer empId, Integer ackDocId, LocalDateTime timestamp, boolean personnelAcked) {
+        this.empId = empId;
+        this.ackDocId = ackDocId;
+        this.timestamp = timestamp;
+        this.personnelAcked = personnelAcked;
     }
 
     public Integer getEmpId() {
@@ -38,5 +49,13 @@ public class Acknowledgment {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isPersonnelAcked() {
+        return personnelAcked;
+    }
+
+    public void setPersonnelAcked(boolean personnelAcked) {
+        this.personnelAcked = personnelAcked;
     }
 }
