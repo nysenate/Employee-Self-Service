@@ -59,9 +59,11 @@ angular.module('ess').directive('employeeSearch', [
                 $scope.clearSelectedEmp = function () {
                     $scope.selectedEmp = null;
                     $scope.empInfo = null;
-                    empId = NaN;
-                    locationService.setSearchParam(EMP_ID_PARAM);
-                    getSearchResults();
+                    if (empId) {
+                        clearEmpId();
+                        newSearch();
+                    }
+                    clearEmpId();
                 };
 
                 /* --- Api Methods --- */
@@ -81,7 +83,6 @@ angular.module('ess').directive('employeeSearch', [
 
                     function onSuccess(resp) {
                         console.log('Got employee search results');
-                        $scope.searchResults = [];
                         resp.employees.forEach(function (emp) {
                             $scope.searchResults.push(emp);
                         });
@@ -89,7 +90,8 @@ angular.module('ess').directive('employeeSearch', [
 
                         if (validEmpId() && $scope.searchResults.length > 0) {
                             $scope.selectEmp($scope.searchResults[0]);
-                            empId = NaN;
+                        } else {
+                            clearEmpId();
                         }
                     }
                 }
@@ -125,6 +127,11 @@ angular.module('ess').directive('employeeSearch', [
 
                 function validEmpId() {
                     return !isNaN(parseInt(empId)) && empId > 0;
+                }
+
+                function clearEmpId() {
+                    empId = NaN;
+                    locationService.setSearchParam(EMP_ID_PARAM);
                 }
 
             }
