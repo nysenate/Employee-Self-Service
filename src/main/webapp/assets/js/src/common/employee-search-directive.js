@@ -10,9 +10,11 @@ angular.module('ess').directive('employeeSearch', [
             link: function ($scope, $elem, $attrs) {
                 var EMP_ID_PARAM = 'empId';
                 var TERM_PARAM = 'term';
+                var ACTIVE_ONLY_PARAM = 'activeOnly';
 
                 $scope.selectedEmp = null;
                 $scope.empInfo = null;
+                $scope.activeOnly = locationService.getSearchParam(ACTIVE_ONLY_PARAM) === 'true';
                 $scope.searchTerm = locationService.getSearchParam(TERM_PARAM) || "";
                 $scope.searchResults = [];
 
@@ -24,7 +26,7 @@ angular.module('ess').directive('employeeSearch', [
                 /* --- Watches --- */
 
                 /** Perform a new search when the search term changes */
-                $scope.$watch('searchTerm', newSearch);
+                $scope.$watchGroup(['searchTerm', 'activeOnly'], newSearch);
 
                 /* --- Display Methods --- */
 
@@ -73,6 +75,7 @@ angular.module('ess').directive('employeeSearch', [
                     var params = {
                         term: $scope.searchTerm,
                         empId: validEmpId() ? empId : 0,
+                        activeOnly: $scope.activeOnly,
                         limit: pagination.getLimit(),
                         offset: pagination.getOffset()
                     };
@@ -122,6 +125,7 @@ angular.module('ess').directive('employeeSearch', [
                     $scope.searchResults = [];
                     pagination.reset();
                     locationService.setSearchParam(TERM_PARAM, $scope.searchTerm, /\S/.test($scope.searchTerm));
+                    locationService.setSearchParam(ACTIVE_ONLY_PARAM, $scope.activeOnly.toString(), $scope.activeOnly);
                     return getSearchResults();
                 }
 

@@ -80,8 +80,9 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 
     /** {@inheritDoc} */
     @Override
-    public PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset) {
-        SqlParameterSource params = new MapSqlParameterSource("term", term);
+    public PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset) {
+        SqlParameterSource params = new MapSqlParameterSource("term", term)
+                .addValue("activeOnly", activeOnly);
         OrderBy orderBy = new OrderBy(
                 "per.FFNALAST", SortOrder.ASC,
                 "per.FFNAFIRST", SortOrder.ASC,

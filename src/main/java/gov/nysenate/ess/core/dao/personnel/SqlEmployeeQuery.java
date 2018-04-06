@@ -63,7 +63,8 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             GET_EMP_SQL_COLS.getSql() + ", COUNT(*) OVER () AS total_rows\n" +
             GET_EMP_SQL_TABLES.getSql() +
             "WHERE UPPER(TRIM(per.NAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST))\n" +
-            "        LIKE UPPER('%' || :term || '%')"
+            "        LIKE UPPER('%' || :term || '%')\n" +
+            "  AND (:activeOnly = 0 OR per.CDEMPSTATUS = 'A')"
     ),
 
     GET_ACTIVE_EMP_IDS(
