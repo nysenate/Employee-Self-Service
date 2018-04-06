@@ -2,7 +2,7 @@
   <div>
     <h1 class="content-info">Estimated Expenses</h1>
     <p class="margin-20">
-      If you wish to be reimbursed for mileage, meal, or lodging expenses, select the appropriate boxes. <br>
+      You will be reimbursed for the following (uncheck anything you don't want to be reimbursed for). <br>
     </p>
     <div class="margin-20">
       <div ng-repeat="dest in destinations" class="margin-10">
@@ -22,28 +22,29 @@
       </div>
     </div>
 
-    <hr class="width-90 margin-20">
-
-    <p>
-      If you wish to request reimbursement for any of the following categories, enter your estimated expenses.
-    </p>
-    <div class="width-50 margin-top-20" style="margin: auto;">
-      <div class="grid" style="min-width: 0;">
-        <div class="col-6-12 padding-bottom-10">
-          <label class="travel-allowance-label">Tolls:</label>
-          <input ng-model="allowances.tollsAllowance" type="number" step="0.01" min="0" style="width: 5em;">
-        </div>
-        <div class="col-6-12 padding-bottom-10">
-          <label class="travel-allowance-label">Parking:</label>
-          <input ng-model="allowances.parkingAllowance" type="number" step="0.01" min="0" style="width: 5em;">
-        </div>
-        <div class="col-6-12">
-          <label class="travel-allowance-label">Taxi/Bus/Subway:</label>
-          <input ng-model="allowances.alternateAllowance" type="number" step="0.01" min="0" style="width: 5em;">
-        </div>
-        <div class="col-6-12">
-          <label class="travel-allowance-label">Registration Fee:</label>
-          <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+    <div>
+      <h1>Miscellaneous Expenses (optional):</h1>
+      <p class="margin-20">
+        If you wish to request reimbursement for any of the following categories, enter your estimated expenses.
+      </p>
+      <div class="width-50 margin-top-20" style="margin: auto;">
+        <div class="grid" style="min-width: 0;">
+          <div class="col-6-12 padding-bottom-10">
+            <label class="travel-allowance-label">Tolls: $</label>
+            <input ng-model="allowances.tollsAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+          </div>
+          <div class="col-6-12 padding-bottom-10">
+            <label class="travel-allowance-label">Parking: $</label>
+            <input ng-model="allowances.parkingAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+          </div>
+          <div class="col-6-12">
+            <label class="travel-allowance-label">Taxi/Bus/Subway: $</label>
+            <input ng-model="allowances.alternateAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+          </div>
+          <div class="col-6-12">
+            <label class="travel-allowance-label">Registration Fee: $</label>
+            <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+          </div>
         </div>
       </div>
     </div>
