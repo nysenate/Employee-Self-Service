@@ -49,44 +49,68 @@
         <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit expenses"></span>
       </div>
       <div class="col-8-12 margin-top-20">
-        <div class="col-5-12 margin-5">
-          Meals: {{reviewApp.mealAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          Meals:
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.mealAllowance | currency}}
           <span ng-if="reviewApp.mealAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMealDetails()"
                 title="View detailed meal expense info">
           </span>
         </div>
-        <div class="col-5-12 margin-5">
-          Lodging: {{reviewApp.lodgingAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          Lodging:
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.lodgingAllowance | currency}}
           <span ng-if="reviewApp.lodgingAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayLodgingDetails()"
                 title="View detailed lodging expense info">
           </span>
         </div>
-        <div class="col-5-12 margin-5">
-          Mileage: {{reviewApp.route.mileageAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          Mileage:
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.route.mileageAllowance | currency}}
           <span ng-if="reviewApp.mileageAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMileageDetails()"
                 title="View detailed mileage expense info">
           </span>
         </div>
-        <div class="col-5-12 margin-5">
-          Tolls: {{reviewApp.tollsAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          Tolls:
         </div>
-        <div class="col-5-12 margin-5">
-          Parking: {{reviewApp.parkingAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.tollsAllowance | currency}}
         </div>
-        <div class="col-5-12 margin-5">
-          Taxi/Bus/Subway: {{reviewApp.alternateAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          Parking:
         </div>
-        <div class="col-5-12 margin-5">
-          Registration Fee: {{reviewApp.registrationAllowance | currency}}
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.parkingAllowance | currency}}
         </div>
-        <div class="col-5-12 margin-5">
-
+        <div class="col-6-12 margin-bottom-5">
+          Taxi/Bus/Subway:
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.alternateAllowance | currency}}
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          Registration Fee:
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.registrationAllowance | currency}}
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          <span class="bold">Total:</span>
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.totalAllowance | currency}}
         </div>
       </div>
     </div>
