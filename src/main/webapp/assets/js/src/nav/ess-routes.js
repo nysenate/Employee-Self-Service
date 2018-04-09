@@ -188,6 +188,10 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/application/travel-application'
     });
 
+    $routeProvider.when(ctxPath + '/travel/application/travel-application-print', {
+        templateUrl: ctxPath + '/template/travel/application/travel-application-print'
+    });
+
     $routeProvider.when(ctxPath + '/travel/view-applications', {
         templateUrl: ctxPath + '/template/travel/view-applications'
     });
