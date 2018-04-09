@@ -1,20 +1,35 @@
 (function () {
     angular.module('essMyInfo')
-        .controller('EmpAckDocReportCtrl', ['$scope', '$q', 'appProps', 'modals','EmpAckReportApi' ,
+        .controller('EmpAckDocReportCtrl', ['$scope', 'EmpAckReportApi' ,
                                             empAckDocReportCtrl])
     ;
 
-    function empAckDocReportCtrl($scope, $q, appProps, modals,EmpAckReportApi) {
+    function empAckDocReportCtrl($scope, EmpAckReportApi) {
 
-        $scope.ackStatusesReady = false;
-        $scope.displayAckStatuses = [];
+        var initialState = {
+            loadingAcks: false,
+            yearDocMap: {},
+            years: [],
+            selectedYear: null,
+            unacknowledged: [],
+            acknowledged: []
+        };
+
+        resetState();
 
         $scope.$watch('selectedEmp', onSelectedEmpChange);
+        $scope.$watch('state.selectedYear', onSelectedYearChange);
+
+        $scope.getYears = function () {
+            return Object.keys($scope.state.yearDocMap);
+        };
+
+        function resetState() {
+            $scope.state = angular.copy(initialState);
+        }
 
         function onSelectedEmpChange() {
-            $scope.displayAckStatuses = [];
-            $scope.ackStatusesReady = false;
-
+            resetState();
 
             if (!$scope.selectedEmp) {
                 return;
@@ -23,31 +38,44 @@
             var params = {
                 empId: $scope.selectedEmp.empId
             };
-            var requestAcquireAcks = true;
+            $scope.state.loadingAcks = true;
             return EmpAckReportApi.get(params, onSuccess, $scope.handleErrorResponse)
                 .$promise.finally(function () {
-                    requestAcquireAcks = false;
+                    $scope.state.loadingAcks = false;
                 });
 
             function onSuccess(resp) {
-                angular.forEach(resp.acks, function (ackStatus) {
-
-                    var status = ackStatus.ackDoc.title + "-" +
-                        new Date(ackStatus.ackDoc.effectiveDateTime).getFullYear() + " ";
-                    if (ackStatus.ack == null) {
-                        status = status + " WAS NOT ACKNOWLEDGED";
+                resp.acks.forEach(function (ack) {
+                    var year = moment(ack.ackDoc.effectiveDateTime).year();
+                    if (!$scope.state.yearDocMap[year]) {
+                        $scope.state.yearDocMap[year] = [];
                     }
-                    else {
-                        status = status + " Acked on: " + ackStatus.ack.timestamp;
-                    }
-                    $scope.displayAckStatuses.push(status);
+                    var docs = $scope.state.yearDocMap[year];
+                    docs.push(ack);
                 });
-                $scope.ackStatusesReady = true;
-                //console.log($scope.displayAckStatuses);
+                var years = Object.keys($scope.state.yearDocMap).map(parseInt);
+                years.sort().reverse();
+                $scope.state.years = years;
+                $scope.state.selectedYear = years[0];
             }
-
         }
 
-    }
+        function onSelectedYearChange() {
+            if (!$scope.state.selectedYear) {
+                return;
+            }
+            console.log('selected year', $scope.state.selectedYear);
+            var ackStatuses = $scope.state.yearDocMap[$scope.state.selectedYear] || [];
+            var unacked = $scope.state.unacknowledged = [];
+            var acked = $scope.state.acknowledged = [];
 
+            ackStatuses.forEach(function (status) {
+                if (status.ack === null) {
+                    unacked.push(status);
+                } else {
+                    acked.push(status);
+                }
+            });
+        }
+    }
 })();
