@@ -1263,7 +1263,8 @@ input[type="text"],
 input[type="password"],
 input[type="number"],
 input[type="tel"],
-input[type="email"] {
+input[type="email"],
+input[type="search"] {
   border: 1px solid #ccc;
   outline: 0;
   background: #fafafa;
@@ -1274,18 +1275,21 @@ input[type="password"].error,
 input[type="number"].error,
 input[type="tel"].error,
 input[type="email"].error,
+input[type="search"].error,
 input[type="text"].ng-invalid,
 input[type="password"].ng-invalid,
 input[type="number"].ng-invalid,
 input[type="tel"].ng-invalid,
-input[type="email"].ng-invalid {
+input[type="email"].ng-invalid,
+input[type="search"].ng-invalid {
   border-color: #B90504;
 }
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus,
 input[type="tel"]:focus,
-input[type="email"]:focus {
+input[type="email"]:focus,
+input[type="search"]:focus {
   border-color: #999;
 }
 input[type=checkbox],
@@ -3129,6 +3133,59 @@ badge,
 .ui-state-focus {
   background: lightgrey;
 }
+/* Employee Search Directive */
+.employee-search-directive .employee-search-bar {
+  width: 20em;
+  font-size: 16px;
+}
+.employee-search-directive .employee-search-bar::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+.employee-search-directive .employee-search-checkbox {
+  display: block;
+  margin-top: 10px;
+}
+.employee-search-directive .employee-search-loader {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+.employee-search-directive .employee-search-results {
+  max-height: 30em;
+  width: 23em;
+  overflow: auto;
+  margin: 10px auto;
+  font-size: 14px;
+  border: 1px solid rgba(0, 107, 128, 0.25);
+  border-left: 0;
+  border-right: 0;
+}
+.employee-search-directive .employee-search-results ul {
+  padding: 0;
+}
+.employee-search-directive .employee-search-results .search-result {
+  margin: 2.5px;
+}
+.employee-search-directive .employee-search-results .search-result:hover {
+  background: teal;
+  color: #fafafa;
+  cursor: pointer;
+}
+.employee-search-directive .selected-employee {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.employee-search-directive .selected-employee th {
+  padding-right: 5px;
+}
+.employee-search-directive .selected-employee td {
+  text-align: left;
+}
+.employee-search-directive .selected-employee .select-another {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
 /** Login Page
 ----------------*/
 .folded-top {
@@ -3520,7 +3577,7 @@ badge,
   margin-bottom: 20px;
   text-align: left !important;
 }
-.acknowledgment-text .ack-doc-title {
+.ack-doc-title {
   font-weight: bold;
 }
 .ack-doc-view-nav {
@@ -3539,9 +3596,6 @@ badge,
 }
 .ack-doc-list li:not(:first-of-type) {
   margin-top: 5px;
-}
-#empReportStatus {
-  padding-bottom: 5px;
 }
 /** --- Paycheck History Page --- */
 @media print {
@@ -5389,51 +5443,6 @@ ul.inactive-employee-email-list {
 }
 #employee-search-page allowance-bar > * {
   margin-top: 20px;
-}
-.employee-search-directive .employee-search-bar {
-  width: 20em;
-  font-size: 16px;
-}
-.employee-search-directive .employee-search-loader {
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
-.employee-search-directive .employee-search-results {
-  max-height: 30em;
-  width: 23em;
-  overflow: auto;
-  margin: 10px auto;
-  font-size: 14px;
-  border: 1px solid rgba(0, 107, 128, 0.25);
-  border-left: 0;
-  border-right: 0;
-}
-.employee-search-directive .employee-search-results ul {
-  padding: 0;
-}
-.employee-search-directive .employee-search-results .search-result {
-  margin: 2.5px;
-}
-.employee-search-directive .employee-search-results .search-result:hover {
-  background: teal;
-  color: #fafafa;
-  cursor: pointer;
-}
-.employee-search-directive .selected-employee {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-.employee-search-directive .selected-employee th {
-  padding-right: 5px;
-}
-.employee-search-directive .selected-employee td {
-  text-align: left;
-}
-.employee-search-directive .selected-employee .select-another {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
 }
 /**
 * Styles for ESS Help Pages
