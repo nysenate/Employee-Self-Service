@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application;
 
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ public class InMemoryTravelAppDao {
             empApps = new HashMap<>();
         }
         if (app.getId() == 0) {
+            app.setSubmittedDateTime(LocalDateTime.now()); // TODO when/where should this be set?
+            app.setId(idAutoInc);
             empApps.put(idAutoInc, app);
             idAutoInc++;
         }
@@ -24,6 +27,17 @@ public class InMemoryTravelAppDao {
             empApps.put((int) app.getId(), app);
         }
         empIdToApps.put(app.getTraveler().getEmployeeId(), empApps);
+    }
+
+    public TravelApplication getTravelAppById(int id) {
+        for (Map<Integer, TravelApplication> empApps : empIdToApps.values()) {
+            for (TravelApplication app : empApps.values()) {
+                if (app.getId() == id) {
+                    return app;
+                }
+            }
+        }
+        return null;
     }
 
     public List<TravelApplication> getTravelAppsByTravelerId(int travelerId) {

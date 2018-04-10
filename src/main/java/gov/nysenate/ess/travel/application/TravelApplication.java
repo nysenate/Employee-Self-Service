@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class TravelApplication {
 
-    private final long id;
+    private long id;
     private Employee traveler;
     private Employee submitter;
     private ImmutableList<Accommodation> accommodations;
@@ -96,6 +96,10 @@ public class TravelApplication {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Employee getTraveler() {

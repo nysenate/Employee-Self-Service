@@ -127,5 +127,6 @@
     <input type="button" class="submit-button"
            value="Submit"
            ng-click="submitConfirmModal()">
+    <a target="_blank" ng-href="${ctxPath}/travel/application/travel-application-print?id={{reviewApp.id}}" style="float: right">Print</a>
   </div>
 </div>

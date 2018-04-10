@@ -4,6 +4,7 @@ import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -29,9 +31,9 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     /**
      * Initialize a mostly empty travel app, containing just the traveling {@link Employee}
      * and the submitter {@link Employee}
-     *
+     * <p>
      * (POST) /api/v1/travel/application/init/:id
-     *
+     * <p>
      * Path Params: id (int) - The travelers employee id.
      *
      * @param id
@@ -59,12 +61,22 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     // TODO Temporary for testing
     @RequestMapping(value = "")
-    public BaseResponse getTravelAppsByTravelerId(@RequestParam int empId) {
-        List<TravelApplication> apps = appDao.getTravelAppsByTravelerId(empId);
-        List<TravelApplicationView> appViews = apps.stream()
-                .map(TravelApplicationView::new)
-                .collect(Collectors.toList());
-        return ListViewResponse.of(appViews);
+    public BaseResponse getTravelApps(@RequestParam(required = false) String empId,
+                                      @RequestParam(required = false) String id,
+                                      @RequestParam(required = false, defaultValue = "false") boolean detailed) {
+        if (empId != null) {
+            List<TravelApplication> apps = appDao.getTravelAppsByTravelerId(Integer.valueOf(empId));
+            List<TravelApplicationView> appViews = apps.stream()
+                    .map(a -> detailed ? new DetailedTravelApplicationView(a) : new TravelApplicationView(a))
+                    .collect(Collectors.toList());
+            return ListViewResponse.of(appViews);
+        }
+
+        if (id != null) {
+            TravelApplication app = appDao.getTravelAppById(Integer.valueOf(id));
+            return new ViewObjectResponse<>(detailed ? new DetailedTravelApplicationView(app) : new TravelApplicationView(app));
+        }
+        return null;
     }
 
     private int getSubjectEmployeeId() {

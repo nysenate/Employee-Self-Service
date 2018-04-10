@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application;
 
 import com.google.common.base.Strings;
 import com.google.maps.errors.ApiException;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.accommodation.AccommodationFactory;
 import gov.nysenate.ess.travel.route.RouteFactory;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -18,16 +19,19 @@ public class TravelApplicationFactory {
 
     private AccommodationFactory accommodationFactory;
     private RouteFactory routeFactory;
+    private EmployeeInfoService employeeInfoService;
 
     @Autowired
-    public TravelApplicationFactory(AccommodationFactory accommodationFactory, RouteFactory routeFactory) {
+    public TravelApplicationFactory(AccommodationFactory accommodationFactory, RouteFactory routeFactory,
+                                    EmployeeInfoService employeeInfoService) {
         this.accommodationFactory = accommodationFactory;
         this.routeFactory = routeFactory;
+        this.employeeInfoService = employeeInfoService;
     }
 
     public TravelApplication createApplication(TravelApplicationView appView) throws IOException, ApiException, InterruptedException {
-        TravelApplication app = new TravelApplication(0, appView.getTraveler().toEmployee(),
-                appView.getSubmitter().toEmployee());
+        TravelApplication app = new TravelApplication(0, employeeInfoService.getEmployee(appView.getTraveler().toEmployee().getEmployeeId()),
+                employeeInfoService.getEmployee(appView.getSubmitter().toEmployee().getEmployeeId()));
         app.setAccommodations(accommodationFactory.createAccommodations(appView));
         app.setRoute(routeFactory.createRoute(appView));
         app.setPurposeOfTravel(appView.getPurposeOfTravel());

@@ -113,6 +113,76 @@
   vertical-align: middle;
 }
 
+
+/** Travel app print page styling */
+
+.travel-print-info-container {
+  div {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    &.travel-print-label {
+      .bold;
+    }
+  }
+}
+
+.travel-print-mot-box {
+  float: left;
+  text-align: center;
+  width: 25%;
+  border: 1px solid grey;
+  margin-left: 100px;
+  .padding-10;
+  label {
+    float: left;
+    font-weight: normal;
+  }
+  input {
+    float: right;
+  }
+}
+
+.travel-print-allowances-box {
+  float: right;
+  text-align: center;
+  width: 30%;
+  border: 1px solid grey;
+  margin-right: 100px;
+  .padding-10;
+  label {
+    float: left;
+    font-weight: normal;
+  }
+  span {
+    float: right;
+  }
+}
+
+.print-signature {
+  width: 350px;
+  border-top: 1px solid black;
+  >.signature-name {
+    float: left;
+  }
+  >.signature-date {
+    float: right;
+  }
+}
+
+#traveler-signature {
+  float: left;
+  margin: 50px 20px 0 20px;
+}
+
+#depthead-signature {
+  float: right;
+  margin: 50px 20px 0 20px;
+}
+
+#secretary-signature {
+  margin: 100px 20px 0 232px;
+}
+
 /** Step Indicator */
 
 @stepColor: @white;
