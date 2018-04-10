@@ -1,17 +1,19 @@
 angular.module('ess')
-    .service('LocationService', ['$location', '$window', '$anchorScroll', 'appProps', locationService]);
+    .service('LocationService', ['$location', '$window', '$anchorScroll', '$http', '$route',
+                                 'appProps', locationService]);
 
 /**
  * A collection of utility functions that utilize $location
  */
-function locationService($location, $window, $anchorScroll, appProps) {
+function locationService($location, $window, $anchorScroll, $http, $route, appProps) {
 
     return {
         setSearchParam: setSearchParam,
         getSearchParam: getSearchParam,
         clearSearchParams: clearSearchParams,
         scrollToId: scrollToId,
-        go: go
+        go: go,
+        logout: logout
     };
 
     /**
@@ -54,12 +56,31 @@ function locationService($location, $window, $anchorScroll, appProps) {
      * Goes to the specified path.
      */
     function go(path, reload, params) {
+        console.log('navigating to', path, 'params=', params);
         $location.path(appProps.ctxPath + path).search((params) ? params : {});
         if (reload === true) {
             // Timeout is required for firefox to reload properly.
             setTimeout(function () {
                 $window.location.reload()
             }, 0);
+        }
+    }
+
+    /**
+     * Logs the user out, with the option of saving the current url on re-login
+     * @param saveLocation
+     */
+    function logout(saveLocation) {
+        var logoutUrl = appProps.ctxPath + '/logout';
+        if (saveLocation) {
+            $http({
+                method: 'HEAD',
+                url: logoutUrl
+            }).finally(function () {
+                go($location.path(), true, $location.search());
+            });
+        } else {
+            go(logoutUrl, true);
         }
     }
 

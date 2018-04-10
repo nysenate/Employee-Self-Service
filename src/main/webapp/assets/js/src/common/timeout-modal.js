@@ -54,7 +54,7 @@ essApp.directive('timeoutModal', ['modals', '$interval', 'LocationService', 'Tim
                 };
 
                 $scope.logout = function () {
-                    locationService.go('/logout', true);
+                    locationService.logout(true);
                 };
 
                 $scope.disableButtons = function () {

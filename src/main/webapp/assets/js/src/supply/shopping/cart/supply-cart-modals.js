@@ -19,9 +19,7 @@ essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
         locationService.go("/supply/shopping/order", false);
     };
 
-    $scope.logout = function () {
-        locationService.go('/logout', true);
-    };
+    $scope.logout = locationService.logout;
 }]);
 
 /**
