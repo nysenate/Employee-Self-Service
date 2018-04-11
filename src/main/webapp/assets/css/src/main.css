@@ -1903,6 +1903,9 @@ input[type="number"] {
 .margin-top-20 {
   margin-top: 20px !important;
 }
+.margin-bottom-5 {
+  margin-bottom: 5px;
+}
 .margin-bottom-20 {
   margin-bottom: 20px !important;
 }
@@ -2005,6 +2008,9 @@ input[type="number"] {
   }
   .view-animate-container {
     width: auto !important;
+  }
+  .content-container {
+    box-shadow: none !important;
   }
 }
 table.ess-table {
@@ -5615,6 +5621,65 @@ ul.inactive-employee-email-list {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
+}
+/** Travel app print page styling */
+.travel-print-info-container div {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.travel-print-info-container div.travel-print-label {
+  font-weight: bold;
+}
+.travel-print-mot-box {
+  float: left;
+  text-align: center;
+  width: 25%;
+  border: 1px solid grey;
+  margin-left: 100px;
+  padding: 10px;
+}
+.travel-print-mot-box label {
+  float: left;
+  font-weight: normal;
+}
+.travel-print-mot-box input {
+  float: right;
+}
+.travel-print-allowances-box {
+  float: right;
+  text-align: center;
+  width: 30%;
+  border: 1px solid grey;
+  margin-right: 100px;
+  padding: 10px;
+}
+.travel-print-allowances-box label {
+  float: left;
+  font-weight: normal;
+}
+.travel-print-allowances-box span {
+  float: right;
+}
+.print-signature {
+  width: 350px;
+  border-top: 1px solid black;
+}
+.print-signature > .signature-name {
+  float: left;
+}
+.print-signature > .signature-date {
+  float: right;
+}
+#traveler-signature {
+  float: left;
+  margin: 50px 20px 0 20px;
+}
+#depthead-signature {
+  float: right;
+  margin: 50px 20px 0 20px;
+}
+#secretary-signature {
+  margin: 100px 20px 0 232px;
 }
 /** Step Indicator */
 .step-indicator {
