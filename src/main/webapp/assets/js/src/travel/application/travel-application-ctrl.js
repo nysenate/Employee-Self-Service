@@ -2,10 +2,10 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
-                      'TravelApplicationApi', travelAppController]);
+                      'TravelApplicationApi', 'TravelApplicationAttachmentApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi,
-                             travelApplicationApi) {
+                             travelApplicationApi, attachmentApi) {
 
     /* --- Container Page --- */
 
@@ -224,13 +224,30 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
  * Copying model data ensures that modifications are not made until the user clicks the 'Next' or 'Save' buttons.
  */
 
-essTravel.directive('travelApplicationPurpose', ['appProps', function (appProps) {
+essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationAttachmentApi', '$http', function (appProps, attachmentApi, $http) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-purpose',
         scope: true,
         link: function ($scope, $elem, $attrs) {
             // Copy current purpose of travel for use in this directive.
             $scope.purposeOfTravel = angular.copy($scope.app.purposeOfTravel);
+
+            $scope.save = function(files) {
+                var files = angular.element("#file")[0].files;
+
+                var formData = new FormData();
+                for(var i = 0; i < files.length; i++) {
+                    formData.append("file", files[i]);
+                }
+
+                $http.post(appProps.apiPath + '/travel/application/upload', formData, {
+                    // Allow $http to choose the right 'content-type'.
+                    headers: {'Content-Type': undefined},
+                    transformRequest: angular.identity
+                }).then(function (response) {
+                    console.log(response);
+                });
+            }
         }
     }
 }]);

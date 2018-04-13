@@ -24,6 +24,7 @@ public class TravelApplication {
     private Dollars alternate; // Bus, subway, and train.
     private Dollars registration;
     private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
+    private List<TravelAttachment> attachments;
 
     public TravelApplication(long id, Employee traveler, Employee submitter) {
         this.id = id;
@@ -173,5 +174,13 @@ public class TravelApplication {
 
     public void setSubmittedDateTime(LocalDateTime submittedDateTime) {
         this.submittedDateTime = Objects.requireNonNull(submittedDateTime);
+    }
+
+    public List<TravelAttachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<TravelAttachment> attachments) {
+        this.attachments = attachments;
     }
 }

@@ -3,20 +3,20 @@ package gov.nysenate.ess.travel.application;
 import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
-import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
-import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -27,6 +27,20 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private TravelApplicationFactory applicationFactory;
     @Autowired private InMemoryTravelAppDao appDao;
+    @Autowired private UploadProcessor uploadProcessor;
+
+    /**
+     * File upload test endpoint
+     */
+    @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse upload(@RequestParam("file") MultipartFile[] files) throws IOException {
+        for (MultipartFile file : files) {
+            TravelAttachment attach = uploadProcessor.uploadTravelAttachment(file);
+            System.out.println("");
+        }
+        return new SimpleResponse();
+    }
+
 
     /**
      * Initialize a mostly empty travel app, containing just the traveling {@link Employee}
@@ -84,14 +98,4 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return person.getEmployeeId();
     }
 
-    @RequestMapping(value = "/test")
-    public BaseResponse testListView() {
-        return new ViewObjectResponse();
-    }
-
-    @RequestMapping(value = "/test/submit")
-    public BaseResponse testListView(@RequestParam ListView list) {
-        System.out.println("sdfsd");
-        return null;
-    }
 }

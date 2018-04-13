@@ -14,6 +14,9 @@ data.dir = /data/ess/
 # Used to determine fs location and request routing for ack docs.
 data.ackdoc_subdir = ack_docs/
 
+# Subdirectory where travel request attachments are stored.
+data.travel.attachments.dir = travel_request_attachments/
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain url and context path that ess is hosted on (used for generating links)
