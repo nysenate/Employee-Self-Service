@@ -1,7 +1,8 @@
 essSupply = angular.module('essSupply').controller('SupplyReconciliationController',
-    ['$scope', 'SupplyRequisitionApi', 'LocationService', 'SupplyUtils', 'modals', '$window', '$timeout', supplyReconciliationController]);
+    ['$scope', 'SupplyRequisitionApi', 'SupplyReconciliationApi', 'LocationService', 'SupplyUtils', 'modals', '$window', '$timeout', supplyReconciliationController]);
 
-function supplyReconciliationController($scope, requisitionApi, locationService, supplyUtils, modals, $window, $timeout) {
+
+function supplyReconciliationController($scope, requisitionApi, supplyReconciliationApi, locationService, supplyUtils, modals, $window, $timeout) {
 
     /** If a particular item is selected, displays information on all orders containing that item. */
     $scope.selectedItem = null;
@@ -11,9 +12,11 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
         matches: [],
         items: [],
         response: {},
-        error: false
+        error: false,
+        quantity: 0
     };
     $scope.currentPage = 1;
+
 
     /** Map of item id's to shipments containing that item. */
     $scope.reconcilableItemMap= {};
@@ -31,6 +34,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
             from: moment().startOf('day').format(),
             to: moment().format(),
             dateField: "approved_date_time",
+            reconciled: 'false',
             offset: 0,
             limit: 'ALL'
         };
@@ -45,6 +49,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
                     else {
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
+                        lineItem.item.newQuantity =0;
                         $scope.reconcilableSearch.items.push(lineItem.item);
                     }
                 })
@@ -56,6 +61,7 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
             $scope.reconcilableSearch.error = true;
             $scope.handleErrorResponse(response);
         });
+
     }
 
     /**
@@ -101,6 +107,29 @@ function supplyReconciliationController($scope, requisitionApi, locationService,
         $scope.currentPage = page;
     };
 
+
+
+    $scope.reconcile = function(){
+        $scope.recOrder=[];
+        for(var i =0; i < $scope.reconcilableSearch.items.length; i++){
+            var order = {
+                id: 0,
+                quantity: 0
+            };
+            order.id = $scope.reconcilableSearch.items[i].id;
+            order.quantity = $scope.reconcilableSearch.items[i].newQuantity;
+            $scope.recOrder[i] = order;
+        }
+
+        //console.log($scope.reconcilableSearch.items);
+        //console.log($scope.recOrder);
+
+
+
+    }
+
     $scope.init();
+
+
 
 }

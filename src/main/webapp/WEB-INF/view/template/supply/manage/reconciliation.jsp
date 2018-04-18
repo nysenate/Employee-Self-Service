@@ -17,7 +17,10 @@
         <li ng-class="{'active-reconciliation-tab': currentPage === 1}"><a href="#" ng-click="setCurrentPage(1)">Page One</a></li>
         <li ng-class="{'active-reconciliation-tab': currentPage === 2}"><a href="#" ng-click="setCurrentPage(2)">Page Two</a></li>
       </ul>
+
       <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
+      <a id="reconcile" class="no-print" style="margin: 10px; float: right" ng-click="reconcile()">Reconcile</a>
+
     </div>
 
     <%--Header--%>
@@ -35,18 +38,21 @@
       </div>
       <%--Item rows--%>
       <div class="supply-div-table-body print-gray-bottom-border"
-           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}">
+           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}" >
+
         <div class="supply-div-table-row"
              ng-class="{'supply-highlight-row': isItemSelected(item)}"
-             ng-class-even="'dark-background'"
-             ng-click="setSelected(item)">
-          <div class="col-2-12">
+             ng-class-even="'dark-background'">
+
+          <div class="col-2-12" ng-click="setSelected(item)">
             {{item.commodityCode}}
+
           </div>
-          <div class="col-8-12" style="overflow: hidden;">
+          <div class="col-8-12" style="overflow: hidden;" ng-click="setSelected(item)">
             {{item.description}}
           </div>
-          <div class="col-2-12">
+          <div class="col-2-12" >
+            <input id="recNum" class="number" placeholder="Enter a number" type="number" style="width: 10em" ng-model="item.newQuantity" >
             &nbsp;
           </div>
         </div>

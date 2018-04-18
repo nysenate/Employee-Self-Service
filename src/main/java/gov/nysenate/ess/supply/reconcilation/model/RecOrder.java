@@ -4,46 +4,45 @@ import java.util.Objects;
 
 public final class RecOrder {
 
-    private final String itemName;
+    private final String itemId;
     private final int quantity;
 
     private RecOrder(Builder builder) {
-        this.itemName = builder.itemName;
+        this.itemId = builder.itemId;
         this.quantity = builder.quantity;
+    }
+
+    public RecOrder(RecOrder recOrder){
+        this.itemId = recOrder.getItemId();
+        this.quantity = recOrder.getQuantity();
     }
 
 
     /**
      * Returns a {@link RecOrder.Builder} which contains a copy of
-     * this requisitions data. Useful for creating new instances where
+     * this rec order data. Useful for creating new instances where
      * only a few fields differ.
      */
     private RecOrder.Builder copy() {
         return new RecOrder.Builder()
-                .withItemName(this.itemName)
+                .withItemId(this.itemId)
                 .withQuantity(this.quantity);
     }
 
-    public String getItemName() {
-        return itemName;
+
+    public String getItemId() {
+        return itemId;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public RecOrder setQuantity(int quantity) {
-        return copy().withQuantity(quantity).build();
-    }
-
-    public RecOrder setItemName(String itemName) {
-        return copy().withItemName(itemName).build();
-    }
 
     @Override
     public String toString() {
         return "RecOrder{" +
-                "itemName=" + itemName +
+                "itemId=" + itemId +
                 ", quantity=" + quantity + "}";
     }
 
@@ -52,21 +51,21 @@ public final class RecOrder {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecOrder that = (RecOrder) o;
-        return itemName == that.itemName && quantity == that.quantity;
+        return itemId == that.itemId && quantity == that.quantity;
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(itemName, quantity);
+        return Objects.hash(itemId, quantity);
     }
 
 
         public static class Builder {
-            private String itemName;
+            private String itemId;
             private int quantity;
 
-            public Builder withItemName(String itemName) {
-                this.itemName = itemName;
+            public Builder withItemId(String itemId) {
+                this.itemId = itemId;
                 return this;
             }
 

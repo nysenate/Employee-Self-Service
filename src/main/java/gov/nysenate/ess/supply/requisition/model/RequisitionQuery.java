@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
@@ -27,6 +28,7 @@ public class RequisitionQuery {
     private String itemId;
     private LimitOffset limitOffset;
     private OrderBy orderBy;
+    private String reconciled;
 
     public RequisitionQuery() {
         // Set default values
@@ -41,6 +43,7 @@ public class RequisitionQuery {
         this.itemId = WILDCARD;
         this.limitOffset = LimitOffset.TEN;
         this.orderBy = new OrderBy(this.dateField, SortOrder.DESC);
+        this.reconciled = WILDCARD;
     }
 
     /**
@@ -132,6 +135,18 @@ public class RequisitionQuery {
         return this;
     }
 
+    public RequisitionQuery setReconciled(String reconciled) {
+        if(reconciled != null){
+            if(reconciled.equals("t") || StringUtils.equalsIgnoreCase(reconciled, "true")){
+                this.reconciled = "true";
+            }
+            if(reconciled.equals("f")|| StringUtils.equalsIgnoreCase(reconciled, "false")){
+                this.reconciled = "false";
+            }
+        }
+        return this;
+    }
+
     public String getDestination() {
         return useWildcard(destination);
     }
@@ -174,5 +189,9 @@ public class RequisitionQuery {
 
     public OrderBy getOrderBy() {
         return orderBy;
+    }
+
+    public String getReconciled() {
+        return reconciled;
     }
 }

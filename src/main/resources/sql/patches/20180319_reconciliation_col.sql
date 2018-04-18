@@ -1,0 +1,2 @@
+ALTER TABLE supply.requisition
+  ADD COLUMN reconciled BOOLEAN NOT NULL DEFAULT FALSE;
