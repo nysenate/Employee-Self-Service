@@ -20,8 +20,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     // Each state represents a different step of the application.
     $scope.STATES = {
         PURPOSE: 5,
-        ORIGIN: 10,
-        DESTINATION: 15,
+        ITINERARY: 10,
         ALLOWANCES: 25,
         REVIEW: 30,
         EDIT: 35
@@ -80,17 +79,13 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             case $scope.STATES.PURPOSE:
                 locationService.go("/travel/application/travel-application", true);
                 break;
-            case $scope.STATES.ORIGIN:
+            case $scope.STATES.ITINERARY:
                 $scope.appState = $scope.STATES.PURPOSE;
                 $scope.pageState = $scope.STATES.PURPOSE;
                 break;
-            case $scope.STATES.DESTINATION:
-                $scope.appState = $scope.STATES.ORIGIN;
-                $scope.pageState = $scope.STATES.ORIGIN;
-                break;
             case $scope.STATES.ALLOWANCES:
-                $scope.appState = $scope.STATES.DESTINATION;
-                $scope.pageState = $scope.STATES.DESTINATION;
+                $scope.appState = $scope.STATES.ITINERARY;
+                $scope.pageState = $scope.STATES.ITINERARY;
                 break;
             case $scope.STATES.REVIEW:
                 $scope.appState = $scope.STATES.ALLOWANCES;
@@ -105,14 +100,10 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     function handleNextAction() {
         switch ($scope.appState) {
             case $scope.STATES.PURPOSE:
-                $scope.appState = $scope.STATES.ORIGIN;
-                $scope.pageState = $scope.STATES.ORIGIN;
+                $scope.appState = $scope.STATES.ITINERARY;
+                $scope.pageState = $scope.STATES.ITINERARY;
                 break;
-            case $scope.STATES.ORIGIN:
-                $scope.appState = $scope.STATES.DESTINATION;
-                $scope.pageState = $scope.STATES.DESTINATION;
-                break;
-            case $scope.STATES.DESTINATION:
+            case $scope.STATES.ITINERARY:
                 $scope.appState = $scope.STATES.ALLOWANCES;
                 $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
@@ -191,15 +182,8 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action, editField);
     };
 
-    $scope.highlightOriginStep = function() {
+    $scope.highlightItineraryStep = function() {
         return $scope.appState !== $scope.STATES.PURPOSE
-    };
-
-    $scope.highlightDestinationStep = function() {
-        return $scope.appState === $scope.STATES.DESTINATION
-            || $scope.appState === $scope.STATES.ALLOWANCES
-            || $scope.appState === $scope.STATES.REVIEW
-            || $scope.appState === $scope.STATES.EDIT
     };
 
     $scope.highlightExpensesStep = function() {
@@ -252,63 +236,79 @@ essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationA
     }
 }]);
 
-essTravel.directive('travelApplicationOrigin', ['appProps', function (appProps) {
+essTravel.directive('travelApplicationItinerary', ['appProps', 'TravelModeOfTransportationApi', function (appProps, motApi) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-origin',
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-itinerary',
         scope: true,
         link: function ($scope, $elem, $attrs) {
-            // Copy current origin for use in this directive.
-            $scope.origin = angular.copy($scope.app.origin);
 
-            $scope.setOrigin = function (address) {
-                $scope.origin = address;
-            };
-        }
-    }
-}]);
+            $scope.modesOfTransportation = [];
+            $scope.outgoingLegs = [];
 
+            (function init() {
+                motApi.get({}, function (response) {
+                    $scope.modesOfTransportation = response.result;
+                });
 
-essTravel.directive('travelApplicationDestination', ['appProps', 'modals', function (appProps, modals) {
-    return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-destination',
-        scope: true,
-        link: function ($scope, $elem, $attrs) {
-            // Copy current destinations for use in this directive.
-            $scope.destinations = angular.copy($scope.app.destinations);
+                $scope.outgoingLegs.push(new Leg());
+            })();
 
-            $scope.editDestination = function (dest) {
-                modals.open('destination-selection-modal', {destination: dest})
-                    .then(function (destination) {
-                        dest = destination;
-                    });
+            $scope.addSegment = function() {
+                console.log($scope.outgoingLegs);
+                $scope.outgoingLegs.push(new Leg());
             };
 
-            $scope.removeDestination = function(dest) {
-                modals.open('destination-delete-confirm-modal')
-                    .then(function() {
-                        var index = $scope.destinations.indexOf(dest);
-                        $scope.destinations.splice(index, 1);
-                        // Save destinations to application after deleting one.
-                        $scope.setDestinations($scope.destinations);
-                    });
-            };
+            function Leg() {
+                const DATEPICKER_FORMAT = 'MM/DD/YYYY';
+                const ISO_FORMAT = 'YYYY-MM-DD';
 
-            $scope.addDestination = function() {
-                var params = {
-                    defaultModeOfTransportation: undefined,
-                    defaultArrivalDate: undefined
+                this.from = {};
+                this.to = {};
+                this._departureDate = {}; // ISO Date
+                this._arrivalDate = {}; // ISO Date
+                this.modeOfTransportation = {};
+                this.isMileageRequested = true;
+                this.isMealsRequested = true;
+                this.isLodgingRequested = true;
+
+                // Used as callback method for travel-address-autocomplete
+                this.setFrom = function(address) {
+                    this.from = address;
                 };
-                if ($scope.destinations.length > 0) {
-                    // Use ModeOfTransportation from previous destination if exists.
-                    params.defaultModeOfTransportation = $scope.destinations[$scope.destinations.length - 1].modeOfTransportation;
-                    // Default arrivalDate to previous destinations departure date.
-                    params.defaultArrivalDate = $scope.destinations[$scope.destinations.length - 1].departureDate;
+
+                // Used as callback method for travel-address-autocomplete
+                this.setTo = function(address) {
+                    this.to = address;
+                };
+
+                this.setDepartureDate = function(date) {
+                    this._departureDate = this.toIsoDate(date);
+                };
+
+                this.setArrivalDate = function(date) {
+                    this._arrivalDate = this.toIsoDate(date);
+                };
+
+                this.toIsoDate = function(date) {
+                    if (formatIs(date, DATEPICKER_FORMAT)) {
+                        return moment(date, DATEPICKER_FORMAT).format(ISO_FORMAT);
+                    }
+                    else if (formatIs(date, ISO_FORMAT)) {
+                        return date;
+                    }
+                    else {
+                        // attempt default format parsing
+                        console.log("Unrecognized date format");
+                        return moment(date).format(ISO_FORMAT);
+                    }
+                };
+
+                // Checks if a date is in the format specified by 'format'
+                function formatIs(date, format) {
+                    return moment(date, format).format(format) === date;
                 }
-                modals.open('destination-selection-modal', params)
-                    .then(function (destination) {
-                        $scope.destinations.push(destination);
-                    });
-            };
+
+            }
         }
     }
 }]);

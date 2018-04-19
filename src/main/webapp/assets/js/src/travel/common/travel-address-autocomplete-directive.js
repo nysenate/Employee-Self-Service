@@ -17,8 +17,8 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps
     return {
         restrict: 'A',
         scope: {
-            callback: '&',
-            address: '@'
+            callback: '&', // function which is given address object after fetched from google.
+            address: '@' // Optional - a default address to initialize input with.
         },
         link: function ($scope, $elem, $attrs) {
             var element = $elem[0];

@@ -11,14 +11,14 @@
         </div>
 
         <span class="margin-10">
-        <label>Mileage <input type="checkbox" ng-model="dest.isMileageRequested"></label>
-      </span>
+          <label>Mileage <input type="checkbox" ng-model="dest.isMileageRequested"></label>
+        </span>
         <span class="margin-10">
-        <label>Meals <input type="checkbox" ng-model="dest.isMealsRequested"></label>
-      </span>
+          <label>Meals <input type="checkbox" ng-model="dest.isMealsRequested"></label>
+        </span>
         <span class="margin-10">
-        <label>Lodging <input type="checkbox" ng-model="dest.isLodgingRequested"></label>
-      </span>
+          <label>Lodging <input type="checkbox" ng-model="dest.isLodgingRequested"></label>
+        </span>
       </div>
     </div>
 
