@@ -102,7 +102,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             case $scope.STATES.PURPOSE:
                 $scope.appState = $scope.STATES.ITINERARY;
                 $scope.pageState = $scope.STATES.ITINERARY;
-                break;
+                break
             case $scope.STATES.ITINERARY:
                 $scope.appState = $scope.STATES.ALLOWANCES;
                 $scope.pageState = $scope.STATES.ALLOWANCES;
@@ -240,7 +240,7 @@ essTravel.directive('travelApplicationItinerary', ['appProps', 'TravelModeOfTran
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-itinerary',
         scope: true,
-        link: function ($scope, $elem, $attrs) {
+        link: function ($scope, $elem, $attrs, ctrl) {
 
             $scope.modesOfTransportation = [];
             $scope.outgoingLegs = [];
@@ -251,6 +251,7 @@ essTravel.directive('travelApplicationItinerary', ['appProps', 'TravelModeOfTran
                 });
 
                 $scope.outgoingLegs.push(new Leg());
+                // $scope.outgoingLegs[0].from.formattedAddress = "100 South Lake Street, Albany, NY 12208";
             })();
 
             $scope.addSegment = function() {
@@ -307,11 +308,30 @@ essTravel.directive('travelApplicationItinerary', ['appProps', 'TravelModeOfTran
                 function formatIs(date, format) {
                     return moment(date, format).format(format) === date;
                 }
-
             }
+
+
         }
     }
 }]);
+
+// essTravel.directive('fromAddressValidator', [function() {
+//     return {
+//         require: 'ngModel',
+//         link: function($scope, $elem, $attrs, $ctrl) {
+//             $ctrl.$validators.from = function(modelValue, viewValue) {
+//                 console.log(modelValue);
+//                 console.log(viewValue);
+//                 return viewValue !== undefined;
+//             }
+//
+//         }
+//     }
+// }]);
+
+/**
+ * --------------------------------------------
+ */
 
 essTravel.directive('travelApplicationAllowances', ['appProps', function (appProps) {
     return {
