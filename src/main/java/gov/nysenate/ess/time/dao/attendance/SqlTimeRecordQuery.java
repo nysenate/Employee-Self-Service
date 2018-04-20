@@ -28,7 +28,9 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "LEFT JOIN ${masterSchema}.PM23ATTEND att\n" +
             "    ON rec.NUXREFEM = att.NUXREFEM AND per.DTPERIODYEAR = att.DTPERIODYEAR\n" +
             "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
-            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'\n" +
+            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
+            "        AND ent.CDSTATUS = 'A'\n" +
+            "        AND ent.DTDAY BETWEEN rec.DTBEGIN AND rec.DTEND\n" +
             "WHERE per.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'\n" +
             "    AND per.CDPERIOD = 'AF'\n"
     ),
@@ -38,7 +40,9 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "JOIN ${masterSchema}.SL16PERIOD per\n" +
             "    ON rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
             "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
-            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'\n" +
+            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
+            "        AND ent.CDSTATUS = 'A'\n" +
+            "        AND ent.DTDAY BETWEEN rec.DTBEGIN AND rec.DTEND\n" +
             "WHERE per.CDSTATUS = 'A' AND per.CDPERIOD = 'AF'\n" +
             "   AND rec.NUXRTIMESHEET = :timesheetId"
     ),
@@ -105,10 +109,20 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "WHERE NUXREFSV = :supId\n" +
             "   AND CDTSSTAT != 'AP'"
     ),
-    GET_TREC_ID_BY_BEGIN_DATE(
+    GET_EXISTING_TREC_ID(
             "SELECT NUXRTIMESHEET\n" +
-            "FROM ${tsSchema}.PM23TIMESHEET\n" +
-            "WHERE NUXREFEM = :empId AND DTBEGIN = :beginDate"
+            "FROM ${tsSchema}.PM23TIMESHEET ts\n" +
+            "WHERE NUXREFEM = :empId\n" +
+            "  AND DTBEGIN <= :endDate\n" +
+            "  AND DTEND >= :beginDate\n" +
+            "  AND NOT EXISTS (\n" +
+            "    SELECT 1\n" +
+            "    FROM ${masterSchema}.PD23ATTEND at\n" +
+            "    WHERE at.CDSTATUS = 'A'\n" +
+            "      AND ts.NUXREFEM = at.NUXREFEM\n" +
+            "      AND ts.DTBEGIN <= at.DTEND\n" +
+            "      AND ts.DTEND >= at.DTBEGIN\n" +
+            "  )"
     ),
 
     INSERT_TIME_REC(

@@ -3,13 +3,13 @@ package gov.nysenate.ess.time.dao.attendance;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.dao.period.mapper.PayPeriodRowMapper;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.attendance.mapper.RemoteEntryRowMapper;
 import gov.nysenate.ess.time.dao.attendance.mapper.RemoteRecordRowMapper;
-import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.dao.period.mapper.PayPeriodRowMapper;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
@@ -34,15 +34,23 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.INSERT_TIME_REC;
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.UPDATE_TIME_REC_SQL;
+
 @Repository
 public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeRecordDao.class);
 
-    @Autowired private TimeEntryDao timeEntryDao;
+    private final TimeEntryDao timeEntryDao;
 
     private static final OrderBy timeRecordOrder =
             new OrderBy("rec.NUXREFEM", SortOrder.ASC, "rec.DTBEGIN", SortOrder.ASC, "ent.DTDAY", SortOrder.ASC);
+
+    @Autowired
+    public SqlTimeRecordDao(TimeEntryDao timeEntryDao) {
+        this.timeEntryDao = timeEntryDao;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -114,29 +122,33 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
                 (rs, rowNum) -> rs.getInt("year"));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean saveRecord(TimeRecord record) {
         boolean isUpdate = true;
         if (record.getTimeRecordId() == null) {
             // Attempt to find existing record for employee with matching begin date
             // If that record exists, use that record id
-            record.setTimeRecordId(getTimeRecordId(record));
+            record.setTimeRecordId(getExistingTimeRecordId(record));
         }
 
         MapSqlParameterSource params = getTimeRecordParams(record);
         if (record.getTimeRecordId() == null ||
-                remoteNamedJdbc.update(SqlTimeRecordQuery.UPDATE_TIME_REC_SQL.getSql(schemaMap()), params)==0) {
+                remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params)==0) {
             isUpdate = false;
             KeyHolder tsIdHolder = new GeneratedKeyHolder();
-            if (remoteNamedJdbc.update(SqlTimeRecordQuery.INSERT_TIME_REC.getSql(schemaMap()), params,
-                    tsIdHolder, new String[] {"NUXRTIMESHEET"}) == 0) {
+            final String tsIdCol = "NUXRTIMESHEET";
+            String[] keyCols = {tsIdCol};
+            if (remoteNamedJdbc.update(INSERT_TIME_REC.getSql(schemaMap()), params, tsIdHolder, keyCols) == 0) {
                 return false;
             }
-            record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get("NUXRTIMESHEET")).toBigInteger());
+            record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get(tsIdCol)).toBigInteger());
             record.setUpdateDate(LocalDateTime.now());
         }
         // Insert each entry from the time record
-        final Optional<TimeRecord> oldRecord = isUpdate ? Optional.of(getTimeRecord(record.getTimeRecordId())) : Optional.empty();
+        final Optional<TimeRecord> oldRecord = isUpdate
+                ? Optional.of(getTimeRecord(record.getTimeRecordId()))
+                : Optional.empty();
 
         for (TimeEntry entry : record.getTimeEntries()) {
             if (!shouldUpdate(entry, oldRecord)) {
@@ -152,6 +164,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean deleteRecord(BigInteger recordId) {
         MapSqlParameterSource params = new MapSqlParameterSource("timesheetId", new BigDecimal(recordId));
@@ -171,7 +184,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return activeRecordCount > 0;
     }
 
-    /** --- Helper Classes --- */
+    /* --- Helper Classes --- */
 
     private static class TimeRecordRowCallbackHandler implements RowCallbackHandler
     {
@@ -213,7 +226,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         }
     }
 
-    public static MapSqlParameterSource getTimeRecordParams(TimeRecord timeRecord) {
+    private static MapSqlParameterSource getTimeRecordParams(TimeRecord timeRecord) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("timesheetId", timeRecord.getTimeRecordId() != null ?
                 new BigDecimal(timeRecord.getTimeRecordId()) : null);
@@ -245,14 +258,12 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
      * @param record {@link TimeRecord}
      * @return BigInteger
      */
-    private BigInteger getTimeRecordId(TimeRecord record) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("empId", record.getEmployeeId())
-                .addValue("beginDate", SqlBaseDao.toDate(record.getBeginDate()));
+    private BigInteger getExistingTimeRecordId(TimeRecord record) {
+        MapSqlParameterSource params = getTimeRecordParams(record);
         // Attempt to find existing record for employee with matching begin date
         // If that record exists, use that record id
         try {
-            BigDecimal id = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_TREC_ID_BY_BEGIN_DATE.getSql(schemaMap()),
+            BigDecimal id = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_EXISTING_TREC_ID.getSql(schemaMap()),
                     params, BigDecimal.class);
             return id.toBigInteger();
         } catch (EmptyResultDataAccessException ex) {
