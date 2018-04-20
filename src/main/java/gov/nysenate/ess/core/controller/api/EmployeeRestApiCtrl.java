@@ -110,6 +110,7 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
     public ListViewResponse<EmployeeSearchView> searchEmployees(
             @RequestParam(defaultValue = "") String term,
             @RequestParam(defaultValue = "0") int empId,
+            @RequestParam(defaultValue = "false") boolean activeOnly,
             WebRequest request) {
 
         LimitOffset limitOffset = getLimitOffset(request, 10);
@@ -124,7 +125,7 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
             } catch (EmployeeNotFoundEx ignored) {}
             empSearchResults = new PaginatedList<>(employeeList.size(), LimitOffset.ALL, employeeList);
         } else {
-            empSearchResults = empInfoService.searchEmployees(term, limitOffset);
+            empSearchResults = empInfoService.searchEmployees(term, activeOnly, limitOffset);
         }
 
         List<EmployeeSearchView> employeeViewList = empSearchResults.getResults().stream()

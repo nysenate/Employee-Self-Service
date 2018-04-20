@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
@@ -17,6 +16,7 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.ShiroUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,6 +195,9 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                                               @RequestParam int ackDocId) {
         checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGMENT, POST));
 
+        int authedEmpId = ShiroUtils.getAuthenticatedEmpId();
+        boolean personnelAcked = authedEmpId != empId;
+
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
         ackDocDao.getAckDoc(ackDocId);
 
@@ -208,7 +211,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         }
 
         // Save the ack doc
-        ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now()));
+        ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now(), personnelAcked));
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
@@ -280,13 +283,12 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * @param empId int - the employee id of the employee whose acknowledgments will be retrieved
      *
      *
-     * @return String
-     * */
+     * @return {@link EmpAckReport}
+     */
     @RequestMapping(value = "/report/acks/emp", method = {GET, HEAD})
-    public String getAllAcksFromEmployee(@RequestParam int empId) {
+    public EmpAckReport getAllAcksFromEmployee(@RequestParam int empId) {
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        return OutputUtils.toJson(ackReportService.getAllAcksFromEmployee(empId));
-
+        return ackReportService.getAllAcksFromEmployee(empId);
     }
 
     /* --- Exception Handlers --- */

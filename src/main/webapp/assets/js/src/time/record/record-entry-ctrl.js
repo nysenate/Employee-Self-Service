@@ -156,7 +156,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             .then($scope.init, function () {
                 // Only logout if there was a successful save
                 if (saveSuccess) {
-                    $scope.logout();
+                    locationService.logout();
                 }
             });
     };

@@ -18,17 +18,5 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
                 badgeService.setBadgeValue('pendingRecordCount', resp.result.count);
             });
         };
-
-        $scope.go = function(path, params) {
-            locationService.go(path, false, params);
-        };
-
-        $scope.logout = function() {
-            locationService.go('/logout', true);
-        };
-
-        $scope.log = function(stuff) {
-            console.log(stuff);
-        };
     }
 ]);

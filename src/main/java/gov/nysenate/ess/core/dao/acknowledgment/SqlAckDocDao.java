@@ -67,6 +67,7 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         params.addValue("empId", acknowledgment.getEmpId());
         params.addValue("ack_doc", acknowledgment.getAckDocId());
         params.addValue("timestamp", toDate(acknowledgment.getTimestamp()));
+        params.addValue("personnel_acked", acknowledgment.isPersonnelAcked());
         localNamedJdbc.update(INSERT_ACK_SQL.getSql(schemaMap()),params);
 
     }
