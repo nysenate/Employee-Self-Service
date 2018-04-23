@@ -109,7 +109,8 @@ CREATE TABLE ess.ack_doc (
 CREATE TABLE ess.acknowledgment (
     emp_id      INTEGER,
     ack_doc_id  INTEGER REFERENCES ess.ack_doc (id),
-    timestamp   TIMESTAMP without TIME ZONE
+    timestamp   TIMESTAMP without TIME ZONE,
+    personnel_acked BOOLEAN DEFAULT FALSE
 );
 
 ALTER TABLE ess.acknowledgment
