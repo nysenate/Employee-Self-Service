@@ -472,8 +472,74 @@ badge, [badge] {
   background: lightgrey;
 }
 
+/* Employee Search Directive */
 
-/** Show google maps address autocomplete over modals */
-.pac-container {
-  z-index: 1051 !important;
+.employee-search-directive {
+
+  .employee-search-bar {
+    width: 20em;
+    font-size: 16px;
+
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: searchfield-cancel-button;
+    }
+  }
+
+  .employee-search-checkbox {
+    display: block;
+    margin-top: 10px;
+  }
+
+  .employee-search-loader {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+
+  .employee-search-results {
+    max-height: 30em;
+    width: 23em;
+    overflow: auto;
+
+    margin: 10px auto;
+
+    font-size: 14px;
+
+    border: 1px solid fade(@teal, 25%);
+    border-left: 0;
+    border-right: 0;
+
+    ul {
+      padding:0;
+    }
+
+    .search-result {
+      margin: 2.5px;
+
+      &:hover {
+        background: teal;
+        color: #fafafa;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .selected-employee {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    th {
+      padding-right: 5px;
+    }
+    td {
+      text-align: left;
+    }
+
+    .select-another {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+  }
+
 }

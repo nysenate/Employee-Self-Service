@@ -16,10 +16,6 @@ angular.module('ess').run([
         var pingFailTolerance = 10;
         var failedPings = 0;
 
-        function logout () {
-            LocationService.go('/logout', true);
-        }
-
         /**
          * Send a ping to the server
          */
@@ -38,7 +34,7 @@ angular.module('ess').run([
             failedPings = 0;
             var remainingInactivity = resp["remainingInactivity"];
             if (remainingInactivity < 0) {
-                logout();
+                LocationService.logout(true);
             }
             else if (remainingInactivity <= warningThreshold && !modals.isOpen(timeoutModalName)) {
                 modals.open(timeoutModalName, {remainingInactivity: remainingInactivity});
@@ -57,7 +53,7 @@ angular.module('ess').run([
             failedPings++;
             // If the ping reported that the user was unauthenticated or too many failed pings occurred, logout
             if (errorCode === 401 || failedPings >= pingFailTolerance) {
-                logout();
+                LocationService.logout(true);
             }
         }
 

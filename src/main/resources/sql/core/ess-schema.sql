@@ -109,7 +109,8 @@ CREATE TABLE ess.ack_doc (
 CREATE TABLE ess.acknowledgment (
     emp_id      INTEGER,
     ack_doc_id  INTEGER REFERENCES ess.ack_doc (id),
-    timestamp   TIMESTAMP without TIME ZONE
+    timestamp   TIMESTAMP without TIME ZONE,
+    personnel_acked BOOLEAN DEFAULT FALSE
 );
 
 ALTER TABLE ess.acknowledgment
@@ -121,6 +122,19 @@ CREATE TABLE user_agent (
     login_time TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     emp_id INT NOT NULL,
     user_agent TEXT
+);
+
+CREATE TYPE ess.mobile_contact_options
+  AS ENUM ('CALLS_ONLY', 'TEXTS_ONLY', 'EVERYTHING');
+
+CREATE TABLE ess.alert_info (
+  employee_id INT PRIMARY KEY NOT NULL,
+  phone_home TEXT,
+  phone_mobile TEXT,
+  phone_alternate TEXT,
+  mobile_options ess.mobile_contact_options NOT NULL DEFAULT 'CALLS_ONLY'::ess.mobile_contact_options,
+  email_personal TEXT,
+  email_alternate TEXT
 );
 
 CREATE INDEX user_agent_emp_id_user_agent_index ON user_agent(emp_id, user_agent);

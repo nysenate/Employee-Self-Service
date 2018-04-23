@@ -22,11 +22,9 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
 
     static final String TIME_TMPL_BASE_URL = TMPL_BASE_URL + "/time";
 
-    private static final String TIME_MESSAGE_URI = TIME_TMPL_BASE_URL + "/error/time-message";
-
     /**
      * Return the corresponding template...
-     * Unless the template uri is caught by one of the methods below
+     * Unless the template uri is caught by one of the methods below.
      * @param request HttpServletRequest
      * @return String - passed in uri
      */
@@ -58,7 +56,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         }
         modelMap.addAttribute("level", "error")
                 .addAttribute("title", "This page is only available for Time and Attendance Supervisors");
-        return TIME_MESSAGE_URI;
+        return SIMPLE_MESSAGE_URI;
     }
 
     /**
@@ -81,7 +79,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         modelMap.addAttribute("level", "info")
                 .addAttribute("title", "Time Entry Not Required")
                 .addAttribute("message", "You are not required to submit attendance records in ESS.");
-        return TIME_MESSAGE_URI;
+        return SIMPLE_MESSAGE_URI;
     }
 
     /**
@@ -104,7 +102,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         modelMap.addAttribute("level", "info")
                 .addAttribute("title", "Time Entry Not Required")
                 .addAttribute("message", "You are not required to submit attendance records in ESS.");
-        return TIME_MESSAGE_URI;
+        return SIMPLE_MESSAGE_URI;
     }
 
     /**
@@ -124,7 +122,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         modelMap.addAttribute("level", "error")
                 .addAttribute("title", "Allowance Not Available")
                 .addAttribute("message", "You are not permitted to view allowance status.");
-        return TIME_MESSAGE_URI;
+        return SIMPLE_MESSAGE_URI;
     }
 
     /**
@@ -140,7 +138,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         final Permission allowancePagePermission = SimpleTimePermission.EMPLOYEE_ALLOWANCE_PAGE.getPermission();
         // First run through the management page permission
         String uri = getManagementPage(request, modelMap);
-        if (TIME_MESSAGE_URI.equals(uri)) {
+        if (SIMPLE_MESSAGE_URI.equals(uri)) {
             return uri;
         }
         if (SecurityUtils.getSubject().isPermitted(allowancePagePermission)) {
@@ -151,7 +149,7 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
                 .addAttribute("title", "Employee Allowance Not Available")
                 .addAttribute("message",
                         "You are not permitted to view employee allowance status.");
-        return TIME_MESSAGE_URI;
+        return SIMPLE_MESSAGE_URI;
     }
 
     /**
@@ -172,6 +170,6 @@ public class TimeTemplateCtrl extends BaseTemplateCtrl
         // Also require management page permission check
         modelMap.addAttribute("level", "error")
                 .addAttribute("title", "This page is only available to Personnel");
-        return TIME_MESSAGE_URI;
+        return SIMPLE_MESSAGE_URI;
     }
 }

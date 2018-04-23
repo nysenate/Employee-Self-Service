@@ -4,9 +4,9 @@ var essApp = angular.module('ess');
  * The wrapping controller that is the parent of the nav menu and views.
  */
 essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$location', '$window',
-                               'appProps', 'modals', 'RestErrorService',
+                               'appProps', 'modals', 'RestErrorService', 'LocationService',
     function($scope, $http, $route, $routeParams, $location, $window,
-             appProps, modals, RestErrorService) {
+             appProps, modals, RestErrorService, locationService) {
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
@@ -28,6 +28,16 @@ essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$lo
         $scope.openHelpWindow = function ($event) {
             $window.open($scope.helpPageUrl, helpWindowName, helpWindowOptions);
             $event.preventDefault();    // prevents following of displayed link
+        };
+
+        /**
+         * Wraps the logout method in location service for easy use in child ctrls.
+         * @type {*|logout}
+         */
+        $scope.logout = locationService.logout;
+
+        $scope.log = function(stuff) {
+            console.log(stuff);
         };
 
         /**

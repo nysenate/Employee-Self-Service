@@ -1259,39 +1259,12 @@ input[type="button"].time-neutral-button:hover,
 input[type="submit"].time-neutral-button:hover {
   background: #006b80;
 }
-input[type="button"].travel-neutral-button,
-input[type="submit"].travel-neutral-button {
-  padding: 5px 10px;
-  background: #d19525;
-  color: white;
-  font-weight: 600;
-  border: 2px none #a6761d;
-  border-bottom-style: solid;
-}
-input[type="button"].travel-neutral-button.inactive,
-input[type="submit"].travel-neutral-button.inactive,
-input[type="button"].travel-neutral-button[disabled="disabled"],
-input[type="submit"].travel-neutral-button[disabled="disabled"] {
-  color: #333;
-  border-color: transparent;
-  cursor: not-allowed;
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
-}
-input[type="button"].travel-neutral-button.inactive:hover,
-input[type="submit"].travel-neutral-button.inactive:hover,
-input[type="button"].travel-neutral-button[disabled="disabled"]:hover,
-input[type="submit"].travel-neutral-button[disabled="disabled"]:hover {
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
-}
-input[type="button"].travel-neutral-button:hover,
-input[type="submit"].travel-neutral-button:hover {
-  background: #ea9c0c;
-}
 input[type="text"],
 input[type="password"],
 input[type="number"],
 input[type="tel"],
-input[type="email"] {
+input[type="email"],
+input[type="search"] {
   border: 1px solid #ccc;
   outline: 0;
   background: #fafafa;
@@ -1302,18 +1275,21 @@ input[type="password"].error,
 input[type="number"].error,
 input[type="tel"].error,
 input[type="email"].error,
+input[type="search"].error,
 input[type="text"].ng-invalid,
 input[type="password"].ng-invalid,
 input[type="number"].ng-invalid,
 input[type="tel"].ng-invalid,
-input[type="email"].ng-invalid {
+input[type="email"].ng-invalid,
+input[type="search"].ng-invalid {
   border-color: #B90504;
 }
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="number"]:focus,
 input[type="tel"]:focus,
-input[type="email"]:focus {
+input[type="email"]:focus,
+input[type="search"]:focus {
   border-color: #999;
 }
 input[type=checkbox],
@@ -1885,9 +1861,6 @@ input[type="number"] {
 .margin-10 {
   margin: 10px;
 }
-.margin-20 {
-  margin: 20px;
-}
 .margin-10-0 {
   margin: 10px 0;
 }
@@ -1902,9 +1875,6 @@ input[type="number"] {
 }
 .margin-top-20 {
   margin-top: 20px !important;
-}
-.margin-bottom-5 {
-  margin-bottom: 5px;
 }
 .margin-bottom-20 {
   margin-bottom: 20px !important;
@@ -1921,25 +1891,11 @@ input[type="number"] {
 .padding-left-10 {
   padding-left: 10px;
 }
-.padding-bottom-5 {
-  padding-bottom: 5px;
-}
-.padding-bottom-10 {
-  padding-bottom: 10px;
-}
 .clearfix {
   clear: both;
-  content: "";
-  display: table;
 }
 .width-100 {
   width: 100%;
-}
-.width-90 {
-  width: 90%;
-}
-.width-50 {
-  width: 50%;
 }
 .hidden {
   display: none;
@@ -2008,9 +1964,6 @@ input[type="number"] {
   }
   .view-animate-container {
     width: auto !important;
-  }
-  .content-container {
-    box-shadow: none !important;
   }
 }
 table.ess-table {
@@ -3180,9 +3133,58 @@ badge,
 .ui-state-focus {
   background: lightgrey;
 }
-/** Show google maps address autocomplete over modals */
-.pac-container {
-  z-index: 1051 !important;
+/* Employee Search Directive */
+.employee-search-directive .employee-search-bar {
+  width: 20em;
+  font-size: 16px;
+}
+.employee-search-directive .employee-search-bar::-webkit-search-cancel-button {
+  -webkit-appearance: searchfield-cancel-button;
+}
+.employee-search-directive .employee-search-checkbox {
+  display: block;
+  margin-top: 10px;
+}
+.employee-search-directive .employee-search-loader {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+.employee-search-directive .employee-search-results {
+  max-height: 30em;
+  width: 23em;
+  overflow: auto;
+  margin: 10px auto;
+  font-size: 14px;
+  border: 1px solid rgba(0, 107, 128, 0.25);
+  border-left: 0;
+  border-right: 0;
+}
+.employee-search-directive .employee-search-results ul {
+  padding: 0;
+}
+.employee-search-directive .employee-search-results .search-result {
+  margin: 2.5px;
+}
+.employee-search-directive .employee-search-results .search-result:hover {
+  background: teal;
+  color: #fafafa;
+  cursor: pointer;
+}
+.employee-search-directive .selected-employee {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.employee-search-directive .selected-employee th {
+  padding-right: 5px;
+}
+.employee-search-directive .selected-employee td {
+  text-align: left;
+}
+.employee-search-directive .selected-employee .select-another {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 /** Login Page
 ----------------*/
@@ -3575,7 +3577,7 @@ badge,
   margin-bottom: 20px;
   text-align: left !important;
 }
-.acknowledgment-text .ack-doc-title {
+.ack-doc-title {
   font-weight: bold;
 }
 .ack-doc-view-nav {
@@ -3594,9 +3596,6 @@ badge,
 }
 .ack-doc-list li:not(:first-of-type) {
   margin-top: 5px;
-}
-#empReportStatus {
-  padding-bottom: 5px;
 }
 /** --- Paycheck History Page --- */
 @media print {
@@ -5444,312 +5443,6 @@ ul.inactive-employee-email-list {
 }
 #employee-search-page allowance-bar > * {
   margin-top: 20px;
-}
-.employee-search-directive .employee-search-bar {
-  width: 20em;
-  font-size: 16px;
-}
-.employee-search-directive .employee-search-loader {
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
-.employee-search-directive .employee-search-results {
-  max-height: 30em;
-  width: 23em;
-  overflow: auto;
-  margin: 10px auto;
-  font-size: 14px;
-  border: 1px solid rgba(0, 107, 128, 0.25);
-  border-left: 0;
-  border-right: 0;
-}
-.employee-search-directive .employee-search-results ul {
-  padding: 0;
-}
-.employee-search-directive .employee-search-results .search-result {
-  margin: 2.5px;
-}
-.employee-search-directive .employee-search-results .search-result:hover {
-  background: teal;
-  color: #fafafa;
-  cursor: pointer;
-}
-.employee-search-directive .selected-employee {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-.employee-search-directive .selected-employee th {
-  padding-right: 5px;
-}
-.employee-search-directive .selected-employee td {
-  text-align: left;
-}
-.employee-search-directive .selected-employee .select-another {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-/**
- * Styles for ESS Travel
- */
-.pointer {
-  cursor: pointer;
-}
-.travel-hero {
-  padding: .3em;
-  font-weight: bold;
-  background: #d19525;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-}
-.travel-hero h1 {
-  font-size: 2.5em;
-}
-.travel-hero h1,
-.travel-hero h2,
-.travel-hero h3,
-.travel-hero h4,
-.travel-hero p,
-.travel-hero span {
-  color: white;
-}
-@media print {
-  .travel-hero h1,
-  .travel-hero h2,
-  .travel-hero h3,
-  .travel-hero h4,
-  .travel-hero p,
-  .travel-hero span {
-    color: black;
-  }
-}
-@media print {
-  .travel-hero {
-    background: white;
-    border-bottom: 1px solid black;
-  }
-}
-.travel-button-container {
-  margin-top: 20px !important;
-  padding: 10px;
-  background: #f9f9f9;
-}
-.travel-button-container input[type="button"] {
-  margin-right: 5px;
-}
-.travel-origin-display-box {
-  display: inline-block;
-  width: 100%;
-  padding: 5px;
-  height: 50px;
-  text-align: center;
-  line-height: 20px;
-  background: #F6F6F6;
-  border-radius: 5px;
-}
-.travel-origin-display-box div {
-  display: inline-block;
-  text-align: center;
-  vertical-align: top;
-}
-.travel-destination-display-box {
-  display: inline-block;
-  width: 100%;
-  padding: 5px;
-  height: 50px;
-  text-align: center;
-  line-height: 20px;
-  background: #F6F6F6;
-  border-radius: 5px;
-}
-.travel-destination-display-box div {
-  display: inline-block;
-  text-align: center;
-  vertical-align: top;
-}
-.travel-destination-display-box :nth-child(1) {
-  float: left;
-  width: 25%;
-  font-size: 0.8em;
-}
-.travel-destination-display-box :nth-child(2) {
-  width: 50%;
-}
-.travel-destination-display-box :nth-child(3) {
-  float: right;
-  width: 25%;
-  font-size: 0.8em;
-}
-.travel-table {
-  width: 100%;
-  text-align: center !important;
-}
-.travel-table thead {
-  background: white;
-}
-.travel-table thead tr {
-  color: #333;
-  font-size: .9em;
-  border-bottom: 1px solid #155C69;
-}
-.travel-table thead tr th {
-  padding: 10px 5px;
-}
-.travel-table tbody tr:nth-child(odd) {
-  background: #fafafa;
-}
-.travel-table tbody tr td {
-  padding: 10px;
-}
-.travel-allowance-label {
-  display: inline-block;
-  width: 120px;
-  text-align: right;
-  margin-bottom: 10px;
-}
-.travel-gray-bottom-border {
-  border-bottom: 1px solid rgba(0, 107, 128, 0.25);
-}
-.travel-hover tbody tr:hover {
-  background-color: #e1e1e1;
-  cursor: pointer;
-}
-.travel-loading {
-  width: 220px;
-  height: 30px;
-  margin: 0;
-  display: table-cell;
-  vertical-align: middle;
-}
-/** Travel app print page styling */
-.travel-print-info-container div {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-.travel-print-info-container div.travel-print-label {
-  font-weight: bold;
-}
-.travel-print-mot-box {
-  float: left;
-  text-align: center;
-  width: 25%;
-  border: 1px solid grey;
-  margin-left: 100px;
-  padding: 10px;
-}
-.travel-print-mot-box label {
-  float: left;
-  font-weight: normal;
-}
-.travel-print-mot-box input {
-  float: right;
-}
-.travel-print-allowances-box {
-  float: right;
-  text-align: center;
-  width: 30%;
-  border: 1px solid grey;
-  margin-right: 100px;
-  padding: 10px;
-}
-.travel-print-allowances-box label {
-  float: left;
-  font-weight: normal;
-}
-.travel-print-allowances-box span {
-  float: right;
-}
-.print-signature {
-  width: 350px;
-  border-top: 1px solid black;
-}
-.print-signature > .signature-name {
-  float: left;
-}
-.print-signature > .signature-date {
-  float: right;
-}
-#traveler-signature {
-  float: left;
-  margin: 50px 20px 0 20px;
-}
-#depthead-signature {
-  float: right;
-  margin: 50px 20px 0 20px;
-}
-#secretary-signature {
-  margin: 100px 20px 0 232px;
-}
-/** Step Indicator */
-.step-indicator {
-  margin-bottom: 50px;
-  margin-top: 10px;
-  line-height: 30px;
-  padding-left: 205px;
-}
-.step {
-  display: block;
-  float: left;
-  font-weight: bold;
-  background: #fefefe;
-  padding-right: 10px;
-  height: 30px;
-  line-height: 32px;
-  margin-right: 33px;
-  position: relative;
-  text-decoration: none;
-  color: #666;
-  cursor: default;
-}
-.step:before {
-  content: "";
-  display: block;
-  width: 0;
-  height: 0;
-  position: absolute;
-  top: 0;
-  left: -30px;
-  border: 15px solid transparent;
-  border-color: #fefefe;
-  border-left-color: transparent;
-}
-.step:after {
-  content: "";
-  display: block;
-  width: 0;
-  height: 0;
-  position: absolute;
-  top: 0;
-  right: -30px;
-  border: 15px solid transparent;
-  border-left-color: #fefefe;
-}
-.step:first-of-type {
-  border-radius: 2px 0 0 2px;
-  padding-left: 15px;
-}
-.step:first-of-type:before {
-  display: none;
-}
-.step:last-of-type {
-  border-radius: 0 2px 2px 0;
-  margin-right: 25px;
-  padding-right: 15px;
-}
-.step:last-of-type:after {
-  display: none;
-}
-.step.completed {
-  background: #006B80;
-  color: #fff;
-}
-.step.completed:before {
-  border-color: #006B80;
-  border-left-color: transparent;
-}
-.step.completed:after {
-  border-left-color: #006B80;
 }
 /**
 * Styles for ESS Help Pages

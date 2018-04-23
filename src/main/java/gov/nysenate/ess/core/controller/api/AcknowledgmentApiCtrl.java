@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
@@ -15,7 +14,6 @@ import gov.nysenate.ess.core.model.acknowledgment.*;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
-import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.ShiroUtils;
@@ -285,13 +283,12 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * @param empId int - the employee id of the employee whose acknowledgments will be retrieved
      *
      *
-     * @return String
-     * */
+     * @return {@link EmpAckReport}
+     */
     @RequestMapping(value = "/report/acks/emp", method = {GET, HEAD})
-    public String getAllAcksFromEmployee(@RequestParam int empId) {
+    public EmpAckReport getAllAcksFromEmployee(@RequestParam int empId) {
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        return OutputUtils.toJson(ackReportService.getAllAcksFromEmployee(empId));
-
+        return ackReportService.getAllAcksFromEmployee(empId);
     }
 
     /* --- Exception Handlers --- */
