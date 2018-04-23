@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * A View representing a Reconciliation Order
  */
-@XmlRootElement
+
 public class RecOrderView implements ViewObject {
 
     protected String itemId;
@@ -31,10 +31,10 @@ public class RecOrderView implements ViewObject {
                 .build();
     }
 
-    @XmlElement
+
     public String getItemId(){return itemId;}
 
-    @XmlElement
+
     public int getQuantity(){return quantity;}
 
     @Override

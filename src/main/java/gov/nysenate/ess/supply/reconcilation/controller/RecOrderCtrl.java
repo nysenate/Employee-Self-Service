@@ -15,15 +15,17 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/reconciliation")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/supply/reconciliation/reconcile")
 public class RecOrderCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse submitRecOrder(@RequestBody RecOrderView[] recOrderViews){
+    public BaseResponse submitRecOrder(@RequestBody List<RecOrderView> recOrderViews){
+
         ArrayList<RecOrder> recOrders = new ArrayList<RecOrder>();
 
         for(RecOrderView order : recOrderViews){
@@ -34,12 +36,10 @@ public class RecOrderCtrl extends BaseRestApiCtrl {
             recOrders.add(recOrder);
         }
 
+        //return "you did something!";
+        //BaseResponse
         return new ViewObjectResponse<>();
 
     }
-
-
-
-
 
 }

@@ -52,7 +52,7 @@
             {{item.description}}
           </div>
           <div class="col-2-12" >
-            <input id="recNum" class="number" placeholder="Enter a number" type="number" style="width: 10em" ng-model="item.newQuantity" >
+            <input id="recNum" class="number" type="number" style="width: 10em" ng-model="item.newQuantity" placeholder="{{placeHolderText}}" >
             &nbsp;
           </div>
         </div>

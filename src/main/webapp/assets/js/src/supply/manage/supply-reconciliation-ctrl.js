@@ -12,8 +12,7 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
         matches: [],
         items: [],
         response: {},
-        error: false,
-        quantity: 0
+        error: false
     };
     $scope.currentPage = 1;
 
@@ -21,6 +20,8 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
     /** Map of item id's to shipments containing that item. */
     $scope.reconcilableItemMap= {};
 
+
+    $scope.placeHolderText = "Enter a Number";
 
     /** Print*/
     $scope.print = function () {
@@ -49,7 +50,7 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
                     else {
                         $scope.reconcilableItemMap[lineItem.item.id] = [];
                         $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                        lineItem.item.newQuantity =0;
+                        lineItem.item.newQuantity =undefined;
                         $scope.reconcilableSearch.items.push(lineItem.item);
                     }
                 })
@@ -110,6 +111,7 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
 
 
     $scope.reconcile = function(){
+
         $scope.recOrder=[];
         for(var i =0; i < $scope.reconcilableSearch.items.length; i++){
             var order = {
@@ -121,10 +123,14 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
             $scope.recOrder[i] = order;
         }
 
-        //console.log($scope.reconcilableSearch.items);
-        //console.log($scope.recOrder);
 
 
+
+        console.log($scope.recOrder);
+        supplyReconciliationApi.save(
+            {},{
+            recOrderViews: $scope.recOrder
+        });
 
     }
 
