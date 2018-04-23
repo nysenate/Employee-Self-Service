@@ -115,10 +115,10 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
         $scope.recOrder=[];
         for(var i =0; i < $scope.reconcilableSearch.items.length; i++){
             var order = {
-                id: 0,
+                itemId: 0,
                 quantity: 0
             };
-            order.id = $scope.reconcilableSearch.items[i].id;
+            order.itemId = $scope.reconcilableSearch.items[i].id;
             order.quantity = $scope.reconcilableSearch.items[i].newQuantity;
             $scope.recOrder[i] = order;
         }
@@ -129,8 +129,10 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
         console.log($scope.recOrder);
         supplyReconciliationApi.save(
             {},{
-            recOrderViews: $scope.recOrder
-        });
+                recOrderViews: $scope.recOrder
+            }
+
+        );
 
     }
 

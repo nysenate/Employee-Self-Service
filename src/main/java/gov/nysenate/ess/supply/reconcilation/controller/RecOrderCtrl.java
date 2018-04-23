@@ -1,6 +1,9 @@
 package gov.nysenate.ess.supply.reconcilation.controller;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
@@ -15,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -30,15 +34,16 @@ public class RecOrderCtrl extends BaseRestApiCtrl {
 
         for(RecOrderView order : recOrderViews){
             RecOrder recOrder = new RecOrder.Builder()
-                    .withItemId(order.getItemId())
+                    .withItemId(String.valueOf(order.getItemId()))
                     .withQuantity(order.getQuantity())
                     .build();
             recOrders.add(recOrder);
         }
 
+
         //return "you did something!";
         //BaseResponse
-        return new ViewObjectResponse<>();
+        return new ViewObjectResponse<>(new RecOrderView());
 
     }
 
