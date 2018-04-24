@@ -2,10 +2,10 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
-                      'TravelApplicationApi', 'TravelApplicationAttachmentApi', travelAppController]);
+                      'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi,
-                             travelApplicationApi, attachmentApi) {
+                             travelApplicationApi, attachmentApi, motApi) {
 
     /* --- Container Page --- */
 
@@ -20,7 +20,8 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     // Each state represents a different step of the application.
     $scope.STATES = {
         PURPOSE: 5,
-        ITINERARY: 10,
+        OUTBOUND: 10,
+        RETURN: 20,
         ALLOWANCES: 25,
         REVIEW: 30,
         EDIT: 35
@@ -38,6 +39,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         $scope.pageState = $scope.STATES.PURPOSE;
         $scope.appState = $scope.STATES.PURPOSE;
         initApplication(appProps.user.employeeId) ;
+        initModesOfTransportation();
     }
 
     init();
@@ -46,6 +48,12 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         appInitApi.save({id: travelerId}, {}, function (response) {
             $scope.app = response.result;
         }, $scope.handleErrorResponse)
+    }
+
+    function initModesOfTransportation() {
+        motApi.get({}, function (response) {
+            $scope.modesOfTransportation = response.result;
+        }, $scope.handleErrorResponse);
     }
 
     /**
@@ -79,13 +87,17 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             case $scope.STATES.PURPOSE:
                 locationService.go("/travel/application/travel-application", true);
                 break;
-            case $scope.STATES.ITINERARY:
+            case $scope.STATES.OUTBOUND:
                 $scope.appState = $scope.STATES.PURPOSE;
                 $scope.pageState = $scope.STATES.PURPOSE;
                 break;
+            case $scope.STATES.RETURN:
+                $scope.appState = $scope.STATES.OUTBOUND;
+                $scope.pageState = $scope.STATES.OUTBOUND;
+                break;
             case $scope.STATES.ALLOWANCES:
-                $scope.appState = $scope.STATES.ITINERARY;
-                $scope.pageState = $scope.STATES.ITINERARY;
+                $scope.appState = $scope.STATES.RETURN;
+                $scope.pageState = $scope.STATES.RETURN;
                 break;
             case $scope.STATES.REVIEW:
                 $scope.appState = $scope.STATES.ALLOWANCES;
@@ -100,10 +112,14 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     function handleNextAction() {
         switch ($scope.appState) {
             case $scope.STATES.PURPOSE:
-                $scope.appState = $scope.STATES.ITINERARY;
-                $scope.pageState = $scope.STATES.ITINERARY;
-                break
-            case $scope.STATES.ITINERARY:
+                $scope.appState = $scope.STATES.OUTBOUND;
+                $scope.pageState = $scope.STATES.OUTBOUND;
+                break;
+            case $scope.STATES.OUTBOUND:
+                $scope.appState = $scope.STATES.RETURN;
+                $scope.pageState = $scope.STATES.RETURN;
+                break;
+            case $scope.STATES.RETURN:
                 $scope.appState = $scope.STATES.ALLOWANCES;
                 $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
@@ -132,9 +148,16 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action);
     };
 
-    $scope.originCallback = function (origin, action) {
+    $scope.outboundCallback = function (outboundSegments, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.origin = origin;
+            $scope.app.outboundSegments = outboundSegments;
+        }
+        updateStates(action);
+    };
+
+    $scope.returnCallback = function (returnSegments, action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.returnSegments = returnSegments;
         }
         updateStates(action);
     };
@@ -182,8 +205,15 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action, editField);
     };
 
-    $scope.highlightItineraryStep = function() {
+    $scope.highlightOutboundStep = function() {
         return $scope.appState !== $scope.STATES.PURPOSE
+    };
+
+    $scope.highlightReturnStep = function() {
+        return $scope.appState === $scope.STATES.RETURN
+            || $scope.appState === $scope.STATES.ALLOWANCES
+            || $scope.appState === $scope.STATES.REVIEW
+            || $scope.appState === $scope.STATES.EDIT
     };
 
     $scope.highlightExpensesStep = function() {
@@ -236,102 +266,53 @@ essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationA
     }
 }]);
 
-essTravel.directive('travelApplicationItinerary', ['appProps', 'TravelModeOfTransportationApi', function (appProps, motApi) {
+essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-itinerary',
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-outbound',
         scope: true,
         link: function ($scope, $elem, $attrs, ctrl) {
 
-            $scope.modesOfTransportation = [];
-            $scope.outgoingLegs = [];
-
-            (function init() {
-                motApi.get({}, function (response) {
-                    $scope.modesOfTransportation = response.result;
-                });
-
-                $scope.outgoingLegs.push(new Leg());
-                // $scope.outgoingLegs[0].from.formattedAddress = "100 South Lake Street, Albany, NY 12208";
-            })();
-
-            $scope.addSegment = function() {
-                console.log($scope.outgoingLegs);
-                $scope.outgoingLegs.push(new Leg());
-            };
-
-            function Leg() {
-                const DATEPICKER_FORMAT = 'MM/DD/YYYY';
-                const ISO_FORMAT = 'YYYY-MM-DD';
-
-                this.from = {};
-                this.to = {};
-                this._departureDate = {}; // ISO Date
-                this._arrivalDate = {}; // ISO Date
-                this.modeOfTransportation = {};
-                this.isMileageRequested = true;
-                this.isMealsRequested = true;
-                this.isLodgingRequested = true;
-
-                // Used as callback method for travel-address-autocomplete
-                this.setFrom = function(address) {
-                    this.from = address;
-                };
-
-                // Used as callback method for travel-address-autocomplete
-                this.setTo = function(address) {
-                    this.to = address;
-                };
-
-                this.setDepartureDate = function(date) {
-                    this._departureDate = this.toIsoDate(date);
-                };
-
-                this.setArrivalDate = function(date) {
-                    this._arrivalDate = this.toIsoDate(date);
-                };
-
-                this.toIsoDate = function(date) {
-                    if (formatIs(date, DATEPICKER_FORMAT)) {
-                        return moment(date, DATEPICKER_FORMAT).format(ISO_FORMAT);
-                    }
-                    else if (formatIs(date, ISO_FORMAT)) {
-                        return date;
-                    }
-                    else {
-                        // attempt default format parsing
-                        console.log("Unrecognized date format");
-                        return moment(date).format(ISO_FORMAT);
-                    }
-                };
-
-                // Checks if a date is in the format specified by 'format'
-                function formatIs(date, format) {
-                    return moment(date, format).format(format) === date;
-                }
+            $scope.outboundSegments = angular.copy($scope.app.outboundSegments) || [];
+            if ($scope.outboundSegments.length === 0) {
+                $scope.outboundSegments.push(new Segment());
             }
 
-
+            $scope.addSegment = function() {
+                // Initialize new leg
+                var segment = new Segment();
+                var prevSeg = $scope.outboundSegments[$scope.outboundSegments.length - 1];
+                segment.from = prevSeg.to;
+                segment.modeOfTransportation = prevSeg.modeOfTransportation;
+                segment.isMileageRequested = prevSeg.isMileageRequested;
+                segment.isMealsRequested = prevSeg.isMealsRequested;
+                segment.isLodgingRequested = prevSeg.isLodgingRequested;
+                $scope.outboundSegments.push(segment);
+            };
         }
     }
 }]);
 
-// essTravel.directive('fromAddressValidator', [function() {
-//     return {
-//         require: 'ngModel',
-//         link: function($scope, $elem, $attrs, $ctrl) {
-//             $ctrl.$validators.from = function(modelValue, viewValue) {
-//                 console.log(modelValue);
-//                 console.log(viewValue);
-//                 return viewValue !== undefined;
-//             }
-//
-//         }
-//     }
-// }]);
+essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-return',
+        scope: true,
+        link: function ($scope, $elem, $attrs, ctrl) {
 
-/**
- * --------------------------------------------
- */
+            $scope.returnSegments = angular.copy($scope.app.returnSegments) || [];
+            if ($scope.returnSegments.length === 0) {
+                // Init return leg
+                var segment = new Segment();
+                segment.from = $scope.app.outboundSegments[$scope.app.outboundSegments.length - 1].to;
+                segment.to = $scope.app.outboundSegments[0].from;
+                $scope.returnSegments.push(segment);
+            }
+
+            $scope.addSegment = function() {
+                $scope.returnSegments.push(new Segment());
+            };
+        }
+    }
+}]);
 
 essTravel.directive('travelApplicationAllowances', ['appProps', function (appProps) {
     return {
@@ -344,8 +325,6 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
                 alternateAllowance: Number(angular.copy($scope.app.alternateAllowance)),
                 registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
             };
-
-            $scope.destinations = angular.copy($scope.app.destinations);
         }
     }
 }]);
@@ -438,3 +417,26 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
             }
         }
     }]);
+
+
+function Segment() {
+    this.from = {};
+    this.to = {};
+    this.departureDate = ''; // Use setter to ensure formatted as ISO date.
+    this.arrivalDate = ''; // Use setter to ensure formatted as ISO date.
+    this.modeOfTransportation = {};
+    this.isMileageRequested = true;
+    this.isMealsRequested = true;
+    this.isLodgingRequested = true;
+
+    // Used as callback method for travel-address-autocomplete
+    this.setFrom = function(address) {
+        this.from = address;
+    };
+
+    // Used as callback method for travel-address-autocomplete
+    this.setTo = function(address) {
+        this.to = address;
+    };
+}
+

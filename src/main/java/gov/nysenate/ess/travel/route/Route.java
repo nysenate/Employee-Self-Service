@@ -24,6 +24,7 @@ public class Route {
             new BigDecimal("0"));
 
     private static final double MILEAGE_THRESHOLD = 35.0;
+
     private final ImmutableList<Leg> outgoingLegs;
     private final ImmutableList<Leg> returnLegs;
     private final BigDecimal mileageRate;

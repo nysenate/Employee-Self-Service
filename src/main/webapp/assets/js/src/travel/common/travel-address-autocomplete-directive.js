@@ -86,9 +86,10 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', '$q', function (ap
             /**
              * Address autocomplete validation.
              */
-            $ctrl.$validators.address = function(modelValue, viewValue) {
-                return address.formattedAddress === modelValue;
-            }
+            // TODO Implement validation
+            // $ctrl.$validators.address = function(modelValue, viewValue) {
+            //     return address.formattedAddress === modelValue;
+            // }
         }
     }
 }]);

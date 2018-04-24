@@ -5,25 +5,31 @@ import gov.nysenate.ess.travel.route.ModeOfTransportation;
 
 import java.time.LocalDate;
 
-public class TravelDestination {
+public class Segment {
 
-    private LocalDate arrivalDate;
+    private Address from;
+    private Address to;
     private LocalDate departureDate;
-    private Address address;
+    private LocalDate arrivalDate;
     private ModeOfTransportation modeOfTransportation;
+    private boolean isMileageRequested;
     private boolean isMealsRequested;
     private boolean isLodgingRequested;
-    private boolean isMileageRequested;
 
-    public TravelDestination() {
+    public Address getFrom() {
+        return from;
     }
 
-    public LocalDate getArrivalDate() {
-        return arrivalDate;
+    public void setFrom(Address from) {
+        this.from = from;
     }
 
-    public void setArrivalDate(LocalDate arrivalDate) {
-        this.arrivalDate = arrivalDate;
+    public Address getTo() {
+        return to;
+    }
+
+    public void setTo(Address to) {
+        this.to = to;
     }
 
     public LocalDate getDepartureDate() {
@@ -34,12 +40,12 @@ public class TravelDestination {
         this.departureDate = departureDate;
     }
 
-    public Address getAddress() {
-        return address;
+    public LocalDate getArrivalDate() {
+        return arrivalDate;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setArrivalDate(LocalDate arrivalDate) {
+        this.arrivalDate = arrivalDate;
     }
 
     public ModeOfTransportation getModeOfTransportation() {
@@ -48,6 +54,14 @@ public class TravelDestination {
 
     public void setModeOfTransportation(ModeOfTransportation modeOfTransportation) {
         this.modeOfTransportation = modeOfTransportation;
+    }
+
+    public boolean isMileageRequested() {
+        return isMileageRequested;
+    }
+
+    public void setMileageRequested(boolean mileageRequested) {
+        isMileageRequested = mileageRequested;
     }
 
     public boolean isMealsRequested() {
@@ -64,13 +78,5 @@ public class TravelDestination {
 
     public void setLodgingRequested(boolean lodgingRequested) {
         isLodgingRequested = lodgingRequested;
-    }
-
-    public boolean isMileageRequested() {
-        return isMileageRequested;
-    }
-
-    public void setMileageRequested(boolean mileageRequested) {
-        isMileageRequested = mileageRequested;
     }
 }
