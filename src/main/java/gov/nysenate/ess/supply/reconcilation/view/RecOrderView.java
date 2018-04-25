@@ -1,17 +1,17 @@
 package gov.nysenate.ess.supply.reconcilation.view;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.reconcilation.model.RecOrder;
 
-import javax.xml.bind.annotation.XmlElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A View representing a Reconciliation Order
  */
-@JsonFormat(shape=JsonFormat.Shape.ARRAY)
+
 @XmlRootElement
 public class RecOrderView implements ViewObject {
 

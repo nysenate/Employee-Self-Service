@@ -28,7 +28,7 @@ public class RecOrderCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse submitRecOrder(@RequestBody List<RecOrderView> recOrderViews){
+    public BaseResponse submitRecOrder(@RequestBody RecOrderView[] recOrderViews){
 
         ArrayList<RecOrder> recOrders = new ArrayList<RecOrder>();
 
@@ -41,7 +41,7 @@ public class RecOrderCtrl extends BaseRestApiCtrl {
         }
 
 
-        //return "you did something!";
+
         //BaseResponse
         return new ViewObjectResponse<>(new RecOrderView());
 

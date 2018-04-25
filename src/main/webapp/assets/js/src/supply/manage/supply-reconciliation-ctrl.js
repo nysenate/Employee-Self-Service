@@ -128,9 +128,8 @@ function supplyReconciliationController($scope, requisitionApi, supplyReconcilia
 
         console.log($scope.recOrder);
         supplyReconciliationApi.save(
-            {},{
-                recOrderViews: $scope.recOrder
-            }
+            {}, $scope.recOrder
+
 
         );
 
