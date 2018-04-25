@@ -11,7 +11,7 @@ public class RecItemRowMapper extends BaseRowMapper<RecOrder> {
     @Override
     public RecOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new RecOrder.Builder()
-                .withItemId(String.valueOf(rs.getInt("NUXREFCO")))
+                .withItemId(rs.getInt("NUXREFCO"))
                 .withQuantity(rs.getInt("AMQTYOHSTD"))
                 .build();
 

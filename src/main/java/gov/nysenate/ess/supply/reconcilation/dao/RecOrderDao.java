@@ -3,10 +3,12 @@ package gov.nysenate.ess.supply.reconcilation.dao;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.supply.reconcilation.model.RecOrder;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Repository
 public class RecOrderDao extends SqlBaseDao {
 
     /**

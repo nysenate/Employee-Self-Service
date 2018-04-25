@@ -21,14 +21,14 @@ public class RecOrderView implements ViewObject {
     public RecOrderView(){}
 
     public RecOrderView(RecOrder recOrder){
-        this.itemId = Integer.valueOf(recOrder.getItemId());
+        this.itemId = recOrder.getItemId();
         this.quantity = recOrder.getQuantity();
     }
 
     @JsonIgnore
     public RecOrder toRecOrder(){
         return new RecOrder.Builder()
-                .withItemId(String.valueOf(itemId))
+                .withItemId(itemId)
                 .withQuantity(quantity)
                 .build();
     }

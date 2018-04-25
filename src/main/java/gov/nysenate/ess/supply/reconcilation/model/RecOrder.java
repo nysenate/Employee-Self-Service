@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public final class RecOrder {
 
-    private final String itemId;
+    private final int itemId;
     private final int quantity;
 
     private RecOrder(Builder builder) {
@@ -30,7 +30,7 @@ public final class RecOrder {
     }
 
 
-    public String getItemId() {
+    public int getItemId() {
         return itemId;
     }
 
@@ -61,10 +61,10 @@ public final class RecOrder {
 
 
         public static class Builder {
-            private String itemId;
+            private int itemId;
             private int quantity;
 
-            public Builder withItemId(String itemId) {
+            public Builder withItemId(int itemId) {
                 this.itemId = itemId;
                 return this;
             }
