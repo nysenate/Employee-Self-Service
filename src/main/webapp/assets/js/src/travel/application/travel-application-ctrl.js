@@ -288,6 +288,14 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
                 segment.isLodgingRequested = prevSeg.isLodgingRequested;
                 $scope.outboundSegments.push(segment);
             };
+
+            $scope.isLastSegment = function(index) {
+                return $scope.outboundSegments.length - 1 === index;
+            };
+
+            $scope.deleteSegment = function() {
+                $scope.outboundSegments.pop();
+            }
         }
     }
 }]);
@@ -310,6 +318,14 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
             $scope.addSegment = function() {
                 $scope.returnSegments.push(new Segment());
             };
+
+            $scope.isLastSegment = function(index) {
+                return $scope.returnSegments.length - 1 === index;
+            };
+
+            $scope.deleteSegment = function() {
+                $scope.returnSegments.pop();
+            }
         }
     }
 }]);

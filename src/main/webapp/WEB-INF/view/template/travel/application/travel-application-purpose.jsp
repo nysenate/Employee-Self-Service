@@ -7,7 +7,7 @@
     <textarea ng-model="purposeOfTravel" cols="80" rows="6" placeholder="Why will you be traveling?"></textarea>
   </div>
 
-  <div>
+  <div class="margin-10">
     <form method="POST" enctype="multipart/form-data">
       <input type="file" id="file" name="file" multiple>
       <input type="submit" ng-click="save()">

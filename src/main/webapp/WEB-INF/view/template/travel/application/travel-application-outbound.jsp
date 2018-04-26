@@ -9,7 +9,12 @@
         <div class="travel-container"
              ng-repeat="leg in outboundSegments">
 
-            <h3 class="outbound">Outbound Segment {{$index + 1}}</h3>
+          <div class="outbound width-100" style="display: inline-block;">
+            <h3 class="float-left">Outbound Segment {{$index + 1}}</h3>
+            <span class="icon-cross travel-container-cross"
+                  ng-if="$index > 0 && isLastSegment($index)"
+                  ng-click="deleteSegment()"></span>
+          </div>
 
             <div class="itinerary-address">
               <label>From</label><br/>
