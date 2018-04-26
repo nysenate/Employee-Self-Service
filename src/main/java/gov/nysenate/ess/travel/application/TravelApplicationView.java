@@ -22,7 +22,8 @@ public class TravelApplicationView implements ViewObject {
     private List<AccommodationView> accommodations;
     private RouteView route;
     private AddressView origin;
-    private List<TravelDestinationView> destinations;
+    private List<SegmentView> outboundSegments;
+    private List<SegmentView> returnSegments;
     private String purposeOfTravel;
     private String mileageAllowance;
     private String mealAllowance;
@@ -57,10 +58,11 @@ public class TravelApplicationView implements ViewObject {
         registrationAllowance = app.getRegistration().toString();
         totalAllowance = app.totalAllowance().toString();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
-        destinations = new ArrayList<>();
-        for (AccommodationView a : accommodations) {
-            destinations.add(new TravelDestinationView(a, route));
-        }
+        // TODO init segments
+//        destinations = new ArrayList<>();
+//        for (AccommodationView a : accommodations) {
+//            destinations.add(new TravelDestinationView(a, route));
+//        }
         origin = route.getOrigin();
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
@@ -126,8 +128,16 @@ public class TravelApplicationView implements ViewObject {
         return submittedDateTime;
     }
 
-    public List<TravelDestinationView> getDestinations() {
-        return destinations;
+//    public List<TravelDestinationView> getDestinations() {
+//        return destinations;
+//    }
+
+    public List<SegmentView> getOutboundSegments() {
+        return outboundSegments;
+    }
+
+    public List<SegmentView> getReturnSegments() {
+        return returnSegments;
     }
 
     public AddressView getOrigin() {

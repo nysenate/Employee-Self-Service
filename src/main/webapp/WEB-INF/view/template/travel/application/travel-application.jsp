@@ -10,8 +10,8 @@
 
   <div class="step-indicator">
     <span class="step completed">Purpose</span>
-    <span class="step" ng-class="{completed: highlightOriginStep()}">Origin</span>
-    <span class="step" ng-class="{completed: highlightDestinationStep()}">Destination</span>
+    <span class="step" ng-class="{completed: highlightOutboundStep()}">Outbound</span>
+    <span class="step" ng-class="{completed: highlightReturnStep()}">Return</span>
     <span class="step" ng-class="{completed: highlightExpensesStep()}">Expenses</span>
     <span class="step" ng-class="{completed: highlightReviewStep()}">Review</span>
   </div>
@@ -20,12 +20,12 @@
     <travel-application-purpose></travel-application-purpose>
   </div>
 
-  <div ng-if="pageState === STATES.ORIGIN">
-    <travel-application-origin></travel-application-origin>
+  <div ng-if="pageState === STATES.OUTBOUND">
+    <travel-application-outbound></travel-application-outbound>
   </div>
 
-  <div ng-if="pageState === STATES.DESTINATION">
-    <travel-application-destination></travel-application-destination>
+  <div ng-if="pageState === STATES.RETURN">
+    <travel-application-return></travel-application-return>
   </div>
 
   <div ng-if="pageState === STATES.ALLOWANCES">

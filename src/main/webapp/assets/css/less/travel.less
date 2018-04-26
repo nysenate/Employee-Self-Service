@@ -113,6 +113,73 @@
   vertical-align: middle;
 }
 
+.travel-container {
+  background: #fafafa;
+  position: relative;
+  .box-shadow(0px 1px 2px #aaa);
+  margin: 20px;
+  h3 {
+    color: white;
+    //padding: 10px;
+    margin: 10px;
+  }
+  >.outbound {
+    background: @orange;
+  }
+  >.return {
+    background: @teal;
+  }
+  input {
+    background: #ffffff;
+  }
+}
+
+.travel-container-cross {
+  float: right;
+  margin: 10px;
+  font-size: x-large;
+  color: white;
+  cursor: pointer;
+}
+
+/** Travel Itinerary styling */
+
+.itinerary-address {
+  width: 48%;
+  margin: 1%;
+  float: left;
+}
+
+.itinerary-date {
+  width: 48%;
+  margin: 1%;
+  float: right;
+}
+
+.itinerary-mot-container {
+  width: 48%;
+  margin: 1%;
+  float: left;
+  .itinerary-mot {
+    float: left;
+  }
+  .itinerary-mot-write-in {
+    float: right;
+    margin-right: 50px;
+  }
+}
+
+.itinerary-allowance-container {
+  width: 48%;
+  margin: 1%;
+  float: right;
+  label {
+    margin-right: 5px;
+  }
+  input {
+    margin-right: 10px;
+  }
+}
 
 /** Travel app print page styling */
 

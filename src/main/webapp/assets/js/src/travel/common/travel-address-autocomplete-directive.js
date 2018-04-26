@@ -13,20 +13,22 @@ var essTravel = angular.module('essTravel');
  *     - The callback function is required to have the 'address' param.
  *     - Only works on text input elements.
  */
-essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps) {
+essTravel.directive('travelAddressAutocomplete', ['appProps', '$q', function (appProps, $q) {
     return {
+        require: 'ngModel',
         restrict: 'A',
         scope: {
-            callback: '&',
-            address: '@'
+            callback: '&', // function which is given address object after fetched from google.
         },
-        link: function ($scope, $elem, $attrs) {
+        link: function ($scope, $elem, $attrs, $ctrl) {
+
             var element = $elem[0];
             var autocomplete = new google.maps.places.Autocomplete(
                 element, { types: ['address'] });
 
+            var address = {};
             autocomplete.addListener('place_changed', function() {
-                var address = {};
+                console.log("Place Changed");
                 var place = autocomplete.getPlace();
 
                 // Convert place result into address object
@@ -80,6 +82,14 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', function (appProps
                 }
                 return '';
             }
+
+            /**
+             * Address autocomplete validation.
+             */
+            // TODO Implement validation
+            // $ctrl.$validators.address = function(modelValue, viewValue) {
+            //     return address.formattedAddress === modelValue;
+            // }
         }
     }
 }]);

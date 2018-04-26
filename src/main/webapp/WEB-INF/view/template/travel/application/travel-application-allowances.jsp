@@ -1,27 +1,5 @@
 <div class="content-container text-align-center">
   <div>
-    <h1 class="content-info">Estimated Expenses</h1>
-    <p class="margin-20">
-      You will be reimbursed for the following (uncheck anything you don't want to be reimbursed for). <br>
-    </p>
-    <div class="margin-20">
-      <div ng-repeat="dest in destinations" class="margin-10">
-        <div class="inline-block" style="width: 550px;">
-          <travel-destination-directive destination="dest"></travel-destination-directive>
-        </div>
-
-        <span class="margin-10">
-        <label>Mileage <input type="checkbox" ng-model="dest.isMileageRequested"></label>
-      </span>
-        <span class="margin-10">
-        <label>Meals <input type="checkbox" ng-model="dest.isMealsRequested"></label>
-      </span>
-        <span class="margin-10">
-        <label>Lodging <input type="checkbox" ng-model="dest.isLodgingRequested"></label>
-      </span>
-      </div>
-    </div>
-
     <div>
       <h1>Miscellaneous Expenses (optional):</h1>
       <p class="margin-20">

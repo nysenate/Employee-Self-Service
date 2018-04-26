@@ -2,10 +2,10 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
-                      'TravelApplicationApi', 'TravelApplicationAttachmentApi', travelAppController]);
+                      'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi,
-                             travelApplicationApi, attachmentApi) {
+                             travelApplicationApi, attachmentApi, motApi) {
 
     /* --- Container Page --- */
 
@@ -20,8 +20,8 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     // Each state represents a different step of the application.
     $scope.STATES = {
         PURPOSE: 5,
-        ORIGIN: 10,
-        DESTINATION: 15,
+        OUTBOUND: 10,
+        RETURN: 20,
         ALLOWANCES: 25,
         REVIEW: 30,
         EDIT: 35
@@ -39,6 +39,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         $scope.pageState = $scope.STATES.PURPOSE;
         $scope.appState = $scope.STATES.PURPOSE;
         initApplication(appProps.user.employeeId) ;
+        initModesOfTransportation();
     }
 
     init();
@@ -47,6 +48,12 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         appInitApi.save({id: travelerId}, {}, function (response) {
             $scope.app = response.result;
         }, $scope.handleErrorResponse)
+    }
+
+    function initModesOfTransportation() {
+        motApi.get({}, function (response) {
+            $scope.modesOfTransportation = response.result;
+        }, $scope.handleErrorResponse);
     }
 
     /**
@@ -80,17 +87,17 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             case $scope.STATES.PURPOSE:
                 locationService.go("/travel/application/travel-application", true);
                 break;
-            case $scope.STATES.ORIGIN:
+            case $scope.STATES.OUTBOUND:
                 $scope.appState = $scope.STATES.PURPOSE;
                 $scope.pageState = $scope.STATES.PURPOSE;
                 break;
-            case $scope.STATES.DESTINATION:
-                $scope.appState = $scope.STATES.ORIGIN;
-                $scope.pageState = $scope.STATES.ORIGIN;
+            case $scope.STATES.RETURN:
+                $scope.appState = $scope.STATES.OUTBOUND;
+                $scope.pageState = $scope.STATES.OUTBOUND;
                 break;
             case $scope.STATES.ALLOWANCES:
-                $scope.appState = $scope.STATES.DESTINATION;
-                $scope.pageState = $scope.STATES.DESTINATION;
+                $scope.appState = $scope.STATES.RETURN;
+                $scope.pageState = $scope.STATES.RETURN;
                 break;
             case $scope.STATES.REVIEW:
                 $scope.appState = $scope.STATES.ALLOWANCES;
@@ -105,14 +112,14 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     function handleNextAction() {
         switch ($scope.appState) {
             case $scope.STATES.PURPOSE:
-                $scope.appState = $scope.STATES.ORIGIN;
-                $scope.pageState = $scope.STATES.ORIGIN;
+                $scope.appState = $scope.STATES.OUTBOUND;
+                $scope.pageState = $scope.STATES.OUTBOUND;
                 break;
-            case $scope.STATES.ORIGIN:
-                $scope.appState = $scope.STATES.DESTINATION;
-                $scope.pageState = $scope.STATES.DESTINATION;
+            case $scope.STATES.OUTBOUND:
+                $scope.appState = $scope.STATES.RETURN;
+                $scope.pageState = $scope.STATES.RETURN;
                 break;
-            case $scope.STATES.DESTINATION:
+            case $scope.STATES.RETURN:
                 $scope.appState = $scope.STATES.ALLOWANCES;
                 $scope.pageState = $scope.STATES.ALLOWANCES;
                 break;
@@ -141,9 +148,16 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action);
     };
 
-    $scope.originCallback = function (origin, action) {
+    $scope.outboundCallback = function (outboundSegments, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.origin = origin;
+            $scope.app.outboundSegments = outboundSegments;
+        }
+        updateStates(action);
+    };
+
+    $scope.returnCallback = function (returnSegments, action) {
+        if (action === $scope.ACTIONS.NEXT) {
+            $scope.app.returnSegments = returnSegments;
         }
         updateStates(action);
     };
@@ -191,12 +205,12 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action, editField);
     };
 
-    $scope.highlightOriginStep = function() {
+    $scope.highlightOutboundStep = function() {
         return $scope.appState !== $scope.STATES.PURPOSE
     };
 
-    $scope.highlightDestinationStep = function() {
-        return $scope.appState === $scope.STATES.DESTINATION
+    $scope.highlightReturnStep = function() {
+        return $scope.appState === $scope.STATES.RETURN
             || $scope.appState === $scope.STATES.ALLOWANCES
             || $scope.appState === $scope.STATES.REVIEW
             || $scope.appState === $scope.STATES.EDIT
@@ -252,63 +266,74 @@ essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationA
     }
 }]);
 
-essTravel.directive('travelApplicationOrigin', ['appProps', function (appProps) {
+essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-origin',
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-outbound',
         scope: true,
-        link: function ($scope, $elem, $attrs) {
-            // Copy current origin for use in this directive.
-            $scope.origin = angular.copy($scope.app.origin);
+        link: function ($scope, $elem, $attrs, ctrl) {
 
-            $scope.setOrigin = function (address) {
-                $scope.origin = address;
+            $scope.outboundSegments = angular.copy($scope.app.outboundSegments) || [];
+            if ($scope.outboundSegments.length === 0) {
+                $scope.outboundSegments.push(new Segment());
+            }
+
+            $scope.addSegment = function() {
+                // Initialize new leg
+                var segment = new Segment();
+                var prevSeg = $scope.outboundSegments[$scope.outboundSegments.length - 1];
+                segment.from = prevSeg.to;
+                segment.modeOfTransportation = prevSeg.modeOfTransportation;
+                segment.isMileageRequested = prevSeg.isMileageRequested;
+                segment.isMealsRequested = prevSeg.isMealsRequested;
+                segment.isLodgingRequested = prevSeg.isLodgingRequested;
+                $scope.outboundSegments.push(segment);
             };
+
+            $scope.isLastSegment = function(index) {
+                return $scope.outboundSegments.length - 1 === index;
+            };
+
+            $scope.deleteSegment = function() {
+                $scope.outboundSegments.pop();
+            }
         }
     }
 }]);
 
-
-essTravel.directive('travelApplicationDestination', ['appProps', 'modals', function (appProps, modals) {
+essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-destination',
+        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-return',
         scope: true,
-        link: function ($scope, $elem, $attrs) {
-            // Copy current destinations for use in this directive.
-            $scope.destinations = angular.copy($scope.app.destinations);
+        link: function ($scope, $elem, $attrs, ctrl) {
 
-            $scope.editDestination = function (dest) {
-                modals.open('destination-selection-modal', {destination: dest})
-                    .then(function (destination) {
-                        dest = destination;
-                    });
+            $scope.returnSegments = angular.copy($scope.app.returnSegments) || [];
+            if ($scope.returnSegments.length === 0) {
+                // Init return leg
+                var segment = new Segment();
+                segment.from = $scope.app.outboundSegments[$scope.app.outboundSegments.length - 1].to;
+                segment.to = $scope.app.outboundSegments[0].from;
+                $scope.returnSegments.push(segment);
+            }
+
+            $scope.addSegment = function() {
+                // Initialize new leg
+                var segment = new Segment();
+                var prevSeg = $scope.returnSegments[$scope.returnSegments.length - 1];
+                segment.from = prevSeg.to;
+                segment.modeOfTransportation = prevSeg.modeOfTransportation;
+                segment.isMileageRequested = prevSeg.isMileageRequested;
+                segment.isMealsRequested = prevSeg.isMealsRequested;
+                segment.isLodgingRequested = prevSeg.isLodgingRequested;
+                $scope.returnSegments.push(segment);
             };
 
-            $scope.removeDestination = function(dest) {
-                modals.open('destination-delete-confirm-modal')
-                    .then(function() {
-                        var index = $scope.destinations.indexOf(dest);
-                        $scope.destinations.splice(index, 1);
-                        // Save destinations to application after deleting one.
-                        $scope.setDestinations($scope.destinations);
-                    });
+            $scope.isLastSegment = function(index) {
+                return $scope.returnSegments.length - 1 === index;
             };
 
-            $scope.addDestination = function() {
-                var params = {
-                    defaultModeOfTransportation: undefined,
-                    defaultArrivalDate: undefined
-                };
-                if ($scope.destinations.length > 0) {
-                    // Use ModeOfTransportation from previous destination if exists.
-                    params.defaultModeOfTransportation = $scope.destinations[$scope.destinations.length - 1].modeOfTransportation;
-                    // Default arrivalDate to previous destinations departure date.
-                    params.defaultArrivalDate = $scope.destinations[$scope.destinations.length - 1].departureDate;
-                }
-                modals.open('destination-selection-modal', params)
-                    .then(function (destination) {
-                        $scope.destinations.push(destination);
-                    });
-            };
+            $scope.deleteSegment = function() {
+                $scope.returnSegments.pop();
+            }
         }
     }
 }]);
@@ -324,8 +349,6 @@ essTravel.directive('travelApplicationAllowances', ['appProps', function (appPro
                 alternateAllowance: Number(angular.copy($scope.app.alternateAllowance)),
                 registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
             };
-
-            $scope.destinations = angular.copy($scope.app.destinations);
         }
     }
 }]);
@@ -370,6 +393,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 };
 
                 function displayMap() {
+                    console.log("Starting map");
                     var map;
                     var directionsDisplay = new google.maps.DirectionsRenderer();
                     var directionsService = new google.maps.DirectionsService();
@@ -385,7 +409,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
 
                     // Create map api parameters.
                     // All intermediate destinations should be waypoints, final destination should be destination.
-                    var destinations = $scope.reviewApp.destinations;
+                    var destinations = $scope.reviewApp.accommodations;
                     var origin = $scope.reviewApp.origin.formattedAddress;
                     var waypoints = [];
                     angular.forEach(destinations, function (dest, index) {
@@ -418,3 +442,26 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
             }
         }
     }]);
+
+
+function Segment() {
+    this.from = {};
+    this.to = {};
+    this.departureDate = ''; // Use setter to ensure formatted as ISO date.
+    this.arrivalDate = ''; // Use setter to ensure formatted as ISO date.
+    this.modeOfTransportation = {};
+    this.isMileageRequested = true;
+    this.isMealsRequested = true;
+    this.isLodgingRequested = true;
+
+    // Used as callback method for travel-address-autocomplete
+    this.setFrom = function(address) {
+        this.from = address;
+    };
+
+    // Used as callback method for travel-address-autocomplete
+    this.setTo = function(address) {
+        this.to = address;
+    };
+}
+
