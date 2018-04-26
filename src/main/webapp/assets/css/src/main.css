@@ -1931,6 +1931,9 @@ input[type="number"] {
 .padding-bottom-10 {
   padding-bottom: 10px;
 }
+.clear {
+  clear: both;
+}
 .clearfix {
   clear: both;
   content: "";
@@ -5626,6 +5629,68 @@ ul.inactive-employee-email-list {
   margin: 0;
   display: table-cell;
   vertical-align: middle;
+}
+.travel-container {
+  background: #fafafa;
+  position: relative;
+  -webkit-box-shadow: 0px 1px 2px #aaa;
+  -moz-box-shadow: 0px 1px 2px #aaa;
+  box-shadow: 0px 1px 2px #aaa;
+  margin: 20px;
+}
+.travel-container h3 {
+  color: white;
+  margin: 10px;
+}
+.travel-container > .outbound {
+  background: #d19525;
+}
+.travel-container > .return {
+  background: #006B80;
+}
+.travel-container input {
+  background: #ffffff;
+}
+.travel-container-cross {
+  float: right;
+  margin: 10px;
+  font-size: x-large;
+  color: white;
+  cursor: pointer;
+}
+/** Travel Itinerary styling */
+.itinerary-address {
+  width: 48%;
+  margin: 1%;
+  float: left;
+}
+.itinerary-date {
+  width: 48%;
+  margin: 1%;
+  float: right;
+}
+.itinerary-mot-container {
+  width: 48%;
+  margin: 1%;
+  float: left;
+}
+.itinerary-mot-container .itinerary-mot {
+  float: left;
+}
+.itinerary-mot-container .itinerary-mot-write-in {
+  float: right;
+  margin-right: 50px;
+}
+.itinerary-allowance-container {
+  width: 48%;
+  margin: 1%;
+  float: right;
+}
+.itinerary-allowance-container label {
+  margin-right: 5px;
+}
+.itinerary-allowance-container input {
+  margin-right: 10px;
 }
 /** Travel app print page styling */
 .travel-print-info-container div {
