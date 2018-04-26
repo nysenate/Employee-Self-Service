@@ -37,7 +37,7 @@
             <div class="itinerary-date">
               <label>Arrival Date</label><br/>
               <input datepicker ng-model="leg.arrivalDate"
-                     from-date="departureDate" size="13">
+                     from-date="leg.departureDate" size="13">
             </div>
             <div class="clear"></div>
 

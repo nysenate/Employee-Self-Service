@@ -68,13 +68,13 @@
           {{app.origin.formattedAddress}}
         </div>
 
-        <span ng-repeat="dest in app.destinations" style="font-weight: normal;">
+        <span ng-repeat="acc in app.accommodations" style="font-weight: normal;">
           <div class="col-2-12 travel-print-label">
             <span ng-if="$first">Destination:</span>
             <span ng-if="!$first">&nbsp;</span>
           </div>
           <div class="col-10-12 float-left">
-            {{dest.address.formattedAddress}}
+            {{acc.address.formattedAddress}}
           </div>
         </span>
 
@@ -99,7 +99,7 @@
       <div class="travel-print-mot-box">
         <h4 style="margin: 0px 0px 5px 0px;">Mode of Transportation</h4>
         <div ng-repeat="mode in modeOfTransportations" style="display: inline;">
-          <label>{{mode}} </label><input type="checkbox" ng-checked="containsMot(mode)">
+          <label>{{mode}} </label><input type="checkbox" ng-checked="containsMot(mode)" onclick="return false;">
           <span ng-if="!$last"><br/></span>
         </div>
       </div>
