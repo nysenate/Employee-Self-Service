@@ -58,7 +58,7 @@
               </div>
             </div>
             <div class="itinerary-allowance-container">
-              <label>This destination will be reimbursed for the following.</label><br/>
+              <label>This segment will be reimbursed for the following:</label><br/>
               <label>Mileage <input type="checkbox" ng-model="leg.isMileageRequested"></label>
               <label>Meals <input type="checkbox" ng-model="leg.isMealsRequested"></label>
               <label>Lodging <input type="checkbox" ng-model="leg.isLodgingRequested"></label>

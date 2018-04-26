@@ -316,7 +316,15 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
             }
 
             $scope.addSegment = function() {
-                $scope.returnSegments.push(new Segment());
+                // Initialize new leg
+                var segment = new Segment();
+                var prevSeg = $scope.returnSegments[$scope.returnSegments.length - 1];
+                segment.from = prevSeg.to;
+                segment.modeOfTransportation = prevSeg.modeOfTransportation;
+                segment.isMileageRequested = prevSeg.isMileageRequested;
+                segment.isMealsRequested = prevSeg.isMealsRequested;
+                segment.isLodgingRequested = prevSeg.isLodgingRequested;
+                $scope.returnSegments.push(segment);
             };
 
             $scope.isLastSegment = function(index) {
@@ -385,6 +393,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                 };
 
                 function displayMap() {
+                    console.log("Starting map");
                     var map;
                     var directionsDisplay = new google.maps.DirectionsRenderer();
                     var directionsService = new google.maps.DirectionsService();
@@ -400,7 +409,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
 
                     // Create map api parameters.
                     // All intermediate destinations should be waypoints, final destination should be destination.
-                    var destinations = $scope.reviewApp.destinations;
+                    var destinations = $scope.reviewApp.accommodations;
                     var origin = $scope.reviewApp.origin.formattedAddress;
                     var waypoints = [];
                     angular.forEach(destinations, function (dest, index) {
