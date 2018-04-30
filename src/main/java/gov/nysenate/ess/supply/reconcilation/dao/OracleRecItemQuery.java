@@ -11,17 +11,17 @@ public enum  OracleRecItemQuery implements BasicSqlQuery {
             "FROM FM12INVENTRY \n" +
             "WHERE CDLOCAT = 'LC100S' \n" +
             "AND CDLOCTYPE = 'P' \n" +
-            "'AND CDSTATUS = 'A'; "
+            "AND CDSTATUS = 'A' \n"
     ),
 
     GET_REC_ORDER_BY_ID(
             REC_ORDER_QUERY.getSql()+
-            "WHERE AMQTYOHSTD = :id"
+            "AND NUXREFCO = :id"
     ),
 
     GET_REC_ORDER_BY_IDS(
             REC_ORDER_QUERY.getSql()+
-            "WHERE AMQTYOHSTD IN (:ids)"
+            "AND NUXREFCO IN (:ids)"
     );
 
     private String sql;

@@ -11,6 +11,7 @@ import gov.nysenate.ess.supply.reconcilation.view.RecOrderView;
 import gov.nysenate.ess.supply.requisition.controller.RequisitionRestApiCtrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,9 @@ import java.util.ArrayList;
 public class RecOrderCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(RequisitionRestApiCtrl.class);
-    private ReconciliationService reconciliationService = new ReconciliationService();
+
+    @Autowired
+    private ReconciliationService reconciliationService;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRecOrder(@RequestBody RecOrderView[] recOrderViews){
@@ -36,9 +39,9 @@ public class RecOrderCtrl extends BaseRestApiCtrl {
                     .build();
             recOrders.add(recOrder);
         }
-
-        reconciliationService.reconcile(recOrders);
         System.out.println("Hello World");
+        reconciliationService.reconcile(recOrders);
+
 
         //BaseResponse
         return new ViewObjectResponse<>(new RecOrderView());
