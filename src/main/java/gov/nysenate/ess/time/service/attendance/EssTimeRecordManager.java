@@ -177,7 +177,7 @@ public class EssTimeRecordManager implements TimeRecordManager
      * If createTempRecords is false, then records will only be created for periods with annual pay work days
      */
     @Transactional(DatabaseConfig.remoteTxManager)
-    private int ensureRecords(int empId, Collection<PayPeriod> payPeriods, Collection<TimeRecord> existingRecords,
+    protected int ensureRecords(int empId, Collection<PayPeriod> payPeriods, Collection<TimeRecord> existingRecords,
                               Collection<AttendanceRecord> attendanceRecords) {
         logger.info("Generating records for {} over {} pay periods with {} existing records",
                 empId, payPeriods.size(), existingRecords.size());
@@ -270,13 +270,11 @@ public class EssTimeRecordManager implements TimeRecordManager
         else if (rangesUnderRecord.size() > 1 ||
                 !rangesUnderRecord.get(0).equals(record.getDateRange())) {
             List<TimeRecord> splitRecords = splitRecord(record, rangesUnderRecord);
-            splitRecords.stream()
-                    .peek(this::patchRecordData)
-                    .forEach(this::patchEntries);
+            splitRecords.forEach(this::patchRecordData);
             return splitRecords;
         }
         // otherwise, check the record for inconsistencies and patch it if necessary
-        else if (patchRecordData(record) && patchEntries(record)) {
+        else if (patchRecordData(record)) {
             return Collections.singletonList(record);
         }
         return Collections.emptyList();
@@ -415,7 +413,7 @@ public class EssTimeRecordManager implements TimeRecordManager
                 // Filter out ranges that are covered by already entered attendance periods
                 .filter(range -> !attendanceRecDates.encloses(range))
                 // Filter out ranges where the employee isn't required to enter time records
-                .filter(range -> RangeUtils.intersects(timeEntryRequiredDates, range))
+                .filter(timeEntryRequiredDates::intersects)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
