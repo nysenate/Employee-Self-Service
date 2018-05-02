@@ -338,11 +338,21 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
     }
 }]);
 
-essTravel.directive('travelApplicationAllowances', ['appProps', function (appProps) {
+essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'TravelApplicationApi', function (appProps, modals, appApi) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-allowances',
         scope: true,
         link: function ($scope, $elem, $attrs) {
+
+            modals.open('review-progress');
+
+            appApi.save({}, $scope.app, function (response) {
+                modals.resolve({});
+                $scope.app = response.result;
+                console.log("Saved app:");
+                console.log($scope.app);
+            }, $scope.handleErrorResponse);
+
             $scope.allowances = {
                 tollsAllowance: Number(angular.copy($scope.app.tollsAllowance)),
                 parkingAllowance: Number(angular.copy($scope.app.parkingAllowance)),

@@ -1,5 +1,31 @@
 <div class="content-container text-align-center">
   <div>
+    <h1>Meals</h1>
+    <div ng-repeat="accommodation in app.accommodations">
+      <%--<h4>{{acc.address.formattedAddress}}</h4>--%>
+      <%--<div ng-repeat="stay in app.accommodations.stays">--%>
+        <table class="travel-table">
+          <thead>
+          <tr>
+            <td>Address</td>
+            <td>Date</td>
+            <td>Meal Allowance</td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="stay in accommodation.stays">
+            <td>{{accommodation.address.formattedAddress}}</td>
+            <td>{{stay.date | date: 'shortDate'}}</td>
+            <td>{{stay.allowance | currency}}</td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <div>
     <div>
       <h1>Miscellaneous Expenses (optional):</h1>
       <p class="margin-20">

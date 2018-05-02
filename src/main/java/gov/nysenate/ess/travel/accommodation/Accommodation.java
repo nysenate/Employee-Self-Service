@@ -5,7 +5,11 @@ import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Accommodation {
 
@@ -47,6 +51,18 @@ public class Accommodation {
         return getStays().stream()
                 .map(Stay::lodgingAllowance)
                 .reduce(Dollars.ZERO, Dollars::add);
+    }
+
+    public Set<LocalDate> daysOfStay() {
+        return Stream.iterate(arrivalDate(), date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(arrivalDate(), departureDate().plusDays(1)))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<LocalDate> nightsOfStay() {
+        return Stream.iterate(arrivalDate().plusDays(1), date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(arrivalDate().plusDays(1), departureDate().plusDays(1)))
+                .collect(Collectors.toSet());
     }
 
     /**
