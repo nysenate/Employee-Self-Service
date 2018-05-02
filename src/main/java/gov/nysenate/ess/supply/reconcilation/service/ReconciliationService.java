@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ReconciliationService {
@@ -18,27 +15,34 @@ public class ReconciliationService {
     RecOrderDao recOrderDao;
 
     public void reconcile(ArrayList<RecOrder> recOrders){
-        List<RecOrder> oracle = new ArrayList<RecOrder>(createOracleSet(recOrders));
+        ArrayList<RecOrder> oracle = new ArrayList<>(createOracleSet(recOrders));
+        Collections.reverse(oracle);
 
+        //debugging
+        for(int i = 0; i < recOrders.size(); i++){
+            System.out.println("Rec Id: " + recOrders.get(i).getItemId() + " Rec Q: " + recOrders.get(i).getQuantity());
+            System.out.println("O Id: " + oracle.get(i).getItemId() + " O Q: " + oracle.get(i).getQuantity());
+        }
+
+        ArrayList<RecOrder> sameQuantityOrders = getSameOrders(recOrders, oracle);
+        ArrayList<RecOrder> differentQuantityOrders = getDifferentOrders(recOrders, oracle);
+
+        //debugging
+        for(RecOrder order: sameQuantityOrders){
+            System.out.println(order.getItemId());
+        }
+        for(RecOrder order: differentQuantityOrders){
+            System.out.println(order.getItemId());
+        }
 
     }
 
     private HashSet<RecOrder> createOracleSet(ArrayList<RecOrder> recOrders){
-        //String ids = createIds(recOrders);
         HashSet ids = createIdSet(recOrders);
         HashSet<RecOrder> oracle = recOrderDao.getItemsById(ids);
-        //Set<RecOrder> oracle = recOrderDao.getItems();
         return oracle;
     }
 
-    private String createIds(ArrayList<RecOrder> recOrders){
-        ArrayList<String> idList = new ArrayList<>();
-        for(RecOrder order: recOrders){
-            idList.add("'" + String.valueOf(order.getItemId()) + "'");
-        }
-        String ids = String.join(",", idList);
-        return ids;
-    }
 
     private HashSet<Integer> createIdSet(ArrayList<RecOrder> recOrders){
         HashSet<Integer> ids = new HashSet();
@@ -48,9 +52,25 @@ public class ReconciliationService {
         return ids;
     }
 
-    private Set<RecOrder> createAllOracleSet(){
-        Set<RecOrder> oracle = recOrderDao.getItems();
-        return oracle;
+    private ArrayList<RecOrder> getSameOrders(ArrayList<RecOrder> recOrders, ArrayList<RecOrder> oracle){
+        ArrayList<RecOrder> sameQuantityOrders = new ArrayList<>();
+        for(int i = 0; i < recOrders.size(); i++){
+            if(recOrders.get(i).getQuantity() == oracle.get(i).getQuantity()){
+                sameQuantityOrders.add(recOrders.get(i));
+            }
+        }
+        return sameQuantityOrders;
     }
-    
+
+    private ArrayList<RecOrder> getDifferentOrders(ArrayList<RecOrder> recOrders, ArrayList<RecOrder> oracle){
+        ArrayList<RecOrder> differentQuantityOrders = new ArrayList<>();
+        for(int i = 0; i < recOrders.size(); i++){
+            if(recOrders.get(i).getQuantity() != oracle.get(i).getQuantity()){
+                differentQuantityOrders.add(recOrders.get(i));
+            }
+        }
+        return differentQuantityOrders;
+    }
+
+
 }

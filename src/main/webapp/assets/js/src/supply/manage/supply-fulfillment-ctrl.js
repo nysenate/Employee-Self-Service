@@ -132,6 +132,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             from: moment.unix(1).format(),
             limit: 'ALL',
             offset: 0
+
         };
         $scope.completedSearch.response = requisitionApi.get(params);
         return $scope.completedSearch.response.$promise
@@ -145,10 +146,10 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getApprovedShipments() {
         var params = {
             status: "APPROVED",
-            from: moment().startOf('day').format(),
-            dateField: "approved_date_time",
             limit: 'ALL',
+            reconciled: 'false',
             offset: 0
+
         };
         $scope.approvedSearch.response = requisitionApi.get(params);
         return $scope.approvedSearch.response.$promise
