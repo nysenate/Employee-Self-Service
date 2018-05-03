@@ -4,8 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.accommodation.Accommodation;
+import gov.nysenate.ess.travel.accommodation.Day;
+import gov.nysenate.ess.travel.accommodation.Night;
 import gov.nysenate.ess.travel.utils.Dollars;
-import gov.nysenate.ess.travel.accommodation.Stay;
 import gov.nysenate.ess.travel.fixtures.AccommodationFixture;
 import org.junit.Test;
 
@@ -25,8 +26,14 @@ public class AccommodationTest {
 
     @Test
     public void usersCanRequestNoAllowances() {
-        ImmutableSet<Stay> stays = AccommodationFixture.twoDayOneNightStays();
-        Accommodation a = new Accommodation(new Address(), stays, false, false);
+        Day dayOne = new Day(AccommodationFixture.MONDAY, AccommodationFixture.TIER, false);
+        Day dayTwo = new Day(AccommodationFixture.TUESDAY, AccommodationFixture.TIER, false);
+        ImmutableSet<Day> days = ImmutableSet.of(dayOne, dayTwo);
+
+        Night night = new Night(AccommodationFixture.TUESDAY, AccommodationFixture.LODGING_RATE, false);
+        ImmutableSet<Night> nights = ImmutableSet.of(night);
+
+        Accommodation a = new Accommodation(new Address(), days, nights);
         assertEquals(new Dollars("0"), a.mealAllowance());
         assertEquals(new Dollars("0"), a.lodgingAllowance());
     }

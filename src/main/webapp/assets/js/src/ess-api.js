@@ -242,7 +242,19 @@ essApi.factory('SupplyLocationStatisticsApi', ['$resource', 'appProps', function
 /** --- Travel API --- */
 
 essApi.factory('TravelApplicationInitApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/init/:id.json', {id: '@id'})
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/init.json')
+}]);
+
+essApi.factory('TravelApplicationPurposeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/purpose.json', {id: '@id'}, {'update': {method: 'PUT'}})
+}]);
+
+essApi.factory('TravelApplicationOutboundApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/outbound.json', {id: '@id'}, {'update': {method: 'PUT'}})
+}]);
+
+essApi.factory('TravelApplicationReturnApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/return.json', {id: '@id'}, {'update': {method: 'PUT'}})
 }]);
 
 essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
@@ -250,7 +262,7 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
 }]);
 
 essApi.factory('TravelApplicationAttachmentApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/upload')
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/upload')
 }]);
 
 essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resource, appProps) {

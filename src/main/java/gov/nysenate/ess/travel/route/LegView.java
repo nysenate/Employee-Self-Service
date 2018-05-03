@@ -27,6 +27,11 @@ public class LegView implements ViewObject {
         this.qualifies = leg.qualifies();
     }
 
+    public Leg toLeg() {
+        return new Leg(from.toAddress(), to.toAddress(), Double.valueOf(miles),
+                ModeOfTransportation.of(modeOfTransportation), isMileageRequested);
+    }
+
     public AddressView getFrom() {
         return from;
     }

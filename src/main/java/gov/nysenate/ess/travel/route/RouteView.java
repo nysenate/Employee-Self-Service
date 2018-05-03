@@ -1,9 +1,11 @@
 package gov.nysenate.ess.travel.route;
 
+import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ListView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,12 @@ public class RouteView implements ViewObject{
                 .collect(Collectors.toList());
         mileageAllowance = route.mileageAllowance().toString();
         origin = new AddressView(route.origin());
+    }
+
+    public Route toRoute() {
+        return new Route(outgoingLegs.stream().map(LegView::toLeg).collect(ImmutableList.toImmutableList()),
+                returnLegs.stream().map(LegView::toLeg).collect(ImmutableList.toImmutableList()),
+                new BigDecimal(mileageRate));
     }
 
     public String getMileageRate() {

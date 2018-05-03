@@ -1,11 +1,11 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
-                     ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
-                      'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
+                     ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
+                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
 
-function travelAppController($scope, $q, appProps, modals, locationService, appInitApi,
-                             travelApplicationApi, attachmentApi, motApi) {
+function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
+                             outboundApi, returnApi, travelApplicationApi, attachmentApi, motApi) {
 
     /* --- Container Page --- */
 
@@ -45,7 +45,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     init();
 
     function initApplication(travelerId) {
-        appInitApi.save({id: travelerId}, {}, function (response) {
+        appInitApi.save({empId: travelerId}, {}, function (response) {
             $scope.app = response.result;
         }, $scope.handleErrorResponse)
     }
@@ -141,36 +141,51 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         $scope.pageState = editField
     }
 
+    $scope.openLoadingModal = function() {
+        modals.open('review-progress');
+    };
+
+    $scope.closeLoadingModal = function() {
+        modals.resolve();
+        console.log($scope.app);
+    };
+
+    function updateAppFromResponse(response) {
+        $scope.app = response.result;
+        console.log($scope.app);
+    }
+
     $scope.purposeCallback = function (purpose, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.purposeOfTravel = purpose;
+            $scope.openLoadingModal();
+            purposeApi.update({id: $scope.app.id}, purpose).$promise
+                .then(updateAppFromResponse)
+                .catch($scope.handleErrorResponse)
+                .finally($scope.closeLoadingModal)
         }
         updateStates(action);
     };
 
     $scope.outboundCallback = function (outboundSegments, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.outboundSegments = outboundSegments;
+            $scope.openLoadingModal();
+            outboundApi.update({id: $scope.app.id}, outboundSegments).$promise
+                .then(updateAppFromResponse)
+                .catch($scope.handleErrorResponse)
+                .finally($scope.closeLoadingModal)
         }
         updateStates(action);
     };
 
     $scope.returnCallback = function (returnSegments, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.returnSegments = returnSegments;
+            $scope.openLoadingModal();
+            returnApi.update({id: $scope.app.id}, returnSegments).$promise
+                .then(updateAppFromResponse)
+                .catch($scope.handleErrorResponse)
+                .finally($scope.closeLoadingModal)
         }
         updateStates(action);
-    };
-
-    $scope.destinationCallback = function (destinations, action) {
-        if (action === $scope.ACTIONS.NEXT) {
-            $scope.setDestinations(destinations);
-        }
-        updateStates(action);
-    };
-
-    $scope.setDestinations = function(destinations) {
-        $scope.app.destinations = destinations;
     };
 
     $scope.allowancesCallback = function (destinations, allowances, action) {
@@ -246,6 +261,10 @@ essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationA
             // Copy current purpose of travel for use in this directive.
             $scope.purposeOfTravel = angular.copy($scope.app.purposeOfTravel);
 
+            console.log($scope.app);
+
+
+            // WIP Save uploads functionality.
             $scope.save = function(files) {
                 var files = angular.element("#file")[0].files;
 
@@ -344,21 +363,59 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
         scope: true,
         link: function ($scope, $elem, $attrs) {
 
-            modals.open('review-progress');
-
-            appApi.save({}, $scope.app, function (response) {
-                modals.resolve({});
-                $scope.app = response.result;
-                console.log("Saved app:");
-                console.log($scope.app);
-            }, $scope.handleErrorResponse);
-
             $scope.allowances = {
                 tollsAllowance: Number(angular.copy($scope.app.tollsAllowance)),
                 parkingAllowance: Number(angular.copy($scope.app.parkingAllowance)),
                 alternateAllowance: Number(angular.copy($scope.app.alternateAllowance)),
                 registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
             };
+
+            var test = true;
+
+            $scope.getNightLodgingRequested = function(day) {
+               return test;
+            };
+
+
+                var accommodations = [];
+
+                function Accommodation () {
+                    this.address;
+                    this.stays = [];
+                }
+
+                function Stay() {
+                    this.date = '';
+                    this.isMealsRequested = false;
+                    this.isLodgingRequested = false;
+                    this.isLodgingEligible = false;
+                }
+
+                // Init accommodations
+                angular.forEach($scope.app.accommodations, function(a) {
+                    var accommodation = new Accommodation();
+                    accommodation.address = a.address;
+                    angular.forEach(a.days, function(day) {
+                        var stay = new Stay();
+                        stay.date = day.date;
+                        stay.isMealsRequested = day.isMealsRequested;
+
+                        // Find out of lodging is possible and requested.
+                        angular.forEach(a.nights, function(night) {
+                            if (night.date === day.date) {
+                                stay.isLodgingEligible = true;
+                                stay.isLodgingRequested = night.isLodgingRequested;
+                            }
+                        });
+
+                        accommodation.stays.push(stay);
+                    });
+                    accommodations.push(accommodation);
+                });
+
+                console.log("SDFSDFSDSD");
+                console.log(accommodations);
+
         }
     }
 }]);
@@ -370,18 +427,10 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
             scope: true,
             link: function ($scope, $elem, $attrs) {
 
-                modals.open('review-progress');
-
                 $scope.reviewApp = angular.copy($scope.app);
 
-                appApi.save({}, $scope.reviewApp, function (response) {
-                    modals.resolve({});
-                    $scope.reviewApp = response.result;
-                    console.log("Review App:");
-                    console.log($scope.reviewApp);
-                    displayMap();
-                }, $scope.handleErrorResponse);
 
+                displayMap();
 
                 $scope.displayLodgingDetails = function () {
                     modals.open('travel-lodging-details-modal', {app: $scope.reviewApp}, true);
@@ -420,7 +469,7 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'Tra
                     // Create map api parameters.
                     // All intermediate destinations should be waypoints, final destination should be destination.
                     var destinations = $scope.reviewApp.accommodations;
-                    var origin = $scope.reviewApp.origin.formattedAddress;
+                    var origin = $scope.reviewApp.route.origin.formattedAddress;
                     var waypoints = [];
                     angular.forEach(destinations, function (dest, index) {
                         waypoints.push({location: dest.address.formattedAddress});

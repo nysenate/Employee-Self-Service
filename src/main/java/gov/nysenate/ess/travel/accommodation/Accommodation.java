@@ -5,39 +5,26 @@ import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Accommodation {
 
     private final Address address;
-    private final ImmutableSet<Stay> stays;
-    private final boolean isMealsRequested;
-    private final boolean isLodgingRequested;
+    private final ImmutableSet<Day> days;
+    private final ImmutableSet<Night> nights;
 
-    public Accommodation(Address address, ImmutableSet<Stay> stays) {
-        this(address, stays, true, true);
-    }
-
-    public Accommodation(Address address, ImmutableSet<Stay> stays, boolean isMealsRequested, boolean isLodgingRequested) {
+    public Accommodation(Address address, ImmutableSet<Day> days, ImmutableSet<Night> nights) {
         this.address = address;
-        this.stays = stays;
-        this.isMealsRequested = isMealsRequested;
-        this.isLodgingRequested = isLodgingRequested;
+        this.days = days;
+        this.nights = nights;
     }
 
     /**
      * @return The total meal allowance for this accommodation.
      */
     public Dollars mealAllowance() {
-        if (!isMealsRequested()) {
-            return Dollars.ZERO;
-        }
-        return getStays().stream()
-                .map(Stay::mealAllowance)
+        return getDays().stream()
+                .map(Day::mealAllowance)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 
@@ -45,63 +32,43 @@ public class Accommodation {
      * @return The total lodging allowance for this accommodation.
      */
     public Dollars lodgingAllowance() {
-        if (!isLodgingRequested()) {
-            return Dollars.ZERO;
-        }
-        return getStays().stream()
-                .map(Stay::lodgingAllowance)
+        return getNights().stream()
+                .map(Night::lodgingAllowance)
                 .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    public Set<LocalDate> daysOfStay() {
-        return Stream.iterate(arrivalDate(), date -> date.plusDays(1))
-                .limit(ChronoUnit.DAYS.between(arrivalDate(), departureDate().plusDays(1)))
-                .collect(Collectors.toSet());
-    }
-
-    public Set<LocalDate> nightsOfStay() {
-        return Stream.iterate(arrivalDate().plusDays(1), date -> date.plusDays(1))
-                .limit(ChronoUnit.DAYS.between(arrivalDate().plusDays(1), departureDate().plusDays(1)))
-                .collect(Collectors.toSet());
     }
 
     /**
      * @return The planned date of arrival.
      */
     public LocalDate arrivalDate() {
-        return getStays().asList().get(0).getDate();
+        return getDays().asList().get(0).getDate();
     }
 
     /**
      * @return The planned date of departure.
      */
     public LocalDate departureDate() {
-        return getStays().asList().reverse().get(0).getDate();
+        return getDays().asList().reverse().get(0).getDate();
     }
 
     protected Address getAddress() {
         return address;
     }
 
-    protected ImmutableSet<Stay> getStays() {
-        return stays;
+    protected ImmutableSet<Day> getDays() {
+        return days;
     }
 
-    protected boolean isMealsRequested() {
-        return isMealsRequested;
-    }
-
-    protected boolean isLodgingRequested() {
-        return isLodgingRequested;
+    protected ImmutableSet<Night> getNights() {
+        return nights;
     }
 
     @Override
     public String toString() {
         return "Accommodation{" +
                 "address=" + address +
-                ", stays=" + stays +
-                ", isMealsRequested=" + isMealsRequested +
-                ", isLodgingRequested=" + isLodgingRequested +
+                ", days=" + days +
+                ", nights=" + nights +
                 '}';
     }
 
@@ -110,14 +77,13 @@ public class Accommodation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Accommodation that = (Accommodation) o;
-        return isMealsRequested == that.isMealsRequested &&
-                isLodgingRequested == that.isLodgingRequested &&
-                Objects.equals(address, that.address) &&
-                Objects.equals(stays, that.stays);
+        return Objects.equals(address, that.address) &&
+                Objects.equals(days, that.days) &&
+                Objects.equals(nights, that.nights);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, stays, isMealsRequested, isLodgingRequested);
+        return Objects.hash(address, days, nights);
     }
 }

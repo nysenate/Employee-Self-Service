@@ -1,10 +1,9 @@
 package gov.nysenate.ess.travel.accommodation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,14 +11,10 @@ import static java.time.format.DateTimeFormatter.*;
 
 public class AccommodationView implements ViewObject {
 
-    @JsonProperty(value="isMealsRequested")
-    private boolean isMealsRequested;
-    @JsonProperty(value="isLodgingRequested")
-    private boolean isLodingRequested;
+
     private AddressView address;
-    private List<StayView> stays;
-    private List<String> daysOfStay;
-    private List<String> nightsOfStay;
+    private List<DayView> days;
+    private List<NightView> nights;
     private String mealAllowance;
     private String lodgingAllowance;
     private String arrivalDate;
@@ -29,42 +24,35 @@ public class AccommodationView implements ViewObject {
     }
 
     public AccommodationView(Accommodation a) {
-        isMealsRequested = a.isMealsRequested();
-        isLodingRequested = a.isLodgingRequested();
         address = new AddressView(a.getAddress());
-        stays = a.getStays().stream()
-                .map(StayView::new)
+        days = a.getDays().stream()
+                .map(DayView::new)
                 .collect(Collectors.toList());
-        daysOfStay = a.daysOfStay().stream().map(LocalDate::toString).sorted().collect(Collectors.toList());
-        nightsOfStay = a.nightsOfStay().stream().map(LocalDate::toString).sorted().collect(Collectors.toList());
+        nights = a.getNights().stream()
+                .map(NightView::new)
+                .collect(Collectors.toList());
         mealAllowance = a.mealAllowance().toString();
         lodgingAllowance = a.lodgingAllowance().toString();
         arrivalDate = a.arrivalDate().format(ISO_DATE);
         departureDate = a.departureDate().format(ISO_DATE);
     }
 
-    public boolean isMealsRequested() {
-        return isMealsRequested;
-    }
-
-    public boolean isLodingRequested() {
-        return isLodingRequested;
+    public Accommodation toAccommodation() {
+        return new Accommodation(address.toAddress(),
+                days.stream().map(DayView::toDay).collect(ImmutableSet.toImmutableSet()),
+                nights.stream().map(NightView::toNight).collect(ImmutableSet.toImmutableSet()));
     }
 
     public AddressView getAddress() {
         return address;
     }
 
-    public List<StayView> getStays() {
-        return stays;
+    public List<DayView> getDays() {
+        return days;
     }
 
-    public List<String> getDaysOfStay() {
-        return daysOfStay;
-    }
-
-    public List<String> getNightsOfStay() {
-        return nightsOfStay;
+    public List<NightView> getNights() {
+        return nights;
     }
 
     public String getMealAllowance() {

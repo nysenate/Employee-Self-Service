@@ -32,7 +32,7 @@ public class TravelApplicationFactory {
     public TravelApplication createApplication(TravelApplicationView appView) throws IOException, ApiException, InterruptedException {
         TravelApplication app = new TravelApplication(0, employeeInfoService.getEmployee(appView.getTraveler().toEmployee().getEmployeeId()),
                 employeeInfoService.getEmployee(appView.getSubmitter().toEmployee().getEmployeeId()));
-        app.setAccommodations(accommodationFactory.createAccommodations(appView));
+//        app.setAccommodations(accommodationFactory.createAccommodations(appView));
         app.setRoute(routeFactory.createRoute(appView));
         app.setPurposeOfTravel(appView.getPurposeOfTravel());
         app.setTolls(new Dollars(appView.getTollsAllowance()));

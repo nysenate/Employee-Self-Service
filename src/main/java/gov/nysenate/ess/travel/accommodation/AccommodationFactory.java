@@ -19,8 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * This factory creates {@link Accommodation} domain objects
- * from user entered data stored in {@link TravelDestinationView TravelDestinationView's}
+ * This factory creates {@link Accommodation} domain objects from outbound and return {@link Segment}'s.
  *
  * As part of this Accommodation initialization, this factory queries
  * GSA API endpoints to get meal and lodging data as necessary.
@@ -35,6 +34,13 @@ public class AccommodationFactory {
         this.gsaService = gsaService;
     }
 
+    /**
+     * Creates accommodations from the outbound and return segments in a travel app view.
+     * isMealsRequested and isLodgingRequested are initialized to true.
+     * @param app
+     * @return
+     * @throws IOException
+     */
     public List<Accommodation> createAccommodations(TravelApplicationView app) throws IOException {
         List<Accommodation> accommodations = new ArrayList<>();
         List<Segment> outboundSegments = app.getOutboundSegments().stream().map(SegmentView::toSegment).collect(Collectors.toList());
@@ -42,11 +48,11 @@ public class AccommodationFactory {
         for (int i = 0; i < outboundSegments.size(); i++) {
             LocalDate arrivalDate = outboundSegments.get(i).getArrivalDate();
             LocalDate departureDate = calculateDepartureDate(outboundSegments, returnSegments, i);
-            Set<Stay> stays = createDayStays(outboundSegments.get(i).getTo(), arrivalDate, departureDate);
-            stays.addAll(createNightStays(outboundSegments.get(i).getTo(), arrivalDate, departureDate));
+            Set<Day> days = createDayStays(outboundSegments.get(i).getTo(), arrivalDate, departureDate);
+            Set<Night> nights = createNightStays(outboundSegments.get(i).getTo(), arrivalDate, departureDate);
 
-            Accommodation accommodation = new Accommodation(outboundSegments.get(i).getTo(), ImmutableSet.copyOf(stays),
-                    outboundSegments.get(i).isMealsRequested(), outboundSegments.get(i).isLodgingRequested());
+            Accommodation accommodation = new Accommodation(outboundSegments.get(i).getTo(),
+                    ImmutableSet.copyOf(days), ImmutableSet.copyOf(nights));
             accommodations.add(accommodation);
         }
         return accommodations;
@@ -67,35 +73,27 @@ public class AccommodationFactory {
         return i == outboundSegments.size() - 1;
     }
 
-//    private Accommodation createAccommodation(TravelDestinationView destination) throws IOException {
-//        TravelDestination dest = destination.toTravelDestination();
-//        List<Stay> stays = new ArrayList<>();
-//        stays.addAll(createDayStays(dest));
-//        stays.addAll(createNightStays(dest));
-//        return new Accommodation(dest.getAddress(), ImmutableSet.copyOf(stays), dest.isMealsRequested(), dest.isLodgingRequested());
-//    }
-
-    private Set<Stay> createDayStays(Address address, LocalDate arrivalDate, LocalDate departureDate) throws IOException {
-        Set<Stay> stays = new HashSet<>();
+    private Set<Day> createDayStays(Address address, LocalDate arrivalDate, LocalDate departureDate) throws IOException {
+        Set<Day> stays = new HashSet<>();
         Range<LocalDate> dayRange = Range.closed(arrivalDate, departureDate);
 
         LocalDate dayOfStay = arrivalDate;
         while(dayRange.contains(dayOfStay)) {
             MealTier tier = gsaService.fetchMealTier(dayOfStay, address);
-            stays.add(new DayStay(dayOfStay, tier));
+            stays.add(new Day(dayOfStay, tier, true));
             dayOfStay = dayOfStay.plusDays(1);
         }
         return stays;
     }
 
-    private Set<Stay> createNightStays(Address address, LocalDate arrivalDate, LocalDate departureDate) throws IOException {
-        Set<Stay> stays = new HashSet<>();
+    private Set<Night> createNightStays(Address address, LocalDate arrivalDate, LocalDate departureDate) throws IOException {
+        Set<Night> stays = new HashSet<>();
         Range<LocalDate> nightRange = Range.openClosed(arrivalDate, departureDate);
 
         LocalDate nightOfStay = arrivalDate.plusDays(1);
         while(nightRange.contains(nightOfStay)) {
             Dollars lodgingRate = gsaService.fetchLodgingRate(nightOfStay, address);
-            stays.add(new NightStay(nightOfStay, lodgingRate));
+            stays.add(new Night(nightOfStay, lodgingRate, true));
             nightOfStay = nightOfStay.plusDays(1);
         }
         return stays;
