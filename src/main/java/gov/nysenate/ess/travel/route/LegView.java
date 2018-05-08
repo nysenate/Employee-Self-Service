@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class LegView implements ViewObject {
 
     private AddressView from;
@@ -12,6 +15,7 @@ public class LegView implements ViewObject {
     private String modeOfTransportation;
     @JsonProperty(value="isMileageRequested")
     private boolean isMileageRequested;
+    private String travelDate;
     @JsonProperty(value="qualifies")
     private boolean qualifies; // Does this leg qualify for reimbursement.
 
@@ -24,12 +28,14 @@ public class LegView implements ViewObject {
         this.miles = String.valueOf(leg.getMiles());
         this.modeOfTransportation = leg.getModeOfTransportation().getDisplayName();
         this.isMileageRequested = leg.isMileageRequested();
+        this.travelDate = leg.getTravelDate().format(DateTimeFormatter.ISO_DATE);
         this.qualifies = leg.qualifies();
     }
 
     public Leg toLeg() {
         return new Leg(from.toAddress(), to.toAddress(), Double.valueOf(miles),
-                ModeOfTransportation.of(modeOfTransportation), isMileageRequested);
+                ModeOfTransportation.of(modeOfTransportation),
+                LocalDate.parse(travelDate, DateTimeFormatter.ISO_DATE), isMileageRequested);
     }
 
     public AddressView getFrom() {
@@ -50,6 +56,10 @@ public class LegView implements ViewObject {
 
     public boolean isMileageRequested() {
         return isMileageRequested;
+    }
+
+    public String getTravelDate() {
+        return travelDate;
     }
 
     public boolean isQualifies() {

@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * The Route is responsible for calculating a mileage allowance.
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
  */
 public class Route {
 
+    // TODO Remove this.??
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of(),
             new BigDecimal("0"));
 
@@ -55,6 +57,18 @@ public class Route {
         return new Address();
     }
 
+    public ImmutableList<Leg> getOutgoingLegs() {
+        return outgoingLegs;
+    }
+
+    public ImmutableList<Leg> getReturnLegs() {
+        return returnLegs;
+    }
+
+    public BigDecimal getMileageRate() {
+        return mileageRate;
+    }
+
     private boolean qualifiesForReimbursement() {
         return outboundQualifyingMiles() > MILEAGE_THRESHOLD;
     }
@@ -82,17 +96,5 @@ public class Route {
     private ImmutableList<Leg> allLegs() {
         return Streams.concat(getOutgoingLegs().stream(), getReturnLegs().stream())
                 .collect(ImmutableList.toImmutableList());
-    }
-
-    ImmutableList<Leg> getOutgoingLegs() {
-        return outgoingLegs;
-    }
-
-    ImmutableList<Leg> getReturnLegs() {
-        return returnLegs;
-    }
-
-    BigDecimal getMileageRate() {
-        return mileageRate;
     }
 }

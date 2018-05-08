@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.route;
 
 import gov.nysenate.ess.core.model.unit.Address;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -11,14 +12,16 @@ public class Leg {
     private final Address to;
     private final double miles;
     private final ModeOfTransportation modeOfTransportation;
+    private final LocalDate travelDate;
     private final boolean isMileageRequested;
 
     public Leg(Address from, Address to, double miles, ModeOfTransportation modeOfTransportation,
-               boolean isMileageRequested) {
+               LocalDate travelDate, boolean isMileageRequested) {
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
         this.miles = miles;
         this.modeOfTransportation = Objects.requireNonNull(modeOfTransportation);
+        this.travelDate = Objects.requireNonNull(travelDate);
         this.isMileageRequested = isMileageRequested;
     }
 
@@ -30,12 +33,16 @@ public class Leg {
                 && isMileageRequested();
     }
 
-    Address getFrom() {
+    public Address getFrom() {
         return from;
     }
 
-    Address getTo() {
+    public Address getTo() {
         return to;
+    }
+
+    public LocalDate getTravelDate() {
+        return travelDate;
     }
 
     double getMiles() {
@@ -57,6 +64,7 @@ public class Leg {
                 ", to=" + to +
                 ", miles=" + miles +
                 ", modeOfTransportation=" + modeOfTransportation +
+                ", travelDate=" + travelDate +
                 ", isMileageRequested=" + isMileageRequested +
                 '}';
     }
@@ -70,11 +78,12 @@ public class Leg {
                 isMileageRequested == leg.isMileageRequested &&
                 Objects.equals(from, leg.from) &&
                 Objects.equals(to, leg.to) &&
-                modeOfTransportation == leg.modeOfTransportation;
+                modeOfTransportation == leg.modeOfTransportation &&
+                Objects.equals(travelDate, leg.travelDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, miles, modeOfTransportation, isMileageRequested);
+        return Objects.hash(from, to, miles, modeOfTransportation, travelDate, isMileageRequested);
     }
 }

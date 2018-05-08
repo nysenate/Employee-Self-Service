@@ -12,6 +12,7 @@ import gov.nysenate.ess.travel.accommodation.*;
 import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.route.Route;
 import gov.nysenate.ess.travel.route.RouteFactory;
+import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -84,9 +84,9 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      *     Body : An array of SegmentView's
      */
     @RequestMapping(value = "/{id}/outbound", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveOutboundSegments(@PathVariable int id, @RequestBody SegmentView[] segments) {
+    public BaseResponse saveOutboundSegments(@PathVariable int id, @RequestBody RouteView route) {
         TravelApplicationView app = appDao.getUncompletedAppById(id);
-        app.setOutboundSegments(Arrays.asList(segments));
+        app.setRoute(route);
         app = appDao.saveUncompleteTravelApp(app);
         return new ViewObjectResponse<>(app);
     }
@@ -100,20 +100,19 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      *     Body : An array of SegmentView's
      */
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveReturnSegments(@PathVariable int id, @RequestBody SegmentView[] segments) throws IOException, ApiException, InterruptedException {
+    public BaseResponse saveReturnSegments(@PathVariable int id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
         TravelApplicationView appView = appDao.getUncompletedAppById(id);
-        appView.setReturnSegments(Arrays.asList(segments));
+        appView.setRoute(route);
 
-        List<Accommodation> accommodations = accommodationFactory.createAccommodations(appView);
-        Route route = routeFactory.createRoute(appView);
+        Route fullRoute = routeFactory.initRoute(appView.getRoute().toRoute());
+        List<Accommodation> accommodations = accommodationFactory.createAccommodations(fullRoute);
+        // Calculate distance, mileage rates, etc for Route.
 
         TravelApplication app = appView.toTravelApplication();
         app.setAccommodations(accommodations);
-        app.setRoute(route);
-        TravelApplicationView updatedView = new TravelApplicationView(app); // This updates the app view with fields calculated by the TravelApplication object.
-        // Still need the outbound and return segments
-        updatedView.setOutboundSegments(appView.getOutboundSegments());
-        updatedView.setReturnSegments(appView.getReturnSegments());
+        app.setRoute(fullRoute);
+        // This updates the app view with fields calculated by the TravelApplication object.
+        TravelApplicationView updatedView = new TravelApplicationView(app);
         updatedView = appDao.saveUncompleteTravelApp(updatedView);
         return new ViewObjectResponse<>(updatedView);
     }

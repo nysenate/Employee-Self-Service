@@ -33,7 +33,7 @@ public class TravelApplicationFactory {
         TravelApplication app = new TravelApplication(0, employeeInfoService.getEmployee(appView.getTraveler().toEmployee().getEmployeeId()),
                 employeeInfoService.getEmployee(appView.getSubmitter().toEmployee().getEmployeeId()));
 //        app.setAccommodations(accommodationFactory.createAccommodations(appView));
-        app.setRoute(routeFactory.createRoute(appView));
+//        app.setRoute(routeFactory.initRoute(appView));
         app.setPurposeOfTravel(appView.getPurposeOfTravel());
         app.setTolls(new Dollars(appView.getTollsAllowance()));
         app.setParking(new Dollars(appView.getParkingAllowance()));
