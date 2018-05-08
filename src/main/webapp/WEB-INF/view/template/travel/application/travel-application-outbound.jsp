@@ -7,7 +7,7 @@
 
         <form name="outboundForm">
         <div class="travel-container"
-             ng-repeat="leg in outboundSegments">
+             ng-repeat="leg in route.outboundLegs">
 
           <div class="outbound width-100" style="display: inline-block;">
             <h3 class="float-left">Outbound Segment {{$index + 1}}</h3>
@@ -25,8 +25,8 @@
                      type="text" size="40">
             </div>
             <div class="itinerary-date">
-              <label>Departure Date</label><br/>
-              <input datepicker ng-model="leg.departureDate" size="13">
+              <label>Travel Date</label><br/>
+              <input datepicker ng-model="leg.travelDate" size="13">
             </div>
             <div class="clear"></div>
 
@@ -38,11 +38,6 @@
                      placeholder="200 State St, Albany NY 12210"
                      type="text"
                      size="40">
-            </div>
-            <div class="itinerary-date">
-              <label>Arrival Date</label><br/>
-              <input datepicker ng-model="leg.arrivalDate"
-                     from-date="leg.departureDate" size="13">
             </div>
             <div class="clear"></div>
 
@@ -60,8 +55,6 @@
             <div class="itinerary-allowance-container">
               <label>This segment will be reimbursed for the following:</label><br/>
               <label>Mileage <input type="checkbox" ng-model="leg.isMileageRequested"></label>
-              <label>Meals <input type="checkbox" ng-model="leg.isMealsRequested"></label>
-              <label>Lodging <input type="checkbox" ng-model="leg.isLodgingRequested"></label>
             </div>
             <div class="clear"></div>
 
@@ -83,11 +76,11 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="outboundCallback(outboundSegments, ACTIONS.BACK)">
+               ng-click="outboundCallback(route, ACTIONS.BACK)">
         <input type="button" class="submit-button"
                value="Next"
                ng-disabled="origin.formattedAddress.length == 0"
-               ng-click="outboundCallback(outboundSegments, ACTIONS.NEXT)">
+               ng-click="outboundCallback(route, ACTIONS.NEXT)">
       </div>
     </div>
   </div>

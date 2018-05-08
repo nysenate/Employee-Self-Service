@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
 
 public class LegView implements ViewObject {
 
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
     private AddressView from;
     private AddressView to;
     private String miles;
@@ -28,14 +30,15 @@ public class LegView implements ViewObject {
         this.miles = String.valueOf(leg.getMiles());
         this.modeOfTransportation = leg.getModeOfTransportation().getDisplayName();
         this.isMileageRequested = leg.isMileageRequested();
-        this.travelDate = leg.getTravelDate().format(DateTimeFormatter.ISO_DATE);
+        this.travelDate = leg.getTravelDate().format(DATE_FORMAT);
         this.qualifies = leg.qualifies();
     }
 
     public Leg toLeg() {
-        return new Leg(from.toAddress(), to.toAddress(), Double.valueOf(miles),
+        return new Leg(from.toAddress(), to.toAddress(),
+                miles == null ? new Double("0") : Double.valueOf(miles),
                 ModeOfTransportation.of(modeOfTransportation),
-                LocalDate.parse(travelDate, DateTimeFormatter.ISO_DATE), isMileageRequested);
+                LocalDate.parse(travelDate, DATE_FORMAT), isMileageRequested);
     }
 
     public AddressView getFrom() {

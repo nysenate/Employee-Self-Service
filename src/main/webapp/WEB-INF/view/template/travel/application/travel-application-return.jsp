@@ -7,7 +7,7 @@
 
         <form name="returnForm">
           <div class="travel-container"
-               ng-repeat="leg in returnSegments">
+               ng-repeat="leg in route.returnLegs">
 
             <div class="return width-100" style="display: inline-block;">
               <h3 class="float-left">Return Segment {{$index + 1}}</h3>
@@ -25,8 +25,8 @@
                      type="text" size="40">
             </div>
             <div class="itinerary-date">
-              <label>Departure Date</label><br/>
-              <input datepicker ng-model="leg.departureDate" size="13">
+              <label>Travel Date</label><br/>
+              <input datepicker ng-model="leg.travelDate" size="13">
             </div>
             <div class="clear"></div>
 
@@ -38,11 +38,6 @@
                      placeholder="200 State St, Albany NY 12210"
                      type="text"
                      size="40">
-            </div>
-            <div class="itinerary-date">
-              <label>Arrival Date</label><br/>
-              <input datepicker ng-model="leg.arrivalDate"
-                     from-date="leg.departureDate" size="13">
             </div>
             <div class="clear"></div>
 
@@ -80,11 +75,11 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="returnCallback(returnSegments, ACTIONS.BACK)">
+               ng-click="returnCallback(route, ACTIONS.BACK)">
         <input type="button" class="submit-button"
                value="Next"
                ng-disabled="origin.formattedAddress.length == 0"
-               ng-click="returnCallback(returnSegments, ACTIONS.NEXT)">
+               ng-click="returnCallback(route, ACTIONS.NEXT)">
       </div>
     </div>
   </div>

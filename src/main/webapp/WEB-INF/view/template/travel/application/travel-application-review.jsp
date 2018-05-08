@@ -30,7 +30,7 @@
       <form name="outboundForm">
         <fieldset disabled="disabled" style="border: none;">
         <div class="travel-container"
-             ng-repeat="leg in app.outboundSegments">
+             ng-repeat="leg in app.route.outboundLegs">
 
           <div class="outbound width-100" style="display: inline-block;">
             <h3 class="float-left">Outbound Segment {{$index + 1}}</h3>
@@ -45,8 +45,8 @@
                    type="text" size="40">
           </div>
           <div class="itinerary-date">
-            <label>Departure Date</label><br/>
-            <input datepicker ng-model="leg.departureDate" size="13">
+            <label>Travel Date</label><br/>
+            <input datepicker ng-model="leg.travelDate" size="13">
           </div>
           <div class="clear"></div>
 
@@ -58,11 +58,6 @@
                    placeholder="200 State St, Albany NY 12210"
                    type="text"
                    size="40">
-          </div>
-          <div class="itinerary-date">
-            <label>Arrival Date</label><br/>
-            <input datepicker ng-model="leg.arrivalDate"
-                   from-date="leg.departureDate" size="13">
           </div>
           <div class="clear"></div>
 
@@ -112,7 +107,7 @@
         <fieldset disabled="disabled" style="border: none;">
 
           <div class="travel-container"
-               ng-repeat="leg in app.returnSegments">
+               ng-repeat="leg in app.route.returnLegs">
 
             <div class="return width-100" style="display: inline-block;">
               <h3 class="float-left">Return Segment {{$index + 1}}</h3>
@@ -127,8 +122,8 @@
                      type="text" size="40">
             </div>
             <div class="itinerary-date">
-              <label>Departure Date</label><br/>
-              <input datepicker ng-model="leg.departureDate" size="13">
+              <label>Travel Date</label><br/>
+              <input datepicker ng-model="leg.travelDate" size="13">
             </div>
             <div class="clear"></div>
 
@@ -140,11 +135,6 @@
                      placeholder="200 State St, Albany NY 12210"
                      type="text"
                      size="40">
-            </div>
-            <div class="itinerary-date">
-              <label>Arrival Date</label><br/>
-              <input datepicker ng-model="leg.arrivalDate"
-                     from-date="leg.departureDate" size="13">
             </div>
             <div class="clear"></div>
 

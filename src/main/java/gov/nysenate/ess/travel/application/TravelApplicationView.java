@@ -36,11 +36,6 @@ public class TravelApplicationView implements ViewObject {
     public TravelApplicationView() {
     }
 
-    public TravelApplicationView(Employee traveler, Employee submitter) {
-        this.traveler = new EmployeeView(traveler);
-        this.submitter = new EmployeeView(submitter);
-    }
-
     public TravelApplicationView(TravelApplication app) {
         id = app.getId();
         traveler = new EmployeeView(app.getTraveler());

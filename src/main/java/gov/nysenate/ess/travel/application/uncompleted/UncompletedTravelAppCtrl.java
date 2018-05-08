@@ -49,7 +49,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         Employee submitter = employeeInfoService.getEmployee(getSubjectEmployeeId());
         TravelApplicationView uncompletedApp = appDao.getUncompletedAppByEmpId(traveler.getEmployeeId());
         if (uncompletedApp == null) {
-            uncompletedApp = new TravelApplicationView(traveler, submitter);
+            TravelApplication app = new TravelApplication(0, traveler, submitter);
+            uncompletedApp = new TravelApplicationView(app);
             uncompletedApp = appDao.saveUncompleteTravelApp(uncompletedApp);
         }
         return new ViewObjectResponse<>(uncompletedApp);

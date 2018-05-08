@@ -166,10 +166,10 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action);
     };
 
-    $scope.outboundCallback = function (outboundSegments, action) {
+    $scope.outboundCallback = function (route, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
-            outboundApi.update({id: $scope.app.id}, outboundSegments).$promise
+            outboundApi.update({id: $scope.app.id}, route).$promise
                 .then(updateAppFromResponse)
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
@@ -177,10 +177,10 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         updateStates(action);
     };
 
-    $scope.returnCallback = function (returnSegments, action) {
+    $scope.returnCallback = function (route, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
-            returnApi.update({id: $scope.app.id}, returnSegments).$promise
+            returnApi.update({id: $scope.app.id}, route).$promise
                 .then(updateAppFromResponse)
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
@@ -298,29 +298,29 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
         scope: true,
         link: function ($scope, $elem, $attrs, ctrl) {
 
-            $scope.outboundSegments = angular.copy($scope.app.outboundSegments) || [];
-            if ($scope.outboundSegments.length === 0) {
-                $scope.outboundSegments.push(new Segment());
+            $scope.route = angular.copy($scope.app.route);
+            if ($scope.route.outboundLegs.length === 0) {
+                $scope.route.outboundLegs.push(new Segment());
             }
 
             $scope.addSegment = function() {
                 // Initialize new leg
                 var segment = new Segment();
-                var prevSeg = $scope.outboundSegments[$scope.outboundSegments.length - 1];
+                var prevSeg = $scope.route.outboundLegs[$scope.route.outboundLegs.length - 1];
                 segment.from = prevSeg.to;
                 segment.modeOfTransportation = prevSeg.modeOfTransportation;
                 segment.isMileageRequested = prevSeg.isMileageRequested;
                 segment.isMealsRequested = prevSeg.isMealsRequested;
                 segment.isLodgingRequested = prevSeg.isLodgingRequested;
-                $scope.outboundSegments.push(segment);
+                $scope.route.outboundLegs.push(segment);
             };
 
             $scope.isLastSegment = function(index) {
-                return $scope.outboundSegments.length - 1 === index;
+                return $scope.route.outboundLegs.length - 1 === index;
             };
 
             $scope.deleteSegment = function() {
-                $scope.outboundSegments.pop();
+                $scope.route.outboundLegs.pop();
             }
         }
     }
@@ -332,33 +332,33 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
         scope: true,
         link: function ($scope, $elem, $attrs, ctrl) {
 
-            $scope.returnSegments = angular.copy($scope.app.returnSegments) || [];
-            if ($scope.returnSegments.length === 0) {
+            $scope.route = angular.copy($scope.app.route);
+            if ($scope.route.returnLegs.length === 0) {
                 // Init return leg
                 var segment = new Segment();
-                segment.from = $scope.app.outboundSegments[$scope.app.outboundSegments.length - 1].to;
-                segment.to = $scope.app.outboundSegments[0].from;
-                $scope.returnSegments.push(segment);
+                segment.from = $scope.app.route.outboundLegs[$scope.app.route.outboundLegs.length - 1].to;
+                segment.to = $scope.app.route.outboundLegs[0].from;
+                $scope.route.returnLegs.push(segment);
             }
 
             $scope.addSegment = function() {
                 // Initialize new leg
                 var segment = new Segment();
-                var prevSeg = $scope.returnSegments[$scope.returnSegments.length - 1];
+                var prevSeg = $scope.route.returnLegs[$scope.route.returnLegs.length - 1];
                 segment.from = prevSeg.to;
                 segment.modeOfTransportation = prevSeg.modeOfTransportation;
                 segment.isMileageRequested = prevSeg.isMileageRequested;
                 segment.isMealsRequested = prevSeg.isMealsRequested;
                 segment.isLodgingRequested = prevSeg.isLodgingRequested;
-                $scope.returnSegments.push(segment);
+                $scope.route.returnLegs.push(segment);
             };
 
             $scope.isLastSegment = function(index) {
-                return $scope.returnSegments.length - 1 === index;
+                return $scope.route.returnLegs.length - 1 === index;
             };
 
             $scope.deleteSegment = function() {
-                $scope.returnSegments.pop();
+                $scope.route.returnLegs.pop();
             }
         }
     }
