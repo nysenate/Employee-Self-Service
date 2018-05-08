@@ -19,7 +19,7 @@
 
       <div ng-repeat="dest in destinations">
         <div class="col-6-12 font-weight-bold margin-top-10">
-          {{dest.address.formattedAddress}}
+          {{dest.accommodation.address.formattedAddress}}
         </div>
         <div class="col-6-12 margin-top-10">
           &nbsp;

@@ -14,7 +14,7 @@ public class Day {
 
     private final LocalDate date;
     private final MealTier tier;
-    private final boolean isMealsRequested;
+    private boolean isMealsRequested;
 
     public Day(LocalDate date, MealTier tier, boolean isMealsRequested) {
         this.date = date;
@@ -41,6 +41,10 @@ public class Day {
 
     protected boolean isMealsRequested() {
         return isMealsRequested;
+    }
+
+    protected void setMealsRequested(boolean isMealsRequested) {
+        this.isMealsRequested = isMealsRequested;
     }
 
     @Override

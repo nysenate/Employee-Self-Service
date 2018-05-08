@@ -380,7 +380,7 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
             $scope.destinations = [];
 
             function Destination () {
-                this.address;
+                this.accommodation;
                 this.stays = [];
             }
 
@@ -394,13 +394,13 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
             // Init accommodations
             angular.forEach($scope.app.accommodations, function(a) {
                 var destination = new Destination();
-                destination.address = a.address;
+                destination.accommodation = a;
                 angular.forEach(a.days, function(day) {
                     var stay = new Stay();
                     stay.date = day.date;
                     stay.isMealsRequested = day.isMealsRequested;
 
-                    // Find out of lodging is possible and requested.
+                    // Find out if lodging is possible and requested.
                     angular.forEach(a.nights, function(night) {
                         if (night.date === day.date) {
                             stay.isLodgingEligible = true;

@@ -14,6 +14,9 @@ public class DayView implements ViewObject {
     public MealTierView mealtier;
     public boolean isMealsRequested;
 
+    public DayView() {
+    }
+
     public DayView(Day day) {
         this.date = day.getDate().format(DateTimeFormatter.ISO_DATE);
         this.allowance = day.mealAllowance().toString();

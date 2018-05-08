@@ -42,6 +42,10 @@ public class Night {
         return isLodgingRequested;
     }
 
+    protected void setLodgingRequested(boolean isLodgingRequested) {
+        this.isLodgingRequested = isLodgingRequested;
+    }
+
     @Override
     public String toString() {
         return "Night{" +

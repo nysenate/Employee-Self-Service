@@ -14,6 +14,9 @@ public class NightView implements ViewObject {
     public String lodgingRate;
     public boolean isLodgingRequested;
 
+    public NightView() {
+    }
+
     public NightView(Night night) {
         this.date = night.getDate().format(DateTimeFormatter.ISO_DATE);
         this.lodgingAllowance = night.lodgingAllowance().toString();

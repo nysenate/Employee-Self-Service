@@ -14,6 +14,7 @@ import gov.nysenate.ess.travel.route.Route;
 import gov.nysenate.ess.travel.route.RouteFactory;
 import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
+import org.apache.http.impl.cookie.AbstractCookieAttributeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -125,26 +126,21 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         appView.setParkingAllowance(expensesDto.allowances.parkingAllowance);
         appView.setAlternateAllowance(expensesDto.allowances.alternateAllowance);
         appView.setRegistrationAllowance(expensesDto.allowances.registrationAllowance);
-        // errrmmmm
+
         for (DestinationDtoView dest : expensesDto.getDestinations()) {
             for (AccommodationView accommodation : appView.getAccommodations()) {
-                if (accommodation.getAddress().getFormattedAddress().equals(dest.address.getFormattedAddress())) {
+                if (dest.accommodation.toAccommodation().equals(accommodation.toAccommodation())) {
+                    Accommodation appAcc = accommodation.toAccommodation();
                     for (StayDtoView stay : dest.getStays()) {
-                        for (DayView day : accommodation.getDays()) {
-                            if (day.getDate().equals(stay.getDate())) {
-                                day.isMealsRequested = stay.isMealsRequested;
-                            }
-                        }
-                        for (NightView night : accommodation.getNights()) {
-                            if (night.getDate().equals(stay.getDate())) {
-                                night.isLodgingRequested = stay.isLodgingRequested;
-                            }
-                        }
+                        appAcc.setRequestMeals(stay.isMealsRequested, stay.getLocalDate());
+                        appAcc.setRequestLodging(stay.isLodgingRequested, stay.getLocalDate());
                     }
                 }
             }
         }
 
+        TravelApplication app = appView.toTravelApplication();
+        appView = new TravelApplicationView(app);
         appView = appDao.saveUncompleteTravelApp(appView);
         return new ViewObjectResponse<>(appView);
     }

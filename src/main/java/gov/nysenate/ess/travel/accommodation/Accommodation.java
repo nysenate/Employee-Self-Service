@@ -5,7 +5,9 @@ import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Accommodation {
 
@@ -49,6 +51,20 @@ public class Accommodation {
      */
     public LocalDate departureDate() {
         return getDays().asList().reverse().get(0).getDate();
+    }
+
+    public void setRequestMeals(boolean isRequestMeals, LocalDate date) {
+        List<Day> days = getDays().stream().filter(d -> d.getDate().equals(date)).collect(Collectors.toList());
+        if (days.size() > 0) {
+            days.get(0).setMealsRequested(isRequestMeals);
+        }
+    }
+
+    public void setRequestLodging(boolean isRequestLodging, LocalDate date) {
+        List<Night> nights = getNights().stream().filter(n -> n.getDate().equals(date)).collect(Collectors.toList());
+        if (nights.size() > 0) {
+            nights.get(0).setLodgingRequested(isRequestLodging);
+        }
     }
 
     protected Address getAddress() {
