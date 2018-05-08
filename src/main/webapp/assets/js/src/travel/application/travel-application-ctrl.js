@@ -2,10 +2,10 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
-                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
+                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
-                             outboundApi, returnApi, travelApplicationApi, attachmentApi, motApi) {
+                             outboundApi, returnApi, expensesApi, travelApplicationApi, attachmentApi, motApi) {
 
     /* --- Container Page --- */
 
@@ -190,11 +190,18 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
 
     $scope.allowancesCallback = function (destinations, allowances, action) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.app.tollsAllowance = allowances.tollsAllowance.toString();
-            $scope.app.parkingAllowance = allowances.parkingAllowance.toString();
-            $scope.app.alternateAllowance = allowances.alternateAllowance.toString();
-            $scope.app.registrationAllowance = allowances.registrationAllowance.toString();
-            $scope.app.destinations= destinations;
+             $scope.openLoadingModal();
+            expensesApi.update({id: $scope.app.id}, {destinations: destinations,
+                allowances: allowances}).$promise
+                .then(updateAppFromResponse)
+                .catch($scope.handleErrorResponse)
+                .finally($scope.closeLoadingModal)
+
+            // $scope.app.tollsAllowance = allowances.tollsAllowance.toString();
+            // $scope.app.parkingAllowance = allowances.parkingAllowance.toString();
+            // $scope.app.alternateAllowance = allowances.alternateAllowance.toString();
+            // $scope.app.registrationAllowance = allowances.registrationAllowance.toString();
+            // $scope.app.destinations= destinations;
         }
         updateStates(action);
     };
@@ -370,52 +377,43 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
                 registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
             };
 
-            var test = true;
+            $scope.destinations = [];
 
-            $scope.getNightLodgingRequested = function(day) {
-               return test;
-            };
+            function Destination () {
+                this.address;
+                this.stays = [];
+            }
 
+            function Stay() {
+                this.date = '';
+                this.isMealsRequested = false;
+                this.isLodgingRequested = false;
+                this.isLodgingEligible = false;
+            }
 
-                var accommodations = [];
+            // Init accommodations
+            angular.forEach($scope.app.accommodations, function(a) {
+                var destination = new Destination();
+                destination.address = a.address;
+                angular.forEach(a.days, function(day) {
+                    var stay = new Stay();
+                    stay.date = day.date;
+                    stay.isMealsRequested = day.isMealsRequested;
 
-                function Accommodation () {
-                    this.address;
-                    this.stays = [];
-                }
-
-                function Stay() {
-                    this.date = '';
-                    this.isMealsRequested = false;
-                    this.isLodgingRequested = false;
-                    this.isLodgingEligible = false;
-                }
-
-                // Init accommodations
-                angular.forEach($scope.app.accommodations, function(a) {
-                    var accommodation = new Accommodation();
-                    accommodation.address = a.address;
-                    angular.forEach(a.days, function(day) {
-                        var stay = new Stay();
-                        stay.date = day.date;
-                        stay.isMealsRequested = day.isMealsRequested;
-
-                        // Find out of lodging is possible and requested.
-                        angular.forEach(a.nights, function(night) {
-                            if (night.date === day.date) {
-                                stay.isLodgingEligible = true;
-                                stay.isLodgingRequested = night.isLodgingRequested;
-                            }
-                        });
-
-                        accommodation.stays.push(stay);
+                    // Find out of lodging is possible and requested.
+                    angular.forEach(a.nights, function(night) {
+                        if (night.date === day.date) {
+                            stay.isLodgingEligible = true;
+                            stay.isLodgingRequested = night.isLodgingRequested;
+                        }
                     });
-                    accommodations.push(accommodation);
+
+                    destination.stays.push(stay);
                 });
+                $scope.destinations.push(destination);
+            });
 
-                console.log("SDFSDFSDSD");
-                console.log(accommodations);
-
+            console.log($scope.destinations);
         }
     }
 }]);

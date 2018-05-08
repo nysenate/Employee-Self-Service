@@ -8,8 +8,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.accommodation.Accommodation;
-import gov.nysenate.ess.travel.accommodation.AccommodationFactory;
+import gov.nysenate.ess.travel.accommodation.*;
 import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.route.Route;
 import gov.nysenate.ess.travel.route.RouteFactory;
@@ -117,6 +116,37 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         updatedView.setReturnSegments(appView.getReturnSegments());
         updatedView = appDao.saveUncompleteTravelApp(updatedView);
         return new ViewObjectResponse<>(updatedView);
+    }
+
+    @RequestMapping(value = "/{id}/expenses", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse saveExpenses(@PathVariable int id, @RequestBody ExpensesDtoView expensesDto) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        appView.setTollsAllowance(expensesDto.allowances.tollsAllowance);
+        appView.setParkingAllowance(expensesDto.allowances.parkingAllowance);
+        appView.setAlternateAllowance(expensesDto.allowances.alternateAllowance);
+        appView.setRegistrationAllowance(expensesDto.allowances.registrationAllowance);
+        // errrmmmm
+        for (DestinationDtoView dest : expensesDto.getDestinations()) {
+            for (AccommodationView accommodation : appView.getAccommodations()) {
+                if (accommodation.getAddress().getFormattedAddress().equals(dest.address.getFormattedAddress())) {
+                    for (StayDtoView stay : dest.getStays()) {
+                        for (DayView day : accommodation.getDays()) {
+                            if (day.getDate().equals(stay.getDate())) {
+                                day.isMealsRequested = stay.isMealsRequested;
+                            }
+                        }
+                        for (NightView night : accommodation.getNights()) {
+                            if (night.getDate().equals(stay.getDate())) {
+                                night.isLodgingRequested = stay.isLodgingRequested;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        appView = appDao.saveUncompleteTravelApp(appView);
+        return new ViewObjectResponse<>(appView);
     }
 
     /**

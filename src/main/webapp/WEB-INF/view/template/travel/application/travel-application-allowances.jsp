@@ -1,6 +1,6 @@
 <div class="content-container text-align-center">
   <div class="margin-top-10">
-    <h1>Meals</h1>
+    <h1>Meals and Lodging</h1>
     <div class="grid">
       <div>
         <div class="col-6-12">
@@ -17,62 +17,28 @@
         </div>
       </div>
 
-      <div ng-repeat="accommodation in app.accommodations">
+      <div ng-repeat="dest in destinations">
         <div class="col-6-12 font-weight-bold margin-top-10">
-          {{accommodation.address.formattedAddress}}
+          {{dest.address.formattedAddress}}
         </div>
         <div class="col-6-12 margin-top-10">
           &nbsp;
         </div>
-        <div ng-repeat="day in accommodation.days" class="">
+        <div ng-repeat="stay in dest.stays" class="">
           <div class="col-6-12">
             &nbsp;
           </div>
           <div class="col-2-12">
-            {{day.date | date: 'shortDate'}}
+            {{stay.date | date: 'shortDate'}}
           </div>
           <div class="col-2-12">
-            <label>Request Meals: </label><input type="checkbox" ng-model="day.isMealsRequested">
+            <label>Meals: </label><input type="checkbox" ng-model="stay.isMealsRequested">
           </div>
            <div class="col-2-12">
-            <label>Request Lodging: </label><input type="checkbox" ng-model="getNightLodgingRequested(day)" ng-model-options="{ getterSetter: true }">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="margin-top-10">
-    <h1>Lodging</h1>
-    <div class="grid">
-      <div>
-        <div class="col-6-12">
-          <h4>Address</h4>
-        </div>
-        <div class="col-3-12">
-          <h4>Date</h4>
-        </div>
-        <div class="col-3-12">
-          <h4>Request Lodging</h4>
-        </div>
-      </div>
-
-      <div ng-repeat="accommodation in app.accommodations">
-        <div class="col-6-12 font-weight-bold margin-top-10">
-          {{accommodation.address.formattedAddress}}
-        </div>
-        <div class="col-6-12 margin-top-10">
-          &nbsp;
-        </div>
-        <div ng-repeat="night in accommodation.nights" class="">
-          <div class="col-6-12">
-            &nbsp;
-          </div>
-          <div class="col-3-12">
-            {{night.date | date: 'shortDate'}}
-          </div>
-          <div class="col-3-12">
-            <label>Request Lodging: </label><input type="checkbox" ng-model="night.isLodgingRequested">
+             <span ng-if="stay.isLodgingEligible">
+               <label>Lodging: </label><input type="checkbox" ng-model="stay.isLodgingRequested">
+             </span>
+             <span ng-if="!stay.isLodgingEligible">&nbsp;</span>
           </div>
         </div>
       </div>

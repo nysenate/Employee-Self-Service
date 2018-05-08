@@ -9,10 +9,10 @@ import java.time.format.DateTimeFormatter;
 
 public class NightView implements ViewObject {
 
-    String date;
-    String lodgingAllowance;
-    String lodgingRate;
-    private boolean isLodgingRequested;
+    public String date;
+    public String lodgingAllowance;
+    public String lodgingRate;
+    public boolean isLodgingRequested;
 
     public NightView(Night night) {
         this.date = night.getDate().format(DateTimeFormatter.ISO_DATE);

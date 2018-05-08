@@ -9,10 +9,10 @@ import java.time.format.DateTimeFormatter;
 
 public class DayView implements ViewObject {
 
-    String date;
-    String allowance;
-    MealTierView mealtier;
-    boolean isMealsRequested;
+    public String date;
+    public String allowance;
+    public MealTierView mealtier;
+    public boolean isMealsRequested;
 
     public DayView(Day day) {
         this.date = day.getDate().format(DateTimeFormatter.ISO_DATE);

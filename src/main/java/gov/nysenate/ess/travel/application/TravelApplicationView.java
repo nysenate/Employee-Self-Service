@@ -62,6 +62,7 @@ public class TravelApplicationView implements ViewObject {
         totalAllowance = app.totalAllowance().toString();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         // TODO init segments
+
 //        destinations = new ArrayList<>();
 //        for (AccommodationView a : accommodations) {
 //            destinations.add(new TravelDestinationView(a, route));
