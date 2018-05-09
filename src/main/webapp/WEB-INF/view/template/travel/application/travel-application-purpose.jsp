@@ -10,7 +10,7 @@
   <div class="margin-10">
     <form method="POST" enctype="multipart/form-data">
       <input type="file" id="file" name="file" multiple>
-      <input type="submit" ng-click="save()">
+      <%--<input type="submit" ng-click="save()">--%>
     </form>
   </div>
   <div class="travel-button-container">

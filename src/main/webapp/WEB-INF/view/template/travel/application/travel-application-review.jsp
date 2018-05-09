@@ -59,7 +59,6 @@
                    type="text"
                    size="40">
           </div>
-          <div class="clear"></div>
 
           <div class="itinerary-mot-container">
             <div class="itinerary-mot">
@@ -72,12 +71,6 @@
               <input type="text" size="17">
             </div>
           </div>
-          <div class="itinerary-allowance-container">
-            <label>This segment will be reimbursed for the following:</label><br/>
-            <label>Mileage <input type="checkbox" ng-model="leg.isMileageRequested"></label>
-            <label>Meals <input type="checkbox" ng-model="leg.isMealsRequested"></label>
-            <label>Lodging <input type="checkbox" ng-model="leg.isLodgingRequested"></label>
-          </div>
           <div class="clear"></div>
 
         </div>
@@ -89,11 +82,6 @@
     </div>
   </div>
 </div>
-
-
-
-
-
 
 
 <div class="content-container">
@@ -136,7 +124,6 @@
                      type="text"
                      size="40">
             </div>
-            <div class="clear"></div>
 
             <div class="itinerary-mot-container">
               <div class="itinerary-mot">
@@ -149,14 +136,9 @@
                 <input type="text" size="17">
               </div>
             </div>
-            <div class="itinerary-allowance-container">
-              <label>This segment will be reimbursed for the following:</label><br/>
-              <label>Mileage <input type="checkbox" ng-model="leg.isMileageRequested"></label>
-            </div>
             <div class="clear"></div>
 
           </div>
-
 
         </fieldset>
       </form>
@@ -164,7 +146,6 @@
     </div>
   </div>
 </div>
-
 
 
 <div class="content-container text-align-center">
