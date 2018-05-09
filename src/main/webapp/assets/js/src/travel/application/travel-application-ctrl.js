@@ -158,52 +158,63 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     $scope.purposeCallback = function (purpose, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
-            purposeApi.update({id: $scope.app.id}, purpose).$promise
-                .then(updateAppFromResponse)
+            purposeApi.update({id: $scope.app.id}, purpose, function(response) {
+                updateAppFromResponse(response);
+                updateStates(action);
+            }).$promise
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
         }
-        updateStates(action);
+        else {
+            updateStates(action);
+        }
     };
 
     $scope.outboundCallback = function (route, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
-            outboundApi.update({id: $scope.app.id}, route).$promise
-                .then(updateAppFromResponse)
+            outboundApi.update({id: $scope.app.id}, route, function(response) {
+                updateAppFromResponse(response);
+                updateStates(action);
+            }).$promise
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
         }
-        updateStates(action);
+        else {
+            updateStates(action);
+        }
     };
 
     $scope.returnCallback = function (route, action) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
-            returnApi.update({id: $scope.app.id}, route).$promise
-                .then(updateAppFromResponse)
+            returnApi.update({id: $scope.app.id}, route, function(response) {
+                updateAppFromResponse(response);
+                updateStates(action);
+            }).$promise
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
         }
-        updateStates(action);
+        else {
+            updateStates(action);
+        }
     };
 
     $scope.allowancesCallback = function (destinations, allowances, action) {
         if (action === $scope.ACTIONS.NEXT) {
              $scope.openLoadingModal();
             expensesApi.update({id: $scope.app.id}, {destinations: destinations,
-                allowances: allowances}).$promise
+                allowances: allowances}, function(response) {
+                updateAppFromResponse(response);
+                updateStates(action);
+            }).$promise
                 .then(updateAppFromResponse)
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
-
-            // $scope.app.tollsAllowance = allowances.tollsAllowance.toString();
-            // $scope.app.parkingAllowance = allowances.parkingAllowance.toString();
-            // $scope.app.alternateAllowance = allowances.alternateAllowance.toString();
-            // $scope.app.registrationAllowance = allowances.registrationAllowance.toString();
-            // $scope.app.destinations= destinations;
         }
-        updateStates(action);
+        else {
+            updateStates(action);
+        }
     };
 
     /**
@@ -377,6 +388,8 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
                 registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
             };
 
+            $scope.route = angular.copy($scope.app.route);
+
             $scope.destinations = [];
 
             function Destination () {
@@ -413,7 +426,23 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
                 $scope.destinations.push(destination);
             });
 
-            console.log($scope.destinations);
+            $scope.anyReimbursableTravel = function() {
+                for(var i = 0; i < $scope.route.outboundLegs.length; i++) {
+                    if ($scope.route.outboundLegs[i].modeOfTransportation === 'Personal Auto') {
+                        return true;
+                    }
+                }
+                for(var y = 0; y < $scope.route.returnLegs.length; y++) {
+                    if ($scope.route.returnLegs[y].modeOfTransportation === 'Personal Auto') {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            $scope.isReimbursableLeg = function(leg) {
+                return leg.modeOfTransportation === 'Personal Auto';
+            }
         }
     }
 }]);

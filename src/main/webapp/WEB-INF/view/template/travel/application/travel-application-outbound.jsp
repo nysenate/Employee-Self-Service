@@ -21,7 +21,7 @@
               <input travel-address-autocomplete
                      ng-model="leg.from.formattedAddress"
                      callback="leg.setFrom(address)"
-                     placeholder="200 State St, Albany NY 12210"
+                     placeholder="From Address"
                      type="text" size="40">
             </div>
             <div class="itinerary-date">
@@ -35,11 +35,11 @@
               <input travel-address-autocomplete
                      ng-model="leg.to.formattedAddress"
                      callback="leg.setTo(address)"
-                     placeholder="200 State St, Albany NY 12210"
+                     placeholder="To Address"
                      type="text"
                      size="40">
             </div>
-            <div class="clear"></div>
+            <%--<div class="clear"></div>--%>
 
             <div class="itinerary-mot-container">
               <div class="itinerary-mot">
@@ -51,10 +51,6 @@
                 <label>Please Specify:</label><br/>
                 <input type="text" size="17">
               </div>
-            </div>
-            <div class="itinerary-allowance-container">
-              <label>This segment will be reimbursed for the following:</label><br/>
-              <label>Mileage <input type="checkbox" ng-model="leg.isMileageRequested"></label>
             </div>
             <div class="clear"></div>
 

@@ -1,6 +1,9 @@
 <div class="content-container text-align-center">
-  <div class="margin-top-10">
+  <div class="expenses-container">
     <h1>Meals and Lodging</h1>
+    <p>
+      You will be reimbursed for the following meals and lodging. Uncheck anything you would not like to be reimbursed for.
+    </p>
     <div class="grid">
       <div>
         <div class="col-6-12">
@@ -18,7 +21,7 @@
       </div>
 
       <div ng-repeat="dest in destinations">
-        <div class="col-6-12 font-weight-bold margin-top-10">
+        <div class="col-6-12 margin-top-10">
           {{dest.accommodation.address.formattedAddress}}
         </div>
         <div class="col-6-12 margin-top-10">
@@ -44,11 +47,56 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div class="margin-top-10">
-    <h1>Miscellaneous Expenses (optional):</h1>
+<div class="content-container text-align-center"
+     ng-if="anyReimbursableTravel()">
+  <div class="expenses-container">
+    <h1>Mileage</h1>
+    <p>
+      You will be reimbursed for the following travel. Uncheck anything you do not wish to be reimbursed for.
+    </p>
+    <div class="grid">
+      <div>
+        <div class="col-5-12">
+          <h4>From</h4>
+        </div>
+        <div class="col-5-12">
+          <h4>To</h4>
+        </div>
+        <div class="col-2-12">
+          <h4>Request Mileage</h4>
+        </div>
+      </div>
+      <div ng-repeat="leg in route.outboundLegs"
+           ng-if="isReimbursableLeg(leg)">
+        <div class="col-5-12">
+          {{leg.from.formattedAddress}}
+        </div>
+        <div class="col-5-12">
+          {{leg.to.formattedAddress}}
+        </div>
+        <label>Mileage: </label><input type="checkbox" ng-model="leg.isMileageRequested">
+      </div>
+      <div ng-repeat="leg in route.returnLegs">
+        <div class="col-5-12">
+          {{leg.from.formattedAddress}}
+        </div>
+        <div class="col-5-12">
+          {{leg.to.formattedAddress}}
+        </div>
+        <label>Mileage: </label><input type="checkbox" ng-model="leg.isMileageRequested">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="content-container text-align-center">
+  <div class="expenses-container">
+    <h1>Miscellaneous Expenses (Optional):</h1>
     <p class="margin-20">
-      If you wish to request reimbursement for any of the following categories, enter your estimated expenses.
+      To request reimbursement for any of the following categories, enter your estimated expenses.
     </p>
     <div class="width-50 margin-top-20" style="margin: auto;">
       <div class="grid" style="min-width: 0;">
