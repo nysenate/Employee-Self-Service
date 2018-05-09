@@ -10,33 +10,10 @@ essTravel.directive('travelMileageDetailsModal', ['appProps', function (appProps
 
 function mileageDetailsModalCtrl($scope, modals) {
 
-    $scope.mileageAllowance = {
-        legs: [],
-        total: 0,
-        rate: 0
-    };
-
-    function init() {
-        var route = modals.params().app.route;
-        $scope.mileageAllowance.rate = route.mileageRate;
-        $scope.mileageAllowance.total = route.mileageAllowance;
-        $scope.mileageAllowance.legs = findQualifyingLegs(route.outgoingLegs)
-            .concat(findQualifyingLegs(route.returnLegs));
-    }
-
-    init();
-
-    function findQualifyingLegs(legs) {
-        var qualifyingLegs = [];
-        angular.forEach(legs, function(leg) {
-            if (leg.qualifies) {
-                qualifyingLegs.push(leg);
-            }
-        });
-        return qualifyingLegs;
-    }
+    $scope.app = modals.params().app;
+    $scope.legs = $scope.app.route.outboundLegs.concat($scope.app.route.returnLegs);
 
     $scope.closeModal = function() {
         modals.resolve();
-    }
+    };
 }

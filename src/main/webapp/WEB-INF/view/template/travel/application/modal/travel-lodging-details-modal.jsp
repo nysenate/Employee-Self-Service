@@ -9,16 +9,19 @@
         <td>Nightly Rate</td>
       </tr>
       </thead>
-      <tbody>
-      <tr ng-repeat="allowance in lodgingAllowances">
-        <td>{{allowance.date | date: 'shortDate'}}</td>
-        <td>{{allowance.address.formattedAddress}}</td>
-        <td>{{allowance.allowance | currency}}</td>
+      <tbody ng-repeat="accommodation in app.accommodations">
+      <tr ng-repeat="night in accommodation.nights"
+          ng-if="night.isLodgingRequested">
+        <td>{{night.date | date: 'shortDate'}}</td>
+        <td>{{accommodation.address.formattedAddress}}</td>
+        <td>{{night.lodgingAllowance | currency}}</td>
       </tr>
+      </tbody>
+      <tbody>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{total | currency}}</td>
+        <td class="bold">{{app.lodgingAllowance | currency}}</td>
       </tr>
       </tbody>
     </table>

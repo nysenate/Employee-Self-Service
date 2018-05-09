@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 public class DayView implements ViewObject {
 
     public String date;
-    public String allowance;
+    public String mealAllowance;
     public MealTierView mealtier;
     public boolean isMealsRequested;
 
@@ -19,7 +19,7 @@ public class DayView implements ViewObject {
 
     public DayView(Day day) {
         this.date = day.getDate().format(DateTimeFormatter.ISO_DATE);
-        this.allowance = day.mealAllowance().toString();
+        this.mealAllowance = day.mealAllowance().toString();
         this.mealtier = new MealTierView(day.getTier());
         this.isMealsRequested = day.isMealsRequested();
     }
@@ -32,8 +32,8 @@ public class DayView implements ViewObject {
         return date;
     }
 
-    public String getAllowance() {
-        return allowance;
+    public String getMealAllowance() {
+        return mealAllowance;
     }
 
     public MealTierView getMealtier() {
