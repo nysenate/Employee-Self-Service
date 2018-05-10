@@ -5658,6 +5658,13 @@ ul.inactive-employee-email-list {
   color: white;
   cursor: pointer;
 }
+.expenses-container {
+  margin-top: 10px !important;
+  padding-bottom: 15px;
+}
+.expenses-container h4 {
+  margin: 5px;
+}
 /** Travel Itinerary styling */
 .itinerary-address {
   width: 48%;
@@ -5672,7 +5679,7 @@ ul.inactive-employee-email-list {
 .itinerary-mot-container {
   width: 48%;
   margin: 1%;
-  float: left;
+  float: right;
 }
 .itinerary-mot-container .itinerary-mot {
   float: left;
@@ -5680,17 +5687,6 @@ ul.inactive-employee-email-list {
 .itinerary-mot-container .itinerary-mot-write-in {
   float: right;
   margin-right: 50px;
-}
-.itinerary-allowance-container {
-  width: 48%;
-  margin: 1%;
-  float: right;
-}
-.itinerary-allowance-container label {
-  margin-right: 5px;
-}
-.itinerary-allowance-container input {
-  margin-right: 10px;
 }
 /** Travel app print page styling */
 .travel-print-info-container div {
