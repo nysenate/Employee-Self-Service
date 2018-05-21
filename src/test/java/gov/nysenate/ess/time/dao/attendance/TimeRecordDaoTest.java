@@ -28,8 +28,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static gov.nysenate.ess.core.config.DatabaseConfig.remoteTxManager;
+
 @Category(SillyTest.class)
-@Transactional
+@Transactional(value = remoteTxManager)
 public class TimeRecordDaoTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordDaoTest.class);
