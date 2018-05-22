@@ -13,6 +13,7 @@ public class LocationView implements ViewObject {
     protected AddressView address;
     protected RespCenterHeadView respCenterHead;
     protected String locationDescription;
+    protected boolean isActive;
 
     public LocationView() {}
 
@@ -24,11 +25,12 @@ public class LocationView implements ViewObject {
         this.address = new AddressView(loc.getAddress());
         this.respCenterHead = new RespCenterHeadView(loc.getResponsibilityHead());
         this.locationDescription = loc.getLocationDescription();
+        this.isActive = loc.isActive();
     }
 
     public Location toLocation() {
         LocationId locId = new LocationId(this.code, this.locationTypeCode);
-        return new Location(locId, address.toAddress(), respCenterHead.toResponsibilityHead(), locationDescription);
+        return new Location(locId, address.toAddress(), respCenterHead.toResponsibilityHead(), locationDescription, isActive);
     }
 
     public String getLocId() {
@@ -57,6 +59,10 @@ public class LocationView implements ViewObject {
 
     public RespCenterHeadView getRespCenterHead() {
         return respCenterHead;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     @Override

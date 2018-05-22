@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EssCachedLocationService implements LocationService, CachingService<String> {
@@ -69,9 +70,16 @@ public class EssCachedLocationService implements LocationService, CachingService
 
     /** {@inheritDoc} */
     @Override
-    public List<Location> getLocations() {
+    public List<Location> getAllLocations() {
         return getLocationCacheTree().getLocations();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Location> getActiveLocations() {
+        return getAllLocations().stream().filter(Location::isActive).collect(Collectors.toList());
+    }
+
 
     /** --- Caching Service Implemented Methods ---
      * @see CachingService */
@@ -138,7 +146,7 @@ public class EssCachedLocationService implements LocationService, CachingService
         locationCache.acquireWriteLockOnKey(LOCATION_CACHE_KEY);
         try {
             locationCache.remove(LOCATION_CACHE_KEY);
-            locationCache.put(new Element(LOCATION_CACHE_KEY, new LocationCacheTree(locationDao.getLocations())));
+            locationCache.put(new Element(LOCATION_CACHE_KEY, new LocationCacheTree(locationDao.getLocations(false))));
         }
         finally {
             locationCache.releaseWriteLockOnKey(LOCATION_CACHE_KEY);
