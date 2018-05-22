@@ -3,6 +3,7 @@ package gov.nysenate.ess.time.dao.attendance;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
+import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.time.model.attendance.AttendanceRecord;
 
 import java.time.LocalDate;
@@ -18,6 +19,11 @@ public interface AttendanceDao
      */
     SortedSet<Integer> getOpenAttendanceYears(Integer empId);
 
+    /**
+     * Get a range set of dates encompassing non-closed attendance years for the given employee.
+     * @param empId Integer
+     * @return RangeSet<LocalDate>
+     */
     RangeSet<LocalDate> getOpenDates(Integer empId);
 
     /**
@@ -39,6 +45,15 @@ public interface AttendanceDao
      * @return List<AttendanceRecord>
      */
     List<AttendanceRecord> getOpenAttendanceRecords(Integer empId);
+
+    /**
+     * Attempt to get an attendance record for the given employee / pay period.
+     * @param empId int
+     * @param period {@link PayPeriod}
+     * @return {@link AttendanceRecord}
+     * @throws AttendanceRecordNotFoundEx if the requested record is not found
+     */
+    AttendanceRecord getAttendanceRecord(Integer empId, PayPeriod period) throws AttendanceRecordNotFoundEx;
 
     /**
      * Get attendance records for the specified employee for the given year
