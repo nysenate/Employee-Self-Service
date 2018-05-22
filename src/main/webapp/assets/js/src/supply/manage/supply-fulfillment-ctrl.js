@@ -67,7 +67,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     // Refresh data every minute.
     var intervalPromise = $interval(function () {
         updateShipments()
-    }, 60000);
+    }, 10000);
     // Stop refreshing when we leave this page.
     $scope.$on('$destroy', function () {
         $interval.cancel(intervalPromise)
