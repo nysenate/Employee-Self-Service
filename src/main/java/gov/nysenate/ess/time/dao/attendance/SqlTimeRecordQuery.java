@@ -67,10 +67,10 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
     GET_LAST_UPDATE_DATE_TIME(
             "SELECT GREATEST(\n" +
             "   CAST (MAX(rec.DTTXNUPDATE) AS TIMESTAMP),\n" +
-            "   CAST (MAX(ent.DTTXNUPDATE) AS TIMESTAMP)\n" +
+            "   CAST (NVL(MAX(ent.DTTXNUPDATE), '01-JAN-70') AS TIMESTAMP)\n" +
             ") AS MAX_DTTXNUPDATE\n" +
             "FROM ${tsSchema}.PM23TIMESHEET rec\n" +
-            "JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+            "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
             "  ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n"
     ),
 
