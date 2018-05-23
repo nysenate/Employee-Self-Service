@@ -401,6 +401,15 @@ public class EssTimeRecordManager implements TimeRecordManager
         RangeSet<LocalDate> attendanceRecDates = TreeRangeSet.create();
         attendanceRecords.stream().map(AttendanceRecord::getDateRange).forEach(attendanceRecDates::add);
 
+        List<TimeRecord> apRecords = timeRecordService.getTimeRecords(
+                Collections.singleton(empId), periods, Collections.singleton(TimeRecordStatus.APPROVED_PERSONNEL));
+        RangeSet<LocalDate> apRecordRanges = apRecords.stream()
+                .map(TimeRecord::getDateRange)
+                .reduce(ImmutableRangeSet.<LocalDate>builder(),
+                        ImmutableRangeSet.Builder::add,
+                        (b1, b2) -> b1.addAll(b2.build()))
+                .build();
+
         return periods.stream()
                 .sorted()
                 .map(PayPeriod::getDateRange)
@@ -410,6 +419,8 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .flatMap(range -> activeDates.subRangeSet(range).asRanges().stream())
                 // Trim ranges, eliminating dates where the employee was a senator
                 .flatMap(range -> senatorDates.complement().subRangeSet(range).asRanges().stream())
+                // Trim ranges, eliminating dates with approved records
+                .flatMap(range -> apRecordRanges.complement().subRangeSet(range).asRanges().stream())
                 // Filter out ranges that are covered by already entered attendance periods
                 .filter(range -> !attendanceRecDates.encloses(range))
                 // Filter out ranges where the employee isn't required to enter time records
