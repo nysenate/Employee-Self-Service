@@ -8,7 +8,7 @@
   </div>
 
   <div class="margin-10">
-    <div ng-if="app.attachments.length > 0">
+    <div>
       <h1>Supporting Documentation</h1>
       <p>If necessary, attach any supporting documentation here.</p>
       <div ng-repeat="attachment in app.attachments" class="travel-attachment-container">
