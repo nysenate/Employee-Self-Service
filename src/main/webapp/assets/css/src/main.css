@@ -5665,6 +5665,21 @@ ul.inactive-employee-email-list {
 .expenses-container h4 {
   margin: 5px;
 }
+/** Attachment styling */
+.travel-attachment-container {
+  margin: 10px;
+}
+.travel-attachment-container > .travel-attachment-filename {
+  margin: 5px;
+  color: #5a5a5a;
+  font-family: monospace;
+}
+.travel-attachment-container > .travel-attachment-filename > .icon-cross {
+  margin: 5px;
+  vertical-align: middle;
+  color: #B90504;
+  font-size: large;
+}
 /** Travel Itinerary styling */
 .itinerary-address {
   width: 48%;
