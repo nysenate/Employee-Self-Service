@@ -8,6 +8,7 @@ import gov.nysenate.ess.travel.route.Route;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,7 @@ public class TravelApplication {
         this.parking = Dollars.ZERO;
         this.alternate = Dollars.ZERO;
         this.registration = Dollars.ZERO;
+        this.attachments = new ArrayList<>();
     }
 
     /**
@@ -182,5 +184,13 @@ public class TravelApplication {
 
     public void setAttachments(List<TravelAttachment> attachments) {
         this.attachments = attachments;
+    }
+
+    public void addAttachments(List<TravelAttachment> attachments) {
+        getAttachments().addAll(attachments);
+    }
+
+    public void deleteAttachment(String attachmentId) {
+        getAttachments().removeIf(a -> a.getId().equals(attachmentId));
     }
 }

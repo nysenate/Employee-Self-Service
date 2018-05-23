@@ -32,6 +32,7 @@ public class TravelApplicationView implements ViewObject {
     private String startDate;
     private String endDate;
     private String submittedDateTime;
+    private List<TravelAttachmentView> attachments;
 
     public TravelApplicationView() {
     }
@@ -56,6 +57,7 @@ public class TravelApplicationView implements ViewObject {
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
+        attachments = app.getAttachments().stream().map(TravelAttachmentView::new).collect(Collectors.toList());
     }
 
     public TravelApplication toTravelApplication() {
@@ -71,7 +73,7 @@ public class TravelApplicationView implements ViewObject {
         app.setParking(new Dollars(parkingAllowance));
         app.setAlternate(new Dollars(alternateAllowance));
         app.setRegistration(new Dollars(registrationAllowance));
-        // TODO Attachments
+        app.setAttachments(attachments.stream().map(TravelAttachmentView::toTravelAttachment).collect(Collectors.toList()));
         return app;
     }
 
@@ -221,6 +223,10 @@ public class TravelApplicationView implements ViewObject {
 
     public void setSubmittedDateTime(String submittedDateTime) {
         this.submittedDateTime = submittedDateTime;
+    }
+
+    public List<TravelAttachmentView> getAttachments() {
+        return attachments;
     }
 
     @Override

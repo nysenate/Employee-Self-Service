@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class TravelAttachment {
 
-    // The unique filename of this attachment.
+    // The id is the unique filename of this attachment.
     private final String id;
     private final String originalName;
     private final String contentType;

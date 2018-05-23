@@ -150,6 +150,24 @@
   }
 }
 
+/** Attachment styling */
+
+.travel-attachment-container {
+  .margin-10;
+  &>.travel-attachment-filename {
+    .margin-5;
+    color: darken(@gray, 15%);
+    font-family: monospace;
+    &>.icon-cross {
+      .margin-5;
+      vertical-align: middle;
+      color: @dark-red;
+      font-size: large;
+    }
+  }
+}
+
+
 /** Travel Itinerary styling */
 
 .itinerary-address {

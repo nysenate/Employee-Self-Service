@@ -2,10 +2,10 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
-                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi', 'TravelApplicationAttachmentApi', 'TravelModeOfTransportationApi', travelAppController]);
+                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi', 'TravelModeOfTransportationApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
-                             outboundApi, returnApi, expensesApi, travelApplicationApi, attachmentApi, motApi) {
+                             outboundApi, returnApi, expensesApi, travelApplicationApi, motApi) {
 
     /* --- Container Page --- */
 
@@ -271,7 +271,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
  * Copying model data ensures that modifications are not made until the user clicks the 'Next' or 'Save' buttons.
  */
 
-essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationAttachmentApi', '$http', function (appProps, attachmentApi, $http) {
+essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAttachmentDelete', function (appProps, $http, deleteAttachmentApi) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-purpose',
         scope: true,
@@ -279,25 +279,36 @@ essTravel.directive('travelApplicationPurpose', ['appProps', 'TravelApplicationA
             // Copy current purpose of travel for use in this directive.
             $scope.purposeOfTravel = angular.copy($scope.app.purposeOfTravel);
 
+            var attachmentInput = angular.element("#addAttachment");
+            attachmentInput.on('change', uploadAttachment);
+
             console.log($scope.app);
 
+            function uploadAttachment(event) {
+                $scope.openLoadingModal();
 
-            // WIP Save uploads functionality.
-            $scope.save = function(files) {
-                var files = angular.element("#file")[0].files;
-
+                var files = attachmentInput[0].files;
                 var formData = new FormData();
                 for(var i = 0; i < files.length; i++) {
                     formData.append("file", files[i]);
                 }
 
-                $http.post(appProps.apiPath + '/travel/application/upload', formData, {
-                    // Allow $http to choose the right 'content-type'.
+                // Use $http instead of $resource because it can handle formData.
+                $http.post(appProps.apiPath + '/travel/application/uncompleted/' + $scope.app.id + '/attachment', formData, {
+                    // Allow $http to choose the correct 'content-type'.
                     headers: {'Content-Type': undefined},
                     transformRequest: angular.identity
                 }).then(function (response) {
+                    // FIXME This creates a new local scope app, does not overwrite parent $scope.app.
+                    $scope.app = response.data.result;
+                }).finally($scope.closeLoadingModal)
+            }
+
+            $scope.deleteAttachment = function(attachment) {
+                deleteAttachmentApi.delete({id: $scope.app.id, attachmentId: attachment.id}, function(response) {
                     console.log(response);
-                });
+                    $scope.app = response.result;
+                })
             }
         }
     }

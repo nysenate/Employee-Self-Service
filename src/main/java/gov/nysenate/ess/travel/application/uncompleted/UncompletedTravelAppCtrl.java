@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -146,17 +147,39 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * File upload test endpoint
+     * Upload one or more files to attach to a application.
      */
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse upload(@RequestParam("file") MultipartFile[] files) throws IOException {
+    @RequestMapping(value = "/{id}/attachment", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse addAttachments(@PathVariable int id, @RequestParam("file") MultipartFile[] files) throws IOException {
+        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        TravelApplication app = appView.toTravelApplication();
+
+        List<TravelAttachment> attachments = new ArrayList<>();
         for (MultipartFile file : files) {
-            TravelAttachment attach = uploadProcessor.uploadTravelAttachment(file);
-            System.out.println("");
+            attachments.add(uploadProcessor.uploadTravelAttachment(file));
         }
-        return new SimpleResponse();
+        app.addAttachments(attachments);
+        appView = new TravelApplicationView(app);
+        appView = appDao.saveUncompleteTravelApp(appView);
+        return new ViewObjectResponse<>(appView);
     }
 
+
+    /**
+     * Delete an attachment
+     * @param id
+     * @param attachmentId
+     * @return
+     */
+    @RequestMapping(value = "/{id}/attachment/{attachmentId}", method = RequestMethod.DELETE)
+    public BaseResponse deleteAttachment(@PathVariable int id, @PathVariable String attachmentId) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        TravelApplication app = appView.toTravelApplication();
+        app.deleteAttachment(attachmentId);
+        appView = new TravelApplicationView(app);
+        appView = appDao.saveUncompleteTravelApp(appView);
+        return new ViewObjectResponse<>(appView);
+    }
 
     private int getSubjectEmployeeId() {
         SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();

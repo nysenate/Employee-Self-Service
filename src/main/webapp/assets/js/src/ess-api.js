@@ -265,9 +265,11 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
     return $resource(appProps.apiPath + '/travel/application.json')
 }]);
 
-essApi.factory('TravelApplicationAttachmentApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/upload')
+essApi.factory('TravelAttachmentDelete', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/attachment/:attachmentId',
+        {id: '@id', attachmentId: '@attachmentId'})
 }]);
+
 
 essApi.factory('TravelUserConfigApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/user/config')
