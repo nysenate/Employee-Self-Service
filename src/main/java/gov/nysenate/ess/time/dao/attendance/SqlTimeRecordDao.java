@@ -34,8 +34,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.GET_EXISTING_TREC_ID;
 import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.INSERT_TIME_REC;
 import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.UPDATE_TIME_REC_SQL;
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_PERSONNEL;
 
 @Repository
 public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
@@ -126,25 +128,36 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     @Override
     public boolean saveRecord(TimeRecord record) {
         boolean isUpdate = true;
+        int updated;
         if (record.getTimeRecordId() == null) {
             // Attempt to find existing record for employee with matching begin date
             // If that record exists, use that record id
-            record.setTimeRecordId(getExistingTimeRecordId(record));
+            record.setTimeRecordId(getExistingTimeRecordIdForUpdate(record));
         }
 
         MapSqlParameterSource params = getTimeRecordParams(record);
-        if (record.getTimeRecordId() == null ||
-                remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params)==0) {
+        if (record.getTimeRecordId() == null) {
             isUpdate = false;
             KeyHolder tsIdHolder = new GeneratedKeyHolder();
             final String tsIdCol = "NUXRTIMESHEET";
             String[] keyCols = {tsIdCol};
-            if (remoteNamedJdbc.update(INSERT_TIME_REC.getSql(schemaMap()), params, tsIdHolder, keyCols) == 0) {
-                return false;
-            }
+            updated = remoteNamedJdbc.update(INSERT_TIME_REC.getSql(schemaMap()), params, tsIdHolder, keyCols);
             record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get(tsIdCol)).toBigInteger());
             record.setUpdateDate(LocalDateTime.now());
+        } else {
+            updated = remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params);
         }
+
+        if (updated != 1) {
+            throw new IllegalStateException("Unexpected number of updates for time record " +
+                    (isUpdate ? "update" : "insert") + ": " +
+                    updated + " updates for id=" + record.getTimeRecordId() + " " +
+                    "empId=" + record.getEmployeeId() + " " +
+                    "beginDate=" + record.getBeginDate() + " " +
+                    "endDate=" + record.getEndDate()
+            );
+        }
+
         // Insert each entry from the time record
         final Optional<TimeRecord> oldRecord = isUpdate
                 ? Optional.of(getTimeRecord(record.getTimeRecordId()))
@@ -253,19 +266,25 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     /* --- Internal Methods --- */
 
     /**
-     * Try to find a time record id for a time record
-     * with the same employee id and begin date as the given time record
+     * Try to find a time record id for a time record with an overlapping date range
+     * that can be updated.
+     *
      * @param record {@link TimeRecord}
      * @return BigInteger
      */
-    private BigInteger getExistingTimeRecordId(TimeRecord record) {
+    private BigInteger getExistingTimeRecordIdForUpdate(TimeRecord record) {
         MapSqlParameterSource params = getTimeRecordParams(record);
         // Attempt to find existing record for employee with matching begin date
         // If that record exists, use that record id
         try {
-            BigDecimal id = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_EXISTING_TREC_ID.getSql(schemaMap()),
-                    params, BigDecimal.class);
-            return id.toBigInteger();
+            Map<String, Object> resultMap =
+                    remoteNamedJdbc.queryForMap(GET_EXISTING_TREC_ID.getSql(schemaMap()), params);
+            TimeRecordStatus status = TimeRecordStatus.valueOfCode(String.valueOf(resultMap.get("CDTSSTAT")));
+            BigInteger id = ((BigDecimal) resultMap.get("NUXRTIMESHEET")).toBigInteger();
+            if (status == APPROVED_PERSONNEL) {
+                throw new IllegalRecordModificationEx(id, "Existing record is approved by personnel");
+            }
+            return id;
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }

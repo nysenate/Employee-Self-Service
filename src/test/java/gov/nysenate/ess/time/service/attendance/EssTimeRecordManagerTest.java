@@ -33,6 +33,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 @Category(SillyTest.class)
 public class EssTimeRecordManagerTest extends BaseTest
 {
@@ -91,7 +93,9 @@ public class EssTimeRecordManagerTest extends BaseTest
     @Test
     @Transactional(value = DatabaseConfig.remoteTxManager)
     public void ensureAllRecordsTest() {
+        Stopwatch started = Stopwatch.createStarted();
         manager.ensureAllActiveRecords();
+        logger.info("TRM run completed in {}s", started.stop().elapsed(SECONDS));
     }
 
     @Test

@@ -67,10 +67,10 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
     GET_LAST_UPDATE_DATE_TIME(
             "SELECT GREATEST(\n" +
             "   CAST (MAX(rec.DTTXNUPDATE) AS TIMESTAMP),\n" +
-            "   CAST (MAX(ent.DTTXNUPDATE) AS TIMESTAMP)\n" +
+            "   CAST (NVL(MAX(ent.DTTXNUPDATE), '01-JAN-70') AS TIMESTAMP)\n" +
             ") AS MAX_DTTXNUPDATE\n" +
             "FROM ${tsSchema}.PM23TIMESHEET rec\n" +
-            "JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+            "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
             "  ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n"
     ),
 
@@ -110,19 +110,11 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "   AND CDTSSTAT != 'AP'"
     ),
     GET_EXISTING_TREC_ID(
-            "SELECT NUXRTIMESHEET\n" +
+            "SELECT NUXRTIMESHEET, CDTSSTAT\n" +
             "FROM ${tsSchema}.PM23TIMESHEET ts\n" +
             "WHERE NUXREFEM = :empId\n" +
             "  AND DTBEGIN <= :endDate\n" +
-            "  AND DTEND >= :beginDate\n" +
-            "  AND NOT EXISTS (\n" +
-            "    SELECT 1\n" +
-            "    FROM ${masterSchema}.PD23ATTEND at\n" +
-            "    WHERE at.CDSTATUS = 'A'\n" +
-            "      AND ts.NUXREFEM = at.NUXREFEM\n" +
-            "      AND ts.DTBEGIN <= at.DTEND\n" +
-            "      AND ts.DTEND >= at.DTBEGIN\n" +
-            "  )"
+            "  AND DTEND >= :beginDate"
     ),
 
     INSERT_TIME_REC(
@@ -140,7 +132,8 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "  DTBEGIN = :beginDate, DTEND = :endDate, DEREMARKS = :remarks, NUXREFSV = :supervisorId,\n" +
             "  DEEXCEPTION = :excDetails, DTPROCESS = :procDate, NAUSER = :lastUser, CDRESPCTRHD = :respCtr,\n" +
             "  NUXREFAPR = :approvalEmpId\n" +
-            "WHERE NUXRTIMESHEET = :timesheetId"
+            "WHERE NUXRTIMESHEET = :timesheetId\n" +
+            "  AND CDTSSTAT != 'AP'"
     ),
 
 

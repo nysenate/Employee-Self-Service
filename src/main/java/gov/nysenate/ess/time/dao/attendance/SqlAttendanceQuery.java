@@ -72,6 +72,12 @@ public enum SqlAttendanceQuery implements BasicSqlQuery {
         "   AND (rec.DTBEGIN BETWEEN :startDate AND :endDate\n" +
         "       OR rec.DTEND BETWEEN :startDate AND :endDate)"
     ),
+
+    GET_ATTENDANCE_RECORD (
+        GET_ATTENDANCE_RECORDS_SELECT.getSql() + "\n" +
+        "  AND rec.NUXREFEM = :empId\n" +
+        "  AND rec.DTEND = :endDate"
+    )
     ;
 
     private String sql;

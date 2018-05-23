@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -256,11 +257,19 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
             if (empAckReport.getAcks().get(0).getAck() != null) {
                 ackedTime = empAckReport.getAcks().get(0).getAck().getTimestamp().withNano(0);
             }
+            String respCenter = "";
+            try {
+                respCenter = empAckReport.getEmployee().getRespCenter().getHead().getShortName();
+            }
+            catch (Exception e) {
+                //No need to do anything. This means that the employee does not have a responsibility center
+            }
+
             csvPrinter.printRecord(
                     empAckReport.getEmployee().getEmployeeId(),
                     empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
                     empAckReport.getEmployee().getEmail(),
-                    empAckReport.getEmployee().getRespCenter().getHead().getShortName(),
+                    respCenter,
                     empAckReport.getAcks().get(0).getAckDoc().getTitle(),
                     empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime().withNano(0),
                     ackedTime);

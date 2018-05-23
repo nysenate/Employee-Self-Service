@@ -13,7 +13,7 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-file-exists": "^0.1.4",
-    "libxmljs": "^0.18.7"
+    "libxmljs": "^0.18.8"
   },
   "scripts": {
     "postinstall": "bower update && grunt"

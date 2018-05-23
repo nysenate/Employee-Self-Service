@@ -12,22 +12,20 @@ public final class Location
     private Address address;
     private ResponsibilityHead responsibilityHead;
     private String locationDescription;
+    private boolean isActive;
 
     public Location(LocationId locId) {
         this.locId = locId;
+        this.isActive = true;
     }
 
-    public Location(LocationId locId, Address address, ResponsibilityHead responsibilityHead) {
-        this.locId = locId;
-        this.address = address;
-        this.responsibilityHead = responsibilityHead;
-    }
-
-    public Location(LocationId locId, Address address, ResponsibilityHead responsibilityHead, String locationDescription) {
+    public Location(LocationId locId, Address address, ResponsibilityHead responsibilityHead,
+                    String locationDescription, boolean isActive) {
         this.locId = locId;
         this.address = address;
         this.responsibilityHead = responsibilityHead;
         this.locationDescription = locationDescription;
+        this.isActive = isActive;
     }
 
     public LocationId getLocId() {
@@ -44,6 +42,10 @@ public final class Location
 
     public ResponsibilityHead getResponsibilityHead() {
         return responsibilityHead;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     @Override

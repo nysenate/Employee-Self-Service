@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
 import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
 import gov.nysenate.ess.core.model.acknowledgment.ReportAck;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +22,11 @@ public class AcknowledgmentReportService implements EssAcknowledgmentReportServi
     private static final Logger logger = LoggerFactory.getLogger(AcknowledgmentReportService.class);
 
     private static final Comparator<EmpAckReport> respCenterComparator = Comparator.comparing(
-            (report) -> report.getEmployee().getRespCenter().getHead().getShortName()
+            (report) -> Optional.ofNullable(report.getEmployee())
+                    .map(Employee::getRespCenter)
+                    .map(ResponsibilityCenter::getHead)
+                    .map(ResponsibilityHead::getShortName)
+                    .orElse("")
     );
 
     private final EmployeeInfoService employeeInfoService;

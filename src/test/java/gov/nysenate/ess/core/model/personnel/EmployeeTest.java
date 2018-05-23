@@ -71,7 +71,7 @@ public class EmployeeTest
         emp1.setTitle("Mr");
         emp1.setUid("sample");
         emp1.setUpdateDateTime(LocalDateTime.now());
-        emp1.setWorkLocation(new Location(new LocationId("A42FB", 'W'), new Address(), new ResponsibilityHead()));
+        emp1.setWorkLocation(new Location(new LocationId("A42FB", 'W')));
         emp1.setWorkPhone("987987987");
 
         Employee emp2 = new Employee(emp1);

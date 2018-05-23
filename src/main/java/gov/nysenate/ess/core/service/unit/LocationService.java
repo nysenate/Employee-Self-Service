@@ -17,5 +17,13 @@ public interface LocationService {
      */
     Location getLocation(LocationId locId);
 
-    List<Location> getLocations();
+    /**
+     * Returns all locations, including inactive locations.
+     */
+    List<Location> getAllLocations();
+
+    /**
+     * Returns all active locations.
+     */
+    List<Location> getActiveLocations();
 }
