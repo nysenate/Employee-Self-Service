@@ -1,44 +1,79 @@
 package gov.nysenate.ess.travel.route;
 
-import java.util.HashMap;
-import java.util.Map;
 
-public enum ModeOfTransportation {
-    PERSONAL_AUTO("Personal Auto", true),
-    SENATE_VEHICLE("Senate Vehicle", false),
-    TRAIN("Train", false),
-    AIRPLANE("Airplane", false),
-    OTHER("Other", false);
+import java.util.Objects;
 
-    private final String displayName;
-    private final boolean isMileageReimbursable;
+/**
+ * Describes the method of travel for the leg of a travel application.
+ * Mostly wraps {@link MethodOfTravel}, however it adds a customizable
+ * description field which is entered by the user if their MethodOfTravel is OTHER.
+ */
+public class ModeOfTransportation {
 
-    ModeOfTransportation(String displayName, boolean isMileageReimbursable) {
-        this.displayName = displayName;
-        this.isMileageReimbursable = isMileageReimbursable;
-    }
+    private final MethodOfTravel methodOfTravel;
+    private final String description;
 
-    public static ModeOfTransportation of(String displayName) {
-        ModeOfTransportation mot = map.get(displayName);
-        if (mot == null) {
-            throw new IllegalArgumentException("Invalid display name: " + displayName);
-        }
-        return mot;
+    /**
+     * Static instances, Use one of these unless MethodOfTravel is OTHER.
+     */
+    public static final ModeOfTransportation PERSONAL_AUTO =
+            new ModeOfTransportation(MethodOfTravel.PERSONAL_AUTO, MethodOfTravel.PERSONAL_AUTO.getDisplayName());
+
+    public static final ModeOfTransportation SENATE_VEHICLE =
+            new ModeOfTransportation(MethodOfTravel.SENATE_VEHICLE, MethodOfTravel.SENATE_VEHICLE.getDisplayName());
+
+    public static final ModeOfTransportation CARPOOL =
+            new ModeOfTransportation(MethodOfTravel.CARPOOL, MethodOfTravel.CARPOOL.getDisplayName());
+
+    public static final ModeOfTransportation TRAIN =
+            new ModeOfTransportation(MethodOfTravel.TRAIN, MethodOfTravel.TRAIN.getDisplayName());
+
+    public static final ModeOfTransportation AIRPLANE =
+            new ModeOfTransportation(MethodOfTravel.AIRPLANE, MethodOfTravel.AIRPLANE.getDisplayName());
+
+    /**
+     * Should use static instances above whenever possible.
+     * This constructor is useful when MethodOfTravel = OTHER
+     * and when instanciating from a view.
+     * @param methodOfTravel
+     * @param description
+     */
+    public ModeOfTransportation(MethodOfTravel methodOfTravel, String description) {
+        this.methodOfTravel = methodOfTravel;
+        this.description = description;
     }
 
     public boolean qualifiesForMileageReimbursement() {
-        return isMileageReimbursable;
+        return getMethodOfTravel().qualifiesForMileageReimbursement();
     }
 
-
-    public String getDisplayName() {
-        return displayName;
+    public MethodOfTravel getMethodOfTravel() {
+        return methodOfTravel;
     }
 
-    private static final Map<String, ModeOfTransportation> map = new HashMap<>(values().length, 1);
+    public String getDescription() {
+        return description;
+    }
 
-    static {
-        for (ModeOfTransportation mot: values())
-            map.put(mot.displayName, mot);
+    @Override
+    public String toString() {
+        return "ModeOfTransportation{" +
+                "methodOfTravel=" + methodOfTravel +
+                ", description='" + description + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ModeOfTransportation that = (ModeOfTransportation) o;
+        return methodOfTravel == that.methodOfTravel &&
+                Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(methodOfTravel, description);
     }
 }

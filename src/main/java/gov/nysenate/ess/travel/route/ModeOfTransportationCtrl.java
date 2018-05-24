@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,11 +18,14 @@ import java.util.stream.Collectors;
 public class ModeOfTransportationCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public BaseResponse getModesOfTransportation() {
-        List<String> mots = Arrays.stream(ModeOfTransportation.values())
-                .map(ModeOfTransportation::getDisplayName)
-                .collect(Collectors.toList());
-        return ListViewResponse.ofStringList(mots, "result", mots.size(), LimitOffset.ALL);
+    public BaseResponse getMethodsOfTravel() {
+        List<ModeOfTransportation> mots = new ArrayList<>();
+        mots.add(ModeOfTransportation.PERSONAL_AUTO);
+        mots.add(ModeOfTransportation.SENATE_VEHICLE);
+        mots.add(ModeOfTransportation.CARPOOL);
+        mots.add(ModeOfTransportation.TRAIN);
+        mots.add(ModeOfTransportation.AIRPLANE);
+        mots.add(new ModeOfTransportation(MethodOfTravel.OTHER, ""));
+        return ListViewResponse.of(mots.stream().map(ModeOfTransportationView::new).collect(Collectors.toList()));
     }
-
 }

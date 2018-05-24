@@ -39,7 +39,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         $scope.pageState = $scope.STATES.PURPOSE;
         $scope.appState = $scope.STATES.PURPOSE;
         initApplication(appProps.user.employeeId) ;
-        initModesOfTransportation();
+        initMethodsOfTravel();
     }
 
     init();
@@ -50,7 +50,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }, $scope.handleErrorResponse)
     }
 
-    function initModesOfTransportation() {
+    function initMethodsOfTravel() {
         motApi.get({}, function (response) {
             $scope.modesOfTransportation = response.result;
         }, $scope.handleErrorResponse);
@@ -343,7 +343,7 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
 
             $scope.deleteSegment = function() {
                 $scope.route.outboundLegs.pop();
-            }
+            };
         }
     }
 }]);

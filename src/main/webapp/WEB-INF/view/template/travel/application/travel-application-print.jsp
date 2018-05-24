@@ -99,7 +99,7 @@
       <div class="travel-print-mot-box">
         <h4 style="margin: 0px 0px 5px 0px;">Mode of Transportation</h4>
         <div ng-repeat="mode in modeOfTransportations" style="display: inline;">
-          <label>{{mode}} </label><input type="checkbox" ng-checked="containsMot(mode)" onclick="return false;">
+          <label>{{mode.displayName}} </label><input type="checkbox" ng-checked="containsMot(mode)" onclick="return false;">
           <span ng-if="!$last"><br/></span>
         </div>
       </div>

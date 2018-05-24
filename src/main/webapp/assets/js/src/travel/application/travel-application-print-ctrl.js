@@ -42,9 +42,9 @@ function appPrintCtrl($scope, locationService, travelAppApi, motApi) {
     $scope.containsMot = function(mot) {
         var appModesOfTransportation = [];
         $scope.app.route.outgoingLegs.forEach(function(leg) {
-            appModesOfTransportation.push(leg.modeOfTransportation);
+            appModesOfTransportation.push(leg.modeOfTransportation.methodOfTravel);
         });
 
-        return appModesOfTransportation.includes(mot);
+        return appModesOfTransportation.includes(mot.methodOfTravel);
     };
 }

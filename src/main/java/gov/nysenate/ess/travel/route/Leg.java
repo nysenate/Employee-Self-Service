@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.route;
 import gov.nysenate.ess.core.model.unit.Address;
 
 import java.time.LocalDate;
-import java.util.EnumSet;
 import java.util.Objects;
 
 public class Leg {
@@ -78,7 +77,7 @@ public class Leg {
                 isMileageRequested == leg.isMileageRequested &&
                 Objects.equals(from, leg.from) &&
                 Objects.equals(to, leg.to) &&
-                modeOfTransportation == leg.modeOfTransportation &&
+                Objects.equals(modeOfTransportation, leg.modeOfTransportation) &&
                 Objects.equals(travelDate, leg.travelDate);
     }
 

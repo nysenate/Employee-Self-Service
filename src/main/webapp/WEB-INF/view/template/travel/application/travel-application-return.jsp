@@ -44,11 +44,11 @@
               <div class="itinerary-mot">
                 <label>Mode of Transportation:</label><br/>
                 <select ng-model="leg.modeOfTransportation"
-                        ng-options="mode for mode in modesOfTransportation"></select>
+                        ng-options="mode.displayName for mode in modesOfTransportation track by mode.methodOfTravel"></select>
               </div>
-              <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation == 'Other'">
+              <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel == 'OTHER'">
                 <label>Please Specify:</label><br/>
-                <input type="text" size="17">
+                <input type="text" size="17" ng-model="leg.modeOfTransportation.description">
               </div>
             </div>
             <div class="clear"></div>

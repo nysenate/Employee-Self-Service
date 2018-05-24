@@ -9,7 +9,7 @@ essTravel.directive('destinationSelectionModal', ['appProps', function (appProps
 }])
     .controller('DestinationSelectionModalCtrl', ['$scope', 'modals', 'TravelModeOfTransportationApi', destSelectionCtrl]);
 
-function destSelectionCtrl($scope, modals, modeOfTransportationApi) {
+function destSelectionCtrl($scope, modals, motApi) {
 
     const DATEPICKER_FORMAT = 'MM/DD/YYYY';
     const ISO_FORMAT = 'YYYY-MM-DD';
@@ -66,7 +66,7 @@ function destSelectionCtrl($scope, modals, modeOfTransportationApi) {
     };
 
     $scope.init = function() {
-        modeOfTransportationApi.get(function(response) {
+        motApi.get(function(response) {
             $scope.modesOfTransportation = response.result;
         });
         if (modals.params().destination) {
