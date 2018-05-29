@@ -12,10 +12,12 @@ public class AddressView implements ViewObject
     protected String addr1 = "";
     protected String addr2 = "";
     protected String city = "";
+    protected String county = "";
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
     protected String formattedAddress = "";
+    protected String formattedAddressWithCounty = "";
 
     public AddressView() {}
 
@@ -24,13 +26,17 @@ public class AddressView implements ViewObject
         this.addr2 = address.getAddr2();
         this.city = address.getCity();
         this.state = address.getState();
+        this.county = address.getCounty();
         this.zip5 = address.getZip5();
         this.zip4 = address.getZip4();
         formattedAddress = address.toString();
+        formattedAddressWithCounty = address.getFromattedAddressWithCounty();
     }
 
     public Address toAddress() {
-        return new Address(addr1, addr2, city, state, zip5, zip4);
+        Address address = new Address(addr1, addr2, city, state, zip5, zip4);
+        address.setCounty(county);
+        return address;
     }
 
     @Override
@@ -55,6 +61,11 @@ public class AddressView implements ViewObject
     }
 
     @XmlElement
+    public String getCounty() {
+        return county;
+    }
+
+    @XmlElement
     public String getState() {
         return state;
     }
@@ -72,5 +83,10 @@ public class AddressView implements ViewObject
     @XmlElement
     public String getFormattedAddress() {
         return formattedAddress;
+    }
+
+    @XmlElement
+    public String getFormattedAddressWithCounty() {
+        return formattedAddressWithCounty;
     }
 }

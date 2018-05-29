@@ -12,6 +12,7 @@ public class Address {
     protected String addr1 = "";
     protected String addr2 = "";
     protected String city = "";
+    protected String county = "";
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
@@ -60,6 +61,20 @@ public class Address {
         }
     }
 
+    public String getFromattedAddressWithCounty() {
+        if (isParsed()) {
+            return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
+                    + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
+                    + (!city.isEmpty() ? " " + city + "," : "")
+                    + (!county.isEmpty() ? " " + county + "," : "")
+                    + (!state.isEmpty() ? " " + state : "")
+                    + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-" + zip4 : "")).trim();
+        }
+        else {
+            return addr1;
+        }
+    }
+
     /**
      * Normalization applied:
      * - Remove the dash within the building number
@@ -98,6 +113,14 @@ public class Address {
         if (city != null) {
             this.city = city;
         }
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
     }
 
     public String getState() {

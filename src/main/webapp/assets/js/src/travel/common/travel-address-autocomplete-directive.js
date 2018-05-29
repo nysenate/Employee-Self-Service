@@ -28,13 +28,13 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', '$q', function (ap
 
             var address = {};
             autocomplete.addListener('place_changed', function() {
-                console.log("Place Changed");
                 var place = autocomplete.getPlace();
 
                 // Convert place result into address object
                 address.formattedAddress = place.formatted_address;
                 address.addr1 = parseAddress1(place);
                 address.city = parseCity(place);
+                address.county = parseCounty(place);
                 address.state = parseState(place);
                 address.zip5 = parseZip5(place);
 
@@ -56,6 +56,10 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', '$q', function (ap
             function parseCity(place) {
                 var city = getTypeName(place, 'locality');
                 return city === null ? getTypeName(place, 'administrative_area_level_3'): city;
+            }
+
+            function parseCounty(place) {
+                return getTypeName(place, 'administrative_area_level_2');
             }
 
             function parseState(place) {
