@@ -337,6 +337,14 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
                 $scope.route.outboundLegs.push(segment);
             };
 
+            $scope.setFromAddress = function(leg, address) {
+                leg.from = address;
+            };
+
+            $scope.setToAddress = function(leg, address) {
+                leg.to = address;
+            };
+
             $scope.isLastSegment = function(index) {
                 return $scope.route.outboundLegs.length - 1 === index;
             };
@@ -373,6 +381,14 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
                 segment.isMealsRequested = prevSeg.isMealsRequested;
                 segment.isLodgingRequested = prevSeg.isLodgingRequested;
                 $scope.route.returnLegs.push(segment);
+            };
+
+            $scope.setFromAddress = function(leg, address) {
+                leg.from = address;
+            };
+
+            $scope.setToAddress = function(leg, address) {
+                leg.to = address;
             };
 
             $scope.isLastSegment = function(index) {

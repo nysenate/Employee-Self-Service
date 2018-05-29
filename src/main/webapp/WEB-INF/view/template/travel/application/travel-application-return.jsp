@@ -20,7 +20,8 @@
               <label>From</label><br/>
               <input travel-address-autocomplete
                      ng-model="leg.from.formattedAddress"
-                     callback="leg.setFrom(address)"
+                     leg="leg"
+                     callback="setFromAddress(leg, address)"
                      placeholder="From Address"
                      type="text" size="40">
             </div>
@@ -34,7 +35,8 @@
               <label>To</label><br/>
               <input travel-address-autocomplete
                      ng-model="leg.to.formattedAddress"
-                     callback="leg.setTo(address)"
+                     leg="leg"
+                     callback="setToAddress(leg, address)"
                      placeholder="To Address"
                      type="text"
                      size="40">
