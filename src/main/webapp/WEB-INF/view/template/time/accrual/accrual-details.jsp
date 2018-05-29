@@ -135,7 +135,9 @@
       <h4 class="content-info">Actions</h4>
       <p class="accrual-report-link">
         <a target="_blank" title="Open a Printable View for this Record"
-           ng-href="{{reportUrl}}">Print Report</a>
+           ng-href="{{ctxPath}}/api/v1/attendance/report?empId={{accruals.empId}}&date={{accruals.payPeriod.endDate}}">
+          Print Report
+        </a>
         <br><br>
         <a href="" ng-click="close()" title="Close this Window">Exit</a>
       </p>
