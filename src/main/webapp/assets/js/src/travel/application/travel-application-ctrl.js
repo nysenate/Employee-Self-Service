@@ -439,12 +439,12 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
 
             $scope.anyReimbursableTravel = function() {
                 for(var i = 0; i < $scope.route.outboundLegs.length; i++) {
-                    if ($scope.route.outboundLegs[i].modeOfTransportation === 'Personal Auto') {
+                    if ($scope.route.outboundLegs[i].modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO') {
                         return true;
                     }
                 }
                 for(var y = 0; y < $scope.route.returnLegs.length; y++) {
-                    if ($scope.route.returnLegs[y].modeOfTransportation === 'Personal Auto') {
+                    if ($scope.route.returnLegs[y].modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO') {
                         return true;
                     }
                 }
@@ -452,7 +452,7 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
             };
 
             $scope.isReimbursableLeg = function(leg) {
-                return leg.modeOfTransportation === 'Personal Auto';
+                return leg.modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO';
             }
         }
     }
