@@ -74,13 +74,13 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="neutral-button" value="Cancel"
-               ng-click="cancelApplication()">
+               ng-click="outboundCallback(ACTIONS.CANCEL)">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="outboundCallback(route, ACTIONS.BACK)">
+               ng-click="outboundCallback(ACTIONS.BACK)">
         <input type="button" class="submit-button"
                value="Next"
                ng-disabled="origin.formattedAddress.length == 0"
-               ng-click="outboundCallback(route, ACTIONS.NEXT)">
+               ng-click="outboundCallback(ACTIONS.NEXT, route)">
       </div>
     </div>
   </div>

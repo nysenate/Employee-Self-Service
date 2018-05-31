@@ -9,9 +9,7 @@
 
 <div class="content-container text-align-center">
   <div>
-    <h1 class="content-info">Purpose of Travel
-    <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.PURPOSE)" class="icon-edit pointer" title="Edit purpose of travel"></span>
-    </h1>
+    <h1 class="content-info">Purpose of Travel</h1>
 
     <div class="margin-20" style="white-space:pre-wrap;">
       {{reviewApp.purposeOfTravel}}
@@ -22,9 +20,7 @@
 
 <div class="content-container">
   <div>
-    <h1 class="content-info">Outbound Segments
-      <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.OUTBOUND)" class="icon-edit pointer" title="Edit origin"></span>
-    </h1>
+    <h1 class="content-info">Outbound Segments</h1>
     <div class="padding-10">
 
       <form name="outboundForm">
@@ -86,9 +82,7 @@
 
 <div class="content-container">
   <div>
-    <h1 class="content-info">Return Segments
-      <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.RETURN)" class="icon-edit pointer" title="Edit origin"></span>
-    </h1>
+    <h1 class="content-info">Return Segments</h1>
     <div class="padding-10">
 
       <form name="returnForm">
@@ -149,9 +143,7 @@
 
 
 <div class="content-container text-align-center">
-  <h1 class="content-info">Expenses
-    <span ng-click="reviewCallback(ACTIONS.EDIT, STATES.ALLOWANCES)" class="icon-edit pointer" title="Edit expenses"></span>
-  </h1>
+  <h1 class="content-info">Expenses</h1>
   <div class="padding-10">
     <div class="grid" style="padding-left: 200px; padding-right: 200px;">
       <div class="col-6-12 margin-bottom-5">
@@ -237,7 +229,7 @@
   </div>
   <div class="travel-button-container">
     <input type="button" class="neutral-button" value="Cancel"
-           ng-click="cancelApplication()">
+           ng-click="reviewCallback(ACTIONS.CANCEL)">
     <input type="button" class="travel-neutral-button" value="Back"
            ng-click="reviewCallback(ACTIONS.BACK)">
     <input type="button" class="submit-button"

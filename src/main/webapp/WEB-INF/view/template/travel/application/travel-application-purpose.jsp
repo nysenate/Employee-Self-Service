@@ -31,10 +31,10 @@
   </div>
   <div class="travel-button-container">
     <input type="button" class="neutral-button" value="Cancel"
-           ng-click="cancelApplication()">
+           ng-click="purposeCallback(ACTIONS.CANCEL)">
     <input type="button" class="submit-button"
            value="Next"
            ng-disabled="purposeOfTravel.length == 0"
-           ng-click="purposeCallback(purposeOfTravel, ACTIONS.NEXT)">
+           ng-click="purposeCallback(ACTIONS.NEXT, purposeOfTravel)">
   </div>
 </div>

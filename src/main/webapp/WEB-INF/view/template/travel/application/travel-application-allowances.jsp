@@ -122,11 +122,11 @@
 
   <div class="travel-button-container">
     <input type="button" class="neutral-button" value="Cancel"
-           ng-click="cancelApplication()">
+           ng-click="allowancesCallback(ACTIONS.CANCEL)">
     <input type="button" class="travel-neutral-button" value="Back"
-           ng-click="allowancesCallback(destinations, allowances, ACTIONS.BACK)">
+           ng-click="allowancesCallback(ACTIONS.BACK)">
     <input type="button" class="submit-button"
            value="Next"
-           ng-click="allowancesCallback(destinations, allowances, ACTIONS.NEXT)">
+           ng-click="allowancesCallback(ACTIONS.NEXT, destinations, allowances)">
   </div>
 </div>

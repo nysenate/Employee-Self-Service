@@ -1,5 +1,13 @@
 var essTravel = angular.module('essTravel');
 
+/**
+ * The Main/Parent controller for the travel application form.
+ * This controller controls data updates and the page of the application.
+ *
+ * Each page of the application is implemented as its own directive (defined below).
+ * These page directives don't modify the application directly, but call callback functions
+ * that are defined in this Parent controller.
+ */
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
                       'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi',
@@ -8,43 +16,49 @@ essTravel.controller('NewTravelApplicationCtrl',
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
                              outboundApi, returnApi, expensesApi, travelApplicationApi, motApi, cancelApi) {
 
-    /* --- Container Page --- */
 
-    // Actions that can be performed by each page of the application.
+    /**
+     * States and Actions
+     * State - The currently active page of the application process.
+     * Action - The valid actions users can perform at any particular state.
+     *      ACTIONS.CANCEL - will prompt the user to cancel/delete their current application.
+     *      ACTIONS.BACK - will return to the previous state without saving any modifications.
+     *      ACTIONS.NEXT - will go to the next state and save all data entered or modifications made.
+     */
     $scope.ACTIONS = {
-        CANCEL: 5, // Cancel the entire application.
-        BACK: 10, // Go back to previous step of application.
-        NEXT: 15, // Go to next step of application
-        EDIT: 20 // Edit the field selected. Used in review page, activates the page corresponding to the field to be edited.
+        CANCEL: 5,
+        BACK: 10,
+        NEXT: 15
     };
 
-    // Each state represents a different step of the application.
     $scope.STATES = {
         PURPOSE: 5,
         OUTBOUND: 10,
         RETURN: 20,
         ALLOWANCES: 25,
-        REVIEW: 30,
-        EDIT: 35
+        REVIEW: 30
     };
 
-    $scope.pageState = undefined; // Controls which page is displayed to the user, must be one of $scope.STATES, but should not be EDIT.
+    // The current state.
+    $scope.pageState = undefined;
 
-    // The state of the application, usually the same as $scope.pageState, unless returning to a page for editing
-    // in that case appState == EDIT and pageState == the page who's data is being edited.
-    $scope.appState = undefined;
-
+    // The users travel application.
     $scope.app = {};
 
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;
-        $scope.appState = $scope.STATES.PURPOSE;
-        initApplication(appProps.user.employeeId) ;
+        initApplication(appProps.user.employeeId);
         initMethodsOfTravel();
     }
 
     init();
 
+    /**
+     * Checks to see if the logged in employee has an uncompleted travel application in progress.
+     * If so, return that application so they can continue to work on it.
+     * If not, initialize a new application.
+     * @param travelerId
+     */
     function initApplication(travelerId) {
         appInitApi.save({empId: travelerId}, {}, function (response) {
             $scope.app = response.result;
@@ -58,105 +72,81 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     }
 
     /**
-     * Updates the app.pageState and $scope.pageState after an action has occurred.
-     * @param action
-     * @param editField (optional) A $scope.STATE value representing the field/page
-     *                  the user wants to edit.
+     * updateStates is called by every page's callback function to determine what page should be displayed next.
+     * @param action the $scope.ACTION done by the user.
      */
-    function updateStates(action, editField) {
+    function updateStates(action) {
         console.log($scope.app);
         if (action === $scope.ACTIONS.CANCEL) {
             handleCancelAction();
         }
-        else if(action === $scope.ACTIONS.BACK) {
+        else if (action === $scope.ACTIONS.BACK) {
             handleBackAction();
         }
-        else if(action === $scope.ACTIONS.NEXT) {
+        else if (action === $scope.ACTIONS.NEXT) {
             handleNextAction();
         }
-        else if(action === $scope.ACTIONS.EDIT) {
-            handleEditAction(editField);
+
+        function handleCancelAction() {
+            modals.open("cancel-application").then(function () {
+                modals.resolve({});
+                $scope.openLoadingModal();
+                cancelApi.remove({empId: $scope.app.traveler.employeeId})
+                    .$promise
+                    .then(reload)
+                    .catch($scope.handleErrorResponse)
+                    .finally($scope.closeLoadingModal)
+            })
+        }
+
+        function handleBackAction() {
+            switch ($scope.pageState) {
+                case $scope.STATES.PURPOSE:
+                    // Cant go back from Purpose.
+                    break;
+                case $scope.STATES.OUTBOUND:
+                    $scope.pageState = $scope.STATES.PURPOSE;
+                    break;
+                case $scope.STATES.RETURN:
+                    $scope.pageState = $scope.STATES.OUTBOUND;
+                    break;
+                case $scope.STATES.ALLOWANCES:
+                    $scope.pageState = $scope.STATES.RETURN;
+                    break;
+                case $scope.STATES.REVIEW:
+                    $scope.pageState = $scope.STATES.ALLOWANCES;
+                    break;
+            }
+        }
+
+        function handleNextAction() {
+            switch ($scope.pageState) {
+                case $scope.STATES.PURPOSE:
+                    $scope.pageState = $scope.STATES.OUTBOUND;
+                    break;
+                case $scope.STATES.OUTBOUND:
+                    $scope.pageState = $scope.STATES.RETURN;
+                    break;
+                case $scope.STATES.RETURN:
+                    $scope.pageState = $scope.STATES.ALLOWANCES;
+                    break;
+                case $scope.STATES.ALLOWANCES:
+                    $scope.pageState = $scope.STATES.REVIEW;
+                    break;
+                case $scope.STATES.REVIEW:
+                    // There is no next state. App should of been submitted.
+                    break;
+            }
         }
     }
 
-    function handleCancelAction() {
-        // TODO: Implement
-    }
+    /** ----- Callback Functions -----
+     *
+     * These take the user action and user entered data specific to that page.
+     * If the action = ACTIONS.NEXT, the application will be updated with the new data.
+     */
 
-    function handleBackAction() {
-        switch ($scope.appState) {
-            case $scope.STATES.PURPOSE:
-                locationService.go("/travel/application/travel-application", true);
-                break;
-            case $scope.STATES.OUTBOUND:
-                $scope.appState = $scope.STATES.PURPOSE;
-                $scope.pageState = $scope.STATES.PURPOSE;
-                break;
-            case $scope.STATES.RETURN:
-                $scope.appState = $scope.STATES.OUTBOUND;
-                $scope.pageState = $scope.STATES.OUTBOUND;
-                break;
-            case $scope.STATES.ALLOWANCES:
-                $scope.appState = $scope.STATES.RETURN;
-                $scope.pageState = $scope.STATES.RETURN;
-                break;
-            case $scope.STATES.REVIEW:
-                $scope.appState = $scope.STATES.ALLOWANCES;
-                $scope.pageState = $scope.STATES.ALLOWANCES;
-                break;
-            case $scope.STATES.EDIT:
-                $scope.pageState = $scope.STATES.REVIEW;
-                break;
-        }
-    }
-
-    function handleNextAction() {
-        switch ($scope.appState) {
-            case $scope.STATES.PURPOSE:
-                $scope.appState = $scope.STATES.OUTBOUND;
-                $scope.pageState = $scope.STATES.OUTBOUND;
-                break;
-            case $scope.STATES.OUTBOUND:
-                $scope.appState = $scope.STATES.RETURN;
-                $scope.pageState = $scope.STATES.RETURN;
-                break;
-            case $scope.STATES.RETURN:
-                $scope.appState = $scope.STATES.ALLOWANCES;
-                $scope.pageState = $scope.STATES.ALLOWANCES;
-                break;
-            case $scope.STATES.ALLOWANCES:
-                $scope.appState = $scope.STATES.REVIEW;
-                $scope.pageState = $scope.STATES.REVIEW;
-                break;
-            case $scope.STATES.REVIEW:
-                // TODO: Submit application
-                break;
-            case $scope.STATES.EDIT:
-                $scope.pageState = $scope.STATES.REVIEW;
-                break;
-        }
-    }
-
-    function handleEditAction(editField) {
-        $scope.appState = $scope.STATES.EDIT;
-        $scope.pageState = editField
-    }
-
-    $scope.openLoadingModal = function() {
-        modals.open('loading');
-    };
-
-    $scope.closeLoadingModal = function() {
-        modals.resolve();
-        console.log($scope.app);
-    };
-
-    function updateAppFromResponse(response) {
-        $scope.app = response.result;
-        console.log($scope.app);
-    }
-
-    $scope.purposeCallback = function (purpose, action) {
+    $scope.purposeCallback = function (action, purpose) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
             purposeApi.update({id: $scope.app.id}, purpose, function(response) {
@@ -171,7 +161,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }
     };
 
-    $scope.outboundCallback = function (route, action) {
+    $scope.outboundCallback = function (action, route) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
             outboundApi.update({id: $scope.app.id}, route, function(response) {
@@ -186,7 +176,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }
     };
 
-    $scope.returnCallback = function (route, action) {
+    $scope.returnCallback = function (action, route) {
         if (action === $scope.ACTIONS.NEXT) {
             $scope.openLoadingModal();
             returnApi.update({id: $scope.app.id}, route, function(response) {
@@ -201,7 +191,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }
     };
 
-    $scope.allowancesCallback = function (destinations, allowances, action) {
+    $scope.allowancesCallback = function (action, destinations, allowances) {
         if (action === $scope.ACTIONS.NEXT) {
              $scope.openLoadingModal();
             expensesApi.update({id: $scope.app.id}, {destinations: destinations,
@@ -209,7 +199,6 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
                 updateAppFromResponse(response);
                 updateStates(action);
             }).$promise
-                .then(updateAppFromResponse)
                 .catch($scope.handleErrorResponse)
                 .finally($scope.closeLoadingModal)
         }
@@ -218,28 +207,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }
     };
 
-    $scope.cancelApplication = function () {
-        console.log("Canceling app");
-        modals.open("cancel-application").then(function () {
-            modals.resolve({});
-            $scope.openLoadingModal();
-            cancelApi.remove({empId: $scope.app.traveler.employeeId})
-                .$promise
-                .then(reload)
-                .catch($scope.handleErrorResponse)
-                .finally($scope.closeLoadingModal)
-        })
-    };
-
-    function reload() {
-        locationService.go("/travel/application/travel-application", true);
-    }
-
-    /**
-     * @param action
-     * @param editField (optional) The field/page the user has requested to edit. Must be one of $scope.STATES.
-     */
-    $scope.reviewCallback = function (action, editField) {
+    $scope.reviewCallback = function (action) {
         if (action === $scope.ACTIONS.NEXT) {
             modals.open("submit-progress");
             travelApplicationApi.save({}, $scope.app).$promise
@@ -253,40 +221,56 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
                 })
                 .catch($scope.handleErrorResponse);
         }
-        updateStates(action, editField);
+        updateStates(action);
     };
 
+    /** ----- Misc Functions ----- */
+
+    function updateAppFromResponse(response) {
+        $scope.app = response.result;
+    }
+
+    $scope.openLoadingModal = function() {
+        modals.open('loading');
+    };
+
+    $scope.closeLoadingModal = function() {
+        modals.resolve();
+    };
+
+    function reload() {
+        locationService.go("/travel/application/travel-application", true);
+    }
+
     $scope.highlightOutboundStep = function() {
-        return $scope.appState !== $scope.STATES.PURPOSE
+        return $scope.pageState !== $scope.STATES.PURPOSE
     };
 
     $scope.highlightReturnStep = function() {
-        return $scope.appState === $scope.STATES.RETURN
-            || $scope.appState === $scope.STATES.ALLOWANCES
-            || $scope.appState === $scope.STATES.REVIEW
-            || $scope.appState === $scope.STATES.EDIT
+        return $scope.pageState === $scope.STATES.RETURN
+            || $scope.pageState === $scope.STATES.ALLOWANCES
+            || $scope.pageState === $scope.STATES.REVIEW
     };
 
     $scope.highlightExpensesStep = function() {
-        return $scope.appState === $scope.STATES.ALLOWANCES
-            || $scope.appState === $scope.STATES.REVIEW
-            || $scope.appState === $scope.STATES.EDIT
+        return $scope.pageState === $scope.STATES.ALLOWANCES
+            || $scope.pageState === $scope.STATES.REVIEW
     };
 
     $scope.highlightReviewStep = function() {
-        return $scope.appState === $scope.STATES.REVIEW
-            || $scope.appState === $scope.STATES.EDIT
+        return $scope.pageState === $scope.STATES.REVIEW
     };
 }
 
 /**
  * --- Page Directives ---
  *
- * Page Directives should not directly modify model data in the parent controller.
- * They make copies of any data that the page will support editing of,
- * and modifications can be saved later through the directives callback method in the parent controller.
+ * Page directives contain the html and logic needed for each step of the application.
  *
- * Copying model data ensures that modifications are not made until the user clicks the 'Next' or 'Save' buttons.
+ * Generally these directives don't update $scope.app directly, but make copies needed data
+ * and pass user actions along with data to their callback function.
+ *
+ * Copying model data ensures that modifications are not made until the user clicks the 'Next' button.
  */
 
 essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAttachmentDelete', function (appProps, $http, deleteAttachmentApi) {
@@ -300,8 +284,10 @@ essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAtt
             var attachmentInput = angular.element("#addAttachment");
             attachmentInput.on('change', uploadAttachment);
 
-            console.log($scope.app);
-
+            /**
+             * This is the one place were a page directive directly updates the application.
+             * This is because we need to upload the attachments while staying on the purpose page.
+             */
             function uploadAttachment(event) {
                 $scope.openLoadingModal();
 
@@ -317,7 +303,7 @@ essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAtt
                     headers: {'Content-Type': undefined},
                     transformRequest: angular.identity
                 }).then(function (response) {
-                    // FIXME This creates a new local scope app, does not overwrite parent $scope.app.
+                    // Note, This creates a new local scope app, does not overwrite parent $scope.app.
                     $scope.app = response.data.result;
                 }).finally($scope.closeLoadingModal)
             }
