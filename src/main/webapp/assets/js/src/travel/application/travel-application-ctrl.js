@@ -326,7 +326,10 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
 
             $scope.route = angular.copy($scope.app.route);
             if ($scope.route.outboundLegs.length === 0) {
-                $scope.route.outboundLegs.push(new Segment());
+                var segment = new Segment();
+                // Init from address to employees work address.
+                segment.from = $scope.app.traveler.empWorkLocation.address;
+                $scope.route.outboundLegs.push(segment);
             }
 
             $scope.addSegment = function() {

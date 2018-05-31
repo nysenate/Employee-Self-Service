@@ -1,8 +1,8 @@
 package gov.nysenate.ess.travel.application;
 
+import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.accommodation.Accommodation;
 import gov.nysenate.ess.travel.accommodation.AccommodationView;
 import gov.nysenate.ess.travel.route.RouteView;
@@ -16,8 +16,8 @@ import static java.time.format.DateTimeFormatter.*;
 public class TravelApplicationView implements ViewObject {
 
     private long id;
-    private EmployeeView traveler;
-    private EmployeeView submitter;
+    private DetailedEmployeeView traveler;
+    private DetailedEmployeeView submitter;
     private List<AccommodationView> accommodations;
     private RouteView route;
     private String purposeOfTravel;
@@ -39,8 +39,8 @@ public class TravelApplicationView implements ViewObject {
 
     public TravelApplicationView(TravelApplication app) {
         id = app.getId();
-        traveler = new EmployeeView(app.getTraveler());
-        submitter = new EmployeeView(app.getSubmitter());
+        traveler = new DetailedEmployeeView(app.getTraveler());
+        submitter = new DetailedEmployeeView(app.getSubmitter());
         accommodations = app.getAccommodations().stream()
                 .map(AccommodationView::new)
                 .collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class TravelApplicationView implements ViewObject {
         return traveler;
     }
 
-    public void setTraveler(EmployeeView traveler) {
+    public void setTraveler(DetailedEmployeeView traveler) {
         this.traveler = traveler;
     }
 
@@ -97,7 +97,7 @@ public class TravelApplicationView implements ViewObject {
         return submitter;
     }
 
-    public void setSubmitter(EmployeeView submitter) {
+    public void setSubmitter(DetailedEmployeeView submitter) {
         this.submitter = submitter;
     }
 
