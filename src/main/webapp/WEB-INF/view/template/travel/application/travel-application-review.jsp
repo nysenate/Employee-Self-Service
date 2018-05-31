@@ -18,9 +18,20 @@
 </div>
 
 
+<div class="content-container text-align-center"
+      ng-if="reviewApp.attachments.length > 0">
+  <div>
+    <h1 class="content-info">Attachments</h1>
+    <div ng-repeat="attachment in reviewApp.attachments" class="travel-attachment-container padding-10">
+      <div class="travel-attachment-filename">{{attachment.originalName}}</div>
+    </div>
+  </div>
+</div>
+
+
 <div class="content-container">
   <div>
-    <h1 class="content-info">Outbound Segments</h1>
+    <h1 class="content-info">Segments</h1>
     <div class="padding-10">
 
       <form name="outboundForm">
@@ -70,20 +81,9 @@
           <div class="clear"></div>
 
         </div>
-
-
         </fieldset>
       </form>
 
-    </div>
-  </div>
-</div>
-
-
-<div class="content-container">
-  <div>
-    <h1 class="content-info">Return Segments</h1>
-    <div class="padding-10">
 
       <form name="returnForm">
         <fieldset disabled="disabled" style="border: none;">
@@ -136,10 +136,10 @@
 
         </fieldset>
       </form>
-
     </div>
   </div>
 </div>
+
 
 
 <div class="content-container text-align-center">
