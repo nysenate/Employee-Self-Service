@@ -62,4 +62,12 @@ public class InMemoryTravelAppDao {
     public TravelApplicationView getUncompletedAppById(int id) {
         return uncompletedTravelApps.values().stream().filter(a -> a.getId() == id).collect(Collectors.toList()).get(0);
     }
+
+    /**
+     * Deletes a uncompleted travel app for the given employee id.
+     * @param empId
+     */
+    public void deleteApplication(int empId) {
+        uncompletedTravelApps.remove(empId);
+    }
 }

@@ -30,8 +30,8 @@
     </div>
   </div>
   <div class="travel-button-container">
-    <input type="button" class="travel-neutral-button" value="Cancel"
-           ng-click="purposeCallback(purposeOfTravel, ACTIONS.BACK)">
+    <input type="button" class="neutral-button" value="Cancel"
+           ng-click="cancelApplication()">
     <input type="button" class="submit-button"
            value="Next"
            ng-disabled="purposeOfTravel.length == 0"

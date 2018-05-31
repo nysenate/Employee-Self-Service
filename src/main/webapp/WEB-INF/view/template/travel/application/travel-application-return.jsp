@@ -71,6 +71,8 @@
 
     <div class="text-align-center">
       <div class="travel-button-container">
+        <input type="button" class="neutral-button" value="Cancel"
+               ng-click="cancelApplication()">
         <input type="button" class="travel-neutral-button" value="Back"
                ng-click="returnCallback(route, ACTIONS.BACK)">
         <input type="button" class="submit-button"

@@ -38,26 +38,22 @@
 
   <div modal-container>
 
-    <%-- Destination modals --%>
-    <modal modal-id="destination-selection-modal">
-      <div destination-selection-modal></div>
-    </modal>
-
-    <modal modal-id="destination-delete-confirm-modal">
-      <div confirm-modal
-           rejectable="true"
-           title="Delete destination?"
-           confirm-message="This will delete the selected destination from your travel application."
-           resolve-button="Delete"
-           reject-button="Cancel">
+    <%--Cancel Modal--%>
+    <modal modal-id="cancel-application">
+      <div confirm-modal rejectable="true"
+           title="Cancel Travel Application"
+           confirm-message="Are you sure you want to cancel your current application?"
+           resolve-button="Yes"
+           reject-button="No">
       </div>
     </modal>
 
-    <%-- Review Modals --%>
-    <modal modal-id="review-progress">
+    <%--Loading Modal--%>
+    <modal modal-id="loading">
       <div progress-modal title="Loading..."></div>
     </modal>
 
+      <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
            title="Submit Travel Application?"

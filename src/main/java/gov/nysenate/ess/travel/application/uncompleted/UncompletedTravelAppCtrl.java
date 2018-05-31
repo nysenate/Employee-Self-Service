@@ -58,6 +58,12 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(uncompletedApp);
     }
 
+    @RequestMapping(value = "/{empId}", method = RequestMethod.DELETE)
+    public BaseResponse cancelApplication(@PathVariable int empId) {
+        appDao.deleteApplication(empId);
+        return new SimpleResponse(true, "Successfully canceled travel application", "travel-app-cancel");
+    }
+
     /**
      * Saves a purpose to an uncompleted application.
      * <p>

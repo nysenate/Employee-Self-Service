@@ -2,10 +2,11 @@ var essTravel = angular.module('essTravel');
 
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
-                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi', 'TravelModeOfTransportationApi', travelAppController]);
+                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi',
+                      'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
-                             outboundApi, returnApi, expensesApi, travelApplicationApi, motApi) {
+                             outboundApi, returnApi, expensesApi, travelApplicationApi, motApi, cancelApi) {
 
     /* --- Container Page --- */
 
@@ -142,7 +143,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     }
 
     $scope.openLoadingModal = function() {
-        modals.open('review-progress');
+        modals.open('loading');
     };
 
     $scope.closeLoadingModal = function() {
@@ -216,6 +217,23 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             updateStates(action);
         }
     };
+
+    $scope.cancelApplication = function () {
+        console.log("Canceling app");
+        modals.open("cancel-application").then(function () {
+            modals.resolve({});
+            $scope.openLoadingModal();
+            cancelApi.remove({empId: $scope.app.traveler.employeeId})
+                .$promise
+                .then(reload)
+                .catch($scope.handleErrorResponse)
+                .finally($scope.closeLoadingModal)
+        })
+    };
+
+    function reload() {
+        locationService.go("/travel/application/travel-application", true);
+    }
 
     /**
      * @param action
