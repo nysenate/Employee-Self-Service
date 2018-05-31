@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.uncompleted;
 
 import com.google.maps.errors.ApiException;
+import com.sun.mail.iap.ByteArray;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -14,19 +15,26 @@ import gov.nysenate.ess.travel.route.Route;
 import gov.nysenate.ess.travel.route.RouteFactory;
 import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.cookie.AbstractCookieAttributeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/application/uncompleted")
 public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
+
+    private static final Logger logger = LoggerFactory.getLogger(UncompletedTravelAppCtrl.class);
 
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private InMemoryTravelAppDao appDao;
@@ -150,6 +158,30 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         appView = new TravelApplicationView(app);
         appView = appDao.saveUncompleteTravelApp(appView);
         return new ViewObjectResponse<>(appView);
+    }
+
+    // TODO: Move attachment API's to their own controller? Would need to update purpose page logic.
+
+    @ResponseBody
+    @RequestMapping(value = "/{id}/attachment/{attachmentId}", method = RequestMethod.GET)
+    public void getAttachment(@PathVariable int id, @PathVariable String attachmentId, HttpServletResponse response) throws IOException {
+        File attachment = uploadProcessor.getAttachmentFile(attachmentId);
+        if (!attachment.exists()) {
+            response.sendError(404, "Cannot find file for attachment " + attachmentId);
+            return;
+        }
+
+        InputStream is = null;
+        try {
+            is = new FileInputStream(attachment);
+            IOUtils.copy(is, response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            logger.error("Error fetching travel attachment " + attachmentId, e);
+            response.sendError(500, e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
     }
 
     /**

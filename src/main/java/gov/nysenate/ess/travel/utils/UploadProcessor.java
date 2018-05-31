@@ -39,7 +39,11 @@ public class UploadProcessor {
         return new TravelAttachment(attachmentId, originalName, contentType);
     }
 
-    public String getUploadPath() {
+    public File getAttachmentFile(String attachmentId) {
+        return new File(getUploadPath() + attachmentId);
+    }
+
+    private String getUploadPath() {
         if (getUploadDir().getPath().endsWith("/")) {
             return getUploadDir().getPath();
         }
