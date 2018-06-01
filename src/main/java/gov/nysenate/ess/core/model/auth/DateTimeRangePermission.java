@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.model.auth;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.util.RangeUtils;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
 
@@ -16,11 +17,25 @@ import java.time.LocalDateTime;
 public class DateTimeRangePermission extends WildcardPermission {
 
     /** The date time range that this permission is effective for */
-    private Range<LocalDateTime> effectiveRange;
+    private final Range<LocalDateTime> effectiveRange;
 
-    public DateTimeRangePermission(String wildcardString, Range<LocalDateTime> effectiveRange) {
+    /**
+     * When false, {@link DateTimeRangePermission}s with date ranges that intersect with this permission's range
+     * (and a matching wildcard) will imply this permission.
+     * When true, {@link DateTimeRangePermission}s must have a date range
+     * that completely encloses this permission's range in order to imply this permission.
+     */
+    private final boolean requireEnclosing;
+
+    public DateTimeRangePermission(String wildcardString, Range<LocalDateTime> effectiveRange, boolean requireEnclosing) {
         super(wildcardString);
         this.effectiveRange = effectiveRange;
+        this.requireEnclosing = requireEnclosing;
+    }
+
+    /** An overload that does not accept overlapping dates */
+    public DateTimeRangePermission(String wildcardString, Range<LocalDateTime> effectiveRange) {
+        this(wildcardString, effectiveRange, true);
     }
 
     /** An overload that is effective only for a specific date time */
@@ -36,20 +51,30 @@ public class DateTimeRangePermission extends WildcardPermission {
 
     /**
      * Return true if this permission's wildcard permission component implies the other's
-     *  and the effective date time range of this permission encloses the other's
+     *  and the effective date time range of this permission encloses or intersects the other's,
+     *  depending on the other permission's requireEnclosing setting.
      * @see WildcardPermission#implies(Permission)
      * @param p Permission
      * @return boolean
      */
     @Override
     public boolean implies(Permission p) {
+        // First check wildcard permission
+        if (!super.implies(p)) {
+            return false;
+        }
         // Unless the effective range includes all dates,
         // A date time range permission cannot imply a standard permission
         if (!(p instanceof DateTimeRangePermission)) {
-            return effectiveRange.encloses(Range.all()) && super.implies(p);
+            return effectiveRange.encloses(Range.all());
         }
 
-        return super.implies(p) && this.effectiveRange.encloses(((DateTimeRangePermission) p).effectiveRange);
+        DateTimeRangePermission dtp = (DateTimeRangePermission) p;
+
+        if (dtp.requireEnclosing) {
+            return this.effectiveRange.encloses(dtp.effectiveRange);
+        }
+        return RangeUtils.intersects(this.effectiveRange, dtp.effectiveRange);
     }
 
     @Override

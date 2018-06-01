@@ -62,10 +62,11 @@ public class AttendanceReportRestApiCtrl extends BaseRestApiCtrl {
             @RequestParam int empId,
             @RequestParam String date) throws IOException {
         LocalDate parsedDate = parseISODate(date, "date");
-        attendanceReportPermissions.stream()
-                .map(po -> new EssTimePermission(empId, po, GET, parsedDate))
-                .forEach(this::checkPermission);
         PayPeriod payPeriod = payPeriodService.getPayPeriod(AF, parsedDate);
+        // Require permissions that were valid at some point during the requested pay period.
+        attendanceReportPermissions.stream()
+                .map(po -> new EssTimePermission(empId, po, GET, payPeriod.getDateRange(), false))
+                .forEach(this::checkPermission);
         Employee employee = empInfoService.getEmployee(empId);
 
         UriComponents attendanceReportUri = reportUrlService.getAttendanceReportUri(empId, payPeriod);
