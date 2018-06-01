@@ -5,13 +5,14 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UnitTest
+@Category(UnitTest.class)
 public class DateTimeRangePermissionTest {
 
     private static final String permissionStrA = "a";
