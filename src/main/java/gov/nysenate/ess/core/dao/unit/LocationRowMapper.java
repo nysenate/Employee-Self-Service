@@ -38,6 +38,8 @@ public class LocationRowMapper extends BaseRowMapper<Location>
         addr.setZip5(rs.getString(pfx + "ADZIPCODE"));
         ResponsibilityHead rspHead = respHeadRowMapper.mapRow(rs, rowNum);
         String locationDescription = rs.getString(pfx + "DELOCAT");
-        return new Location(locId, addr, rspHead, locationDescription);
+        String isActiveString = rs.getString(pfx + "CDSTATUS");
+        boolean isActive = isActiveString.equals("A");
+        return new Location(locId, addr, rspHead, locationDescription, isActive);
     }
 }

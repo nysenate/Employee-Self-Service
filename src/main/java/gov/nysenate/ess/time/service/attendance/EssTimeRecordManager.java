@@ -35,10 +35,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static gov.nysenate.ess.core.model.payroll.PayType.TE;
+import static java.math.BigDecimal.ZERO;
 
 @Service
 public class EssTimeRecordManager implements TimeRecordManager
@@ -362,19 +366,46 @@ public class EssTimeRecordManager implements TimeRecordManager
                         .getEffectivePayTypes(Range.all()));
 
         for (TimeEntry entry : record.getTimeEntries()) {
-            // Check the pay types for each entry
             PayType correctPayType = payTypes.get(entry.getDate());
-            if (!Objects.equals(entry.getPayType(), correctPayType)) {
-                modifiedEntries = true;
-                entry.setPayType(correctPayType);
-            }
-            // Deactivate any entries that do not fall within the record dates
-            if (!record.getDateRange().contains(entry.getDate())) {
+            // If the current entry is invalid, deactivate it
+            if (!validEntry(entry, record, correctPayType)) {
                 modifiedEntries = true;
                 entry.setActive(false);
             }
+            // Check and potentially switch the pay types for each entry
+            else if (!Objects.equals(entry.getPayType(), correctPayType)) {
+                modifiedEntries = true;
+                entry.setPayType(correctPayType);
+            }
         }
         return modifiedEntries;
+    }
+
+    /**
+     * Returns true if the given entry is valid for the given record and pay type.
+     */
+    private boolean validEntry(TimeEntry entry, TimeRecord record, PayType correctPayType) {
+        return record.getDateRange().contains(entry.getDate()) && validForPayType(entry, correctPayType);
+    }
+
+    /**
+     * Returns true if the given entry is valid for the given pay type
+     */
+    private boolean validForPayType(TimeEntry entry, PayType correctPayType) {
+        if (correctPayType == TE) {
+            List<Optional<BigDecimal>> nonTempHours = Arrays.asList(
+                    entry.getPersonalHours(),
+                    entry.getVacationHours(),
+                    entry.getSickEmpHours(),
+                    entry.getSickFamHours(),
+                    entry.getHolidayHours(),
+                    entry.getTravelHours(),
+                    entry.getMiscHours()
+            );
+            return nonTempHours.stream()
+                    .allMatch(hrsOpt -> !hrsOpt.isPresent() || hrsOpt.get().compareTo(ZERO) == 0);
+        }
+        return true;
     }
 
     /**
@@ -401,6 +432,15 @@ public class EssTimeRecordManager implements TimeRecordManager
         RangeSet<LocalDate> attendanceRecDates = TreeRangeSet.create();
         attendanceRecords.stream().map(AttendanceRecord::getDateRange).forEach(attendanceRecDates::add);
 
+        List<TimeRecord> apRecords = timeRecordService.getTimeRecords(
+                Collections.singleton(empId), periods, Collections.singleton(TimeRecordStatus.APPROVED_PERSONNEL));
+        RangeSet<LocalDate> apRecordRanges = apRecords.stream()
+                .map(TimeRecord::getDateRange)
+                .reduce(ImmutableRangeSet.<LocalDate>builder(),
+                        ImmutableRangeSet.Builder::add,
+                        (b1, b2) -> b1.addAll(b2.build()))
+                .build();
+
         return periods.stream()
                 .sorted()
                 .map(PayPeriod::getDateRange)
@@ -410,6 +450,8 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .flatMap(range -> activeDates.subRangeSet(range).asRanges().stream())
                 // Trim ranges, eliminating dates where the employee was a senator
                 .flatMap(range -> senatorDates.complement().subRangeSet(range).asRanges().stream())
+                // Trim ranges, eliminating dates with approved records
+                .flatMap(range -> apRecordRanges.complement().subRangeSet(range).asRanges().stream())
                 // Filter out ranges that are covered by already entered attendance periods
                 .filter(range -> !attendanceRecDates.encloses(range))
                 // Filter out ranges where the employee isn't required to enter time records

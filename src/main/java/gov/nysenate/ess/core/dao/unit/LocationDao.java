@@ -13,6 +13,8 @@ public interface LocationDao {
 
     List<Location> getLocations();
 
+    List<Location> getLocations(boolean activeOnly);
+
     Location getLocationById(LocationId locId);
 
     /**
