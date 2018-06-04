@@ -207,7 +207,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             throw new AccrualException(empId, AccrualExceptionType.NO_FROM_DATE_FOUND);
         }
 
-        if (!fromDate.isBefore(lastPeriod.getEndDate())) {
+        if (fromDate.isAfter(lastPeriod.getEndDate())) {
             return Collections.emptyList();
         }
         // Range from last existing accrual entry to the end of the last pay period
@@ -393,10 +393,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     private AccrualState computeInitialAccState(TransactionHistory transHistory, Optional<PeriodAccSummary> periodAccSum,
                                                 AnnualAccSummary annualAcc, LocalDate fromDate) {
         AccrualState accrualState = new AccrualState(annualAcc);
-        // Use the from date if there is no end date
+        // Use the day before the from date as the end date if none exists
         // (this means that there have been no accruals posted yet for the employee)
         if (accrualState.getEndDate() == null) {
-            accrualState.setEndDate(fromDate);
+            accrualState.setEndDate(fromDate.minusDays(1));
         }
 
         PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate);
