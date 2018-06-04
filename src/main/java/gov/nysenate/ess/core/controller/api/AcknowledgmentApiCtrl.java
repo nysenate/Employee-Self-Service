@@ -248,7 +248,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         response.setHeader(headerKey, headerValue);
 
         CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withHeader("EmpId", "Name", "Email", "Resp Center","Document Title",
+                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Document Title",
                         "Document Effective Date Time", "Acknowledgment"));
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
@@ -270,6 +270,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                     empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
                     empAckReport.getEmployee().getEmail(),
                     respCenter,
+                    empAckReport.getEmployee().getSenateContServiceDate(),
                     empAckReport.getAcks().get(0).getAckDoc().getTitle(),
                     empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime().withNano(0),
                     ackedTime);
