@@ -11,14 +11,13 @@ import static java.time.format.DateTimeFormatter.*;
 
 public class AccommodationView implements ViewObject {
 
-
-    private AddressView address;
-    private List<DayView> days;
-    private List<NightView> nights;
-    private String mealAllowance;
-    private String lodgingAllowance;
-    private String arrivalDate;
-    private String departureDate;
+    AddressView address;
+    List<DayView> days;
+    List<NightView> nights;
+    String mealAllowance;
+    String lodgingAllowance;
+    String arrivalDate;
+    String departureDate;
 
     public AccommodationView() {
     }

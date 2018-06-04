@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.accommodation.Accommodation;
 import gov.nysenate.ess.travel.accommodation.AccommodationView;
 import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -15,24 +14,24 @@ import static java.time.format.DateTimeFormatter.*;
 
 public class TravelApplicationView implements ViewObject {
 
-    private long id;
-    private DetailedEmployeeView traveler;
-    private DetailedEmployeeView submitter;
-    private List<AccommodationView> accommodations;
-    private RouteView route;
-    private String purposeOfTravel;
-    private String mileageAllowance = "0";
-    private String mealAllowance = "0";
-    private String lodgingAllowance = "0";
-    private String tollsAllowance = "0";
-    private String parkingAllowance = "0";
-    private String alternateAllowance = "0";
-    private String registrationAllowance = "0";
-    private String totalAllowance = "0";
-    private String startDate;
-    private String endDate;
-    private String submittedDateTime;
-    private List<TravelAttachmentView> attachments;
+    long id;
+    DetailedEmployeeView traveler;
+    DetailedEmployeeView submitter;
+    List<AccommodationView> accommodations;
+    RouteView route;
+    String purposeOfTravel;
+    String mileageAllowance = "0";
+    String mealAllowance = "0";
+    String lodgingAllowance = "0";
+    String tollsAllowance = "0";
+    String parkingAllowance = "0";
+    String alternateAllowance = "0";
+    String registrationAllowance = "0";
+    String totalAllowance = "0";
+    String startDate;
+    String endDate;
+    String submittedDateTime;
+    List<TravelAttachmentView> attachments;
 
     public TravelApplicationView() {
     }
@@ -103,22 +102,6 @@ public class TravelApplicationView implements ViewObject {
 
     public List<AccommodationView> getAccommodations() {
         return accommodations;
-    }
-
-    public void setAccommodations(List<Accommodation> accommodations) {
-        this.accommodations = accommodations.stream().map(AccommodationView::new).collect(Collectors.toList());
-
-        Dollars mealAllowance = Dollars.ZERO;
-        for (Accommodation a : accommodations) {
-            mealAllowance = mealAllowance.add(a.mealAllowance());
-        }
-        setMealAllowance(mealAllowance.toString());
-
-        Dollars lodgingAllowance = Dollars.ZERO;
-        for (Accommodation a : accommodations) {
-            lodgingAllowance = lodgingAllowance.add(a.lodgingAllowance());
-        }
-        setLodgingAllowance(lodgingAllowance.toString());
     }
 
     public RouteView getRoute() {
