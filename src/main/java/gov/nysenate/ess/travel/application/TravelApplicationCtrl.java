@@ -34,7 +34,8 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveTravelApplication(@RequestBody TravelApplicationView appView) throws InterruptedException, ApiException, IOException {
-        TravelApplication app = applicationFactory.createApplication(appView);
+//        TravelApplication app = applicationFactory.createApplication(appView);
+        TravelApplication app = appView.toTravelApplication();
         appDao.saveTravelApplication(app);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }

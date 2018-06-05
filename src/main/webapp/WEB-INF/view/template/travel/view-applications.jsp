@@ -29,18 +29,16 @@
               <th>Employee</th>
               <th>Destination</th>
               <th>Allotted Funds</th>
-              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr dir-paginate="app in apps.filtered | orderBy: '-travelDate' : true | itemsPerPage : 10"
                 pagination-id="travel-history-pagination"
-                ng-click="viewApplicationDetails(row.id)">
+                ng-click="viewApplicationDetails(app)">
               <td>{{app.startDate | date:'M/d/yyyy'}}</td>
               <td>{{app.traveler.lastName}}</td>
-              <td>{{app.destinations[0].address.city}}</td>
+              <td>{{shortAddress(app)}}</td>
               <td>{{app.totalAllowance | currency}}</td>
-              <td>{{app.status}}</td>
             </tr>
           </tbody>
         </table>

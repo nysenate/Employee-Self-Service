@@ -12,7 +12,8 @@ essTravel.directive('travelHistoryDetailModal', ['appProps', function (appProps)
 function travelDetailCtrl($scope, modals) {
     //display the travel application details corresponding to what they clicked on
 
-    $scope.requestInfo = modals.params().info;
+    $scope.app = modals.params();
+    console.log($scope.app);
 
     $scope.exit = function () {
         modals.resolve();

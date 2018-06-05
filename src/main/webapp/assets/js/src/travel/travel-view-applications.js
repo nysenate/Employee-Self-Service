@@ -17,15 +17,8 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     };
 
     $scope.init = function() {
-        initDateRanges();
-        console.log($scope.date);
         fetchApplications(appProps.user.employeeId)
     };
-
-    function initDateRanges() {
-        // $scope.date.from = angular.element("#dateFrom").val();
-        // $scope.date.to = angular.element("#dateTo").val();
-    }
 
     function fetchApplications(empId) {
         travelApplicationApi.get({empId: empId}, onSuccess, $scope.handleErrorResponse);
@@ -37,12 +30,12 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
             console.log($scope.apps);
             console.log($scope.date);
         }
-    }
 
-    function parseResponse(resp) {
-        var result = resp.result;
-        for (var i = 0; i < result.length; i++) {
-            $scope.apps.all.push(result[i]);
+        function parseResponse(resp) {
+            var result = resp.result;
+            for (var i = 0; i < result.length; i++) {
+                $scope.apps.all.push(result[i]);
+            }
         }
     }
 
@@ -62,16 +55,14 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
         });
     }
 
-    $scope.viewApplicationDetails = function(requestId) {
-        // request = {};
-        // for (i = 0; i < $scope.travelHistory.length; i++) {
-        //     element = $scope.travelHistory[i];
-        //     if (element.id == requestId) {
-        //         request = element;
-        //         break;
-        //     }
-        // }
-        // modals.open("travel-history-detail-modal", {info: request}, true).catch(function() {})
+    $scope.viewApplicationDetails = function(app) {
+        modals.open("travel-history-detail-modal", app, true)
+            .catch(function() {})
+    };
+
+    $scope.shortAddress = function(app) {
+        var addr = app.accommodations[0].address;
+        return addr.city || addr.county || addr.addr1;
     };
 
     $scope.init();
