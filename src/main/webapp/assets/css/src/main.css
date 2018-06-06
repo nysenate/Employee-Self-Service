@@ -5539,6 +5539,7 @@ ul.inactive-employee-email-list {
   }
 }
 .travel-button-container {
+  text-align: center !important;
   margin-top: 20px !important;
   padding: 10px;
   background: #f9f9f9;
