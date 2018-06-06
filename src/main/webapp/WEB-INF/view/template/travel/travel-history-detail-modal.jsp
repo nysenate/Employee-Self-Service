@@ -1,76 +1,134 @@
-<div class="text-align-center padding-10">
-  <div class="travel-gray-bottom-border clearfix padding-10 width-100">
-    <p class="col-6-12 bold">{{app.traveler.fullName}}</p>
-    <p class="col-6-12"><span class="bold">Status:</span> {{app.status}}</p>
-  </div>
-  <div class="travel-gray-bottom-border clearfix padding-10 width-100">
-    <table class="travel-table col-6-12">
-      <tbody>
-        <tr>
-          <td>Meals</td>
-          <td>{{ '$' + app.mealAllowance}}</td>
-        </tr>
-        <tr>
-          <td>Lodging</td>
-          <td>{{ '$' + app.lodgingAllowance}}</td>
-        </tr>
-        <tr>
-          <td>Registration Fee</td>
-          <td>{{ '$' + app.registrationAllowance}}</td>
-        </tr>
-        <!-- People might be confused if they try to add up to the overall total
-        <tr>
-          <td>GSA Total</td>
-          <td>{{ '$' + app.allowances.gsa.total}}</td>
-        </tr> -->
-      </tbody>
-    </table>
-    <table class="travel-table col-6-12">
-      <tbody>
-        <tr>
-          <td>Mileage</td>
-          <td>{{ '$' + app.mileageAllowance}}</td>
-        </tr>
-        <tr>
-          <td>Tolls</td>
-          <td>{{ '$' + app.tollsAllowance}}</td>
-        </tr>
-        <tr>
-          <td>Parking</td>
-          <td>{{ '$' + app.parkingAllowance}}</td>
-        </tr>
-        <tr>
-          <td>Alternate</td>
-          <td>{{ '$' + app.alternateAllowance}}</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="width-100 clearfix margin-top-10 padding-top-10 text-align-center"><span class="bold">Total Allowance:</span> {{'$' + app.totalAllowance}}</p>
-  </div>
-  <div class="padding-10 clearfix width-100">
-    <div class="clearfix width-100 margin-bottom-20">
-      <p class="col-6-12">
-        <span class="bold">Origin:</span> {{app.route.origin.formattedAddress}}
-      </p>
-      <p class="col-6-12"><span class="bold">Mode of transportation:</span> {{app.modeOfTransportation}}</p>
+<div class="content-container no-top-margin padding-left-10 padding-right-10">
+  <h1>Travel Application for: {{app.traveler.fullName}}</h1>
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Purpose of Travel:</label>
     </div>
-    <table class="travel-table margin-top-10 padding-top-10">
-      <thead>
-      <tr>
-        <td>Arrival Date</td>
-        <td>Departure Date</td>
-        <td>Address</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr ng-repeat="destination in app.accommodations">
-        <td>{{destination.arrivalDate | date:'M/d/yyyy'}}</td>
-        <td>{{destination.departureDate | date:'M/d/yyyy'}}</td>
-        <td>{{destination.address.addr1 + ', ' + destination.address.city + ', '
-          + destination.address.state + ' ' + destination.address.zip5}}</td>
-      </tr>
-      </tbody>
-    </table>
-    <p class="padding-10"><span class="bold">Purpose of travel:</span> {{app.purposeOfTravel}}</p>
+    <div class="col-10-12">
+      {{app.purposeOfTravel}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Origin:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.route.origin.formattedAddress}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Mode of Transportation:</label>
+    </div>
+    <div class="col-10-12">
+      <span ng-repeat="mot in getModesOfTransportation()">
+        {{mot.description}}<span ng-if="!$last">, </span>
+      </span>
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Destination:</label>
+    </div>
+    <div class="col-10-12">
+      <table class="travel-table">
+        <thead>
+        <tr>
+          <th>Arrival Date</th>
+          <th>Departure Date</th>
+          <th>Address</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="accommodation in app.accommodations">
+          <td>{{accommodation.arrivalDate}}</td>
+          <td>{{accommodation.departureDate}}</td>
+          <td>{{accommodation.address.formattedAddressWithCounty}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Mileage:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.mileageAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Tolls:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.tollsAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Food:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.mealAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Lodging:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.lodgingAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Parking/Tolls:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.parkingAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Taxi/Bus/Subway:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.alternateAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10">
+    <div class="col-2-12">
+      <label>Registration Fee:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.registrationAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="grid margin-top-10 bold">
+    <div class="col-2-12">
+      <label class="bold">Total:</label>
+    </div>
+    <div class="col-10-12">
+      {{app.totalAllowance | currency}}
+    </div>
+  </div>
+
+  <div class="travel-button-container">
+    <input type="button" class="travel-neutral-button" value="Exit"
+           ng-click="exit()">
+    <a target="_blank" ng-href="${ctxPath}/travel/application/travel-application-print?id={{app.id}}">Print</a>
   </div>
 </div>

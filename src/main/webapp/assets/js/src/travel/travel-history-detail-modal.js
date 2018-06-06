@@ -15,6 +15,33 @@ function travelDetailCtrl($scope, modals) {
     $scope.app = modals.params();
     console.log($scope.app);
 
+    /**
+     * @return {Array} Array containing all modes of transportation in this travel application.
+     */
+    $scope.getModesOfTransportation = function() {
+        var mots = [];
+        var legs = $scope.app.route.outboundLegs.concat($scope.app.route.returnLegs);
+        legs.forEach(function(leg, index) {
+            var mot = leg.modeOfTransportation;
+            if (!arrayContains(mots, mot)) {
+                mots.push(mot);
+            }
+        });
+        return mots;
+
+        // Returns true of an array contains an object. Compares object equality.
+        function arrayContains(array, obj) {
+            var contains = false;
+            array.forEach(function(element) {
+                if (angular.equals(element, obj)) {
+                    contains = true;
+                }
+            });
+            return contains;
+        }
+
+    };
+
     $scope.exit = function () {
         modals.resolve();
     };
