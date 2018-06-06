@@ -11,39 +11,42 @@ essTravel.controller('TravelApplicationPrintCtrl',
  */
 function appPrintCtrl($scope, locationService, travelAppApi, motApi) {
 
+    $scope.NOT_AVAILABLE = "N/A";
     $scope.modeOfTransportations = [];
     $scope.app = {};
 
     (function init() {
         var appId = locationService.getSearchParam('id');
-        $scope.appRequest = travelAppApi.get({id: appId, detailed: true});
-        $scope.appRequest.$promise
+        travelAppApi.get({id: appId, detailed: true}).$promise
             .then(extractApplication)
             .catch($scope.handleErrorResponse);
 
-        $scope.motRequest = motApi.get();
-        $scope.motRequest.$promise
+        function extractApplication(response) {
+            $scope.app = response.result;
+            console.log($scope.app);
+        }
+
+        motApi.get().$promise
             .then(extractMots)
             .catch($scope.handleErrorResponse);
+
+        function extractMots(response) {
+            $scope.modeOfTransportations = response.result;
+        }
     })();
 
-    function extractApplication(response) {
-        $scope.app = response.result;
-    }
-
-    function extractMots(response) {
-        $scope.modeOfTransportations = response.result;
-    }
-
-    $scope.tollsAndParking = function() {
+    $scope.tollsAndParking = function () {
         return Number($scope.app.tollsAllowance) + Number($scope.app.parkingAllowance);
     };
 
-    $scope.containsMot = function(mot) {
+    $scope.containsMot = function (mot) {
         var appModesOfTransportation = [];
-        $scope.app.route.outgoingLegs.forEach(function(leg) {
+        $scope.app.route.outboundLegs.forEach(function (leg) {
             appModesOfTransportation.push(leg.modeOfTransportation.methodOfTravel);
         });
+
+        console.log(mot);
+        console.log(appModesOfTransportation);
 
         return appModesOfTransportation.includes(mot.methodOfTravel);
     };

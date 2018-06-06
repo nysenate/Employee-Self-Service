@@ -9,6 +9,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.supply.util.date.DateTimeFactory;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse saveTravelApplication(@RequestBody TravelApplicationView appView) throws InterruptedException, ApiException, IOException {
 //        TravelApplication app = applicationFactory.createApplication(appView);
         TravelApplication app = appView.toTravelApplication();
+        app.setSubmittedDateTime(LocalDateTime.now());
         appDao.saveTravelApplication(app);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
