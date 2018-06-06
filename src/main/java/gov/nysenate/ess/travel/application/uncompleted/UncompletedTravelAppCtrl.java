@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,41 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(uncompletedApp);
     }
 
+    /**
+     * Submits an application to be reviewed.
+     * @param id The Uncompleted Application Id to be submitted.
+     *
+     * <p>
+     *  (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
+     * </p>
+     *
+     * Path Params: id (int) - The id of an uncompleted travel application to submit.
+     *
+     * @return
+     */
+    @RequestMapping(value = "/{id}/submit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse submitTravelApp(@PathVariable int id) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        TravelApplication app = appView.toTravelApplication();
+        app.setSubmittedDateTime(LocalDateTime.now());
+        appDao.saveTravelApplication(app);
+        // TODO: Clear out uncompleted version.
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
+    }
+
+    /**
+     * Deletes the uncompleted travel application belonging the the specified employee.
+     *
+     * This allows users to reset their application and start over.
+     *
+     * <p>
+     *  (DELETE) /api/v1/travel/application/uncompleted/{empId}
+     * </p>
+     *      Path Params: empId (int) - The employee Id who's uncompleted applications should be deleted.
+     *
+     * @param empId
+     * @return
+     */
     @RequestMapping(value = "/{empId}", method = RequestMethod.DELETE)
     public BaseResponse cancelApplication(@PathVariable int empId) {
         appDao.deleteApplication(empId);

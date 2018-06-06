@@ -10,11 +10,11 @@ var essTravel = angular.module('essTravel');
  */
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
-                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationApi',
+                      'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationSubmitApi',
                       'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
-                             outboundApi, returnApi, expensesApi, travelApplicationApi, motApi, cancelApi) {
+                             outboundApi, returnApi, expensesApi, submitApi, motApi, cancelApi) {
 
 
     /**
@@ -210,7 +210,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     $scope.reviewCallback = function (action) {
         if (action === $scope.ACTIONS.NEXT) {
             modals.open("submit-progress");
-            travelApplicationApi.save({}, $scope.app).$promise
+            submitApi.update({id: $scope.app.id}).$promise
                 .then(function (response) {
                     modals.resolve({});
                 })
@@ -409,7 +409,7 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
     }
 }]);
 
-essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'TravelApplicationApi', function (appProps, modals, appApi) {
+essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', function (appProps, modals) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-allowances',
         scope: true,
@@ -481,8 +481,8 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', 'Trave
     }
 }]);
 
-essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals', 'TravelApplicationApi',
-                                                function (appProps, $q, modals, appApi) {
+essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals',
+                                                function (appProps, $q, modals) {
         return {
             templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-review',
             scope: true,

@@ -30,19 +30,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @Autowired private TravelApplicationFactory applicationFactory;
     @Autowired private InMemoryTravelAppDao appDao;
 
-    /**
-     * @param appView
-     * @return
-     */
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveTravelApplication(@RequestBody TravelApplicationView appView) throws InterruptedException, ApiException, IOException {
-//        TravelApplication app = applicationFactory.createApplication(appView);
-        TravelApplication app = appView.toTravelApplication();
-        app.setSubmittedDateTime(LocalDateTime.now());
-        appDao.saveTravelApplication(app);
-        return new ViewObjectResponse<>(new TravelApplicationView(app));
-    }
-
     // TODO Temporary for testing
     @RequestMapping(value = "")
     public BaseResponse getTravelApps(@RequestParam(required = false) String empId,
