@@ -10,7 +10,7 @@ import java.util.Objects;
  * An Accommodation contains a DayStay for each day at an address.
  * The DayStay contains all info related to meal allowances for that address and date.
  */
-public class Day {
+public class Day implements Comparable<Day> {
 
     private final LocalDate date;
     private final MealTier tier;
@@ -69,5 +69,18 @@ public class Day {
     @Override
     public int hashCode() {
         return Objects.hash(date, tier, isMealsRequested);
+    }
+
+
+    @Override
+    public int compareTo(Day o) {
+        int cmp = date.compareTo(o.date);
+        if (cmp == 0) {
+            cmp = tier.compareTo(o.tier);
+            if (cmp == 0) {
+                cmp = (isMealsRequested == o.isMealsRequested ? 0 : (isMealsRequested ? 1 : -1));
+            }
+        }
+        return cmp;
     }
 }

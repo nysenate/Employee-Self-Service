@@ -8,7 +8,7 @@ import java.util.Objects;
  * Represents a single row in the GSA Meals and Incidental Expenses breakdown
  * available at http://www.gsa.gov/mie.
  */
-public class MealTier {
+public class MealTier implements Comparable<MealTier> {
 
     private final String tier; // Also known as M&IE Total.
     private final Dollars breakfast;
@@ -78,5 +78,23 @@ public class MealTier {
     @Override
     public int hashCode() {
         return Objects.hash(tier, breakfast, lunch, dinner, incidental);
+    }
+
+    @Override
+    public int compareTo(MealTier o) {
+        int cmp = tier.compareTo(o.tier);
+        if (cmp == 0) {
+            cmp = breakfast.compareTo(o.breakfast);
+            if (cmp == 0) {
+                cmp = lunch.compareTo(o.lunch);
+                if (cmp == 0) {
+                    cmp = dinner.compareTo(o.dinner);
+                    if (cmp == 0) {
+                        cmp = incidental.compareTo(o.incidental);
+                    }
+                }
+            }
+        }
+        return cmp;
     }
 }

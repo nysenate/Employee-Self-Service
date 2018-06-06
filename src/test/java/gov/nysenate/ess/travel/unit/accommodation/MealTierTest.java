@@ -6,6 +6,7 @@ import gov.nysenate.ess.travel.meal.MealTier;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @UnitTest
 public class MealTierTest {
@@ -14,5 +15,21 @@ public class MealTierTest {
     public void senateRateIsBreakfastAndDinner() {
         MealTier tier = new MealTier("50", "10", "15", "20", "5");
         assertEquals(new Dollars("30.00"), tier.allowance());
+    }
+
+    @Test
+    public void testComparable() {
+        MealTier a = new MealTier("50", "10", "15", "20", "5");
+        MealTier b = new MealTier("50", "10", "15", "20", "5");
+        assertEquals(a.compareTo(b), 0);
+        assertEquals(a, b);
+
+        b = new MealTier("60", "10", "15", "20", "15");
+        assertNotEquals(a.compareTo(b), 0);
+        assertNotEquals(a, b);
+
+        b = new MealTier("50", "10", "10", "20", "0");
+        assertNotEquals(a.compareTo(b), 0);
+        assertNotEquals(a, b);
     }
 }

@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.accommodation;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
@@ -38,8 +39,8 @@ public class AccommodationView implements ViewObject {
 
     public Accommodation toAccommodation() {
         return new Accommodation(address.toAddress(),
-                days.stream().map(DayView::toDay).collect(ImmutableSet.toImmutableSet()),
-                nights.stream().map(NightView::toNight).collect(ImmutableSet.toImmutableSet()));
+                days.stream().map(DayView::toDay).collect(Collectors.toSet()),
+                nights.stream().map(NightView::toNight).collect(Collectors.toSet()));
     }
 
     public AddressView getAddress() {

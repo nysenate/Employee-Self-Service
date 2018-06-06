@@ -9,7 +9,7 @@ import java.util.Objects;
  * An Accommodation contains a NightStay for each night at an address.
  * The NightStay contains all info related to lodging allowances for that address and date.
  */
-public class Night {
+public class Night implements Comparable<Night> {
 
     private final LocalDate date;
     private final Dollars lodgingRate;
@@ -68,5 +68,17 @@ public class Night {
     @Override
     public int hashCode() {
         return Objects.hash(date, lodgingRate, isLodgingRequested);
+    }
+
+    @Override
+    public int compareTo(Night o) {
+        int cmp = date.compareTo(o.date);
+        if (cmp == 0) {
+            cmp = lodgingRate.compareTo(o.lodgingRate);
+            if (cmp == 0) {
+                cmp = (isLodgingRequested == o.isLodgingRequested ? 0 : (isLodgingRequested ? 1 : -1));
+            }
+        }
+        return cmp;
     }
 }

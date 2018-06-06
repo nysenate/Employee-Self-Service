@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * A wrapper around BigDecimal used to represent dollars.
  * Auto scales and rounds to two digits.
  */
-public final class Dollars {
+public final class Dollars implements Comparable<Dollars> {
 
     private static final int SCALE = 2;
     private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
@@ -62,5 +62,10 @@ public final class Dollars {
     @Override
     public int hashCode() {
         return Objects.hash(dollars);
+    }
+
+    @Override
+    public int compareTo(Dollars o) {
+        return dollars.compareTo(o.dollars);
     }
 }

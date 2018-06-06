@@ -1,24 +1,26 @@
 package gov.nysenate.ess.travel.accommodation;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Accommodation {
 
     private final Address address;
-    private final ImmutableSet<Day> days;
-    private final ImmutableSet<Night> nights;
+    private final ImmutableSortedSet<Day> days;
+    private final ImmutableSortedSet<Night> nights;
 
-    public Accommodation(Address address, ImmutableSet<Day> days, ImmutableSet<Night> nights) {
+    public Accommodation(Address address, Set<Day> days, Set<Night> nights) {
         this.address = address;
-        this.days = days;
-        this.nights = nights;
+        this.days = ImmutableSortedSet.copyOf(days);
+        this.nights = ImmutableSortedSet.copyOf(nights);
     }
 
     /**

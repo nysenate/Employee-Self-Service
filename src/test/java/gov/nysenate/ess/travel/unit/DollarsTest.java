@@ -4,8 +4,7 @@ import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UnitTest
 public class DollarsTest {
@@ -41,5 +40,17 @@ public class DollarsTest {
     public void multiply() {
         Dollars expected = new Dollars("6.30");
         assertEquals(expected, new Dollars("2.10").multiply(new Dollars("3.00")));
+    }
+
+    @Test
+    public void testComparable() {
+        Dollars a =  new Dollars("1");
+        Dollars b =  new Dollars("1");
+        assertEquals(a.compareTo(b), 0);
+        assertEquals(a, b);
+
+        b = new Dollars("2");
+        assertNotEquals(a.compareTo(b), 0);
+        assertNotEquals(a, b);
     }
 }

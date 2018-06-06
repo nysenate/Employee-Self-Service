@@ -24,7 +24,7 @@ public class AccommodationFixture {
     public static ImmutableSet<Day> twoDayStays() {
         Day dayOne = new Day(MONDAY, TIER, true);
         Day dayTwo = new Day(TUESDAY, TIER, true);
-        return ImmutableSet.of(dayOne, dayTwo);
+        return ImmutableSet.of(dayTwo, dayOne);
     }
 
     public static ImmutableSet<Night> oneNightStay() {
