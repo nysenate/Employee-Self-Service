@@ -34,7 +34,7 @@
            ng-click="purposeCallback(ACTIONS.CANCEL)">
     <input type="button" class="submit-button"
            value="Next"
-           ng-disabled="purposeOfTravel.length == 0"
+           ng-disabled="purposeOfTravel.length === 0"
            ng-click="purposeCallback(ACTIONS.NEXT, purposeOfTravel)">
   </div>
 </div>

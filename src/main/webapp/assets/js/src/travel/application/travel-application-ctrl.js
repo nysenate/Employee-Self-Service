@@ -43,7 +43,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     $scope.pageState = undefined;
 
     // The users travel application.
-    $scope.app = {};
+    $scope.app = undefined;
 
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;

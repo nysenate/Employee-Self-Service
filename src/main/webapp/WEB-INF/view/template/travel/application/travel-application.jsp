@@ -16,24 +16,28 @@
     <span class="step" ng-class="{completed: highlightReviewStep()}">Review</span>
   </div>
 
-  <div ng-if="pageState === STATES.PURPOSE">
-    <travel-application-purpose></travel-application-purpose>
-  </div>
+  <div loader-indicator class="loader" ng-show="!app"></div>
 
-  <div ng-if="pageState === STATES.OUTBOUND">
-    <travel-application-outbound></travel-application-outbound>
-  </div>
+  <div ng-if="app">
+    <div ng-if="pageState === STATES.PURPOSE">
+      <travel-application-purpose></travel-application-purpose>
+    </div>
 
-  <div ng-if="pageState === STATES.RETURN">
-    <travel-application-return></travel-application-return>
-  </div>
+    <div ng-if="pageState === STATES.OUTBOUND">
+      <travel-application-outbound></travel-application-outbound>
+    </div>
 
-  <div ng-if="pageState === STATES.ALLOWANCES">
-    <travel-application-allowances></travel-application-allowances>
-  </div>
+    <div ng-if="pageState === STATES.RETURN">
+      <travel-application-return></travel-application-return>
+    </div>
 
-  <div ng-if="pageState === STATES.REVIEW">
-    <travel-application-review></travel-application-review>
+    <div ng-if="pageState === STATES.ALLOWANCES">
+      <travel-application-allowances></travel-application-allowances>
+    </div>
+
+    <div ng-if="pageState === STATES.REVIEW">
+      <travel-application-review></travel-application-review>
+    </div>
   </div>
 
   <div modal-container>
