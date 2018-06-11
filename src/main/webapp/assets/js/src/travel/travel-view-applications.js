@@ -11,6 +11,8 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
         filtered: []
     };
 
+    $scope.appRequest = {};
+
     $scope.date = {
         from: moment().subtract(1, 'month').format(DATE_FORMAT),
         to: moment().add(6, 'month').format(DATE_FORMAT)
@@ -21,14 +23,12 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     };
 
     function fetchApplications(empId) {
-        travelApplicationApi.get({empId: empId}, onSuccess, $scope.handleErrorResponse);
+        $scope.appRequest = travelApplicationApi.get({empId: empId}, onSuccess, $scope.handleErrorResponse);
 
         function onSuccess (resp) {
             parseResponse(resp);
             applyFilters();
             sort($scope.apps.filtered);
-            console.log($scope.apps);
-            console.log($scope.date);
         }
 
         function parseResponse(resp) {
