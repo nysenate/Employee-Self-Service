@@ -152,9 +152,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             purposeApi.update({id: $scope.app.id}, purpose, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
+                $scope.closeLoadingModal();
             }).$promise
-                .catch($scope.handleErrorResponse)
-                .finally($scope.closeLoadingModal)
+                .catch(catchErrorResponse)
         }
         else {
             updateStates(action);
@@ -167,9 +167,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             outboundApi.update({id: $scope.app.id}, route, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
+                $scope.closeLoadingModal();
             }).$promise
-                .catch($scope.handleErrorResponse)
-                .finally($scope.closeLoadingModal)
+                .catch(catchErrorResponse)
         }
         else {
             updateStates(action);
@@ -182,9 +182,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             returnApi.update({id: $scope.app.id}, route, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
+                $scope.closeLoadingModal();
             }).$promise
-                .catch($scope.handleErrorResponse)
-                .finally($scope.closeLoadingModal)
+                .catch(catchErrorResponse)
         }
         else {
             updateStates(action);
@@ -198,9 +198,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
                 allowances: allowances}, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
+                $scope.closeLoadingModal();
             }).$promise
-                .catch($scope.handleErrorResponse)
-                .finally($scope.closeLoadingModal)
+                .catch(catchErrorResponse)
         }
         else {
             updateStates(action);
@@ -235,8 +235,17 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     };
 
     $scope.closeLoadingModal = function() {
-        modals.resolve();
+        if (modals.isTop('loading')) {
+            modals.resolve();
+        }
     };
+
+    function catchErrorResponse(response) {
+        if (modals.isOpen('loading')) {
+            $scope.closeLoadingModal();
+        }
+        $scope.handleErrorResponse(response);
+    }
 
     function reload() {
         locationService.go("/travel/application/travel-application", true);
