@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.application.uncompleted;
 
 import com.google.maps.errors.ApiException;
-import com.sun.mail.iap.ByteArray;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -16,11 +15,9 @@ import gov.nysenate.ess.travel.route.RouteFactory;
 import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.impl.cookie.AbstractCookieAttributeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -85,7 +82,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         TravelApplication app = appView.toTravelApplication();
         app.setSubmittedDateTime(LocalDateTime.now());
         appDao.saveTravelApplication(app);
-        // TODO: Clear out uncompleted version.
+        // Delete uncompleted version.
+        appDao.deleteApplication(app.getTraveler().getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 

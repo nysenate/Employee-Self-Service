@@ -28,7 +28,7 @@ function appPrintCtrl($scope, locationService, travelAppApi, $timeout, $window) 
             if (shouldPrint) {
                 $timeout(function () {
                     $window.print();
-                }, 600) // Prints a blank page with a lower timeout. Should work with 0 timeout, not sure whats going on.
+                }, 600) // If timeout is reduced, printed page is blank. Should work with 0 timeout, not sure whats going on.
             }
         }
     };
