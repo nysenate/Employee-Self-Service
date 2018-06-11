@@ -251,6 +251,17 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         locationService.go("/travel/application/travel-application", true);
     }
 
+    $scope.numDistinctModesOfTransportation = function (app) {
+        var mots = (app.route.outboundLegs.concat(app.route.returnLegs)).map(function(leg) {
+            return leg.modeOfTransportation.description;
+        });
+
+        console.log(mots);
+        var distinct = _.uniq(mots);
+        console.log(distinct);
+        return distinct.length;
+    };
+
     $scope.highlightOutboundStep = function() {
         return $scope.pageState !== $scope.STATES.PURPOSE
     };
@@ -382,8 +393,12 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
             if ($scope.route.returnLegs.length === 0) {
                 // Init return leg
                 var segment = new Segment();
-                segment.from = $scope.app.route.outboundLegs[$scope.app.route.outboundLegs.length - 1].to;
-                segment.to = $scope.app.route.outboundLegs[0].from;
+                segment.from = angular.copy($scope.route.outboundLegs[$scope.route.outboundLegs.length - 1].to);
+                segment.to = angular.copy($scope.route.outboundLegs[0].from);
+                // If only 1 outbound mode of transportation, initialize to that.
+                if ($scope.numDistinctModesOfTransportation($scope.app) === 1) {
+                    segment.modeOfTransportation = angular.copy($scope.route.outboundLegs[0].modeOfTransportation);
+                }
                 $scope.route.returnLegs.push(segment);
             }
 
@@ -392,11 +407,13 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
                 var segment = new Segment();
                 var prevSeg = $scope.route.returnLegs[$scope.route.returnLegs.length - 1];
                 segment.from = prevSeg.to;
+                segment.to = angular.copy($scope.route.outboundLegs[0].from);
                 segment.modeOfTransportation = prevSeg.modeOfTransportation;
                 segment.isMileageRequested = prevSeg.isMileageRequested;
                 segment.isMealsRequested = prevSeg.isMealsRequested;
                 segment.isLodgingRequested = prevSeg.isLodgingRequested;
                 $scope.route.returnLegs.push(segment);
+                console.log($scope.app);
             };
 
             $scope.setFromAddress = function(leg, address) {
