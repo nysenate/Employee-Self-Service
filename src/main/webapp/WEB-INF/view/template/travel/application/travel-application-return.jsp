@@ -6,7 +6,7 @@
         <p class="text-align-center">Add the route of travel of your return trip.</p>
 
         <form name="returnForm">
-          <div class="travel-container"
+          <div class="travel-container margin-20"
                ng-repeat="leg in route.returnLegs">
 
             <div class="return width-100" style="display: inline-block;">

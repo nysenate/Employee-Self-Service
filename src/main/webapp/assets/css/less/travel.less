@@ -9,12 +9,30 @@
 }
 
 .travel-text {
-  color: @orange;
+  color: darken(@orange, 7%);
   .bold;
 }
 
 .travel-hero {
   .page-hero(@orange, white);
+}
+
+#travel-review-page {
+  padding-left: 10px;
+  padding-right: 10px;
+  &>div {
+    margin-bottom: 20px;
+  }
+  &>div>div{
+    margin-top:20px;
+  }
+  h4 {
+    font-size: 1.1em;
+    padding-bottom: 5px;
+    color: #3b4045;
+    margin: 10px;
+    border-bottom: solid #e4e6e8 1px;
+  }
 }
 
 .travel-button-container {
@@ -98,10 +116,6 @@
   margin-bottom: 10px;
 }
 
-.travel-gray-bottom-border {
-  border-bottom: 1px solid rgba(0,107,128,.25);
-}
-
 .travel-hover{
   tbody {
     tr:hover {
@@ -123,7 +137,6 @@
   background: #fafafa;
   position: relative;
   .box-shadow(0px 1px 2px #aaa);
-  margin: 20px;
   h3 {
     color: white;
     //padding: 10px;

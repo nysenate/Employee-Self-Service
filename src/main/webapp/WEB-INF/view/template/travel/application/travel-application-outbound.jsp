@@ -6,7 +6,7 @@
         <p class="text-align-center">Add the route of travel of your outbound trip.</p>
 
         <form name="outboundForm">
-        <div class="travel-container"
+        <div class="travel-container margin-20"
              ng-repeat="leg in route.outboundLegs">
 
           <div class="outbound width-100" style="display: inline-block;">
