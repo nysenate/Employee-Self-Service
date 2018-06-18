@@ -5504,6 +5504,10 @@ ul.inactive-employee-email-list {
 .pointer {
   cursor: pointer;
 }
+.travel-text {
+  color: #b37f20;
+  font-weight: bold;
+}
 .travel-hero {
   padding: .3em;
   font-weight: bold;
@@ -5537,6 +5541,23 @@ ul.inactive-employee-email-list {
     background: white;
     border-bottom: 1px solid black;
   }
+}
+#travel-review-page {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#travel-review-page > div {
+  margin-bottom: 20px;
+}
+#travel-review-page > div > div {
+  margin-top: 20px;
+}
+#travel-review-page h4 {
+  font-size: 1.1em;
+  padding-bottom: 5px;
+  color: #3b4045;
+  margin: 10px;
+  border-bottom: solid #e4e6e8 1px;
 }
 .travel-button-container {
   text-align: center !important;
@@ -5617,9 +5638,6 @@ ul.inactive-employee-email-list {
   text-align: right;
   margin-bottom: 10px;
 }
-.travel-gray-bottom-border {
-  border-bottom: 1px solid rgba(0, 107, 128, 0.25);
-}
 .travel-hover tbody tr:hover {
   background-color: #e1e1e1;
   cursor: pointer;
@@ -5637,7 +5655,6 @@ ul.inactive-employee-email-list {
   -webkit-box-shadow: 0px 1px 2px #aaa;
   -moz-box-shadow: 0px 1px 2px #aaa;
   box-shadow: 0px 1px 2px #aaa;
-  margin: 20px;
 }
 .travel-container h3 {
   color: white;
