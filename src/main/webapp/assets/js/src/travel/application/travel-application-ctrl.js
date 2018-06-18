@@ -299,7 +299,10 @@ essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAtt
         scope: true,
         link: function ($scope, $elem, $attrs) {
             // Copy current purpose of travel for use in this directive.
-            $scope.purposeOfTravel = angular.copy($scope.app.purposeOfTravel);
+            $scope.data = {
+                purposeOfTravel: angular.copy($scope.app.purposeOfTravel)
+            };
+            console.log($scope.data);
 
             var attachmentInput = angular.element("#addAttachment");
             attachmentInput.on('change', uploadAttachment);

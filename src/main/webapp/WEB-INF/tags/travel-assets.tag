@@ -15,6 +15,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-history-detail-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-address-autocomplete-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-destination-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-inner-container.js?v=${releaseVersion}"></script>
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/dest/ess-travel.min.js?v=${releaseVersion}"></script>

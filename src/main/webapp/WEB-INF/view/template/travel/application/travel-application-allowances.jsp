@@ -1,8 +1,10 @@
-<div class="content-container text-align-center">
+<div ng-if="false" class="content-container text-align-center">
+
   <div class="expenses-container">
     <h1>Meals and Lodging</h1>
     <p>
-      You will be reimbursed for the following meals and lodging. Uncheck anything you would not like to be reimbursed for.
+      You will be reimbursed for the following meals and lodging. Uncheck anything you would not like to be reimbursed
+      for.
     </p>
     <div class="grid">
       <div>
@@ -37,11 +39,11 @@
           <div class="col-2-12">
             <label>Meals: </label><input type="checkbox" ng-model="stay.isMealsRequested">
           </div>
-           <div class="col-2-12">
+          <div class="col-2-12">
              <span ng-if="stay.isLodgingEligible">
                <label>Lodging: </label><input type="checkbox" ng-model="stay.isLodgingRequested">
              </span>
-             <span ng-if="!stay.isLodgingEligible">&nbsp;</span>
+            <span ng-if="!stay.isLodgingEligible">&nbsp;</span>
           </div>
         </div>
       </div>
@@ -49,8 +51,8 @@
   </div>
 </div>
 
-<div class="content-container text-align-center"
-     ng-if="anyReimbursableTravel()">
+<div ng-if="false" class="content-container text-align-center">
+  <%--ng-if="anyReimbursableTravel()">--%>
   <div class="expenses-container">
     <h1>Mileage</h1>
     <p>
@@ -92,13 +94,13 @@
 </div>
 
 
-<div class="content-container text-align-center">
-  <div class="expenses-container">
-    <h1>Miscellaneous Expenses (Optional):</h1>
-    <p class="margin-20">
-      To request reimbursement for any of the following categories, enter your estimated expenses.
-    </p>
-    <div class="width-50 margin-top-20" style="margin: auto;">
+<div class="content-container">
+  <p class="travel-content-info travel-text">
+    Enter your estimated expenses for the following categories.
+  </p>
+
+  <travel-inner-container title="Miscellaneous Expenses (Optional)">
+    <div class="text-align-center" style="width: 70%; margin: auto;">
       <div class="grid" style="min-width: 0;">
         <div class="col-6-12 padding-bottom-10">
           <label class="travel-allowance-label">Tolls: $</label>
@@ -118,7 +120,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </travel-inner-container>
 
   <div class="travel-button-container">
     <input type="button" class="neutral-button" value="Cancel"

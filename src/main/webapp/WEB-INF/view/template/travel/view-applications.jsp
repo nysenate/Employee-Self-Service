@@ -2,8 +2,8 @@
   <div class="travel-hero">
     <h2>View Applications</h2>
   </div>
-  <div class="content-container content-controls">
-    <h4 class="content-info travel-text" style="margin-bottom: 0px;">View submitted applications by date</h4>
+  <div class="content-container travel-content-controls">
+    <h4 class="travel-content-info travel-text" style="margin-bottom: 0px;">Search submitted travel applications by date</h4>
     <div class="text-align-center">
       <div class="padding-10 inline-block">
         <label class="bold">From:</label>

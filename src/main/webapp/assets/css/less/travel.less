@@ -4,35 +4,72 @@
  * Styles for ESS Travel
  */
 
-.pointer {
-  cursor: pointer;
+/**
+ * Basic Theme
+ */
+
+@travelPrimaryColor: @orange;
+@travelSecondaryColor: @teal;
+@travelLightGray: #e4e6e8;
+@travelDarkGray: #3b4045;
+
+.travel-hero {
+  .page-hero(@travelPrimaryColor, white);
+}
+
+.white-text {
+  color: white;
 }
 
 .travel-text {
-  color: darken(@orange, 7%);
+  color: @travelDarkGray;
   .bold;
 }
 
-.travel-hero {
-  .page-hero(@orange, white);
+.travel-highlight-text {
+  color: @travelPrimaryColor;
+  .bold;
 }
 
-#travel-review-page {
-  padding-left: 10px;
-  padding-right: 10px;
-  &>div {
-    margin-bottom: 20px;
+.travel-background {
+  background: @travelPrimaryColor;
+}
+
+.travel-secondary-background {
+  background: @travelSecondaryColor;
+}
+
+.travel-neutral-background {
+  background: @travelLightGray;
+}
+
+.travel-content-info {
+  .content-info;
+  border-bottom: 1px solid @travelLightGray;
+}
+
+.travel-content-controls {
+  .content-controls;
+  p, label {
+    .travel-text;
   }
-  &>div>div{
-    margin-top:20px;
-  }
-  h4 {
-    font-size: 1.1em;
-    padding-bottom: 5px;
-    color: #3b4045;
-    margin: 10px;
-    border-bottom: solid #e4e6e8 1px;
-  }
+}
+
+.travel-inner-container {
+  margin: 10px 10px 20px;
+  border: solid @travelLightGray 1px;
+}
+
+.travel-inner-container-content {
+  margin: 15px;
+}
+
+h2.travel-subheader {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 10px;
+  color: white;
 }
 
 .travel-button-container {
@@ -45,21 +82,15 @@
   }
 }
 
-@travel-location-box-core: {
+
+
+
+
+@travel-location-box-core: { display: inline-block; width: 100%; padding: 5px; height: 50px; text-align: center; line-height: 20px; background: #F6F6F6; border-radius: 5px; div {
   display: inline-block;
-  width: 100%;
-  padding: 5px;
-  height: 50px;
   text-align: center;
-  line-height: 20px;
-  background: #F6F6F6;
-  border-radius: 5px;
-  div {
-    display:inline-block;
-    text-align: center;
-    vertical-align: top;
-  }
-};
+  vertical-align: top;
+} };
 
 .travel-origin-display-box {
   @travel-location-box-core();
@@ -116,7 +147,7 @@
   margin-bottom: 10px;
 }
 
-.travel-hover{
+.travel-hover {
   tbody {
     tr:hover {
       background-color: darken(color(#fafafa), 10%);
@@ -133,20 +164,29 @@
   vertical-align: middle;
 }
 
+// Still used in review page
 .travel-container {
   background: #fafafa;
   position: relative;
-  .box-shadow(0px 1px 2px #aaa);
+  //.box-shadow(0px 1px 2px #aaa);
+  border: solid @travelLightGray 1px;
   h3 {
-    color: white;
+    color: @travelDarkGray;
     //padding: 10px;
     margin: 10px;
   }
-  >.outbound {
-    background: @orange;
+  > .outbound {
+    //color: @green;
+    //border-bottom: solid @green 1px;
+    border-bottom: solid @travelLightGray 1px;
+    //background: @travelPrimaryColor;
   }
-  >.return {
-    background: @teal;
+  > .return {
+    //color: @teal;
+    border-bottom: solid @travelLightGray 1px;
+    //border: solid @travelLightGray 1px;
+    //border-bottom: solid @teal 1px;
+    //background: @travelSecondaryColor;
   }
   input {
     background: #ffffff;
@@ -156,28 +196,22 @@
 .travel-container-cross {
   float: right;
   margin: 10px;
-  font-size: x-large;
+  font-size: large;
   color: white;
   cursor: pointer;
 }
 
-.expenses-container {
-  .margin-top-10;
-  padding-bottom: 15px;
-  h4 {
-    margin: 5px;
-  }
-}
-
-/** Attachment styling */
+/**
+  * Attachment styling
+  */
 
 .travel-attachment-container {
   .margin-10;
-  &>.travel-attachment-filename {
+  & > .travel-attachment-filename {
     .margin-5;
     color: darken(@gray, 15%);
     font-family: monospace;
-    &>.icon-cross {
+    & > .icon-cross {
       .margin-5;
       vertical-align: middle;
       color: @dark-red;
@@ -186,23 +220,24 @@
   }
 }
 
-
-/** Travel Itinerary styling */
+/**
+  * Travel Itinerary styling
+  */
 
 .itinerary-address {
-  width: 48%;
+  width: 44%;
   margin: 1%;
   float: left;
 }
 
 .itinerary-date {
-  width: 48%;
+  width: 44%;
   margin: 1%;
   float: right;
 }
 
 .itinerary-mot-container {
-  width: 48%;
+  width: 44%;
   margin: 1%;
   float: right;
   .itinerary-mot {
@@ -214,7 +249,9 @@
   }
 }
 
-/** Travel app print page styling */
+/**
+  * Travel app print page styling
+  */
 
 .travel-print-info-container {
   div {
@@ -261,10 +298,10 @@
 .print-signature {
   width: 350px;
   border-top: 1px solid black;
-  >.signature-name {
+  > .signature-name {
     float: left;
   }
-  >.signature-date {
+  > .signature-date {
     float: right;
   }
 }
@@ -283,10 +320,12 @@
   margin: 100px 20px 0 232px;
 }
 
-/** Step Indicator */
+/**
+  * Step Indicator
+  */
 
 @stepColor: @white;
-@stepColorCompleted: @teal;
+@stepColorCompleted: @travelSecondaryColor;
 @textColor: #666;
 @textColorCompleted: #fff;
 
