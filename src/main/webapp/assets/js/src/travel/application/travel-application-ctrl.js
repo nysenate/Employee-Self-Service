@@ -262,24 +262,36 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         return distinct.length;
     };
 
-    $scope.highlightOutboundStep = function() {
-        return $scope.pageState !== $scope.STATES.PURPOSE
+    /**
+     * Determines when a step indicator/breadcrumb should be highlighted.
+     * @param state
+     * @return {boolean}
+     */
+    $scope.highlightStep = function (state) {
+        return state <= $scope.pageState;
     };
 
-    $scope.highlightReturnStep = function() {
-        return $scope.pageState === $scope.STATES.RETURN
-            || $scope.pageState === $scope.STATES.ALLOWANCES
-            || $scope.pageState === $scope.STATES.REVIEW
+    /**
+     * Determines if the user is allowed to click on this step indicator.
+     * Users can only click on steps they have already completed.
+     * @param state
+     */
+    $scope.stepNavigable = function (state) {
+        return state < $scope.pageState;
     };
 
-    $scope.highlightExpensesStep = function() {
-        return $scope.pageState === $scope.STATES.ALLOWANCES
-            || $scope.pageState === $scope.STATES.REVIEW
-    };
+    /**
+     * Attempts to go to state page.
+     * Only allowed to go to a page if it goes backwards in the application.
+     * @param state an instance of $scope.STATES.
+     */
+    $scope.gotoStep = function (state) {
+        if (state < $scope.pageState) {
+            $scope.pageState = state;
+        }
+    }
 
-    $scope.highlightReviewStep = function() {
-        return $scope.pageState === $scope.STATES.REVIEW
-    };
+
 }
 
 /**

@@ -9,11 +9,16 @@
   </div>
 
   <div class="step-indicator">
-    <span class="step completed">Purpose</span>
-    <span class="step" ng-class="{completed: highlightOutboundStep()}">Outbound</span>
-    <span class="step" ng-class="{completed: highlightReturnStep()}">Return</span>
-    <span class="step" ng-class="{completed: highlightExpensesStep()}">Expenses</span>
-    <span class="step" ng-class="{completed: highlightReviewStep()}">Review</span>
+    <span class="step completed" ng-click="gotoStep(STATES.PURPOSE)"
+          ng-class="{navigable: stepNavigable(STATES.PURPOSE)}">Purpose</span>
+    <span class="step" ng-click="gotoStep(STATES.OUTBOUND)"
+          ng-class="{completed: highlightStep(STATES.OUTBOUND), navigable: stepNavigable(STATES.OUTBOUND)}">Outbound</span>
+    <span class="step" ng-click="gotoStep(STATES.RETURN)"
+          ng-class="{completed: highlightStep(STATES.RETURN), navigable: stepNavigable(STATES.RETURN)}">Return</span>
+    <span class="step" ng-click="gotoStep(STATES.ALLOWANCES)"
+          ng-class="{completed: highlightStep(STATES.ALLOWANCES), navigable: stepNavigable(STATES.ALLOWANCES)}">Expenses</span>
+    <span class="step"
+          ng-class="{completed: highlightStep(STATES.REVIEW)}">Review</span>
   </div>
 
   <div loader-indicator class="loader" ng-show="!app"></div>

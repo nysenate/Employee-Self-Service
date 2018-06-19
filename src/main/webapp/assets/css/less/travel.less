@@ -407,4 +407,21 @@ h2.travel-subheader {
       border-left-color: @stepColorCompleted;
     }
   }
+
+  &.navigable {
+    @navigableColor: lighten(@stepColorCompleted, 10%);
+    cursor: pointer;
+    &:hover {
+      background: @navigableColor;
+
+      &:before {
+        border-color: @navigableColor;
+        border-left-color: transparent;
+      }
+
+      &:after {
+        border-left-color: @navigableColor;
+      }
+    }
+  }
 }
