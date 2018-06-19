@@ -3240,7 +3240,7 @@ badge,
   flex-direction: column;
   justify-content: space-around;
 }
-.employee-search-directive .pointer {
+.pointer {
   cursor: pointer;
 }
 /** Login Page
@@ -5901,6 +5901,19 @@ h2.travel-subheader {
 }
 .step.completed:after {
   border-left-color: #006B80;
+}
+.step.navigable {
+  cursor: pointer;
+}
+.step.navigable:hover {
+  background: #0096b3;
+}
+.step.navigable:hover:before {
+  border-color: #0096b3;
+  border-left-color: transparent;
+}
+.step.navigable:hover:after {
+  border-left-color: #0096b3;
 }
 /**
 * Styles for ESS Help Pages
