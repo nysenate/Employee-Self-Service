@@ -3240,6 +3240,9 @@ badge,
   flex-direction: column;
   justify-content: space-around;
 }
+.employee-search-directive .pointer {
+  cursor: pointer;
+}
 /** Login Page
 ----------------*/
 .folded-top {
@@ -5501,13 +5504,9 @@ ul.inactive-employee-email-list {
 /**
  * Styles for ESS Travel
  */
-.pointer {
-  cursor: pointer;
-}
-.travel-text {
-  color: #b37f20;
-  font-weight: bold;
-}
+/**
+ * Basic Theme
+ */
 .travel-hero {
   padding: .3em;
   font-weight: bold;
@@ -5542,22 +5541,76 @@ ul.inactive-employee-email-list {
     border-bottom: 1px solid black;
   }
 }
-#travel-review-page {
-  padding-left: 10px;
-  padding-right: 10px;
+.white-text {
+  color: white;
 }
-#travel-review-page > div {
-  margin-bottom: 20px;
-}
-#travel-review-page > div > div {
-  margin-top: 20px;
-}
-#travel-review-page h4 {
-  font-size: 1.1em;
-  padding-bottom: 5px;
+.travel-text {
   color: #3b4045;
-  margin: 10px;
-  border-bottom: solid #e4e6e8 1px;
+  font-weight: bold;
+}
+.travel-highlight-text {
+  color: #d19525;
+  font-weight: bold;
+}
+.travel-background {
+  background: #d19525;
+}
+.travel-secondary-background {
+  background: #006B80;
+}
+.travel-neutral-background {
+  background: #e4e6e8;
+}
+.travel-content-info {
+  margin-top: 0;
+  padding: 11px;
+  color: #222;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 107, 128, 0.25);
+  border-bottom: 1px solid #e4e6e8;
+}
+.travel-content-info.no-bottom-margin {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+@media print {
+  .travel-content-info {
+    border-bottom: 0;
+  }
+}
+.travel-content-controls {
+  margin-top: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  text-align: center;
+}
+.travel-content-controls p,
+.travel-content-controls label {
+  font-weight: 600;
+  color: #006B80;
+}
+.travel-content-controls > .content-info {
+  border-bottom: none;
+}
+.travel-content-controls p,
+.travel-content-controls label {
+  color: #3b4045;
+  font-weight: bold;
+}
+.travel-inner-container {
+  margin: 10px 10px 20px;
+  border: solid #e4e6e8 1px;
+}
+.travel-inner-container-content {
+  margin: 15px;
+}
+h2.travel-subheader {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 10px;
+  color: white;
 }
 .travel-button-container {
   text-align: center !important;
@@ -5652,19 +5705,17 @@ ul.inactive-employee-email-list {
 .travel-container {
   background: #fafafa;
   position: relative;
-  -webkit-box-shadow: 0px 1px 2px #aaa;
-  -moz-box-shadow: 0px 1px 2px #aaa;
-  box-shadow: 0px 1px 2px #aaa;
+  border: solid #e4e6e8 1px;
 }
 .travel-container h3 {
-  color: white;
+  color: #3b4045;
   margin: 10px;
 }
 .travel-container > .outbound {
-  background: #d19525;
+  border-bottom: solid #e4e6e8 1px;
 }
 .travel-container > .return {
-  background: #006B80;
+  border-bottom: solid #e4e6e8 1px;
 }
 .travel-container input {
   background: #ffffff;
@@ -5672,18 +5723,13 @@ ul.inactive-employee-email-list {
 .travel-container-cross {
   float: right;
   margin: 10px;
-  font-size: x-large;
+  font-size: large;
   color: white;
   cursor: pointer;
 }
-.expenses-container {
-  margin-top: 10px !important;
-  padding-bottom: 15px;
-}
-.expenses-container h4 {
-  margin: 5px;
-}
-/** Attachment styling */
+/**
+  * Attachment styling
+  */
 .travel-attachment-container {
   margin: 10px;
 }
@@ -5698,19 +5744,21 @@ ul.inactive-employee-email-list {
   color: #B90504;
   font-size: large;
 }
-/** Travel Itinerary styling */
+/**
+  * Travel Itinerary styling
+  */
 .itinerary-address {
-  width: 48%;
+  width: 44%;
   margin: 1%;
   float: left;
 }
 .itinerary-date {
-  width: 48%;
+  width: 44%;
   margin: 1%;
   float: right;
 }
 .itinerary-mot-container {
-  width: 48%;
+  width: 44%;
   margin: 1%;
   float: right;
 }
@@ -5721,7 +5769,9 @@ ul.inactive-employee-email-list {
   float: right;
   margin-right: 50px;
 }
-/** Travel app print page styling */
+/**
+  * Travel app print page styling
+  */
 .travel-print-info-container div {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -5780,7 +5830,9 @@ ul.inactive-employee-email-list {
 #secretary-signature {
   margin: 100px 20px 0 232px;
 }
-/** Step Indicator */
+/**
+  * Step Indicator
+  */
 .step-indicator {
   margin-bottom: 50px;
   margin-top: 10px;
