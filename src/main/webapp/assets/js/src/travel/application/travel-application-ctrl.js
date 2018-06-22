@@ -689,6 +689,18 @@ essTravel.directive('addressValidator', function() {
     return {
         require: 'ngModel',
         link: function($scope, elm, attrs, ctrl) {
+            elm.on('keydown', function(e) {
+                // Reset address when manually edited.
+                var address = $scope.leg[attrs.ngModel.split('.')[1]];
+                address.addr1 = '';
+                address.addr2 = '';
+                address.city = '';
+                address.county = '';
+                address.state = '';
+                address.zip4 = '';
+                address.zip5 = '';
+
+            });
             ctrl.$validators.addressValidator = function (modelValue, viewValue) {
                 if (!modelValue) {
                     return false;
