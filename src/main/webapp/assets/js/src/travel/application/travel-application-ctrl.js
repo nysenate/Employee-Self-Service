@@ -193,7 +193,13 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
 
     $scope.allowancesCallback = function (action, destinations, allowances) {
         if (action === $scope.ACTIONS.NEXT) {
-             $scope.openLoadingModal();
+            $scope.openLoadingModal();
+            // Default empty allowances to 0.
+            for (var prop in allowances) {
+                if (!allowances[prop]) {
+                    allowances[prop] = 0;
+                }
+            }
             expensesApi.update({id: $scope.app.id}, {destinations: destinations,
                 allowances: allowances}, function(response) {
                 updateAppFromResponse(response);
