@@ -26,6 +26,7 @@
                  ng-model="leg.from.formattedAddress"
                  leg="leg"
                  callback="setFromAddress(leg, address)"
+                 address-validator
                  placeholder="From Address"
                  type="text" size="40" required>
         </div>
@@ -42,6 +43,7 @@
                  ng-model="leg.to.formattedAddress"
                  leg="leg"
                  callback="setToAddress(leg, address)"
+                 address-validator
                  placeholder="To Address"
                  type="text"
                  size="40"

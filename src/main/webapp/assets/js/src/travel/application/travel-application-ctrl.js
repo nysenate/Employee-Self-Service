@@ -675,6 +675,29 @@ essTravel.directive('dateValidator', function() {
     }
 });
 
+/**
+ * Validates address are selected from the google autocomplete.
+ * Elements using this must have an ng-model in the form of
+ * 'leg.from.formattedAddress' or 'leg.to.formattedAddress'
+ */
+essTravel.directive('addressValidator', function() {
+    return {
+        require: 'ngModel',
+        link: function($scope, elm, attrs, ctrl) {
+            ctrl.$validators.addressValidator = function (modelValue, viewValue) {
+                if (!modelValue) {
+                    return false;
+                }
+                // Parse the ng-model attribute to determine if we should validate the 'to' or 'from' address.
+                var address = $scope.leg[attrs.ngModel.split('.')[1]];
+                if (address.addr1) {
+                    return true;
+                }
+            }
+        }
+    }
+});
+
 function Segment() {
     this.from = {};
     this.to = {};
