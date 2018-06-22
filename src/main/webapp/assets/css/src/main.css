@@ -5621,6 +5621,51 @@ h2.travel-subheader {
 .travel-button-container input[type="button"] {
   margin-right: 5px;
 }
+/**
+  * Validation
+ */
+#purposeForm input.ng-invalid,
+#outboundForm input.ng-invalid,
+#returnForm input.ng-invalid,
+#allowancesForm input.ng-invalid,
+#purposeForm select.ng-invalid,
+#outboundForm select.ng-invalid,
+#returnForm select.ng-invalid,
+#allowancesForm select.ng-invalid,
+#purposeForm textarea.ng-invalid,
+#outboundForm textarea.ng-invalid,
+#returnForm textarea.ng-invalid,
+#allowancesForm textarea.ng-invalid {
+  border: 1px solid #ccc;
+}
+#purposeForm input.ng-invalid.ng-touched,
+#outboundForm input.ng-invalid.ng-touched,
+#returnForm input.ng-invalid.ng-touched,
+#allowancesForm input.ng-invalid.ng-touched,
+#purposeForm select.ng-invalid.ng-touched,
+#outboundForm select.ng-invalid.ng-touched,
+#returnForm select.ng-invalid.ng-touched,
+#allowancesForm select.ng-invalid.ng-touched,
+#purposeForm textarea.ng-invalid.ng-touched,
+#outboundForm textarea.ng-invalid.ng-touched,
+#returnForm textarea.ng-invalid.ng-touched,
+#allowancesForm textarea.ng-invalid.ng-touched {
+  border: 1px solid #e64727;
+}
+#purposeForm input.ng-invalid.ng-dirty,
+#outboundForm input.ng-invalid.ng-dirty,
+#returnForm input.ng-invalid.ng-dirty,
+#allowancesForm input.ng-invalid.ng-dirty,
+#purposeForm select.ng-invalid.ng-dirty,
+#outboundForm select.ng-invalid.ng-dirty,
+#returnForm select.ng-invalid.ng-dirty,
+#allowancesForm select.ng-invalid.ng-dirty,
+#purposeForm textarea.ng-invalid.ng-dirty,
+#outboundForm textarea.ng-invalid.ng-dirty,
+#returnForm textarea.ng-invalid.ng-dirty,
+#allowancesForm textarea.ng-invalid.ng-dirty {
+  border: 1px solid #e64727;
+}
 .travel-origin-display-box {
   display: inline-block;
   width: 100%;
