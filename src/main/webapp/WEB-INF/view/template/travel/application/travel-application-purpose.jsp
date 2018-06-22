@@ -7,11 +7,12 @@
   <%--Only call the callback function if form is valid--%>
         ng-submit="purposeForm.$valid && purposeCallback(ACTIONS.NEXT, data.purposeOfTravel)" novalidate>
 
+    <div ng-show="purposeForm.$submitted && !purposeForm.$valid" class="margin-10">
+      <ess-notification level="error" message="Purpose of Travel is required."></ess-notification>
+    </div>
+
     <travel-inner-container title="Purpose of Travel">
       <div class="text-align-center">
-        <div ng-show="purposeForm.$submitted && !purposeForm.$valid" class="margin-10">
-          <ess-notification level="error" message="Purpose of Travel is required."></ess-notification>
-        </div>
         <textarea ng-model="data.purposeOfTravel" cols="80" rows="6"
                   placeholder="Why will you be traveling?" required></textarea>
       </div>
