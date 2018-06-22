@@ -289,8 +289,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         if (state < $scope.pageState) {
             $scope.pageState = state;
         }
-    }
-
+    };
 
 }
 
@@ -314,9 +313,8 @@ essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAtt
             $scope.data = {
                 purposeOfTravel: angular.copy($scope.app.purposeOfTravel)
             };
-            console.log($scope.data);
 
-            var attachmentInput = angular.element("#addAttachment");
+           var attachmentInput = angular.element("#addAttachment");
             attachmentInput.on('change', uploadAttachment);
 
             /**
@@ -348,7 +346,7 @@ essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAtt
                     console.log(response);
                     $scope.app = response.result;
                 })
-            }
+            };
         }
     }
 }]);
@@ -360,6 +358,7 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
         link: function ($scope, $elem, $attrs, ctrl) {
 
             $scope.route = angular.copy($scope.app.route);
+
             if ($scope.route.outboundLegs.length === 0) {
                 var segment = new Segment();
                 // Init from address to employees work address.
@@ -393,6 +392,19 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
 
             $scope.deleteSegment = function() {
                 $scope.route.outboundLegs.pop();
+            };
+
+            $scope.submit = function () {
+                for (var prop in $scope.outboundForm) {
+                    // Set all form elements as touched so they can be styled appropriately if they have errors.
+                    if ($scope.outboundForm[prop] && typeof($scope.outboundForm[prop].$setTouched) === 'function') {
+                        $scope.outboundForm[prop].$setTouched();
+                    }
+                }
+                // If the entire form is valid, continue to next page.
+                if ($scope.outboundForm.$valid) {
+                    $scope.outboundCallback($scope.ACTIONS.NEXT, $scope.route);
+                }
             };
         }
     }
@@ -445,7 +457,20 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
 
             $scope.deleteSegment = function() {
                 $scope.route.returnLegs.pop();
-            }
+            };
+
+            $scope.submit = function () {
+                for (var prop in $scope.returnForm) {
+                    // Set all form elements as touched so they can be styled appropriately if they have errors.
+                    if ($scope.returnForm[prop] && typeof($scope.returnForm[prop].$setTouched) === 'function') {
+                        $scope.returnForm[prop].$setTouched();
+                    }
+                }
+                // If the entire form is valid, continue to next page.
+                if ($scope.returnForm.$valid) {
+                    $scope.returnCallback($scope.ACTIONS.NEXT, $scope.route);
+                }
+            };
         }
     }
 }]);
@@ -517,7 +542,8 @@ essTravel.directive('travelApplicationAllowances', ['appProps', 'modals', functi
 
             $scope.isReimbursableLeg = function(leg) {
                 return leg.modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO';
-            }
+            };
+
         }
     }
 }]);
@@ -605,12 +631,36 @@ essTravel.directive('travelApplicationReview', ['appProps', '$q', 'modals',
     }]);
 
 
+/**
+ * Validators
+ */
+
+/**
+ * Validator for Method of Transportation select elements.
+ * Requires that a method of transportation is selected.
+ */
+essTravel.directive('motValidator', function () {
+    return {
+        require: 'ngModel',
+        link: function ($scope, elm, attrs, ctrl) {
+            ctrl.$validators.motValidator = function (modelValue, viewValue) {
+                console.log(modelValue);
+                if (modelValue && modelValue.methodOfTravel == null) {
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+});
+
 function Segment() {
     this.from = {};
     this.to = {};
     this.departureDate = ''; // Use setter to ensure formatted as ISO date.
     this.arrivalDate = ''; // Use setter to ensure formatted as ISO date.
-    this.modeOfTransportation = {};
+    this.travelDate = '';
+    this.modeOfTransportation = undefined;
     this.isMileageRequested = true;
     this.isMealsRequested = true;
     this.isLodgingRequested = true;

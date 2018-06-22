@@ -82,6 +82,27 @@ h2.travel-subheader {
   }
 }
 
+/**
+  * Validation
+ */
+
+// Only highlight fields once they have been touched.
+// Prevents highlighting them before the user even starts to fill out the info.
+#purposeForm, #outboundForm, #returnForm, #allowancesForm {
+  input, select, textarea {
+    &.ng-invalid {
+      border: 1px solid #ccc;
+      &.ng-touched {
+        border: 1px solid @redorange;
+      }
+      &.ng-dirty {
+        border: 1px solid @redorange;
+      }
+    }
+  }
+}
+
+
 
 
 

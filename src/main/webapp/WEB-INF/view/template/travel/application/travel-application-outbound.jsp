@@ -3,7 +3,13 @@
     Enter your outbound route of travel.
   </p>
 
-  <form name="outboundForm">
+  <form novalidate name="outboundForm" id="outboundForm">
+
+    <div ng-if="outboundForm.$submitted && !outboundForm.$valid" class="margin-10">
+      <ess-notification level="error" title="Outbound segments have errors" message="Fix the highlighted fields below.">
+      </ess-notification>
+    </div>
+
     <div class="travel-inner-container" ng-repeat="leg in route.outboundLegs">
       <div class="travel-background" style="display: inline-block; width: 100%;">
         <h2 class="travel-subheader float-left">Outbound Segment {{$index + 1}}</h2>
@@ -16,63 +22,66 @@
         <div class="itinerary-address">
           <label>From</label><br/>
           <input travel-address-autocomplete
+                 name="fromAddress_{{$index}}"
                  ng-model="leg.from.formattedAddress"
                  leg="leg"
                  callback="setFromAddress(leg, address)"
                  placeholder="From Address"
-                 type="text" size="40">
+                 type="text" size="40" required>
         </div>
         <div class="itinerary-date">
           <label>Travel Date</label><br/>
-          <input datepicker ng-model="leg.travelDate" size="13">
+          <input datepicker name="travelDate_{{$index}}" ng-model="leg.travelDate" size="13" type="text" required>
         </div>
         <div class="clear"></div>
 
         <div class="itinerary-address">
           <label>To</label><br/>
           <input travel-address-autocomplete
+                 name="toAddress_{{$index}}"
                  ng-model="leg.to.formattedAddress"
                  leg="leg"
                  callback="setToAddress(leg, address)"
                  placeholder="To Address"
                  type="text"
-                 size="40">
+                 size="40" required>
         </div>
         <%--<div class="clear"></div>--%>
 
         <div class="itinerary-mot-container">
           <div class="itinerary-mot">
             <label>Mode of Transportation:</label><br/>
-            <select ng-model="leg.modeOfTransportation"
-                    ng-options="mode.displayName for mode in modesOfTransportation track by mode.methodOfTravel"></select>
+            <select mot-validator name="mot_{{$index}}" ng-model="leg.modeOfTransportation"
+                    ng-options="mode.displayName for mode in modesOfTransportation track by mode.methodOfTravel"
+                    required></select>
           </div>
           <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel == 'OTHER'">
             <label>Please Specify:</label><br/>
-            <input type="text" size="17" ng-model="leg.modeOfTransportation.description">
+            <input name="motOther_{{$index}}"
+                   ng-required="leg.modeOfTransportation.methodOfTravel === 'OTHER'"
+                   type="text" size="17" ng-model="leg.modeOfTransportation.description">
           </div>
         </div>
         <div class="clear"></div>
 
       </div>
     </div>
-  </form>
 
-  <div class="text-align-center">
-    <input type="button" class="travel-neutral-button" value="Add Outbound Segment"
-           ng-click="addSegment()">
-  </div>
-
-
-  <div class="text-align-center">
-    <div class="travel-button-container">
-      <input type="button" class="neutral-button" value="Cancel"
-             ng-click="outboundCallback(ACTIONS.CANCEL)">
-      <input type="button" class="travel-neutral-button" value="Back"
-             ng-click="outboundCallback(ACTIONS.BACK)">
-      <input type="button" class="submit-button"
-             value="Next"
-             ng-disabled="origin.formattedAddress.length == 0"
-             ng-click="outboundCallback(ACTIONS.NEXT, route)">
+    <div class="text-align-center">
+      <input type="button" class="travel-neutral-button" value="Add Outbound Segment"
+             ng-click="addSegment()">
     </div>
-  </div>
+
+
+    <div class="text-align-center">
+      <div class="travel-button-container">
+        <input type="button" class="neutral-button" value="Cancel"
+               ng-click="outboundCallback(ACTIONS.CANCEL)">
+        <input type="button" class="travel-neutral-button" value="Back"
+               ng-click="outboundCallback(ACTIONS.BACK)">
+        <input type="submit" class="submit-button" value="Next"
+               ng-click="submit()">
+      </div>
+    </div>
+  </form>
 </div>
