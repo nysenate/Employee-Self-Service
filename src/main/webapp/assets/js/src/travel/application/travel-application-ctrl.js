@@ -465,6 +465,11 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
                 $scope.route.returnLegs.pop();
             };
 
+            // Ensure user does not select a return travel date before the outbound travel date.
+            $scope.fromDate = function() {
+                return $scope.route.outboundLegs.slice(-1)[0].travelDate;
+            };
+
             $scope.submit = function () {
                 for (var prop in $scope.returnForm) {
                     // Set all form elements as touched so they can be styled appropriately if they have errors.
