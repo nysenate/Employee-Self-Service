@@ -31,7 +31,7 @@
         </div>
         <div class="itinerary-date">
           <label>Travel Date</label><br/>
-          <input datepicker name="travelDate_{{$index}}" ng-model="leg.travelDate" size="13" type="text" required>
+          <input datepicker date-validator name="travelDate_{{$index}}" ng-model="leg.travelDate" size="13" type="text" required>
         </div>
         <div class="clear"></div>
 
