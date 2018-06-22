@@ -436,6 +436,13 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
             }
 
             $scope.addSegment = function() {
+                // When adding a new segment, mark the form as unsubmitted if there are not any errors.
+                // This prevents the error notification from being display for errors in the new segment
+                // which the user has not had a chance to fill out yet.
+                if ($scope.returnForm.$valid) {
+                    $scope.returnForm.$submitted = false;
+                }
+
                 // Initialize new leg
                 var segment = new Segment();
                 var prevSeg = $scope.route.returnLegs[$scope.route.returnLegs.length - 1];
