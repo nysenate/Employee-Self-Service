@@ -54,7 +54,7 @@ essTravel.directive('travelAddressAutocomplete', ['appProps', '$q', function (ap
 
             function parseCity(place) {
                 var city = getTypeName(place, 'locality');
-                return city === null ? getTypeName(place, 'administrative_area_level_3'): city;
+                return !city ? getTypeName(place, 'administrative_area_level_3'): city;
             }
 
             function parseCounty(place) {
