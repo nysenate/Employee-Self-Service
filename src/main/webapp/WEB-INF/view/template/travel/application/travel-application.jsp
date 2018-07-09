@@ -47,6 +47,12 @@
 
   <div modal-container>
 
+    <%--Continue application modal--%>
+    <modal modal-id="travel-continue-application-modal">
+      <div travel-continue-application-modal></div>
+    </modal>
+
+
     <%--Cancel Modal--%>
     <modal modal-id="cancel-application">
       <div confirm-modal rejectable="true"

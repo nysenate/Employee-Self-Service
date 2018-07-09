@@ -7,6 +7,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-print-body.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-print-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/travel-lodging-details-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/travel-continue-application-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/travel-meal-details-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/travel-mileage-details-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-user-config.js?v=${releaseVersion}"></script>

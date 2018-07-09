@@ -16,7 +16,6 @@ essTravel.controller('NewTravelApplicationCtrl',
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
                              outboundApi, returnApi, expensesApi, submitApi, motApi, cancelApi) {
 
-
     /**
      * States and Actions
      * State - The currently active page of the application process.
@@ -57,18 +56,40 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
      * Checks to see if the logged in employee has an uncompleted travel application in progress.
      * If so, return that application so they can continue to work on it.
      * If not, initialize a new application.
+     *
+     * If continuing a previous application, display modal asking user if they
+     * would like to continue working on it or start over.
      * @param travelerId
      */
     function initApplication(travelerId) {
         appInitApi.save({empId: travelerId}, {}, function (response) {
             $scope.app = response.result;
-        }, $scope.handleErrorResponse)
+            if (hasUncompleteApplication()) {
+                modals.open('travel-continue-application-modal')
+                    .catch(function () {
+                        $scope.openLoadingModal();
+                        cancelApplication()
+                    });
+            }
+        }, $scope.handleErrorResponse);
+
+        function hasUncompleteApplication() {
+            return $scope.app.purposeOfTravel.length > 0;
+        }
     }
 
     function initMethodsOfTravel() {
         motApi.get({}, function (response) {
             $scope.modesOfTransportation = response.result;
         }, $scope.handleErrorResponse);
+    }
+
+    function cancelApplication() {
+        cancelApi.remove({empId: $scope.app.traveler.employeeId})
+            .$promise
+            .then(reload)
+            .catch($scope.handleErrorResponse)
+            .finally($scope.closeLoadingModal)
     }
 
     /**
@@ -91,11 +112,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             modals.open("cancel-application").then(function () {
                 modals.resolve({});
                 $scope.openLoadingModal();
-                cancelApi.remove({empId: $scope.app.traveler.employeeId})
-                    .$promise
-                    .then(reload)
-                    .catch($scope.handleErrorResponse)
-                    .finally($scope.closeLoadingModal)
+                cancelApplication();
             })
         }
 
