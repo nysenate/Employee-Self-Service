@@ -31,8 +31,7 @@ CREATE OR REPLACE PACKAGE BODY SYNCHRONIZE_SUPPLY AS
       INTO responsibility_head
       FROM SL16LOCATION
       WHERE CDLOCAT = location_code
-            AND CDLOCTYPE = location_type
-            AND CDSTATUS = 'A';
+            AND CDLOCTYPE = location_type;
       RETURN responsibility_head;
     END;
 
