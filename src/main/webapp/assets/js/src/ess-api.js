@@ -294,6 +294,10 @@ essApi.factory('TravelModeOfTransportationApi', ['$resource', 'appProps', functi
     return $resource(appProps.apiPath + '/travel/mode-of-transportation.json')
 }]);
 
+essApi.factory('TravelGeocodeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/geocode')
+}]);
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {

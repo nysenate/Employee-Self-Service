@@ -68,7 +68,12 @@
       <div progress-modal title="Loading..."></div>
     </modal>
 
-      <%-- Review Modals --%>
+    <%--County information modal--%>
+    <modal modal-id="address-county-modal">
+      <div address-county-modal></div>
+    </modal>
+
+    <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
            title="Submit Travel Application?"

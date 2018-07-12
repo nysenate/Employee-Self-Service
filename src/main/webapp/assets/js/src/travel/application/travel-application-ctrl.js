@@ -11,10 +11,10 @@ var essTravel = angular.module('essTravel');
 essTravel.controller('NewTravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi', 'TravelApplicationPurposeApi',
                       'TravelApplicationOutboundApi', 'TravelApplicationReturnApi', 'TravelApplicationExpensesApi', 'TravelApplicationSubmitApi',
-                      'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', travelAppController]);
+                      'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', 'AddressGeocoder', travelAppController]);
 
 function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, purposeApi,
-                             outboundApi, returnApi, expensesApi, submitApi, motApi, cancelApi) {
+                             outboundApi, returnApi, expensesApi, submitApi, motApi, cancelApi, geocoder) {
 
     /**
      * States and Actions
@@ -374,7 +374,7 @@ essTravel.directive('travelApplicationPurpose', ['appProps', '$http', 'TravelAtt
     }
 }]);
 
-essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps) {
+essTravel.directive('travelApplicationOutbound', ['$q', 'appProps', 'AddressGeocoder', 'modals', 'AddressCountyService', function ($q, appProps, geocoder, modals, countyService) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-outbound',
         scope: true,
@@ -424,16 +424,38 @@ essTravel.directive('travelApplicationOutbound', ['appProps', function (appProps
                         $scope.outboundForm[prop].$setTouched();
                     }
                 }
-                // If the entire form is valid, continue to next page.
+                // If the entire form is valid, continue.
                 if ($scope.outboundForm.$valid) {
-                    $scope.outboundCallback($scope.ACTIONS.NEXT, $scope.route);
+                    var addresses = $scope.route.outboundLegs.map(function (leg) {
+                        return leg.from;
+                    }).concat($scope.route.outboundLegs.map(function (leg) {
+                        return leg.to;
+                    }));
+
+                    var addrsMissingCounty = countyService.missingCounty(addresses);
+
+                    if (addrsMissingCounty.isEmpty) {
+                        $scope.continue();
+                    }
+                    else {
+                        $scope.openLoadingModal();
+                        countyService.updateWithGeocodeCounty(addrsMissingCounty)
+                            .then(countyService.missingCounty) // filter out addresses that were updated with a county.
+                            .then(countyService.promptUserForCounty)
+                            .then($scope.closeLoadingModal)
+                            .then($scope.continue);
+                    }
                 }
-            };
+           };
+
+            $scope.continue = function () {
+                $scope.outboundCallback($scope.ACTIONS.NEXT, $scope.route);
+            }
         }
     }
 }]);
 
-essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) {
+essTravel.directive('travelApplicationReturn', ['appProps', 'AddressCountyService', function (appProps, countyService) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-return',
         scope: true,
@@ -501,11 +523,33 @@ essTravel.directive('travelApplicationReturn', ['appProps', function (appProps) 
                         $scope.returnForm[prop].$setTouched();
                     }
                 }
-                // If the entire form is valid, continue to next page.
+                // If the entire form is valid, check for counties and continue to next page.
                 if ($scope.returnForm.$valid) {
-                    $scope.returnCallback($scope.ACTIONS.NEXT, $scope.route);
+                    var addresses = $scope.route.returnLegs.map(function (leg) {
+                        return leg.from;
+                    }).concat($scope.route.returnLegs.map(function (leg) {
+                        return leg.to;
+                    }));
+
+                    var addrsMissingCounty = countyService.missingCounty(addresses);
+
+                    if (addrsMissingCounty.isEmpty) {
+                        $scope.continue();
+                    }
+                    else {
+                        $scope.openLoadingModal();
+                        countyService.updateWithGeocodeCounty(addrsMissingCounty)
+                            .then(countyService.missingCounty) // filter out addresses that were updated with a county.
+                            .then(countyService.promptUserForCounty)
+                            .then($scope.closeLoadingModal)
+                            .then($scope.continue);
+                    }
                 }
             };
+
+            $scope.continue = function () {
+                $scope.returnCallback($scope.ACTIONS.NEXT, $scope.route);
+            }
         }
     }
 }]);
