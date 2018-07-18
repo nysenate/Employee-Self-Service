@@ -28,7 +28,7 @@
                  callback="setFromAddress(leg, address)"
                  address-validator
                  placeholder="From Address"
-                 type="text" size="40" required>
+                 type="text" size="50" required>
         </div>
         <div class="itinerary-date">
           <label>Travel Date</label><br/>
@@ -47,7 +47,7 @@
                  address-validator
                  placeholder="To Address"
                  type="text"
-                 size="40"
+                 size="50"
                  required>
         </div>
 
