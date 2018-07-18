@@ -11,8 +11,8 @@
     </div>
 
     <div class="travel-inner-container" ng-repeat="leg in route.returnLegs">
-      <div class="travel-background" style="display: inline-block; width: 100%;">
-        <h2 class="travel-subheader float-left">Return Segment {{$index + 1}}</h2>
+      <div class="travel-secondary-background" style="display: inline-block; width: 100%;">
+        <h2 class="travel-subheader float-left travel-secondary-background">Return Segment {{$index + 1}}</h2>
         <span class="icon-cross travel-container-cross float-right" style=""
               ng-if="$index > 0 && isLastSegment($index)"
               ng-click="deleteSegment()"></span>
