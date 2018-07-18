@@ -16,7 +16,7 @@ function addressCountyService($q, $timeout, modals, geocoder) {
      * @param addresses an array of addresses.
      * @returns A new array containing all addresses without a county set.
      */
-    this.missingCounty = function (addresses) {
+    this.addressesMissingCounty = function (addresses) {
         return addresses.filter(function (addr) {
             return !addr.county;
         })

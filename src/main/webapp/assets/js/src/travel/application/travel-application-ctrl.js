@@ -66,8 +66,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             $scope.app = response.result;
             if (hasUncompleteApplication()) {
                 modals.open('travel-continue-application-modal')
-                    .catch(function () {
-                        $scope.openLoadingModal();
+                    .catch(function () { // Restart application on modal rejection.
                         cancelApplication()
                     });
             }
@@ -89,7 +88,6 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)
-            .finally($scope.closeLoadingModal)
     }
 
     /**
@@ -165,11 +163,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
 
     $scope.purposeCallback = function (action, purpose) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.openLoadingModal();
             purposeApi.update({id: $scope.app.id}, purpose, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
-                $scope.closeLoadingModal();
             }).$promise
                 .catch(catchErrorResponse)
         }
@@ -180,11 +176,9 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
 
     $scope.outboundCallback = function (action, route) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.openLoadingModal();
             outboundApi.update({id: $scope.app.id}, route, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
-                $scope.closeLoadingModal();
             }).$promise
                 .catch(catchErrorResponse)
         }
@@ -210,7 +204,6 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
 
     $scope.allowancesCallback = function (action, destinations, allowances) {
         if (action === $scope.ACTIONS.NEXT) {
-            $scope.openLoadingModal();
             // Default empty allowances to 0.
             for (var prop in allowances) {
                 if (!allowances[prop]) {
@@ -221,7 +214,6 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
                 allowances: allowances}, function(response) {
                 updateAppFromResponse(response);
                 updateStates(action);
-                $scope.closeLoadingModal();
             }).$promise
                 .catch(catchErrorResponse)
         }
@@ -424,15 +416,10 @@ essTravel.directive('travelApplicationOutbound', ['$q', 'appProps', 'AddressGeoc
                         $scope.outboundForm[prop].$setTouched();
                     }
                 }
+
                 // If the entire form is valid, continue.
                 if ($scope.outboundForm.$valid) {
-                    var addresses = $scope.route.outboundLegs.map(function (leg) {
-                        return leg.from;
-                    }).concat($scope.route.outboundLegs.map(function (leg) {
-                        return leg.to;
-                    }));
-
-                    var addrsMissingCounty = countyService.missingCounty(addresses);
+                    var addrsMissingCounty = findAddressesWithoutCounty();
 
                     if (addrsMissingCounty.isEmpty) {
                         $scope.continue();
@@ -440,11 +427,20 @@ essTravel.directive('travelApplicationOutbound', ['$q', 'appProps', 'AddressGeoc
                     else {
                         $scope.openLoadingModal();
                         countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                            .then(countyService.missingCounty) // filter out addresses that were updated with a county.
+                            .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
                             .then(countyService.promptUserForCounty)
                             .then($scope.closeLoadingModal)
                             .then($scope.continue);
                     }
+                }
+
+                function findAddressesWithoutCounty() {
+                    var addresses = $scope.route.outboundLegs.map(function (leg) {
+                        return leg.from;
+                    }).concat($scope.route.outboundLegs.map(function (leg) {
+                        return leg.to;
+                    }));
+                    return countyService.addressesMissingCounty(addresses);
                 }
            };
 
@@ -525,13 +521,7 @@ essTravel.directive('travelApplicationReturn', ['appProps', 'AddressCountyServic
                 }
                 // If the entire form is valid, check for counties and continue to next page.
                 if ($scope.returnForm.$valid) {
-                    var addresses = $scope.route.returnLegs.map(function (leg) {
-                        return leg.from;
-                    }).concat($scope.route.returnLegs.map(function (leg) {
-                        return leg.to;
-                    }));
-
-                    var addrsMissingCounty = countyService.missingCounty(addresses);
+                    var addrsMissingCounty = findAddressesWithoutCounty();
 
                     if (addrsMissingCounty.isEmpty) {
                         $scope.continue();
@@ -539,11 +529,20 @@ essTravel.directive('travelApplicationReturn', ['appProps', 'AddressCountyServic
                     else {
                         $scope.openLoadingModal();
                         countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                            .then(countyService.missingCounty) // filter out addresses that were updated with a county.
+                            .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
                             .then(countyService.promptUserForCounty)
                             .then($scope.closeLoadingModal)
                             .then($scope.continue);
                     }
+                }
+
+                function findAddressesWithoutCounty() {
+                    var addresses = $scope.route.returnLegs.map(function (leg) {
+                        return leg.from;
+                    }).concat($scope.route.returnLegs.map(function (leg) {
+                        return leg.to;
+                    }));
+                    return countyService.addressesMissingCounty(addresses);
                 }
             };
 
