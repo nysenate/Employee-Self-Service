@@ -69,8 +69,14 @@
       </div>
     </div>
 
-    <div class="text-align-center">
-      <p>Click Next to continue (or <a href="#" ng-click="addSegment()">Add Another Outbound Segment</a> if your outbound travel has multiple parts)</p>
+    <div class="">
+    <%--<div class="text-align-center">--%>
+      <div class="margin-10 travel-highlight-text pointer" style="margin-left:20px;"
+           ng-click="addSegment()">
+        <span class="icon-circle-with-plus" style="font-size: large; vertical-align: middle;"></span>
+        <span style="vertical-align: middle;"> Add Outbound Segment</span>
+      </div>
+      <%--<p>Click Next to continue (or <a href="#" ng-click="addSegment()">Add Another Outbound Segment</a> if your outbound travel has multiple parts)</p>--%>
     </div>
 
 
