@@ -16,6 +16,6 @@
     "libxmljs": "^0.18.8"
   },
   "scripts": {
-    "postinstall": "bower install && grunt"
+    "postinstall": "bower install && grunt compile"
   }
 }
