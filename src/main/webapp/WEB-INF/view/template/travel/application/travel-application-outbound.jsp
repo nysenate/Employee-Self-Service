@@ -70,8 +70,7 @@
     </div>
 
     <div class="text-align-center">
-      <input type="button" class="travel-neutral-button" value="Add Outbound Segment"
-             ng-click="addSegment()">
+      <p>Click Next to continue (or <a href="#" ng-click="addSegment()">Add Another Outbound Segment</a> if your outbound travel has multiple parts)</p>
     </div>
 
 

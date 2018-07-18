@@ -73,8 +73,7 @@
 
 
     <div class="text-align-center">
-      <input type="button" class="travel-neutral-button" value="Add Return Segment"
-             ng-click="addSegment()">
+      <p>Click Next to continue (or <a href="#" ng-click="addSegment()">Add Another Return Segment</a> if your return travel has multiple parts)</p>
     </div>
 
 
