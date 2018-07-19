@@ -69,11 +69,13 @@
 
       </div>
     </div>
-    <%--<input type="submit" value="submit" ng-disabled="returnForm.$invalid">--%>
 
-
-    <div class="text-align-center">
-      <p>Click Next to continue (or <a href="#" ng-click="addSegment()">Add Another Return Segment</a> if your return travel has multiple parts)</p>
+    <div>
+      <div class="margin-10 travel-secondary-text pointer" style="margin-left:20px;"
+           ng-click="addSegment()">
+        <span class="icon-circle-with-plus" style="font-size: large; vertical-align: middle;"></span>
+        <span style="vertical-align: middle;"> Add Return Segment (optional)</span>
+      </div>
     </div>
 
 
