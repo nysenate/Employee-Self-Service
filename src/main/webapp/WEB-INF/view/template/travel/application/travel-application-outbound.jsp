@@ -3,9 +3,9 @@
     Enter your outbound route of travel.
   </p>
 
-  <form novalidate name="outboundForm" id="outboundForm">
+  <form novalidate name="outbound.form" id="outboundForm">
 
-    <div ng-if="outboundForm.$submitted && !outboundForm.$valid" class="margin-10">
+    <div ng-if="outbound.form.$submitted && !outbound.form.$valid" class="margin-10">
       <ess-notification level="error" title="Outbound segments have errors" message="Fix the highlighted fields below.">
       </ess-notification>
     </div>

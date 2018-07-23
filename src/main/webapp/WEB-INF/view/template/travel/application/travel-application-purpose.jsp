@@ -27,11 +27,11 @@
         </div>
         <%--Cant have an inner form, do more testing to see if this form was necessary--%>
         <%--<form method="POST" enctype="multipart/form-data">--%>
-          <%--Hack to change the button text of file input--%>
-          <input class="neutral-button" type="button" id="addAttachmentDisplay" value="Add Attachment"
-                 onclick="document.getElementById('addAttachment').click();"/>
-          <input type="file" id="addAttachment" name="file" multiple style="display:none;">
-          <%--<input type="submit" ng-click="save()">--%>
+        <%--Hack to change the button text of file input--%>
+        <input class="neutral-button" type="button" id="addAttachmentDisplay" value="Add Attachment"
+               onclick="document.getElementById('addAttachment').click();"/>
+        <input type="file" id="addAttachment" name="file" multiple style="display:none;">
+        <%--<input type="submit" ng-click="save()">--%>
         <%--</form>--%>
       </div>
     </travel-inner-container>

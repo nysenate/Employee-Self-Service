@@ -3,9 +3,9 @@
     Enter your return route of travel.
   </p>
 
-  <form novalidate name="returnForm" id="returnForm">
+  <form novalidate name="return.form" id="returnForm">
 
-    <div ng-if="returnForm.$submitted && !returnForm.$valid" class="margin-10">
+    <div ng-if="return.form.$submitted && !return.form.$valid" class="margin-10">
       <ess-notification level="error" title="Return segments have errors" message="Fix the highlighted fields below.">
       </ess-notification>
     </div>

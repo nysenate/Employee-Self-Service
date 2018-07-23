@@ -1,4 +1,4 @@
-<div ng-controller="NewTravelApplicationCtrl">
+<div ng-controller="TravelApplicationCtrl">
   <div class="travel-hero">
     <h2>Travel Application</h2>
   </div>
@@ -25,23 +25,33 @@
 
   <div ng-if="app">
     <div ng-if="pageState === STATES.PURPOSE">
-      <travel-application-purpose></travel-application-purpose>
+      <div ng-controller="TravelApplicationPurposeCtrl">
+        <ng-include src="'/template/travel/application/travel-application-purpose'"></ng-include>
+      </div>
     </div>
 
     <div ng-if="pageState === STATES.OUTBOUND">
-      <travel-application-outbound></travel-application-outbound>
+       <div ng-controller="TravelApplicationOutboundCtrl">
+        <ng-include src="'/template/travel/application/travel-application-outbound'"></ng-include>
+      </div>
     </div>
 
     <div ng-if="pageState === STATES.RETURN">
-      <travel-application-return></travel-application-return>
+      <div ng-controller="TravelApplicationReturnCtrl">
+        <ng-include src="'/template/travel/application/travel-application-return'"></ng-include>
+      </div>
     </div>
 
     <div ng-if="pageState === STATES.ALLOWANCES">
-      <travel-application-allowances></travel-application-allowances>
+      <div ng-controller="TravelApplicationAllowancesCtrl">
+        <ng-include src="'/template/travel/application/travel-application-allowances'"></ng-include>
+      </div>
     </div>
 
     <div ng-if="pageState === STATES.REVIEW">
-      <travel-application-review></travel-application-review>
+      <div ng-controller="TravelApplicationReviewCtrl">
+        <ng-include src="'/template/travel/application/travel-application-review'" onload="init()"></ng-include>
+      </div>
     </div>
   </div>
 
