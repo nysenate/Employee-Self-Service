@@ -23,10 +23,10 @@
       </div>
 
       <div class="col-2-12 travel-print-label">
-        Name:
+        Name/Title:
       </div>
       <div class="col-6-12">
-        {{(app.traveler.fullName) || NOT_AVAILABLE}}
+        {{(app.traveler.fullName) || NOT_AVAILABLE}} - {{(app.traveler.jobTitle) || NOT_AVAILABLE}}
       </div>
 
       <div class="col-2-12 travel-print-label">

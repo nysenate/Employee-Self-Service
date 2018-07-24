@@ -1,6 +1,6 @@
 <div class="content-container">
   <p class="travel-content-info travel-text">
-    Enter your purpose of travel and any supporting documentation.
+    Enter your purpose of travel.
   </p>
 
   <form name="purposeForm" id="purposeForm"

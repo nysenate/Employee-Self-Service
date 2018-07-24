@@ -11,10 +11,17 @@ essTravel.directive('addressCountyModal', ['appProps', function (appProps) {
 
 function addressCountyModalCtrl($scope, modals) {
 
-    $scope.address = modals.params().address;
+    this.$onInit = function () {
+        $scope.address = modals.params().address;
+        document.getElementById('countyInput').focus();
+    };
 
-    $scope.resolveModal = function () {
+    $scope.submit = function () {
         modals.resolve();
-    }
+    };
 
+    $scope.cancel = function () {
+        console.log("Canceling Modal");
+        modals.reject();
+    };
 }

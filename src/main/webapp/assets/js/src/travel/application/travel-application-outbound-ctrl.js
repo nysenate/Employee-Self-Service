@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', 'AddressGeocoder', 'modals',
+essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals',
                                                        'AddressCountyService', outboundCtrl]);
 
-function outboundCtrl($scope, $q, geocoder, modals, countyService) {
+function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService) {
 
     $scope.outbound = {
         form: {}
@@ -68,7 +68,10 @@ function outboundCtrl($scope, $q, geocoder, modals, countyService) {
                     .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
                     .then(countyService.promptUserForCounty)
                     .then($scope.closeLoadingModal)
-                    .then($scope.continue);
+                    .then($scope.continue)
+                    .catch(function () {
+                        console.log("Canceling county input")
+                    });
             }
         }
 
@@ -84,5 +87,18 @@ function outboundCtrl($scope, $q, geocoder, modals, countyService) {
 
     $scope.continue = function () {
         $scope.outboundCallback($scope.ACTIONS.NEXT, $scope.route);
-    }
+    };
+
+    /**
+     * Sets the focus on the Other MOT input box when selecting Other MOT.
+     * @param leg
+     */
+    $scope.motChange = function (leg, index) {
+        $timeout(function () { // Execute on next digest cycle, giving input box a chance to render.
+            if (leg.modeOfTransportation.methodOfTravel === 'OTHER') {
+                document.getElementById('outboundMotOtherInput_' + index).focus();
+            }
+        });
+
+    };
 }

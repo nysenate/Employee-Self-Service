@@ -6,7 +6,7 @@ import java.util.Map;
 public enum MethodOfTravel {
     PERSONAL_AUTO("Personal Auto", true),
     SENATE_VEHICLE("Senate Vehicle", false),
-    CARPOOL("Carpool", false),
+    CARPOOL("Carpool Rider", false),
     TRAIN("Train", false),
     AIRPLANE("Airplane", false),
     OTHER("Other", false);

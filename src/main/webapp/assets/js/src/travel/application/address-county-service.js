@@ -79,11 +79,14 @@ function addressCountyService($q, $timeout, modals, geocoder) {
                     .then(function () {
                         modals.open('loading');
                         // This timeout serves 2 purposes. One, It makes it more noticeable to the user
-                        // that the modal has changed. Two, The modal does not seem to close correctly without it,
-                        // the next modal will have the same params as the first.
+                        // that the modal has changed. Two, The modal does not seem to close correctly without it
+                        // (the next modal will have the same params as the first).
                         $timeout(function () {
                             displayCountyModal();
                         }, 200);
+                    })
+                    .catch(function () {
+                        deferred.reject();
                     });
             }
         })();

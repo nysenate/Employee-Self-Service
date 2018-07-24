@@ -9,6 +9,7 @@ travel.directive('travelAppPrintBody', ['appProps', 'TravelModeOfTransportationA
         templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-print-body',
         link: function ($scope, $elem, $attrs) {
 
+            console.log($scope.app);
             $scope.NOT_AVAILABLE = "N/A";
 
             $scope.tollsAndParking = function () {

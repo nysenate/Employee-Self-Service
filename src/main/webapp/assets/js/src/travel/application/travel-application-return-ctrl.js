@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReturnCtrl', ['$scope', 'AddressCountyService', returnCtrl]);
+essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', 'AddressCountyService', returnCtrl]);
 
-function returnCtrl($scope, countyService) {
+function returnCtrl($scope, $timeout, countyService) {
 
     $scope.return = {
         form: {}
@@ -100,5 +100,17 @@ function returnCtrl($scope, countyService) {
 
     $scope.continue = function () {
         $scope.returnCallback($scope.ACTIONS.NEXT, $scope.route);
-    }
+    };
+
+    /**
+     * Sets the focus on the Other MOT input box when selecting Other MOT.
+     * @param leg
+     */
+    $scope.motChange = function (leg, index) {
+        $timeout(function () { // Execute on next digest cycle, giving the input a chance to render.
+            if (leg.modeOfTransportation.methodOfTravel === 'OTHER') {
+                document.getElementById('returnMotOtherInput_' + index).focus();
+            }
+        });
+    };
 }

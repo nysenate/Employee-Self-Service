@@ -44,11 +44,6 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     // The users travel application.
     $scope.app = undefined;
 
-    this.$onInit = function () {
-        console.log("parent oninit");
-    };
-
-    console.log("parent");
     function init() {
         $scope.pageState = $scope.STATES.PURPOSE;
         initApplication(appProps.user.employeeId);

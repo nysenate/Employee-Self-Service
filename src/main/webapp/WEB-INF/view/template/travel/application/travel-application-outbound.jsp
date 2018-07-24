@@ -55,11 +55,12 @@
             <label>Mode of Transportation:</label><br/>
             <select mot-validator name="mot_{{$index}}" ng-model="leg.modeOfTransportation"
                     ng-options="mode.displayName for mode in modesOfTransportation track by mode.methodOfTravel"
+                    ng-change="motChange(leg, $index)"
                     required></select>
           </div>
           <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel == 'OTHER'">
             <label>Please Specify:</label><br/>
-            <input name="motOther_{{$index}}"
+            <input id="outboundMotOtherInput_{{$index}}" name="motOther_{{$index}}"
                    ng-required="leg.modeOfTransportation.methodOfTravel === 'OTHER'"
                    type="text" size="17" ng-model="leg.modeOfTransportation.description">
           </div>

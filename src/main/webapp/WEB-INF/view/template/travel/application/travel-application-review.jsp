@@ -193,7 +193,7 @@
   </travel-inner-container>
 
 
-  <travel-inner-container title="Route of Travel">
+  <travel-inner-container title="Driving Route">
     <div id="map" class="margin-top-20"
          style="width: 650px; height: 375px; margin-left: auto; margin-right: auto;"></div>
   </travel-inner-container>
