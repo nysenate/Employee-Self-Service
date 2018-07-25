@@ -44,6 +44,14 @@
             </td>
           </tr>
           <tr>
+            <th>Status</th>
+            <td class="personnel-status"
+                ng-class="{inactive: !empInfo.personnelStatus.employed,
+                           special: empInfo.personnelStatus.description != 'ACTIVE'}">
+              {{empInfo.personnelStatus.description | lowercase}}
+            </td>
+          </tr>
+          <tr>
             <th>Emp. Id</th>
             <td>{{empInfo.employeeId}}</td>
           </tr>

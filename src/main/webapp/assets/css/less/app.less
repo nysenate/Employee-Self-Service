@@ -540,6 +540,18 @@ badge, [badge] {
       flex-direction: column;
       justify-content: space-around;
     }
+
+    .personnel-status {
+      text-transform: capitalize;
+
+      &.special {
+        color: @orange;
+      }
+
+      &.inactive {
+        color: @redorange;
+      }
+    }
   }
 }
 

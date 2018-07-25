@@ -5,7 +5,6 @@ import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
-import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorCode;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordErrorException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidator;
@@ -14,15 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 
 /**
- * Checks time records to make sure that no time record contains partially entered miscellaneous values
+ * Checks time records to ensure that they contain no entries that fall outside of their specified date range
  */
-
 @Service
 public class DateRangeTRV implements TimeRecordValidator {
 
@@ -30,24 +26,20 @@ public class DateRangeTRV implements TimeRecordValidator {
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState,TimeRecordAction action) {
-        // If the saved record contains entries in the employee scope
-        return record.getScope() == TimeRecordScope.EMPLOYEE;
+        return true;
     }
 
     /**
-     *  checkTimeRecord check hourly increments for all of the daily records
+     * Check time record for entries that fall outside of the record's date range.
      *
      * @param record TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
-     * @throws TimeRecordErrorException
+     * @throws TimeRecordErrorException - if time entries exist outside of the record's date range
      */
-
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
         ImmutableList<TimeEntry> entries =  record.getTimeEntries();
         LocalDate entryDate;
-        Set<LocalDate> set = new HashSet<>();
-
 
         for (TimeEntry entry : entries) {
 
@@ -55,26 +47,16 @@ public class DateRangeTRV implements TimeRecordValidator {
 
             if (entryDate == null)  {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.NULL_DATE,
-                        new InvalidParameterView("dateRange", "string",
-                                " entryDate =  NULL ", "NULL"));
+                        new InvalidParameterView("date", "string",
+                                "time entry date cannot be null", null));
             }
 
-//            if (set.contains(entryDate)||!set.add(entryDate)) {
-//                throw new TimeRecordErrorException(TimeRecordErrorCode.DUPLICATE_DATE,
-//                        new InvalidParameterView("dateRange", "string",
-//                                " entryDate =  " + entryDate.toString(), entryDate.toString()));
-//            }
-
-            if (entryDate.isBefore(record.getBeginDate())||entryDate.isAfter(record.getEndDate())) {
+            if (!record.getDateRange().contains(entryDate)) {
                 throw new TimeRecordErrorException(TimeRecordErrorCode.DATE_OUT_OF_RANGE,
-                        new InvalidParameterView("dateRange", "string",
-                                 " entryDate = " + entryDate.toString(), entryDate.toString()));
-
+                        new InvalidParameterView("date", "string",
+                                "time entry date must fall within time record date range",
+                                entryDate));
             }
-
         }
-
     }
-
-
 }

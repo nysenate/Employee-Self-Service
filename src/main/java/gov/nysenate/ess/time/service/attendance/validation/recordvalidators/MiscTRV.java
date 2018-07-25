@@ -1,6 +1,5 @@
 package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
-import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
@@ -29,14 +28,13 @@ public class MiscTRV implements TimeRecordValidator {
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
         // If the saved record contains entries where the employee was not a temporary employee
-        return record.getScope() == TimeRecordScope.EMPLOYEE
-                &&
+        return record.getScope() == TimeRecordScope.EMPLOYEE &&
                 record.getTimeEntries().stream()
                         .anyMatch(entry -> entry.getPayType() != PayType.TE);
     }
 
     /**
-     *  checkTimeRecord check hourly increments for all of the daily records
+     * Check misc leave / type entries for time record
      *
      * @param record TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
@@ -44,13 +42,11 @@ public class MiscTRV implements TimeRecordValidator {
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
-        ImmutableList<TimeEntry> entries =  record.getTimeEntries();
-
-        entries.forEach(this::checkMisc);
+        record.getTimeEntries().forEach(this::checkMisc);
     }
 
     /**
-     * checkMisc:  check misc field values
+     * Check misc field values
      *
      * @param entry {@link TimeEntry}
      * @throws TimeRecordErrorException if misc type doesn't accompany misc hours and vice versa
@@ -67,7 +63,6 @@ public class MiscTRV implements TimeRecordValidator {
                     new InvalidParameterView("miscType", "decimal",
                             "A misc type must be specified for misc hours",
                             entry.getMiscHours().orElse(null)));
-
         }
 
         if (!miscHoursPresent && miscTypePresent) {
@@ -77,5 +72,4 @@ public class MiscTRV implements TimeRecordValidator {
                             entry.getMiscType()));
         }
     }
-
 }

@@ -71,6 +71,8 @@ public class EntryPermittedModificationTRV implements TimeRecordValidator {
 
     }
 
+    /* --- Internal Methods --- */
+
     /**
      * Raises exception if one entry is missing but the other isn't (from same date)
      */

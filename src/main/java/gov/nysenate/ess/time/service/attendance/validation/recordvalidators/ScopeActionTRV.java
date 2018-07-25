@@ -35,20 +35,20 @@ public class ScopeActionTRV implements TimeRecordValidator {
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> prevState, TimeRecordAction action) throws TimeRecordErrorException {
-           if (prevState.isPresent()) {
-               TimeRecord previousState = prevState.get();
-               TimeRecordStatus timeRecordStatus = previousState.getRecordStatus();
-               try {
-                   timeRecordStatus.getResultingStatus(action);
-               }
-               catch (InvalidTimeRecordActionEx ex) {
-                   throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_SCOPE_ACTION,
-                           new InvalidParameterView("action", "TimeRecordAction",
-                                  "action should be valid for current time record status: " +
-                                   timeRecordStatus + ". Valid actions include: " + timeRecordStatus.getValidActions(),
-                                   action));
-               }
-           }
+        if (!prevState.isPresent()) {
+            return;
+        }
+        TimeRecord previousState = prevState.get();
+        TimeRecordStatus timeRecordStatus = previousState.getRecordStatus();
+        try {
+            timeRecordStatus.getResultingStatus(action);
+        } catch (InvalidTimeRecordActionEx ex) {
+            throw new TimeRecordErrorException(TimeRecordErrorCode.INVALID_SCOPE_ACTION,
+                    new InvalidParameterView("action", "TimeRecordAction",
+                    "action should be valid for current time record status: " +
+                            timeRecordStatus + ". Valid actions include: " + timeRecordStatus.getValidActions(),
+                            action));
+        }
     }
 
 }
