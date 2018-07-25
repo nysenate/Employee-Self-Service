@@ -10,7 +10,7 @@
       </ess-notification>
     </div>
 
-    <div class="travel-inner-container" ng-repeat="leg in route.outboundLegs">
+    <div class="travel-inner-container" ng-repeat="leg in dirtyApp.route.outboundLegs">
       <div class="travel-background" style="display: inline-block; width: 100%;">
         <h2 class="travel-subheader float-left">Outbound Segment {{$index + 1}}</h2>
         <span class="icon-cross travel-container-cross float-right" style=""
@@ -82,11 +82,11 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="neutral-button" value="Cancel"
-               ng-click="outboundCallback(ACTIONS.CANCEL)">
+               ng-click="cancel()">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="outboundCallback(ACTIONS.BACK)">
+               ng-click="previousState()">
         <input type="submit" class="submit-button" value="Next"
-               ng-click="submit()">
+               ng-click="next()">
       </div>
     </div>
   </form>

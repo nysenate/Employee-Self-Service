@@ -21,7 +21,7 @@
     <form name="outboundForm">
       <fieldset disabled="disabled" style="border: none;">
         <div class="travel-container"
-             ng-repeat="leg in app.route.outboundLegs">
+             ng-repeat="leg in reviewApp.route.outboundLegs">
 
           <div class="outbound width-100" style="display: inline-block;">
             <h3 class="float-left">Outbound Segment {{$index + 1}}</h3>
@@ -73,7 +73,7 @@
       <fieldset disabled="disabled" style="border: none;">
 
         <div class="travel-container"
-             ng-repeat="leg in app.route.returnLegs">
+             ng-repeat="leg in reviewApp.route.returnLegs">
 
           <div class="return width-100" style="display: inline-block;">
             <h3 class="float-left">Return Segment {{$index + 1}}</h3>
@@ -200,11 +200,11 @@
 
   <div class="travel-button-container" style="border: none;">
     <input type="button" class="neutral-button" value="Cancel"
-           ng-click="reviewCallback(ACTIONS.CANCEL)">
+           ng-click="cancel()">
     <input type="button" class="travel-neutral-button" value="Back"
-           ng-click="reviewCallback(ACTIONS.BACK)">
+           ng-click="previousState()">
     <input type="button" class="submit-button"
            value="Submit"
-           ng-click="submitConfirmModal()">
+           ng-click="next()">
   </div>
 </div>

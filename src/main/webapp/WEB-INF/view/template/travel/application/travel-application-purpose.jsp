@@ -5,7 +5,7 @@
 
   <form name="purposeForm" id="purposeForm"
   <%--Only call the callback function if form is valid--%>
-        ng-submit="purposeForm.$valid && purposeCallback(ACTIONS.NEXT, data.purposeOfTravel)" novalidate>
+        ng-submit="purposeForm.$valid && next()" novalidate>
 
     <div ng-show="purposeForm.$submitted && !purposeForm.$valid" class="margin-10">
       <ess-notification level="error" message="Purpose of Travel is required."></ess-notification>
@@ -13,7 +13,7 @@
 
     <travel-inner-container title="Purpose of Travel">
       <div class="text-align-center">
-        <textarea ng-model="data.purposeOfTravel" cols="80" rows="6"
+        <textarea ng-model="dirtyApp.purposeOfTravel" cols="80" rows="6"
                   placeholder="Why will you be traveling?" required></textarea>
       </div>
     </travel-inner-container>
@@ -38,7 +38,7 @@
 
     <div class="travel-button-container">
       <input type="button" class="neutral-button" value="Cancel"
-             ng-click="purposeCallback(ACTIONS.CANCEL)">
+             ng-click="cancel()">
       <input type="submit" class="submit-button" value="Next">
     </div>
 

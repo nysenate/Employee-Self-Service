@@ -4,7 +4,7 @@
   </div>
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
-      Travel application for: <span class="bold">{{app.traveler.firstName}} {{app.traveler.lastName}}</span>
+      Travel application for: <span class="bold">{{data.app.traveler.firstName}} {{data.app.traveler.lastName}}</span>
     </div>
   </div>
 
@@ -21,9 +21,9 @@
           ng-class="{completed: highlightStep(STATES.REVIEW)}">Review</span>
   </div>
 
-  <div loader-indicator class="loader" ng-show="!app"></div>
+  <div loader-indicator class="loader" ng-show="!data.app"></div>
 
-  <div ng-if="app">
+  <div ng-if="data.app">
     <div ng-if="pageState === STATES.PURPOSE">
       <div ng-controller="TravelApplicationPurposeCtrl">
         <ng-include src="'/template/travel/application/travel-application-purpose'"></ng-include>

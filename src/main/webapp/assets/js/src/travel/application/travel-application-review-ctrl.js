@@ -1,11 +1,12 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReviewCtrl', ['$scope', '$q', 'modals', reviewCtrl]);
+essTravel.controller('TravelApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService',
+                                                     'TravelApplicationSubmitApi', reviewCtrl]);
 
-function reviewCtrl($scope, $q, modals) {
+function reviewCtrl($scope, $q, modals, locationService, submitApi) {
 
     $scope.init = function () {
-        $scope.reviewApp = angular.copy($scope.app);
+        $scope.reviewApp = angular.copy($scope.data.app);
         displayMap();
     };
 
@@ -21,15 +22,24 @@ function reviewCtrl($scope, $q, modals) {
         modals.open('travel-mileage-details-modal', {app: $scope.reviewApp}, true);
     };
 
-    $scope.submitConfirmModal = function () {
+    $scope.next = function () {
         modals.open('submit-confirm')
             .then(function () {
-                $scope.reviewCallback($scope.ACTIONS.NEXT);
+                modals.open("submit-progress");
+                submitApi.update({id: $scope.data.app.id}).$promise
+                    .then(function (response) {
+                        modals.resolve({});
+                    })
+                    .then(function () {
+                        modals.open("submit-results").then(function () {
+                            locationService.go("/travel/application/travel-application", true);
+                        });
+                    })
+                    .catch($scope.handleErrorResponse);
             })
     };
 
     function displayMap() {
-        console.log("Starting map");
         var map;
         var directionsDisplay = new google.maps.DirectionsRenderer();
         var directionsService = new google.maps.DirectionsService();

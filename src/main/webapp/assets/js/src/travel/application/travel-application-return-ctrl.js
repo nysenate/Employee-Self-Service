@@ -1,26 +1,37 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', 'AddressCountyService', returnCtrl]);
+essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', 'AddressCountyService',
+                                                     'TravelApplicationReturnApi', returnCtrl]);
 
-function returnCtrl($scope, $timeout, countyService) {
+function returnCtrl($scope, $timeout, countyService, returnApi) {
 
-    $scope.return = {
-        form: {}
-    };
+    this.$onInit = function () {
+        $scope.return = {
+            form: {}
+        };
 
-    $scope.route = angular.copy($scope.app.route);
+        $scope.route = angular.copy($scope.data.app.route);
 
-    if ($scope.route.returnLegs.length === 0) {
-        // Init return leg
-        var segment = new Segment();
-        segment.from = angular.copy($scope.route.outboundLegs[$scope.route.outboundLegs.length - 1].to);
-        segment.to = angular.copy($scope.route.outboundLegs[0].from);
-        // If only 1 outbound mode of transportation, initialize to that.
-        if ($scope.numDistinctModesOfTransportation($scope.app) === 1) {
-            segment.modeOfTransportation = angular.copy($scope.route.outboundLegs[0].modeOfTransportation);
+        if ($scope.route.returnLegs.length === 0) {
+            // Init return leg
+            var segment = new Segment();
+            segment.from = angular.copy($scope.route.outboundLegs[$scope.route.outboundLegs.length - 1].to);
+            segment.to = angular.copy($scope.route.outboundLegs[0].from);
+            // If only 1 outbound mode of transportation, initialize to that.
+            if (numDistinctModesOfTransportation($scope.data.app) === 1) {
+                segment.modeOfTransportation = angular.copy($scope.route.outboundLegs[0].modeOfTransportation);
+            }
+            $scope.route.returnLegs.push(segment);
         }
-        $scope.route.returnLegs.push(segment);
-    }
+
+        function numDistinctModesOfTransportation (app) {
+            var mots = (app.route.outboundLegs.concat(app.route.returnLegs)).map(function (leg) {
+                return leg.modeOfTransportation.description;
+            });
+            var distinct = _.uniq(mots);
+            return distinct.length;
+        }
+    };
 
     $scope.addSegment = function () {
         // When adding a new segment, mark the form as unsubmitted if there are not any errors.
@@ -40,7 +51,6 @@ function returnCtrl($scope, $timeout, countyService) {
         segment.isMealsRequested = prevSeg.isMealsRequested;
         segment.isLodgingRequested = prevSeg.isLodgingRequested;
         $scope.route.returnLegs.push(segment);
-        console.log($scope.app);
     };
 
     $scope.setFromAddress = function (leg, address) {
@@ -64,7 +74,7 @@ function returnCtrl($scope, $timeout, countyService) {
         return $scope.route.outboundLegs.slice(-1)[0].travelDate;
     };
 
-    $scope.submit = function () {
+    $scope.next = function () {
         for (var prop in $scope.return.form) {
             // Set all form elements as touched so they can be styled appropriately if they have errors.
             if ($scope.return.form[prop] && typeof($scope.return.form[prop].$setTouched) === 'function') {
@@ -99,7 +109,15 @@ function returnCtrl($scope, $timeout, countyService) {
     };
 
     $scope.continue = function () {
-        $scope.returnCallback($scope.ACTIONS.NEXT, $scope.route);
+        $scope.openLoadingModal();
+        returnApi.update({id: $scope.data.app.id}, $scope.route, function (response) {
+            $scope.data.app = response.result;
+            $scope.nextState();
+            $scope.closeLoadingModal();
+        }, function (error) {
+            $scope.closeLoadingModal();
+            $scope.handleErrorResponse();
+        });
     };
 
     /**

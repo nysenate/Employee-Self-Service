@@ -3,16 +3,23 @@ var essTravel = angular.module('essTravel');
 essTravel.controller('TravelApplicationPurposeCtrl', ['$scope', 'appProps', '$http', 'TravelApplicationPurposeApi',
                                                       'TravelAttachmentDelete', purposeCtrl]);
 
-function purposeCtrl($scope, appProps, $http, stateService, appUtils, purposeApi, deleteAttachmentApi) {
+function purposeCtrl($scope, appProps, $http, purposeApi, deleteAttachmentApi) {
 
-    // this.$onInit = function () {
-    //     console.log("ON INIT");
-    // };
-
-    // Copy current purpose of travel for use in this directive.
-    $scope.data = {
-        purposeOfTravel: angular.copy($scope.app.purposeOfTravel)
+    this.$onInit = function () {
+        $scope.dirtyApp = angular.copy($scope.data.app);
     };
+
+    $scope.next = function () {
+        purposeApi.update({id: $scope.data.app.id}, $scope.dirtyApp.purposeOfTravel, function (response) {
+            $scope.data.app = response.result;
+            $scope.nextState();
+        }, $scope.handleErrorResponse)
+    };
+
+    /**
+     * Attachment Code
+     * TODO This is not currently used and probably needs fixes.
+     **/
 
     var attachmentInput = angular.element("#addAttachment");
     attachmentInput.on('change', uploadAttachment);
@@ -31,7 +38,7 @@ function purposeCtrl($scope, appProps, $http, stateService, appUtils, purposeApi
         }
 
         // Use $http instead of $resource because it can handle formData.
-        $http.post(appProps.apiPath + '/travel/application/uncompleted/' + $scope.app.id + '/attachment', formData, {
+        $http.post(appProps.apiPath + '/travel/application/uncompleted/' + $scope.dirtyApp.id + '/attachment', formData, {
             // Allow $http to choose the correct 'content-type'.
             headers: {'Content-Type': undefined},
             transformRequest: angular.identity

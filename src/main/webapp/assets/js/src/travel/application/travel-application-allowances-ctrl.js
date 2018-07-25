@@ -1,17 +1,17 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', allowancesCtrl]);
+essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'TravelApplicationExpensesApi', allowancesCtrl]);
 
-function allowancesCtrl($scope) {
+function allowancesCtrl($scope, expensesApi) {
 
     $scope.allowances = {
-        tollsAllowance: Number(angular.copy($scope.app.tollsAllowance)),
-        parkingAllowance: Number(angular.copy($scope.app.parkingAllowance)),
-        alternateAllowance: Number(angular.copy($scope.app.alternateAllowance)),
-        registrationAllowance: Number(angular.copy($scope.app.registrationAllowance))
+        tollsAllowance: Number(angular.copy($scope.data.app.tollsAllowance)),
+        parkingAllowance: Number(angular.copy($scope.data.app.parkingAllowance)),
+        alternateAllowance: Number(angular.copy($scope.data.app.alternateAllowance)),
+        registrationAllowance: Number(angular.copy($scope.data.app.registrationAllowance))
     };
 
-    $scope.route = angular.copy($scope.app.route);
+    $scope.route = angular.copy($scope.data.app.route);
 
     $scope.destinations = [];
 
@@ -28,7 +28,7 @@ function allowancesCtrl($scope) {
     }
 
     // Init accommodations
-    angular.forEach($scope.app.accommodations, function (a) {
+    angular.forEach($scope.data.app.accommodations, function (a) {
         var destination = new Destination();
         destination.accommodation = a;
         angular.forEach(a.days, function (day) {
@@ -66,5 +66,21 @@ function allowancesCtrl($scope) {
     $scope.isReimbursableLeg = function (leg) {
         return leg.modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO';
     };
+
+    $scope.next = function () {
+        // Default empty allowances to 0.
+        for (var prop in $scope.allowances) {
+            if (!$scope.allowances[prop]) {
+                $scope.allowances[prop] = 0;
+            }
+        }
+        expensesApi.update({id: $scope.data.app.id}, {
+            destinations: $scope.destinations,
+            allowances: $scope.allowances
+        }, function (response) {
+            $scope.data.app = response.result;
+            $scope.nextState();
+        }, $scope.handleErrorResponse)
+    }
 }
 

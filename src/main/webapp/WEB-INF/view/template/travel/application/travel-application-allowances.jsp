@@ -96,7 +96,7 @@
 
 <div class="content-container">
   <form novalidate name="allowancesForm" id="allowancesForm"
-    ng-submit="allowancesForm.$valid && allowancesCallback(ACTIONS.NEXT, destinations, allowances)">
+    ng-submit="allowancesForm.$valid && next()">
 
     <p class="travel-content-info travel-text">
       Enter your estimated expenses for the following categories.
@@ -133,7 +133,7 @@
           </div>
           <div class="col-6-12">
             <label class="travel-allowance-label">Train/Airplane: $</label>
-            <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+            <input ng-model="allowances.trailAirplaneStub" type="number" step="0.01" min="0" style="width: 5em;">
           </div>
         </div>
         <p class="travel-text">
@@ -144,9 +144,9 @@
 
     <div class="travel-button-container">
       <input type="button" class="neutral-button" value="Cancel"
-             ng-click="allowancesCallback(ACTIONS.CANCEL)">
+             ng-click="cancel()">
       <input type="button" class="travel-neutral-button" value="Back"
-             ng-click="allowancesCallback(ACTIONS.BACK)">
+             ng-click="previousState()">
       <input type="submit" class="submit-button" value="Next">
     </div>
   </form>

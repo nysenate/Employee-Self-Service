@@ -83,11 +83,11 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="neutral-button" value="Cancel"
-               ng-click="returnCallback(ACTIONS.CANCEL)">
+               ng-click="cancel()">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="returnCallback(ACTIONS.BACK)">
+               ng-click="previousState()">
         <input type="submit" class="submit-button" value="Next"
-               ng-click="submit()">
+               ng-click="next()">
       </div>
     </div>
 

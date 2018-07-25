@@ -1,33 +1,34 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals',
-                                                       'AddressCountyService', outboundCtrl]);
+                                                       'AddressCountyService', 'TravelApplicationOutboundApi', outboundCtrl]);
 
-function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService) {
+function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService, outboundApi) {
 
-    $scope.outbound = {
-        form: {}
+    this.$onInit = function () {
+        $scope.outbound = {
+            form: {}
+        };
+        $scope.dirtyApp = angular.copy($scope.data.app);
+
+        if ($scope.dirtyApp.route.outboundLegs.length === 0) {
+            var segment = new Segment();
+            // Init from address to employees work address.
+            segment.from = $scope.data.app.traveler.empWorkLocation.address;
+            $scope.dirtyApp.route.outboundLegs.push(segment);
+        }
     };
-
-    $scope.route = angular.copy($scope.app.route);
-
-    if ($scope.route.outboundLegs.length === 0) {
-        var segment = new Segment();
-        // Init from address to employees work address.
-        segment.from = $scope.app.traveler.empWorkLocation.address;
-        $scope.route.outboundLegs.push(segment);
-    }
 
     $scope.addSegment = function () {
         // Initialize new leg
         var segment = new Segment();
-        var prevSeg = $scope.route.outboundLegs[$scope.route.outboundLegs.length - 1];
+        var prevSeg = $scope.dirtyApp.route.outboundLegs[$scope.dirtyApp.route.outboundLegs.length - 1];
         segment.from = prevSeg.to;
         segment.modeOfTransportation = prevSeg.modeOfTransportation;
         segment.isMileageRequested = prevSeg.isMileageRequested;
         segment.isMealsRequested = prevSeg.isMealsRequested;
         segment.isLodgingRequested = prevSeg.isLodgingRequested;
-        $scope.route.outboundLegs.push(segment);
+        $scope.dirtyApp.route.outboundLegs.push(segment);
     };
 
     $scope.setFromAddress = function (leg, address) {
@@ -39,15 +40,14 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService) {
     };
 
     $scope.isLastSegment = function (index) {
-        return $scope.route.outboundLegs.length - 1 === index;
+        return $scope.dirtyApp.route.outboundLegs.length - 1 === index;
     };
 
     $scope.deleteSegment = function () {
-        $scope.route.outboundLegs.pop();
+        $scope.dirtyApp.route.outboundLegs.pop();
     };
 
-    $scope.submit = function () {
-        console.log($scope.outbound.form);
+    $scope.next = function () {
         for (var prop in $scope.outbound.form) {
             // Set all form elements as touched so they can be styled appropriately if they have errors.
             if ($scope.outbound.form[prop] && typeof($scope.outbound.form[prop].$setTouched) === 'function') {
@@ -76,9 +76,9 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService) {
         }
 
         function findAddressesWithoutCounty() {
-            var addresses = $scope.route.outboundLegs.map(function (leg) {
+            var addresses = $scope.dirtyApp.route.outboundLegs.map(function (leg) {
                 return leg.from;
-            }).concat($scope.route.outboundLegs.map(function (leg) {
+            }).concat($scope.dirtyApp.route.outboundLegs.map(function (leg) {
                 return leg.to;
             }));
             return countyService.addressesMissingCounty(addresses);
@@ -86,11 +86,14 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService) {
     };
 
     $scope.continue = function () {
-        $scope.outboundCallback($scope.ACTIONS.NEXT, $scope.route);
+        outboundApi.update({id: $scope.data.app.id}, $scope.dirtyApp.route, function (response) {
+            $scope.data.app = response.result;
+            $scope.nextState();
+        }, $scope.handleErrorResponse);
     };
 
     /**
-     * Sets the focus on the Other MOT input box when selecting Other MOT.
+     * Sets the focus to the Other MOT input box when selecting Other MOT.
      * @param leg
      */
     $scope.motChange = function (leg, index) {
