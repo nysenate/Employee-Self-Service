@@ -36,7 +36,10 @@ public class GoogleMapsService implements MapService {
                 .trafficModel(TrafficModel.OPTIMISTIC)
                 .units(Unit.IMPERIAL)
                 .await();
-        long meters = request.rows[0].elements[0].distance.inMeters;
+        long meters = 0;
+        if (request.rows[0].elements[0].distance != null) {
+            meters = request.rows[0].elements[0].distance.inMeters;
+        }
         return UnitUtils.metersToMiles(meters).doubleValue();
     }
 }

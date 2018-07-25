@@ -72,8 +72,9 @@ public class GsaClient implements CachingService<GsaResponseId> {
     }
 
     private GsaResponse queryApi(GsaResponseId id) throws IOException {
-        String query = "{\"FiscalYear\":" + String.valueOf(id.getFiscalYear())
-                + ",\"Zip\":" + id.getZipcode() + "}";
+        // Example query: {"FiscalYear":"2018","Zip":"12208"}
+        String query = "{\"FiscalYear\":\"" + String.valueOf(id.getFiscalYear())
+                + "\",\"Zip\":\"" + id.getZipcode() + "\"}";
         String url = baseUrl + URLEncoder.encode(query, "UTF-8");
         String content = HttpUtils.urlToString(url);
         return gsaResponseParser.parseGsaResponse(content);

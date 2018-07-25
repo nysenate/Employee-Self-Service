@@ -123,15 +123,22 @@
             <label class="travel-allowance-label">Parking: $</label>
             <input ng-model="allowances.parkingAllowance" type="number" step="0.01" min="0" style="width: 5em;">
           </div>
-          <div class="col-6-12">
+          <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Taxi/Bus/Subway: $</label>
             <input ng-model="allowances.alternateAllowance" type="number" step="0.01" min="0" style="width: 5em;">
           </div>
-          <div class="col-6-12">
+          <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Registration Fee: $</label>
             <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
           </div>
+          <div class="col-6-12">
+            <label class="travel-allowance-label">Train/Airplane: $</label>
+            <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+          </div>
         </div>
+        <p class="travel-text">
+          Note: Meals, lodging, and mileage expenses will be calculated automatically.
+        </p>
       </div>
     </travel-inner-container>
 
