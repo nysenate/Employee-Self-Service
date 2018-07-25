@@ -20,8 +20,12 @@ import java.util.Optional;
 @Service
 public class PreviousSubmissionTRV implements TimeRecordValidator {
 
+    private final TimeRecordService timeRecordService;
+
     @Autowired
-    TimeRecordService timeRecordService;
+    public PreviousSubmissionTRV(TimeRecordService timeRecordService) {
+        this.timeRecordService = timeRecordService;
+    }
 
     /**
      * {@inheritDoc}

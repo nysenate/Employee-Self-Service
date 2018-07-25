@@ -47,7 +47,6 @@ public class RecordPermittedModificationTRV implements TimeRecordValidator
         checkTimeRecordField(record, prevRecord, "endDate", "Date", TimeRecord::getEndDate);
         checkTimeRecordField(record, prevRecord, "exceptionDetails", "String", TimeRecord::getExceptionDetails);
         checkTimeRecordField(record, prevRecord, "processedDate", "Date", TimeRecord::getProcessedDate);
-       // checkTimeEntries(record, prevRecord);  -- Commented Out 8/16/16 to test ChangeTRV
     }
 
     /** --- Internal Methods --- */

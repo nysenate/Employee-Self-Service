@@ -42,7 +42,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.payroll.PayType.TE;
-import static java.math.BigDecimal.ZERO;
 
 @Service
 public class EssTimeRecordManager implements TimeRecordManager
@@ -402,8 +401,7 @@ public class EssTimeRecordManager implements TimeRecordManager
                     entry.getTravelHours(),
                     entry.getMiscHours()
             );
-            return nonTempHours.stream()
-                    .allMatch(hrsOpt -> !hrsOpt.isPresent() || hrsOpt.get().compareTo(ZERO) == 0);
+            return nonTempHours.stream().noneMatch(Optional::isPresent);
         }
         return true;
     }
