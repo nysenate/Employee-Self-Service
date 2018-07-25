@@ -2,7 +2,6 @@ package gov.nysenate.ess.time.service.attendance.validation.recordvalidators;
 
 import gov.nysenate.ess.core.client.view.base.InvalidParameterView;
 import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.time.model.accrual.AccrualsAvailable;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
@@ -28,8 +27,12 @@ public class AccrualTRV implements TimeRecordValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(AccrualTRV.class);
 
-    @Autowired private EssAccrualComputeService essAccrualComputeService;
-    @Autowired private PayPeriodService payPeriodService;
+    private final EssAccrualComputeService essAccrualComputeService;
+
+    @Autowired
+    public AccrualTRV(EssAccrualComputeService essAccrualComputeService) {
+        this.essAccrualComputeService = essAccrualComputeService;
+    }
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {
@@ -60,6 +63,8 @@ public class AccrualTRV implements TimeRecordValidator {
         checkAccrualValue("sickHours",
                 recordAccUsage.getTotalSickHoursUsed(), accrualsAvailable.getSickAvailable());
     }
+
+    /* --- Internal Methods --- */
 
     /**
      * Test to see if a used accrual value exceeds the available amount

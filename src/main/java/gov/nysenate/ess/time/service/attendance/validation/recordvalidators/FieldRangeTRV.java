@@ -37,44 +37,44 @@ public class FieldRangeTRV implements TimeRecordValidator {
     }
 
     /**
-     *  checkTimeRecord check hour entry values for each entry in the time record
+     * Check hour entry values for each entry in the time record
      *
      * @param record TimeRecord - A posted time record in the process of validation
      * @param previousState TimeRecord - The most recently saved version of the posted time record
-     * @throws TimeRecordErrorException
+     * @throws TimeRecordErrorException if the submitted record contains invalid hour values
      */
     @Override
     public void checkTimeRecord(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) throws TimeRecordErrorException {
         record.getTimeEntries().forEach(this::checkAllFieldsMaxMin);
     }
 
+    /* --- Internal Methods --- */
+
     /**
-     * checkTotal:  check hour values for the given time entry
-     *
-     * @param entry
-     * @throws TimeRecordErrorException
+     * Check all hour values for the given time entry
      */
     private void checkAllFieldsMaxMin(TimeEntry entry)  throws TimeRecordErrorException {
 
         // Set the non-work hour maximum depending on the employee's pay type
         BigDecimal nonWorkMax = entry.getPayType() == PayType.TE ? BigDecimal.ZERO : annualEmpNonWorkMax;
 
-        checkFieldMaxMin("workHours", entry.getWorkHours().orElse(BigDecimal.ZERO), workMax);
-        checkFieldMaxMin("travelHours", entry.getTravelHours().orElse(BigDecimal.ZERO), nonWorkMax);
-        checkFieldMaxMin("holidayHours", entry.getHolidayHours().orElse(BigDecimal.ZERO), nonWorkMax);
-        checkFieldMaxMin("vacationHours", entry.getVacationHours().orElse(BigDecimal.ZERO), nonWorkMax);
-        checkFieldMaxMin("sickEmpHours", entry.getSickEmpHours().orElse(BigDecimal.ZERO), nonWorkMax);
-        checkFieldMaxMin("sickFamHours", entry.getSickFamHours().orElse(BigDecimal.ZERO), nonWorkMax);
-        checkFieldMaxMin("miscHours", entry.getMiscHours().orElse(BigDecimal.ZERO), nonWorkMax);
+        checkFieldMaxMin("workHours", entry.getWorkHours(), workMax);
+        checkFieldMaxMin("travelHours", entry.getTravelHours(), nonWorkMax);
+        checkFieldMaxMin("holidayHours", entry.getHolidayHours(), nonWorkMax);
+        checkFieldMaxMin("vacationHours", entry.getVacationHours(), nonWorkMax);
+        checkFieldMaxMin("sickEmpHours", entry.getSickEmpHours(), nonWorkMax);
+        checkFieldMaxMin("sickFamHours", entry.getSickFamHours(), nonWorkMax);
+        checkFieldMaxMin("miscHours", entry.getMiscHours(), nonWorkMax);
     }
 
-    private void checkFieldMaxMin(String fieldName, BigDecimal fieldValue, BigDecimal maxValue)  throws TimeRecordErrorException {
-        checkFieldMaxMin(fieldName, fieldValue, maxValue, BigDecimal.ZERO);
+    private void checkFieldMaxMin(String fieldName, Optional<BigDecimal> fieldValueOpt, BigDecimal maxValue)  throws TimeRecordErrorException {
+        checkFieldMaxMin(fieldName, fieldValueOpt, maxValue, BigDecimal.ZERO);
     }
 
 
-    private void checkFieldMaxMin(String fieldName, BigDecimal fieldValue, BigDecimal maxValue, BigDecimal minValue)
+    private void checkFieldMaxMin(String fieldName, Optional<BigDecimal> fieldValueOpt, BigDecimal maxValue, BigDecimal minValue)
             throws TimeRecordErrorException {
+        BigDecimal fieldValue = fieldValueOpt.orElse(BigDecimal.ZERO);
         if (fieldValue.compareTo(minValue) < 0) {
             throw new TimeRecordErrorException(TimeRecordErrorCode.FIELD_LESS_THAN_ZERO,
                     new InvalidParameterView("fieldHrs", "decimal",
