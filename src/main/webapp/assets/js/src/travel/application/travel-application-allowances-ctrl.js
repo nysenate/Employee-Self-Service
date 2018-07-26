@@ -8,7 +8,8 @@ function allowancesCtrl($scope, expensesApi) {
         tollsAllowance: Number(angular.copy($scope.data.app.tollsAllowance)),
         parkingAllowance: Number(angular.copy($scope.data.app.parkingAllowance)),
         alternateAllowance: Number(angular.copy($scope.data.app.alternateAllowance)),
-        registrationAllowance: Number(angular.copy($scope.data.app.registrationAllowance))
+        registrationAllowance: Number(angular.copy($scope.data.app.registrationAllowance)),
+        trailAirplaneStub: 0
     };
 
     $scope.route = angular.copy($scope.data.app.route);

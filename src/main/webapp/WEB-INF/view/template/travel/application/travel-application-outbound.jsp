@@ -26,7 +26,7 @@
                  ng-model="leg.from.formattedAddress"
                  leg="leg"
                  callback="setFromAddress(leg, address)"
-                 address-validator
+                 autocomplete-address-validator
                  placeholder="From Address"
                  type="text" size="50" required>
         </div>
@@ -44,7 +44,7 @@
                  leg="leg"
                  callback="setToAddress(leg, address)"
                  placeholder="To Address"
-                 address-validator
+                 autocomplete-address-validator
                  type="text"
                  size="50" required>
         </div>
