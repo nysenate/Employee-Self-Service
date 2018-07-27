@@ -12,24 +12,21 @@ public class Leg {
     private final double miles;
     private final ModeOfTransportation modeOfTransportation;
     private final LocalDate travelDate;
-    private final boolean isMileageRequested;
 
     public Leg(Address from, Address to, double miles, ModeOfTransportation modeOfTransportation,
-               LocalDate travelDate, boolean isMileageRequested) {
+               LocalDate travelDate) {
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
         this.miles = miles;
         this.modeOfTransportation = Objects.requireNonNull(modeOfTransportation);
         this.travelDate = Objects.requireNonNull(travelDate);
-        this.isMileageRequested = isMileageRequested;
     }
 
     /**
      * Does this Leg qualify for Mileage Reimbursement.
      */
     boolean qualifies() {
-        return getModeOfTransportation().qualifiesForMileageReimbursement()
-                && isMileageRequested();
+        return getModeOfTransportation().qualifiesForMileageReimbursement();
     }
 
     public Address getFrom() {
@@ -52,10 +49,6 @@ public class Leg {
         return modeOfTransportation;
     }
 
-    boolean isMileageRequested() {
-        return isMileageRequested;
-    }
-
     @Override
     public String toString() {
         return "Leg{" +
@@ -64,7 +57,6 @@ public class Leg {
                 ", miles=" + miles +
                 ", modeOfTransportation=" + modeOfTransportation +
                 ", travelDate=" + travelDate +
-                ", isMileageRequested=" + isMileageRequested +
                 '}';
     }
 
@@ -74,7 +66,6 @@ public class Leg {
         if (o == null || getClass() != o.getClass()) return false;
         Leg leg = (Leg) o;
         return Double.compare(leg.miles, miles) == 0 &&
-                isMileageRequested == leg.isMileageRequested &&
                 Objects.equals(from, leg.from) &&
                 Objects.equals(to, leg.to) &&
                 Objects.equals(modeOfTransportation, leg.modeOfTransportation) &&
@@ -83,6 +74,6 @@ public class Leg {
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, miles, modeOfTransportation, travelDate, isMileageRequested);
+        return Objects.hash(from, to, miles, modeOfTransportation, travelDate);
     }
 }

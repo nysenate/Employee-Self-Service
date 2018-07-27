@@ -1,4 +1,4 @@
-<div ng-if="false" class="content-container text-align-center">
+<div ng-if="true" class="content-container text-align-center">
 
   <div class="expenses-container">
     <h1>Meals and Lodging</h1>
@@ -50,49 +50,6 @@
     </div>
   </div>
 </div>
-
-<div ng-if="false" class="content-container text-align-center">
-  <%--ng-if="anyReimbursableTravel()">--%>
-  <div class="expenses-container">
-    <h1>Mileage</h1>
-    <p>
-      You will be reimbursed for the following travel. Uncheck anything you do not wish to be reimbursed for.
-    </p>
-    <div class="grid">
-      <div>
-        <div class="col-5-12">
-          <h4>From</h4>
-        </div>
-        <div class="col-5-12">
-          <h4>To</h4>
-        </div>
-        <div class="col-2-12">
-          <h4>Request Mileage</h4>
-        </div>
-      </div>
-      <div ng-repeat="leg in route.outboundLegs"
-           ng-if="isReimbursableLeg(leg)">
-        <div class="col-5-12">
-          {{leg.from.formattedAddress}}
-        </div>
-        <div class="col-5-12">
-          {{leg.to.formattedAddress}}
-        </div>
-        <label>Mileage: </label><input type="checkbox" ng-model="leg.isMileageRequested">
-      </div>
-      <div ng-repeat="leg in route.returnLegs">
-        <div class="col-5-12">
-          {{leg.from.formattedAddress}}
-        </div>
-        <div class="col-5-12">
-          {{leg.to.formattedAddress}}
-        </div>
-        <label>Mileage: </label><input type="checkbox" ng-model="leg.isMileageRequested">
-      </div>
-    </div>
-  </div>
-</div>
-
 
 <div class="content-container">
   <form novalidate name="allowancesForm" id="allowancesForm"

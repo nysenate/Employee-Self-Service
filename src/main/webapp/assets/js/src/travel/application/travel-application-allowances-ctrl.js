@@ -50,24 +50,6 @@ function allowancesCtrl($scope, expensesApi) {
         $scope.destinations.push(destination);
     });
 
-    $scope.anyReimbursableTravel = function () {
-        for (var i = 0; i < $scope.route.outboundLegs.length; i++) {
-            if ($scope.route.outboundLegs[i].modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO') {
-                return true;
-            }
-        }
-        for (var y = 0; y < $scope.route.returnLegs.length; y++) {
-            if ($scope.route.returnLegs[y].modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO') {
-                return true;
-            }
-        }
-        return false;
-    };
-
-    $scope.isReimbursableLeg = function (leg) {
-        return leg.modeOfTransportation.methodOfTravel === 'PERSONAL_AUTO';
-    };
-
     $scope.next = function () {
         // Default empty allowances to 0.
         for (var prop in $scope.allowances) {

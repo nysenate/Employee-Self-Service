@@ -37,13 +37,13 @@ public class RouteFactory {
         for (Leg leg : route.getOutgoingLegs()) {
             double miles = mileageService.calculateMileage(leg.getFrom(), leg.getTo());
             outboundLegs.add(new Leg(leg.getFrom(), leg.getTo(), miles, leg.getModeOfTransportation(),
-                    leg.getTravelDate(), leg.isMileageRequested()));
+                    leg.getTravelDate()));
         }
 
         for (Leg leg : route.getReturnLegs()) {
             double miles = mileageService.calculateMileage(leg.getFrom(), leg.getTo());
             returnLegs.add(new Leg(leg.getFrom(), leg.getTo(), miles, leg.getModeOfTransportation(),
-                    leg.getTravelDate(), leg.isMileageRequested()));
+                    leg.getTravelDate()));
         }
         return new Route(ImmutableList.copyOf(outboundLegs), ImmutableList.copyOf(returnLegs),
                 irsDao.getIrsRate(outboundLegs.get(0).getTravelDate()));

@@ -15,8 +15,6 @@ public class LegView implements ViewObject {
     private AddressView to;
     private String miles;
     private ModeOfTransportationView modeOfTransportation;
-    @JsonProperty(value="isMileageRequested")
-    private boolean isMileageRequested;
     private String travelDate;
     @JsonProperty(value="qualifies")
     private boolean qualifies; // Does this leg qualify for reimbursement.
@@ -29,7 +27,6 @@ public class LegView implements ViewObject {
         this.to = new AddressView(leg.getTo());
         this.miles = String.valueOf(leg.getMiles());
         this.modeOfTransportation = new ModeOfTransportationView(leg.getModeOfTransportation());
-        this.isMileageRequested = leg.isMileageRequested();
         this.travelDate = leg.getTravelDate().format(DATE_FORMAT);
         this.qualifies = leg.qualifies();
     }
@@ -38,7 +35,7 @@ public class LegView implements ViewObject {
         return new Leg(from.toAddress(), to.toAddress(),
                 miles == null ? new Double("0") : Double.valueOf(miles),
                 modeOfTransportation.toModeOfTransportation(),
-                LocalDate.parse(travelDate, DATE_FORMAT), isMileageRequested);
+                LocalDate.parse(travelDate, DATE_FORMAT));
     }
 
     public AddressView getFrom() {
@@ -55,10 +52,6 @@ public class LegView implements ViewObject {
 
     public ModeOfTransportationView getModeOfTransportation() {
         return modeOfTransportation;
-    }
-
-    public boolean isMileageRequested() {
-        return isMileageRequested;
     }
 
     public String getTravelDate() {

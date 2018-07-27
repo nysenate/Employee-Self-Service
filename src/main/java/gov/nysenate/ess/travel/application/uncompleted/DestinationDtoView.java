@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application.uncompleted;
 
-import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.accommodation.AccommodationView;
 

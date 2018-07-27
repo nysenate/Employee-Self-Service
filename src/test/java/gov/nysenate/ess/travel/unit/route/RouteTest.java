@@ -52,19 +52,11 @@ public class RouteTest {
     }
 
     @Test
-    public void mileageAllowanceMustBeRequested() {
-        Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, LocalDate.now(), false);
-        Leg return1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, LocalDate.now(), false);
-        Route route = new Route(ImmutableList.of(outbound1), ImmutableList.of(return1), RouteFixture.MILEAGE_RATE);
-        assertEquals(new Dollars("0"), route.mileageAllowance());
-    }
-
-    @Test
     public void multiModeOfTransporationTrip() {
-        Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, LocalDate.now(), true);
-        Leg outbound2 = new Leg(new Address(), new Address(), 10, new ModeOfTransportation(MethodOfTravel.OTHER, "Uber"), LocalDate.now(), true);
-        Leg return1 = new Leg(new Address(), new Address(), 10, new ModeOfTransportation(MethodOfTravel.OTHER, "Uber"), LocalDate.now(), true);
-        Leg return2 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, LocalDate.now(), true);
+        Leg outbound1 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, LocalDate.now());
+        Leg outbound2 = new Leg(new Address(), new Address(), 10, new ModeOfTransportation(MethodOfTravel.OTHER, "Uber"), LocalDate.now());
+        Leg return1 = new Leg(new Address(), new Address(), 10, new ModeOfTransportation(MethodOfTravel.OTHER, "Uber"), LocalDate.now());
+        Leg return2 = new Leg(new Address(), new Address(), 50, ModeOfTransportation.PERSONAL_AUTO, LocalDate.now());
         Route route = new Route(ImmutableList.of(outbound1, outbound2),
                 ImmutableList.of(return1, return2), RouteFixture.MILEAGE_RATE);
 
