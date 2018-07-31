@@ -7,6 +7,7 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
 
     $scope.init = function () {
         $scope.reviewApp = angular.copy($scope.data.app);
+        console.log($scope.reviewApp);
         displayMap();
     };
 

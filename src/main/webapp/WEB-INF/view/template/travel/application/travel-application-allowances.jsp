@@ -1,61 +1,9 @@
-<div ng-if="true" class="content-container text-align-center">
-
-  <div class="expenses-container">
-    <h1>Meals and Lodging</h1>
-    <p>
-      You will be reimbursed for the following meals and lodging. Uncheck anything you would not like to be reimbursed
-      for.
-    </p>
-    <div class="grid">
-      <div>
-        <div class="col-6-12">
-          <h4>Address</h4>
-        </div>
-        <div class="col-2-12">
-          <h4>Date</h4>
-        </div>
-        <div class="col-2-12">
-          <h4>Request Meals</h4>
-        </div>
-        <div class="col-2-12">
-          <h4>Request Lodging</h4>
-        </div>
-      </div>
-
-      <div ng-repeat="dest in destinations">
-        <div class="col-6-12 margin-top-10">
-          {{dest.accommodation.address.formattedAddress}}
-        </div>
-        <div class="col-6-12 margin-top-10">
-          &nbsp;
-        </div>
-        <div ng-repeat="stay in dest.stays" class="">
-          <div class="col-6-12">
-            &nbsp;
-          </div>
-          <div class="col-2-12">
-            {{stay.date | date: 'shortDate'}}
-          </div>
-          <div class="col-2-12">
-            <label>Meals: </label><input type="checkbox" ng-model="stay.isMealsRequested">
-          </div>
-          <div class="col-2-12">
-             <span ng-if="stay.isLodgingEligible">
-               <label>Lodging: </label><input type="checkbox" ng-model="stay.isLodgingRequested">
-             </span>
-            <span ng-if="!stay.isLodgingEligible">&nbsp;</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="content-container">
-  <form novalidate name="allowancesForm" id="allowancesForm"
-    ng-submit="allowancesForm.$valid && next()">
 
-    <p class="travel-content-info travel-text">
+  <form novalidate name="allowancesForm" id="allowancesForm"
+        ng-submit="allowancesForm.$valid && next()">
+
+    <p class="travel-content-info travel-text-bold">
       Enter your estimated expenses for the following categories.
     </p>
 
@@ -93,9 +41,63 @@
             <input ng-model="allowances.trailAirplaneStub" type="number" step="0.01" min="0" style="width: 5em;">
           </div>
         </div>
-        <p class="travel-text">
+        <p class="travel-text-bold">
           Note: Meals, lodging, and mileage expenses will be calculated automatically.
         </p>
+      </div>
+    </travel-inner-container>
+
+    <travel-inner-container title="Meals Adjustment (Optional)">
+      <p class="travel-text">
+        You qualify for the following meal reimbursements. Uncheck anything you would <span class="bold">not</span> like
+        to be reimbursed for.
+      </p>
+      <div class="grid">
+        <div ng-repeat="acc in dirtyApp.accommodations">
+          <div class="expenses-opt-out-list">
+            <div class="col-6-12">
+              {{acc.address.formattedAddress}}
+            </div>
+            <div ng-repeat="day in acc.days" class="">
+              <div ng-if="!$first" class="col-6-12">
+                &nbsp;
+              </div>
+              <div class="col-3-12">
+                {{day.date | date: 'shortDate'}}
+              </div>
+              <div class="col-3-12">
+                <label>Meals: </label><input type="checkbox" ng-model="day.isMealsRequested">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </travel-inner-container>
+
+    <travel-inner-container title="Lodging Adjustment (Optional)" ng-show="isLodging()">
+      <p class="travel-text">
+        You qualify for the following lodging reimbursements. Uncheck anything you would <span class="bold">not</span>
+        like to be reimbursed for.
+      </p>
+      <div class="grid">
+        <div ng-repeat="acc in dirtyApp.accommodations">
+          <div class="expenses-opt-out-list">
+            <div class="col-6-12">
+              {{acc.address.formattedAddress}}
+            </div>
+            <div ng-repeat="night in acc.nights" class="">
+              <div ng-if="!$first" class="col-6-12">
+                &nbsp;
+              </div>
+              <div class="col-3-12">
+                {{previousDay(night.date) | date: 'shortDate'}} - {{night.date | date: 'shortDate'}}
+              </div>
+              <div class="col-3-12">
+                <label>Lodging: </label><input type="checkbox" ng-model="night.isLodgingRequested">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </travel-inner-container>
 

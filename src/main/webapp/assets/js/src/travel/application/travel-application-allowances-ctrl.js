@@ -1,54 +1,26 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'TravelApplicationExpensesApi', allowancesCtrl]);
+essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'TravelApplicationExpensesApi',
+                                                         'TravelApplicationAccommodationsApi', allowancesCtrl]);
 
-function allowancesCtrl($scope, expensesApi) {
+function allowancesCtrl($scope, expensesApi, accommodationsApi) {
 
-    $scope.allowances = {
-        tollsAllowance: Number(angular.copy($scope.data.app.tollsAllowance)),
-        parkingAllowance: Number(angular.copy($scope.data.app.parkingAllowance)),
-        alternateAllowance: Number(angular.copy($scope.data.app.alternateAllowance)),
-        registrationAllowance: Number(angular.copy($scope.data.app.registrationAllowance)),
-        trailAirplaneStub: 0
+    this.$onInit = function () {
+        $scope.dirtyApp = angular.copy($scope.data.app);
+        console.log($scope.dirtyApp);
+        $scope.route = $scope.dirtyApp.route;
+
+        $scope.allowances = {
+            tollsAllowance: Number($scope.dirtyApp.tollsAllowance),
+            parkingAllowance: Number($scope.dirtyApp.parkingAllowance),
+            alternateAllowance: Number($scope.dirtyApp.alternateAllowance),
+            registrationAllowance: Number($scope.dirtyApp.registrationAllowance)
+        };
     };
 
-    $scope.route = angular.copy($scope.data.app.route);
-
-    $scope.destinations = [];
-
-    function Destination() {
-        this.accommodation;
-        this.stays = [];
-    }
-
-    function Stay() {
-        this.date = '';
-        this.isMealsRequested = false;
-        this.isLodgingRequested = false;
-        this.isLodgingEligible = false;
-    }
-
-    // Init accommodations
-    angular.forEach($scope.data.app.accommodations, function (a) {
-        var destination = new Destination();
-        destination.accommodation = a;
-        angular.forEach(a.days, function (day) {
-            var stay = new Stay();
-            stay.date = day.date;
-            stay.isMealsRequested = day.isMealsRequested;
-
-            // Find out if lodging is possible and requested.
-            angular.forEach(a.nights, function (night) {
-                if (night.date === day.date) {
-                    stay.isLodgingEligible = true;
-                    stay.isLodgingRequested = night.isLodgingRequested;
-                }
-            });
-
-            destination.stays.push(stay);
-        });
-        $scope.destinations.push(destination);
-    });
+    $scope.previousDay = function (date) {
+        return moment(date).subtract(1, 'days').toDate();
+    };
 
     $scope.next = function () {
         // Default empty allowances to 0.
@@ -57,13 +29,25 @@ function allowancesCtrl($scope, expensesApi) {
                 $scope.allowances[prop] = 0;
             }
         }
-        expensesApi.update({id: $scope.data.app.id}, {
-            destinations: $scope.destinations,
-            allowances: $scope.allowances
-        }, function (response) {
+        expensesApi.update({id: $scope.data.app.id}, $scope.allowances, function (response) {
             $scope.data.app = response.result;
-            $scope.nextState();
+            accommodationsApi.update({id: $scope.data.app.id}, $scope.dirtyApp.accommodations, function (response) {
+                $scope.data.app = response.result;
+                $scope.nextState();
+            }, $scope.handleErrorResponse);
         }, $scope.handleErrorResponse)
+    };
+
+    /**
+     * Returns true if the traveler will be lodging during their travel, otherwise false.
+     */
+    $scope.isLodging = function () {
+        for (var i = 0; i < $scope.dirtyApp.accommodations.length; i++) {
+            var a = $scope.dirtyApp.accommodations[i];
+            if (a.nights.length > 0) {
+                return true;
+            }
+        }
     }
 }
 

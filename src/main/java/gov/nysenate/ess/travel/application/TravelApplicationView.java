@@ -104,6 +104,10 @@ public class TravelApplicationView implements ViewObject {
         return accommodations;
     }
 
+    public void setAccommodations(List<AccommodationView> accommodations) {
+        this.accommodations = accommodations;
+    }
+
     public RouteView getRoute() {
         return route;
     }

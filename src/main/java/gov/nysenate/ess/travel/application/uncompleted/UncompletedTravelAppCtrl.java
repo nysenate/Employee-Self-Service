@@ -153,46 +153,64 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveReturnSegments(@PathVariable int id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
         TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        Route previousRoute = appView.getRoute().toRoute(); // need to see if route has been modified.
+
         appView.setRoute(route);
 
         Route fullRoute = routeFactory.initRoute(appView.getRoute().toRoute());
-        List<Accommodation> accommodations = accommodationFactory.createAccommodations(fullRoute);
         // Calculate distance, mileage rates, etc for Route.
-
         TravelApplication app = appView.toTravelApplication();
-        app.setAccommodations(accommodations);
         app.setRoute(fullRoute);
+
+        // Calculate accommodations if they have not been calculated yet or if route has changed.
+        // This is so meal/lodging opt out is persisted/refreshed at the right times.
+        if (appView.getAccommodations().isEmpty() || !previousRoute.equals(fullRoute)) {
+            List<Accommodation> accommodations = accommodationFactory.createAccommodations(fullRoute);
+            app.setAccommodations(accommodations);
+        }
+
         // This updates the app view with fields calculated by the TravelApplication object.
         TravelApplicationView updatedView = new TravelApplicationView(app);
         updatedView = appDao.saveUncompleteTravelApp(updatedView);
         return new ViewObjectResponse<>(updatedView);
     }
 
+    /**
+     * Sets the user specified expenses on a travel application
+     * <p>
+     * (PUT) /api/v1/travel/application/uncompleted/{id}/expenses
+     * <p>
+     */
     @RequestMapping(value = "/{id}/expenses", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveExpenses(@PathVariable int id, @RequestBody ExpensesDtoView expensesDto) {
+    public BaseResponse saveExpenses(@PathVariable int id, @RequestBody AllowancesDtoView allowancesDto) {
         TravelApplicationView appView = appDao.getUncompletedAppById(id);
-        appView.setTollsAllowance(expensesDto.allowances.tollsAllowance);
-        appView.setParkingAllowance(expensesDto.allowances.parkingAllowance);
-        appView.setAlternateAllowance(expensesDto.allowances.alternateAllowance);
-        appView.setRegistrationAllowance(expensesDto.allowances.registrationAllowance);
-
-        for (DestinationDtoView dest : expensesDto.getDestinations()) {
-            for (AccommodationView accommodation : appView.getAccommodations()) {
-                if (dest.accommodation.toAccommodation().equals(accommodation.toAccommodation())) {
-                    Accommodation appAcc = accommodation.toAccommodation();
-                    for (StayDtoView stay : dest.getStays()) {
-                        appAcc.setRequestMeals(stay.isMealsRequested, stay.getLocalDate());
-                        appAcc.setRequestLodging(stay.isLodgingRequested, stay.getLocalDate());
-                    }
-                }
-            }
-        }
+        appView.setTollsAllowance(allowancesDto.tollsAllowance);
+        appView.setParkingAllowance(allowancesDto.parkingAllowance);
+        appView.setAlternateAllowance(allowancesDto.alternateAllowance);
+        appView.setRegistrationAllowance(allowancesDto.registrationAllowance);
 
         TravelApplication app = appView.toTravelApplication();
         appView = new TravelApplicationView(app);
         appView = appDao.saveUncompleteTravelApp(appView);
         return new ViewObjectResponse<>(appView);
     }
+
+    /**
+     * Updates a travel application with the provided accommodations.
+     * <p>
+     * (PUT) /api/v1/travel/application/uncompleted/{id}/accommodations
+     * <p>
+     */
+    @RequestMapping(value = "/{id}/accommodations", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse updateAccommodations(@PathVariable int id, @RequestBody List<AccommodationView> accommodationViews) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        appView.setAccommodations(accommodationViews);
+        TravelApplication app = appView.toTravelApplication();
+        appView = new TravelApplicationView(app);
+        appView = appDao.saveUncompleteTravelApp(appView);
+        return new ViewObjectResponse<>(appView);
+    }
+
 
     // TODO: Move attachment API's to their own controller? Would need to update purpose page logic.
 

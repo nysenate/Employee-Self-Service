@@ -265,6 +265,10 @@ essApi.factory('TravelApplicationExpensesApi', ['$resource', 'appProps', functio
     return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/expenses.json', {id: '@id'}, {'update': {method: 'PUT'}})
 }]);
 
+essApi.factory('TravelApplicationAccommodationsApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/accommodations.json', {id: '@id'}, {'update': {method: 'PUT'}})
+}]);
+
 essApi.factory('TravelApplicationSubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/application/uncompleted/:id/submit.json', {id: '@id'}, {'update': {method: 'PUT'}})
 }]);

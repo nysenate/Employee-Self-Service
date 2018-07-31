@@ -1,5 +1,5 @@
 <div class="content-container">
-  <p class="travel-content-info travel-text">
+  <p class="travel-content-info travel-text-bold">
     Enter your purpose of travel.
   </p>
 

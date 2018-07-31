@@ -23,6 +23,10 @@
 
 .travel-text {
   color: @travelDarkGray;
+}
+
+.travel-text-bold {
+  .travel-text;
   .bold;
 }
 
@@ -56,7 +60,7 @@
 .travel-content-controls {
   .content-controls;
   p, label {
-    .travel-text;
+    .travel-text-bold;
   }
 }
 
@@ -84,6 +88,18 @@ h2.travel-subheader {
   background: #f9f9f9;
   input[type="button"] {
     margin-right: 5px;
+  }
+}
+
+.expenses-opt-out-list {
+  .clear;
+  padding-top: 15px;
+  div {
+    margin-top: 3px;
+    .travel-text;
+    &.col-6-12 {
+      .travel-text-bold;
+    }
   }
 }
 

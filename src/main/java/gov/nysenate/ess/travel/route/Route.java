@@ -7,6 +7,7 @@ import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * The Route is responsible for calculating a mileage allowance.
@@ -96,5 +97,29 @@ public class Route {
     private ImmutableList<Leg> allLegs() {
         return Streams.concat(getOutgoingLegs().stream(), getReturnLegs().stream())
                 .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "outgoingLegs=" + outgoingLegs +
+                ", returnLegs=" + returnLegs +
+                ", mileageRate=" + mileageRate +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Route route = (Route) o;
+        return Objects.equals(outgoingLegs, route.outgoingLegs) &&
+                Objects.equals(returnLegs, route.returnLegs) &&
+                Objects.equals(mileageRate, route.mileageRate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(outgoingLegs, returnLegs, mileageRate);
     }
 }
