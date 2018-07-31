@@ -55,20 +55,6 @@ public class Accommodation {
         return getDays().asList().reverse().get(0).getDate();
     }
 
-    public void setRequestMeals(boolean isRequestMeals, LocalDate date) {
-        List<Day> days = getDays().stream().filter(d -> d.getDate().equals(date)).collect(Collectors.toList());
-        if (days.size() > 0) {
-            days.get(0).setMealsRequested(isRequestMeals);
-        }
-    }
-
-    public void setRequestLodging(boolean isRequestLodging, LocalDate date) {
-        List<Night> nights = getNights().stream().filter(n -> n.getDate().equals(date)).collect(Collectors.toList());
-        if (nights.size() > 0) {
-            nights.get(0).setLodgingRequested(isRequestLodging);
-        }
-    }
-
     protected Address getAddress() {
         return address;
     }

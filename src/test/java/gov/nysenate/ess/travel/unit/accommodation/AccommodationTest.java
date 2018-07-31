@@ -20,7 +20,7 @@ public class AccommodationTest {
     @Test
     public void calculatesAllowances() {
         Accommodation a = AccommodationFixture.twoDayOneNightAccommodation();
-        assertEquals(new Dollars("68.00"), a.mealAllowance());
+        assertEquals(new Dollars("102.00"), a.mealAllowance());
         assertEquals(new Dollars("120.00"), a.lodgingAllowance());
     }
 

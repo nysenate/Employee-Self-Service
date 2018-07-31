@@ -34,7 +34,7 @@ public class TravelApplicationTest {
     @Test
     public void mealAllowanceSumsAllAccommodations() {
         TravelApplication app = testTravelApp();
-        assertEquals(new Dollars("136"), app.mealAllowance());
+        assertEquals(new Dollars("204"), app.mealAllowance());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TravelApplicationTest {
         app.setAlternate(new Dollars("5.00"));
         app.setRegistration(new Dollars("40.00"));
 
-        assertEquals(new Dollars("705.25"), app.totalAllowance());
+        assertEquals(new Dollars("773.25"), app.totalAllowance());
     }
 
     private TravelApplication testTravelApp() {
