@@ -1,19 +1,19 @@
 package gov.nysenate.ess.travel.application.uncompleted;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.accommodation.AccommodationView;
+import gov.nysenate.ess.travel.application.destination.DestinationView;
 
 import java.util.List;
 
 public class DestinationDtoView implements ViewObject {
 
-    AccommodationView accommodation;
+    DestinationView accommodation;
     List<StayDtoView> stays;
 
     public DestinationDtoView() {
     }
 
-    public AccommodationView getAccommodation() {
+    public DestinationView getAccommodation() {
         return accommodation;
     }
 

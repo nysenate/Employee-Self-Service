@@ -8,10 +8,12 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.accommodation.*;
+import gov.nysenate.ess.travel.MileageAllowanceFactory;
 import gov.nysenate.ess.travel.application.*;
-import gov.nysenate.ess.travel.route.Route;
-import gov.nysenate.ess.travel.route.RouteFactory;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
+import gov.nysenate.ess.travel.application.destination.DestinationView;
+import gov.nysenate.ess.travel.route.Leg;
 import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.apache.commons.io.IOUtils;
@@ -34,11 +36,11 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(UncompletedTravelAppCtrl.class);
 
+    @Autowired private TravelApplicationService applicationService;
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private InMemoryTravelAppDao appDao;
     @Autowired private UploadProcessor uploadProcessor;
-    @Autowired private AccommodationFactory accommodationFactory;
-    @Autowired private RouteFactory routeFactory;
+    @Autowired private MileageAllowanceFactory mileageAllowanceFactory;
 
     /**
      * Initialize a mostly empty travel app, containing just the traveling {@link Employee}
@@ -136,8 +138,10 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/outbound", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveOutboundSegments(@PathVariable int id, @RequestBody RouteView route) {
-        TravelApplicationView app = appDao.getUncompletedAppById(id);
-        app.setRoute(route);
+        List<Leg> outboundLegs = route.toRoute().getOutgoingLegs();
+        TravelApplication travelApplication = applicationService.addOutboundLegs(id, outboundLegs);
+
+        TravelApplicationView app = new TravelApplicationView(travelApplication);
         app = appDao.saveUncompleteTravelApp(app);
         return new ViewObjectResponse<>(app);
     }
@@ -152,25 +156,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveReturnSegments(@PathVariable int id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
-        Route previousRoute = appView.getRoute().toRoute(); // need to see if route has been modified.
-
-        appView.setRoute(route);
-
-        Route fullRoute = routeFactory.initRoute(appView.getRoute().toRoute());
-        // Calculate distance, mileage rates, etc for Route.
-        TravelApplication app = appView.toTravelApplication();
-        app.setRoute(fullRoute);
-
-        // Calculate accommodations if they have not been calculated yet or if route has changed.
-        // This is so meal/lodging opt out is persisted/refreshed at the right times.
-        if (appView.getAccommodations().isEmpty() || !previousRoute.equals(fullRoute)) {
-            List<Accommodation> accommodations = accommodationFactory.createAccommodations(fullRoute);
-            app.setAccommodations(accommodations);
-        }
-
-        // This updates the app view with fields calculated by the TravelApplication object.
-        TravelApplicationView updatedView = new TravelApplicationView(app);
+        TravelApplication travelApplication = applicationService.addReturnLegs(id, route.toRoute().getReturnLegs());
+        TravelApplicationView updatedView = new TravelApplicationView(travelApplication);
         updatedView = appDao.saveUncompleteTravelApp(updatedView);
         return new ViewObjectResponse<>(updatedView);
     }
@@ -196,15 +183,31 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Updates a travel application with the provided accommodations.
+     * Updates a travel application with the provided meal allowances
      * <p>
-     * (PUT) /api/v1/travel/application/uncompleted/{id}/accommodations
+     * (PUT) /api/v1/travel/application/uncompleted/{id}/meal-allowances
      * <p>
      */
-    @RequestMapping(value = "/{id}/accommodations", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse updateAccommodations(@PathVariable int id, @RequestBody List<AccommodationView> accommodationViews) {
+    @RequestMapping(value = "/{id}/meal-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse updateMealAllowances(@PathVariable int id, @RequestBody MealAllowancesView mealAllowancesView) {
         TravelApplicationView appView = appDao.getUncompletedAppById(id);
-        appView.setAccommodations(accommodationViews);
+        appView.setMealAllowance(mealAllowancesView);
+        TravelApplication app = appView.toTravelApplication();
+        appView = new TravelApplicationView(app);
+        appView = appDao.saveUncompleteTravelApp(appView);
+        return new ViewObjectResponse<>(appView);
+    }
+
+    /**
+     * Updates a travel application with the provided lodging allowances
+     * <p>
+     * (PUT) /api/v1/travel/application/uncompleted/{id}/lodging-allowances
+     * <p>
+     */
+    @RequestMapping(value = "/{id}/lodging-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public BaseResponse updateMealAllowances(@PathVariable int id, @RequestBody LodgingAllowancesView lodgingAllowancesView) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+        appView.setLodgingAllowance(lodgingAllowancesView);
         TravelApplication app = appView.toTravelApplication();
         appView = new TravelApplicationView(app);
         appView = appDao.saveUncompleteTravelApp(appView);

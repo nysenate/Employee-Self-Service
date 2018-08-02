@@ -9,19 +9,19 @@
         <td>Meal Allowance</td>
       </tr>
       </thead>
-      <tbody ng-repeat="accommodation in app.accommodations">
-      <tr ng-repeat="day in accommodation.days"
-          ng-if="day.isMealsRequested">
-        <td>{{day.date | date: 'shortDate'}}</td>
-        <td>{{accommodation.address.formattedAddress}}</td>
-        <td>{{day.mealAllowance | currency}}</td>
+      <tbody>
+      <tr ng-repeat="mealAllowance in app.mealAllowance.mealAllowances"
+          ng-if="mealAllowance.isMealsRequested">
+        <td>{{mealAllowance.date | date: 'shortDate'}}</td>
+        <td>{{mealAllowance.address.formattedAddress}}</td>
+        <td>{{mealAllowance.allowance | currency}}</td>
       </tr>
       </tbody>
       <tbody>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.mealAllowance | currency}}</td>
+        <td class="bold">{{app.mealAllowance.totalMealAllowance | currency}}</td>
       </tr>
       </tbody>
     </table>

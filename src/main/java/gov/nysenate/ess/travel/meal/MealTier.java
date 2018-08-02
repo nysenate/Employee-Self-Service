@@ -30,7 +30,7 @@ public class MealTier implements Comparable<MealTier> {
      * the GSA total and senate total is the same. Therefore we use the GSA total as the total meal reimbursement.
      * @return the Senate provided meal allowance for this meal tier.
      */
-    public Dollars allowance() {
+    public Dollars total() {
         return getBreakfast().add(getLunch()).add(getDinner()).add(getIncidental());
     }
 

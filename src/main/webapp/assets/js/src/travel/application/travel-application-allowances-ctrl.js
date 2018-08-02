@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'TravelApplicationExpensesApi',
-                                                         'TravelApplicationAccommodationsApi', allowancesCtrl]);
+essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'TravelApplicationExpensesApi', 'TravelApplicationMealAllowanceApi',
+                                                         'TravelApplicationLodgingAllowanceApi', allowancesCtrl]);
 
-function allowancesCtrl($scope, expensesApi, accommodationsApi) {
+function allowancesCtrl($scope, expensesApi, mealAllowancesApi, lodgingAllowancesApi) {
 
     this.$onInit = function () {
         $scope.dirtyApp = angular.copy($scope.data.app);
@@ -31,9 +31,14 @@ function allowancesCtrl($scope, expensesApi, accommodationsApi) {
         }
         expensesApi.update({id: $scope.data.app.id}, $scope.allowances, function (response) {
             $scope.data.app = response.result;
-            accommodationsApi.update({id: $scope.data.app.id}, $scope.dirtyApp.accommodations, function (response) {
+
+            mealAllowancesApi.update({id: $scope.data.app.id}, $scope.dirtyApp.mealAllowance, function (response) {
                 $scope.data.app = response.result;
-                $scope.nextState();
+
+                lodgingAllowancesApi.update({id: $scope.data.app.id}, $scope.dirtyApp.lodgingAllowance, function (response) {
+                    $scope.data.app = response.result;
+                    $scope.nextState();
+                }, $scope.handleErrorResponse);
             }, $scope.handleErrorResponse);
         }, $scope.handleErrorResponse)
     };
@@ -41,13 +46,8 @@ function allowancesCtrl($scope, expensesApi, accommodationsApi) {
     /**
      * Returns true if the traveler will be lodging during their travel, otherwise false.
      */
-    $scope.isLodging = function () {
-        for (var i = 0; i < $scope.dirtyApp.accommodations.length; i++) {
-            var a = $scope.dirtyApp.accommodations[i];
-            if (a.nights.length > 0) {
-                return true;
-            }
-        }
+    $scope.tripHasLodging = function () {
+        return $scope.dirtyApp.lodgingAllowance.lodgingAllowances.length > 0;
     }
 }
 

@@ -24,7 +24,7 @@ public class Day implements Comparable<Day> {
 
     public Dollars mealAllowance() {
         if (isMealsRequested()) {
-            return tier.allowance();
+            return tier.total();
         }
         else {
             return Dollars.ZERO;

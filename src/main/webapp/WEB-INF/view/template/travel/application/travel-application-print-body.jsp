@@ -67,13 +67,13 @@
         {{(app.route.origin.formattedAddressWithCounty) || NOT_AVAILABLE}}
       </div>
 
-      <span ng-repeat="acc in app.accommodations" style="font-weight: normal;">
+      <span ng-repeat="dest in app.accommodations.destinations" style="font-weight: normal;">
           <div class="col-2-12 travel-print-label">
             <span ng-if="$first">Destination:</span>
             <span ng-if="!$first">&nbsp;</span>
           </div>
           <div class="col-10-12 float-left">
-            {{(acc.address.formattedAddressWithCounty) || NOT_AVAILABLE}}
+            {{(dest.address.formattedAddressWithCounty) || NOT_AVAILABLE}}
           </div>
         </span>
 
@@ -108,9 +108,9 @@
 
     <div class="travel-print-allowances-box">
       <h4 style="margin: 0px 0px 5px 0px;">Estimated Travel Costs</h4>
-      <label>Transportation</label><span>{{(app.mileageAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Food</label><span>{{(app.mealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Lodging</label><span>{{(app.lodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Transportation</label><span>{{(app.mileageAllowance.totalMileageAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Food</label><span>{{(app.mealAllowance.totalMealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Lodging</label><span>{{(app.lodgingAllowance.totalLodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Parking/Tolls</label><span>{{(tollsAndParking() | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Taxi/Bus/Subway</label><span>{{(app.alternateAllowance | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Registration Fee</label><span>{{(app.registrationAllowance | currency) || NOT_AVAILABLE}}</span><br/>

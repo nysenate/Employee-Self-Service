@@ -53,48 +53,38 @@
         to be reimbursed for.
       </p>
       <div class="grid">
-        <div ng-repeat="acc in dirtyApp.accommodations">
+        <div ng-repeat="allowance in dirtyApp.mealAllowance.mealAllowances">
           <div class="expenses-opt-out-list">
             <div class="col-6-12">
-              {{acc.address.formattedAddress}}
+              {{allowance.address.formattedAddress}}
             </div>
-            <div ng-repeat="day in acc.days" class="">
-              <div ng-if="!$first" class="col-6-12">
-                &nbsp;
-              </div>
-              <div class="col-3-12">
-                {{day.date | date: 'shortDate'}}
-              </div>
-              <div class="col-3-12">
-                <label>Meals: </label><input type="checkbox" ng-model="day.isMealsRequested">
-              </div>
+            <div class="col-3-12">
+              {{allowance.date | date: 'shortDate'}}
+            </div>
+            <div class="col-3-12">
+              <label>Meals: </label><input type="checkbox" ng-model="allowance.isMealsRequested">
             </div>
           </div>
         </div>
       </div>
     </travel-inner-container>
 
-    <travel-inner-container title="Lodging Adjustment (Optional)" ng-show="isLodging()">
+    <travel-inner-container title="Lodging Adjustment (Optional)" ng-show="tripHasLodging()">
       <p class="travel-text">
         You qualify for the following lodging reimbursements. Uncheck anything you would <span class="bold">not</span>
         like to be reimbursed for.
       </p>
       <div class="grid">
-        <div ng-repeat="acc in dirtyApp.accommodations">
+        <div ng-repeat="allowance in dirtyApp.lodgingAllowance.lodgingAllowances">
           <div class="expenses-opt-out-list">
             <div class="col-6-12">
-              {{acc.address.formattedAddress}}
+              {{allowance.address.formattedAddress}}
             </div>
-            <div ng-repeat="night in acc.nights" class="">
-              <div ng-if="!$first" class="col-6-12">
-                &nbsp;
-              </div>
-              <div class="col-3-12">
-                {{previousDay(night.date) | date: 'shortDate'}} - {{night.date | date: 'shortDate'}}
-              </div>
-              <div class="col-3-12">
-                <label>Lodging: </label><input type="checkbox" ng-model="night.isLodgingRequested">
-              </div>
+            <div class="col-3-12">
+              {{previousDay(allowance.date) | date: 'shortDate'}} - {{allowance.date | date: 'shortDate'}}
+            </div>
+            <div class="col-3-12">
+              <label>Lodging: </label><input type="checkbox" ng-model="allowance.isLodgingRequested">
             </div>
           </div>
         </div>

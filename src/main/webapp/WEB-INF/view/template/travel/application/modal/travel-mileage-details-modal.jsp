@@ -11,18 +11,17 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="leg in legs"
-          ng-if="leg.qualifies">
-        <td>{{leg.from.formattedAddress}}</td>
-        <td>{{leg.to.formattedAddress}}</td>
-        <td>{{leg.miles}}</td>
-        <td>{{app.route.mileageRate}}</td>
+      <tr ng-repeat="allowance in mileageAllowances">
+        <td>{{allowance.leg.from.formattedAddress}}</td>
+        <td>{{allowance.leg.to.formattedAddress}}</td>
+        <td>{{allowance.miles}}</td>
+        <td>{{allowance.mileageRate}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
         <td></td>
-        <td class="bold">{{app.mileageAllowance | currency}}<span ng-if="displayRequirements">*</span></td>
+        <td class="bold">{{app.mileageAllowance.totalMileageAllowance | currency}}<span ng-if="displayRequirements">*</span></td>
       </tr>
       </tbody>
     </table>

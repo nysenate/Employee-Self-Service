@@ -13,6 +13,9 @@ function mileageDetailsModalCtrl($scope, modals) {
     $scope.app = modals.params().app;
     $scope.legs = $scope.app.route.outboundLegs.concat($scope.app.route.returnLegs);
 
+    $scope.mileageAllowances = $scope.app.mileageAllowance.outboundAllowances.concat(
+        $scope.app.mileageAllowance.returnAllowances);
+
     $scope.closeModal = function() {
         modals.resolve();
     };

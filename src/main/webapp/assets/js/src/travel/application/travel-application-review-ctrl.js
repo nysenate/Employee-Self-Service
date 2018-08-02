@@ -59,7 +59,7 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
         var destinations = $scope.reviewApp.accommodations;
         var origin = $scope.reviewApp.route.origin.formattedAddress;
         var waypoints = [];
-        angular.forEach(destinations, function (dest, index) {
+        angular.forEach(destinations.destinations, function (dest, index) {
             waypoints.push({location: dest.address.formattedAddress});
         });
         // Last destination should be destination param, not waypoint.

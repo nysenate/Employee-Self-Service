@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.uncompleted;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.destination.Destination;
 
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * A Data Transfer Object, used to accept front end model data from the
  * travel application expenses page.
  *
- * This data is used to update {@link gov.nysenate.ess.travel.accommodation.Accommodation} and allowances.
+ * This data is used to update {@link Destination} and allowances.
  */
 public class ExpensesDtoView implements ViewObject {
 

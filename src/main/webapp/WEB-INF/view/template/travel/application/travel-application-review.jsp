@@ -129,8 +129,8 @@
           Meals:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.mealAllowance | currency}}
-          <span ng-if="reviewApp.mealAllowance > 0"
+          {{reviewApp.mealAllowance.totalMealAllowance | currency}}
+          <span ng-if="reviewApp.mealAllowance.totalMealAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMealDetails()"
                 title="View detailed meal expense info">
@@ -140,8 +140,8 @@
           Lodging:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.lodgingAllowance | currency}}
-          <span ng-if="reviewApp.lodgingAllowance > 0"
+          {{reviewApp.lodgingAllowance.totalLodgingAllowance | currency}}
+          <span ng-if="reviewApp.lodgingAllowance.totalLodgingAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayLodgingDetails()"
                 title="View detailed lodging expense info">
@@ -151,8 +151,8 @@
           Mileage:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.route.mileageAllowance | currency}}
-          <span ng-if="reviewApp.mileageAllowance > 0"
+          {{reviewApp.mileageAllowance.totalMileageAllowance | currency}}
+          <span ng-if="reviewApp.mileageAllowance.totalMileageAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMileageDetails()"
                 title="View detailed mileage expense info">

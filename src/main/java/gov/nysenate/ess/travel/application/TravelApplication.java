@@ -1,9 +1,13 @@
 package gov.nysenate.ess.travel.application;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.travel.MileageAllowances;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
+import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
+import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.utils.Dollars;
-import gov.nysenate.ess.travel.accommodation.Accommodation;
 import gov.nysenate.ess.travel.route.Route;
 
 import java.time.LocalDate;
@@ -17,9 +21,12 @@ public class TravelApplication {
     private long id;
     private Employee traveler;
     private Employee submitter;
-    private ImmutableList<Accommodation> accommodations;
-    private Route route;
     private String purposeOfTravel;
+    private Route route;
+    private Destinations destinations;
+    private MileageAllowances mileageAllowances;
+    private MealAllowances mealAllowances;
+    private LodgingAllowances lodgingAllowances;
     private Dollars tolls;
     private Dollars parking;
     private Dollars alternate; // Bus, subway, and train.
@@ -31,9 +38,12 @@ public class TravelApplication {
         this.id = id;
         this.traveler = Objects.requireNonNull(traveler, "Travel Application requires non null traveler.");
         this.submitter = Objects.requireNonNull(submitter, "Travel Application requires non null submitter.");
-        this.accommodations = ImmutableList.of();
-        this.route = Route.EMPTY_ROUTE;
         this.purposeOfTravel = "";
+        this.route = Route.EMPTY_ROUTE;
+        this.destinations = new Destinations(ImmutableList.of());
+        this.mileageAllowances = new MileageAllowances(Lists.newArrayList(), Lists.newArrayList());
+        this.mealAllowances = new MealAllowances(Lists.newArrayList());
+        this.lodgingAllowances = new LodgingAllowances(Lists.newArrayList());
         this.tolls = Dollars.ZERO;
         this.parking = Dollars.ZERO;
         this.alternate = Dollars.ZERO;
@@ -45,14 +55,14 @@ public class TravelApplication {
      * @return The travel start date or {@code null} if no destinations.
      */
     public LocalDate startDate() {
-        return getAccommodations().size() > 0 ? getAccommodations().get(0).arrivalDate() : null;
+        return getRoute().startDate();
     }
 
     /**
      * @return The travel end date or {@code null} if no destinations.
      */
     public LocalDate endDate() {
-        return getAccommodations().size() > 0 ? getAccommodations().reverse().get(0).departureDate() : null;
+        return getRoute().endDate();
     }
 
     /**
@@ -60,9 +70,7 @@ public class TravelApplication {
      * @return
      */
     public Dollars lodgingAllowance() {
-        return getAccommodations().stream()
-                .map(Accommodation::lodgingAllowance)
-                .reduce(Dollars.ZERO, Dollars::add);
+        return getLodgingAllowances().totalAllowance();
     }
 
     /**
@@ -70,9 +78,7 @@ public class TravelApplication {
      * @return
      */
     public Dollars mealAllowance() {
-        return getAccommodations().stream()
-                .map(Accommodation::mealAllowance)
-                .reduce(Dollars.ZERO, Dollars::add);
+        return getMealAllowances().totalAllowance();
     }
 
     /**
@@ -80,7 +86,7 @@ public class TravelApplication {
      * @return
      */
     public Dollars mileageAllowance() {
-        return getRoute().mileageAllowance();
+        return getMileageAllowances().totalAllowance();
     }
 
     /**
@@ -113,29 +119,52 @@ public class TravelApplication {
         return submitter;
     }
 
-    public ImmutableList<Accommodation> getAccommodations() {
-        return accommodations;
+    public String getPurposeOfTravel() {
+        return purposeOfTravel;
     }
 
-    public void setAccommodations(List<Accommodation> accommodations) {
-        Objects.requireNonNull(accommodations);
-        this.accommodations = ImmutableList.copyOf(accommodations);
+    public void setPurposeOfTravel(String purposeOfTravel) {
+        this.purposeOfTravel = purposeOfTravel;
     }
 
     public Route getRoute() {
         return route;
     }
 
-    public void setRoute(Route route) {
-        this.route = Objects.requireNonNull(route);
+    protected void setRoute(Route route) {
+        this.route = route;
     }
 
-    public String getPurposeOfTravel() {
-        return purposeOfTravel;
+    public Destinations getDestinations() {
+        return destinations;
     }
 
-    public void setPurposeOfTravel(String purposeOfTravel) {
-        this.purposeOfTravel = Objects.requireNonNull(purposeOfTravel);
+    protected void setDestinations(Destinations destinations) {
+        this.destinations = destinations;
+    }
+
+    public MileageAllowances getMileageAllowances() {
+        return mileageAllowances;
+    }
+
+    protected void setMileageAllowances(MileageAllowances mileageAllowances) {
+        this.mileageAllowances = mileageAllowances;
+    }
+
+    public MealAllowances getMealAllowances() {
+        return mealAllowances;
+    }
+
+    protected void setMealAllowances(MealAllowances mealAllowances) {
+        this.mealAllowances = mealAllowances;
+    }
+
+    public LodgingAllowances getLodgingAllowances() {
+        return lodgingAllowances;
+    }
+
+    protected void setLodgingAllowances(LodgingAllowances lodgingAllowances) {
+        this.lodgingAllowances = lodgingAllowances;
     }
 
     public Dollars getTolls() {
@@ -143,7 +172,7 @@ public class TravelApplication {
     }
 
     public void setTolls(Dollars tolls) {
-        this.tolls = Objects.requireNonNull(tolls);
+        this.tolls = tolls;
     }
 
     public Dollars getParking() {
@@ -151,7 +180,7 @@ public class TravelApplication {
     }
 
     public void setParking(Dollars parking) {
-        this.parking = Objects.requireNonNull(parking);
+        this.parking = parking;
     }
 
     public Dollars getAlternate() {
@@ -159,7 +188,7 @@ public class TravelApplication {
     }
 
     public void setAlternate(Dollars alternate) {
-        this.alternate = Objects.requireNonNull(alternate);
+        this.alternate = alternate;
     }
 
     public Dollars getRegistration() {
@@ -167,7 +196,7 @@ public class TravelApplication {
     }
 
     public void setRegistration(Dollars registration) {
-        this.registration = Objects.requireNonNull(registration);
+        this.registration = registration;
     }
 
     public LocalDateTime getSubmittedDateTime() {
@@ -175,7 +204,7 @@ public class TravelApplication {
     }
 
     public void setSubmittedDateTime(LocalDateTime submittedDateTime) {
-        this.submittedDateTime = Objects.requireNonNull(submittedDateTime);
+        this.submittedDateTime = submittedDateTime;
     }
 
     public List<TravelAttachment> getAttachments() {

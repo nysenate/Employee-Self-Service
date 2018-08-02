@@ -14,7 +14,7 @@ public class MealTierTest {
     @Test
     public void senateRateIsTierTotal() {
         MealTier tier = new MealTier("50", "10", "15", "20", "5");
-        assertEquals(new Dollars("50.00"), tier.allowance());
+        assertEquals(new Dollars("50.00"), tier.total());
     }
 
     @Test

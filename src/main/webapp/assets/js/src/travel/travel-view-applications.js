@@ -61,7 +61,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     };
 
     $scope.shortAddress = function(app) {
-        var addr = app.accommodations[0].address;
+        var addr = app.accommodations.destinations[0].address;
         return addr.city || addr.county || addr.addr1;
     };
 

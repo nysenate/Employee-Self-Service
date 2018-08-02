@@ -21,13 +21,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/application")
 public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private TravelApplicationFactory applicationFactory;
     @Autowired private InMemoryTravelAppDao appDao;
 
     // TODO Temporary for testing

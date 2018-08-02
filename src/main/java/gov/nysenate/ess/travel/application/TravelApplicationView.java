@@ -3,7 +3,12 @@ package gov.nysenate.ess.travel.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.accommodation.AccommodationView;
+import gov.nysenate.ess.travel.MileageAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
+import gov.nysenate.ess.travel.application.destination.DestinationView;
+import gov.nysenate.ess.travel.application.destination.Destinations;
+import gov.nysenate.ess.travel.application.destination.DestinationsView;
 import gov.nysenate.ess.travel.route.RouteView;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -17,12 +22,12 @@ public class TravelApplicationView implements ViewObject {
     long id;
     DetailedEmployeeView traveler;
     DetailedEmployeeView submitter;
-    List<AccommodationView> accommodations;
-    RouteView route;
     String purposeOfTravel;
-    String mileageAllowance = "0";
-    String mealAllowance = "0";
-    String lodgingAllowance = "0";
+    RouteView route;
+    DestinationsView accommodations;
+    MileageAllowancesView mileageAllowance;
+    MealAllowancesView mealAllowance;
+    LodgingAllowancesView lodgingAllowance;
     String tollsAllowance = "0";
     String parkingAllowance = "0";
     String alternateAllowance = "0";
@@ -40,14 +45,12 @@ public class TravelApplicationView implements ViewObject {
         id = app.getId();
         traveler = new DetailedEmployeeView(app.getTraveler());
         submitter = new DetailedEmployeeView(app.getSubmitter());
-        accommodations = app.getAccommodations().stream()
-                .map(AccommodationView::new)
-                .collect(Collectors.toList());
-        route = new RouteView(app.getRoute());
         purposeOfTravel = app.getPurposeOfTravel();
-        mileageAllowance = app.mileageAllowance().toString();
-        mealAllowance = app.mealAllowance().toString();
-        lodgingAllowance = app.lodgingAllowance().toString();
+        route = new RouteView(app.getRoute());
+        accommodations = new DestinationsView(app.getDestinations());
+        mileageAllowance = new MileageAllowancesView(app.getMileageAllowances());
+        mealAllowance = new MealAllowancesView(app.getMealAllowances());
+        lodgingAllowance = new LodgingAllowancesView(app.getLodgingAllowances());
         tollsAllowance = app.getTolls().toString();
         parkingAllowance = app.getParking().toString();
         alternateAllowance = app.getAlternate().toString();
@@ -62,12 +65,15 @@ public class TravelApplicationView implements ViewObject {
     public TravelApplication toTravelApplication() {
         TravelApplication app = new TravelApplication(id, traveler.toEmployee(), submitter.toEmployee());
         if (accommodations != null) {
-            app.setAccommodations(accommodations.stream().map(AccommodationView::toAccommodation).collect(Collectors.toList()));
+            app.setDestinations(this.accommodations.toDestinations());
         }
         if (route != null) {
             app.setRoute(route.toRoute());
         }
         app.setPurposeOfTravel(purposeOfTravel);
+        app.setMileageAllowances(mileageAllowance.toMileageAllowanceView());
+        app.setMealAllowances(mealAllowance.toMealAllowances());
+        app.setLodgingAllowances(lodgingAllowance.toLodgingAllowances());
         app.setTolls(new Dollars(tollsAllowance));
         app.setParking(new Dollars(parkingAllowance));
         app.setAlternate(new Dollars(alternateAllowance));
@@ -100,11 +106,11 @@ public class TravelApplicationView implements ViewObject {
         this.submitter = submitter;
     }
 
-    public List<AccommodationView> getAccommodations() {
+    public DestinationsView getAccommodations() {
         return accommodations;
     }
 
-    public void setAccommodations(List<AccommodationView> accommodations) {
+    public void setAccommodations(DestinationsView accommodations) {
         this.accommodations = accommodations;
     }
 
@@ -124,28 +130,32 @@ public class TravelApplicationView implements ViewObject {
         this.purposeOfTravel = purposeOfTravel;
     }
 
-    public String getMileageAllowance() {
+    public MileageAllowancesView getMileageAllowance() {
         return mileageAllowance;
     }
 
-    public void setMileageAllowance(String mileageAllowance) {
+    public void setMileageAllowance(MileageAllowancesView mileageAllowance) {
         this.mileageAllowance = mileageAllowance;
     }
 
-    public String getMealAllowance() {
+    public MealAllowancesView getMealAllowance() {
         return mealAllowance;
     }
 
-    public void setMealAllowance(String mealAllowance) {
+    public void setMealAllowance(MealAllowancesView mealAllowance) {
         this.mealAllowance = mealAllowance;
     }
 
-    public String getLodgingAllowance() {
+    public LodgingAllowancesView getLodgingAllowance() {
         return lodgingAllowance;
     }
 
-    public void setLodgingAllowance(String lodgingAllowance) {
+    public void setLodgingAllowance(LodgingAllowancesView lodgingAllowance) {
         this.lodgingAllowance = lodgingAllowance;
+    }
+
+    public void setAttachments(List<TravelAttachmentView> attachments) {
+        this.attachments = attachments;
     }
 
     public String getTollsAllowance() {
