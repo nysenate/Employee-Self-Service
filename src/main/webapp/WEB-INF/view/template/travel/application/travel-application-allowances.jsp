@@ -36,7 +36,7 @@
             <label class="travel-allowance-label">Registration Fee: $</label>
             <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
           </div>
-          <div class="col-6-12">
+          <div class="col-6-12" ng-if="false">
             <label class="travel-allowance-label">Train/Airplane: $</label>
             <input ng-model="allowances.trailAirplaneStub" type="number" step="0.01" min="0" style="width: 5em;">
           </div>

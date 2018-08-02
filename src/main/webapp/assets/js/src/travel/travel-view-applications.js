@@ -27,7 +27,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
 
         function onSuccess (resp) {
             parseResponse(resp);
-            applyFilters();
+            $scope.applyFilters();
             sort($scope.apps.filtered);
         }
 
@@ -39,13 +39,13 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
         }
     }
 
-    function applyFilters() {
+    $scope.applyFilters = function () {
         $scope.apps.filtered = angular.copy($scope.apps.all);
         $scope.apps.filtered = $scope.apps.filtered.filter(function (app) {
             return Date.parse(app.startDate) >= Date.parse($scope.date.from) &&
                 Date.parse(app.startDate) <= Date.parse($scope.date.to)
         });
-    }
+    };
 
     function sort(apps) {
         apps.sort(function(a, b) {
