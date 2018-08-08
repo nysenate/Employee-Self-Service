@@ -4,6 +4,8 @@ import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.addressvalidation.DistrictAssignmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,8 @@ public class MileageAllowanceService {
     @Autowired
     private EmployeeInfoService employeeInfoService;
 
+    private static final Logger logger = LoggerFactory.getLogger(MileageAllowanceService.class);
+
     public double calculateMileage(Address from, Address to) throws InterruptedException, ApiException, IOException {
         return googleMapsService.drivingDistance(from, to);
     }
@@ -36,6 +40,36 @@ public class MileageAllowanceService {
         return irsMileageRateDao.getIrsRate(date);
     }
 
+
+
+    public void ensureCurrentMileageRate() {
+        MileageRateScraper scraper = new MileageRateScraper();
+
+        try {
+            MileageRate scrapedRate = scraper.scrapeMileRates();
+
+            MileageRate currentRate = irsMileageRateDao.getCompleteIrsRate(LocalDate.now());
+
+            if ( !scrapedRate.getStartDate().isEqual(currentRate.getStartDate()) ) {
+
+                irsMileageRateDao.UpdateEndDate(currentRate.getStartDate(), scrapedRate.getEndDate());
+
+                irsMileageRateDao.insertIrsRate(
+                        scrapedRate.getStartDate().toString(),
+                        scrapedRate.getEndDate().toString(),
+                        scrapedRate.getRate());
+            }
+            else {
+                logger.info("The mileage rate did not change. No updates were made to the database");
+            }
+
+        }
+        catch (IOException e) {
+            logger.warn("Mileage rate scraping failed! \n" + e);
+        }
+
+
+    }
 
 //    /**
 //     * Calculates the {@link MileageAllowance} from a {@link Itinerary}.

@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
+import gov.nysenate.ess.travel.miles.MileageAllowanceService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class EssCachedLocationService implements LocationService, CachingService
     @Autowired private LocationDao locationDao;
     @Autowired private EventBus eventBus;
     @Autowired private EhCacheManageService cacheManageService;
+    @Autowired private MileageAllowanceService allowanceService;
     private volatile Cache locationCache;
 
     private static final class LocationCacheTree {
@@ -154,4 +156,10 @@ public class EssCachedLocationService implements LocationService, CachingService
         logger.info("Done caching locations.");
     }
 
+    @Scheduled(cron = "${cache.cron.mileage.rate}")
+
+    private void cacheMileageRate() {
+        logger.info("Caching Mileage Rate...");
+        allowanceService.ensureCurrentMileageRate();
+    }
 }
