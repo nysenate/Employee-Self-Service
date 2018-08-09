@@ -6,7 +6,7 @@
   <form novalidate name="outbound.form" id="outboundForm">
 
     <div ng-if="outbound.form.$submitted && !outbound.form.$valid" class="margin-10">
-      <ess-notification level="error" title="Outbound segments have errors" message="Fix the highlighted fields below.">
+      <ess-notification level="error" title="Outbound segments have errors" message="Fix the highlighted fields below. Addresses require a zip code.">
       </ess-notification>
     </div>
 

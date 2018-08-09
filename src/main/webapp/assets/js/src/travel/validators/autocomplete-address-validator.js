@@ -22,11 +22,16 @@ essTravel.directive('autocompleteAddressValidator', function () {
 
             });
             ctrl.$validators.addressValidator = function (modelValue, viewValue) {
+
+                // Parse the ng-model attribute to determine if we should validate the 'to' or 'from' address.
+                var address = $scope.leg[attrs.ngModel.split('.')[1]];
+
                 if (!modelValue) {
                     return false;
                 }
-                // Parse the ng-model attribute to determine if we should validate the 'to' or 'from' address.
-                var address = $scope.leg[attrs.ngModel.split('.')[1]];
+                if (!address.zip5) {
+                    return false;
+                }
                 if (address.addr1) {
                     return true;
                 }
