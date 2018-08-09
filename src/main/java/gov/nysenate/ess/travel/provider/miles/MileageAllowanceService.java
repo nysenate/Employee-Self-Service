@@ -7,6 +7,7 @@ import gov.nysenate.ess.travel.provider.addressvalidation.DistrictAssignmentServ
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -37,38 +38,29 @@ public class MileageAllowanceService {
 
     // TODO Use Dollars
     public BigDecimal getIrsRate(LocalDate date) {
-        return irsMileageRateDao.getIrsRate(date);
+        return irsMileageRateDao.getMileageRate(date).getRate();
     }
-
-
 
     public void ensureCurrentMileageRate() {
         MileageRateScraper scraper = new MileageRateScraper();
-
         try {
             MileageRate scrapedRate = scraper.scrapeMileRates();
-
-            MileageRate currentRate = irsMileageRateDao.getCompleteIrsRate(LocalDate.now());
-
-            if ( !scrapedRate.getStartDate().isEqual(currentRate.getStartDate()) ) {
-
-                irsMileageRateDao.UpdateEndDate(currentRate.getStartDate(), scrapedRate.getEndDate());
-
-                irsMileageRateDao.insertIrsRate(
-                        scrapedRate.getStartDate().toString(),
-                        scrapedRate.getEndDate().toString(),
-                        scrapedRate.getRate());
-            }
-            else {
+            MileageRate currentRate = irsMileageRateDao.getMileageRate(LocalDate.now());
+            if (!scrapedRate.getStartDate().isEqual(currentRate.getStartDate())) {
+                irsMileageRateDao.updateEndDate(currentRate.getStartDate(), scrapedRate.getStartDate().minusDays(1));
+                irsMileageRateDao.insertIrsRate(scrapedRate);
+            } else {
                 logger.info("The mileage rate did not change. No updates were made to the database");
             }
-
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             logger.warn("Mileage rate scraping failed! \n" + e);
         }
+    }
 
-
+    @Scheduled(cron = "${cache.cron.mileage.rate:0 0 0 * * *}")
+    private void cacheMileageRate() {
+        logger.info("Scraping Mileage Rates...");
+        ensureCurrentMileageRate();
     }
 
 //    /**

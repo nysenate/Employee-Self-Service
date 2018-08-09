@@ -16,52 +16,40 @@ import java.time.LocalDate;
 @Repository
 public class IrsMileageRateDao extends SqlBaseDao {
 
-    public void insertIrsRate(String startDate, String endDate, String rate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("rate", rate);
-        params.addValue("startDate", Date.valueOf(startDate));
-        params.addValue("endDate", Date.valueOf(endDate));
-        String sql = IrsMileageRateDao.SqlIrsRateQuery.INSERT_IRS_RATE.getSql(schemaMap());
+    public void insertIrsRate(MileageRate mileageRate) {
+        MapSqlParameterSource params = new MapSqlParameterSource("rate", mileageRate.getRate());
+        params.addValue("startDate", mileageRate.getStartDate());
+        params.addValue("endDate", mileageRate.getEndDate());
+        String sql = IrsMileageRateDao.SqlIrsRateQuery.INSERT_MILEAGE_RATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
-    public BigDecimal getIrsRate(LocalDate date) {
-        MapSqlParameterSource params = new MapSqlParameterSource("date", Date.valueOf(date));
-        String sql = IrsMileageRateDao.SqlIrsRateQuery.GET_IRS_RATE.getSql(schemaMap());
-        IrsMileageRateDao.IrsRateMapper mapper = new IrsRateMapper();
-        return localNamedJdbc.queryForObject(sql, params, mapper);
-    }
-
-    public void UpdateEndDate(LocalDate oldStartDate, LocalDate newEndDate) {
+    public void updateEndDate(LocalDate oldStartDate, LocalDate newEndDate) {
         MapSqlParameterSource params = new MapSqlParameterSource("old_start_date", Date.valueOf(oldStartDate));
         params.addValue("new_end_date", Date.valueOf(newEndDate));
         String sql = SqlIrsRateQuery.UPDATE_END_DATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
-    public MileageRate getCompleteIrsRate(LocalDate startDate) {
+    public MileageRate getMileageRate(LocalDate startDate) {
         MapSqlParameterSource params = new MapSqlParameterSource("date", Date.valueOf(startDate));
-        String sql = SqlIrsRateQuery.GET_COMPLETE_IRS_RATE.getSql(schemaMap());
+        String sql = SqlIrsRateQuery.GET_MILEAGE_RATE.getSql(schemaMap());
         IrsMileageRateDao.MileageRateMapper mapper = new MileageRateMapper();
         return localNamedJdbc.queryForObject(sql, params, mapper);
     }
 
     private enum SqlIrsRateQuery implements BasicSqlQuery {
 
-        INSERT_IRS_RATE(
+        INSERT_MILEAGE_RATE(
                 "INSERT INTO ${travelSchema}.irs_mileage_rate\n" +
                         "VALUES (:startDate, :endDate, :rate)"
-        ),
-        GET_IRS_RATE(
-                "SELECT irs_mileage_rate.rate\n" +
-                        "FROM ${travelSchema}.irs_mileage_rate\n" +
-                        "WHERE :date BETWEEN start_date and end_date"
         ),
         UPDATE_END_DATE (
                 "UPDATE ${travelSchema}.irs_mileage_rate\n" +
                         "set end_date = :new_end_date\n" +
                         "where start_date = :old_start_date;"
         ),
-        GET_COMPLETE_IRS_RATE(
+        GET_MILEAGE_RATE(
                 "SELECT m.start_date, m.end_date, m.rate \n " +
                         "FROM ${travelSchema}.irs_mileage_rate m \n " +
                         "WHERE :date BETWEEN m.start_date and m.end_date"
@@ -81,14 +69,6 @@ public class IrsMileageRateDao extends SqlBaseDao {
         @Override
         public DbVendor getVendor() {
             return DbVendor.POSTGRES;
-        }
-    }
-
-    private class IrsRateMapper extends BaseRowMapper<BigDecimal> {
-
-        @Override
-        public BigDecimal mapRow(ResultSet resultSet, int i) throws SQLException {
-            return new BigDecimal(resultSet.getString("rate"));
         }
     }
 

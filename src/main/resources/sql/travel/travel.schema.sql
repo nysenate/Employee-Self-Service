@@ -56,7 +56,7 @@ COMMENT ON COLUMN travel.irs_mileage_rate.start_date IS 'The effective start dat
 -- Name: COLUMN irs_mileage_rate.end_date; Type: COMMENT; Schema: travel; Owner: postgres
 --
 
-COMMENT ON COLUMN travel.irs_mileage_rate.end_date IS 'The effective end date of this mileage rate, inclusinve.';
+COMMENT ON COLUMN travel.irs_mileage_rate.end_date IS 'The effective end date of this mileage rate, inclusive.';
 
 
 --

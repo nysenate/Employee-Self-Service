@@ -31,7 +31,6 @@ public class EssCachedLocationService implements LocationService, CachingService
     @Autowired private LocationDao locationDao;
     @Autowired private EventBus eventBus;
     @Autowired private EhCacheManageService cacheManageService;
-    @Autowired private MileageAllowanceService allowanceService;
     private volatile Cache locationCache;
 
     private static final class LocationCacheTree {
@@ -142,7 +141,7 @@ public class EssCachedLocationService implements LocationService, CachingService
         return element;
     }
 
-    @Scheduled(cron = "${cache.cron.location}")
+    @Scheduled(cron = "${cache.cron.location:0 0 0 * * *}")
     private void cacheLocations() {
         logger.info("Caching Locations...");
         locationCache.acquireWriteLockOnKey(LOCATION_CACHE_KEY);
@@ -156,10 +155,5 @@ public class EssCachedLocationService implements LocationService, CachingService
         logger.info("Done caching locations.");
     }
 
-    @Scheduled(cron = "${cache.cron.mileage.rate}")
 
-    private void cacheMileageRate() {
-        logger.info("Caching Mileage Rate...");
-        allowanceService.ensureCurrentMileageRate();
-    }
 }
