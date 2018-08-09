@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.admin;
 
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
+import gov.nysenate.ess.travel.provider.miles.MileageRateView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,8 +15,8 @@ public class MileageRateCtrl {
     MileageAllowanceService allowanceService;
 
     @RequestMapping(value = "")
-    public void updateMileageRate() {
-        allowanceService.ensureCurrentMileageRate();
+    public MileageRateView updateMileageRate() {
+        return new MileageRateView( allowanceService.ensureCurrentMileageRate());
     }
 
 }

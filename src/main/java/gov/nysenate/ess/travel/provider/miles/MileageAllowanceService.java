@@ -41,7 +41,7 @@ public class MileageAllowanceService {
         return irsMileageRateDao.getMileageRate(date).getRate();
     }
 
-    public void ensureCurrentMileageRate() {
+    public MileageRate ensureCurrentMileageRate() {
         MileageRateScraper scraper = new MileageRateScraper();
         try {
             MileageRate scrapedRate = scraper.scrapeMileRates();
@@ -52,8 +52,10 @@ public class MileageAllowanceService {
             } else {
                 logger.info("The mileage rate did not change. No updates were made to the database");
             }
+            return scrapedRate;
         } catch (IOException e) {
             logger.warn("Mileage rate scraping failed! \n" + e);
+            return null;
         }
     }
 
