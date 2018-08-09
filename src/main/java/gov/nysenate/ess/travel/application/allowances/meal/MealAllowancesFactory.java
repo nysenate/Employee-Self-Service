@@ -3,8 +3,8 @@ package gov.nysenate.ess.travel.application.allowances.meal;
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.travel.application.destination.Destination;
 import gov.nysenate.ess.travel.application.destination.Destinations;
-import gov.nysenate.ess.travel.gsa.GsaAllowanceService;
-import gov.nysenate.ess.travel.meal.MealTier;
+import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
+import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

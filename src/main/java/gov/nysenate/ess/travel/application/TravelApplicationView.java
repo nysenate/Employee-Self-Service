@@ -3,13 +3,11 @@ package gov.nysenate.ess.travel.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.MileageAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
-import gov.nysenate.ess.travel.application.destination.DestinationView;
-import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.application.destination.DestinationsView;
-import gov.nysenate.ess.travel.route.RouteView;
+import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.List;

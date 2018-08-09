@@ -2,8 +2,8 @@ package gov.nysenate.ess.travel.application.destination;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.route.Leg;
-import gov.nysenate.ess.travel.route.Route;
+import gov.nysenate.ess.travel.application.route.Leg;
+import gov.nysenate.ess.travel.application.route.Route;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

@@ -3,12 +3,12 @@ package gov.nysenate.ess.travel.application;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.MileageAllowances;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowances;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
 import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.utils.Dollars;
-import gov.nysenate.ess.travel.route.Route;
+import gov.nysenate.ess.travel.application.route.Route;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

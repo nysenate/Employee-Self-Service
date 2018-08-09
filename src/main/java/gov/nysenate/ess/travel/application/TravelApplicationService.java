@@ -2,16 +2,16 @@ package gov.nysenate.ess.travel.application;
 
 import com.google.common.collect.Lists;
 import com.google.maps.errors.ApiException;
-import gov.nysenate.ess.travel.MileageAllowanceFactory;
-import gov.nysenate.ess.travel.MileageAllowances;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowanceFactory;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowances;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesFactory;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesFactory;
 import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.application.destination.DestinationsFactory;
-import gov.nysenate.ess.travel.route.Leg;
-import gov.nysenate.ess.travel.route.Route;
+import gov.nysenate.ess.travel.application.route.Leg;
+import gov.nysenate.ess.travel.application.route.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

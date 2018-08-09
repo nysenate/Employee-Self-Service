@@ -3,7 +3,7 @@ package gov.nysenate.ess.travel.application.allowances.meal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.meal.MealTierView;
+import gov.nysenate.ess.travel.provider.gsa.meal.MealTierView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

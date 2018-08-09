@@ -7,7 +7,7 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
-import gov.nysenate.ess.travel.miles.MileageAllowanceService;
+import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;

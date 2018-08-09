@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.meal.MealTier;
+import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;

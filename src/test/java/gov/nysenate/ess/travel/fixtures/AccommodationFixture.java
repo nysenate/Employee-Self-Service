@@ -1,12 +1,7 @@
 package gov.nysenate.ess.travel.fixtures;
 
-import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
-import gov.nysenate.ess.travel.application.destination.Destination;
-import gov.nysenate.ess.travel.accommodation.Day;
-import gov.nysenate.ess.travel.accommodation.Night;
-import gov.nysenate.ess.travel.meal.MealTier;
+import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 
 import java.time.LocalDate;
 
@@ -20,15 +15,15 @@ public class AccommodationFixture {
 //    public static Destination twoDayOneNightAccommodation() {
 //        return new Destination(new Address(), twoDayStays(), oneNightStay());
 //    }
-
-    public static ImmutableSet<Day> twoDayStays() {
-        Day dayOne = new Day(MONDAY, TIER, true);
-        Day dayTwo = new Day(TUESDAY, TIER, true);
-        return ImmutableSet.of(dayTwo, dayOne);
-    }
-
-    public static ImmutableSet<Night> oneNightStay() {
-        Night night = new Night(TUESDAY, LODGING_RATE, true);
-        return ImmutableSet.of(night);
-    }
+//
+//    public static ImmutableSet<Day> twoDayStays() {
+//        Day dayOne = new Day(MONDAY, TIER, true);
+//        Day dayTwo = new Day(TUESDAY, TIER, true);
+//        return ImmutableSet.of(dayTwo, dayOne);
+//    }
+//
+//    public static ImmutableSet<Night> oneNightStay() {
+//        Night night = new Night(TUESDAY, LODGING_RATE, true);
+//        return ImmutableSet.of(night);
+//    }
 }

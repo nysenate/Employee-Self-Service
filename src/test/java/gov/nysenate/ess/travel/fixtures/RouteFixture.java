@@ -2,10 +2,9 @@ package gov.nysenate.ess.travel.fixtures;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.route.Leg;
-import gov.nysenate.ess.travel.route.MethodOfTravel;
-import gov.nysenate.ess.travel.route.ModeOfTransportation;
-import gov.nysenate.ess.travel.route.Route;
+import gov.nysenate.ess.travel.application.route.Leg;
+import gov.nysenate.ess.travel.application.route.ModeOfTransportation;
+import gov.nysenate.ess.travel.application.route.Route;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
