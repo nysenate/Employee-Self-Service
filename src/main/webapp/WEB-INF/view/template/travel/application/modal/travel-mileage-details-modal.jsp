@@ -8,6 +8,7 @@
         <td>To</td>
         <td>Miles</td>
         <td>Rate</td>
+        <td>Allowance</td>
       </tr>
       </thead>
       <tbody>
@@ -16,10 +17,12 @@
         <td>{{allowance.leg.to.formattedAddress}}</td>
         <td>{{allowance.miles}}</td>
         <td>{{allowance.mileageRate}}</td>
+        <td>{{allowance.allowance | currency}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
+        <td class="bold">{{app.mileageAllowance.totalMiles}}</td>
         <td></td>
         <td class="bold">{{app.mileageAllowance.totalMileageAllowance | currency}}<span ng-if="displayRequirements">*</span></td>
       </tr>

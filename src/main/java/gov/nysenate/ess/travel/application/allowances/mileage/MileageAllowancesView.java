@@ -10,6 +10,7 @@ public class MileageAllowancesView implements ViewObject {
     List<MileageAllowanceView> outboundAllowances;
     List<MileageAllowanceView> returnAllowances;
     String totalMileageAllowance;
+    String totalMiles;
 
     public MileageAllowancesView() {
     }
@@ -22,6 +23,7 @@ public class MileageAllowancesView implements ViewObject {
                 .map(MileageAllowanceView::new)
                 .collect(Collectors.toList());
         this.totalMileageAllowance = mileageAllowances.totalAllowance().toString();
+        this.totalMiles = String.valueOf(mileageAllowances.totalMiles());
     }
 
     public MileageAllowances toMileageAllowanceView() {
@@ -43,6 +45,10 @@ public class MileageAllowancesView implements ViewObject {
 
     public String getTotalMileageAllowance() {
         return totalMileageAllowance;
+    }
+
+    public String getTotalMiles() {
+        return totalMiles;
     }
 
     @Override

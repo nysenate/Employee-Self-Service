@@ -29,6 +29,12 @@ public class MileageAllowances {
         }
     }
 
+    public double totalMiles() {
+        return Stream.concat(outboundAllowances.stream(), returnAllowances.stream())
+                .mapToDouble(MileageAllowance::getMiles)
+                .sum();
+    }
+
     private boolean qualifiesForReimbursement() {
         double outboundMiles = outboundAllowances.stream()
                 .mapToDouble(MileageAllowance::getMiles)
