@@ -29,7 +29,8 @@ public class TravelApplication {
     private LodgingAllowances lodgingAllowances;
     private Dollars tolls;
     private Dollars parking;
-    private Dollars alternate; // Bus, subway, and train.
+    private Dollars alternate; // taxi, bus, subway,
+    private Dollars trainAndAirplane; // Train or airplane expenses
     private Dollars registration;
     private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
     private List<TravelAttachment> attachments;
@@ -47,6 +48,7 @@ public class TravelApplication {
         this.tolls = Dollars.ZERO;
         this.parking = Dollars.ZERO;
         this.alternate = Dollars.ZERO;
+        this.trainAndAirplane = Dollars.ZERO;
         this.registration = Dollars.ZERO;
         this.attachments = new ArrayList<>();
     }
@@ -90,6 +92,14 @@ public class TravelApplication {
     }
 
     /**
+     * Get the total transportation allowance.
+     * @return
+     */
+    public Dollars transportationAllowance() {
+        return mileageAllowance().add(getTrainAndAirplane());
+    }
+
+    /**
      * Get the total allowance for this application.
      * @return
      */
@@ -100,6 +110,7 @@ public class TravelApplication {
                 .add(getTolls())
                 .add(getParking())
                 .add(getAlternate())
+                .add(getTrainAndAirplane())
                 .add(getRegistration());
     }
 
@@ -189,6 +200,14 @@ public class TravelApplication {
 
     public void setAlternate(Dollars alternate) {
         this.alternate = alternate;
+    }
+
+    public Dollars getTrainAndAirplane() {
+        return trainAndAirplane;
+    }
+
+    public void setTrainAndAirplane(Dollars trainAndAirplane) {
+        this.trainAndAirplane = trainAndAirplane;
     }
 
     public Dollars getRegistration() {

@@ -177,6 +177,12 @@
           {{reviewApp.alternateAllowance | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
+          Train/Airplane:
+        </div>
+        <div class="col-6-12 margin-bottom-5">
+          {{reviewApp.trainAndAirplaneAllowance | currency}}
+        </div>
+        <div class="col-6-12 margin-bottom-5">
           Registration Fee:
         </div>
         <div class="col-6-12 margin-bottom-5">

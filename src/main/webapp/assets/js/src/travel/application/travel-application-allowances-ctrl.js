@@ -14,7 +14,8 @@ function allowancesCtrl($scope, expensesApi, mealAllowancesApi, lodgingAllowance
             tollsAllowance: Number($scope.dirtyApp.tollsAllowance),
             parkingAllowance: Number($scope.dirtyApp.parkingAllowance),
             alternateAllowance: Number($scope.dirtyApp.alternateAllowance),
-            registrationAllowance: Number($scope.dirtyApp.registrationAllowance)
+            registrationAllowance: Number($scope.dirtyApp.registrationAllowance),
+            trainAndAirplaneAllowance: Number($scope.dirtyApp.trainAndAirplaneAllowance)
         };
     };
 

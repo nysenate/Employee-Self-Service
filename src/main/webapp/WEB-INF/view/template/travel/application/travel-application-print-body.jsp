@@ -108,7 +108,7 @@
 
     <div class="travel-print-allowances-box">
       <h4 style="margin: 0px 0px 5px 0px;">Estimated Travel Costs</h4>
-      <label>Transportation</label><span>{{(app.mileageAllowance.totalMileageAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Transportation</label><span>{{(app.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Food</label><span>{{(app.mealAllowance.totalMealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Lodging</label><span>{{(app.lodgingAllowance.totalLodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Parking/Tolls</label><span>{{(tollsAndParking() | currency) || NOT_AVAILABLE}}</span><br/>

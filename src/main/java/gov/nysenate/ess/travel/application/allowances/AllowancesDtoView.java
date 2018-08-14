@@ -8,6 +8,7 @@ public class AllowancesDtoView implements ViewObject {
     public String parkingAllowance;
     public String alternateAllowance;
     public String registrationAllowance;
+    public String trainAndAirplaneAllowance;
 
     public AllowancesDtoView() {
     }
@@ -26,6 +27,10 @@ public class AllowancesDtoView implements ViewObject {
 
     public String getRegistrationAllowance() {
         return registrationAllowance;
+    }
+
+    public String getTrainAndAirplaneAllowance() {
+        return trainAndAirplaneAllowance;
     }
 
     @Override

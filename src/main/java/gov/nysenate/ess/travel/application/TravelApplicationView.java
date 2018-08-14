@@ -29,8 +29,10 @@ public class TravelApplicationView implements ViewObject {
     String tollsAllowance = "0";
     String parkingAllowance = "0";
     String alternateAllowance = "0";
+    String trainAndAirplaneAllowance = "0";
     String registrationAllowance = "0";
     String totalAllowance = "0";
+    String transportationAllowance;
     String startDate;
     String endDate;
     String submittedDateTime;
@@ -52,8 +54,10 @@ public class TravelApplicationView implements ViewObject {
         tollsAllowance = app.getTolls().toString();
         parkingAllowance = app.getParking().toString();
         alternateAllowance = app.getAlternate().toString();
+        trainAndAirplaneAllowance = app.getTrainAndAirplane().toString();
         registrationAllowance = app.getRegistration().toString();
         totalAllowance = app.totalAllowance().toString();
+        transportationAllowance = app.transportationAllowance().toString();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
@@ -75,6 +79,7 @@ public class TravelApplicationView implements ViewObject {
         app.setTolls(new Dollars(tollsAllowance));
         app.setParking(new Dollars(parkingAllowance));
         app.setAlternate(new Dollars(alternateAllowance));
+        app.setTrainAndAirplane(new Dollars(trainAndAirplaneAllowance));
         app.setRegistration(new Dollars(registrationAllowance));
         app.setAttachments(attachments.stream().map(TravelAttachmentView::toTravelAttachment).collect(Collectors.toList()));
         return app;
@@ -178,6 +183,22 @@ public class TravelApplicationView implements ViewObject {
 
     public void setAlternateAllowance(String alternateAllowance) {
         this.alternateAllowance = alternateAllowance;
+    }
+
+    public String getTrainAndAirplaneAllowance() {
+        return trainAndAirplaneAllowance;
+    }
+
+    public void setTrainAndAirplaneAllowance(String trainAndAirplaneAllowance) {
+        this.trainAndAirplaneAllowance = trainAndAirplaneAllowance;
+    }
+
+    public String getTransportationAllowance() {
+        return transportationAllowance;
+    }
+
+    public void setTransportationAllowance(String transportationAllowance) {
+        this.transportationAllowance = transportationAllowance;
     }
 
     public String getRegistrationAllowance() {

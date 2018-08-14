@@ -175,6 +175,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         appView.setParkingAllowance(allowancesDto.parkingAllowance);
         appView.setAlternateAllowance(allowancesDto.alternateAllowance);
         appView.setRegistrationAllowance(allowancesDto.registrationAllowance);
+        appView.setTrainAndAirplaneAllowance(allowancesDto.trainAndAirplaneAllowance);
 
         TravelApplication app = appView.toTravelApplication();
         appView = new TravelApplicationView(app);
