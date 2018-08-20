@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.provider.gsa.meal;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a single row in the GSA Meals and Incidental Expenses breakdown
@@ -10,13 +11,15 @@ import java.util.Objects;
  */
 public class MealTier implements Comparable<MealTier> {
 
+    private final UUID id;
     private final String tier; // Also known as M&IE Total.
     private final Dollars breakfast;
     private final Dollars lunch;
     private final Dollars dinner;
     private final Dollars incidental;
 
-    public MealTier(String tier, String breakfast, String lunch, String dinner, String incidental) {
+    public MealTier(UUID id, String tier, String breakfast, String lunch, String dinner, String incidental) {
+        this.id = id;
         this.tier = tier;
         this.breakfast = new Dollars(breakfast);
         this.lunch = new Dollars(lunch);
@@ -32,6 +35,10 @@ public class MealTier implements Comparable<MealTier> {
      */
     public Dollars total() {
         return getBreakfast().add(getLunch()).add(getDinner()).add(getIncidental());
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     protected String getTier() {
@@ -57,7 +64,8 @@ public class MealTier implements Comparable<MealTier> {
     @Override
     public String toString() {
         return "MealTier{" +
-                "tier='" + tier + '\'' +
+                "id=" + id +
+                ", tier='" + tier + '\'' +
                 ", breakfast=" + breakfast +
                 ", lunch=" + lunch +
                 ", dinner=" + dinner +

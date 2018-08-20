@@ -15,10 +15,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class TravelApplication {
 
-    private long id;
+    private UUID id;
+    private UUID versionId;
     private Employee traveler;
     private Employee submitter;
     private String purposeOfTravel;
@@ -33,10 +35,14 @@ public class TravelApplication {
     private Dollars trainAndAirplane; // Train or airplane expenses
     private Dollars registration;
     private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
+    private LocalDateTime modifiedDateTime; // DateTime this app was last updated.
+    private Employee modifiedBy; // The last employee to modify.
     private List<TravelAttachment> attachments;
+    private boolean isDeleted;
 
-    public TravelApplication(long id, Employee traveler, Employee submitter) {
+    public TravelApplication(UUID id, UUID versionId, Employee traveler, Employee submitter) {
         this.id = id;
+        this.versionId = versionId;
         this.traveler = Objects.requireNonNull(traveler, "Travel Application requires non null traveler.");
         this.submitter = Objects.requireNonNull(submitter, "Travel Application requires non null submitter.");
         this.purposeOfTravel = "";
@@ -51,6 +57,7 @@ public class TravelApplication {
         this.trainAndAirplane = Dollars.ZERO;
         this.registration = Dollars.ZERO;
         this.attachments = new ArrayList<>();
+        this.isDeleted = false;
     }
 
     /**
@@ -114,12 +121,16 @@ public class TravelApplication {
                 .add(getRegistration());
     }
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public UUID getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(UUID versionId) {
+        this.versionId = versionId;
     }
 
     public Employee getTraveler() {
@@ -222,8 +233,24 @@ public class TravelApplication {
         return submittedDateTime;
     }
 
-    public void setSubmittedDateTime(LocalDateTime submittedDateTime) {
+    protected void setSubmittedDateTime(LocalDateTime submittedDateTime) {
         this.submittedDateTime = submittedDateTime;
+    }
+
+    public LocalDateTime getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    protected void setModifiedDateTime(LocalDateTime modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public Employee getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(Employee modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
     public List<TravelAttachment> getAttachments() {
@@ -240,5 +267,13 @@ public class TravelApplication {
 
     public void deleteAttachment(String attachmentId) {
         getAttachments().removeIf(a -> a.getId().equals(attachmentId));
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 }

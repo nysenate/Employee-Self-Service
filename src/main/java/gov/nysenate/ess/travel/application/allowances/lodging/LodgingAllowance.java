@@ -1,19 +1,22 @@
 package gov.nysenate.ess.travel.application.allowances.lodging;
 
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 public class LodgingAllowance {
 
-    private final Address address;
+    private final UUID id;
+    private final TravelAddress address;
     private final LocalDate date;
     private final Dollars lodgingRate;
     private final boolean isLodgingRequested;
 
-    public LodgingAllowance(Address address, LocalDate date, Dollars lodgingRate, boolean isLodgingRequested) {
+    public LodgingAllowance(UUID id, TravelAddress address, LocalDate date, Dollars lodgingRate, boolean isLodgingRequested) {
+        this.id = id;
         this.address = address;
         this.date = date;
         this.lodgingRate = lodgingRate;
@@ -27,7 +30,11 @@ public class LodgingAllowance {
         return Dollars.ZERO;
     }
 
-    protected Address getAddress() {
+    protected UUID getId() {
+        return id;
+    }
+
+    protected TravelAddress getAddress() {
         return address;
     }
 

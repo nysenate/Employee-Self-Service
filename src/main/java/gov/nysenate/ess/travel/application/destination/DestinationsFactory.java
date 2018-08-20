@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.application.destination;
 
 import com.google.common.collect.ImmutableList;
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.Route;
 import org.springframework.stereotype.Service;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class DestinationsFactory {
@@ -31,10 +32,10 @@ public class DestinationsFactory {
     }
 
     private Destination createDestination(ImmutableList<Leg> outboundLegs, ImmutableList<Leg> returnLegs, int i) {
-        Address address = outboundLegs.get(i).getTo();
+        TravelAddress address = outboundLegs.get(i).getTo();
         LocalDate arrivalDate = outboundLegs.get(i).getTravelDate();
         LocalDate departureDate = calculateDepartureDate(outboundLegs, returnLegs, i);
-        return new Destination(address, arrivalDate, departureDate);
+        return new Destination(UUID.randomUUID(), address, arrivalDate, departureDate);
     }
 
     private LocalDate calculateDepartureDate(List<Leg> outboundLegs, List<Leg> returnLegs, int i) {

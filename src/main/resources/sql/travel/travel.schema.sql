@@ -2,10 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.3
--- Dumped by pg_dump version 10.3
-
--- Started on 2018-03-21 10:39:14 EDT
+-- Dumped from database version 10.5
+-- Dumped by pg_dump version 10.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -31,6 +29,213 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: app; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app (
+    traveler_id integer NOT NULL,
+    submitter_id integer NOT NULL,
+    created_date_time timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid NOT NULL,
+    current_version_id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app OWNER TO postgres;
+
+--
+-- Name: COLUMN app.traveler_id; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app.traveler_id IS 'The employee id of the employee who will be traveling.';
+
+
+--
+-- Name: COLUMN app.submitter_id; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app.submitter_id IS 'The employee id of whoever submitted the application';
+
+
+--
+-- Name: COLUMN app.created_date_time; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app.created_date_time IS 'Date time this travel application was submitted.';
+
+
+--
+-- Name: app_address; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_address (
+    street_1 text,
+    street_2 text,
+    city text,
+    county text,
+    state text,
+    zip_5 text,
+    zip_4 text,
+    id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app_address OWNER TO postgres;
+
+--
+-- Name: app_destination; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_destination (
+    arrival_date date NOT NULL,
+    departure_date date NOT NULL,
+    sequence_no smallint NOT NULL,
+    id uuid NOT NULL,
+    version_id uuid NOT NULL,
+    address_id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app_destination OWNER TO postgres;
+
+--
+-- Name: COLUMN app_destination.sequence_no; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app_destination.sequence_no IS 'The order of the destinations';
+
+
+--
+-- Name: app_leg; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_leg (
+    method_of_travel text NOT NULL,
+    method_of_travel_description text NOT NULL,
+    travel_date date NOT NULL,
+    sequence_no smallint NOT NULL,
+    is_outbound boolean NOT NULL,
+    id uuid NOT NULL,
+    from_address_id uuid NOT NULL,
+    to_address_id uuid NOT NULL,
+    version_id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app_leg OWNER TO postgres;
+
+--
+-- Name: COLUMN app_leg.sequence_no; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app_leg.sequence_no IS 'The order of this leg';
+
+
+--
+-- Name: COLUMN app_leg.is_outbound; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app_leg.is_outbound IS 'true = outbound leg, false = return leg';
+
+
+--
+-- Name: app_lodging_allowance; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_lodging_allowance (
+    date date NOT NULL,
+    lodging_rate text NOT NULL,
+    is_lodging_requested boolean NOT NULL,
+    id uuid NOT NULL,
+    version_id uuid NOT NULL,
+    address_id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app_lodging_allowance OWNER TO postgres;
+
+--
+-- Name: app_meal_allowance; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_meal_allowance (
+    is_meals_requested boolean NOT NULL,
+    id uuid NOT NULL,
+    version_id uuid NOT NULL,
+    address_id uuid NOT NULL,
+    meal_tier_id uuid NOT NULL,
+    date date NOT NULL
+);
+
+
+ALTER TABLE travel.app_meal_allowance OWNER TO postgres;
+
+--
+-- Name: app_mileage_allowance; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_mileage_allowance (
+    miles text NOT NULL,
+    mileage_rate text NOT NULL,
+    sequence_no smallint NOT NULL,
+    id uuid NOT NULL,
+    version_id uuid NOT NULL,
+    leg_id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app_mileage_allowance OWNER TO postgres;
+
+--
+-- Name: app_version; Type: TABLE; Schema: travel; Owner: postgres
+--
+
+CREATE TABLE travel.app_version (
+    created_date_time timestamp without time zone DEFAULT now() NOT NULL,
+    created_by integer NOT NULL,
+    is_deleted boolean NOT NULL,
+    purpose_of_travel text NOT NULL,
+    tolls_allowance text NOT NULL,
+    parking_allowance text NOT NULL,
+    alternate_allowance text NOT NULL,
+    train_and_plane_allowance text NOT NULL,
+    registration_allowance text NOT NULL,
+    id uuid NOT NULL,
+    app_id uuid NOT NULL
+);
+
+
+ALTER TABLE travel.app_version OWNER TO postgres;
+
+--
+-- Name: TABLE app_version; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON TABLE travel.app_version IS 'Represents a single version of a travel application. A new version should be inserted into this table whenever an edit is made so that a full history of edits is maintained.';
+
+
+--
+-- Name: COLUMN app_version.created_by; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app_version.created_by IS 'The employee id of whoever made these changes.';
+
+
+--
+-- Name: COLUMN app_version.is_deleted; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app_version.is_deleted IS 'Logical deletion flag. ';
+
+
+--
+-- Name: COLUMN app_version.alternate_allowance; Type: COMMENT; Schema: travel; Owner: postgres
+--
+
+COMMENT ON COLUMN travel.app_version.alternate_allowance IS 'Taxi/bus/subway allowances.';
+
+
+--
 -- Name: irs_mileage_rate; Type: TABLE; Schema: travel; Owner: postgres
 --
 
@@ -44,7 +249,6 @@ CREATE TABLE travel.irs_mileage_rate (
 ALTER TABLE travel.irs_mileage_rate OWNER TO postgres;
 
 --
--- Dependencies: 202
 -- Name: COLUMN irs_mileage_rate.start_date; Type: COMMENT; Schema: travel; Owner: postgres
 --
 
@@ -52,15 +256,13 @@ COMMENT ON COLUMN travel.irs_mileage_rate.start_date IS 'The effective start dat
 
 
 --
--- Dependencies: 202
 -- Name: COLUMN irs_mileage_rate.end_date; Type: COMMENT; Schema: travel; Owner: postgres
 --
 
-COMMENT ON COLUMN travel.irs_mileage_rate.end_date IS 'The effective end date of this mileage rate, inclusive.';
+COMMENT ON COLUMN travel.irs_mileage_rate.end_date IS 'The effective end date of this mileage rate, inclusinve.';
 
 
 --
--- Dependencies: 202
 -- Name: COLUMN irs_mileage_rate.rate; Type: COMMENT; Schema: travel; Owner: postgres
 --
 
@@ -72,34 +274,26 @@ COMMENT ON COLUMN travel.irs_mileage_rate.rate IS 'The mileage rate whole dollar
 --
 
 CREATE TABLE travel.meal_rate (
-    id integer NOT NULL,
+    id uuid NOT NULL,
     start_date date NOT NULL,
-    end_date date
+    end_date date NOT NULL
 );
 
 
 ALTER TABLE travel.meal_rate OWNER TO postgres;
 
 --
--- Name: meal_rate_id_seq; Type: SEQUENCE; Schema: travel; Owner: postgres
+-- Name: COLUMN meal_rate.start_date; Type: COMMENT; Schema: travel; Owner: postgres
 --
 
-CREATE SEQUENCE travel.meal_rate_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+COMMENT ON COLUMN travel.meal_rate.start_date IS 'The effective start date of this meal rate, inclusive.';
 
-
-ALTER TABLE travel.meal_rate_id_seq OWNER TO postgres;
 
 --
--- Dependencies: 200
--- Name: meal_rate_id_seq; Type: SEQUENCE OWNED BY; Schema: travel; Owner: postgres
+-- Name: COLUMN meal_rate.end_date; Type: COMMENT; Schema: travel; Owner: postgres
 --
 
-ALTER SEQUENCE travel.meal_rate_id_seq OWNED BY travel.meal_rate.id;
+COMMENT ON COLUMN travel.meal_rate.end_date IS 'The effective end date of this meal rate, inclusive';
 
 
 --
@@ -107,7 +301,8 @@ ALTER SEQUENCE travel.meal_rate_id_seq OWNED BY travel.meal_rate.id;
 --
 
 CREATE TABLE travel.meal_tier (
-    id integer NOT NULL,
+    id uuid NOT NULL,
+    meal_rate_id uuid NOT NULL,
     tier text NOT NULL,
     breakfast text NOT NULL,
     lunch text NOT NULL,
@@ -133,10 +328,67 @@ CREATE TABLE travel.travel_requestors (
 ALTER TABLE travel.travel_requestors OWNER TO postgres;
 
 --
--- Name: meal_rate id; Type: DEFAULT; Schema: travel; Owner: postgres
+-- Name: app_address app_address_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
 --
 
-ALTER TABLE ONLY travel.meal_rate ALTER COLUMN id SET DEFAULT nextval('travel.meal_rate_id_seq'::regclass);
+ALTER TABLE ONLY travel.app_address
+    ADD CONSTRAINT app_address_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_destination app_destination_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_destination
+    ADD CONSTRAINT app_destination_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_leg app_leg_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_leg
+    ADD CONSTRAINT app_leg_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_lodging_allowance app_lodging_allowance_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_lodging_allowance
+    ADD CONSTRAINT app_lodging_allowance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_meal_allowance app_meal_allowance_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_meal_allowance
+    ADD CONSTRAINT app_meal_allowance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_mileage_allowance app_mileage_allowance_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_mileage_allowance
+    ADD CONSTRAINT app_mileage_allowance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app app_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app
+    ADD CONSTRAINT app_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: app_version app_version_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_version
+    ADD CONSTRAINT app_version_pkey PRIMARY KEY (id);
 
 
 --
@@ -160,7 +412,7 @@ ALTER TABLE ONLY travel.meal_rate
 --
 
 ALTER TABLE ONLY travel.meal_tier
-    ADD CONSTRAINT meal_tier_pkey PRIMARY KEY (id, tier);
+    ADD CONSTRAINT meal_tier_pkey PRIMARY KEY (id);
 
 
 --
@@ -172,24 +424,146 @@ ALTER TABLE ONLY travel.travel_requestors
 
 
 --
--- Name: meal_tier meal_tier_id_meal_rate_id_f_key; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+-- Name: app app_current_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app
+    ADD CONSTRAINT app_current_version_id_fkey FOREIGN KEY (current_version_id) REFERENCES travel.app_version(id);
+
+
+--
+-- Name: app_destination app_destination_address_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_destination
+    ADD CONSTRAINT app_destination_address_id_fkey FOREIGN KEY (address_id) REFERENCES travel.app_address(id);
+
+
+--
+-- Name: app_destination app_destination_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_destination
+    ADD CONSTRAINT app_destination_version_id_fkey FOREIGN KEY (version_id) REFERENCES travel.app_version(id);
+
+
+--
+-- Name: app_leg app_leg_from_address_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_leg
+    ADD CONSTRAINT app_leg_from_address_id_fkey FOREIGN KEY (from_address_id) REFERENCES travel.app_address(id);
+
+
+--
+-- Name: app_leg app_leg_to_address_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_leg
+    ADD CONSTRAINT app_leg_to_address_id_fkey FOREIGN KEY (to_address_id) REFERENCES travel.app_address(id);
+
+
+--
+-- Name: app_leg app_leg_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_leg
+    ADD CONSTRAINT app_leg_version_id_fkey FOREIGN KEY (version_id) REFERENCES travel.app_version(id);
+
+
+--
+-- Name: app_lodging_allowance app_lodging_allowance_address_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_lodging_allowance
+    ADD CONSTRAINT app_lodging_allowance_address_id_fkey FOREIGN KEY (address_id) REFERENCES travel.app_address(id);
+
+
+--
+-- Name: app_lodging_allowance app_lodging_allowance_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_lodging_allowance
+    ADD CONSTRAINT app_lodging_allowance_version_id_fkey FOREIGN KEY (version_id) REFERENCES travel.app_version(id);
+
+
+--
+-- Name: app_meal_allowance app_meal_allowance_address_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_meal_allowance
+    ADD CONSTRAINT app_meal_allowance_address_id_fkey FOREIGN KEY (address_id) REFERENCES travel.app_address(id);
+
+
+--
+-- Name: app_meal_allowance app_meal_allowance_meal_tier_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_meal_allowance
+    ADD CONSTRAINT app_meal_allowance_meal_tier_id_fkey FOREIGN KEY (meal_tier_id) REFERENCES travel.meal_tier(id);
+
+
+--
+-- Name: app_meal_allowance app_meal_allowance_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_meal_allowance
+    ADD CONSTRAINT app_meal_allowance_version_id_fkey FOREIGN KEY (version_id) REFERENCES travel.app_version(id);
+
+
+--
+-- Name: app_mileage_allowance app_mileage_allowance_leg_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_mileage_allowance
+    ADD CONSTRAINT app_mileage_allowance_leg_id_fkey FOREIGN KEY (leg_id) REFERENCES travel.app_leg(id);
+
+
+--
+-- Name: app_mileage_allowance app_mileage_allowance_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_mileage_allowance
+    ADD CONSTRAINT app_mileage_allowance_version_id_fkey FOREIGN KEY (version_id) REFERENCES travel.app_version(id);
+
+
+--
+-- Name: app_version app_version_app_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
+--
+
+ALTER TABLE ONLY travel.app_version
+    ADD CONSTRAINT app_version_app_id_fkey FOREIGN KEY (app_id) REFERENCES travel.app(id);
+
+
+--
+-- Name: meal_tier meal_tier_meal_rate_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
 --
 
 ALTER TABLE ONLY travel.meal_tier
-    ADD CONSTRAINT meal_tier_id_meal_rate_id_f_key FOREIGN KEY (id) REFERENCES travel.meal_rate(id);
+    ADD CONSTRAINT meal_tier_meal_rate_id_fkey FOREIGN KEY (meal_rate_id) REFERENCES travel.meal_rate(id);
 
 
--- Completed on 2018-03-21 10:39:14 EDT
+--
+-- Name: SCHEMA travel; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA travel TO PUBLIC;
+
+
+--
+-- Name: TABLE irs_mileage_rate; Type: ACL; Schema: travel; Owner: postgres
+--
+
+GRANT ALL ON TABLE travel.irs_mileage_rate TO PUBLIC;
+
+
+--
+-- Name: TABLE travel_requestors; Type: ACL; Schema: travel; Owner: postgres
+--
+
+GRANT ALL ON TABLE travel.travel_requestors TO PUBLIC;
+
 
 --
 -- PostgreSQL database dump complete
 --
-
---
--- Permissions
---
-
-GRANT ALL PRIVILEGES ON SCHEMA travel TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA travel TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA travel TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA travel TO PUBLIC;

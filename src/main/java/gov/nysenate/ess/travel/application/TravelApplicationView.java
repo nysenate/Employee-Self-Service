@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
@@ -10,14 +11,17 @@ import gov.nysenate.ess.travel.application.destination.DestinationsView;
 import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.utils.Dollars;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.*;
 
 public class TravelApplicationView implements ViewObject {
 
-    long id;
+    String id;
+    String versionId;
     DetailedEmployeeView traveler;
     DetailedEmployeeView submitter;
     String purposeOfTravel;
@@ -36,13 +40,18 @@ public class TravelApplicationView implements ViewObject {
     String startDate;
     String endDate;
     String submittedDateTime;
+    String modifiedDateTime;
+    DetailedEmployeeView modifiedBy;
     List<TravelAttachmentView> attachments;
+    @JsonProperty(value="isDeleted")
+    boolean isDeleted;
 
     public TravelApplicationView() {
     }
 
     public TravelApplicationView(TravelApplication app) {
-        id = app.getId();
+        id = app.getId().toString();
+        versionId = app.getVersionId().toString();
         traveler = new DetailedEmployeeView(app.getTraveler());
         submitter = new DetailedEmployeeView(app.getSubmitter());
         purposeOfTravel = app.getPurposeOfTravel();
@@ -59,13 +68,17 @@ public class TravelApplicationView implements ViewObject {
         totalAllowance = app.totalAllowance().toString();
         transportationAllowance = app.transportationAllowance().toString();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
+        modifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
+        modifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
         attachments = app.getAttachments().stream().map(TravelAttachmentView::new).collect(Collectors.toList());
+        isDeleted = app.isDeleted();
     }
 
     public TravelApplication toTravelApplication() {
-        TravelApplication app = new TravelApplication(id, traveler.toEmployee(), submitter.toEmployee());
+        TravelApplication app = new TravelApplication(UUID.fromString(id), UUID.fromString(versionId),
+                traveler.toEmployee(), submitter.toEmployee());
         if (accommodations != null) {
             app.setDestinations(this.accommodations.toDestinations());
         }
@@ -81,16 +94,20 @@ public class TravelApplicationView implements ViewObject {
         app.setAlternate(new Dollars(alternateAllowance));
         app.setTrainAndAirplane(new Dollars(trainAndAirplaneAllowance));
         app.setRegistration(new Dollars(registrationAllowance));
+        app.setSubmittedDateTime(submittedDateTime == null ? null : LocalDateTime.parse(submittedDateTime, ISO_DATE_TIME));
+        app.setModifiedDateTime(modifiedDateTime == null ? null : LocalDateTime.parse(modifiedDateTime, ISO_DATE_TIME));
+        app.setModifiedBy(modifiedBy == null ? null : modifiedBy.toEmployee());
         app.setAttachments(attachments.stream().map(TravelAttachmentView::toTravelAttachment).collect(Collectors.toList()));
+        app.setDeleted(isDeleted);
         return app;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public String getVersionId() {
+        return versionId;
     }
 
     public EmployeeView getTraveler() {
@@ -241,8 +258,33 @@ public class TravelApplicationView implements ViewObject {
         this.submittedDateTime = submittedDateTime;
     }
 
+    public String getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(String modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public DetailedEmployeeView getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(DetailedEmployeeView modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
     public List<TravelAttachmentView> getAttachments() {
         return attachments;
+    }
+
+    @JsonProperty(value="isDeleted")
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     @Override

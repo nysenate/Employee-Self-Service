@@ -2,8 +2,11 @@ package gov.nysenate.ess.travel.provider.gsa.meal;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import java.util.UUID;
+
 public class MealTierView implements ViewObject {
 
+    String id;
     String tier;
     String breakfast;
     String lunch;
@@ -14,6 +17,7 @@ public class MealTierView implements ViewObject {
     }
 
     public MealTierView(MealTier tier) {
+        this.id = tier.getId().toString();
         this.tier = tier.getTier();
         this.breakfast = tier.getBreakfast().toString();
         this.lunch = tier.getLunch().toString();
@@ -22,7 +26,11 @@ public class MealTierView implements ViewObject {
     }
 
     public MealTier toMealTier() {
-        return new MealTier(tier, breakfast, lunch, dinner, incidental);
+        return new MealTier(UUID.fromString(id), tier, breakfast, lunch, dinner, incidental);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getTier() {

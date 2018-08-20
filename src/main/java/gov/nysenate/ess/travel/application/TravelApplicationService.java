@@ -2,6 +2,8 @@ package gov.nysenate.ess.travel.application;
 
 import com.google.common.collect.Lists;
 import com.google.maps.errors.ApiException;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowanceFactory;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowances;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
@@ -16,18 +18,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TravelApplicationService {
 
     @Autowired private InMemoryTravelAppDao appDao;
+    @Autowired private TravelApplicationDao applicationDao;
+    @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private DestinationsFactory destinationsFactory;
     @Autowired private MileageAllowanceFactory mileageAllowanceFactory;
     @Autowired private MealAllowancesFactory mealAllowancesFactory;
     @Autowired private LodgingAllowancesFactory lodgingAllowancesFactory;
 
-    public TravelApplication addOutboundLegs(int appId, List<Leg> outboundLegs) {
+    /**
+     * Creates a new travel application
+     * @return
+     */
+    public TravelApplication initTravelApplication(Employee traveler, Employee submitter) {
+        return new TravelApplication(UUID.randomUUID(), UUID.randomUUID(), traveler, submitter);
+    }
+
+    public TravelApplication insertTravelApplication(TravelApplication app) {
+        LocalDateTime modifiedDateTime = LocalDateTime.now();
+        app.setSubmittedDateTime(modifiedDateTime);
+        app.setModifiedDateTime(modifiedDateTime);
+        app.setModifiedBy(app.getSubmitter()); // submitter is also the first modifier.
+        applicationDao.insertTravelApplication(app);
+        return app;
+    }
+
+    // TODO Pessimistic locking?
+    public TravelApplication updateTravelApplication(TravelApplication app, int modifiedByEmpId) {
+        LocalDateTime modifiedDateTime = LocalDateTime.now();
+        app.setModifiedDateTime(modifiedDateTime);
+        app.setModifiedBy(employeeInfoService.getEmployee(modifiedByEmpId));
+        app.setVersionId(UUID.randomUUID());
+        return null;
+    }
+
+    public TravelApplication addOutboundLegs(UUID appId, List<Leg> outboundLegs) {
         TravelApplication app = appDao.getUncompletedAppById(appId).toTravelApplication();
         List<Leg> previousLegs = app.getRoute().getOutgoingLegs();
         if (!previousLegs.equals(outboundLegs)) {
@@ -39,8 +71,8 @@ public class TravelApplicationService {
         return app;
     }
 
-    public TravelApplication addReturnLegs(long appId, List<Leg> returnLegs) throws InterruptedException, ApiException, IOException {
-        TravelApplication app = appDao.getUncompletedAppById((int)appId).toTravelApplication();
+    public TravelApplication addReturnLegs(UUID appId, List<Leg> returnLegs) throws InterruptedException, ApiException, IOException {
+        TravelApplication app = appDao.getUncompletedAppById(appId).toTravelApplication();
         List<Leg> previousLegs = app.getRoute().getReturnLegs();
         if (!previousLegs.equals(returnLegs)) {
             resetDestinations(app);

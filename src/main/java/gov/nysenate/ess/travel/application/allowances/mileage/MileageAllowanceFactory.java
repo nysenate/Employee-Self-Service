@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MileageAllowanceFactory {
@@ -46,6 +47,6 @@ public class MileageAllowanceFactory {
     private MileageAllowance calculateLegAllowance(Leg leg) throws InterruptedException, ApiException, IOException {
         double miles = mileageService.calculateMileage(leg.getFrom(), leg.getTo());
         BigDecimal mileageRate = mileageService.getIrsRate(leg.getTravelDate());
-        return new MileageAllowance(leg, miles, mileageRate);
+        return new MileageAllowance(UUID.randomUUID(), leg, miles, mileageRate);
     }
 }

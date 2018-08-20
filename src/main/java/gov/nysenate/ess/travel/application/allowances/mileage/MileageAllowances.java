@@ -49,4 +49,12 @@ public class MileageAllowances {
     protected ImmutableList<MileageAllowance> getReturnAllowances() {
         return this.returnAllowances;
     }
+
+    @Override
+    public String toString() {
+        return "MileageAllowances{" +
+                "outboundAllowances=" + outboundAllowances +
+                ", returnAllowances=" + returnAllowances +
+                '}';
+    }
 }

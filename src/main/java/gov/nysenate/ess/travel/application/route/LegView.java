@@ -2,16 +2,19 @@ package gov.nysenate.ess.travel.application.route;
 
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.address.TravelAddressView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 public class LegView implements ViewObject {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-    private AddressView from;
-    private AddressView to;
+    private String id;
+    private TravelAddressView from;
+    private TravelAddressView to;
     private ModeOfTransportationView modeOfTransportation;
     private String travelDate;
 
@@ -19,16 +22,25 @@ public class LegView implements ViewObject {
     }
 
     public LegView(Leg leg) {
-        this.from = new AddressView(leg.getFrom());
-        this.to = new AddressView(leg.getTo());
+        this.id = leg.getId().toString();
+        this.from = new TravelAddressView(leg.getFrom());
+        this.to = new TravelAddressView(leg.getTo());
         this.modeOfTransportation = new ModeOfTransportationView(leg.getModeOfTransportation());
         this.travelDate = leg.getTravelDate().format(DATE_FORMAT);
     }
 
     public Leg toLeg() {
-        return new Leg(from.toAddress(), to.toAddress(),
+        // TODO
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+        return new Leg(UUID.fromString(id), from.toTravelAddress(), to.toTravelAddress(),
                 modeOfTransportation.toModeOfTransportation(),
                 LocalDate.parse(travelDate, DATE_FORMAT));
+    }
+
+    public String getId() {
+        return id;
     }
 
     public AddressView getFrom() {

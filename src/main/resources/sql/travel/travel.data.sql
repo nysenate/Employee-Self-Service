@@ -31,7 +31,7 @@ COPY travel.irs_mileage_rate (start_date, end_date, rate) FROM stdin;
 --
 
 COPY travel.meal_rate (id, start_date, end_date) FROM stdin;
-1	2018-01-05	\N
+4ee5c6d8-ac93-456f-b5f8-3ec970be4b66 2018-01-05	\N
 \.
 
 
@@ -40,12 +40,12 @@ COPY travel.meal_rate (id, start_date, end_date) FROM stdin;
 --
 
 COPY travel.meal_tier (id, tier, breakfast, lunch, dinner, incidental) FROM stdin;
-1	69	16	17	31	5
-1	59	13	15	26	5
-1	51	11	12	23	5
-1	74	17	18	34	5
-1	64	15	16	28	5
-1	54	12	13	24	5
+3eb3ad52-15f9-449a-ba19-c17b71dc201c 4ee5c6d8-ac93-456f-b5f8-3ec970be4b66 69	16	17	31	5
+bfd62f90-6fc0-4563-a74f-a8a8d5beacc4 4ee5c6d8-ac93-456f-b5f8-3ec970be4b66	59	13	15	26	5
+b40c2f51-1c9d-4257-a2dc-0409d20aadd1 4ee5c6d8-ac93-456f-b5f8-3ec970be4b66	51	11	12	23	5
+dd66109f-fddc-490a-8e65-72f4d03c52e2 4ee5c6d8-ac93-456f-b5f8-3ec970be4b66	74	17	18	34	5
+45b7f334-f19e-41d9-b32a-8d4b88c94a04 4ee5c6d8-ac93-456f-b5f8-3ec970be4b66	64	15	16	28	5
+8cc8c148-5398-4b06-936f-22fd73591b77 4ee5c6d8-ac93-456f-b5f8-3ec970be4b66	54	12	13	24	5
 \.
 
 

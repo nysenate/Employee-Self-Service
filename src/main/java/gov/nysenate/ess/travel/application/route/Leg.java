@@ -1,29 +1,36 @@
 package gov.nysenate.ess.travel.application.route;
 
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Leg {
 
-    private final Address from;
-    private final Address to;
+    private final UUID id;
+    private final TravelAddress from;
+    private final TravelAddress to;
     private final ModeOfTransportation modeOfTransportation;
     private final LocalDate travelDate;
 
-    public Leg(Address from, Address to, ModeOfTransportation modeOfTransportation, LocalDate travelDate) {
+    public Leg(UUID id, TravelAddress from, TravelAddress to, ModeOfTransportation modeOfTransportation, LocalDate travelDate) {
+        this.id = id;
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
         this.modeOfTransportation = Objects.requireNonNull(modeOfTransportation);
         this.travelDate = Objects.requireNonNull(travelDate);
     }
 
-    public Address getFrom() {
+    public UUID getId() {
+        return id;
+    }
+
+    public TravelAddress getFrom() {
         return from;
     }
 
-    public Address getTo() {
+    public TravelAddress getTo() {
         return to;
     }
 

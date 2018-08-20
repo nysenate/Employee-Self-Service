@@ -58,6 +58,6 @@ public class MealAllowancesFactory {
 
     private MealAllowance createMealAllowance(LocalDate date, Destination destination) throws IOException {
         MealTier mealTier = gsaService.fetchMealTier(date, destination.getAddress());
-        return new MealAllowance(destination.getAddress(), date, mealTier, true);
+        return new MealAllowance(UUID.randomUUID(), destination.getAddress(), date, mealTier, true);
     }
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LodgingAllowancesFactory {
@@ -28,7 +29,7 @@ public class LodgingAllowancesFactory {
         for (Destination dest : destinations.getDestinations()) {
             for (LocalDate night: dest.nights()) {
                 Dollars lodgingAllowance = gsaService.fetchLodgingRate(night, dest.getAddress());
-                lodgingAllowances.add(new LodgingAllowance(dest.getAddress(), night, lodgingAllowance, true));
+                lodgingAllowances.add(new LodgingAllowance(UUID.randomUUID(), dest.getAddress(), night, lodgingAllowance, true));
             }
         }
 
