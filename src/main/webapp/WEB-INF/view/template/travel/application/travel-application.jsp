@@ -31,7 +31,7 @@
     </div>
 
     <div ng-if="pageState === STATES.OUTBOUND">
-       <div ng-controller="TravelApplicationOutboundCtrl">
+      <div ng-controller="TravelApplicationOutboundCtrl">
         <ng-include src="'/template/travel/application/travel-application-outbound'"></ng-include>
       </div>
     </div>
@@ -118,6 +118,19 @@
     <modal modal-id="travel-mileage-details-modal">
       <div travel-mileage-details-modal></div>
     </modal>
+
+    <modal modal-id="external-api-error">
+      <div confirm-modal rejectable="true"
+           title="Failed to Create Travel Request"
+           confirm-message=
+           "ESS is unable to communicate with some 3rd party services required to create the travel estimate.
+           Please try submitting your travel application again later.
+           What would you like to do next?"
+           resolve-button="Go back to ESS"
+           reject-button="Log out of ESS">
+      </div>
+    </modal>
+
   </div>
 
 </div>
