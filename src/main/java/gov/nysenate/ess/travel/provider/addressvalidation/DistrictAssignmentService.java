@@ -34,6 +34,7 @@ public class DistrictAssignmentService {
         if(!address.getZip5().isEmpty() || address.getZip5() != null) {
             url = url + "&zip5=" + address.getZip5();
         }
+        url = url + "uspsValidate=true";
 
         JsonParser parser = new JsonParser();
         int senateDistNumber = 0;
