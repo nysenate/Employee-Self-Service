@@ -30,7 +30,6 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
             "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
             "        AND ent.CDSTATUS = 'A'\n" +
-            "        AND ent.DTDAY BETWEEN rec.DTBEGIN AND rec.DTEND\n" +
             "WHERE per.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'\n" +
             "    AND per.CDPERIOD = 'AF'\n"
     ),
@@ -42,7 +41,6 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
             "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
             "        AND ent.CDSTATUS = 'A'\n" +
-            "        AND ent.DTDAY BETWEEN rec.DTBEGIN AND rec.DTEND\n" +
             "WHERE per.CDSTATUS = 'A' AND per.CDPERIOD = 'AF'\n" +
             "   AND rec.NUXRTIMESHEET = :timesheetId"
     ),

@@ -292,16 +292,16 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 
     /**
      * @param entry TimeEntry - the time entry to insert
-     * @param oldRecord TimeRecord - a record containing the last saved entry set
+     * @param savedRecordOpt TimeRecord - a record containing the last saved entry set
      * @return true if the entry is fundamentally different than the equivalent entry in oldRecord
      */
-    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> oldRecord) {
-        Optional<TimeEntry> oldEntry = oldRecord.map(rec -> rec.getEntry(entry.getDate()));
-        return oldEntry
-                // Return true if the old record has the entry, and it is different
+    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> savedRecordOpt) {
+        Optional<TimeEntry> savedEntryOpt = savedRecordOpt.map(rec -> rec.getEntry(entry.getDate()));
+        return savedEntryOpt
+                // If entry already exists, update it if the new entry is different
                 .map(oldEnt -> !oldEnt.equals(entry))
-                // Or the new entry is active and non-empty
-                .orElse(!entry.isEmpty() && entry.isActive());
+                // If the entry doesn't exist, insert the new entry if it is non-empty
+                .orElse(!entry.isEmpty());
     }
 
     /**
