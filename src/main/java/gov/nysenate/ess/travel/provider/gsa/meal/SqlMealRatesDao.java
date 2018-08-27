@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +30,6 @@ public class SqlMealRatesDao extends SqlBaseDao {
         return handler.results();
     }
 
-//    @Transactional(value = "localTxManager")
     public synchronized void insertMealRates(MealRates mealRates, LocalDate date) {
         updateCurrentRatesEndDate(date);
         Integer id = insertMealRate(date);
@@ -68,9 +66,7 @@ public class SqlMealRatesDao extends SqlBaseDao {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("id", id)
                     .addValue("tier", tier.getTier())
-                    .addValue("breakfast", tier.getBreakfast().toString())
-                    .addValue("lunch", tier.getLunch().toString())
-                    .addValue("dinner", tier.getDinner().toString())
+                    .addValue("total", tier.getTotal().toString())
                     .addValue("incidental", tier.getIncidental().toString());
             paramList.add(params);
         }
@@ -84,8 +80,8 @@ public class SqlMealRatesDao extends SqlBaseDao {
                         "VALUES (:startDate)"
         ),
         INSERT_MEAL_TIER(
-                "INSERT INTO ${travelSchema}.meal_tier(id, tier, breakfast, lunch, dinner, incidental) " +
-                        "VALUES (:id, :tier, :breakfast, :lunch, :dinner, :incidental)"
+                "INSERT INTO ${travelSchema}.meal_tier(id, tier, total, incidental) " +
+                        "VALUES (:id, :tier, :total, :incidental)"
         ),
         UPDATE_MEAL_RATE_END_DATE(
                 "UPDATE ${travelSchema}.meal_rate " +
@@ -93,7 +89,7 @@ public class SqlMealRatesDao extends SqlBaseDao {
                         "WHERE end_date IS NULL"
         ),
         GET_MEAL_RATES(
-                "SELECT tier, breakfast, lunch, dinner, incidental " +
+                "SELECT tier, total, incidental " +
                         "FROM ${travelSchema}.meal_tier mt " +
                         "INNER JOIN ${travelSchema}.meal_rate mr on mr.id = mt.id " +
                         "WHERE mr.start_date <= :date " +
@@ -127,8 +123,7 @@ public class SqlMealRatesDao extends SqlBaseDao {
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            MealTier tier = new MealTier(rs.getString("tier"), rs.getString("breakfast"),
-                    rs.getString("lunch"), rs.getString("dinner"), rs.getString("incidental"));
+            MealTier tier = new MealTier(rs.getString("tier"), rs.getString("total"), rs.getString("incidental"));
             tiers.add(tier);
         }
 

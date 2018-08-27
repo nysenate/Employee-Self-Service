@@ -11,16 +11,18 @@ import java.util.Objects;
 public class MealTier implements Comparable<MealTier> {
 
     private final String tier; // Also known as M&IE Total.
-    private final Dollars breakfast;
-    private final Dollars lunch;
-    private final Dollars dinner;
+    private final Dollars total;
     private final Dollars incidental;
 
     public MealTier(String tier, String breakfast, String lunch, String dinner, String incidental) {
         this.tier = tier;
-        this.breakfast = new Dollars(breakfast);
-        this.lunch = new Dollars(lunch);
-        this.dinner = new Dollars(dinner);
+        this.total = new Dollars(breakfast).add(new Dollars(lunch)).add(new Dollars(dinner));
+        this.incidental = new Dollars(incidental);
+    }
+
+    public MealTier(String tier, String total, String incidental) {
+        this.tier = tier;
+        this.total = new Dollars(total);
         this.incidental = new Dollars(incidental);
     }
 
@@ -31,36 +33,26 @@ public class MealTier implements Comparable<MealTier> {
      * @return the Senate provided meal allowance for this meal tier.
      */
     public Dollars total() {
-        return getBreakfast().add(getLunch()).add(getDinner()).add(getIncidental());
+        return total.add(getIncidental());
     }
 
     protected String getTier() {
         return tier;
     }
 
-    protected Dollars getBreakfast() {
-        return breakfast;
-    }
-
-    protected Dollars getLunch() {
-        return lunch;
-    }
-
-    protected Dollars getDinner() {
-        return dinner;
-    }
-
     protected Dollars getIncidental() {
         return incidental;
+    }
+
+    protected Dollars getTotal() {
+        return total;
     }
 
     @Override
     public String toString() {
         return "MealTier{" +
                 "tier='" + tier + '\'' +
-                ", breakfast=" + breakfast +
-                ", lunch=" + lunch +
-                ", dinner=" + dinner +
+                ", total=" + total +
                 ", incidental=" + incidental +
                 '}';
     }
@@ -71,30 +63,22 @@ public class MealTier implements Comparable<MealTier> {
         if (o == null || getClass() != o.getClass()) return false;
         MealTier tier1 = (MealTier) o;
         return Objects.equals(tier, tier1.tier) &&
-                Objects.equals(breakfast, tier1.breakfast) &&
-                Objects.equals(lunch, tier1.lunch) &&
-                Objects.equals(dinner, tier1.dinner) &&
+                Objects.equals(total, tier1.total) &&
                 Objects.equals(incidental, tier1.incidental);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tier, breakfast, lunch, dinner, incidental);
+        return Objects.hash(tier, total, incidental);
     }
 
     @Override
     public int compareTo(MealTier o) {
         int cmp = tier.compareTo(o.tier);
         if (cmp == 0) {
-            cmp = breakfast.compareTo(o.breakfast);
+            cmp = total.compareTo(o.total);
             if (cmp == 0) {
-                cmp = lunch.compareTo(o.lunch);
-                if (cmp == 0) {
-                    cmp = dinner.compareTo(o.dinner);
-                    if (cmp == 0) {
-                        cmp = incidental.compareTo(o.incidental);
-                    }
-                }
+                cmp = incidental.compareTo(o.incidental);
             }
         }
         return cmp;

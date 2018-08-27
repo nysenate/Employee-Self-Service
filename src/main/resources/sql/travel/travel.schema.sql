@@ -109,9 +109,7 @@ ALTER SEQUENCE travel.meal_rate_id_seq OWNED BY travel.meal_rate.id;
 CREATE TABLE travel.meal_tier (
     id integer NOT NULL,
     tier text NOT NULL,
-    breakfast text NOT NULL,
-    lunch text NOT NULL,
-    dinner text NOT NULL,
+    total text NOT NULL,
     incidental text NOT NULL
 );
 
