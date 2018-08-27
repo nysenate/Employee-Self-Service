@@ -24,9 +24,17 @@ public class DistrictAssignmentService {
     public DistrictResponse assignDistrict(Address address) {
         RestTemplate restTemplate = new RestTemplate();
         String url = sageBaseUrl + "/district/assign?" +
-                "addr1=" + address.getAddr1() + "&" +
-                "city="  + address.getCity() + "&" +
-                "state=" + address.getState();
+                "addr1=" + address.getAddr1();
+        if(!address.getCity().isEmpty() || address.getCity() != null) {
+            url = url + "&city="  + address.getCity();
+        }
+        if(!address.getState().isEmpty() || address.getState() != null) {
+            url = url + "&state=" + address.getState();
+        }
+        if(!address.getZip5().isEmpty() || address.getZip5() != null) {
+            url = url + "&zip5=" + address.getZip5();
+        }
+
         JsonParser parser = new JsonParser();
         int senateDistNumber = 0;
         String senateDistName = null;
