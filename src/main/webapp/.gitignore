@@ -1,2 +1,5 @@
 bower_components/
 node_modules/
+assets/js/dest/
+assets/css/src/
+assets/css/dest/
