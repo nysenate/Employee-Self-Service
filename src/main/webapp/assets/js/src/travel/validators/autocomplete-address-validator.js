@@ -32,9 +32,10 @@ essTravel.directive('autocompleteAddressValidator', function () {
                 if (!address.zip5) {
                     return false;
                 }
-                if (address.addr1) {
-                    return true;
+                if (!address.addr1) {
+                    return false;
                 }
+                return true;
             }
         }
     }
