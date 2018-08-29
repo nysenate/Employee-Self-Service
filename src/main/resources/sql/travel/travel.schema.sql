@@ -304,9 +304,7 @@ CREATE TABLE travel.meal_tier (
     id uuid NOT NULL,
     meal_rate_id uuid NOT NULL,
     tier text NOT NULL,
-    breakfast text NOT NULL,
-    lunch text NOT NULL,
-    dinner text NOT NULL,
+    total text NOT NULL,
     incidental text NOT NULL
 );
 

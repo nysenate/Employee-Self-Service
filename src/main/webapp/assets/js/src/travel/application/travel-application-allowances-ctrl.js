@@ -24,24 +24,36 @@ function allowancesCtrl($scope, expensesApi, mealAllowancesApi, lodgingAllowance
     };
 
     $scope.next = function () {
-        // Default empty allowances to 0.
-        for (var prop in $scope.allowances) {
-            if (!$scope.allowances[prop]) {
-                $scope.allowances[prop] = 0;
-            }
-        }
-        expensesApi.update({id: $scope.data.app.id}, $scope.allowances, function (response) {
-            $scope.data.app = response.result;
 
-            mealAllowancesApi.update({id: $scope.data.app.id}, $scope.dirtyApp.mealAllowance, function (response) {
+        try {
+            // Default empty allowances to 0.
+            for (var prop in $scope.allowances) {
+                if (!$scope.allowances[prop]) {
+                    $scope.allowances[prop] = 0;
+                }
+            }
+            expensesApi.update({id: $scope.data.app.id}, $scope.allowances, function (response) {
                 $scope.data.app = response.result;
 
-                lodgingAllowancesApi.update({id: $scope.data.app.id}, $scope.dirtyApp.lodgingAllowance, function (response) {
+                mealAllowancesApi.update({id: $scope.data.app.id}, $scope.dirtyApp.mealAllowance, function (response) {
                     $scope.data.app = response.result;
-                    $scope.nextState();
+
+                    lodgingAllowancesApi.update({id: $scope.data.app.id}, $scope.dirtyApp.lodgingAllowance, function (response) {
+                        $scope.data.app = response.result;
+                        $scope.nextState();
+                    }, $scope.handleErrorResponse);
                 }, $scope.handleErrorResponse);
-            }, $scope.handleErrorResponse);
-        }, $scope.handleErrorResponse)
+            }, $scope.handleErrorResponse)
+        }
+        catch (err) {
+            modals.open("external-api-error")
+                .then(function (response) {
+                    locationService.go("/travel/application/travel-application", true);
+                })
+                .catch(function (response) {
+                    locationService.go("/logout", true);
+                });
+        }
     };
 
     /**

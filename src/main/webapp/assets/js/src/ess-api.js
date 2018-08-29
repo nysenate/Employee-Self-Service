@@ -306,6 +306,10 @@ essApi.factory('TravelGeocodeApi', ['$resource', 'appProps', function ($resource
     return $resource(appProps.apiPath + '/travel/geocode')
 }]);
 
+essApi.factory('TravelDistrictAssignApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/address/district')
+}]);
+
 /** --- Timeout API --- */
 
 essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appProps) {
