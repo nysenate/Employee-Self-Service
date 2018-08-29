@@ -176,7 +176,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             app.setRoute(routeDao.getRoute(versionId));
             app.setDestinations(destinationDao.getDestinations(versionId));
             app.setMileageAllowances(mileageAllowanceDao.getMileageAllowance(versionId));
-//            app.setMealAllowances(); // TODO Need to finish this after merge with mealtier changes
+            app.setMealAllowances(mealAllowanceDao.getMealAllowances(versionId));
             app.setLodgingAllowances(lodgingAllowanceDao.getLodgingAllowances(versionId));
             app.setTolls(new Dollars(rs.getString("tolls_allowance")));
             app.setParking(new Dollars(rs.getString("parking_allowance")));

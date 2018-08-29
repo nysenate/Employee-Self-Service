@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.provider.gsa.meal;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents a single row in the GSA Meals and Incidental Expenses breakdown
@@ -10,17 +11,21 @@ import java.util.Objects;
  */
 public class MealTier implements Comparable<MealTier> {
 
+    private final UUID id;
     private final String tier; // Also known as M&IE Total.
     private final Dollars total;
     private final Dollars incidental;
 
-    public MealTier(String tier, String breakfast, String lunch, String dinner, String incidental) {
+    // TODO Remove?
+    public MealTier(UUID id, String tier, String breakfast, String lunch, String dinner, String incidental) {
+        this.id = id;
         this.tier = tier;
         this.total = new Dollars(breakfast).add(new Dollars(lunch)).add(new Dollars(dinner));
         this.incidental = new Dollars(incidental);
     }
 
-    public MealTier(String tier, String total, String incidental) {
+    public MealTier(UUID id, String tier, String total, String incidental) {
+        this.id = id;
         this.tier = tier;
         this.total = new Dollars(total);
         this.incidental = new Dollars(incidental);
@@ -34,6 +39,10 @@ public class MealTier implements Comparable<MealTier> {
      */
     public Dollars total() {
         return total.add(getIncidental());
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     protected String getTier() {
@@ -51,7 +60,8 @@ public class MealTier implements Comparable<MealTier> {
     @Override
     public String toString() {
         return "MealTier{" +
-                "tier='" + tier + '\'' +
+                "id=" + id +
+                ", tier='" + tier + '\'' +
                 ", total=" + total +
                 ", incidental=" + incidental +
                 '}';
@@ -61,15 +71,16 @@ public class MealTier implements Comparable<MealTier> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealTier tier1 = (MealTier) o;
-        return Objects.equals(tier, tier1.tier) &&
-                Objects.equals(total, tier1.total) &&
-                Objects.equals(incidental, tier1.incidental);
+        MealTier mealTier = (MealTier) o;
+        return Objects.equals(id, mealTier.id) &&
+                Objects.equals(tier, mealTier.tier) &&
+                Objects.equals(total, mealTier.total) &&
+                Objects.equals(incidental, mealTier.incidental);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tier, total, incidental);
+        return Objects.hash(id, tier, total, incidental);
     }
 
     @Override
