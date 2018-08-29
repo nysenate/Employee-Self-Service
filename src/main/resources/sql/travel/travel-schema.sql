@@ -33,11 +33,11 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE travel.app (
+    id uuid NOT NULL,
+    current_version_id uuid NOT NULL,
     traveler_id integer NOT NULL,
     submitter_id integer NOT NULL,
-    created_date_time timestamp without time zone DEFAULT now() NOT NULL,
-    id uuid NOT NULL,
-    current_version_id uuid NOT NULL
+    created_date_time timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -69,14 +69,14 @@ COMMENT ON COLUMN travel.app.created_date_time IS 'Date time this travel applica
 --
 
 CREATE TABLE travel.app_address (
+    id uuid NOT NULL,
     street_1 text,
     street_2 text,
     city text,
     county text,
     state text,
     zip_5 text,
-    zip_4 text,
-    id uuid NOT NULL
+    zip_4 text
 );
 
 
@@ -87,12 +87,12 @@ ALTER TABLE travel.app_address OWNER TO postgres;
 --
 
 CREATE TABLE travel.app_destination (
-    arrival_date date NOT NULL,
-    departure_date date NOT NULL,
-    sequence_no smallint NOT NULL,
     id uuid NOT NULL,
     version_id uuid NOT NULL,
-    address_id uuid NOT NULL
+    address_id uuid NOT NULL,
+    arrival_date date NOT NULL,
+    departure_date date NOT NULL,
+    sequence_no smallint NOT NULL
 );
 
 
@@ -110,15 +110,15 @@ COMMENT ON COLUMN travel.app_destination.sequence_no IS 'The order of the destin
 --
 
 CREATE TABLE travel.app_leg (
-    method_of_travel text NOT NULL,
-    method_of_travel_description text NOT NULL,
-    travel_date date NOT NULL,
-    sequence_no smallint NOT NULL,
-    is_outbound boolean NOT NULL,
     id uuid NOT NULL,
     from_address_id uuid NOT NULL,
     to_address_id uuid NOT NULL,
-    version_id uuid NOT NULL
+    version_id uuid NOT NULL,
+    travel_date date NOT NULL,
+    method_of_travel text NOT NULL,
+    method_of_travel_description text NOT NULL,
+    is_outbound boolean NOT NULL,
+    sequence_no smallint NOT NULL
 );
 
 
@@ -143,12 +143,12 @@ COMMENT ON COLUMN travel.app_leg.is_outbound IS 'true = outbound leg, false = re
 --
 
 CREATE TABLE travel.app_lodging_allowance (
-    date date NOT NULL,
-    lodging_rate text NOT NULL,
-    is_lodging_requested boolean NOT NULL,
     id uuid NOT NULL,
     version_id uuid NOT NULL,
-    address_id uuid NOT NULL
+    address_id uuid NOT NULL,
+    date date NOT NULL,
+    lodging_rate text NOT NULL,
+    is_lodging_requested boolean NOT NULL
 );
 
 
@@ -159,12 +159,12 @@ ALTER TABLE travel.app_lodging_allowance OWNER TO postgres;
 --
 
 CREATE TABLE travel.app_meal_allowance (
-    is_meals_requested boolean NOT NULL,
     id uuid NOT NULL,
     version_id uuid NOT NULL,
     address_id uuid NOT NULL,
     meal_tier_id uuid NOT NULL,
-    date date NOT NULL
+    date date NOT NULL,
+    is_meals_requested boolean NOT NULL
 );
 
 
@@ -175,12 +175,13 @@ ALTER TABLE travel.app_meal_allowance OWNER TO postgres;
 --
 
 CREATE TABLE travel.app_mileage_allowance (
+    id uuid NOT NULL,
+    version_id uuid NOT NULL,
+    leg_id uuid NOT NULL,
     miles text NOT NULL,
     mileage_rate text NOT NULL,
     sequence_no smallint NOT NULL,
-    id uuid NOT NULL,
-    version_id uuid NOT NULL,
-    leg_id uuid NOT NULL
+    is_outbound boolean
 );
 
 
@@ -191,17 +192,17 @@ ALTER TABLE travel.app_mileage_allowance OWNER TO postgres;
 --
 
 CREATE TABLE travel.app_version (
-    created_date_time timestamp without time zone DEFAULT now() NOT NULL,
-    created_by integer NOT NULL,
-    is_deleted boolean NOT NULL,
+    id uuid NOT NULL,
+    app_id uuid NOT NULL,
     purpose_of_travel text NOT NULL,
     tolls_allowance text NOT NULL,
     parking_allowance text NOT NULL,
     alternate_allowance text NOT NULL,
     train_and_plane_allowance text NOT NULL,
     registration_allowance text NOT NULL,
-    id uuid NOT NULL,
-    app_id uuid NOT NULL
+    created_date_time timestamp without time zone DEFAULT now() NOT NULL,
+    created_by integer NOT NULL,
+    is_deleted boolean NOT NULL
 );
 
 
@@ -422,14 +423,6 @@ ALTER TABLE ONLY travel.travel_requestors
 
 
 --
--- Name: app app_current_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
---
-
-ALTER TABLE ONLY travel.app
-    ADD CONSTRAINT app_current_version_id_fkey FOREIGN KEY (current_version_id) REFERENCES travel.app_version(id);
-
-
---
 -- Name: app_destination app_destination_address_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
 --
 
@@ -565,3 +558,8 @@ GRANT ALL ON TABLE travel.travel_requestors TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+
+GRANT ALL PRIVILEGES ON SCHEMA travel TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA travel TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA travel TO PUBLIC;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA travel TO PUBLIC;
