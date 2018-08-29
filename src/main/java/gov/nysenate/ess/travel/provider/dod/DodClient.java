@@ -42,7 +42,7 @@ public class DodClient {
         return response.parse();
     }
 
-    public Document connectToDodPerDiem(Connection conn, String country) throws IOException {
+    public Document connectToDodPerDiem(Connection conn) throws IOException {
 
         return conn
                 .referrer(dodUrl)
@@ -60,7 +60,8 @@ public class DodClient {
                 .parse();
     }
 
-    public void selectFromDodLandingForm(Document doc, String country) {
+    public void selectFromDodLandingForm(Document doc, String country, LocalDate travelDate) {
+        //Handle Country / State Dropdown
         Elements selectCountryOptions = doc.select("select[name=country] > option");
         boolean matched = false;
 
@@ -72,6 +73,21 @@ public class DodClient {
                 option.removeAttr("selected");
             }
         }
+
+        //Handle Date dropdown
+        String travelYear = String.valueOf(travelDate.getYear());
+        String dateValue = "01" + " " + travelDate.getMonth().toString().substring(0,3) + " " + travelYear.substring(travelYear.length() - 2);
+        Elements selectDateOptions = doc.select("select[id=DATE] > option" );
+
+        for (Element option: selectDateOptions) {
+            if ( option.text().equals(dateValue) ) {
+                option.attr("selected", "selected");
+            }
+            else {
+                option.removeAttr("selected");
+            }
+        }
+
     }
 
     public Connection submitDodLandingForm(Document doc) {

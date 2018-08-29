@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/meals")
+@RequestMapping(BaseRestApiCtrl.ADMIN_REST_PATH + "/travel/meals")
 public class MealRateCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(MealRateCtrl.class);

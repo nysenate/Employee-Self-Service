@@ -21,9 +21,9 @@ public class DodService {
     public DodMealTier getNonConusMealInfo(String country, String city, LocalDate travelDate) throws IOException {
 
         Document doc = dodClient.connectToDod();
-        dodClient.selectFromDodLandingForm(doc, country);
+        dodClient.selectFromDodLandingForm(doc, country, travelDate);
         Connection conn = dodClient.submitDodLandingForm(doc);
-        return dodClient.gatherCityInfo(dodClient.connectToDodPerDiem(conn,country), city, travelDate);
+        return dodClient.gatherCityInfo(dodClient.connectToDodPerDiem(conn), city, travelDate);
 
     }
 
