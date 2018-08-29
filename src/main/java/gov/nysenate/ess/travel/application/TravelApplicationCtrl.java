@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,7 +43,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         }
 
         if (id != null) {
-            TravelApplication app = appDao.getTravelAppById(Integer.valueOf(id));
+            TravelApplication app = appDao.getTravelAppById(UUID.fromString(id));
             return new ViewObjectResponse<>(detailed ? new DetailedTravelApplicationView(app) : new TravelApplicationView(app));
         }
         return null;

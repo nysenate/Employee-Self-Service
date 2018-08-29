@@ -1,20 +1,23 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MealAllowance {
 
-    private final Address address;
+    private final UUID id;
+    private final TravelAddress address;
     private final LocalDate date;
     private final MealTier mealTier;
     private final boolean isMealsRequested;
 
-    public MealAllowance(Address address, LocalDate date, MealTier mealTier, boolean isMealsRequested) {
+    public MealAllowance(UUID id, TravelAddress address, LocalDate date, MealTier mealTier, boolean isMealsRequested) {
+        this.id = id;
         this.address = address;
         this.date = date;
         this.mealTier = mealTier;
@@ -28,7 +31,11 @@ public class MealAllowance {
         return Dollars.ZERO;
     }
 
-    protected Address getAddress() {
+    protected UUID getId() {
+        return id;
+    }
+
+    protected TravelAddress getAddress() {
         return address;
     }
 

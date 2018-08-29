@@ -4,9 +4,11 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.route.LegView;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class MileageAllowanceView implements ViewObject {
 
+    String id;
     LegView leg;
     String miles;
     String mileageRate;
@@ -16,6 +18,7 @@ public class MileageAllowanceView implements ViewObject {
     }
 
     public MileageAllowanceView(MileageAllowance mileageAllowance) {
+        this.id = mileageAllowance.getId().toString();
         this.leg = new LegView(mileageAllowance.getLeg());
         this.miles = String.valueOf(mileageAllowance.getMiles());
         this.mileageRate = mileageAllowance.getMileageRate().toString();
@@ -23,7 +26,11 @@ public class MileageAllowanceView implements ViewObject {
     }
 
     public MileageAllowance toLegMileageAllowance() {
-        return new MileageAllowance(leg.toLeg(), Double.valueOf(miles), new BigDecimal(mileageRate));
+        return new MileageAllowance(UUID.fromString(id), leg.toLeg(), Double.valueOf(miles), new BigDecimal(mileageRate));
+    }
+
+    public String getId() {
+        return id;
     }
 
     public LegView getLeg() {

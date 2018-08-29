@@ -2,10 +2,12 @@ package gov.nysenate.ess.travel.application.route;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.TravelAddress;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Route {
 
@@ -19,11 +21,11 @@ public class Route {
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
-    public Address origin() {
+    public TravelAddress origin() {
         if (getOutgoingLegs().size() > 0) {
             return getOutgoingLegs().get(0).getFrom();
         }
-        return new Address();
+        return new TravelAddress(UUID.randomUUID()); // TODO throw exception if no origin?
     }
 
     /**

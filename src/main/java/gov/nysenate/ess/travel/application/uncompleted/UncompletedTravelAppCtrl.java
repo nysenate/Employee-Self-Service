@@ -29,6 +29,7 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/application/uncompleted")
@@ -59,7 +60,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         Employee submitter = employeeInfoService.getEmployee(getSubjectEmployeeId());
         TravelApplicationView uncompletedApp = appDao.getUncompletedAppByEmpId(traveler.getEmployeeId());
         if (uncompletedApp == null) {
-            TravelApplication app = new TravelApplication(0, traveler, submitter);
+            TravelApplication app = applicationService.initTravelApplication(traveler, submitter);
             uncompletedApp = new TravelApplicationView(app);
             uncompletedApp = appDao.saveUncompleteTravelApp(uncompletedApp);
         }
@@ -74,16 +75,16 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      *  (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
      * </p>
      *
-     * Path Params: id (int) - The id of an uncompleted travel application to submit.
+     * Path Params: id (string) - The id of an uncompleted travel application to submit.
      *
      * @return
      */
     @RequestMapping(value = "/{id}/submit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse submitTravelApp(@PathVariable int id) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+    public BaseResponse submitTravelApp(@PathVariable String id) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
         TravelApplication app = appView.toTravelApplication();
-        app.setSubmittedDateTime(LocalDateTime.now());
-        appDao.saveTravelApplication(app);
+
+        applicationService.insertTravelApplication(app);
         // Delete uncompleted version.
         appDao.deleteApplication(app.getTraveler().getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
@@ -113,7 +114,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      * (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
      * <p>
-     *     Path Params: id (int) - The id of an uncompleted travel application to update with the given purpose.<br>
+     *     Path Params: id (string) - The id of an uncompleted travel application to update with the given purpose.<br>
      *     Body : The purpose of travel.
      *
      * @param id
@@ -121,8 +122,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * @return The application with its purpose updated.
      */
     @RequestMapping(value = "/{id}/purpose", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse savePurpose(@PathVariable int id, @RequestBody String purpose) {
-        TravelApplicationView app = appDao.getUncompletedAppById(id);
+    public BaseResponse savePurpose(@PathVariable String id, @RequestBody String purpose) {
+        TravelApplicationView app = appDao.getUncompletedAppById(UUID.fromString(id));
         app.setPurposeOfTravel(purpose);
         app = appDao.saveUncompleteTravelApp(app);
         return new ViewObjectResponse<>(app);
@@ -133,13 +134,13 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      * (PUT) /api/v1/travel/application/uncompleted/{id}/outbound
      * <p>
-     *     Path Params: id (int) - The id of an uncompleted travel application to update with the given outbound segments.<br>
+     *     Path Params: id (String) - The id of an uncompleted travel application to update with the given outbound segments.<br>
      *     Body : An array of SegmentView's
      */
     @RequestMapping(value = "/{id}/outbound", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveOutboundSegments(@PathVariable int id, @RequestBody RouteView route) {
+    public BaseResponse saveOutboundSegments(@PathVariable String id, @RequestBody RouteView route) {
         List<Leg> outboundLegs = route.toRoute().getOutgoingLegs();
-        TravelApplication travelApplication = applicationService.addOutboundLegs(id, outboundLegs);
+        TravelApplication travelApplication = applicationService.addOutboundLegs(UUID.fromString(id), outboundLegs);
 
         TravelApplicationView app = new TravelApplicationView(travelApplication);
         app = appDao.saveUncompleteTravelApp(app);
@@ -151,12 +152,12 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      * (PUT) /api/v1/travel/application/uncompleted/{id}/return
      * <p>
-     *     Path Params: id (int) - The id of an uncompleted travel application to update with the given return segments.<br>
+     *     Path Params: id (String) - The id of an uncompleted travel application to update with the given return segments.<br>
      *     Body : An array of SegmentView's
      */
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveReturnSegments(@PathVariable int id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
-        TravelApplication travelApplication = applicationService.addReturnLegs(id, route.toRoute().getReturnLegs());
+    public BaseResponse saveReturnSegments(@PathVariable String id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
+        TravelApplication travelApplication = applicationService.addReturnLegs(UUID.fromString(id), route.toRoute().getReturnLegs());
         TravelApplicationView updatedView = new TravelApplicationView(travelApplication);
         updatedView = appDao.saveUncompleteTravelApp(updatedView);
         return new ViewObjectResponse<>(updatedView);
@@ -169,8 +170,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "/{id}/expenses", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveExpenses(@PathVariable int id, @RequestBody AllowancesDtoView allowancesDto) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+    public BaseResponse saveExpenses(@PathVariable String id, @RequestBody AllowancesDtoView allowancesDto) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
         appView.setTollsAllowance(allowancesDto.tollsAllowance);
         appView.setParkingAllowance(allowancesDto.parkingAllowance);
         appView.setAlternateAllowance(allowancesDto.alternateAllowance);
@@ -190,8 +191,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "/{id}/meal-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse updateMealAllowances(@PathVariable int id, @RequestBody MealAllowancesView mealAllowancesView) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+    public BaseResponse updateMealAllowances(@PathVariable String id, @RequestBody MealAllowancesView mealAllowancesView) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
         appView.setMealAllowance(mealAllowancesView);
         TravelApplication app = appView.toTravelApplication();
         appView = new TravelApplicationView(app);
@@ -206,8 +207,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "/{id}/lodging-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse updateMealAllowances(@PathVariable int id, @RequestBody LodgingAllowancesView lodgingAllowancesView) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+    public BaseResponse updateMealAllowances(@PathVariable String id, @RequestBody LodgingAllowancesView lodgingAllowancesView) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
         appView.setLodgingAllowance(lodgingAllowancesView);
         TravelApplication app = appView.toTravelApplication();
         appView = new TravelApplicationView(app);
@@ -244,8 +245,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * Upload one or more files to attach to a application.
      */
     @RequestMapping(value = "/{id}/attachment", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse addAttachments(@PathVariable int id, @RequestParam("file") MultipartFile[] files) throws IOException {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+    public BaseResponse addAttachments(@PathVariable String id, @RequestParam("file") MultipartFile[] files) throws IOException {
+        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
         TravelApplication app = appView.toTravelApplication();
 
         List<TravelAttachment> attachments = new ArrayList<>();
@@ -266,8 +267,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * @return
      */
     @RequestMapping(value = "/{id}/attachment/{attachmentId}", method = RequestMethod.DELETE)
-    public BaseResponse deleteAttachment(@PathVariable int id, @PathVariable String attachmentId) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(id);
+    public BaseResponse deleteAttachment(@PathVariable String id, @PathVariable String attachmentId) {
+        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
         TravelApplication app = appView.toTravelApplication();
         app.deleteAttachment(attachmentId);
         appView = new TravelApplicationView(app);
