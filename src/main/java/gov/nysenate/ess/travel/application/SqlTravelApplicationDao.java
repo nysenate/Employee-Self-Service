@@ -18,7 +18,6 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,11 +91,11 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     private void insertAddresses(TravelApplication app) {
-        List<TravelAddress> destinations = app.getDestinations().getDestinations().stream()
+        List<TravelAddress> addresses = app.getDestinations().getDestinations().stream()
                 .map(Destination::getAddress)
                 .collect(Collectors.toList());
-        destinations.add(app.getRoute().origin());
-        travelAddressDao.insertAddresses(destinations);
+        addresses.add(app.getRoute().origin());
+        travelAddressDao.insertAddresses(addresses);
     }
 
     private enum SqlTravelApplicationQuery implements BasicSqlQuery {
