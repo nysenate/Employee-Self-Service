@@ -62,6 +62,15 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 mileageAllowanceDao, mealAllowanceDao, lodgingAllowanceDao, employeeInfoService));
     }
 
+    @Override
+    public List<TravelApplication> getActiveTravelApplications(int travelerId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("travelerId", travelerId);
+        String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
+        TravelApplicationRowMapper mapper = new TravelApplicationRowMapper(routeDao, destinationDao,
+                mileageAllowanceDao, mealAllowanceDao, lodgingAllowanceDao, employeeInfoService);
+        return localNamedJdbc.query(sql, params, mapper);
+    }
+
     private void insertApplication(TravelApplication app) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appId", app.getId().toString())
@@ -121,11 +130,19 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                         "  app_version.alternate_allowance, app_version.train_and_plane_allowance, app_version.registration_allowance,\n" +
                         "  app_version.registration_allowance"
         ),
+        TRAVEL_APP_TABLES(
+                "FROM ${travelSchema}.app \n" +
+                        "INNER JOIN ${travelSchema}.app_version ON app.current_version_id = app_version.id"
+        ),
         SELECT_APP_BY_ID(
                 TRAVEL_APP_COLUMNS.getSql() + " \n" +
-                        "FROM ${travelSchema}.app \n" +
-                        "INNER JOIN ${travelSchema}.app_version ON app.current_version_id = app_version.id \n" +
+                        TRAVEL_APP_TABLES.getSql() + "\n" +
                         "WHERE app.id = :id::uuid"
+        ),
+        SELECT_APP_BY_TRAVELER(
+                TRAVEL_APP_COLUMNS.getSql() + "\n" +
+                        TRAVEL_APP_TABLES.getSql() + "\n" +
+                        "WHERE app.traveler_id = :travelerId AND is_deleted = false"
         );
 
         private String sql;

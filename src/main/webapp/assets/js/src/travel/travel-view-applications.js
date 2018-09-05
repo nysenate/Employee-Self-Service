@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelHistoryController', ['$scope', 'appProps', 'modals', 'TravelApplicationApi', 'PaginationModel', historyController]);
+essTravel.controller('TravelHistoryController', ['$scope', 'appProps', 'modals', 'TravelApplicationsForTravelerApi', 'PaginationModel', historyController]);
 
-function historyController($scope, appProps, modals, travelApplicationApi) {
+function historyController($scope, appProps, modals, travelerAppApi) {
 
     var DATE_FORMAT = "MM/DD/YYYY";
 
@@ -23,7 +23,7 @@ function historyController($scope, appProps, modals, travelApplicationApi) {
     };
 
     function fetchApplications(empId) {
-        $scope.appRequest = travelApplicationApi.get({empId: empId}, onSuccess, $scope.handleErrorResponse);
+        $scope.appRequest = travelerAppApi.get({travelerId: empId}, onSuccess, $scope.handleErrorResponse);
 
         function onSuccess (resp) {
             parseResponse(resp);

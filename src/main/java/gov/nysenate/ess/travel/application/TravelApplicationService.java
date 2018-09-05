@@ -59,6 +59,14 @@ public class TravelApplicationService {
         return null;
     }
 
+    public TravelApplication getTravelApplication(UUID appId) {
+        return applicationDao.getTravelApplication(appId);
+    }
+
+    public List<TravelApplication> getActiveTravelApplications(int travelerId) {
+        return applicationDao.getActiveTravelApplications(travelerId);
+    }
+
     public TravelApplication addOutboundLegs(UUID appId, List<Leg> outboundLegs) {
         TravelApplication app = appDao.getUncompletedAppById(appId).toTravelApplication();
         List<Leg> previousLegs = app.getRoute().getOutgoingLegs();
