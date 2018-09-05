@@ -16,12 +16,7 @@ public class TravelAddressView extends AddressView {
     }
 
     public TravelAddress toTravelAddress() {
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        TravelAddress address = new TravelAddress(UUID.fromString(id), addr1, addr2, city, state, zip5, zip4);
-        address.setCounty(county);
-        return address;
+        return TravelAddressService.createTravelAddress(super.toAddress());
     }
 
     public String getId() {

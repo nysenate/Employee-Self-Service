@@ -83,8 +83,8 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         ),
         LEG_TABLES(
                 "FROM ${travelSchema}.app_leg leg \n" +
-                        "INNER JOIN ${travelSchema}.app_address from_addr ON leg.from_address_id = from_addr.id \n" +
-                        "INNER JOIN ${travelSchema}.app_address to_addr ON leg.to_address_id = to_addr.id \n"
+                        "INNER JOIN ${travelSchema}.address from_addr ON leg.from_address_id = from_addr.id \n" +
+                        "INNER JOIN ${travelSchema}.address to_addr ON leg.to_address_id = to_addr.id \n"
 
         ),
         SELECT_ROUTE(

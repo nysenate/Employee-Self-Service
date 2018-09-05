@@ -66,7 +66,7 @@ public class SqlLodgingAllowanceDao extends SqlBaseDao implements LodgingAllowan
                         "  addr.city as addr_city, addr.county as addr_county, addr.state as addr_state,\n" +
                         "  addr.zip_5 as addr_zip_5, addr.zip_4 as addr_zip_4\n" +
                         "FROM ${travelSchema}.app_lodging_allowance l\n" +
-                        "INNER JOIN ${travelSchema}.app_address addr on l.address_id = addr.id\n" +
+                        "INNER JOIN ${travelSchema}.address addr on l.address_id = addr.id\n" +
                         "WHERE version_id = :versionId::uuid \n" +
                         "ORDER BY date ASC"
         )

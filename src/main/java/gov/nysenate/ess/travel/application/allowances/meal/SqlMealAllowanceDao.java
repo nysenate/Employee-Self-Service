@@ -65,7 +65,7 @@ public class SqlMealAllowanceDao extends SqlBaseDao implements MealAllowanceDao 
                         "  addr.zip_5 as addr_zip_5, addr.zip_4 as addr_zip_4,\n" +
                         "  t.id as tier_id, t.tier, t.incidental, t.total\n" +
                         "FROM ${travelSchema}.app_meal_allowance m\n" +
-                        "  INNER JOIN ${travelSchema}.app_address addr on m.address_id = addr.id\n" +
+                        "  INNER JOIN ${travelSchema}.address addr on m.address_id = addr.id\n" +
                         "  INNER JOIN ${travelSchema}.meal_tier t on m.meal_tier_id = t.id\n" +
                         "WHERE m.version_id = :versionId::uuid\n" +
                         "ORDER BY date ASC;\n"

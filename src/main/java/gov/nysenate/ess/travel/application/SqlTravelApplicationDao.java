@@ -33,7 +33,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private Logger logger = LoggerFactory.getLogger(SqlTravelApplicationDao.class);
 
-    @Autowired private TravelAddressDao travelAddressDao;
     @Autowired private RouteDao routeDao;
     @Autowired private DestinationDao destinationDao;
     @Autowired private MileageAllowanceDao mileageAllowanceDao;
@@ -46,7 +45,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     public synchronized void insertTravelApplication(TravelApplication app) {
         insertApplication(app);
         insertApplicationVersion(app);
-        insertAddresses(app);
         routeDao.insertRoute(app.getVersionId(), app.getRoute());
         destinationDao.insertDestinations(app.getVersionId(), app.getDestinations());
         mileageAllowanceDao.insertMileageAllowances(app.getVersionId(), app.getMileageAllowances());
@@ -97,14 +95,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .addValue("registrationAllowance", app.getRegistration().toString());
         String sql = SqlTravelApplicationQuery.INSERT_APP_VERSION.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
-    }
-
-    private void insertAddresses(TravelApplication app) {
-        List<TravelAddress> addresses = app.getDestinations().getDestinations().stream()
-                .map(Destination::getAddress)
-                .collect(Collectors.toList());
-        addresses.add(app.getRoute().origin());
-        travelAddressDao.insertAddresses(addresses);
     }
 
     private enum SqlTravelApplicationQuery implements BasicSqlQuery {

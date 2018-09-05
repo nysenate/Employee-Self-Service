@@ -65,7 +65,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                         "  addr.city as addr_city, addr.county as addr_county, addr.state as addr_state,\n" +
                         "  addr.zip_5 as addr_zip_5, addr.zip_4 as addr_zip_4\n" +
                         "FROM ${travelSchema}.app_destination dest\n" +
-                        "  INNER JOIN ${travelSchema}.app_address addr ON dest.address_id = addr.id\n" +
+                        "  INNER JOIN ${travelSchema}.address addr ON dest.address_id = addr.id\n" +
                         "WHERE dest.version_id = :versionId::uuid \n" +
                         "ORDER BY dest.sequence_no ASC"
         )
