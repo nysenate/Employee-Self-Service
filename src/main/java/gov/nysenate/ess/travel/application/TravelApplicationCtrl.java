@@ -20,7 +20,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{id}")
     public BaseResponse getTravelAppById(@PathVariable String id) {
         TravelApplication app = travelApplicationService.getTravelApplication(UUID.fromString(id));
-        TravelApplicationView appView = new DetailedTravelApplicationView(app);
+        TravelApplicationView appView = new TravelApplicationView(app);
         return new ViewObjectResponse(appView);
     }
 
@@ -28,7 +28,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse getActiveTravelApps(@PathVariable int travelerId) {
         List<TravelApplication> apps = travelApplicationService.getActiveTravelApplications(travelerId);
         List<TravelApplicationView> appViews = apps.stream()
-                    .map(DetailedTravelApplicationView::new)
+                    .map(TravelApplicationView::new)
                     .collect(Collectors.toList());
         return ListViewResponse.of(appViews);
     }

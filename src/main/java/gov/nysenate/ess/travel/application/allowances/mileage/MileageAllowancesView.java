@@ -26,7 +26,7 @@ public class MileageAllowancesView implements ViewObject {
         this.totalMiles = String.valueOf(mileageAllowances.totalMiles());
     }
 
-    public MileageAllowances toMileageAllowanceView() {
+    public MileageAllowances toMileageAllowances() {
         return new MileageAllowances(getOutboundAllowances().stream()
                 .map(MileageAllowanceView::toLegMileageAllowance)
                 .collect(Collectors.toList()),

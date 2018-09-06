@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application.uncompleted;
+package gov.nysenate.ess.travel.application;
 
 import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
@@ -6,15 +6,11 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.application.allowances.AllowancesDtoView;
-import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowanceFactory;
-import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
-import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.RouteView;
+import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -26,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,15 +32,12 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(UncompletedTravelAppCtrl.class);
 
-    @Autowired private TravelApplicationService applicationService;
-    @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private InMemoryTravelAppDao appDao;
+    @Autowired private UncompletedTravelApplicationService uncompletedAppService;
+    @Autowired private UncompletedTravelApplicationDao uncompletedAppDao;
     @Autowired private UploadProcessor uploadProcessor;
-    @Autowired private MileageAllowanceFactory mileageAllowanceFactory;
 
     /**
-     * Initialize a mostly empty travel app, containing just the traveling {@link Employee}
-     * and the submitter {@link Employee}
+     * Gets a users currently saved travel application or creates a new empty application.
      * <p>
      * (POST) /api/v1/travel/application/uncompleted/init
      * <p>
@@ -55,16 +47,9 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * @return An application with the traveler and submitter initialized.
      */
     @RequestMapping(value = "/init", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse initTravelApplication(@RequestParam int empId) {
-        Employee traveler = employeeInfoService.getEmployee(empId);
-        Employee submitter = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        TravelApplicationView uncompletedApp = appDao.getUncompletedAppByEmpId(traveler.getEmployeeId());
-        if (uncompletedApp == null) {
-            TravelApplication app = applicationService.initTravelApplication(traveler, submitter);
-            uncompletedApp = new TravelApplicationView(app);
-            uncompletedApp = appDao.saveUncompleteTravelApp(uncompletedApp);
-        }
-        return new ViewObjectResponse<>(uncompletedApp);
+    public BaseResponse getSavedTravelApplication(@RequestParam int empId) {
+        TravelApplication app = uncompletedAppService.getSavedTravelApplication(empId, getSubjectEmployeeId());
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     /**
@@ -81,12 +66,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/submit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitTravelApp(@PathVariable String id) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
-        TravelApplication app = appView.toTravelApplication();
-
-        applicationService.insertTravelApplication(app);
-        // Delete uncompleted version.
-        appDao.deleteApplication(app.getTraveler().getEmployeeId());
+        TravelApplication app = uncompletedAppService.submitApplication(UUID.fromString(id));
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
@@ -105,7 +85,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{empId}", method = RequestMethod.DELETE)
     public BaseResponse cancelApplication(@PathVariable int empId) {
-        appDao.deleteApplication(empId);
+        uncompletedAppService.deleteUncompletedTravelApplication(empId);
         return new SimpleResponse(true, "Successfully canceled travel application", "travel-app-cancel");
     }
 
@@ -123,10 +103,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/purpose", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse savePurpose(@PathVariable String id, @RequestBody String purpose) {
-        TravelApplicationView app = appDao.getUncompletedAppById(UUID.fromString(id));
-        app.setPurposeOfTravel(purpose);
-        app = appDao.saveUncompleteTravelApp(app);
-        return new ViewObjectResponse<>(app);
+        TravelApplication app = uncompletedAppService.savePurpose(UUID.fromString(id), purpose);
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     /**
@@ -139,12 +117,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/outbound", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveOutboundSegments(@PathVariable String id, @RequestBody RouteView route) {
-        List<Leg> outboundLegs = route.toRoute().getOutgoingLegs();
-        TravelApplication travelApplication = applicationService.addOutboundLegs(UUID.fromString(id), outboundLegs);
-
-        TravelApplicationView app = new TravelApplicationView(travelApplication);
-        app = appDao.saveUncompleteTravelApp(app);
-        return new ViewObjectResponse<>(app);
+        TravelApplication app = uncompletedAppService.saveOutboundLegs(UUID.fromString(id), route.toRoute().getOutgoingLegs());
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     /**
@@ -157,10 +131,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveReturnSegments(@PathVariable String id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
-        TravelApplication travelApplication = applicationService.addReturnLegs(UUID.fromString(id), route.toRoute().getReturnLegs());
-        TravelApplicationView updatedView = new TravelApplicationView(travelApplication);
-        updatedView = appDao.saveUncompleteTravelApp(updatedView);
-        return new ViewObjectResponse<>(updatedView);
+        TravelApplication app = uncompletedAppService.saveReturnLegs(UUID.fromString(id), route.toRoute().getReturnLegs());
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     /**
@@ -171,17 +143,10 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/expenses", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveExpenses(@PathVariable String id, @RequestBody AllowancesDtoView allowancesDto) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
-        appView.setTollsAllowance(allowancesDto.tollsAllowance);
-        appView.setParkingAllowance(allowancesDto.parkingAllowance);
-        appView.setAlternateAllowance(allowancesDto.alternateAllowance);
-        appView.setRegistrationAllowance(allowancesDto.registrationAllowance);
-        appView.setTrainAndAirplaneAllowance(allowancesDto.trainAndAirplaneAllowance);
-
-        TravelApplication app = appView.toTravelApplication();
-        appView = new TravelApplicationView(app);
-        appView = appDao.saveUncompleteTravelApp(appView);
-        return new ViewObjectResponse<>(appView);
+        TravelApplication app = uncompletedAppService.saveExpenses(UUID.fromString(id), new Dollars(allowancesDto.tollsAllowance),
+                new Dollars(allowancesDto.getParkingAllowance()), new Dollars(allowancesDto.getAlternateAllowance()),
+                new Dollars(allowancesDto.getRegistrationAllowance()), new Dollars(allowancesDto.getTrainAndAirplaneAllowance()));
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     /**
@@ -192,12 +157,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/meal-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse updateMealAllowances(@PathVariable String id, @RequestBody MealAllowancesView mealAllowancesView) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
-        appView.setMealAllowance(mealAllowancesView);
-        TravelApplication app = appView.toTravelApplication();
-        appView = new TravelApplicationView(app);
-        appView = appDao.saveUncompleteTravelApp(appView);
-        return new ViewObjectResponse<>(appView);
+        TravelApplication app = uncompletedAppService.updateMealAllowances(UUID.fromString(id), mealAllowancesView.toMealAllowances());
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     /**
@@ -207,13 +168,9 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      */
     @RequestMapping(value = "/{id}/lodging-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse updateMealAllowances(@PathVariable String id, @RequestBody LodgingAllowancesView lodgingAllowancesView) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
-        appView.setLodgingAllowance(lodgingAllowancesView);
-        TravelApplication app = appView.toTravelApplication();
-        appView = new TravelApplicationView(app);
-        appView = appDao.saveUncompleteTravelApp(appView);
-        return new ViewObjectResponse<>(appView);
+    public BaseResponse updateLodgingAllowances(@PathVariable String id, @RequestBody LodgingAllowancesView lodgingAllowancesView) {
+        TravelApplication app = uncompletedAppService.updateLodgingAllowances(UUID.fromString(id), lodgingAllowancesView.toLodgingAllowances());
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
 
@@ -246,17 +203,15 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/attachment", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse addAttachments(@PathVariable String id, @RequestParam("file") MultipartFile[] files) throws IOException {
-        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
-        TravelApplication app = appView.toTravelApplication();
+        TravelApplication app = uncompletedAppDao.selectUncompletedApplication(UUID.fromString(id));
 
         List<TravelAttachment> attachments = new ArrayList<>();
         for (MultipartFile file : files) {
             attachments.add(uploadProcessor.uploadTravelAttachment(file));
         }
         app.addAttachments(attachments);
-        appView = new TravelApplicationView(app);
-        appView = appDao.saveUncompleteTravelApp(appView);
-        return new ViewObjectResponse<>(appView);
+        uncompletedAppDao.saveUncompletedApplication(app);
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
 
@@ -268,12 +223,10 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/attachment/{attachmentId}", method = RequestMethod.DELETE)
     public BaseResponse deleteAttachment(@PathVariable String id, @PathVariable String attachmentId) {
-        TravelApplicationView appView = appDao.getUncompletedAppById(UUID.fromString(id));
-        TravelApplication app = appView.toTravelApplication();
+        TravelApplication app = uncompletedAppDao.selectUncompletedApplication(UUID.fromString(id));
         app.deleteAttachment(attachmentId);
-        appView = new TravelApplicationView(app);
-        appView = appDao.saveUncompleteTravelApp(appView);
-        return new ViewObjectResponse<>(appView);
+        uncompletedAppDao.saveUncompletedApplication(app);
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     private int getSubjectEmployeeId() {

@@ -177,7 +177,7 @@ public class TravelApplication {
         return mealAllowances;
     }
 
-    protected void setMealAllowances(MealAllowances mealAllowances) {
+    public void setMealAllowances(MealAllowances mealAllowances) {
         this.mealAllowances = mealAllowances;
     }
 
@@ -185,7 +185,7 @@ public class TravelApplication {
         return lodgingAllowances;
     }
 
-    protected void setLodgingAllowances(LodgingAllowances lodgingAllowances) {
+    public void setLodgingAllowances(LodgingAllowances lodgingAllowances) {
         this.lodgingAllowances = lodgingAllowances;
     }
 

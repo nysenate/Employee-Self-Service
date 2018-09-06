@@ -86,7 +86,7 @@ public class TravelApplicationView implements ViewObject {
             app.setRoute(route.toRoute());
         }
         app.setPurposeOfTravel(purposeOfTravel);
-        app.setMileageAllowances(mileageAllowance.toMileageAllowanceView());
+        app.setMileageAllowances(mileageAllowance.toMileageAllowances());
         app.setMealAllowances(mealAllowance.toMealAllowances());
         app.setLodgingAllowances(lodgingAllowance.toLodgingAllowances());
         app.setTolls(new Dollars(tollsAllowance));

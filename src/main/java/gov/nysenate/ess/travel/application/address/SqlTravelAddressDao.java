@@ -68,8 +68,8 @@ public class SqlTravelAddressDao extends SqlBaseDao implements TravelAddressDao 
         SELECT_ADDRESS(
                 "SELECT id, street_1, street_2, city, county, state, zip_5, zip_4\n" +
                         "FROM ${travelSchema}.address\n" +
-                        "WHERE street_1 = :street1 AND street_2 = :street2\n" +
-                        "AND city = :city AND state = :state AND zip_5 = :zip5 AND zip_4 = :zip4"
+                        "WHERE street_1 = :street1 AND street_2 = :street2 AND city = :city\n" +
+                        "AND county = :county AND state = :state AND zip_5 = :zip5 AND zip_4 = :zip4"
         )
         ;
 
