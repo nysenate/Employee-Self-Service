@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application.allowances.mileage;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,8 @@ public class MileageAllowancesView implements ViewObject {
                 .map(MileageAllowanceView::new)
                 .collect(Collectors.toList());
         this.totalMileageAllowance = mileageAllowances.totalAllowance().toString();
-        this.totalMiles = String.valueOf(mileageAllowances.totalMiles());
+        // Round to one decimal place.
+        this.totalMiles = new DecimalFormat("#.#").format(mileageAllowances.totalMiles());
     }
 
     public MileageAllowances toMileageAllowances() {
