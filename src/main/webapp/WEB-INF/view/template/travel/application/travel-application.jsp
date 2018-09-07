@@ -105,8 +105,8 @@
            reject-button="Log out of ESS">
         <div style="padding-bottom: 20px;">
           <p>
-            You should now <a class="bold" target="_blank" ng-href="${ctxPath}/travel/application/travel-application-print?id={{data.app.id}}&print=true">print</a>
-            and sign your travel application and deliver it to your department head.
+            You should now <a class="bold" target="_blank" ng-href="${ctxPath}/travel/application/travel-application-print?id={{data.app.id}}&print=true">print</a>,
+            sign and deliver your application to your department head.
           </p>
         </div>
       </div>
