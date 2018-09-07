@@ -210,7 +210,8 @@
     <input type="button" class="travel-neutral-button" value="Back"
            ng-click="previousState()">
     <input type="button" class="submit-button"
-           value="Submit"
+           value="Save"
            ng-click="next()">
   </div>
+
 </div>

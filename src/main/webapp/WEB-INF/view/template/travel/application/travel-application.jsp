@@ -86,23 +86,29 @@
     <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
-           title="Submit Travel Application?"
-           confirm-message="The application will be sent to your department head for review."
-           resolve-button="Submit"
+           title="Save Travel Application?"
+           confirm-message="Are you sure you want to save this travel application?"
+           resolve-button="Save"
            reject-button="Cancel">
       </div>
     </modal>
 
     <modal modal-id="submit-progress">
-      <div progress-modal title="Submitting travel application..."></div>
+      <div progress-modal title="Saving travel application..."></div>
     </modal>
 
     <modal modal-id="submit-results">
       <div confirm-modal rejectable="true"
-           title="Your travel application has been submitted."
-           confirm-message="What would you like to do next?"
+           title="Your travel application has been saved."
+           <%--confirm-message="What would you like to do next?"--%>
            resolve-button="Go back to ESS"
            reject-button="Log out of ESS">
+        <div style="padding-bottom: 20px;">
+          <p>
+            You should now <a class="bold" target="_blank" ng-href="${ctxPath}/travel/application/travel-application-print?id={{data.app.id}}&print=true">print</a>
+            and sign your travel application and deliver it to your department head.
+          </p>
+        </div>
       </div>
     </modal>
 
