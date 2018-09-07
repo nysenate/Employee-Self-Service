@@ -28,7 +28,6 @@ function historyController($scope, appProps, modals, travelerAppApi) {
         function onSuccess (resp) {
             parseResponse(resp);
             $scope.applyFilters();
-            sort($scope.apps.filtered);
         }
 
         function parseResponse(resp) {
@@ -45,13 +44,14 @@ function historyController($scope, appProps, modals, travelerAppApi) {
             return Date.parse(app.startDate) >= Date.parse($scope.date.from) &&
                 Date.parse(app.startDate) <= Date.parse($scope.date.to)
         });
+        sortByTravelDateAsc($scope.apps.filtered);
     };
 
-    function sort(apps) {
+    function sortByTravelDateAsc(apps) {
         apps.sort(function(a, b) {
             // Turn your strings into dates, and then subtract them
             // to get a value that is either negative, positive, or zero.
-            return new Date(b.startDate.date) - new Date(a.startDate.date);
+            return new Date(b.startDate) - new Date(a.startDate);
         });
     }
 
