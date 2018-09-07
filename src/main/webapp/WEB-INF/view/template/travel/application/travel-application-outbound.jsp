@@ -6,7 +6,17 @@
   <form novalidate name="outbound.form" id="outboundForm">
 
     <div ng-if="outbound.form.$submitted && !outbound.form.$valid" class="margin-10">
-      <ess-notification level="error" title="Outbound segments have errors" message="Fix the highlighted fields below. Addresses require a zip code.">
+      <ess-notification level="error" title="Outbound segments have errors">
+        <ul>
+          <li ng-if="outbound.form.$error.dateValidator">One or more travel dates are invalid.
+            <span class="icon-help-with-circle" style="padding: 5px;" title="Select a date from the calendar or enter a date in the form mm/dd/yyyy"></span>
+          </li>
+          <li ng-if="outbound.form.$error.motRequired">Enter a mode of transportation for each segment.</li>
+          <li ng-if="outbound.form.$error.motDescription">Specify how you will travel for segments with mode of transportation of Other.</li>
+          <li ng-if="outbound.form.$error.addressValidator">One or more of your addresses are invalid.
+            <span class="icon-help-with-circle" style="padding: 5px;" title="Addresses must be selected from the drop down and contain a zip code. Include a street number to help ensure your selected address will be valid."></span>
+          </li>
+        </ul>
       </ess-notification>
     </div>
 
@@ -56,12 +66,12 @@
             <select mot-validator name="mot_{{$index}}" ng-model="leg.modeOfTransportation"
                     ng-options="mode.displayName for mode in modesOfTransportation track by mode.methodOfTravel"
                     ng-change="motChange(leg, $index)"
-                    required></select>
+                    ></select>
           </div>
-          <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel == 'OTHER'">
+          <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel === 'OTHER'">
             <label>Please Specify:</label><br/>
-            <input id="outboundMotOtherInput_{{$index}}" name="motOther_{{$index}}"
-                   ng-required="leg.modeOfTransportation.methodOfTravel === 'OTHER'"
+            <input mot-description-validator id="outboundMotOtherInput_{{$index}}" name="motOther_{{$index}}"
+                   <%--ng-required="leg.modeOfTransportation.methodOfTravel === 'OTHER'"--%>
                    type="text" size="17" ng-model="leg.modeOfTransportation.description">
           </div>
         </div>

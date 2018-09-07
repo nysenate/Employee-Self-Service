@@ -6,7 +6,17 @@
   <form novalidate name="return.form" id="returnForm">
 
     <div ng-if="return.form.$submitted && !return.form.$valid" class="margin-10">
-      <ess-notification level="error" title="Return segments have errors" message="Fix the highlighted fields below.">
+      <ess-notification level="error" title="Return segments have errors">
+        <ul>
+          <li ng-if="return.form.$error.dateValidator">One or more travel dates are invalid.
+            <span class="icon-help-with-circle" style="padding: 5px;" title="Select a date from the calendar or enter a date in the form mm/dd/yyyy"></spanclas></li>
+          </li>
+          <li ng-if="return.form.$error.motRequired">Enter a mode of transportation for each segment.</li>
+          <li ng-if="return.form.$error.motDescription">Specify how you will travel for segments with mode of transportation of Other.</li>
+          <li ng-if="return.form.$error.addressValidator">One or more of your addresses are invalid.
+            <span class="icon-help-with-circle" style="padding: 5px;" title="Addresses must be selected from the drop down and contain a zip code. Include a street number to help ensure your selected address will be valid."></span>
+          </li>
+        </ul>
       </ess-notification>
     </div>
 
@@ -59,10 +69,9 @@
                     ng-change="motChange(leg, $index)"
                     required></select>
           </div>
-          <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel == 'OTHER'">
+          <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel === 'OTHER'">
             <label>Please Specify:</label><br/>
-            <input id="returnMotOtherInput_{{$index}}" name="motOther_{{$index}}"
-                   ng-required="leg.modeOfTransportation.methodOfTravel === 'OTHER'"
+            <input mot-description-validator id="returnMotOtherInput_{{$index}}" name="motOther_{{$index}}"
                    type="text" size="17" ng-model="leg.modeOfTransportation.description">
           </div>
         </div>

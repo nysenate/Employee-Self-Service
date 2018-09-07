@@ -8,11 +8,26 @@ essTravel.directive('motValidator', function () {
     return {
         require: 'ngModel',
         link: function ($scope, elm, attrs, ctrl) {
-            ctrl.$validators.motValidator = function (modelValue, viewValue) {
-                if (modelValue && modelValue.methodOfTravel == null) {
-                    return false;
-                }
-                return true;
+            ctrl.$validators.motRequired = function (modelValue, viewValue) {
+                return modelValue;
+            };
+        }
+    }
+});
+
+/**
+ * Simply requires a mot description.
+ *
+ * We use a custom validator instead of the 'required' attribute because the input element
+ * this is used on are named dynamically (since there can be multiple segments) which makes it impossible
+ * to detect an error with this field and display an error message for it.
+ */
+essTravel.directive('motDescriptionValidator', function () {
+    return {
+        require: 'ngModel',
+        link: function ($scope, elm, attrs, ctrl) {
+            ctrl.$validators.motDescription = function (modelValue, viewValue) {
+                return modelValue;
             }
         }
     }
