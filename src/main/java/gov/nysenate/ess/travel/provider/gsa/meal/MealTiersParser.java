@@ -7,12 +7,14 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 
 @Component
-public class MealRatesParser {
+public class MealTiersParser {
 
-    public MealRates parseMealRates(String content) {
+    public Set<MealTier> parseMealTiers(String content) {
         HashSet<MealTier> mealTiers = new HashSet<>();
 
         Document document = Jsoup.parse(content);
@@ -28,12 +30,11 @@ public class MealRatesParser {
                 String dinner = columnEls.get(3).text().substring(1);
                 String incidental = columnEls.get(4).text().substring(1);
 
-                MealTier mealTier = new MealTier(tier, breakfast, lunch, dinner, incidental);
+                MealTier mealTier = new MealTier(UUID.randomUUID(), tier, breakfast, lunch, dinner, incidental);
                 mealTiers.add(mealTier);
             }
         }
 
-
-        return new MealRates(mealTiers);
+        return mealTiers;
     }
 }

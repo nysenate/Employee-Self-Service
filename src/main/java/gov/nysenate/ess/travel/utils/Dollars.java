@@ -32,11 +32,9 @@ public final class Dollars implements Comparable<Dollars> {
         this(new BigDecimal(dollars));
     }
 
-
     public Dollars add(Dollars dollars) {
         return new Dollars(this.getDollars().add(dollars.getDollars()));
     }
-
 
     public Dollars multiply(Dollars dollars) {
         return new Dollars(this.getDollars().multiply(dollars.getDollars()));

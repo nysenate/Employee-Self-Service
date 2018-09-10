@@ -1,5 +1,8 @@
 package gov.nysenate.ess.travel.admin;
 
+import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.travel.provider.dod.DodMealTierView;
 import gov.nysenate.ess.travel.provider.dod.DodService;
@@ -29,8 +32,8 @@ public class MealRateCtrl {
     DodService dodService;
 
     @RequestMapping(value = "", produces = "application/json")
-    public MealRatesView updateMealRates() throws IOException {
-       return mealRatesService.scrapeAndUpdate();
+    public BaseResponse updateMealRates() throws IOException {
+       return new ViewObjectResponse<>(new MealRatesView(mealRatesService.scrapeAndUpdate()));
     }
 
     @RequestMapping(value = "/dod", produces = "application/json")
@@ -39,6 +42,6 @@ public class MealRateCtrl {
                                               @RequestParam String travelDate) throws IOException {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-        return  new DodMealTierView( dodService.getNonConusMealInfo(country, city, LocalDate.parse(travelDate, formatter)));
+        return  new DodMealTierView(dodService.getNonConusMealInfo(country, city, LocalDate.parse(travelDate, formatter)));
     }
 }

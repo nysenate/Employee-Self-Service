@@ -17,7 +17,7 @@ public class MealRates {
 
     private final UUID id;
     private final LocalDate startDate;
-    private final LocalDate endDate;
+    private LocalDate endDate;
     private final ImmutableMap<String, MealTier> tiers;
 
     public MealRates(UUID id, LocalDate startDate, LocalDate endDate, Set<MealTier> tiers) {
@@ -34,6 +34,22 @@ public class MealRates {
 
     public ImmutableCollection<MealTier> getTiers() {
         return tiers.values();
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    protected UUID getId() {
+        return id;
+    }
+
+    protected LocalDate getStartDate() {
+        return startDate;
+    }
+
+    protected LocalDate getEndDate() {
+        return endDate;
     }
 
     @Override

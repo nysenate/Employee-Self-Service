@@ -29,12 +29,20 @@ public class GsaAllowanceService {
         this.mealRatesDao = mealRatesDao;
     }
 
+    /**
+     * Returns the MealTier for the given date and address.
+     * @throws IOException
+     */
     public MealTier fetchMealTier(LocalDate date, Address address) throws IOException {
         GsaResponse res = client.queryGsa(date, address.getZip5());
         MealRates rates = mealRatesDao.getMealRates(date);
         return rates.getTier(res.getMealTier());
     }
 
+    /**
+     * Returns the lodging rate for the given date and address.
+     * @throws IOException
+     */
     public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
         GsaResponse res = client.queryGsa(date, address.getZip5());
         return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse

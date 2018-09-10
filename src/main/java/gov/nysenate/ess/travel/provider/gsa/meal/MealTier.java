@@ -72,15 +72,14 @@ public class MealTier implements Comparable<MealTier> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MealTier mealTier = (MealTier) o;
-        return Objects.equals(id, mealTier.id) &&
-                Objects.equals(tier, mealTier.tier) &&
+        return Objects.equals(tier, mealTier.tier) &&
                 Objects.equals(total, mealTier.total) &&
                 Objects.equals(incidental, mealTier.incidental);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tier, total, incidental);
+        return Objects.hash(tier, total, incidental);
     }
 
     @Override

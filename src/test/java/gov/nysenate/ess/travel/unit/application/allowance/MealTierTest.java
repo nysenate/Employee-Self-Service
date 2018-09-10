@@ -1,14 +1,17 @@
 package gov.nysenate.ess.travel.unit.application.allowance;
 
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 import org.junit.Test;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 @UnitTest
 public class MealTierTest {
@@ -19,6 +22,16 @@ public class MealTierTest {
     public void senateRateIsTierTotal() {
         MealTier tier = new MealTier(id, "50", "10", "15", "20", "5");
         assertEquals(new Dollars("50.00"), tier.total());
+    }
+
+    @Test
+    public void testEquality() {
+        MealTier tierA = new MealTier(UUID.randomUUID(), "50", "10", "15", "20", "5");
+        MealTier tierB = new MealTier(UUID.randomUUID(), "55", "15", "15", "20", "5");
+        assertNotEquals(tierA, tierB);
+        Set setA = Sets.newHashSet(tierA, tierB);
+        Set setB = Sets.newHashSet(tierA, tierB);
+        assertEquals(setA, setB);
     }
 
     @Test

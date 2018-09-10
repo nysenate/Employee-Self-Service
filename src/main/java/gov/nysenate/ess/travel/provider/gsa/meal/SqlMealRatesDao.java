@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,8 +20,6 @@ public class SqlMealRatesDao extends SqlBaseDao {
 
     /**
      * Get the effective Meal Rates for a given date.
-     * @param date
-     * @return
      */
     public MealRates getMealRates(LocalDate date) {
         MapSqlParameterSource params =  new MapSqlParameterSource()
@@ -33,42 +30,39 @@ public class SqlMealRatesDao extends SqlBaseDao {
         return handler.results();
     }
 
-    // TODO This needs some fixes... end date no longer null...
-    public synchronized void insertMealRates(MealRates mealRates, LocalDate date) {
-        updateCurrentRatesEndDate(date);
-        Integer id = insertMealRate(date);
-        insertMealTiers(mealRates, id);
+    /**
+     * Insert a new meal rate.
+     */
+    public synchronized void insertMealRates(MealRates mealRates) {
+        MapSqlParameterSource params = mealRatesParams(mealRates);
+        String sql = SqlMealRatesQuery.INSERT_MEAL_RATE.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+        insertMealTiers(mealRates);
     }
 
-    private void updateCurrentRatesEndDate(LocalDate endDate) {
-        MapSqlParameterSource params =  new MapSqlParameterSource()
-                .addValue("endDate", toDate(endDate));
-        String sql = SqlMealRatesQuery.UPDATE_MEAL_RATE_END_DATE.getSql(schemaMap());
+    /**
+     * Updates a meal rate.
+     */
+    public void updateMealRates(MealRates mealRates) {
+        MapSqlParameterSource params = mealRatesParams(mealRates);
+        String sql = SqlMealRatesQuery.UPDATE_MEAL_RATES.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
-    private Integer insertMealRate(LocalDate startDate) {
-        MapSqlParameterSource params =  new MapSqlParameterSource()
-                .addValue("startDate", toDate(startDate));
-        String sql = SqlMealRatesQuery.INSERT_MEAL_RATE.getSql(schemaMap());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        localNamedJdbc.update(sql, params, keyHolder);
-        return (Integer) keyHolder.getKeys().get("id");
-    }
-
-    private void insertMealTiers(MealRates mealRates, Integer id) {
-        List<SqlParameterSource> paramList = createBatchParams(mealRates, id);
+    private void insertMealTiers(MealRates mealRates) {
+        List<SqlParameterSource> paramList = createBatchMealTierParams(mealRates);
         String sql = SqlMealRatesQuery.INSERT_MEAL_TIER.getSql(schemaMap());
         SqlParameterSource[] batchParams = new SqlParameterSource[paramList.size()];
         batchParams = paramList.toArray(batchParams);
         localNamedJdbc.batchUpdate(sql, batchParams);
     }
 
-    private List<SqlParameterSource> createBatchParams(MealRates mealRates, Integer id) {
+    private List<SqlParameterSource> createBatchMealTierParams(MealRates mealRates) {
         List<SqlParameterSource> paramList = new ArrayList<>();
         for (MealTier tier: mealRates.getTiers()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("id", id)
+                    .addValue("id", tier.getId().toString())
+                    .addValue("mealRateId", mealRates.getId().toString())
                     .addValue("tier", tier.getTier())
                     .addValue("total", tier.getTotal().toString())
                     .addValue("incidental", tier.getIncidental().toString());
@@ -77,27 +71,34 @@ public class SqlMealRatesDao extends SqlBaseDao {
         return paramList;
     }
 
+    private MapSqlParameterSource mealRatesParams(MealRates mealRates) {
+        return new MapSqlParameterSource()
+                .addValue("id", mealRates.getId().toString())
+                .addValue("startDate", toDate(mealRates.getStartDate()))
+                .addValue("endDate", toDate(mealRates.getEndDate()));
+    }
+
     private enum SqlMealRatesQuery implements BasicSqlQuery {
         INSERT_MEAL_RATE(
-                "INSERT INTO ${travelSchema}.meal_rate(id, start_date) \n" +
-                        "VALUES (:id, :startDate)"
+                "INSERT INTO ${travelSchema}.meal_rate(id, start_date, end_date) \n" +
+                        "VALUES (:id::uuid, :startDate, :endDate)"
         ),
         INSERT_MEAL_TIER(
-                "INSERT INTO ${travelSchema}.meal_tier(id, tier, total, incidental) " +
-                        "VALUES (:id, :tier, :total, :incidental)"
+                "INSERT INTO ${travelSchema}.meal_tier(id, meal_rate_id, tier, total, incidental) " +
+                        "VALUES (:id::uuid, :mealRateId::uuid, :tier, :total, :incidental)"
         ),
-        UPDATE_MEAL_RATE_END_DATE(
-                "UPDATE ${travelSchema}.meal_rate " +
-                        "SET end_date = :endDate " +
-                        "WHERE end_date IS NULL"
+        UPDATE_MEAL_RATES(
+                "UPDATE ${travelSchema}.meal_rate \n" +
+                        "SET start_date = :startDate, \n" +
+                        "end_date = :endDate \n" +
+                        "WHERE id = :id::uuid"
         ),
         GET_MEAL_RATES(
                 "SELECT mr.id, mr.start_date, mr.end_date, \n" +
                         "mt.id as meal_tier_id, mt.tier, mt.total, mt.incidental \n" +
                         "FROM ${travelSchema}.meal_tier mt \n" +
                         "INNER JOIN ${travelSchema}.meal_rate mr on mr.id = mt.meal_rate_id " +
-                        "WHERE mr.start_date <= :date " +
-                        "AND (mr.end_date IS NULL OR mr.end_date >= :date)"
+                        "WHERE :date BETWEEN mr.start_date AND mr.end_date"
         );
 
         private String sql;
