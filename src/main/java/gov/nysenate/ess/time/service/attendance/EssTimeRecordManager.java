@@ -5,6 +5,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
+import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
@@ -196,34 +198,41 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .filter(record -> record.getRecordStatus().getScope() != TimeRecordScope.EMPLOYEE)
                 .max(TimeRecord::compareTo);
 
-        // Check that existing records correspond to the record ranges
-        // Split any records that span multiple ranges
-        //  also ensure that existing records and entries contain up to date information
-        // Remove ranges that are covered by existing records
-        List<TimeRecord> patchedRecords = patchExistingRecords(existingRecords, recordRanges);
-        recordsToSave.addAll(patchedRecords);
-        long patchedRecordsSaved = patchedRecords.size();
+        try {
+            // Check that existing records correspond to the record ranges
+            // Split any records that span multiple ranges
+            //  also ensure that existing records and entries contain up to date information
+            // Remove ranges that are covered by existing records
+            List<TimeRecord> patchedRecords = patchExistingRecords(existingRecords, recordRanges);
+            recordsToSave.addAll(patchedRecords);
+            long patchedRecordsSaved = patchedRecords.size();
 
-        // Create new records for all ranges not covered by existing records
-        long newRecordsSaved = 0;
-        if (transHistory.isFullyAppointed()) {
-            newRecordsSaved = recordRanges.stream()
-                    .filter(range -> DateUtils.startOfDateRange(range).isAfter(
-                            latestSubmitted.map(TimeRecord::getEndDate).orElse(LocalDate.MIN)))
-                    .map(range -> createTimeRecord(empId, range))
-                    .peek(recordsToSave::add)
-                    .count();
+            // Create new records for all ranges not covered by existing records
+            long newRecordsSaved = 0;
+            if (transHistory.isFullyAppointed()) {
+                newRecordsSaved = recordRanges.stream()
+                        .filter(range -> DateUtils.startOfDateRange(range).isAfter(
+                                latestSubmitted.map(TimeRecord::getEndDate).orElse(LocalDate.MIN)))
+                        .map(range -> createTimeRecord(empId, range))
+                        .peek(recordsToSave::add)
+                        .count();
+            }
+
+            recordsToSave.forEach(timeRecordService::saveRecord);
+
+            if (recordsToSave.isEmpty()) {
+                logger.info("empId {}: no changes", empId);
+            } else {
+                logger.info("empId {}:\t{} periods\t{} existing\t{} saved:\t{} new\t{} patched/split",
+                        empId, payPeriods.size(), existingRecords.size(), recordsToSave.size(), newRecordsSaved, patchedRecordsSaved);
+            }
+            return recordsToSave.size();
+        } catch (Exception ex) {
+            // If anything goes wrong, attempt to clear the employee's record cache.
+            logger.warn("Clearing time record cache for emp:{} due to time record manager error.", empId);
+            eventBus.post(new CacheEvictIdEvent<>(ContentCache.ACTIVE_TIME_RECORDS, empId));
+            throw ex;
         }
-
-        recordsToSave.forEach(timeRecordService::saveRecord);
-
-        if (recordsToSave.isEmpty()) {
-            logger.info("empId {}: no changes", empId);
-        } else {
-            logger.info("empId {}:\t{} periods\t{} existing\t{} saved:\t{} new\t{} patched/split",
-                    empId, payPeriods.size(), existingRecords.size(), recordsToSave.size(), newRecordsSaved, patchedRecordsSaved);
-        }
-        return recordsToSave.size();
     }
 
     /**
