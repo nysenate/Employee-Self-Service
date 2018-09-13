@@ -2,28 +2,30 @@ package gov.nysenate.ess.time.service.attendance;
 
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.config.DatabaseConfig;
-import gov.nysenate.ess.core.service.base.CachingService;
-import gov.nysenate.ess.core.service.period.HolidayService;
-import gov.nysenate.ess.core.util.RangeUtils;
-import gov.nysenate.ess.core.util.ShiroUtils;
-import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
-import gov.nysenate.ess.time.dao.attendance.TimeRecordAuditDao;
-import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
-import gov.nysenate.ess.time.model.attendance.*;
+import gov.nysenate.ess.core.config.DatabaseConfig;
+import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
+import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.Holiday;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
+import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
-import gov.nysenate.ess.time.model.personnel.SupervisorException;
-import gov.nysenate.ess.core.model.payroll.PayType;
-import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
+import gov.nysenate.ess.core.service.period.HolidayService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
+import gov.nysenate.ess.core.util.RangeUtils;
+import gov.nysenate.ess.core.util.ShiroUtils;
+import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.time.dao.attendance.TimeRecordAuditDao;
+import gov.nysenate.ess.time.dao.attendance.TimeRecordDao;
+import gov.nysenate.ess.time.model.attendance.*;
+import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
+import gov.nysenate.ess.time.model.personnel.SupervisorException;
+import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
+import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.time.service.notification.DisapprovalEmailService;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import net.sf.ehcache.Cache;
@@ -43,12 +45,10 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.time.model.attendance.TimeRecordAction.SUBMIT;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED;
-import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.DISAPPROVED;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -74,6 +74,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     @Autowired protected SupervisorInfoService supervisorInfoService;
     @Autowired protected HolidayService holidayService;
     @Autowired protected DisapprovalEmailService disapprovalEmailService;
+    @Autowired protected TimeRecordValidationService trValidationService;
 
     private LocalDateTime lastUpdateTime;
 
@@ -268,10 +269,11 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
 
     @Override
     @Transactional(value = DatabaseConfig.remoteTxManager)
-    public boolean saveRecord(TimeRecord record, TimeRecordAction action) {
+    public boolean saveRecord(final TimeRecord record, final TimeRecordAction action) {
+        trValidationService.validateTimeRecord(record, action);
         // Set resulting status according to action
-        TimeRecordStatus currentStatus = record.getRecordStatus();
-        TimeRecordStatus nextStatus = currentStatus.getResultingStatus(action);
+        TimeRecordStatus initialStatus = record.getRecordStatus();
+        TimeRecordStatus nextStatus = initialStatus.getResultingStatus(action);
         record.setRecordStatus(nextStatus);
 
         // Set update user fields for time record and entries based on authenticated user
@@ -281,30 +283,33 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         record.setOverallUpdateUser(updateUser);
 
         // If record is being approved, then we need to set the Approval Xref#
-        if (nextStatus == APPROVED && currentStatus != APPROVED) {
+        if (nextStatus == APPROVED && initialStatus != APPROVED) {
             record.setApprovalEmpId(ShiroUtils.getAuthenticatedEmpId());
         }
 
-        boolean saved = saveRecord(record);
+        int empId = record.getEmployeeId();
 
-        if (saved) {
-            // If the record was in the employee scope and was submitted,
-            // deactivate any active temporary time records that came before it
-            if (currentStatus.isUnlockedForEmployee() && action == SUBMIT) {
-                deactivatePreviousTERecs(record);
+        try {
+            boolean saved = saveRecord(record);
+            if (saved) {
+                // If the record was in the employee scope and was submitted,
+                // deactivate any active temporary time records that came before it
+                if (initialStatus.isUnlockedForEmployee() && action == SUBMIT) {
+                    deactivatePreviousTERecs(record);
+                }
+                // Generate an audit record for the time record if a significant action was made on the time record.
+                if (action != TimeRecordAction.SAVE) {
+                    auditDao.auditTimeRecord(record.getTimeRecordId());
+                }
+                eventBus.post(new TimeRecordActionEvent(record, action));
             }
-
-            // Generate an audit record for the time record if a significant action was made on the time record.
-            if (action != TimeRecordAction.SAVE) {
-                auditDao.auditTimeRecord(record.getTimeRecordId());
-            }
-
-            if (nextStatus == DISAPPROVED) {
-                disapprovalEmailService.sendRejectionMessage(record, ShiroUtils.getAuthenticatedEmpId());
-            }
+            return saved;
+        } catch (Exception ex) {
+            // If anything goes wrong, attempt to clear the employee's record cache.
+            logger.warn("Clearing time record cache for emp:{} due to time record save error.", empId);
+            eventBus.post(new CacheEvictIdEvent<>(ContentCache.ACTIVE_TIME_RECORDS, empId));
+            throw ex;
         }
-
-        return saved;
     }
 
     @Override
@@ -324,6 +329,7 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
     /** {@inheritDoc} */
     @Override
     public void evictContent(Integer empId) {
+        logger.info("Clearing active time record cache for employee {}", empId);
         activeRecordCache.remove(empId);
     }
 

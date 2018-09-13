@@ -1,6 +1,8 @@
 package gov.nysenate.ess.time.service.notification;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -8,7 +10,9 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.template.EssTemplateException;
+import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
+import gov.nysenate.ess.time.service.attendance.TimeRecordActionEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ import java.io.StringWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import static gov.nysenate.ess.time.model.attendance.TimeRecordAction.REJECT;
 import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.DISAPPROVED;
 
 @Service
@@ -27,13 +32,23 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
     private static final String subjectTemplate = "DISAPPROVED TIMESHEET %s - %s";
     private static final DateTimeFormatter subjectDateFormat = DateTimeFormatter.ofPattern("MM/dd/uu");
 
-    @Autowired private SendMailService sendMailService;
-    @Autowired private Configuration freemarkerCfg;
-
-    @Autowired private EmployeeInfoService empInfoService;
+    private final SendMailService sendMailService;
+    private final Configuration freemarkerCfg;
+    private final EmployeeInfoService empInfoService;
 
     @Value("${freemarker.time.templates.time_record_disapproval_notice:time_record_disapproval_notice.ftlh}")
     private String emailTemplateName;
+
+    @Autowired
+    public EssDisapprovalEmailService(SendMailService sendMailService,
+                                      Configuration freemarkerCfg,
+                                      EmployeeInfoService empInfoService,
+                                      EventBus eventBus) {
+        this.sendMailService = sendMailService;
+        this.freemarkerCfg = freemarkerCfg;
+        this.empInfoService = empInfoService;
+        eventBus.register(this);
+    }
 
     @Override
     public void sendRejectionMessage(TimeRecord rejectedRecord, int rejectorId) {
@@ -42,6 +57,18 @@ public class EssDisapprovalEmailService implements DisapprovalEmailService {
         }
         MimeMessage rejectionEmail = generateRejectionEmail(rejectorId, rejectedRecord);
         sendMailService.send(rejectionEmail);
+    }
+
+    /**
+     * Detect and notify disapprovals through time record action events.
+     * @param event {@link TimeRecordActionEvent}
+     */
+    @Subscribe
+    public void handleTimeRecordActionEvent(TimeRecordActionEvent event) {
+        TimeRecord record = event.getTimeRecord();
+        if (event.getTimeRecordAction() == REJECT && record.getRecordStatus() == DISAPPROVED) {
+            sendRejectionMessage(record, ShiroUtils.getAuthenticatedEmpId());
+        }
     }
 
     /**
