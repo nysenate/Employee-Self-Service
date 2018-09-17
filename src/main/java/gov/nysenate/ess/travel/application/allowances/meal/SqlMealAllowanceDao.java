@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.travel.application.address.TravelAddress;
-import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
+import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -47,7 +47,7 @@ public class SqlMealAllowanceDao extends SqlBaseDao implements MealAllowanceDao 
                 .addValue("id", mealAllowance.getId().toString())
                 .addValue("versionId", versionId.toString())
                 .addValue("addressId", mealAllowance.getAddress().getId().toString())
-                .addValue("mealTierId", mealAllowance.getMealTier().getId().toString())
+                .addValue("mealRate", mealAllowance.getMealRate().toString())
                 .addValue("date", toDate(mealAllowance.getDate()))
                 .addValue("isMealsRequested", mealAllowance.isMealsRequested());
     }
@@ -55,18 +55,16 @@ public class SqlMealAllowanceDao extends SqlBaseDao implements MealAllowanceDao 
     private enum SqlMealAllowanceQuery implements BasicSqlQuery {
         INSERT_MEAL_ALLOWANCE(
                 "INSERT INTO ${travelSchema}.app_meal_allowance(id, version_id, address_id, " +
-                        "meal_tier_id, date, is_meals_requested) \n" +
-                        "VALUES(:id::uuid, :versionId::uuid, :addressId::uuid, :mealTierId::uuid, :date, :isMealsRequested)"
+                        "meal_rate, date, is_meals_requested) \n" +
+                        "VALUES(:id::uuid, :versionId::uuid, :addressId::uuid, :mealRate, :date, :isMealsRequested)"
         ),
         SELECT_MEAL_TIER(
-                "SELECT m.id, m.date, m.is_meals_requested,\n" +
+                "SELECT m.id, m.meal_rate, m.date, m.is_meals_requested,\n" +
                         "  addr.id as addr_id, addr.street_1 as addr_street_1, addr.street_2 as addr_street_2,\n" +
                         "  addr.city as addr_city, addr.county as addr_county, addr.state as addr_state,\n" +
-                        "  addr.zip_5 as addr_zip_5, addr.zip_4 as addr_zip_4,\n" +
-                        "  t.id as tier_id, t.tier, t.incidental, t.total\n" +
+                        "  addr.zip_5 as addr_zip_5, addr.zip_4 as addr_zip_4 \n" +
                         "FROM ${travelSchema}.app_meal_allowance m\n" +
                         "  INNER JOIN ${travelSchema}.address addr on m.address_id = addr.id\n" +
-                        "  INNER JOIN ${travelSchema}.meal_tier t on m.meal_tier_id = t.id\n" +
                         "WHERE m.version_id = :versionId::uuid\n" +
                         "ORDER BY date ASC;\n"
         )
@@ -104,11 +102,9 @@ public class SqlMealAllowanceDao extends SqlBaseDao implements MealAllowanceDao 
             address.setZip5(rs.getString("addr_zip_5"));
             address.setZip4(rs.getString("addr_zip_4"));
 
-            MealTier tier = new MealTier(UUID.fromString(rs.getString("tier_id")),
-                    rs.getString("tier"), rs.getString("total"), rs.getString("incidental"));
-
             MealAllowance mealAllowance = new MealAllowance(UUID.fromString(rs.getString("id")),
-                    address, getLocalDateFromRs(rs, "date"), tier, rs.getBoolean("is_meals_requested"));
+                    address, getLocalDateFromRs(rs, "date"), new Dollars(rs.getString("meal_rate")),
+                    rs.getBoolean("is_meals_requested"));
 
             mealAllowances.add(mealAllowance);
         }

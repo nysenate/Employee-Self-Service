@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
 import gov.nysenate.ess.travel.application.address.TravelAddress;
-import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
@@ -13,20 +12,20 @@ public class MealAllowance {
     private final UUID id;
     private final TravelAddress address;
     private final LocalDate date;
-    private final MealTier mealTier;
+    private final Dollars mealRate;
     private final boolean isMealsRequested;
 
-    public MealAllowance(UUID id, TravelAddress address, LocalDate date, MealTier mealTier, boolean isMealsRequested) {
+    public MealAllowance(UUID id, TravelAddress address, LocalDate date, Dollars mealRate, boolean isMealsRequested) {
         this.id = id;
         this.address = address;
         this.date = date;
-        this.mealTier = mealTier;
+        this.mealRate = mealRate;
         this.isMealsRequested = isMealsRequested;
     }
 
     public Dollars allowance() {
         if (isMealsRequested()) {
-            return mealTier.total();
+            return mealRate;
         }
         return Dollars.ZERO;
     }
@@ -43,8 +42,8 @@ public class MealAllowance {
         return date;
     }
 
-    protected MealTier getMealTier() {
-        return mealTier;
+    protected Dollars getMealRate() {
+        return mealRate;
     }
 
     protected boolean isMealsRequested() {
@@ -53,10 +52,11 @@ public class MealAllowance {
 
     @Override
     public String toString() {
-        return "MealAllowanceDay{" +
-                "address=" + address +
+        return "MealAllowance{" +
+                "id=" + id +
+                ", address=" + address +
                 ", date=" + date +
-                ", mealTier=" + mealTier +
+                ", mealRate=" + mealRate +
                 ", isMealsRequested=" + isMealsRequested +
                 '}';
     }
@@ -67,13 +67,14 @@ public class MealAllowance {
         if (o == null || getClass() != o.getClass()) return false;
         MealAllowance that = (MealAllowance) o;
         return isMealsRequested == that.isMealsRequested &&
+                Objects.equals(id, that.id) &&
                 Objects.equals(address, that.address) &&
                 Objects.equals(date, that.date) &&
-                Objects.equals(mealTier, that.mealTier);
+                Objects.equals(mealRate, that.mealRate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, date, mealTier, isMealsRequested);
+        return Objects.hash(id, address, date, mealRate, isMealsRequested);
     }
 }

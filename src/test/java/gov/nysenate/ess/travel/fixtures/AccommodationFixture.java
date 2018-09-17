@@ -1,13 +1,11 @@
 package gov.nysenate.ess.travel.fixtures;
 
 import gov.nysenate.ess.travel.utils.Dollars;
-import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
 
 import java.time.LocalDate;
 
 public class AccommodationFixture {
 
-    public static MealTier TIER = MealRatesFixture.mealRatesFor2018().getTier("51");
     public static Dollars LODGING_RATE = new Dollars("120");
     public static LocalDate MONDAY = LocalDate.of(2018, 1, 1);
     public static LocalDate TUESDAY = LocalDate.of(2018, 1, 2);

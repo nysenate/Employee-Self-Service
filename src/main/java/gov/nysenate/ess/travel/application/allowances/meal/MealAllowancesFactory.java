@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.travel.application.destination.Destination;
 import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
-import gov.nysenate.ess.travel.provider.gsa.meal.MealTier;
+import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -46,18 +46,18 @@ public class MealAllowancesFactory {
      * @throws IOException
      */
     private MealAllowance getMostExpensiveMealAllowance(LocalDate date, ImmutableList<Destination> dateDestinations) throws IOException {
-        // Place MealTiers and Destinations in an ordered map. The last key will be the most expensive MealTier.
-        TreeMap<MealTier, Destination> tierToDests = new TreeMap<>();
+        // Place Dollars and Destinations in an ordered map. The last key will be the most expensive MealTier.
+        TreeMap<Dollars, Destination> ratesToDests = new TreeMap<>();
         for (Destination d : dateDestinations) {
-            MealTier mealTier = gsaService.fetchMealTier(date, d.getAddress());
-            tierToDests.put(mealTier, d);
+            Dollars mealRate = gsaService.fetchMealRate(date, d.getAddress());
+            ratesToDests.put(mealRate, d);
         }
 
-        return createMealAllowance(date, tierToDests.lastEntry().getValue());
+        return createMealAllowance(date, ratesToDests.lastEntry().getValue());
     }
 
     private MealAllowance createMealAllowance(LocalDate date, Destination destination) throws IOException {
-        MealTier mealTier = gsaService.fetchMealTier(date, destination.getAddress());
-        return new MealAllowance(UUID.randomUUID(), destination.getAddress(), date, mealTier, true);
+        Dollars mealRate = gsaService.fetchMealRate(date, destination.getAddress());
+        return new MealAllowance(UUID.randomUUID(), destination.getAddress(), date, mealRate, true);
     }
 }
