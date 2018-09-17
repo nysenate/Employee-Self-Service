@@ -31,7 +31,7 @@ public class GsaResponseParser {
     public GsaResponse parseGsaResponse(String json) throws IOException {
         JsonNode root = mapper.readTree(json);
         JsonNode records = root.path("result").path("records");
-        JsonNode record = records.get(0);
+        JsonNode record = findRecord(records);
 
         int fiscalYear = record.get("FiscalYear").asInt();
         String zip = record.get("Zip").asText();
@@ -39,6 +39,22 @@ public class GsaResponseParser {
         String mealTier = record.get("Meals").asText();
 
         return new GsaResponse(new GsaResponseId(fiscalYear, zip), lodgingRates, mealTier);
+    }
+
+    // Finds the correct record to use. Use the County provided record if one is given.
+    private JsonNode findRecord(JsonNode records) {
+        JsonNode record = null;
+        for (JsonNode r : records) {
+            // Use the county record if given one.
+            if (!r.get("County").asText().equals("")) {
+                record = r;
+            }
+        }
+        // If no county record, use the first one.
+        if (record == null) {
+            record = records.get(0);
+        }
+        return record;
     }
 
     private Map<Month, BigDecimal> parseLodgingRates(JsonNode record) {
