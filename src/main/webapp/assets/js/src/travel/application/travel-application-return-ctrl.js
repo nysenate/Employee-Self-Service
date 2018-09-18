@@ -116,7 +116,7 @@ function returnCtrl($scope, $timeout, countyService, returnApi) {
             $scope.closeLoadingModal();
         }, function (error) {
             $scope.closeLoadingModal();
-            $scope.handleErrorResponse();
+            $scope.handleErrorResponse(error);
         });
     };
 
