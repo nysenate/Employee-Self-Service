@@ -22,6 +22,18 @@ public class GsaResponseParser {
     }
 
     /**
+     * Detects if the "records" object in the response is empty.
+     * This occurs when querying for a year that does not exist yet.
+     * @param json
+     * @return
+     */
+    public boolean isResponseEmpty(String json) throws IOException {
+        JsonNode root = mapper.readTree(json);
+        JsonNode records = root.path("result").path("records");
+        return records.size() == 0;
+    }
+
+    /**
      * Parses the json text received from the GSA API into a {@link GsaResponse}.
      * This method only handles successful responses, errors should be checked for before use.
      * @param json A json string containing the raw text response from a GSA Api call.

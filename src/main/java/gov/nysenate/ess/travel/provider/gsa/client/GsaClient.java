@@ -77,7 +77,18 @@ public class GsaClient implements CachingService<GsaResponseId> {
                 + "\",\"Zip\":\"" + id.getZipcode() + "\"}";
         String url = baseUrl + URLEncoder.encode(query, "UTF-8");
         String content = HttpUtils.urlToString(url);
-        return gsaResponseParser.parseGsaResponse(content);
+        if (dateTooFarInFuture(id, content)) {
+            id = new GsaResponseId(id.fiscalYear - 1, id.zipcode);
+            return queryApi(id);
+        }
+        else {
+            return gsaResponseParser.parseGsaResponse(content);
+        }
+    }
+
+    // When querying for travel far in the future, GSA may not yet have rates available.
+    private boolean dateTooFarInFuture(GsaResponseId id, String content) throws IOException {
+        return gsaResponseParser.isResponseEmpty(content) && id.fiscalYear > getFiscalYear(LocalDate.now());
     }
 
     private GsaResponse queryCache(GsaResponseId gsaId) {
