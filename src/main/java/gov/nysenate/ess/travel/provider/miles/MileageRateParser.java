@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.provider.miles;
 
+import gov.nysenate.ess.core.util.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,8 +46,7 @@ public class MileageRateParser {
                 Integer.parseInt(splitStartDate[1])
         );
 
-        endDate = LocalDate.of(3000, Month.DECEMBER, 31);
-
+        endDate = DateUtils.THE_FUTURE;
         return new MileageRate(finalStartdate, endDate, mileageRate);
 
     }

@@ -44,5 +44,5 @@ dd66109f-fddc-490a-8e65-72f4d03c52e2	4ee5c6d8-ac93-456f-b5f8-3ec970be4b66	74	5	6
 --
 
 COPY travel.irs_mileage_rate (start_date, end_date, rate) FROM stdin;
-2018-01-01	2018-12-31	0.545
+2018-01-01	2999-12-31	0.545
 \.
