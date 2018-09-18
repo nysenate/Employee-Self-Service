@@ -43,7 +43,7 @@
         <div class="itinerary-date">
           <label>Travel Date</label><br/>
           <input datepicker date-validator type="text" size="13" from-date="fromDate()"
-                 name="travelDate_{{$index}}" ng-model="leg.travelDate" required>
+                 name="travelDate_{{$index}}" ng-model="leg.travelDate" autocomplete="new-password" required>
         </div>
         <div class="clear"></div>
 
