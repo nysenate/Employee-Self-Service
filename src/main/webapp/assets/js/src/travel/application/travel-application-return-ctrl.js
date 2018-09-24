@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', 'AddressCountyService',
+essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', 'modals', 'AddressCountyService',
                                                      'TravelApplicationReturnApi', returnCtrl]);
 
-function returnCtrl($scope, $timeout, countyService, returnApi) {
+function returnCtrl($scope, $timeout, modals, countyService, returnApi) {
 
     this.$onInit = function () {
         $scope.return = {
@@ -24,7 +24,7 @@ function returnCtrl($scope, $timeout, countyService, returnApi) {
             $scope.route.returnLegs.push(segment);
         }
 
-        function numDistinctModesOfTransportation (app) {
+        function numDistinctModesOfTransportation(app) {
             var mots = (app.route.outboundLegs.concat(app.route.returnLegs)).map(function (leg) {
                 return leg.modeOfTransportation.description;
             });
@@ -81,21 +81,30 @@ function returnCtrl($scope, $timeout, countyService, returnApi) {
                 $scope.return.form[prop].$setTouched();
             }
         }
-        // If the entire form is valid, check for counties and continue to next page.
+
         if ($scope.return.form.$valid) {
             $scope.normalizeTravelDates($scope.route.returnLegs);
-            var addrsMissingCounty = findAddressesWithoutCounty();
 
-            if (addrsMissingCounty.isEmpty) {
-                $scope.continue();
-            }
-            else {
-                $scope.openLoadingModal();
-                countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                    .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
-                    .then(countyService.promptUserForCounty)
-                    .then($scope.closeLoadingModal)
-                    .then($scope.continue);
+            var startDate = moment($scope.data.app.startDate, "YYYY-MM-DD", true);
+            var endDate = moment($scope.route.returnLegs[$scope.route.returnLegs.length - 1].travelDate, "MM/DD/YYYY", true);
+            var duration = moment.duration(endDate - startDate);
+            if (duration.asDays() > 7) {
+                modals.open('long-trip-warning')
+                    .then(function () {
+                        var addrsMissingCounty = findAddressesWithoutCounty();
+
+                        if (addrsMissingCounty.isEmpty) {
+                            $scope.continue();
+                        }
+                        else {
+                            $scope.openLoadingModal();
+                            countyService.updateWithGeocodeCounty(addrsMissingCounty)
+                                .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
+                                .then(countyService.promptUserForCounty)
+                                .then($scope.closeLoadingModal)
+                                .then($scope.continue);
+                        }
+                    })
             }
         }
 

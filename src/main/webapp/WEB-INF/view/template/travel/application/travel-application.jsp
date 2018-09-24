@@ -83,6 +83,15 @@
       <div address-county-modal></div>
     </modal>
 
+    <modal modal-id="long-trip-warning">
+      <div confirm-modal rejectable="true"
+           title="Scheduled trip is longer than 7 days"
+           confirm-message="Are you sure your travel dates are correct?"
+           resolve-button="Yes, my dates are correct"
+           reject-button="Let me review">
+      </div>
+    </modal>
+
     <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
