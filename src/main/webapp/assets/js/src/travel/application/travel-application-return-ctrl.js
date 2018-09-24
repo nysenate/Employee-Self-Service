@@ -83,6 +83,7 @@ function returnCtrl($scope, $timeout, countyService, returnApi) {
         }
         // If the entire form is valid, check for counties and continue to next page.
         if ($scope.return.form.$valid) {
+            $scope.normalizeTravelDates($scope.route.returnLegs);
             var addrsMissingCounty = findAddressesWithoutCounty();
 
             if (addrsMissingCounty.isEmpty) {

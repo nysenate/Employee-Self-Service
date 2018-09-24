@@ -136,6 +136,33 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
             $scope.pageState = state;
         }
     };
+
+    /**
+     * Modifies the given legs, normalizing each travel date to MM/DD/YYYY format.
+     * @param legs
+     */
+    $scope.normalizeTravelDates = function (legs) {
+        angular.forEach(legs, function(leg) {
+            if (leg.travelDate) {
+                leg.travelDate = $scope.normalizedDateFormat(leg.travelDate);
+            }
+        })
+    };
+
+    /**
+     * Returns a date representing the given date in MM/DD/YYYY format.
+     * Returns undefined if the given date format cannot be converted.
+     * @param date String representation of a date.
+     */
+    $scope.normalizedDateFormat = function (date) {
+        if (moment(date, 'M/D/YY', true).isValid()) {
+            return moment(date, 'M/D/YY', true).format("MM/DD/YYYY");
+        }
+        else if (moment(date, 'M/D/YYYY', true).isValid()) {
+            return moment(date, 'M/D/YYYY', true).format("MM/DD/YYYY");
+        }
+        return undefined;
+    };
 }
 
 function Segment() {

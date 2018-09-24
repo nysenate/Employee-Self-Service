@@ -8,7 +8,7 @@ essTravel.directive('dateValidator', function () {
                 if (!modelValue) {
                     return false;
                 }
-                if (moment(modelValue, 'MM/DD/YYYY', true).isValid()) {
+                if (moment(modelValue, 'M/D/YY', true).isValid() || moment(modelValue, 'M/D/YYYY', true).isValid()) {
                     return true;
                 }
             }

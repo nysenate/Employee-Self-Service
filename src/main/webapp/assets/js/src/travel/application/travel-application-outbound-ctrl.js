@@ -57,6 +57,7 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService, out
 
         // If the entire form is valid, continue.
         if ($scope.outbound.form.$valid) {
+            $scope.normalizeTravelDates($scope.dirtyApp.route.outboundLegs);
             var addrsMissingCounty = findAddressesWithoutCounty();
 
             if (addrsMissingCounty.isEmpty) {
