@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class GsaResponseId {
 
-    public final int fiscalYear;
-    public final String zipcode;
+    private final int fiscalYear;
+    private final String zipcode;
 
     public GsaResponseId(int fiscalYear, String zipcode) {
         this.fiscalYear = fiscalYear;

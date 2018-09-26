@@ -1,0 +1,151 @@
+{
+  "help": "https:\/\/inventory.data.gov\/api\/3\/action\/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "8ea44bc4-22ba-4386-b84c-1494ab28964b",
+    "fields": [
+      {
+        "type": "int4",
+        "id": "_id"
+      },
+      {
+        "type": "numeric",
+        "id": "DestinationID"
+      },
+      {
+        "type": "text",
+        "id": "City"
+      },
+      {
+        "type": "text",
+        "id": "County"
+      },
+      {
+        "type": "numeric",
+        "id": "FiscalYear"
+      },
+      {
+        "type": "numeric",
+        "id": "Oct"
+      },
+      {
+        "type": "numeric",
+        "id": "Nov"
+      },
+      {
+        "type": "numeric",
+        "id": "Dec"
+      },
+      {
+        "type": "numeric",
+        "id": "Jan"
+      },
+      {
+        "type": "numeric",
+        "id": "Feb"
+      },
+      {
+        "type": "numeric",
+        "id": "Mar"
+      },
+      {
+        "type": "numeric",
+        "id": "Apr"
+      },
+      {
+        "type": "numeric",
+        "id": "May"
+      },
+      {
+        "type": "numeric",
+        "id": "Jun"
+      },
+      {
+        "type": "numeric",
+        "id": "Jul"
+      },
+      {
+        "type": "numeric",
+        "id": "Aug"
+      },
+      {
+        "type": "numeric",
+        "id": "Sep"
+      },
+      {
+        "type": "numeric",
+        "id": "Meals"
+      },
+      {
+        "type": "text",
+        "id": "State"
+      },
+      {
+        "type": "numeric",
+        "id": "Zip"
+      },
+      {
+        "type": "text",
+        "id": "LocationDefined"
+      }
+    ],
+    "records": [
+      {
+        "City": "New York City",
+        "Dec": "291",
+        "Feb": "164",
+        "Zip": "10008",
+        "Aug": "230",
+        "Sep": "291",
+        "Apr": "253",
+        "Jun": "253",
+        "State": "NY",
+        "Jul": "230",
+        "Meals": "74",
+        "County": "New York County, NY",
+        "May": "253",
+        "DestinationID": "266",
+        "Mar": "253",
+        "Jan": "164",
+        "LocationDefined": "Bronx \/ Kings \/ New York \/ Queens \/ Richmond",
+        "Nov": "291",
+        "_id": 73698,
+        "Oct": "291",
+        "FiscalYear": "2018"
+      },
+      {
+        "City": "New York City",
+        "Dec": "291",
+        "Feb": "164",
+        "Zip": "10008",
+        "Aug": "230",
+        "Sep": "291",
+        "Apr": "253",
+        "Jun": "253",
+        "State": "NY",
+        "Jul": "230",
+        "Meals": "74",
+        "County": "New York County, NY",
+        "May": "253",
+        "DestinationID": "266",
+        "Mar": "253",
+        "Jan": "164",
+        "LocationDefined": "Bronx \/ Kings \/ New York \/ Queens \/ Richmond",
+        "Nov": "291",
+        "_id": 89003,
+        "Oct": "291",
+        "FiscalYear": "2018"
+      }
+    ],
+    "_links": {
+      "start": "\/api\/action\/datastore_search?limit=300000&filters=%7B%22FiscalYear%22%3A%222018%22%2C%22Zip%22%3A%2210008%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b",
+      "next": "\/api\/action\/datastore_search?offset=300000&limit=300000&filters=%7B%22FiscalYear%22%3A%222018%22%2C%22Zip%22%3A%2210008%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b"
+    },
+    "filters": {
+      "Zip": "10008",
+      "FiscalYear": "2018"
+    },
+    "limit": 300000,
+    "total": 2
+  }
+}

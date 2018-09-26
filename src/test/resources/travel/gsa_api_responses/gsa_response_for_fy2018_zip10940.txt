@@ -1,0 +1,197 @@
+{
+  "help": "https:\/\/inventory.data.gov\/api\/3\/action\/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "8ea44bc4-22ba-4386-b84c-1494ab28964b",
+    "fields": [
+      {
+        "type": "int4",
+        "id": "_id"
+      },
+      {
+        "type": "numeric",
+        "id": "DestinationID"
+      },
+      {
+        "type": "text",
+        "id": "City"
+      },
+      {
+        "type": "text",
+        "id": "County"
+      },
+      {
+        "type": "numeric",
+        "id": "FiscalYear"
+      },
+      {
+        "type": "numeric",
+        "id": "Oct"
+      },
+      {
+        "type": "numeric",
+        "id": "Nov"
+      },
+      {
+        "type": "numeric",
+        "id": "Dec"
+      },
+      {
+        "type": "numeric",
+        "id": "Jan"
+      },
+      {
+        "type": "numeric",
+        "id": "Feb"
+      },
+      {
+        "type": "numeric",
+        "id": "Mar"
+      },
+      {
+        "type": "numeric",
+        "id": "Apr"
+      },
+      {
+        "type": "numeric",
+        "id": "May"
+      },
+      {
+        "type": "numeric",
+        "id": "Jun"
+      },
+      {
+        "type": "numeric",
+        "id": "Jul"
+      },
+      {
+        "type": "numeric",
+        "id": "Aug"
+      },
+      {
+        "type": "numeric",
+        "id": "Sep"
+      },
+      {
+        "type": "numeric",
+        "id": "Meals"
+      },
+      {
+        "type": "text",
+        "id": "State"
+      },
+      {
+        "type": "numeric",
+        "id": "Zip"
+      },
+      {
+        "type": "text",
+        "id": "LocationDefined"
+      }
+    ],
+    "records": [
+      {
+        "City": "Standard Rate",
+        "Dec": "93",
+        "Feb": "93",
+        "Zip": "10940",
+        "Aug": "93",
+        "Sep": "93",
+        "Apr": "93",
+        "Jun": "93",
+        "State": "NY",
+        "Jul": "93",
+        "Meals": "51",
+        "County": "",
+        "May": "93",
+        "DestinationID": "0",
+        "Mar": "93",
+        "Jan": "93",
+        "LocationDefined": "",
+        "Nov": "93",
+        "_id": 74197,
+        "Oct": "93",
+        "FiscalYear": "2018"
+      },
+      {
+        "City": "West Point",
+        "Dec": "108",
+        "Feb": "108",
+        "Zip": "10940",
+        "Aug": "108",
+        "Sep": "108",
+        "Apr": "108",
+        "Jun": "108",
+        "State": "NY",
+        "Jul": "108",
+        "Meals": "59",
+        "County": "Orange County, NY",
+        "May": "108",
+        "DestinationID": "278",
+        "Mar": "108",
+        "Jan": "108",
+        "LocationDefined": "Orange",
+        "Nov": "108",
+        "_id": 74198,
+        "Oct": "108",
+        "FiscalYear": "2018"
+      },
+      {
+        "City": "Standard Rate",
+        "Dec": "93",
+        "Feb": "93",
+        "Zip": "10940",
+        "Aug": "93",
+        "Sep": "93",
+        "Apr": "93",
+        "Jun": "93",
+        "State": "NY",
+        "Jul": "93",
+        "Meals": "51",
+        "County": "",
+        "May": "93",
+        "DestinationID": "0",
+        "Mar": "93",
+        "Jan": "93",
+        "LocationDefined": "",
+        "Nov": "93",
+        "_id": 89827,
+        "Oct": "93",
+        "FiscalYear": "2018"
+      },
+      {
+        "City": "West Point",
+        "Dec": "108",
+        "Feb": "108",
+        "Zip": "10940",
+        "Aug": "108",
+        "Sep": "108",
+        "Apr": "108",
+        "Jun": "108",
+        "State": "NY",
+        "Jul": "108",
+        "Meals": "59",
+        "County": "Orange County, NY",
+        "May": "108",
+        "DestinationID": "278",
+        "Mar": "108",
+        "Jan": "108",
+        "LocationDefined": "Orange",
+        "Nov": "108",
+        "_id": 89830,
+        "Oct": "108",
+        "FiscalYear": "2018"
+      }
+    ],
+    "_links": {
+      "start": "\/api\/action\/datastore_search?limit=300000&filters=%7B%22FiscalYear%22%3A%222018%22%2C%22Zip%22%3A%2210940%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b",
+      "next": "\/api\/action\/datastore_search?offset=300000&limit=300000&filters=%7B%22FiscalYear%22%3A%222018%22%2C%22Zip%22%3A%2210940%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b"
+    },
+    "filters": {
+      "Zip": "10940",
+      "FiscalYear": "2018"
+    },
+    "limit": 300000,
+    "total": 4
+  }
+}
