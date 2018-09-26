@@ -91,20 +91,27 @@ function returnCtrl($scope, $timeout, modals, countyService, returnApi) {
             if (duration.asDays() > 7) {
                 modals.open('long-trip-warning')
                     .then(function () {
-                        var addrsMissingCounty = findAddressesWithoutCounty();
-
-                        if (addrsMissingCounty.isEmpty) {
-                            $scope.continue();
-                        }
-                        else {
-                            $scope.openLoadingModal();
-                            countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                                .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
-                                .then(countyService.promptUserForCounty)
-                                .then($scope.closeLoadingModal)
-                                .then($scope.continue);
-                        }
+                        checkCounties();
                     })
+            }
+            else {
+                checkCounties();
+            }
+        }
+
+        function checkCounties() {
+            var addrsMissingCounty = findAddressesWithoutCounty();
+
+            if (addrsMissingCounty.isEmpty) {
+                $scope.continue();
+            }
+            else {
+                $scope.openLoadingModal();
+                countyService.updateWithGeocodeCounty(addrsMissingCounty)
+                    .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
+                    .then(countyService.promptUserForCounty)
+                    .then($scope.closeLoadingModal)
+                    .then($scope.continue);
             }
         }
 

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-@UnitTest
+@org.junit.experimental.categories.Category(UnitTest.class)
 public class DollarsTest {
 
     @Test (expected = NullPointerException.class)
