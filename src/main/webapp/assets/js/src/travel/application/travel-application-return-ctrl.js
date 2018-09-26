@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', 'modals', 'AddressCountyService',
+essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals',
                                                      'TravelApplicationReturnApi', returnCtrl]);
 
-function returnCtrl($scope, $timeout, modals, countyService, returnApi) {
+function returnCtrl($scope, $timeout, $q, modals, returnApi) {
 
     this.$onInit = function () {
         $scope.return = {
@@ -75,53 +75,40 @@ function returnCtrl($scope, $timeout, modals, countyService, returnApi) {
     };
 
     $scope.next = function () {
-        for (var prop in $scope.return.form) {
-            // Set all form elements as touched so they can be styled appropriately if they have errors.
-            if ($scope.return.form[prop] && typeof($scope.return.form[prop].$setTouched) === 'function') {
-                $scope.return.form[prop].$setTouched();
-            }
-        }
-
+        $scope.setFormElementsTouched($scope.return.form);
         if ($scope.return.form.$valid) {
             $scope.normalizeTravelDates($scope.route.returnLegs);
+            promptUserIfLongTrip()
+                .then(function () {
+                    $scope.checkCounties($scope.route.returnLegs)
+                })
+                .then($scope.continue);
+        }
 
+        /**
+         * Checks if the trip is longer than 7 days which would suggest a date typo by the user.
+         * If it is, display a modal to ask the user if this is intentional.
+         * @return {Promise} A promise which is resolved if the trip is less than 7 days long or the user
+         * approves of their long trip. Rejected if the user wishes to review/change their travel dates.
+         */
+        function promptUserIfLongTrip() {
+            var deferred = $q.defer();
             var startDate = moment($scope.data.app.startDate, "YYYY-MM-DD", true);
             var endDate = moment($scope.route.returnLegs[$scope.route.returnLegs.length - 1].travelDate, "MM/DD/YYYY", true);
             var duration = moment.duration(endDate - startDate);
             if (duration.asDays() > 7) {
                 modals.open('long-trip-warning')
                     .then(function () {
-                        checkCounties();
+                        deferred.resolve();
+                    })
+                    .catch(function () {
+                        deferred.reject();
                     })
             }
             else {
-                checkCounties();
+                deferred.resolve();
             }
-        }
-
-        function checkCounties() {
-            var addrsMissingCounty = findAddressesWithoutCounty();
-
-            if (addrsMissingCounty.isEmpty) {
-                $scope.continue();
-            }
-            else {
-                $scope.openLoadingModal();
-                countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                    .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
-                    .then(countyService.promptUserForCounty)
-                    .then($scope.closeLoadingModal)
-                    .then($scope.continue);
-            }
-        }
-
-        function findAddressesWithoutCounty() {
-            var addresses = $scope.route.returnLegs.map(function (leg) {
-                return leg.from;
-            }).concat($scope.route.returnLegs.map(function (leg) {
-                return leg.to;
-            }));
-            return countyService.addressesMissingCounty(addresses);
+            return deferred.promise;
         }
     };
 

@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals',
-                                                       'AddressCountyService', 'TravelApplicationOutboundApi', outboundCtrl]);
+                                                       'TravelApplicationOutboundApi', outboundCtrl]);
 
-function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService, outboundApi) {
+function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
 
     this.$onInit = function () {
         $scope.outbound = {
@@ -48,41 +48,11 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, countyService, out
     };
 
     $scope.next = function () {
-        for (var prop in $scope.outbound.form) {
-            // Set all form elements as touched so they can be styled appropriately if they have errors.
-            if ($scope.outbound.form[prop] && typeof($scope.outbound.form[prop].$setTouched) === 'function') {
-                $scope.outbound.form[prop].$setTouched();
-            }
-        }
-
-        // If the entire form is valid, continue.
+        $scope.setFormElementsTouched($scope.outbound.form);
         if ($scope.outbound.form.$valid) {
             $scope.normalizeTravelDates($scope.dirtyApp.route.outboundLegs);
-            var addrsMissingCounty = findAddressesWithoutCounty();
-
-            if (addrsMissingCounty.isEmpty) {
-                $scope.continue();
-            }
-            else {
-                $scope.openLoadingModal();
-                countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                    .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
-                    .then(countyService.promptUserForCounty)
-                    .then($scope.closeLoadingModal)
-                    .then($scope.continue)
-                    .catch(function () {
-                        console.log("Canceling county input")
-                    });
-            }
-        }
-
-        function findAddressesWithoutCounty() {
-            var addresses = $scope.dirtyApp.route.outboundLegs.map(function (leg) {
-                return leg.from;
-            }).concat($scope.dirtyApp.route.outboundLegs.map(function (leg) {
-                return leg.to;
-            }));
-            return countyService.addressesMissingCounty(addresses);
+            $scope.checkCounties($scope.dirtyApp.route.outboundLegs)
+                .then($scope.continue);
         }
     };
 

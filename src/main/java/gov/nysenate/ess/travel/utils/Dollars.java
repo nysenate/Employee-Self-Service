@@ -25,7 +25,8 @@ public final class Dollars implements Comparable<Dollars> {
     }
 
     public Dollars(String dollars) {
-        this(new BigDecimal(dollars == null ? "0" : dollars));
+//        this(new BigDecimal(dollars == null ? "0" : dollars));
+        this(new BigDecimal(dollars));
     }
 
     public Dollars(double dollars) {

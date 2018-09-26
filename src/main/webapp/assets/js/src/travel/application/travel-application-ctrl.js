@@ -10,9 +10,9 @@ var essTravel = angular.module('essTravel');
  */
 essTravel.controller('TravelApplicationCtrl',
                      ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
-                      'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', travelAppController]);
+                      'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', 'AddressCountyService', travelAppController]);
 
-function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, motApi, cancelApi) {
+function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, motApi, cancelApi, countyService) {
 
     $scope.STATES = {
         PURPOSE: 1,
@@ -134,6 +134,52 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
     $scope.gotoStep = function (state) {
         if (state < $scope.pageState) {
             $scope.pageState = state;
+        }
+    };
+
+    /**
+     * ---- Functions shared by child scopes ---
+     */
+
+    // Set all form elements as touched so they can be styled appropriately if they have errors.
+    $scope.setFormElementsTouched = function (form) {
+        for (var prop in form) {
+            if (form[prop] && typeof(form[prop].$setTouched) === 'function') {
+                form[prop].$setTouched();
+            }
+        }
+    };
+
+    $scope.checkCounties = function (legs) {
+        var deferred = $q.defer();
+        var addrsMissingCounty = findAddressesWithoutCounty(legs);
+
+        if (addrsMissingCounty.isEmpty) {
+            deferred.resolve();
+        }
+        else {
+            $scope.openLoadingModal();
+            countyService.updateWithGeocodeCounty(addrsMissingCounty)
+                .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
+                .then(countyService.promptUserForCounty)
+                .then($scope.closeLoadingModal)
+                .then(function () {
+                    deferred.resolve();
+                })
+                .catch(function () {
+                    deferred.reject();
+                })
+        }
+        return deferred.promise;
+
+
+        function findAddressesWithoutCounty(legs) {
+            var addresses = legs.map(function (leg) {
+                return leg.from;
+            }).concat(legs.map(function (leg) {
+                return leg.to;
+            }));
+            return countyService.addressesMissingCounty(addresses);
         }
     };
 
