@@ -19,4 +19,10 @@ public class GsaApiResponseFixture {
         String path = GsaApiResponseFixture.class.getClassLoader().getResource("travel/gsa_api_responses/gsa_response_for_fy2018_zip10940.txt").getFile();
         return FileUtils.readFileToString(new File(path));
     }
+
+    // Empty response for year with no data.
+    public static String fy2999_zip11111_response() throws IOException {
+        String path = GsaApiResponseFixture.class.getClassLoader().getResource("travel/gsa_api_responses/gsa_response_for_fy2999_zip11111.txt").getFile();
+        return FileUtils.readFileToString(new File(path));
+    }
 }

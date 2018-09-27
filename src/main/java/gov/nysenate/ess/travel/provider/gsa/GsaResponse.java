@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.provider.gsa.client;
+package gov.nysenate.ess.travel.provider.gsa;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

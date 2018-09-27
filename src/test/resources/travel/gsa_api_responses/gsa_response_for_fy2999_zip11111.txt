@@ -1,0 +1,105 @@
+{
+  "help": "https:\/\/inventory.data.gov\/api\/3\/action\/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "resource_id": "8ea44bc4-22ba-4386-b84c-1494ab28964b",
+    "fields": [
+      {
+        "type": "int4",
+        "id": "_id"
+      },
+      {
+        "type": "numeric",
+        "id": "DestinationID"
+      },
+      {
+        "type": "text",
+        "id": "City"
+      },
+      {
+        "type": "text",
+        "id": "County"
+      },
+      {
+        "type": "numeric",
+        "id": "FiscalYear"
+      },
+      {
+        "type": "numeric",
+        "id": "Oct"
+      },
+      {
+        "type": "numeric",
+        "id": "Nov"
+      },
+      {
+        "type": "numeric",
+        "id": "Dec"
+      },
+      {
+        "type": "numeric",
+        "id": "Jan"
+      },
+      {
+        "type": "numeric",
+        "id": "Feb"
+      },
+      {
+        "type": "numeric",
+        "id": "Mar"
+      },
+      {
+        "type": "numeric",
+        "id": "Apr"
+      },
+      {
+        "type": "numeric",
+        "id": "May"
+      },
+      {
+        "type": "numeric",
+        "id": "Jun"
+      },
+      {
+        "type": "numeric",
+        "id": "Jul"
+      },
+      {
+        "type": "numeric",
+        "id": "Aug"
+      },
+      {
+        "type": "numeric",
+        "id": "Sep"
+      },
+      {
+        "type": "numeric",
+        "id": "Meals"
+      },
+      {
+        "type": "text",
+        "id": "State"
+      },
+      {
+        "type": "numeric",
+        "id": "Zip"
+      },
+      {
+        "type": "text",
+        "id": "LocationDefined"
+      }
+    ],
+    "records": [
+
+    ],
+    "_links": {
+      "start": "\/api\/action\/datastore_search?limit=300000&filters=%7B%22FiscalYear%22%3A%222999%22%2C%22Zip%22%3A%2211111%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b",
+      "next": "\/api\/action\/datastore_search?offset=300000&limit=300000&filters=%7B%22FiscalYear%22%3A%222999%22%2C%22Zip%22%3A%2211111%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b"
+    },
+    "filters": {
+      "Zip": "11111",
+      "FiscalYear": "2999"
+    },
+    "limit": 300000
+  }
+}

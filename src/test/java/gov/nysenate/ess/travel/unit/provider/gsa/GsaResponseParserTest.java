@@ -3,9 +3,9 @@ package gov.nysenate.ess.travel.unit.provider.gsa;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.fixtures.GsaApiResponseFixture;
-import gov.nysenate.ess.travel.provider.gsa.client.GsaResponse;
-import gov.nysenate.ess.travel.provider.gsa.client.GsaResponseId;
-import gov.nysenate.ess.travel.provider.gsa.client.GsaResponseParser;
+import gov.nysenate.ess.travel.provider.gsa.GsaResponse;
+import gov.nysenate.ess.travel.provider.gsa.GsaResponseId;
+import gov.nysenate.ess.travel.provider.gsa.GsaResponseParser;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(UnitTest.class)
 public class GsaResponseParserTest {
@@ -70,4 +71,8 @@ public class GsaResponseParserTest {
         assertEquals(new BigDecimal("108"), res.getLodging(LocalDate.of(2018, 12, 1)));
     }
 
+    @Test
+    public void canDetectEmptyResponse() throws IOException {
+        assertTrue(parser.isResponseEmpty(GsaApiResponseFixture.fy2999_zip11111_response()));
+    }
 }

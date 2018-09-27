@@ -8,7 +8,6 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -121,5 +120,14 @@ public class DateUtilsTest {
         LocalDate atMostEnd = endOfDateRange(atMost);
         LocalDate atMostEndExpected = now;
         assertEquals(atMostEndExpected, atMostEnd);
+    }
+
+    @Test
+    public void federalFiscalYearStartsOctFirst() {
+        LocalDate sep = LocalDate.of(2018, 9, 30);
+        assertEquals(2018, DateUtils.getFederalFiscalYear(sep));
+
+        LocalDate oct = LocalDate.of(2018, 10, 1);
+        assertEquals(2019, DateUtils.getFederalFiscalYear(oct));
     }
 }

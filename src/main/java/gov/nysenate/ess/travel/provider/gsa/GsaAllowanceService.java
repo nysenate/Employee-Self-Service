@@ -2,8 +2,6 @@ package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.Dollars;
-import gov.nysenate.ess.travel.provider.gsa.client.GsaClient;
-import gov.nysenate.ess.travel.provider.gsa.client.GsaResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +15,13 @@ public class GsaAllowanceService {
 
     private static final Logger logger = LoggerFactory.getLogger(GsaAllowanceService.class);
 
-    private GsaClient client;
+    private GsaCache gsaCache;
+    private GsaApi gsaApi;
 
     @Autowired
-    public GsaAllowanceService(GsaClient client) {
-        this.client = client;
+    public GsaAllowanceService(GsaCache gsaCache, GsaApi gsaApi) {
+        this.gsaCache = gsaCache;
+        this.gsaApi = gsaApi;
     }
 
     /**
@@ -29,7 +29,7 @@ public class GsaAllowanceService {
      * @throws IOException
      */
     public Dollars fetchMealRate(LocalDate date, Address address) throws IOException {
-        GsaResponse res = client.queryGsa(date, address.getZip5());
+        GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getMealTier());
     }
 
@@ -38,7 +38,18 @@ public class GsaAllowanceService {
      * @throws IOException
      */
     public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
-        GsaResponse res = client.queryGsa(date, address.getZip5());
+        GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
+    }
+
+    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
+        GsaResponse res = gsaCache.queryGsa(date, address.getZip5());
+        if (res == null) {
+            res = gsaApi.queryGsa(date, address.getZip5());
+            if (res != null) {
+                gsaCache.saveToCache(res);
+            }
+        }
+        return res;
     }
 }
