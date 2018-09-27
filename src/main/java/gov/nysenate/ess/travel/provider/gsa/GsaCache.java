@@ -44,7 +44,7 @@ public class GsaCache implements CachingService<GsaResponseId> {
      * @param zip The zip code to get GSA rates for.
      * @return
      */
-    protected GsaResponse queryGsa(LocalDate date, String zip) {
+    public GsaResponse queryGsa(LocalDate date, String zip) {
         GsaResponseId id = new GsaResponseId(DateUtils.getFederalFiscalYear(date), zip);
         return queryCache(id);
     }
@@ -56,7 +56,7 @@ public class GsaCache implements CachingService<GsaResponseId> {
         return e == null ? null : (GsaResponse) e.getObjectValue();
     }
 
-    protected void saveToCache(GsaResponse response) {
+    public void saveToCache(GsaResponse response) {
         GsaResponseId id = response.getId();
         gsaCache.acquireWriteLockOnKey(id);
         gsaCache.put(new Element(id, response));

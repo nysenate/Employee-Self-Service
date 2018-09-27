@@ -8,9 +8,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
 public class HttpUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
@@ -24,7 +26,7 @@ public class HttpUtils {
      * @throws IOException
      * @throws UnsuccessfulHttpReqException if status code is unsuccessful (not 2xx).
      */
-    public static String urlToString(String url) throws IOException {
+    public String urlToString(String url) throws IOException {
         HttpGet httpget = new HttpGet(url);
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(httpget)) {
@@ -38,11 +40,11 @@ public class HttpUtils {
         }
     }
 
-    private static boolean successfulStatusCode(int statusCode) {
+    private boolean successfulStatusCode(int statusCode) {
         return statusCode >= 200 && statusCode < 300;
     }
 
-    private static String handleUnsuccessfulStatusCode(String url, int statusCode, String content) {
+    private String handleUnsuccessfulStatusCode(String url, int statusCode, String content) {
         String msg = "A http request to url: " + url + " was unsuccessful. " +
                 "Response had a status code of: " + statusCode + "\n" +
                 "Response content was: \n" +
