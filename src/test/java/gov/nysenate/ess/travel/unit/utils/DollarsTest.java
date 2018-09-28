@@ -9,12 +9,6 @@ import static org.junit.Assert.*;
 @org.junit.experimental.categories.Category(UnitTest.class)
 public class DollarsTest {
 
-    @Test (expected = NullPointerException.class)
-    public void cantBeNull() {
-        String dollars = null;
-        Dollars d = new Dollars(dollars);
-    }
-
     @Test
     public void roundsToTwoDecimalPlaces() {
         Dollars d = new Dollars("4.12345");
