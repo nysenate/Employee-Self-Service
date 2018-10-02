@@ -17,6 +17,7 @@ function googlePlaceService() {
         address.county = parseCounty(place);
         address.state = parseState(place);
         address.zip5 = parseZip5(place);
+        address.country = parseCountry(place);
 
         function parseAddress1(place) {
             return getTypeName(place, 'street_number') + ' ' + getTypeName(place, 'route');
@@ -37,6 +38,10 @@ function googlePlaceService() {
 
         function parseZip5(place) {
             return getTypeName(place, 'postal_code');
+        }
+
+        function parseCountry(place) {
+            return getTypeName(place, 'country');
         }
 
         /**

@@ -16,6 +16,7 @@ public class Address {
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
+    protected String country = "";
 
     public Address() {}
 
@@ -121,6 +122,14 @@ public class Address {
 
     public void setCounty(String county) {
         this.county = county;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getState() {

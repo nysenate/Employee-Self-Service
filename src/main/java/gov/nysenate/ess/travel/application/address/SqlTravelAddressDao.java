@@ -31,7 +31,8 @@ public class SqlTravelAddressDao extends SqlBaseDao implements TravelAddressDao 
                 .addValue("county", address.getCounty())
                 .addValue("state", address.getState())
                 .addValue("zip5", address.getZip5())
-                .addValue("zip4", address.getZip4());
+                .addValue("zip4", address.getZip4())
+                .addValue("country", address.getCountry());
         String sql = SqlTravelAddressQuery.INSERT_ADDRESS.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -45,7 +46,8 @@ public class SqlTravelAddressDao extends SqlBaseDao implements TravelAddressDao 
                 .addValue("county", address.getCounty())
                 .addValue("state", address.getState())
                 .addValue("zip5", address.getZip5())
-                .addValue("zip4", address.getZip4());
+                .addValue("zip4", address.getZip4())
+                .addValue("country", address.getCountry());
         String sql = SqlTravelAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
         return localNamedJdbc.queryForObject(sql, params, new TravelAddressRowMapper());
     }
@@ -62,14 +64,14 @@ public class SqlTravelAddressDao extends SqlBaseDao implements TravelAddressDao 
 
     private enum SqlTravelAddressQuery implements BasicSqlQuery {
         INSERT_ADDRESS(
-                "INSERT INTO ${travelSchema}.address(id, street_1, street_2, city, county, state, zip_5, zip_4) \n" +
-                        "VALUES (:id::uuid, :street1, :street2, :city, :county, :state, :zip5, :zip4)"
+                "INSERT INTO ${travelSchema}.address(id, street_1, street_2, city, county, state, zip_5, zip_4, country) \n" +
+                        "VALUES (:id::uuid, :street1, :street2, :city, :county, :state, :zip5, :zip4, :country)"
         ),
         SELECT_ADDRESS(
-                "SELECT id, street_1, street_2, city, county, state, zip_5, zip_4\n" +
+                "SELECT id, street_1, street_2, city, county, state, zip_5, zip_4, country\n" +
                         "FROM ${travelSchema}.address\n" +
                         "WHERE street_1 = :street1 AND street_2 = :street2 AND city = :city\n" +
-                        "AND county = :county AND state = :state AND zip_5 = :zip5 AND zip_4 = :zip4"
+                        "AND county = :county AND state = :state AND zip_5 = :zip5 AND zip_4 = :zip4 AND country = :country"
         )
         ;
 
@@ -103,6 +105,7 @@ public class SqlTravelAddressDao extends SqlBaseDao implements TravelAddressDao 
             travelAddress.setState(rs.getString("state"));
             travelAddress.setZip5(rs.getString("zip_5"));
             travelAddress.setZip4(rs.getString("zip_4"));
+            travelAddress.setCountry(rs.getString("country"));
             return travelAddress;
         }
     }

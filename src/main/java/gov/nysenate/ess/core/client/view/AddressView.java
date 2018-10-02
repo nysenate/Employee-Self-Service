@@ -13,6 +13,7 @@ public class AddressView implements ViewObject
     protected String addr2 = "";
     protected String city = "";
     protected String county = "";
+    protected String country = "";
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
@@ -27,6 +28,7 @@ public class AddressView implements ViewObject
         this.city = address.getCity();
         this.state = address.getState();
         this.county = address.getCounty();
+        this.country = address.getCountry();
         this.zip5 = address.getZip5();
         this.zip4 = address.getZip4();
         formattedAddress = address.toString();
@@ -36,6 +38,7 @@ public class AddressView implements ViewObject
     public Address toAddress() {
         Address address = new Address(addr1, addr2, city, state, zip5, zip4);
         address.setCounty(county);
+        address.setCountry(country);
         return address;
     }
 
@@ -78,6 +81,11 @@ public class AddressView implements ViewObject
     @XmlElement
     public String getZip4() {
         return zip4;
+    }
+
+    @XmlElement
+    public String getCountry() {
+        return country;
     }
 
     @XmlElement

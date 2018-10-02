@@ -19,6 +19,7 @@ essTravel.directive('autocompleteAddressValidator', function () {
                 address.state = '';
                 address.zip4 = '';
                 address.zip5 = '';
+                address.country = '';
 
             });
             ctrl.$validators.addressValidator = function (modelValue, viewValue) {
