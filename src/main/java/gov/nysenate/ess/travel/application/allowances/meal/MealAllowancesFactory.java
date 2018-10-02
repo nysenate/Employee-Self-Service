@@ -1,10 +1,12 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
 import com.google.common.collect.ImmutableList;
+import gov.nysenate.ess.travel.application.allowances.ServiceProviderFactory;
 import gov.nysenate.ess.travel.application.destination.Destination;
 import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,10 +16,11 @@ import java.util.*;
 @Service
 public class MealAllowancesFactory {
 
-    private GsaAllowanceService gsaService;
+    private ServiceProviderFactory serviceProviderFactory;
 
-    public MealAllowancesFactory(GsaAllowanceService gsaService) {
-        this.gsaService = gsaService;
+    @Autowired
+    public MealAllowancesFactory(ServiceProviderFactory serviceProviderFactory) {
+        this.serviceProviderFactory = serviceProviderFactory;
     }
 
     public MealAllowances createMealAllowances(Destinations destinations) throws IOException {
@@ -49,7 +52,7 @@ public class MealAllowancesFactory {
         // Place Dollars and Destinations in an ordered map. The last key will be the most expensive MealTier.
         TreeMap<Dollars, Destination> ratesToDests = new TreeMap<>();
         for (Destination d : dateDestinations) {
-            Dollars mealRate = gsaService.fetchMealRate(date, d.getAddress());
+            Dollars mealRate = serviceProviderFactory.fetchMealRate(date, d.getAddress());
             ratesToDests.put(mealRate, d);
         }
 
@@ -57,7 +60,7 @@ public class MealAllowancesFactory {
     }
 
     private MealAllowance createMealAllowance(LocalDate date, Destination destination) throws IOException {
-        Dollars mealRate = gsaService.fetchMealRate(date, destination.getAddress());
+        Dollars mealRate = serviceProviderFactory.fetchMealRate(date, destination.getAddress());
         return new MealAllowance(UUID.randomUUID(), destination.getAddress(), date, mealRate, true);
     }
 }

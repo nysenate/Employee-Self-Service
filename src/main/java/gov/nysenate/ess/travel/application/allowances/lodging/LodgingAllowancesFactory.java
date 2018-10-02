@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application.allowances.lodging;
 
+import gov.nysenate.ess.travel.application.allowances.ServiceProviderFactory;
 import gov.nysenate.ess.travel.application.destination.Destination;
 import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
@@ -16,11 +17,11 @@ import java.util.UUID;
 @Service
 public class LodgingAllowancesFactory {
 
-    private GsaAllowanceService gsaService;
+    private ServiceProviderFactory serviceProviderFactory;
 
     @Autowired
-    public LodgingAllowancesFactory(GsaAllowanceService gsaService) {
-        this.gsaService = gsaService;
+    public LodgingAllowancesFactory(ServiceProviderFactory serviceProviderFactory) {
+        this.serviceProviderFactory = serviceProviderFactory;
     }
 
     public LodgingAllowances createLodgingAllowances(Destinations destinations) throws IOException {
@@ -28,7 +29,7 @@ public class LodgingAllowancesFactory {
 
         for (Destination dest : destinations.getDestinations()) {
             for (LocalDate night: dest.nights()) {
-                Dollars lodgingAllowance = gsaService.fetchLodgingRate(night, dest.getAddress());
+                Dollars lodgingAllowance = serviceProviderFactory.fetchLodgingRate(night, dest.getAddress());
                 lodgingAllowances.add(new LodgingAllowance(UUID.randomUUID(), dest.getAddress(), night, lodgingAllowance, true));
             }
         }
