@@ -42,7 +42,7 @@ public class GsaApi {
      * @return GsaResponse for the given date and zip.
      * @throws IOException
      */
-    protected GsaResponse queryGsa(LocalDate date, String zip) throws IOException {
+    public GsaResponse queryGsa(LocalDate date, String zip) throws IOException {
         GsaResponseId id = new GsaResponseId(DateUtils.getFederalFiscalYear(date), zip);
         return queryApi(id);
     }

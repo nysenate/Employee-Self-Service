@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +42,7 @@ public class GsaAllowanceServiceTest extends BaseTest {
     @Before
     public void before() throws IOException {
         MockitoAnnotations.initMocks(this);
-        gsaApi = new GsaApi("", responseParser, httpUtils);
+        gsaApi = spy(new GsaApi("", responseParser, httpUtils)); // TODO: Possible to spy this?
         service = new GsaAllowanceService(gsaCache, gsaApi);
         gsaCache.evictCache();
     }
@@ -50,28 +51,29 @@ public class GsaAllowanceServiceTest extends BaseTest {
     public void fetchesMealRateAndSaveToCache() throws IOException {
         when(httpUtils.urlToString(anyString())).thenReturn(GsaApiResponseFixture.fy2018_zip10008_response());
 
-        Dollars expected = new Dollars("74");
         Dollars actual = service.fetchMealRate(DATE, AddressFixture.zip10008());
+        Dollars expected = new Dollars("74");
+        assertEquals(expected, actual);
 
-        Mockito.verify(gsaCache, times(1)).queryGsa(DATE, "10008"); // Attempted to query from cache.
-        assertEquals(expected, actual); // Got correct value from gsaApi
-        Mockito.verify(gsaCache, times(1)).saveToCache(anyObject()); // Verify response saved to cache.
+        // Call fetchMealRate twice to verify cache functionality.
+        service.fetchMealRate(DATE, AddressFixture.zip10008());
+        Mockito.verify(gsaCache, times(2)).queryGsa(DATE, "10008"); // Attempted to query from cache on both calls.
+        Mockito.verify(gsaCache, times(1)).saveToCache(anyObject()); // Verify response saved to cache once.
+        Mockito.verify(gsaApi, times(1)).queryGsa(DATE, "10008"); // Api was only called once.
     }
 
     @Test
     public void fetchLodgingRateAndSaveToCache() throws IOException {
         when(httpUtils.urlToString(anyString())).thenReturn(GsaApiResponseFixture.fy2018_zip10008_response());
 
-        Dollars expected = new Dollars("164");
         Dollars actual = service.fetchLodgingRate(DATE, AddressFixture.zip10008());
-
-        Mockito.verify(gsaCache, times(1)).queryGsa(DATE, "10008"); // Attempted to query from cache.
+        Dollars expected = new Dollars("164");
         assertEquals(expected, actual);
-        Mockito.verify(gsaCache, times(1)).saveToCache(anyObject()); // Verify response saved to cache.
-    }
 
-    @Test
-    public void requestFarInFuture_ReturnLatestYearWeHaveDataFor() {
-
+        // Call fetchLodingRate twice to verify cache functionality.
+        service.fetchLodgingRate(DATE, AddressFixture.zip10008());
+        Mockito.verify(gsaCache, times(2)).queryGsa(DATE, "10008"); // Cache called twice.
+        Mockito.verify(gsaCache, times(1)).saveToCache(anyObject()); // Verify response saved to cache once.
+        Mockito.verify(gsaApi, times(1)).queryGsa(DATE, "10008"); // Verify api only called once
     }
 }
