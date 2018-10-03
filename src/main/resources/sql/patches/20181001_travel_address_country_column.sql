@@ -1,3 +1,3 @@
 ALTER table travel.address
-  ADD COLUMN country VARCHAR;
+  ADD COLUMN country text;
 

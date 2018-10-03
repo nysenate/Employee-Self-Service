@@ -40,7 +40,8 @@ CREATE TABLE travel.address (
     county text,
     state text,
     zip_5 text,
-    zip_4 text
+    zip_4 text,
+    country text
 );
 
 
@@ -162,9 +163,9 @@ CREATE TABLE travel.app_meal_allowance (
     id uuid NOT NULL,
     version_id uuid NOT NULL,
     address_id uuid NOT NULL,
-    meal_tier_id uuid NOT NULL,
     date date NOT NULL,
-    is_meals_requested boolean NOT NULL
+    is_meals_requested boolean NOT NULL,
+    meal_rate text
 );
 
 
@@ -271,48 +272,6 @@ COMMENT ON COLUMN travel.irs_mileage_rate.rate IS 'The mileage rate whole dollar
 
 
 --
--- Name: meal_rate; Type: TABLE; Schema: travel; Owner: postgres
---
-
-CREATE TABLE travel.meal_rate (
-    id uuid NOT NULL,
-    start_date date NOT NULL,
-    end_date date NOT NULL
-);
-
-
-ALTER TABLE travel.meal_rate OWNER TO postgres;
-
---
--- Name: COLUMN meal_rate.start_date; Type: COMMENT; Schema: travel; Owner: postgres
---
-
-COMMENT ON COLUMN travel.meal_rate.start_date IS 'The effective start date of this meal rate, inclusive.';
-
-
---
--- Name: COLUMN meal_rate.end_date; Type: COMMENT; Schema: travel; Owner: postgres
---
-
-COMMENT ON COLUMN travel.meal_rate.end_date IS 'The effective end date of this meal rate, inclusive';
-
-
---
--- Name: meal_tier; Type: TABLE; Schema: travel; Owner: postgres
---
-
-CREATE TABLE travel.meal_tier (
-    id uuid NOT NULL,
-    meal_rate_id uuid NOT NULL,
-    tier text NOT NULL,
-    total text NOT NULL,
-    incidental text NOT NULL
-);
-
-
-ALTER TABLE travel.meal_tier OWNER TO postgres;
-
---
 -- Name: travel_requestors; Type: TABLE; Schema: travel; Owner: postgres
 --
 
@@ -326,19 +285,21 @@ CREATE TABLE travel.travel_requestors (
 
 ALTER TABLE travel.travel_requestors OWNER TO postgres;
 
+--
+-- Name: uncompleted_travel_application; Type: TABLE; Schema: travel; Owner: kevin
+--
 
-CREATE TABLE travel.uncompleted_travel_application
-(
-    id uuid PRIMARY KEY NOT NULL,
+CREATE TABLE travel.uncompleted_travel_application (
+    id uuid NOT NULL,
     version_id uuid NOT NULL,
-    traveler_id int NOT NULL,
-    submitter_id int NOT NULL,
+    traveler_id integer NOT NULL,
+    submitter_id integer NOT NULL,
     app_json text NOT NULL,
     modified_date_time timestamp without time zone DEFAULT now() NOT NULL
 );
 
-CREATE UNIQUE INDEX uncompleted_travel_application_traveler_id_uindex ON travel.uncompleted_travel_application (traveler_id);
 
+ALTER TABLE travel.uncompleted_travel_application OWNER TO kevin;
 
 --
 -- Name: address address_unique; Type: CONSTRAINT; Schema: travel; Owner: postgres
@@ -349,11 +310,11 @@ ALTER TABLE ONLY travel.address
 
 
 --
--- Name: address address_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
+-- Name: address app_address_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
 --
 
 ALTER TABLE ONLY travel.address
-    ADD CONSTRAINT address_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT app_address_pkey PRIMARY KEY (id);
 
 
 --
@@ -421,27 +382,26 @@ ALTER TABLE ONLY travel.irs_mileage_rate
 
 
 --
--- Name: meal_rate meal_rate_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
---
-
-ALTER TABLE ONLY travel.meal_rate
-    ADD CONSTRAINT meal_rate_pkey PRIMARY KEY (id);
-
-
---
--- Name: meal_tier meal_tier_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
---
-
-ALTER TABLE ONLY travel.meal_tier
-    ADD CONSTRAINT meal_tier_pkey PRIMARY KEY (id);
-
-
---
 -- Name: travel_requestors travel_requestors_pkey; Type: CONSTRAINT; Schema: travel; Owner: postgres
 --
 
 ALTER TABLE ONLY travel.travel_requestors
     ADD CONSTRAINT travel_requestors_pkey PRIMARY KEY (emp_id);
+
+
+--
+-- Name: uncompleted_travel_application uncomplete_travel_application_pkey; Type: CONSTRAINT; Schema: travel; Owner: kevin
+--
+
+ALTER TABLE ONLY travel.uncompleted_travel_application
+    ADD CONSTRAINT uncomplete_travel_application_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: uncomplete_travel_application_traveler_id_uindex; Type: INDEX; Schema: travel; Owner: kevin
+--
+
+CREATE UNIQUE INDEX uncomplete_travel_application_traveler_id_uindex ON travel.uncompleted_travel_application USING btree (traveler_id);
 
 
 --
@@ -509,14 +469,6 @@ ALTER TABLE ONLY travel.app_meal_allowance
 
 
 --
--- Name: app_meal_allowance app_meal_allowance_meal_tier_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
---
-
-ALTER TABLE ONLY travel.app_meal_allowance
-    ADD CONSTRAINT app_meal_allowance_meal_tier_id_fkey FOREIGN KEY (meal_tier_id) REFERENCES travel.meal_tier(id);
-
-
---
 -- Name: app_meal_allowance app_meal_allowance_version_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
 --
 
@@ -546,14 +498,6 @@ ALTER TABLE ONLY travel.app_mileage_allowance
 
 ALTER TABLE ONLY travel.app_version
     ADD CONSTRAINT app_version_app_id_fkey FOREIGN KEY (app_id) REFERENCES travel.app(id);
-
-
---
--- Name: meal_tier meal_tier_meal_rate_id_fkey; Type: FK CONSTRAINT; Schema: travel; Owner: postgres
---
-
-ALTER TABLE ONLY travel.meal_tier
-    ADD CONSTRAINT meal_tier_meal_rate_id_fkey FOREIGN KEY (meal_rate_id) REFERENCES travel.meal_rate(id);
 
 
 --
@@ -627,28 +571,13 @@ GRANT ALL ON TABLE travel.irs_mileage_rate TO PUBLIC;
 
 
 --
--- Name: TABLE meal_rate; Type: ACL; Schema: travel; Owner: postgres
---
-
-GRANT ALL ON TABLE travel.meal_rate TO PUBLIC;
-
-
---
--- Name: TABLE meal_tier; Type: ACL; Schema: travel; Owner: postgres
---
-
-GRANT ALL ON TABLE travel.meal_tier TO PUBLIC;
-
-
---
 -- Name: TABLE travel_requestors; Type: ACL; Schema: travel; Owner: postgres
 --
 
 GRANT ALL ON TABLE travel.travel_requestors TO PUBLIC;
 
 
+--
+-- PostgreSQL database dump complete
+--
 
-GRANT ALL PRIVILEGES ON SCHEMA travel TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA travel TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA travel TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA travel TO PUBLIC;
