@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.application.allowances;
+package gov.nysenate.ess.travel.provider;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.provider.dod.DodAllowanceService;

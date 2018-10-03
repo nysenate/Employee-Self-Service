@@ -1,9 +1,8 @@
 package gov.nysenate.ess.travel.application.allowances.lodging;
 
-import gov.nysenate.ess.travel.application.allowances.ServiceProviderFactory;
+import gov.nysenate.ess.travel.provider.ServiceProviderFactory;
 import gov.nysenate.ess.travel.application.destination.Destination;
 import gov.nysenate.ess.travel.application.destination.Destinations;
-import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
