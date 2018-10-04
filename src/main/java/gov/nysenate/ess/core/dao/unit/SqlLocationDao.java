@@ -22,7 +22,18 @@ public class SqlLocationDao extends SqlBaseDao implements LocationDao {
 
     @Override
     public List<Location> getLocations() {
-        String sql = SqlLocationQuery.GET_LOCATIONS.getSql(schemaMap());
+        return getLocations(true);
+    }
+
+    @Override
+    public List<Location> getLocations(boolean activeOnly) {
+        String sql;
+        if (activeOnly) {
+            sql = SqlLocationQuery.GET_LOCATIONS.getSql(schemaMap());
+        }
+        else {
+            sql = SqlLocationQuery.GET_LOCATIONS_INCLUDING_INACTIVE.getSql(schemaMap());
+        }
         LocationRowMapper locationRowMapper = new LocationRowMapper("LOC_", "RCTRHD_");
         return remoteNamedJdbc.query(sql, locationRowMapper);
     }

@@ -5,6 +5,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.cache.CacheEvictIdEvent;
+import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
@@ -35,10 +37,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static gov.nysenate.ess.core.model.payroll.PayType.TE;
 
 @Service
 public class EssTimeRecordManager implements TimeRecordManager
@@ -177,7 +182,7 @@ public class EssTimeRecordManager implements TimeRecordManager
      * If createTempRecords is false, then records will only be created for periods with annual pay work days
      */
     @Transactional(DatabaseConfig.remoteTxManager)
-    private int ensureRecords(int empId, Collection<PayPeriod> payPeriods, Collection<TimeRecord> existingRecords,
+    protected int ensureRecords(int empId, Collection<PayPeriod> payPeriods, Collection<TimeRecord> existingRecords,
                               Collection<AttendanceRecord> attendanceRecords) {
         logger.info("Generating records for {} over {} pay periods with {} existing records",
                 empId, payPeriods.size(), existingRecords.size());
@@ -193,34 +198,41 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .filter(record -> record.getRecordStatus().getScope() != TimeRecordScope.EMPLOYEE)
                 .max(TimeRecord::compareTo);
 
-        // Check that existing records correspond to the record ranges
-        // Split any records that span multiple ranges
-        //  also ensure that existing records and entries contain up to date information
-        // Remove ranges that are covered by existing records
-        List<TimeRecord> patchedRecords = patchExistingRecords(existingRecords, recordRanges);
-        recordsToSave.addAll(patchedRecords);
-        long patchedRecordsSaved = patchedRecords.size();
+        try {
+            // Check that existing records correspond to the record ranges
+            // Split any records that span multiple ranges
+            //  also ensure that existing records and entries contain up to date information
+            // Remove ranges that are covered by existing records
+            List<TimeRecord> patchedRecords = patchExistingRecords(existingRecords, recordRanges);
+            recordsToSave.addAll(patchedRecords);
+            long patchedRecordsSaved = patchedRecords.size();
 
-        // Create new records for all ranges not covered by existing records
-        long newRecordsSaved = 0;
-        if (transHistory.isFullyAppointed()) {
-            newRecordsSaved = recordRanges.stream()
-                    .filter(range -> DateUtils.startOfDateRange(range).isAfter(
-                            latestSubmitted.map(TimeRecord::getEndDate).orElse(LocalDate.MIN)))
-                    .map(range -> createTimeRecord(empId, range))
-                    .peek(recordsToSave::add)
-                    .count();
+            // Create new records for all ranges not covered by existing records
+            long newRecordsSaved = 0;
+            if (transHistory.isFullyAppointed()) {
+                newRecordsSaved = recordRanges.stream()
+                        .filter(range -> DateUtils.startOfDateRange(range).isAfter(
+                                latestSubmitted.map(TimeRecord::getEndDate).orElse(LocalDate.MIN)))
+                        .map(range -> createTimeRecord(empId, range))
+                        .peek(recordsToSave::add)
+                        .count();
+            }
+
+            recordsToSave.forEach(timeRecordService::saveRecord);
+
+            if (recordsToSave.isEmpty()) {
+                logger.info("empId {}: no changes", empId);
+            } else {
+                logger.info("empId {}:\t{} periods\t{} existing\t{} saved:\t{} new\t{} patched/split",
+                        empId, payPeriods.size(), existingRecords.size(), recordsToSave.size(), newRecordsSaved, patchedRecordsSaved);
+            }
+            return recordsToSave.size();
+        } catch (Exception ex) {
+            // If anything goes wrong, attempt to clear the employee's record cache.
+            logger.warn("Clearing time record cache for emp:{} due to time record manager error.", empId);
+            eventBus.post(new CacheEvictIdEvent<>(ContentCache.ACTIVE_TIME_RECORDS, empId));
+            throw ex;
         }
-
-        recordsToSave.forEach(timeRecordService::saveRecord);
-
-        if (recordsToSave.isEmpty()) {
-            logger.info("empId {}: no changes", empId);
-        } else {
-            logger.info("empId {}:\t{} periods\t{} existing\t{} saved:\t{} new\t{} patched/split",
-                    empId, payPeriods.size(), existingRecords.size(), recordsToSave.size(), newRecordsSaved, patchedRecordsSaved);
-        }
-        return recordsToSave.size();
     }
 
     /**
@@ -270,13 +282,11 @@ public class EssTimeRecordManager implements TimeRecordManager
         else if (rangesUnderRecord.size() > 1 ||
                 !rangesUnderRecord.get(0).equals(record.getDateRange())) {
             List<TimeRecord> splitRecords = splitRecord(record, rangesUnderRecord);
-            splitRecords.stream()
-                    .peek(this::patchRecordData)
-                    .forEach(this::patchEntries);
+            splitRecords.forEach(this::patchRecordData);
             return splitRecords;
         }
         // otherwise, check the record for inconsistencies and patch it if necessary
-        else if (patchRecordData(record) && patchEntries(record)) {
+        else if (patchRecordData(record)) {
             return Collections.singletonList(record);
         }
         return Collections.emptyList();
@@ -364,19 +374,45 @@ public class EssTimeRecordManager implements TimeRecordManager
                         .getEffectivePayTypes(Range.all()));
 
         for (TimeEntry entry : record.getTimeEntries()) {
-            // Check the pay types for each entry
             PayType correctPayType = payTypes.get(entry.getDate());
-            if (!Objects.equals(entry.getPayType(), correctPayType)) {
-                modifiedEntries = true;
-                entry.setPayType(correctPayType);
-            }
-            // Deactivate any entries that do not fall within the record dates
-            if (!record.getDateRange().contains(entry.getDate())) {
+            // If the current entry is invalid, deactivate it
+            if (!validEntry(entry, record, correctPayType)) {
                 modifiedEntries = true;
                 entry.setActive(false);
             }
+            // Check and potentially switch the pay types for each entry
+            else if (!Objects.equals(entry.getPayType(), correctPayType)) {
+                modifiedEntries = true;
+                entry.setPayType(correctPayType);
+            }
         }
         return modifiedEntries;
+    }
+
+    /**
+     * Returns true if the given entry is valid for the given record and pay type.
+     */
+    private boolean validEntry(TimeEntry entry, TimeRecord record, PayType correctPayType) {
+        return record.getDateRange().contains(entry.getDate()) && validForPayType(entry, correctPayType);
+    }
+
+    /**
+     * Returns true if the given entry is valid for the given pay type
+     */
+    private boolean validForPayType(TimeEntry entry, PayType correctPayType) {
+        if (correctPayType == TE) {
+            List<Optional<BigDecimal>> nonTempHours = Arrays.asList(
+                    entry.getPersonalHours(),
+                    entry.getVacationHours(),
+                    entry.getSickEmpHours(),
+                    entry.getSickFamHours(),
+                    entry.getHolidayHours(),
+                    entry.getTravelHours(),
+                    entry.getMiscHours()
+            );
+            return nonTempHours.stream().noneMatch(Optional::isPresent);
+        }
+        return true;
     }
 
     /**
@@ -403,6 +439,15 @@ public class EssTimeRecordManager implements TimeRecordManager
         RangeSet<LocalDate> attendanceRecDates = TreeRangeSet.create();
         attendanceRecords.stream().map(AttendanceRecord::getDateRange).forEach(attendanceRecDates::add);
 
+        List<TimeRecord> apRecords = timeRecordService.getTimeRecords(
+                Collections.singleton(empId), periods, Collections.singleton(TimeRecordStatus.APPROVED_PERSONNEL));
+        RangeSet<LocalDate> apRecordRanges = apRecords.stream()
+                .map(TimeRecord::getDateRange)
+                .reduce(ImmutableRangeSet.<LocalDate>builder(),
+                        ImmutableRangeSet.Builder::add,
+                        (b1, b2) -> b1.addAll(b2.build()))
+                .build();
+
         return periods.stream()
                 .sorted()
                 .map(PayPeriod::getDateRange)
@@ -412,10 +457,12 @@ public class EssTimeRecordManager implements TimeRecordManager
                 .flatMap(range -> activeDates.subRangeSet(range).asRanges().stream())
                 // Trim ranges, eliminating dates where the employee was a senator
                 .flatMap(range -> senatorDates.complement().subRangeSet(range).asRanges().stream())
+                // Trim ranges, eliminating dates with approved records
+                .flatMap(range -> apRecordRanges.complement().subRangeSet(range).asRanges().stream())
                 // Filter out ranges that are covered by already entered attendance periods
                 .filter(range -> !attendanceRecDates.encloses(range))
                 // Filter out ranges where the employee isn't required to enter time records
-                .filter(range -> RangeUtils.intersects(timeEntryRequiredDates, range))
+                .filter(timeEntryRequiredDates::intersects)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

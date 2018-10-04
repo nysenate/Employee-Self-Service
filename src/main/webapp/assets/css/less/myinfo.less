@@ -106,6 +106,12 @@
   margin: auto;
   padding-bottom: 1em;
 
+  //label.year-select {
+  //  font-weight: normal;
+  //  display: inline-block;
+  //  margin-top: 30px;
+  //}
+
   h2 {
     margin-top: 30px;
   }
@@ -206,10 +212,10 @@
   margin-bottom: 20px;
 
   text-align: left !important;
+}
 
-  .ack-doc-title {
-    font-weight: bold;
-  }
+.ack-doc-title {
+  font-weight: bold;
 }
 
 .ack-doc-view-nav {
@@ -218,6 +224,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.ack-doc-report-link {
+  text-decoration: underline !important;
+  color: blue !important;
+}
+.ack-doc-list {
+  text-align: center;
+  padding: 0;
+
+  li:not(:first-of-type) {
+    margin-top: 5px;
+  }
 }
 
 /** --- Paycheck History Page --- */

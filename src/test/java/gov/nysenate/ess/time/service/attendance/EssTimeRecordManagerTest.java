@@ -91,7 +91,9 @@ public class EssTimeRecordManagerTest extends BaseTest
     @Test
     @Transactional(value = DatabaseConfig.remoteTxManager)
     public void ensureAllRecordsTest() {
+        Stopwatch started = Stopwatch.createStarted();
         manager.ensureAllActiveRecords();
+        logger.info("TRM run completed in {}s", started.stop());
     }
 
     @Test

@@ -26,7 +26,12 @@ public class AllowanceTRV implements TimeRecordValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(AllowanceTRV.class);
 
-    @Autowired private AllowanceService allowanceService;
+    private final AllowanceService allowanceService;
+
+    @Autowired
+    public AllowanceTRV(AllowanceService allowanceService) {
+        this.allowanceService = allowanceService;
+    }
 
     @Override
     public boolean isApplicable(TimeRecord record, Optional<TimeRecord> previousState, TimeRecordAction action) {

@@ -1,4 +1,4 @@
-angular.module('essTime')
+angular.module('ess')
     .directive('employeeSelect', ['appProps', '$filter', 'supEmpGroupService', employeeSelectDirective]);
 
 function employeeSelectDirective(appProps, $filter, supEmpGroupService) {

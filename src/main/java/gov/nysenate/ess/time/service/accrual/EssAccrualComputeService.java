@@ -1,11 +1,13 @@
 package gov.nysenate.ess.time.service.accrual;
 
 import com.google.common.collect.ImmutableRangeSet;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
+import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
@@ -36,6 +38,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.model.personnel.PersonnelStatus.LWOP;
+import static gov.nysenate.ess.core.model.personnel.PersonnelStatus.SLHP;
 import static gov.nysenate.ess.time.model.EssTimeConstants.ANNUAL_PER_HOURS;
 import static gov.nysenate.ess.time.model.EssTimeConstants.MAX_DAYS_PER_YEAR;
 import static gov.nysenate.ess.time.util.AccrualUtils.getProratePercentage;
@@ -60,6 +64,9 @@ import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
 public class EssAccrualComputeService extends SqlDaoBaseService implements AccrualComputeService
 {
     private static final Logger logger = LoggerFactory.getLogger(EssAccrualComputeService.class);
+
+    /** Set of statuses that prevent accrual if present at pay period end */
+    private static final Set<PersonnelStatus> accrualOverrideStatuses = ImmutableSet.of(SLHP, LWOP);
 
     @Autowired private AccrualDao accrualDao;
     @Autowired private TimeRecordDao timeRecordDao;
@@ -207,7 +214,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
             throw new AccrualException(empId, AccrualExceptionType.NO_FROM_DATE_FOUND);
         }
 
-        if (!fromDate.isBefore(lastPeriod.getEndDate())) {
+        if (fromDate.isAfter(lastPeriod.getEndDate())) {
             return Collections.emptyList();
         }
         // Range from last existing accrual entry to the end of the last pay period
@@ -393,10 +400,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
     private AccrualState computeInitialAccState(TransactionHistory transHistory, Optional<PeriodAccSummary> periodAccSum,
                                                 AnnualAccSummary annualAcc, LocalDate fromDate) {
         AccrualState accrualState = new AccrualState(annualAcc);
-        // Use the from date if there is no end date
+        // Use the day before the from date as the end date if none exists
         // (this means that there have been no accruals posted yet for the employee)
         if (accrualState.getEndDate() == null) {
-            accrualState.setEndDate(fromDate);
+            accrualState.setEndDate(fromDate.minusDays(1));
         }
 
         PayPeriod firstPayPeriod = payPeriodService.getPayPeriod(PayPeriodType.AF, fromDate);
@@ -434,8 +441,16 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                                           RangeSet<LocalDate> expectedHoursDates) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
+        PersonnelStatus lastStatus = Optional.ofNullable(
+                transHistory.getEffectivePersonnelStatus(gapPeriodRange).lastEntry().getValue())
+                .orElse(PersonnelStatus.NONE);
+
         // If the employee was not allowed to accrue during the gap period, don't increment accruals
-        accrualState.setEmpAccruing(accrualAllowedDates.intersects(gapPeriodRange));
+        // Also, do not allow accrual if the effective personnel status at pay period end prevents it.
+        boolean accruing =
+                accrualAllowedDates.intersects(gapPeriodRange) &&
+                !accrualOverrideStatuses.contains(lastStatus);
+        accrualState.setEmpAccruing(accruing);
 
         // TODO if min total hours changes mid pay period,
         //   the period total hours need to be calculated according to rate of total hours / 260

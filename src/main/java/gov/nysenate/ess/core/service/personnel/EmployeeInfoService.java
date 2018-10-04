@@ -92,9 +92,9 @@ public interface EmployeeInfoService
      * Search for employees based on their full name.
      *
      * @param term String - search term
-     * @param limitOffset {@link LimitOffset} - pagination for query results
-     * @return {@link PaginatedList<Employee>}
+     * @param activeOnly
+     *@param limitOffset {@link LimitOffset} - pagination for query results  @return {@link PaginatedList<Employee>}
      */
-    PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset);
+    PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset);
 
 }

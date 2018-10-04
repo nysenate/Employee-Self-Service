@@ -29,7 +29,7 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "loc.DELOCAT AS LOC_DELOCAT,\n" +
         "loc.FFADSTREET1 AS LOC_FFADSTREET1, loc.FFADSTREET2 AS LOC_FFADSTREET2,\n" +
         "loc.FFADCITY AS LOC_FFADCITY, loc.ADSTATE AS LOC_ADSTATE,\n" +
-        "loc.ADZIPCODE AS LOC_ADZIPCODE, loc.DTTXNUPDATE AS LOC_DTTXNUPDATE\n"
+        "loc.ADZIPCODE AS LOC_ADZIPCODE, loc.DTTXNUPDATE AS LOC_DTTXNUPDATE, loc.CDSTATUS AS LOC_CDSTATUS\n"
     ),
     GET_EMP_SQL_TABLES(
         "FROM ${masterSchema}.PM21PERSONN per\n" +
@@ -63,7 +63,8 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             GET_EMP_SQL_COLS.getSql() + ", COUNT(*) OVER () AS total_rows\n" +
             GET_EMP_SQL_TABLES.getSql() +
             "WHERE UPPER(TRIM(per.NAFIRST) || ' ' || TRIM(per.FFNAMIDINIT) || ' ' || TRIM(per.FFNALAST))\n" +
-            "        LIKE UPPER('%' || :term || '%')"
+            "        LIKE UPPER('%' || :term || '%')\n" +
+            "  AND (:activeOnly = 0 OR per.CDEMPSTATUS = 'A')"
     ),
 
     GET_ACTIVE_EMP_IDS(

@@ -1,15 +1,17 @@
 package gov.nysenate.ess.core.model.auth;
 
 public enum EssRole {
-    /** General */
+    /* General */
     ADMIN,
     SENATE_EMPLOYEE,
     SENATOR,
     TIMEOUT_EXEMPT,
-    /** Supply */
+    /* MyInfo */
+    ACK_MANAGER,
+    /* Supply */
     SUPPLY_EMPLOYEE,
     SUPPLY_MANAGER,
-    /** Time */
-    PERSONNEL_MANAGER,
+    /* Time */
+    TIME_MANAGER,
     ;
 }

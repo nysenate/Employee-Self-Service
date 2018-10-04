@@ -27,13 +27,13 @@ function confirmModal (modals) {
             '<ng-transclude></ng-transclude>' +
             '<div ng-hide="rejectable" class="input-container">' +
               '<input type="button" ng-click="resolve()" class="{{confirmClass}}" ' +
-                     'value="{{resolveButton || \'OK\'}}" tabindex="1"/>' +
+                     'value="{{resolveButton}}" title="{{resolveButton}}" tabindex="1"/>' +
             '</div>' +
             '<div ng-show="rejectable" class="input-container">' +
               '<input type="button" ng-click="resolve()" class="{{resolveClass}}" ' +
-                     'value="{{resolveButton || \'Yes\'}}" tabindex="1"/>' +
+                     'value="{{resolveButton}}" title="{{resolveButton}}" tabindex="1"/>' +
               '<input type="button" ng-click="reject()" class="{{rejectClass}}" ' +
-                     'value="{{rejectButton || \'No\'}}" tabindex="1"/>' +
+                     'value="{{rejectButton}}" title="{{rejectButton}}" tabindex="1"/>' +
             '</div>' +
           '</div>' +
         '</div>',
@@ -52,8 +52,8 @@ function confirmModal (modals) {
 
         $scope.confirmMessage = $attrs.confirmMessage;
 
-        $scope.resolveButton = $attrs.resolveButton;
-        $scope.rejectButton = $attrs.rejectButton;
+        $scope.resolveButton = $attrs.resolveButton || ($scope.rejectable ? 'Yes' : 'Ok');
+        $scope.rejectButton = $attrs.rejectButton || 'No';
 
         $scope.resolveClass = $attrs.resolveClass || 'submit-button';
         $scope.rejectClass = $attrs.rejectClass || 'reject-button';

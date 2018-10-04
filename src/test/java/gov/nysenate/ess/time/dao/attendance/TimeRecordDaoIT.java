@@ -3,14 +3,18 @@ package gov.nysenate.ess.time.dao.attendance;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.annotation.SillyTest;
+import gov.nysenate.ess.core.BaseTest;
+import gov.nysenate.ess.core.annotation.IntegrationTest;
+import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
-import gov.nysenate.ess.core.BaseTest;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -18,29 +22,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-@Category(SillyTest.class)
-@Transactional
-public class TimeRecordDaoTest extends BaseTest
+import static gov.nysenate.ess.core.config.DatabaseConfig.remoteTxManager;
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_PERSONNEL;
+
+@Category(IntegrationTest.class)
+@Transactional(value = remoteTxManager)
+public class TimeRecordDaoIT extends BaseTest
 {
-    private static final Logger logger = LoggerFactory.getLogger(TimeRecordDaoTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(TimeRecordDaoIT.class);
 
     @Autowired private TimeRecordDao timeRecordDao;
+    @Autowired private EmployeeDao employeeDao;
 
-    private static TimeRecord testRecord;
-    private static LocalDate trStartDate = LocalDate.of(1990, 8, 2);
-    private static LocalDate trEndDate = LocalDate.of(1990, 8, 15);
+    private TimeRecord testRecord;
+    private static final LocalDate trStartDate = LocalDate.of(1990, 8, 2);
+    private static final LocalDate trEndDate = LocalDate.of(1990, 8, 15);
 
-    public static void initTestRecord() {
+    private void initTestRecord() {
         testRecord = new TimeRecord();
 
         testRecord.setEmployeeId(11423);
@@ -60,16 +65,48 @@ public class TimeRecordDaoTest extends BaseTest
         }
     }
 
-    @PostConstruct
+    @Before
     public void init() {
         initTestRecord();
     }
 
+    /**
+     * Tests scenario where ess tries to insert new record over personnel approved record
+     */
+    @Test(expected = IllegalRecordModificationEx.class)
+    public void overwriteAPRecordTest() {
+        // Get an active employee id with a history
+        int empId = employeeDao.getActiveEmployees().stream()
+                .sorted(Comparator.comparing(emp ->
+                        Optional.ofNullable(emp.getSenateContServiceDate()).orElse(LocalDate.now())))
+                .findFirst()
+                .map(Employee::getEmployeeId)
+                .orElseThrow(() -> new AssertionError("Can't find an employee"));
+        // Get an approved record for that employee
+        List<TimeRecord> approvedRecords =
+                timeRecordDao.getRecordsDuring(empId, Range.all(), Collections.singleton(APPROVED_PERSONNEL));
+        TimeRecord record = approvedRecords.stream()
+                .sorted()
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Cant find AP records for longest serving emp: " + empId));
+        record.setTimeRecordId(null);
+        record.setRemarks("These are ESS test remarks.  You shouldn't see this in the db due to test db rollbacks");
+        timeRecordDao.saveRecord(record);
+    }
+
+    /* --- Ignored Tests ---
+
+    These are "unit tests" from a simpler time.
+    Some of them don't work, all of them are smoke tests at best.
+    They are still useful for debugging, however.
+     */
+
     @Test
+    @Ignore
     public void insertTimeRecord() {
         boolean existing = false;
         try {
-            TimeRecord oldRecord = timeRecordDao.getRecordsDuring(11423, Range.closed(trStartDate, trEndDate)) .get(0);
+            TimeRecord oldRecord = timeRecordDao.getRecordsDuring(11423, Range.closed(trStartDate, trEndDate)).get(0);
             testRecord.setTimeRecordId(oldRecord.getTimeRecordId());
             existing = true;
         } catch (IndexOutOfBoundsException ignored) {}
@@ -79,6 +116,7 @@ public class TimeRecordDaoTest extends BaseTest
     }
 
     @Test
+    @Ignore
     public void removeRecordTest() {
         timeRecordDao.getRecordsDuring(11423, Range.closed(trStartDate, trEndDate)).forEach(record -> {
             Stopwatch sw = Stopwatch.createStarted();
@@ -88,6 +126,7 @@ public class TimeRecordDaoTest extends BaseTest
     }
 
     @Test
+    @Ignore
     public void updateTimeRecordTest() {
         removeRecordTest();
         insertTimeRecord();
@@ -102,6 +141,7 @@ public class TimeRecordDaoTest extends BaseTest
     }
 
     @Test
+    @Ignore
     public void getRecordByEmployeeId() throws Exception {
         Stopwatch sw = Stopwatch.createStarted();
         ListMultimap<Integer, TimeRecord> timeRecords = timeRecordDao.getRecordsDuring(Collections.singleton(11423),
@@ -111,12 +151,14 @@ public class TimeRecordDaoTest extends BaseTest
     }
 
     @Test
+    @Ignore
     public void testGetRecord() throws Exception {
         List<TimeRecord> records = timeRecordDao.getRecordsDuring(11423, Range.closedOpen(LocalDate.of(2015, 8, 12), LocalDate.of(2015, 8, 15)));
         records.forEach(record -> logger.info("{}", record.getBeginDate()));
     }
 
     @Test
+    @Ignore
     public void getTimeRecordTest() {
         Stopwatch sw = Stopwatch.createStarted();
         timeRecordDao.getTimeRecord(new BigInteger("39555288913054012606969560863737970844"));
@@ -124,6 +166,7 @@ public class TimeRecordDaoTest extends BaseTest
     }
 
     @Test
+    @Ignore
     public void getUpdatedTRecsTest() {
         logger.info("Getting updated time records");
         Stopwatch sw = Stopwatch.createStarted();
@@ -136,6 +179,7 @@ public class TimeRecordDaoTest extends BaseTest
     }
 
     @Test
+    @Ignore
     public void getLastUpdateTimeTest() {
         logger.info("Getting latest update timestamp...");
         LocalDateTime lastUpdate = timeRecordDao.getLatestUpdateTime();

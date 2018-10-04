@@ -7,13 +7,6 @@ function accrualDetailDirective(appProps, modals, accrualUtils) {
         link: function ($scope, $elem, $attrs) {
             $scope.accruals = modals.params().accruals;
 
-            $scope.$watchCollection('accruals', function () {
-                if (!$scope.accruals) {
-                    return;
-                }
-                $scope.reportUrl = accrualUtils.getAccrualReportURL($scope.accruals);
-            });
-
             $scope.close = modals.resolve;
         }
     };

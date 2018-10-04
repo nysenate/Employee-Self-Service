@@ -156,7 +156,7 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
             .then($scope.init, function () {
                 // Only logout if there was a successful save
                 if (saveSuccess) {
-                    $scope.logout();
+                    locationService.logout();
                 }
             });
     };
@@ -732,6 +732,14 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
 
     function getSubmitDialogs() {
         var submitDialogs = [];
+
+        var prevUnsubmittedTe = getPrevUnsubmittedTe();
+        if (prevUnsubmittedTe && prevUnsubmittedTe.length > 0) {
+            submitDialogs.push(function () {
+                return modals.open("unsubmitted-te-warning", {records: prevUnsubmittedTe}, true);
+            })
+        }
+
         if (!$scope.expectedHoursEntered()) {
             submitDialogs.push(function () {
                 return modals.open("expectedhrs-dialog", {
@@ -794,14 +802,14 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
     $scope.preValidation = function() {
         var record = $scope.getSelectedRecord();
         $scope.errorTypes.reset();
-        checkForPrevUnsubmitted(record);
+        checkForPrevUnsubmittedRaSa(record);
     };
 
     /**
      * Check for any unsubmitted salaried records before the given record
      * @param record
      */
-    function checkForPrevUnsubmitted(record) {
+    function checkForPrevUnsubmittedRaSa(record) {
         for (var iRecord in $scope.state.records) {
             var otherRecord = $scope.state.records[iRecord];
             if (moment(otherRecord.beginDate).isBefore(record.beginDate)) {
@@ -813,6 +821,18 @@ function recordEntryCtrl($scope, $rootScope, $filter, $q, appProps,
                 }
             }
         }
+    }
+
+    /**
+     * Search for and return any unsubmitted temporary time records before the given record.
+     */
+    function getPrevUnsubmittedTe() {
+        var currentRec = $scope.getSelectedRecord();
+        return $scope.state.records
+            .filter(function (rec) {
+                return rec.scope === 'E' &&
+                    moment(rec.beginDate).isBefore(currentRec.beginDate);
+            });
     }
 
     /**

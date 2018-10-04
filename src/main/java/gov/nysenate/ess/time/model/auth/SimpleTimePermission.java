@@ -28,11 +28,13 @@ public enum SimpleTimePermission {
     /** Granted to supervisors of temp employees allowing them to view their employees' allowance */
     EMPLOYEE_ALLOWANCE_PAGE("time:emp-allowance-page"),
 
+    /** Granted to select personnel employees, allowing them to view complete employee data */
+    PERSONNEL_PAGES("time:personnel-pages"),
+
     /* --- Admin Permissions --- */
 
     /** Allows full use of the time record manager to create / modify records */
-    TIME_RECORD_MANAGEMENT("admin:time:timerecords:manager")
-
+    TIME_RECORD_MANAGEMENT("admin:time:timerecords:manager"),
     ;
 
     private String permissionString;

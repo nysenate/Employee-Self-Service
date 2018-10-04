@@ -1,3 +1,13 @@
+var fs = require("fs");
+var libxmljs = require("libxmljs");
+
+var pomPath = __dirname + "/../../../pom.xml";
+var pomXml = fs.readFileSync(pomPath, 'utf8');
+
+var pomDoc = libxmljs.parseXml(pomXml);
+var artifactId = pomDoc.find("/*/*[name()='artifactId']")[0].text();
+var version = pomDoc.find("/*/*[name()='version']")[0].text();
+
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -16,7 +26,8 @@ module.exports = function(grunt) {
         tagSource: 'WEB-INF/tags',
         bowerRoot: 'bower_components',
         jsDest: '<%= jsRoot %>/dest',
-        tomcatWeb: '<%= properties.deployDirectory %>',
+        buildName: artifactId + '##' + version,
+        tomcatWeb: '<%= properties.deployDirectory %>/<%= buildName %>',
 
         /** Compile LESS into css and place it into the css source directory */
         less: {
@@ -130,45 +141,49 @@ module.exports = function(grunt) {
         watch: {
             less: {
                 files: ['<%= lessSource %>/**.less', '<%= lessSource %>/common/**.less'],
-                tasks: ['less', 'cssmin', 'copy:css', '<%= properties.lessBeep %>']
+                tasks: ['less', 'cssmin', 'fileExists', 'copy:css', '<%= properties.lessBeep %>']
             },
             cssVendor: {
                 files: ['<%= cssVendor %>/**/*.css'],
-                tasks: ['cssmin', 'copy:css', '<%= properties.cssBeep %>']
+                tasks: ['cssmin', 'fileExists', 'copy:css', '<%= properties.cssBeep %>']
             },
             jsVendor: {
                 files: ['<%= bowerRoot %>/**.js'],
-                tasks: ['uglify:vendor', 'copy:js', '<%= properties.jsVendorBeep %>']
+                tasks: ['uglify:vendor', 'fileExists', 'copy:js', '<%= properties.jsVendorBeep %>']
             },
             jsSource: {
                 files: ['<%= jsSource %>/**/*.js'],
-                tasks: ['uglify:dev', 'uglify:prod', 'copy:js', '<%= properties.jsSourceBeep %>']
+                tasks: ['uglify:dev', 'uglify:prod', 'fileExists', 'copy:js', '<%= properties.jsSourceBeep %>']
             },
             jsp: {
                 files: ['<%= jspSource %>/**/*.jsp', '<%= tagSource %>/**/*.tag'],
-                tasks: ['copy:jsp', '<%= properties.jspBeep %>']
+                tasks: ['fileExists', 'copy:jsp', '<%= properties.jspBeep %>']
             }
         },
 
         copy: {
             css: {
                 files: [{
-                    expand:true, cwd: '<%= cssDest %>/', src: ['**'], filter: 'isFile',
+                    expand: true, cwd: '<%= cssDest %>/', src: ['**'], filter: 'isFile',
                     dest: '<%= tomcatWeb %>/assets/css/dest/'
                 }]
             },
             js: {
                 files: [{
-                    expand:true, src: ['<%= jsSource %>/**', '<%= jsDest %>/**'], filter: 'isFile',
+                    expand: true, src: ['<%= jsSource %>/**', '<%= jsDest %>/**'], filter: 'isFile',
                     dest: '<%= tomcatWeb %>'}]
             },
             jsp : {
                 files: [{
-                    expand:true, src: ['<%= jspSource %>/**', '<%= tagSource %>/**'], filter: 'isFile',
+                    expand: true, src: ['<%= jspSource %>/**', '<%= tagSource %>/**'], filter: 'isFile',
                     dest: '<%= tomcatWeb %>'
                 }]
             }
-        }
+        },
+
+         fileExists: {
+            buildDir: '<%= tomcatWeb %>'
+         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -179,6 +194,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-beep');
+    grunt.loadNpmTasks('grunt-file-exists');
 
-    grunt.registerTask('default', ['less', 'cssmin', 'uglify', 'copy', 'beep:*-*---*-**-**-*-']);
+    grunt.registerTask('compile', ['less', 'cssmin', 'uglify']);
+    grunt.registerTask('default', ['compile', 'fileExists', 'copy', 'beep:*-*---*-**-**-*-']);
 };

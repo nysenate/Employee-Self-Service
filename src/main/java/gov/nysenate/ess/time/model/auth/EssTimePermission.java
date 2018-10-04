@@ -31,6 +31,11 @@ public class EssTimePermission extends DateTimeRangePermission {
         super(getEmployeePart(empId), Range.all());
     }
 
+    public EssTimePermission(int empId, TimePermissionObject object, RequestMethod action,
+                             Range<LocalDate> effectiveRange, boolean requireEnclosing) {
+        super(getPermissionString(empId, object, action), DateUtils.toDateTimeRange(effectiveRange), requireEnclosing);
+    }
+
     /**
      * Construct a permission that grants an actions to an ess-time object under the given employee
      *  for the given date range

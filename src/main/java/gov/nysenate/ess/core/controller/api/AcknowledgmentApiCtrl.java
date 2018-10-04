@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
@@ -17,6 +16,7 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.core.util.ShiroUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -195,6 +196,9 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                                               @RequestParam int ackDocId) {
         checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGMENT, POST));
 
+        int authedEmpId = ShiroUtils.getAuthenticatedEmpId();
+        boolean personnelAcked = authedEmpId != empId;
+
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
         ackDocDao.getAckDoc(ackDocId);
 
@@ -208,7 +212,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         }
 
         // Save the ack doc
-        ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now()));
+        ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now(), personnelAcked));
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
@@ -231,7 +235,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                                            HttpServletResponse response) throws IOException {
 
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        String csvFileName = "AckDoc-"+ ackDocId +"_"+ "SenateReport" + LocalDateTime.now()+".csv";
+        AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
+        String csvFileName = ackDoc.getTitle()+"_"+ "SenateAckReport_" + LocalDateTime.now().withNano(0)+".csv";
 
         response.setContentType("text/csv");
         response.setStatus(200);
@@ -243,20 +248,33 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         response.setHeader(headerKey, headerValue);
 
         CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withHeader("EmpId", "Name", "Email", "Resp Center","Document Title",
+                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Document Title",
                         "Document Effective Date Time", "Acknowledgment"));
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         for (EmpAckReport empAckReport: ackReportService.getAllAcksForAckDocById(ackDocId)) {
-            JsonNode ackNode = mapper.readTree(OutputUtils.toJson(empAckReport.getAcks().get(0).getAck()));
+            LocalDateTime ackedTime = null;
+            if (empAckReport.getAcks().get(0).getAck() != null) {
+                ackedTime = empAckReport.getAcks().get(0).getAck().getTimestamp().withNano(0);
+            }
+            String respCenter = "";
+            try {
+                respCenter = empAckReport.getEmployee().getRespCenter().getHead().getShortName();
+            }
+            catch (Exception e) {
+                //No need to do anything. This means that the employee does not have a responsibility center
+            }
+
             csvPrinter.printRecord(
                     empAckReport.getEmployee().getEmployeeId(),
                     empAckReport.getEmployee().getFirstName() + " " + empAckReport.getEmployee().getLastName(),
                     empAckReport.getEmployee().getEmail(),
-                    empAckReport.getEmployee().getRespCenter().getHead().getShortName(),
+                    respCenter,
+                    empAckReport.getEmployee().getSenateContServiceDate(),
                     empAckReport.getAcks().get(0).getAckDoc().getTitle(),
-                    empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime(),
-                    ackNode.get("timestamp"));
+                    empAckReport.getAcks().get(0).getAckDoc().getEffectiveDateTime().withNano(0),
+                    ackedTime);
+
         }
         csvPrinter.close();
     }
@@ -275,13 +293,12 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * @param empId int - the employee id of the employee whose acknowledgments will be retrieved
      *
      *
-     * @return String
-     * */
+     * @return {@link EmpAckReport}
+     */
     @RequestMapping(value = "/report/acks/emp", method = {GET, HEAD})
-    public String getAllAcksFromEmployee(@RequestParam int empId) {
+    public EmpAckReport getAllAcksFromEmployee(@RequestParam int empId) {
         checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
-        return OutputUtils.toJson(ackReportService.getAllAcksFromEmployee(empId));
-
+        return ackReportService.getAllAcksFromEmployee(empId);
     }
 
     /* --- Exception Handlers --- */

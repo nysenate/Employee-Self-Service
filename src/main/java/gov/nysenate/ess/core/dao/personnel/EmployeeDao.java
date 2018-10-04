@@ -23,7 +23,7 @@ public interface EmployeeDao extends BaseDao
      * @return Employee if found, throws EmployeeNotFoundEx otherwise.
      * @throws EmployeeException - EmployeeNotFoundEx if employee with given id was not found.
      */
-    public Employee getEmployeeById(int empId) throws EmployeeException;
+    Employee getEmployeeById(int empId) throws EmployeeException;
 
     /**
      * Retrieve an Employee object based on the employee email.
@@ -32,7 +32,7 @@ public interface EmployeeDao extends BaseDao
      * @return Employee if found, throws EmployeeNotFoundEx otherwise.
      * @throws EmployeeException - EmployeeNotFoundEx if employee with given email was not found.
      */
-    public Employee getEmployeeByEmail(String email) throws EmployeeException;
+    Employee getEmployeeByEmail(String email) throws EmployeeException;
 
     /**
      * Retrieves a Map of {emp id (Integer) -> Employee} given a collection of employee ids
@@ -41,32 +41,32 @@ public interface EmployeeDao extends BaseDao
      * @param empIds List<Integer> - List of employee ids
      * @return Map - {emp id (Integer) -> Employee} or empty map if no ids could be matched
      */
-    public Map<Integer, Employee> getEmployeesByIds(List<Integer> empIds);
+    Map<Integer, Employee> getEmployeesByIds(List<Integer> empIds);
 
     /**
      * @return Employee info objects for all past and present employees
      */
-    public Set<Employee> getAllEmployees();
+    Set<Employee> getAllEmployees();
 
     /**
      * @return Employee info objects for all currently active employees
      */
-    public Set<Employee> getActiveEmployees();
+    Set<Employee> getActiveEmployees();
 
     /**
      * Search for employees by their full name.
      * Results are paginated and ordered in alphabetical order.
      *
      * @param term String - search term
-     * @param limitOffset {@link LimitOffset} - result window
-     * @return {@link PaginatedList<Employee>}
+     * @param activeOnly boolean - return only active employees if true
+     *@param limitOffset {@link LimitOffset} - result window  @return {@link PaginatedList<Employee>}
      */
-    public PaginatedList<Employee> searchEmployees(String term, LimitOffset limitOffset);
+    PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset);
 
     /**
      * @return The ids for all currently active employees
      */
-    public Set<Integer> getActiveEmployeeIds();
+    Set<Integer> getActiveEmployeeIds();
 
     /**
      * Get raw column data from the employee table.
@@ -76,17 +76,17 @@ public interface EmployeeDao extends BaseDao
      * @param empId int - employee id
      * @return ImmutableMap<String, String>
      */
-    public Map<String, String> getRawEmployeeColumns(int empId);
+    Map<String, String> getRawEmployeeColumns(int empId);
 
     /**
      * @return LocalDateTime - the date/time of the latest employee table update
      */
-    public LocalDateTime getLastUpdateTime();
+    LocalDateTime getLastUpdateTime();
 
     /**
      * Get all employees with fields that were updated after the given date time
      * @param fromDateTime LocalDateTime
      * @return List<Employee>
      */
-    public List<Employee> getUpdatedEmployees(LocalDateTime fromDateTime);
+    List<Employee> getUpdatedEmployees(LocalDateTime fromDateTime);
 }

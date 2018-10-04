@@ -3,13 +3,13 @@ package gov.nysenate.ess.time.dao.attendance;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.dao.period.mapper.PayPeriodRowMapper;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.dao.attendance.mapper.RemoteEntryRowMapper;
 import gov.nysenate.ess.time.dao.attendance.mapper.RemoteRecordRowMapper;
-import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.dao.period.mapper.PayPeriodRowMapper;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
@@ -34,15 +34,25 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.GET_EXISTING_TREC_ID;
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.INSERT_TIME_REC;
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeRecordQuery.UPDATE_TIME_REC_SQL;
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_PERSONNEL;
+
 @Repository
 public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlTimeRecordDao.class);
 
-    @Autowired private TimeEntryDao timeEntryDao;
+    private final TimeEntryDao timeEntryDao;
 
     private static final OrderBy timeRecordOrder =
             new OrderBy("rec.NUXREFEM", SortOrder.ASC, "rec.DTBEGIN", SortOrder.ASC, "ent.DTDAY", SortOrder.ASC);
+
+    @Autowired
+    public SqlTimeRecordDao(TimeEntryDao timeEntryDao) {
+        this.timeEntryDao = timeEntryDao;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -99,9 +109,9 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     @Override
     public List<TimeRecord> getActiveRecords(Integer empId) {
         TimeRecordRowCallbackHandler handler = new TimeRecordRowCallbackHandler();
-        MapSqlParameterSource params = new MapSqlParameterSource("empIds", empId);
+        MapSqlParameterSource params = new MapSqlParameterSource("empId", empId);
         remoteNamedJdbc.query(
-                SqlTimeRecordQuery.GET_ACTIVE_TIME_REC_BY_EMP_IDS.getSql(schemaMap(), timeRecordOrder), params, handler);
+                SqlTimeRecordQuery.GET_ACTIVE_TIME_REC_BY_EMP_ID.getSql(schemaMap(), timeRecordOrder), params, handler);
         return handler.getRecordList();
     }
 
@@ -114,29 +124,44 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
                 (rs, rowNum) -> rs.getInt("year"));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean saveRecord(TimeRecord record) {
         boolean isUpdate = true;
+        int updated;
         if (record.getTimeRecordId() == null) {
             // Attempt to find existing record for employee with matching begin date
             // If that record exists, use that record id
-            record.setTimeRecordId(getTimeRecordId(record));
+            record.setTimeRecordId(getExistingTimeRecordIdForUpdate(record));
         }
 
         MapSqlParameterSource params = getTimeRecordParams(record);
-        if (record.getTimeRecordId() == null ||
-                remoteNamedJdbc.update(SqlTimeRecordQuery.UPDATE_TIME_REC_SQL.getSql(schemaMap()), params)==0) {
+        if (record.getTimeRecordId() == null) {
             isUpdate = false;
             KeyHolder tsIdHolder = new GeneratedKeyHolder();
-            if (remoteNamedJdbc.update(SqlTimeRecordQuery.INSERT_TIME_REC.getSql(schemaMap()), params,
-                    tsIdHolder, new String[] {"NUXRTIMESHEET"}) == 0) {
-                return false;
-            }
-            record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get("NUXRTIMESHEET")).toBigInteger());
+            final String tsIdCol = "NUXRTIMESHEET";
+            String[] keyCols = {tsIdCol};
+            updated = remoteNamedJdbc.update(INSERT_TIME_REC.getSql(schemaMap()), params, tsIdHolder, keyCols);
+            record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get(tsIdCol)).toBigInteger());
             record.setUpdateDate(LocalDateTime.now());
+        } else {
+            updated = remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params);
         }
+
+        if (updated != 1) {
+            throw new IllegalStateException("Unexpected number of updates for time record " +
+                    (isUpdate ? "update" : "insert") + ": " +
+                    updated + " updates for id=" + record.getTimeRecordId() + " " +
+                    "empId=" + record.getEmployeeId() + " " +
+                    "beginDate=" + record.getBeginDate() + " " +
+                    "endDate=" + record.getEndDate()
+            );
+        }
+
         // Insert each entry from the time record
-        final Optional<TimeRecord> oldRecord = isUpdate ? Optional.of(getTimeRecord(record.getTimeRecordId())) : Optional.empty();
+        final Optional<TimeRecord> oldRecord = isUpdate
+                ? Optional.of(getTimeRecord(record.getTimeRecordId()))
+                : Optional.empty();
 
         for (TimeEntry entry : record.getTimeEntries()) {
             if (!shouldUpdate(entry, oldRecord)) {
@@ -152,6 +177,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean deleteRecord(BigInteger recordId) {
         MapSqlParameterSource params = new MapSqlParameterSource("timesheetId", new BigDecimal(recordId));
@@ -171,7 +197,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         return activeRecordCount > 0;
     }
 
-    /** --- Helper Classes --- */
+    /* --- Helper Classes --- */
 
     private static class TimeRecordRowCallbackHandler implements RowCallbackHandler
     {
@@ -213,7 +239,7 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
         }
     }
 
-    public static MapSqlParameterSource getTimeRecordParams(TimeRecord timeRecord) {
+    private static MapSqlParameterSource getTimeRecordParams(TimeRecord timeRecord) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("timesheetId", timeRecord.getTimeRecordId() != null ?
                 new BigDecimal(timeRecord.getTimeRecordId()) : null);
@@ -240,21 +266,25 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     /* --- Internal Methods --- */
 
     /**
-     * Try to find a time record id for a time record
-     * with the same employee id and begin date as the given time record
+     * Try to find a time record id for a time record with an overlapping date range
+     * that can be updated.
+     *
      * @param record {@link TimeRecord}
      * @return BigInteger
      */
-    private BigInteger getTimeRecordId(TimeRecord record) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("empId", record.getEmployeeId())
-                .addValue("beginDate", SqlBaseDao.toDate(record.getBeginDate()));
+    private BigInteger getExistingTimeRecordIdForUpdate(TimeRecord record) {
+        MapSqlParameterSource params = getTimeRecordParams(record);
         // Attempt to find existing record for employee with matching begin date
         // If that record exists, use that record id
         try {
-            BigDecimal id = remoteNamedJdbc.queryForObject(SqlTimeRecordQuery.GET_TREC_ID_BY_BEGIN_DATE.getSql(schemaMap()),
-                    params, BigDecimal.class);
-            return id.toBigInteger();
+            Map<String, Object> resultMap =
+                    remoteNamedJdbc.queryForMap(GET_EXISTING_TREC_ID.getSql(schemaMap()), params);
+            TimeRecordStatus status = TimeRecordStatus.valueOfCode(String.valueOf(resultMap.get("CDTSSTAT")));
+            BigInteger id = ((BigDecimal) resultMap.get("NUXRTIMESHEET")).toBigInteger();
+            if (status == APPROVED_PERSONNEL) {
+                throw new IllegalRecordModificationEx(id, "Existing record is approved by personnel");
+            }
+            return id;
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
@@ -262,16 +292,16 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
 
     /**
      * @param entry TimeEntry - the time entry to insert
-     * @param oldRecord TimeRecord - a record containing the last saved entry set
+     * @param savedRecordOpt TimeRecord - a record containing the last saved entry set
      * @return true if the entry is fundamentally different than the equivalent entry in oldRecord
      */
-    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> oldRecord) {
-        Optional<TimeEntry> oldEntry = oldRecord.map(rec -> rec.getEntry(entry.getDate()));
-        return oldEntry
-                // Return true if the old record has the entry, and it is different
+    private static boolean shouldUpdate(TimeEntry entry, Optional<TimeRecord> savedRecordOpt) {
+        Optional<TimeEntry> savedEntryOpt = savedRecordOpt.map(rec -> rec.getEntry(entry.getDate()));
+        return savedEntryOpt
+                // If entry already exists, update it if the new entry is different
                 .map(oldEnt -> !oldEnt.equals(entry))
-                // Or the new entry is active and non-empty
-                .orElse(!entry.isEmpty() && entry.isActive());
+                // If the entry doesn't exist, insert the new entry if it is non-empty
+                .orElse(!entry.isEmpty());
     }
 
     /**

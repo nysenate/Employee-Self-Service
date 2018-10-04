@@ -8,7 +8,7 @@ Typically, when the user requests a page they don't have access to
     <c:if test="${not empty message}">
       ${message}<br>
     </c:if>
-    Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
+    Please contact the STS Helpline at (518) 455-2011 if you require any assistance.
   </p>
 </ess-notification>
 <div modal-container></div>

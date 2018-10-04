@@ -28,7 +28,8 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "LEFT JOIN ${masterSchema}.PM23ATTEND att\n" +
             "    ON rec.NUXREFEM = att.NUXREFEM AND per.DTPERIODYEAR = att.DTPERIODYEAR\n" +
             "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
-            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'\n" +
+            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
+            "        AND ent.CDSTATUS = 'A'\n" +
             "WHERE per.CDSTATUS = 'A' AND rec.CDSTATUS = 'A'\n" +
             "    AND per.CDPERIOD = 'AF'\n"
     ),
@@ -38,7 +39,8 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "JOIN ${masterSchema}.SL16PERIOD per\n" +
             "    ON rec.DTBEGIN BETWEEN per.DTBEGIN AND per.DTEND\n" +
             "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
-            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET AND ent.CDSTATUS = 'A'\n" +
+            "    ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n" +
+            "        AND ent.CDSTATUS = 'A'\n" +
             "WHERE per.CDSTATUS = 'A' AND per.CDPERIOD = 'AF'\n" +
             "   AND rec.NUXRTIMESHEET = :timesheetId"
     ),
@@ -55,18 +57,18 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             GET_TIME_REC_SQL_TEMPLATE.getSql() +
                     "    AND (att.DTCLOSE IS NULL OR att.DTCLOSE > SYSDATE)\n"
     ),
-    GET_ACTIVE_TIME_REC_BY_EMP_IDS(
+    GET_ACTIVE_TIME_REC_BY_EMP_ID(
             GET_ACTIVE_TIME_REC.getSql() +
-                    "    AND (rec.NUXREFEM IN (:empIds))\n"
+                    "    AND rec.NUXREFEM = :empId\n"
     ),
 
     GET_LAST_UPDATE_DATE_TIME(
             "SELECT GREATEST(\n" +
             "   CAST (MAX(rec.DTTXNUPDATE) AS TIMESTAMP),\n" +
-            "   CAST (MAX(ent.DTTXNUPDATE) AS TIMESTAMP)\n" +
+            "   CAST (NVL(MAX(ent.DTTXNUPDATE), '01-JAN-70') AS TIMESTAMP)\n" +
             ") AS MAX_DTTXNUPDATE\n" +
             "FROM ${tsSchema}.PM23TIMESHEET rec\n" +
-            "JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
+            "LEFT JOIN ${tsSchema}.PD23TIMESHEET ent\n" +
             "  ON rec.NUXRTIMESHEET = ent.NUXRTIMESHEET\n"
     ),
 
@@ -105,10 +107,12 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "WHERE NUXREFSV = :supId\n" +
             "   AND CDTSSTAT != 'AP'"
     ),
-    GET_TREC_ID_BY_BEGIN_DATE(
-            "SELECT NUXRTIMESHEET\n" +
-            "FROM ${tsSchema}.PM23TIMESHEET\n" +
-            "WHERE NUXREFEM = :empId AND DTBEGIN = :beginDate"
+    GET_EXISTING_TREC_ID(
+            "SELECT NUXRTIMESHEET, CDTSSTAT\n" +
+            "FROM ${tsSchema}.PM23TIMESHEET ts\n" +
+            "WHERE NUXREFEM = :empId\n" +
+            "  AND DTBEGIN <= :endDate\n" +
+            "  AND DTEND >= :beginDate"
     ),
 
     INSERT_TIME_REC(
@@ -126,7 +130,8 @@ public enum SqlTimeRecordQuery implements BasicSqlQuery {
             "  DTBEGIN = :beginDate, DTEND = :endDate, DEREMARKS = :remarks, NUXREFSV = :supervisorId,\n" +
             "  DEEXCEPTION = :excDetails, DTPROCESS = :procDate, NAUSER = :lastUser, CDRESPCTRHD = :respCtr,\n" +
             "  NUXREFAPR = :approvalEmpId\n" +
-            "WHERE NUXRTIMESHEET = :timesheetId"
+            "WHERE NUXRTIMESHEET = :timesheetId\n" +
+            "  AND CDTSSTAT != 'AP'"
     ),
 
 

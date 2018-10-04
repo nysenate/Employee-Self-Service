@@ -10,6 +10,11 @@
              ng-model-options="{debounce: 300}"
              placeholder="Search for an employee">
 
+      <label class="employee-search-checkbox">
+        <input type="checkbox" ng-model="activeOnly">
+        Show only active employees
+      </label>
+
       <div loader-indicator class="loader employee-search-loader"
            ng-class="{'visibility-hidden': !loadingEmps}">
       </div>
@@ -23,6 +28,9 @@
           </li>
         </ul>
       </div>
+      <p ng-hide="!searchTerm || loadingEmps || searchResultsExist()">
+        No results found for "{{searchTerm}}"
+      </p>
 
     </div>
 
@@ -33,6 +41,14 @@
             <th>Selected</th>
             <td>
               {{selectedEmp.fullName}}
+            </td>
+          </tr>
+          <tr>
+            <th>Status</th>
+            <td class="personnel-status"
+                ng-class="{inactive: !empInfo.personnelStatus.employed,
+                           special: empInfo.personnelStatus.description != 'ACTIVE'}">
+              {{empInfo.personnelStatus.description | lowercase}}
             </td>
           </tr>
           <tr>

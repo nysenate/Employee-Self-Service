@@ -1,5 +1,5 @@
 
-angular.module('essTime')
+angular.module('ess')
     .controller('EmployeeSearchCtrl', ['$scope', 'AccrualActiveYearsApi', 'AccrualPeriodApi',
                                        'AllowanceActiveYearsApi', 'AllowanceUtils', 'AllowanceApi',
                                        employeeSearchCtrl])
