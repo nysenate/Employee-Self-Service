@@ -40,4 +40,6 @@ public interface RequisitionService {
      * Marks a requisition as being saved in sfms.
      */
     void savedInSfms(int requisitionId, boolean succeed);
+
+    Requisition reconcileRequisition(Requisition requisition);
 }

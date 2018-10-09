@@ -12,6 +12,15 @@
   </div>
 
   <div class="content-container" ng-show="reconcilableSearch.response.$resolved && reconcilableSearch.items.length > 0">
+
+    <div id="reconciliation-error-messages" class="text-align-center padding-10">
+      <div ess-notification ng-show="reconciliationStatus.attempted == true && !inventory.isComplete()"
+           level="error"
+           title="Missing item quantities"
+           message="To reconcile, you must enter a quantity for all items on both pages.">
+      </div>
+    </div>
+
     <div style="display:inline-block; width:100%">
       <ul class="reconciliation-tab-links">
         <li ng-class="{'active-reconciliation-tab': currentPage === 1}"><a href="#" ng-click="setCurrentPage(1)">Page One</a></li>
@@ -19,7 +28,7 @@
       </ul>
 
       <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
-      <a id="reconcile" class="no-print" style="margin: 10px; float: right" ng-click="reconcile()">Reconcile</a>
+      <input class="submit-button" style="float: right;" type="button" value="Reconcile" ng-click="reconcile()">
 
     </div>
 
@@ -41,7 +50,7 @@
            ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}" >
 
         <div class="supply-div-table-row"
-             ng-class="{'supply-highlight-row': isItemSelected(item)}"
+             ng-class="{'supply-highlight-row': isItemSelected(item), 'warn-important': isReconciliationError(item)}"
              ng-class-even="'dark-background'">
 
           <div class="col-2-12" ng-click="setSelected(item)">
@@ -52,8 +61,8 @@
             {{item.description}}
           </div>
           <div class="col-2-12" >
-            <input id="recNum" class="number" type="number" style="width: 10em" ng-model="item.newQuantity" placeholder="{{placeHolderText}}" >
-            &nbsp;
+            <input type="number" style="width: 10em" ng-model="inventory.itemQuantities[item.id]" placeholder="Quantity"
+            ng-class="{'warn-important': reconciliationStatus.attempted === true && inventory.itemQuantities[item.id] === null}">
           </div>
         </div>
 
@@ -87,5 +96,20 @@
 
     </div>
   </div>
-  <div modal-container></div>
+  <div modal-container>
+    <modal modal-id="reconciliation-success">
+      <div confirm-modal title="Successful reconciliation"
+           resolve-button="Ok"
+           confirm-class="approve-button">
+      </div>
+    </modal>
+
+    <modal modal-id="reconciliation-error">
+      <div confirm-modal title="Errors occurred in reconciliation"
+           confirm-message="One or more of the quantities entered is incorrect. Errors will be highlighted red."
+           resolve-button="Review Errors"
+           confirm-class="approve-button">
+      </div>
+    </modal>
+  </div>
 </div>

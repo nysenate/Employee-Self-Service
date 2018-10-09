@@ -136,6 +136,7 @@ CREATE TABLE requisition_content (
   note text,
   customer_id smallint NOT NULL,
   delivery_method delivery_method NOT NULL,
+  is_reconciled boolean NOT NULL DEFAULT FALSE,
   modified_by_id smallint NOT NULL,
   modified_date_time timestamp without time zone NOT NULL
 );

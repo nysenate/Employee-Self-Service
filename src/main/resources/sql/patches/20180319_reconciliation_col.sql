@@ -1,2 +1,2 @@
-ALTER TABLE supply.requisition
-  ADD COLUMN reconciled BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE supply.requisition_content
+  ADD COLUMN is_reconciled boolean NOT NULL DEFAULT FALSE;

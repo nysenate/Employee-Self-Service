@@ -148,7 +148,9 @@ public final class Requisition {
         return copy().withSavedInSfms(savedInSfms).build();
     }
 
-    public Requisition setReconiled(boolean reconciled){ return copy().withReconciled(reconciled).build();}
+    public Requisition setReconiled(boolean reconciled) {
+        return copy().withReconciled(reconciled).build();
+    }
 
     public int getRequisitionId() {
         return requisitionId;
@@ -226,7 +228,9 @@ public final class Requisition {
         return savedInSfms;
     }
 
-    public boolean getReconciled(){return reconciled; }
+    public boolean getReconciled() {
+        return reconciled;
+    }
 
     /**
      * Protected methods should only be used by implementations of the RequisitionState interface via the process/reject methods.

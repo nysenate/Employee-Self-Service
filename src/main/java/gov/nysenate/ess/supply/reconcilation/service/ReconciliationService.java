@@ -1,76 +1,73 @@
 package gov.nysenate.ess.supply.reconcilation.service;
 
-import gov.nysenate.ess.supply.reconcilation.dao.RecOrderDao;
-import gov.nysenate.ess.supply.reconcilation.model.RecOrder;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.supply.reconcilation.ReconciliationException;
+import gov.nysenate.ess.supply.reconcilation.dao.OracleInventoryDao;
+import gov.nysenate.ess.supply.reconcilation.model.Inventory;
+import gov.nysenate.ess.supply.reconcilation.model.ReconciliationResults;
+import gov.nysenate.ess.supply.requisition.model.Requisition;
+import gov.nysenate.ess.supply.requisition.model.RequisitionQuery;
+import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
+import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
 
 @Service
 public class ReconciliationService {
 
+    private Reconciler reconciler;
+    private OracleInventoryDao oracleInventoryDao;
+    private RequisitionService requisitionService;
+
     @Autowired
-    RecOrderDao recOrderDao;
-
-    public void reconcile(ArrayList<RecOrder> recOrders){
-        ArrayList<RecOrder> oracle = new ArrayList<>(createOracleSet(recOrders));
-        Collections.reverse(oracle);
-
-        //debugging
-        for(int i = 0; i < recOrders.size(); i++){
-            System.out.println("Rec Id: " + recOrders.get(i).getItemId() + " Rec Q: " + recOrders.get(i).getQuantity());
-            System.out.println("O Id: " + oracle.get(i).getItemId() + " O Q: " + oracle.get(i).getQuantity());
-        }
-
-        ArrayList<RecOrder> sameQuantityOrders = getSameOrders(recOrders, oracle);
-        ArrayList<RecOrder> differentQuantityOrders = getDifferentOrders(recOrders, oracle);
-
-        //debugging
-        for(RecOrder order: sameQuantityOrders){
-            System.out.println(order.getItemId());
-        }
-        for(RecOrder order: differentQuantityOrders){
-            System.out.println(order.getItemId());
-        }
-
+    public ReconciliationService(Reconciler reconciler, OracleInventoryDao oracleInventoryDao,
+                                 RequisitionService requisitionService) {
+        this.reconciler = reconciler;
+        this.oracleInventoryDao = oracleInventoryDao;
+        this.requisitionService = requisitionService;
     }
 
-    private HashSet<RecOrder> createOracleSet(ArrayList<RecOrder> recOrders){
-        HashSet ids = createIdSet(recOrders);
-        HashSet<RecOrder> oracle = recOrderDao.getItemsById(ids);
-        return oracle;
-    }
-
-
-    private HashSet<Integer> createIdSet(ArrayList<RecOrder> recOrders){
-        HashSet<Integer> ids = new HashSet();
-        for(RecOrder order: recOrders){
-            ids.add(order.getItemId());
+    public ReconciliationResults reconcile(Inventory expectedInventory) {
+        List<Requisition> reqsPendingReconciliation = reqsPendingReconciliation();
+        if (!isFullInventory(expectedInventory, reqsPendingReconciliation)) {
+            throw new ReconciliationException("Inventory did not include counts for all needed items");
         }
-        return ids;
-    }
 
-    private ArrayList<RecOrder> getSameOrders(ArrayList<RecOrder> recOrders, ArrayList<RecOrder> oracle){
-        ArrayList<RecOrder> sameQuantityOrders = new ArrayList<>();
-        for(int i = 0; i < recOrders.size(); i++){
-            if(recOrders.get(i).getQuantity() == oracle.get(i).getQuantity()){
-                sameQuantityOrders.add(recOrders.get(i));
+        Inventory actualInventory = oracleInventoryDao.forLocation(expectedInventory.getLocationId());
+        ReconciliationResults results = reconciler.reconcile(expectedInventory, actualInventory);
+
+        if (results.success()) {
+            for (Requisition req : reqsPendingReconciliation) {
+                requisitionService.reconcileRequisition(req);
             }
         }
-        return sameQuantityOrders;
+
+        return results;
     }
 
-    private ArrayList<RecOrder> getDifferentOrders(ArrayList<RecOrder> recOrders, ArrayList<RecOrder> oracle){
-        ArrayList<RecOrder> differentQuantityOrders = new ArrayList<>();
-        for(int i = 0; i < recOrders.size(); i++){
-            if(recOrders.get(i).getQuantity() != oracle.get(i).getQuantity()){
-                differentQuantityOrders.add(recOrders.get(i));
-            }
-        }
-        return differentQuantityOrders;
+    private List<Requisition> reqsPendingReconciliation() {
+        RequisitionQuery query = new RequisitionQuery()
+                .setStatuses(EnumSet.of(RequisitionStatus.APPROVED))
+                .setReconciled("false")
+                .setLimitOffset(LimitOffset.ALL);
+        return requisitionService.searchRequisitions(query).getResults();
     }
 
-
+    /**
+     * Verifies all items needed to reconcile the outstanding requisitions are included in the Inventory.
+     * @param expectedInventory
+     * @param needsReconciliation
+     * @return
+     */
+    private boolean isFullInventory(Inventory expectedInventory, List<Requisition> needsReconciliation) {
+        return needsReconciliation.stream()
+                .map(Requisition::getLineItems)
+                .flatMap(Set::stream)
+                .allMatch(li -> expectedInventory.containsItem(li.getItem().getId()));
+    }
 }
