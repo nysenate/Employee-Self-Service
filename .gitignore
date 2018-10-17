@@ -4,4 +4,4 @@
 **/target/
 **.properties
 grunt.properties.json
-./src/main/resources/**.xml
+src/main/resources/*.xml
