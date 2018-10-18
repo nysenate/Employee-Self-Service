@@ -1,5 +1,6 @@
 package gov.nysenate.ess.web.controller.template;
 
+import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public class SupplyTemplateCtrl extends BaseTemplateCtrl
     }
 
     private String getSupplyEmployeePage(String pageName) {
-        if (SecurityUtils.getSubject().isPermitted("supply:employee")) {
+        if (SecurityUtils.getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
             return pageName;
         }
         return NOT_SUPPLY_EMPLOYEE_PAGE;

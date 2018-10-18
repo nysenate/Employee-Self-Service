@@ -1,3 +1,4 @@
+<%@ tag import="gov.nysenate.ess.supply.authorization.permission.SupplyPermission" %>
 <%@tag description="Left navigation menu for Supply screens" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
@@ -12,7 +13,7 @@
       <li class="sub-topic"><a href="${ctxPath}/supply/shopping/cart/cart">Shopping Cart</a></li>
       <li class="sub-topic"><a href="${ctxPath}/supply/history/order-history">Order History</a></li>
     </ul>
-    <shiro:hasPermission name="supply:employee">
+    <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_EMPLOYEE.getPermissionString() %>">
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <li class="sub-topic"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
