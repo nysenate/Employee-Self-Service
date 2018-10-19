@@ -1,3 +1,4 @@
+<%@ page import="gov.nysenate.ess.supply.authorization.permission.SupplyPermission" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
@@ -128,7 +129,7 @@
            class="complete-button" style="width: 15%" type="button" value="Complete">
 
     <%--Approve button. Requires current status is COMPLETED and logged in employee has appropriate permissions.--%>
-    <shiro:hasPermission name="supply:requisition:approve">
+    <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermissionString() %>">
       <input class="approve-button"
              style="width: 15%;"
              ng-click="approveShipment()"

@@ -39,9 +39,7 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
     var printIfRequested = function () {
         var print = locationService.getSearchParam('print');
         if (print === 'true') {
-            $timeout(function () {
-                $window.print();
-            })
+            $scope.print();
         }
     };
 
@@ -88,5 +86,11 @@ function supplyViewController($scope, historyApi, locationService, $window, $tim
 
     $scope.displayIssuedDate = function (selectedVersion) {
         return selectedVersion.status === 'COMPLETED' || selectedVersion.status === 'APPROVED';
+    };
+
+    $scope.print = function () {
+        $timeout(function () {
+            $window.print();
+        });
     }
 }

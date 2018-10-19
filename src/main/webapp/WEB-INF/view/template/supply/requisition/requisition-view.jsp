@@ -17,7 +17,7 @@
           <select ng-model="selectedVersion"
                   ng-options="version.name for version in requisitionHistory.versions">
           </select>
-          <a class="float-right" style="padding: 5px 20px 0px 0px;" href="javascript:if(window.print)window.print()">
+          <a class="float-right" style="padding: 5px 20px 0px 0px;" ng-click="print()">
             Print Page
           </a>
         </div>
