@@ -7,12 +7,10 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.unit.LocationService;
-import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.item.OrderableItems;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
 import gov.nysenate.ess.supply.item.view.SupplyItemView;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,6 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping("/{itemId}")
     public BaseResponse getSupplyItemById(@PathVariable int itemId) {
-        checkPermission(SupplyPermission.SUPPLY_EMPLOYEE.getPermission());
         return new ViewObjectResponse<>(new SupplyItemView(supplyItemDao.getItemById(itemId)));
     }
 
@@ -51,7 +48,6 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("")
     public BaseResponse allSupplyItems() {
-        checkPermission(SupplyPermission.SUPPLY_EMPLOYEE.getPermission());
         Set<SupplyItem> items = supplyItemDao.getSupplyItems();
         return sortedItemViews(items);
     }

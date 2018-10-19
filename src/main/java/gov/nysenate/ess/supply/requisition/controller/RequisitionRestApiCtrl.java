@@ -158,7 +158,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(defaultValue = "All", required = false) String savedInSfms,
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
                                            WebRequest webRequest) {
-        checkPermission(SupplyPermission.SUPPLY_EMPLOYEE.getPermission());
+        checkPermission(RequisitionPermission.forAll(RequestMethod.GET));
 
         dateField = dateField == null ? "ordered_date_time" : dateField;
         RequisitionQuery query = new RequisitionQuery()

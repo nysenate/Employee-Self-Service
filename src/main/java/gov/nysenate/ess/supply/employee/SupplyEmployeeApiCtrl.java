@@ -31,7 +31,7 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping("")
     public BaseResponse getSupplyEmployees() {
-        checkPermission(SupplyPermission.SUPPLY_EMPLOYEE.getPermission());
+        checkPermission(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
         ImmutableList<Employee> employees = roleDao.getEmployeesWithRole(EssRole.SUPPLY_EMPLOYEE);
         return ListViewResponse.of(new ArrayList(employees));
     }
@@ -41,7 +41,7 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/issuers")
     public BaseResponse getIssuers() {
-        checkPermission(SupplyPermission.SUPPLY_EMPLOYEE.getPermission());
+        checkPermission(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
         Set<Employee> employees = supplyEmployeeDao.getDistinctIssuers();
         return ListViewResponse.of(new ArrayList(employees));
     }
