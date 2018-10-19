@@ -4,6 +4,7 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.auth.DateTimeRangePermission;
+import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.LimitOffset;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,14 @@ public class BaseRestApiCtrl
         getSubject().checkPermission(permission);
     }
 
+    /**
+     * Get the employeeId of the user making this request.
+     * @return
+     */
+    protected int getSubjectEmployeeId() {
+        SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
+        return person.getEmployeeId();
+    }
 
     /**
      * Attempts to parse a date request parameter

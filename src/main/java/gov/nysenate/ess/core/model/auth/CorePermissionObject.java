@@ -9,4 +9,5 @@ public enum CorePermissionObject {
     EMPLOYEE_INFO,
     TRANSACTION_HISTORY,
     ACKNOWLEDGMENT,
+    TRAVEL_APPLICATION
 }

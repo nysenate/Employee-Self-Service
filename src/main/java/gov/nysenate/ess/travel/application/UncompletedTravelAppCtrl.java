@@ -5,7 +5,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.model.auth.SenatePerson;
+import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.travel.application.allowances.AllowancesDtoView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
@@ -25,6 +25,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static gov.nysenate.ess.core.model.auth.CorePermissionObject.TRAVEL_APPLICATION;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/application/uncompleted")
@@ -49,6 +51,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/init", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse getSavedTravelApplication(@RequestParam int empId) {
         TravelApplication app = uncompletedAppService.getSavedTravelApplication(empId, getSubjectEmployeeId());
+        checkWritePermissions(app.getTraveler().getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
@@ -66,6 +69,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/submit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitTravelApp(@PathVariable String id) {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.submitApplication(UUID.fromString(id));
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
@@ -85,6 +89,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{empId}", method = RequestMethod.DELETE)
     public BaseResponse cancelApplication(@PathVariable int empId) {
+        checkWritePermissions(empId);
         uncompletedAppService.deleteUncompletedTravelApplication(empId);
         return new SimpleResponse(true, "Successfully canceled travel application", "travel-app-cancel");
     }
@@ -103,6 +108,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/purpose", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse savePurpose(@PathVariable String id, @RequestBody String purpose) {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.savePurpose(UUID.fromString(id), purpose);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
@@ -117,6 +123,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/outbound", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveOutboundSegments(@PathVariable String id, @RequestBody RouteView route) {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.saveOutboundLegs(UUID.fromString(id), route.toRoute().getOutgoingLegs());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
@@ -131,6 +138,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveReturnSegments(@PathVariable String id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.saveReturnLegs(UUID.fromString(id), route.toRoute().getReturnLegs());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
@@ -143,6 +151,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/expenses", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveExpenses(@PathVariable String id, @RequestBody AllowancesDtoView allowancesDto) {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.saveExpenses(UUID.fromString(id), new Dollars(allowancesDto.tollsAllowance),
                 new Dollars(allowancesDto.getParkingAllowance()), new Dollars(allowancesDto.getAlternateAllowance()),
                 new Dollars(allowancesDto.getRegistrationAllowance()), new Dollars(allowancesDto.getTrainAndAirplaneAllowance()));
@@ -157,6 +166,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/meal-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse updateMealAllowances(@PathVariable String id, @RequestBody MealAllowancesView mealAllowancesView) {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.updateMealAllowances(UUID.fromString(id), mealAllowancesView.toMealAllowances());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
@@ -169,10 +179,21 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/lodging-allowances", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse updateLodgingAllowances(@PathVariable String id, @RequestBody LodgingAllowancesView lodgingAllowancesView) {
+        checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.updateLodgingAllowances(UUID.fromString(id), lodgingAllowancesView.toLodgingAllowances());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
+    // Checks that the logged in user is allowed to modify this application.
+    private void checkWritePermissions(String appId) {
+        TravelApplication app = uncompletedAppDao.selectUncompletedApplication(UUID.fromString(appId));
+        checkWritePermissions(app.getTraveler().getEmployeeId());
+    }
+
+    // Checks that the logged in user is allowed to modify applications where the traveler's empId = empId.
+    private void checkWritePermissions(int empId) {
+        checkPermission(new CorePermission(empId, TRAVEL_APPLICATION, RequestMethod.GET));
+    }
 
     // TODO: Move attachment API's to their own controller? Would need to update purpose page logic.
 
@@ -227,10 +248,5 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         app.deleteAttachment(attachmentId);
         uncompletedAppDao.saveUncompletedApplication(app);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
-    }
-
-    private int getSubjectEmployeeId() {
-        SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
-        return person.getEmployeeId();
     }
 }

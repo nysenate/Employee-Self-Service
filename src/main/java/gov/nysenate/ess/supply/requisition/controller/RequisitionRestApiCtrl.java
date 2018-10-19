@@ -293,9 +293,4 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
     private Employee getModifiedBy() {
         return employeeService.getEmployee(getSubjectEmployeeId());
     }
-
-    private int getSubjectEmployeeId() {
-        SenatePerson person = (SenatePerson) getSubject().getPrincipals().getPrimaryPrincipal();
-        return person.getEmployeeId();
-    }
 }
