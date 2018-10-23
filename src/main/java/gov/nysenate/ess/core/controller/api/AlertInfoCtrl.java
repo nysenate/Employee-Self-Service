@@ -14,6 +14,7 @@ import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.alert.AlertInfoValidationService;
@@ -111,7 +112,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "contact-dump", method = RequestMethod.GET)
     public ContactBatch generateContactList() {
-        checkPermission(new WildcardPermission("admin"));
+        checkPermission(SimpleEssPermission.ADMIN.getPermission());
 
         List<AlertInfo> alertInfos = alertInfoDao.getAllAlertInfo();
         Map<Integer, AlertInfo> alertInfoMap = alertInfos.stream()

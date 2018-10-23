@@ -30,7 +30,8 @@ CREATE TYPE ess_role AS ENUM (
     'ACK_MANAGER',
     'SUPPLY_EMPLOYEE',
     'SUPPLY_MANAGER',
-    'TIME_MANAGER'
+    'TIME_MANAGER',
+    'SUPPLY_REPORTER'
 );
 
 ALTER TYPE ess_role OWNER TO postgres;

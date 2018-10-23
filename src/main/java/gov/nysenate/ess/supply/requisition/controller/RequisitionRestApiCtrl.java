@@ -17,6 +17,8 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
+import gov.nysenate.ess.supply.authorization.permission.RequisitionPermission;
+import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.view.LineItemView;
 import gov.nysenate.ess.supply.requisition.model.*;
@@ -82,8 +84,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void saveRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
-        checkPermission(new WildcardPermission("supply:requisition:edit"));
         Requisition requisition = requisitionView.toRequisition();
+        checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
+
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisitionService.saveRequisition(requisition);
     }
@@ -95,11 +98,12 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/process", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void processRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
-        checkPermission(new WildcardPermission("supply:requisition:edit"));
-        if (RequisitionStatus.valueOf(requisitionView.getStatus()) == RequisitionStatus.COMPLETED) {
-            checkPermission(new WildcardPermission("supply:requisition:approve"));
-        }
         Requisition requisition = requisitionView.toRequisition();
+        checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
+
+        if (requisition.getStatus() == RequisitionStatus.COMPLETED) {
+            checkPermission(SupplyPermission.SUPPLY_REQUISITION_APPROVE.getPermission());
+        }
         if (!requisition.getIssuer().isPresent()) {
             requisition = requisition.setIssuer(getModifiedBy());
         }
@@ -114,8 +118,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{id}/reject", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void rejectRequisition(@PathVariable int id, @RequestBody RequisitionView requisitionView) {
-        checkPermission(new WildcardPermission("supply:requisition:edit"));
         Requisition requisition = requisitionView.toRequisition();
+        checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
+
         requisition = requisition.setModifiedBy(getModifiedBy());
         requisitionService.rejectRequisition(requisition);
     }
@@ -154,7 +159,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
                                            @RequestParam(required = false) String reconciled,
                                            WebRequest webRequest) {
-        checkPermission(new WildcardPermission("supply:employee"));
+        checkPermission(RequisitionPermission.forAll(RequestMethod.GET));
 
         dateField = dateField == null ? "ordered_date_time" : dateField;
         RequisitionQuery query = new RequisitionQuery()
@@ -204,8 +209,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                      @RequestParam(required = false) String to,
                                      @RequestParam(required = false) String dateField,
                                      WebRequest webRequest) {
-        if (!getSubject().isPermitted("supply:requisition:view:customer:" + String.valueOf(customerId))
-                || !getSubject().isPermitted("supply:requisition:view:destination:" + location)) {
+        if (!getSubject().isPermitted(RequisitionPermission.forCustomer(customerId, RequestMethod.GET))
+                || !getSubject().isPermitted(RequisitionPermission.forDestination(location, RequestMethod.GET))) {
             throw new UnauthorizedException();
         }
 
@@ -245,8 +250,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
      * @param requisition The requisition being requested.
      */
     private void checkViewRequisitionPermissions(Requisition requisition) {
-        if (!getSubject().isPermitted("supply:requisition:view:customer:" + String.valueOf(requisition.getCustomer().getEmployeeId()))
-                && !getSubject().isPermitted("supply:requisition:view:destination:" + requisition.getDestination().getLocId().toString())) {
+        if (!getSubject().isPermitted(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.GET))
+                && !getSubject().isPermitted(RequisitionPermission.forDestination(requisition.getDestination().getLocId().toString(), RequestMethod.GET))) {
             throw new UnauthorizedException();
         }
     }
