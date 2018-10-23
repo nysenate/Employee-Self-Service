@@ -133,6 +133,7 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
         var params = {
             status: "APPROVED",
             reconciled: 'false',
+            from: moment.unix(1).format(),
             offset: 0,
             limit: 'ALL'
         };

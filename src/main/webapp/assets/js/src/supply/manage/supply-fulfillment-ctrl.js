@@ -146,6 +146,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     function getApprovedShipments() {
         var params = {
             status: "APPROVED",
+            from: moment.unix(1).format(),
             limit: 'ALL',
             reconciled: 'false',
             offset: 0
