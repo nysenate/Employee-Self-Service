@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.admin;
 
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.EssRole;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageRateView;
 import org.apache.shiro.authz.permission.WildcardPermission;
@@ -18,7 +19,7 @@ public class MileageRateCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "")
     public MileageRateView updateMileageRate() {
-        checkPermission(new WildcardPermission("admin"));
+        checkPermission(SimpleEssPermission.ADMIN.getPermission());
         return new MileageRateView( allowanceService.ensureCurrentMileageRate());
     }
 
