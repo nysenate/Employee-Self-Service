@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.security.authorization;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.EssRole;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
@@ -17,7 +18,7 @@ public class AdminPermissionFactory implements PermissionFactory {
     @Override
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
         return roles.contains(EssRole.ADMIN)
-                ? ImmutableList.of(new WildcardPermission("admin"))
+                ? ImmutableList.of(SimpleEssPermission.ADMIN.getPermission())
                 : ImmutableList.of();
     }
 }
