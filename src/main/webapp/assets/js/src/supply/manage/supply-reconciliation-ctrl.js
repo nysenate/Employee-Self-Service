@@ -157,9 +157,11 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
                     $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
                 }
                 else {
-                    $scope.reconcilableItemMap[lineItem.item.id] = [];
-                    $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                    $scope.reconcilableSearch.items.push(lineItem.item);
+                    if (lineItem.item.inventoryTracked === true) { // Item only needs to be reconciled if it is tracked in inventory.
+                        $scope.reconcilableItemMap[lineItem.item.id] = [];
+                        $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
+                        $scope.reconcilableSearch.items.push(lineItem.item);
+                    }
                 }
             })
         });

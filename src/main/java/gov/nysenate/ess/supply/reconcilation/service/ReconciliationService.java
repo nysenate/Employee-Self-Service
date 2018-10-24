@@ -1,6 +1,7 @@
 package gov.nysenate.ess.supply.reconcilation.service;
 
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.reconcilation.ReconciliationException;
 import gov.nysenate.ess.supply.reconcilation.dao.OracleInventoryDao;
 import gov.nysenate.ess.supply.reconcilation.model.Inventory;
@@ -68,6 +69,7 @@ public class ReconciliationService {
         return needsReconciliation.stream()
                 .map(Requisition::getLineItems)
                 .flatMap(Set::stream)
+                .filter(li -> li.getItem().requiresSynchronization()) // Remove items for which inventory counts are not tracked.
                 .allMatch(li -> expectedInventory.containsItem(li.getItem().getId()));
     }
 }
