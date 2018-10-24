@@ -19,7 +19,9 @@ public class InventoryRowHandler implements RowCallbackHandler {
         if (locationId == null) {
             locationId = new LocationId(rs.getString("CDLOCAT"), rs.getString("CDLOCTYPE").charAt(0));
         }
-        inventory.put(rs.getInt("NUXREFCO"), rs.getInt("AMQTYOHSTD"));
+        // Divide the unit quantity by the unit size to get the normal item quantity used in reconciliation.
+        int quantity = rs.getInt("AMQTYOHSTD")/rs.getInt("AmStdUnit");
+        inventory.put(rs.getInt("NUXREFCO"), quantity);
     }
 
     public Inventory results() {

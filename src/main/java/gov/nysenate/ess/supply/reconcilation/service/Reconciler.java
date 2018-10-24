@@ -19,8 +19,8 @@ public class Reconciler {
      *
      * This does NOT verify that both inventories are exactly equal, only that the quantities in
      * {@code expected} are in {@code actual}. Actual may have additional items which are not in {@code expected}.
-     * @param expected
-     * @param actual
+     * @param expected An Inventory with item quantities entered by the user.
+     * @param actual An Inventory with item quantities retrieved from sfms.
      * @return {@link ReconciliationResults}
      * @throws ReconciliationException if the inventory locations differ or if an item in {@code expected} does not exist in {@code actual}.
      */
