@@ -8,7 +8,7 @@ import java.util.Map;
 public class Inventory {
 
     private final LocationId locationId;
-    private final ImmutableMap<Integer, Integer> itemQuantities;
+    private final ImmutableMap<Integer, Integer> itemQuantities; // ItemId to quantity
 
     public Inventory(LocationId locationId, Map<Integer, Integer> itemQuantities) {
         this.locationId = locationId;

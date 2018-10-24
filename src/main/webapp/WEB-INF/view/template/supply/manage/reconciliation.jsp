@@ -28,7 +28,7 @@
       </ul>
 
       <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
-      <input class="submit-button" style="float: right;" type="button" value="Reconcile" ng-click="reconcile()">
+      <input class="submit-button no-print" style="float: right;" type="button" value="Reconcile" ng-click="reconcile()">
 
     </div>
 
@@ -38,11 +38,15 @@
         <div class="col-2-12">
           Commodity Code
         </div>
-        <div class="col-8-12">
+        <div class="col-7-12">
           Item
         </div>
         <div class="col-2-12">
           Quantity On Hand
+        </div>
+        <div class="col-1-12 no-print">
+          <span ng-if="reconciliationStatus.resultErrorMap.size > 0">Difference</span>
+          <span ng-if="reconciliationStatus.resultErrorMap.size === 0">&nbsp</span>
         </div>
       </div>
       <%--Item rows--%>
@@ -57,12 +61,17 @@
             {{item.commodityCode}}
 
           </div>
-          <div class="col-8-12" style="overflow: hidden;" ng-click="setSelected(item)">
+          <div class="col-7-12" style="overflow: hidden;" ng-click="setSelected(item)">
             {{item.description}}
           </div>
-          <div class="col-2-12" >
+          <div class="col-2-12 no-print">
             <input type="number" style="width: 10em" ng-model="inventory.itemQuantities[item.id]" placeholder="Quantity"
             ng-class="{'warn-important': reconciliationStatus.attempted === true && inventory.itemQuantities[item.id] === null}">
+          </div>
+          <div class="col-1-12">
+            <span class="bold-text no-print" ng-if="reconciliationStatus.resultErrorMap.size > 0">
+              {{reconciliationStatus.resultErrorMap.get(item.id).expectedQuantity - reconciliationStatus.resultErrorMap.get(item.id).actualQuantity}}</span>
+            <span ng-if="reconciliationStatus.resultErrorMap.size === 0">&nbsp</span>
           </div>
         </div>
 
