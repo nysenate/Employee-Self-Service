@@ -8,7 +8,7 @@ public enum OracleItemInventoryQuery implements BasicSqlQuery {
 
     REC_ORDER_QUERY(
             "SELECT inv.NUXREFCO, inv.AMQTYOHSTD, inv.CDLOCAT, inv.CDLOCTYPE \n" +
-                    "FROM FM12INVENTRY inv INNER JOIN FM12COMMODTY com \n" +
+                    "FROM ${masterSchema}.FM12INVENTRY inv INNER JOIN ${masterSchema}.FM12COMMODTY com \n" +
                     "  ON com.NUXREFCO = inv.NUXREFCO \n" +
                     "WHERE com.CDSTOCKITEM = 'Y' \n" +
                     "  AND inv.CDLOCAT = :cdlocat \n" +
