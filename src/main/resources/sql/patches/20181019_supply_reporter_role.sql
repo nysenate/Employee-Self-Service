@@ -1,2 +1,0 @@
-ALTER TYPE ess.ess_role ADD VALUE 'SUPPLY_REPORTER'
-
