@@ -19,7 +19,7 @@ flyway.baselineVersion = 4
 flyway.locations = classpath:sql/migrations
 
 # Allow execution of migration scripts with version before current version
-flyway.outOfOrder = false
+flyway.outOfOrder = true
 
 # Whether to allow mixing transactional and non-transactional statements within the same migration.
 flyway.mixed = true
