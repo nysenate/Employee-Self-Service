@@ -13,7 +13,7 @@ SET client_min_messages = warning;
 -- Name: ess; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA ess;
+CREATE SCHEMA IF NOT EXISTS ess;
 
 
 ALTER SCHEMA ess OWNER TO postgres;
@@ -30,8 +30,7 @@ CREATE TYPE ess_role AS ENUM (
     'ACK_MANAGER',
     'SUPPLY_EMPLOYEE',
     'SUPPLY_MANAGER',
-    'TIME_MANAGER',
-    'SUPPLY_REPORTER'
+    'TIME_MANAGER'
 );
 
 ALTER TYPE ess_role OWNER TO postgres;
