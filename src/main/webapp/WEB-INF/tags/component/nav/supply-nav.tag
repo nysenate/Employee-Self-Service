@@ -9,24 +9,24 @@
     <ess-component-nav:nav-header topicTitle="Supply Menu" colorClass="blue-purple"/>
     <h3 class="main-topic">My Supply</h3>
     <ul class="sub-topic-list">
-      <li class="sub-topic"><a href="${ctxPath}/supply/shopping/order">Requisition Form</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/shopping/cart/cart">Shopping Cart</a></li>
-      <li class="sub-topic"><a href="${ctxPath}/supply/history/order-history">Order History</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/shopping/order">Requisition Form</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/shopping/cart/cart">Shopping Cart</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/history/order-history">Order History</a></li>
     </ul>
     <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_UI_NAV_MANAGE.getPermissionString() %>">
     <h3 class="main-topic">Manage Supply</h3>
     <ul class="sub-topic-list">
       <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_UI_MANAGE_FULFILLMENT.getPermissionString() %>">
-      <li class="sub-topic"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/manage/fulfillment">Fulfillment</a></li>
       </shiro:hasPermission>
       <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_UI_MANAGE_RECONCILIATION.getPermissionString() %>">
-      <li class="sub-topic"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/manage/reconciliation">Reconciliation</a></li>
       </shiro:hasPermission>
       <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_UI_MANAGE_REQUISITION_HISTORY.getPermissionString() %>">
-      <li class="sub-topic"><a href="${ctxPath}/supply/history/requisition-history">Requisition History</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/history/requisition-history">Requisition History</a></li>
       </shiro:hasPermission>
       <shiro:hasPermission name="<%= SupplyPermission.SUPPLY_UI_MANAGE_ITEM_HISTORY.getPermissionString() %>">
-      <li class="sub-topic"><a href="${ctxPath}/supply/history/item-history">Item History</a></li>
+      <li class="sub-topic blue-purple"><a href="${ctxPath}/supply/history/item-history">Item History</a></li>
       </shiro:hasPermission>
     </ul>
     </shiro:hasPermission>
