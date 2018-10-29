@@ -9,7 +9,7 @@
       <ess-notification level="error" title="Return segments have errors">
         <ul>
           <li ng-if="return.form.$error.dateValidator">One or more travel dates are invalid.
-            <span class="icon-help-with-circle" style="padding: 5px;" title="Select a date from the calendar or enter a date in the form mm/dd/yyyy"></spanclas></li>
+            <span class="icon-help-with-circle" style="padding: 5px;" title="Select a date from the calendar or enter a date in the form mm/dd/yyyy"></span></li>
           </li>
           <li ng-if="return.form.$error.motRequired">Enter a mode of transportation for each segment.</li>
           <li ng-if="return.form.$error.motDescription">Specify how you will travel for segments with mode of transportation of Other.</li>
