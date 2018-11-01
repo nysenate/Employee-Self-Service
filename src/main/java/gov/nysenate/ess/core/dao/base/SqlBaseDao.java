@@ -1,7 +1,5 @@
 package gov.nysenate.ess.core.dao.base;
 
-import gov.nysenate.ess.core.model.unit.Location;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -13,8 +11,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class SqlBaseDao
@@ -31,36 +27,10 @@ public abstract class SqlBaseDao
     @Resource(name = "remoteNamedJdbcTemplate")
     protected NamedParameterJdbcTemplate remoteNamedJdbc;
 
-    /** The main production schema. Intended for read access only. */
-    @Value("${master.schema}")
-    protected String MASTER_SCHEMA;
+    @Resource(name = "schemaMap")
+    protected Map<String, String> schemaMap;
 
-    /** The time/attendance buffer schema. Permits writes. */
-    @Value("${ts.schema}")
-    protected String TS_SCHEMA;
-
-    /** The shared Ess schema */
-    @Value("${ess.schema}")
-    protected String ESS_SCHEMA;
-
-    /** The schema for the Supply app. */
-    @Value("${supply.schema}")
-    protected String SUPPLY_SCHEMA;
-
-    private static Map<String, String> schemaMap = null;
-
-    /**
-     * Returns a string substitution map for setting the configured schema names.
-     * @return Map<String, String>
-     */
     protected Map<String, String> schemaMap() {
-        if (schemaMap == null) {
-            schemaMap = new HashMap<>();
-            schemaMap.put("masterSchema", MASTER_SCHEMA);
-            schemaMap.put("tsSchema", TS_SCHEMA);
-            schemaMap.put("essSchema", ESS_SCHEMA);
-            schemaMap.put("supplySchema", SUPPLY_SCHEMA);
-        }
         return schemaMap;
     }
 

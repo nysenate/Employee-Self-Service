@@ -5,9 +5,13 @@ import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrSubstitutor;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Common utility methods to be used by enums/classes that store sql queries.
@@ -15,6 +19,14 @@ import java.util.List;
 public abstract class SqlQueryUtils
 {
     static final Integer ORACLE_MAX_ROW_LIMIT = 100000;
+
+    /**
+     * Return the sql with schemas substituted.
+     */
+    public static String substituteSchema(Map<String, String> schemaMap, String sql) {
+        StrSubstitutor strSub = new StrSubstitutor(schemaMap);
+        return strSub.replace(sql);
+    }
 
     /**
      * Wraps the input sql query with a limit offset clause. The returned query will have the

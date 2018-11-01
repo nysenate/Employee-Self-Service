@@ -17,8 +17,7 @@ public interface BasicSqlQuery
      * Return the sql query as is with the given schemas.
      */
     default String getSql(Map<String, String> schemaMap) {
-        StrSubstitutor strSub = new StrSubstitutor(schemaMap);
-        return strSub.replace(getSql());
+        return SqlQueryUtils.substituteSchema(schemaMap, getSql());
     }
 
     /**
