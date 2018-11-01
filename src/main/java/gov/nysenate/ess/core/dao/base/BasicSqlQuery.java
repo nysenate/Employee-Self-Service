@@ -2,7 +2,6 @@ package gov.nysenate.ess.core.dao.base;
 
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
-import org.apache.commons.lang3.text.StrSubstitutor;
 
 import java.util.Map;
 

@@ -1,9 +1,11 @@
 package gov.nysenate.ess.core.config;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +23,7 @@ import java.util.Map;
  */
 @EnableTransactionManagement
 @Configuration
-public class DatabaseConfig
-{
+public class DatabaseConfig {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
     public static final String localTxManager = "localTxManager";
@@ -62,7 +63,7 @@ public class DatabaseConfig
     }
 
     /**
-     * Returns a string substitution map for setting the configured schema names.
+     * Configures the string substitution map for setting the configured schema names.
      * @return Map<String, String>
      */
     @Bean(name = "schemaMap")
@@ -90,4 +91,11 @@ public class DatabaseConfig
     /** The schema for the Supply app. */
     @Value("${supply.schema}")
     protected String SUPPLY_SCHEMA;
+
+    /** Configures the supply sync procedure name prefixed with the correct schema. */
+    @Bean(name = "supplySyncProcedureName")
+    public String supplySyncProcedureName(@Qualifier("schemaMap") Map<String, String> schemaMap) {
+        String name = "${masterSchema}.SYNCHRONIZE_SUPPLY.synchronize_with_supply";
+        return SqlQueryUtils.substituteSchema(schemaMap, name);
+    }
 }
