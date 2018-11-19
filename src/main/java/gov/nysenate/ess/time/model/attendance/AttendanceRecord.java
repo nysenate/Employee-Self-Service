@@ -6,8 +6,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class AttendanceRecord extends AttendanceHours {
 
@@ -21,7 +20,7 @@ public class AttendanceRecord extends AttendanceHours {
     protected LocalDateTime createdDate;
     protected LocalDateTime updatedDate;
     protected String transactionNote;
-    protected List<BigInteger> timesheetIds;
+    protected LinkedHashSet<BigInteger> timesheetIds;
     protected Integer expectedDays;
 
     /** --- Functional Getters / Setters --- */
@@ -40,6 +39,32 @@ public class AttendanceRecord extends AttendanceHours {
 
     public Range<LocalDate> getDateRange() {
         return Range.closedOpen(beginDate, endDate.plusDays(1));
+    }
+
+    public void setTimesheetIds(Collection<BigInteger> timesheetIds) {
+        this.timesheetIds = new LinkedHashSet<>(timesheetIds);
+    }
+
+    /**
+     * Get a subset of given time records that cover this attendance record, iff there is a subset that fully covers it.
+     *
+     * If none of the given time records are listed on this attendance record,
+     * or the given time records do not contain all time records listed on this attendance record,
+     * return an empty list.
+     */
+    public List<TimeRecord> getTimeRecordCoverage(Collection<TimeRecord> timeRecords) {
+        Set<BigInteger> presentTimesheetIds = new HashSet<>();
+        List<TimeRecord> validTimeRecords = new ArrayList<>();
+        for (TimeRecord twreck : timeRecords) {
+            if (timesheetIds.contains(twreck.getTimeRecordId())) {
+                validTimeRecords.add(twreck);
+                presentTimesheetIds.add(twreck.getTimeRecordId());
+            }
+        }
+        if (!presentTimesheetIds.equals(timesheetIds)) {
+            validTimeRecords = Collections.emptyList();
+        }
+        return validTimeRecords;
     }
 
     /** --- Getters / Setters --- */
@@ -112,12 +137,8 @@ public class AttendanceRecord extends AttendanceHours {
         this.transactionNote = transactionNote;
     }
 
-    public List<BigInteger> getTimesheetIds() {
+    public LinkedHashSet<BigInteger> getTimesheetIds() {
         return timesheetIds;
-    }
-
-    public void setTimesheetIds(List<BigInteger> timesheetIds) {
-        this.timesheetIds = timesheetIds;
     }
 
     public Integer getExpectedDays() {

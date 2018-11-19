@@ -1,7 +1,6 @@
 package gov.nysenate.ess.time.service.allowance;
 
 import com.google.common.collect.*;
-import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.payroll.SalaryRec;
 import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
@@ -28,10 +27,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.model.payroll.PayType.TE;
 import static gov.nysenate.ess.core.model.period.PayPeriodType.AF;
 import static gov.nysenate.ess.core.util.SortOrder.NONE;
 import static java.math.BigDecimal.ZERO;
@@ -138,8 +139,10 @@ public class EssAllowanceService implements AllowanceService {
      */
     private void initAllowanceUsage(AllowanceUsage allowanceUsage) {
         TransactionHistory transHistory = transService.getTransHistory(allowanceUsage.getEmpId());
-        Range<LocalDate> effectiveRange =
-                Range.closedOpen(LocalDate.ofYearDay(allowanceUsage.getYear(), 1), allowanceUsage.getEndDate());
+        Range<LocalDate> effectiveRange = Range.closedOpen(
+                Year.of(allowanceUsage.getYear()).atDay(1),
+                allowanceUsage.getEndDate().plusDays(1)
+        );
 
         // Set Salary Recs
         allowanceUsage.setSalaryRecs(transHistory.getEffectiveSalaryRecs(effectiveRange).values());
@@ -231,8 +234,9 @@ public class EssAllowanceService implements AllowanceService {
         Collection<TimeEntry> timeEntries = timeRecords.stream()
                 .map(TimeRecord::getTimeEntries)
                 .flatMap(Collection::stream)
-                .filter(entry -> validDates.contains(entry.getDate()))
-                .filter(timeEntry -> timeEntry.getPayType() == PayType.TE)
+                .filter(e -> e.getPayType() == TE &&
+                        validDates.contains(e.getDate()) &&
+                        !e.isEmpty())
                 .collect(toList());
 
         RangeSet<LocalDate> appliedDates = TreeRangeSet.create();
@@ -290,7 +294,7 @@ public class EssAllowanceService implements AllowanceService {
                                                                        AttendanceRecord record) {
         // Get the highest temporary salary rate that was effective during the attendance record
         BigDecimal appliedRate = allowanceUsage.getSalaryRecs().stream()
-                .filter(salaryRec -> salaryRec.getPayType() == PayType.TE)
+                .filter(salaryRec -> salaryRec.getPayType() == TE)
                 .filter(salaryRec -> RangeUtils.intersects(salaryRec.getEffectiveRange(), record.getDateRange()))
                 .map(SalaryRec::getSalaryRate)
                 .max(BigDecimal::compareTo)
@@ -347,7 +351,7 @@ public class EssAllowanceService implements AllowanceService {
      */
     private RangeSet<LocalDate> getAllowanceDates(int empId) {
         TransactionHistory transHistory = transService.getTransHistory(empId);
-        RangeSet<LocalDate> tempDates = transHistory.getPayTypeDates(PayType.TE::equals);
+        RangeSet<LocalDate> tempDates = transHistory.getPayTypeDates(TE::equals);
         RangeSet<LocalDate> activeDates = transHistory.getPerStatusDates(personnelStatus ->
                 personnelStatus.isEmployed() && personnelStatus.isTimeEntryRequired());
         return RangeUtils.intersection(tempDates, activeDates);
@@ -393,18 +397,19 @@ public class EssAllowanceService implements AllowanceService {
         RangeSet<LocalDate> periodAllowanceDates =
                 RangeUtils.intersection(allowanceDates, ImmutableRangeSet.of(periodDates));
 
-        RangeSet<LocalDate> timeRecordDates = TreeRangeSet.create();
-        timeRecords.stream()
-                .map(TimeRecord::getDateRange)
-                .forEach(timeRecordDates::add);
+        Collection<TimeRecord> validTimeRecords = timeRecords;
 
-        Pair<BigDecimal, BigDecimal> usage;
+        // Check time records against listed time record ids of attendance record
+        if (attendRec != null) {
+            validTimeRecords = attendRec.getTimeRecordCoverage(timeRecords);
+        }
 
-        if (timeRecordDates.enclosesAll(periodAllowanceDates) || attendRec == null) {
+        Pair<BigDecimal, BigDecimal> usage = Pair.of(ZERO, ZERO);
+
+        if (!validTimeRecords.isEmpty()) {
             // use time records
             usage = getTimeRecordAllowanceUsage(periodUsage, timeRecords, periodAllowanceDates);
-        }
-        else {
+        } else if (attendRec != null) {
             // use attend record
             usage = getAttendRecordAllowanceUsage(periodUsage, attendRec);
         }
