@@ -295,10 +295,20 @@ h2.travel-subheader {
   * Travel app print page styling
   */
 
+#travel-app-print {
+  font-size: 16px;
+}
+
 .travel-print-info-container {
-  div {
+  // Overwrite grid col spacing to 10px for print form.
+  [class*='col-'] {
+    padding-right: 10px !important;
+  }
+  .row {
     margin-top: 5px;
     margin-bottom: 5px;
+  }
+  div {
     &.travel-print-label {
       .bold;
     }
