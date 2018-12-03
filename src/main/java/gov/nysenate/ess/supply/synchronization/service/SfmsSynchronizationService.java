@@ -71,7 +71,6 @@ public class SfmsSynchronizationService {
         for (Requisition r : filteredReqs) {
             syncRequisition(r);
         }
-
     }
 
     private void syncRequisition(Requisition requisition) {

@@ -6,7 +6,7 @@
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.4.8</version>
+  <version>1.5</version>
   <packaging>war</packaging>
 
   <build>
@@ -87,9 +87,27 @@
               <executable>npm</executable>
               <arguments>
                 <argument>install</argument>
+                <argument>--no-audit</argument>
               </arguments>
               <workingDirectory>src/main/webapp</workingDirectory>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-maven-plugin</artifactId>
+        <version>5.2.0</version>
+        <configuration>
+          <configFile>src/main/resources/flyway.conf</configFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flyway-migrate</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>migrate</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -102,7 +120,7 @@
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.validator.version>1.6</commons.validator.version>
     <commons-csv.version>1.5</commons-csv.version>
-    <c3p0.version>0.9.1.2</c3p0.version>
+    <c3p0.version>0.9.5.2</c3p0.version>
     <eh-cache.version>2.10.0</eh-cache.version>
     <freemarker.version>2.3.23</freemarker.version>
     <guava.version>22.0</guava.version>
@@ -115,6 +133,7 @@
     <oracle.driver.version>10.2.0.5</oracle.driver.version>
     <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
     <slf4j.version>1.7.5</slf4j.version>
+    <log4j.version>2.11.1</log4j.version>
     <spring.version>4.3.9.RELEASE</spring.version>
     <spring.ldap.version>2.0.3.RELEASE</spring.ldap.version>
     <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
@@ -288,7 +307,7 @@
 
     <!-- cp30 connection pool -->
     <dependency>
-      <groupId>c3p0</groupId>
+      <groupId>com.mchange</groupId>
       <artifactId>c3p0</artifactId>
       <version>${c3p0.version}</version>
     </dependency>
@@ -301,14 +320,31 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
 
@@ -400,7 +436,6 @@
       <artifactId>commons-csv</artifactId>
       <version>${commons-csv.version}</version>
     </dependency>
-
 
     <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>

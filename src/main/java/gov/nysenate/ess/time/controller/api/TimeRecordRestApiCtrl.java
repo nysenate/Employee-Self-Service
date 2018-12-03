@@ -39,7 +39,6 @@ import gov.nysenate.ess.time.service.attendance.TimeRecordService;
 import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordException;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationNotPermittedEx;
 import gov.nysenate.ess.time.service.attendance.validation.TimeRecordCreationValidator;
-import gov.nysenate.ess.time.service.attendance.validation.TimeRecordValidationService;
 import gov.nysenate.ess.time.service.notification.InactiveEmployeeEmailEx;
 import gov.nysenate.ess.time.service.notification.RecordReminderEmailService;
 import org.slf4j.Logger;
@@ -77,7 +76,6 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
     @Autowired AttendanceDao attendanceDao;
 
-    @Autowired TimeRecordValidationService validationService;
     @Autowired TimeRecordCreationValidator creationValidator;
 
     @Autowired RecordReminderEmailService emailService;
@@ -314,7 +312,6 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
         checkPermission(new EssTimePermission(record.getEmployeeId(), TIME_RECORDS, POST, newRecord.getDateRange()));
 
-        validationService.validateTimeRecord(newRecord, timeRecordAction);
         timeRecordService.saveRecord(newRecord, timeRecordAction);
     }
 
@@ -345,7 +342,6 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         }
 
         record.setRemarks(remarks);
-        validationService.validateTimeRecord(record, timeRecordAction);
         timeRecordService.saveRecord(record, timeRecordAction);
     }
 

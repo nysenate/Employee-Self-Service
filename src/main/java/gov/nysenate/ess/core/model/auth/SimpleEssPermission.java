@@ -7,6 +7,9 @@ import org.apache.shiro.authz.permission.WildcardPermission;
  */
 public enum SimpleEssPermission {
 
+    /** Granted to all admin users. */
+    ADMIN("admin"),
+
     /** Granted to all users that log in, used to ensure that authorization worked */
     SENATE_EMPLOYEE("core:senate-employee"),
 

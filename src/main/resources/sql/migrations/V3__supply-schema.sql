@@ -13,7 +13,7 @@ SET client_min_messages = warning;
 -- Name: supply; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA supply;
+CREATE SCHEMA IF NOT EXISTS supply;
 
 
 ALTER SCHEMA supply OWNER TO postgres;

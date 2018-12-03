@@ -1,1 +1,0 @@
-ALTER TABLE  ess.acknowledgment RENAME COLUMN "personnelAcked" TO personnel_acked;

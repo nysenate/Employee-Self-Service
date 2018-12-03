@@ -286,12 +286,22 @@
   li {
     padding: 5px 5px 5px 20px;
     &.sub-topic.active {
-      border-left: 4px solid teal;
+      &.teal {
+        border-left: 4px solid @teal;
+      }
+      &.green {
+        border-left: 4px solid @green;
+      }
+      &.blue-purple {
+        border-left: 4px solid @blue-purple;
+      }
+      &.orange {
+        border-left: 4px solid @orange;
+      }
       padding-left: 16px;
       background: #F4F4F4;
       a {
         .font-weight-bold;
-        color: darken(teal, 10%);
       }
     }
     a:focus {

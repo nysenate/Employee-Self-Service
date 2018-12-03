@@ -161,7 +161,7 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
      */
     $scope.resetCode = function () {
         $scope.warning = false;
-    }
+    };
 
     function isItemADuplicate(newItem) {
         var duplicateItem = false;

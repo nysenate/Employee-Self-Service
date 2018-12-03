@@ -1,1 +1,0 @@
-ALTER TABLE ess.acknowledgment ADD COLUMN "personnelAcked" BOOLEAN DEFAULT FALSE;

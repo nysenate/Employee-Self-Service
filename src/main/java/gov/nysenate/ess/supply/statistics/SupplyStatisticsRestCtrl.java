@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.view.base.MapView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.unit.Location;
+import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.statistics.location.LocationStatistic;
 import gov.nysenate.ess.supply.statistics.location.LocationStatisticView;
 import gov.nysenate.ess.supply.statistics.location.SupplyLocationStatisticService;
@@ -35,7 +36,7 @@ public class SupplyStatisticsRestCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/locations")
     public BaseResponse allLocationStatistics(@RequestParam int year, @RequestParam int month) {
-        checkPermission(new WildcardPermission("supply:employee"));
+        checkPermission(SupplyPermission.SUPPLY_EMPLOYEE.getPermission());
         List<LocationStatistic> locationStatistics = locationStatisticService.getAllLocationStatistics(year, month);
         Map<String, LocationStatisticView> locToStatsMap = new HashMap<>();
         for (LocationStatistic stat : locationStatistics) {

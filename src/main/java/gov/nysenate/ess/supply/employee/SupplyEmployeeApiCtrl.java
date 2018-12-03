@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
 
     @RequestMapping("")
     public BaseResponse getSupplyEmployees() {
-        checkPermission(new WildcardPermission("supply:employee"));
+        checkPermission(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
         ImmutableList<Employee> employees = roleDao.getEmployeesWithRole(EssRole.SUPPLY_EMPLOYEE);
         return ListViewResponse.of(new ArrayList(employees));
     }
@@ -40,7 +41,7 @@ public class SupplyEmployeeApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping("/issuers")
     public BaseResponse getIssuers() {
-        checkPermission(new WildcardPermission("supply:employee"));
+        checkPermission(SupplyPermission.SUPPLY_STAFF_VIEW.getPermission());
         Set<Employee> employees = supplyEmployeeDao.getDistinctIssuers();
         return ListViewResponse.of(new ArrayList(employees));
     }

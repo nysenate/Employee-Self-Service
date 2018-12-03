@@ -32,7 +32,7 @@ public enum LocationType
         return code;
     }
 
-    public String getName() {
+    public String fullName() {
         return name;
     }
 }

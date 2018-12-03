@@ -11,6 +11,7 @@ public enum EssRole {
     /* Supply */
     SUPPLY_EMPLOYEE,
     SUPPLY_MANAGER,
+    SUPPLY_REPORTER,
     /* Time */
     TIME_MANAGER,
     ;

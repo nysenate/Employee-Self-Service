@@ -13,7 +13,7 @@ SET client_min_messages = warning;
 -- Name: ess; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
-CREATE SCHEMA ess;
+CREATE SCHEMA IF NOT EXISTS ess;
 
 
 ALTER SCHEMA ess OWNER TO postgres;

@@ -3,6 +3,7 @@ package gov.nysenate.ess.supply.synchronization.admin;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.supply.synchronization.service.SfmsSynchronizationService;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class SupplySynchronizationRestCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public BaseResponse runSynchronization() {
-        checkPermission(new WildcardPermission("supply:admin"));
+        checkPermission(SimpleEssPermission.ADMIN.getPermission());
         synchronizationService.synchronizeRequisitions();
         return new SimpleResponse(true, "Supply synchronization has been run.", "run-synchronization");
     }

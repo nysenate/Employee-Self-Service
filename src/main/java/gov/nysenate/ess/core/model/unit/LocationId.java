@@ -16,6 +16,7 @@ public final class LocationId {
     public LocationId(String locCode, char locType) {
         this.code = locCode;
         this.type = LocationType.valueOfCode(locType);
+        // TODO error if locType is invalid. isSyntacticallyValid kinda handles this but is never called?
     }
 
     public LocationId(String locationId) {
