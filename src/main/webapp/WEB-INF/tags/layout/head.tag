@@ -9,7 +9,6 @@
     <title><jsp:invoke fragment="pageTitle"/></title>
     <base href="<c:out value="${empty ctxPath ? '/' : ctxPath}" />"/>
     <link rel="shortcut icon" type="image/png" href="${ctxPath}/assets/favicon.ico"/>
-    <script type="text/javascript" src='http://maps.google.com/maps/api/js?libraries=places&key=${googleApiKey}'></script>
     <script>
         window.globalProps = {
             ctxPath: '${ctxPath}',
