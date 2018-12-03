@@ -45,7 +45,7 @@ public class MileageAllowanceFactory {
     }
 
     private MileageAllowance calculateLegAllowance(Leg leg) throws InterruptedException, ApiException, IOException {
-        double miles = mileageService.calculateMileage(leg.getFrom(), leg.getTo());
+        double miles = mileageService.drivingDistance(leg.getFrom(), leg.getTo());
         BigDecimal mileageRate = mileageService.getIrsRate(leg.getTravelDate());
         return new MileageAllowance(UUID.randomUUID(), leg, miles, mileageRate);
     }

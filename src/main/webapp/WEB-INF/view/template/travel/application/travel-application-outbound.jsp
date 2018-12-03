@@ -1,6 +1,8 @@
 <div class="content-container">
   <p class="travel-content-info travel-text-bold">
-    Enter your outbound route of travel.
+    <%--Enter travel from origin to all destinations.--%>
+    <%--Enter outbound route from the origin to all destinations.--%>
+      Enter your outbound route starting from the origin and including all destinations.
   </p>
 
   <form novalidate name="outbound.form" id="outboundForm">

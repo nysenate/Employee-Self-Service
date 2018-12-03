@@ -1,6 +1,8 @@
 <div class="content-container">
   <p class="travel-content-info travel-text-bold">
-    Enter your return route of travel.
+    <%--Enter travel from last destination back to origin.--%>
+    <%--Enter return route from the last destination to the origin.--%>
+    Enter your return route from the last destination to the origin.
   </p>
 
   <form novalidate name="return.form" id="returnForm">

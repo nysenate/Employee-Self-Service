@@ -33,7 +33,7 @@ public class MileageAllowanceService {
     /**
      * Calculates the driving mileage from one address to another
      */
-    public double calculateMileage(Address from, Address to) throws InterruptedException, ApiException, IOException {
+    public double drivingDistance(Address from, Address to) throws InterruptedException, ApiException, IOException {
         return googleMapsService.drivingDistance(from, to);
     }
 
