@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.RangeUtils;
 import gov.nysenate.ess.core.util.SortOrder;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -20,6 +21,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static gov.nysenate.ess.core.model.transaction.TransactionCode.SAL;
+import static gov.nysenate.ess.core.model.transaction.TransactionType.PAY;
 
 /**
  * The TransactionHistory maintains an ordered collection of TransactionRecords. This class is intended to be
@@ -181,23 +185,30 @@ public class TransactionHistory
     }
 
     public TreeMap<LocalDate, SalaryRec> getEffectiveSalaryRecs(Range<LocalDate> dateRange) {
-        TreeBasedTable<LocalDate, String, String> effectiveSalEntries =
-                getUniqueEntriesDuring(Sets.newHashSet("MOSALBIWKLY", "CDPAYTYPE"), dateRange, true);
+        List<TransactionRecord> salRecs = new ArrayList<>();
+        appointDocuments.values().stream()
+                .filter(trec -> trec.getTransType() == PAY)
+                .sorted(Comparator.reverseOrder())
+                .findFirst()
+                .ifPresent(salRecs::add);
+        getRecords(SAL).stream()
+                .filter(rec -> !appointDocuments.containsKey(rec.getDocumentId()))
+                .forEach(salRecs::add);
+
         TreeMap<LocalDate, SalaryRec> salaryRecs = new TreeMap<>();
-        SalaryRec lastRec = null;
-        for (LocalDate effectDate : effectiveSalEntries.rowKeySet()) {
-            if (lastRec != null) {
-                lastRec.setEndDate(effectDate.minusDays(1));
-            }
-            lastRec = new SalaryRec(
-                    new BigDecimal(effectiveSalEntries.get(effectDate, "MOSALBIWKLY")),
-                    PayType.valueOf(effectiveSalEntries.get(effectDate, "CDPAYTYPE")),
-                    effectDate);
-            salaryRecs.put(lastRec.getEffectDate(), lastRec);
+        for (TransactionRecord rec : salRecs) {
+            SalaryRec salaryRec = new SalaryRec(
+                    new BigDecimal(rec.getValue("MOSALBIWKLY")),
+                    PayType.valueOf(rec.getValue("CDPAYTYPE")),
+                    rec.getEffectDate(),
+                    rec.getAuditDate()
+            );
+            LocalDate date = ObjectUtils.max(rec.getEffectDate(), DateUtils.startOfDateRange(dateRange));
+            Optional.ofNullable(salaryRecs.lowerEntry(date))
+                    .ifPresent(entry -> entry.getValue().setEndDate(date));
+            salaryRecs.put(date, salaryRec);
         }
-        if (lastRec != null) {
-            lastRec.setEndDate(DateUtils.endOfDateRange(dateRange));
-        }
+
         return salaryRecs;
     }
 

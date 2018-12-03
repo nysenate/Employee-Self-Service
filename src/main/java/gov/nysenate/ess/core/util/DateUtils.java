@@ -29,22 +29,12 @@ public class DateUtils
     public static final ImmutableSet<DayOfWeek> WEEKEND = ImmutableSet.copyOf(
             EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
     );
+
     /**
      * Returns a LocalDateTime that represents the time just before the start of the next day.
      */
     public static LocalDateTime atEndOfDay(LocalDate date) {
         return date.atTime(23, 59, 59, 999999999);
-    }
-
-
-    /**
-     * Returns a LocalDate that is set to a date way in the past. Can't really use the LocalDate.MIN
-     * value because it doesn't play nice when converting into a database date.
-     *
-     * @return LocalDate
-     */
-    public static LocalDate longAgo() {
-        return LocalDate.ofYearDay(1, 1);
     }
 
     /**
@@ -79,6 +69,13 @@ public class DateUtils
      */
     public static int getFiscalYear(LocalDate localDate) {
         return localDate.plus(SENATE_FISCAL_YEAR_OFFSET).getYear();
+    }
+
+    /**
+     * Get a range of days from the start of the year up to the given date.
+     */
+    public static Range<LocalDate> yearToDate(LocalDate toDate) {
+        return Range.closedOpen(LocalDate.ofYearDay(toDate.getYear(), 1), toDate);
     }
 
     /**
