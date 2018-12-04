@@ -16,8 +16,6 @@ SET client_min_messages = warning;
 CREATE SCHEMA IF NOT EXISTS ess;
 
 
-ALTER SCHEMA ess OWNER TO postgres;
-
 SET search_path = ess, pg_catalog;
 
 --
@@ -32,8 +30,6 @@ CREATE TYPE ess_role AS ENUM (
     'SUPPLY_MANAGER',
     'TIME_MANAGER'
 );
-
-ALTER TYPE ess_role OWNER TO postgres;
 
 
 SET default_tablespace = '';
@@ -50,8 +46,6 @@ CREATE TABLE user_roles (
     role ess_role NOT NULL
 );
 
-
-ALTER TABLE user_roles OWNER TO postgres;
 
 --
 -- Name: COLUMN user_roles.role; Type: COMMENT; Schema: ess; Owner: postgres
@@ -71,8 +65,6 @@ CREATE SEQUENCE user_roles_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE user_roles_id_seq OWNER TO postgres;
 
 --
 -- Name: user_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: ess; Owner: postgres
@@ -139,15 +131,6 @@ CREATE TABLE ess.alert_info (
 
 CREATE INDEX user_agent_emp_id_user_agent_index ON user_agent(emp_id, user_agent);
 CREATE INDEX user_agent_emp_id_login_time_index ON user_agent(emp_id, login_time);
-
---
--- Add permissions for all roles.
---
-GRANT ALL PRIVILEGES ON SCHEMA ess TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA ess TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ess TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA ess TO PUBLIC;
-GRANT ALL PRIVILEGES ON TYPE ess_role TO PUBLIC;
 
 --
 -- PostgreSQL database dump complete
