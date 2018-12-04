@@ -1,12 +1,14 @@
 package gov.nysenate.ess.time.model.attendance;
 
 import com.google.common.base.Objects;
-import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
+import com.google.common.collect.ImmutableMap;
 import gov.nysenate.ess.core.model.payroll.PayType;
+import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * A TimeEntry contains all the hours worked and charged for a specific date.
@@ -107,6 +109,33 @@ public class TimeEntry extends AttendanceHours
         return Objects.hashCode(super.hashCode(), entryId, timeRecordId, empId,
                 employeeName, date, miscType, active, empComment, payType,
                 originalUserId, updateUserId, originalDate, updateDate);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sbuilder = new StringBuilder(String.valueOf(date));
+        if (isEmpty()) {
+            sbuilder.append(" - empty");
+        } else {
+            ImmutableMap<String, Optional> hourMap = ImmutableMap.<String, Optional>builder()
+                    .put("work", getWorkHours())
+                    .put("hol", getHolidayHours())
+                    .put("vac", getVacationHours())
+                    .put("pers", getPersonalHours())
+                    .put("sickEmp", getSickEmpHours())
+                    .put("sickFam", getSickFamHours())
+                    .put("misc", getMiscHours())
+                    .build();
+            hourMap.forEach((label, valueOpt) -> {
+                if (valueOpt.isPresent()) {
+                    sbuilder.append(" ")
+                            .append(label)
+                            .append(":")
+                            .append(valueOpt.get());
+                }
+            });
+        }
+        return sbuilder.toString();
     }
 
     /** --- Basic Getters/Setters --- */

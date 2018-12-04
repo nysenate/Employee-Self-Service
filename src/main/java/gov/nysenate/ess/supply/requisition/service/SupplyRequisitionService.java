@@ -40,14 +40,13 @@ public class SupplyRequisitionService implements RequisitionService {
     @Override
     public Requisition processRequisition(Requisition requisition) {
         requisition = requisition.process(LocalDateTime.now());
-        saveRequisition(requisition);
-        return requisition;
+        return saveRequisition(requisition);
     }
 
     @Override
     public Requisition rejectRequisition(Requisition requisition) {
         requisition = requisition.reject(LocalDateTime.now());
-        saveRequisition(requisition);
+        requisition = saveRequisition(requisition);
         emailService.sendRejectEmail(requisition);
         return requisition;
     }
@@ -97,5 +96,11 @@ public class SupplyRequisitionService implements RequisitionService {
     @Override
     public void savedInSfms(int requisitionId, boolean succeed) {
         requisitionDao.savedInSfms(requisitionId, succeed);
+    }
+
+    @Override
+    public Requisition reconcileRequisition(Requisition requisition) {
+        requisition = requisition.setReconiled(true);
+        return saveRequisition(requisition);
     }
 }

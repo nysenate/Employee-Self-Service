@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.util.DateUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class SalaryRec implements Comparable<SalaryRec>
 {
@@ -16,20 +17,19 @@ public class SalaryRec implements Comparable<SalaryRec>
 
     /** The start and end points for the range of dates for which this salary is in effect */
     private LocalDate effectDate;
-    private LocalDate endDate;
+    private LocalDate endDate = DateUtils.THE_FUTURE;
 
-    public SalaryRec(BigDecimal salaryRate, PayType payType, LocalDate effectDate, LocalDate endDate) {
+    /** The date this record was created */
+    private LocalDateTime auditDate;
+
+    public SalaryRec(BigDecimal salaryRate, PayType payType, LocalDate effectDate, LocalDateTime auditDate) {
         this.salaryRate = salaryRate;
         this.payType = payType;
         this.effectDate = effectDate;
-        this.endDate = endDate;
+        this.auditDate = auditDate;
     }
 
-    public SalaryRec(BigDecimal salaryRate, PayType payType, LocalDate effectDate) {
-        this(salaryRate, payType, effectDate, DateUtils.THE_FUTURE);
-    }
-
-    /** --- Overridden Methods --- */
+    /* --- Overridden Methods --- */
 
     @Override
     public int compareTo(SalaryRec o) {
@@ -37,13 +37,18 @@ public class SalaryRec implements Comparable<SalaryRec>
         return this.getSalaryRate().compareTo(o.getSalaryRate());
     }
 
-    /** --- Functional Getters --- */
+    /* --- Functional Getters --- */
 
     public Range<LocalDate> getEffectiveRange() {
         return Range.closedOpen(effectDate, endDate.plusDays(1));
     }
 
-    /** --- Getters / Setters --- */
+
+    /* --- Getters / Setters --- */
+
+    public LocalDateTime getAuditDate() {
+        return auditDate;
+    }
 
     public BigDecimal getSalaryRate() {
         return salaryRate;

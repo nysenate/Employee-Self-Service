@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.supply.item.LineItem;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ public final class Requisition {
     private final LocalDateTime rejectedDateTime;
     private final LocalDateTime lastSfmsSyncDateTime;
     private final boolean savedInSfms;
+    private final boolean reconciled;
 
     private Requisition(Builder builder) {
         this.requisitionId = builder.requisitionId;
@@ -52,6 +54,7 @@ public final class Requisition {
         this.rejectedDateTime = builder.rejectedDateTime;
         this.lastSfmsSyncDateTime = builder.lastSfmsSyncDateTime;
         this.savedInSfms = builder.savedInSfms;
+        this.reconciled = builder.reconciled;
     }
 
     /**
@@ -79,7 +82,8 @@ public final class Requisition {
                 .withApprovedDateTime(this.approvedDateTime)
                 .withRejectedDateTime(this.rejectedDateTime)
                 .withLastSfmsSyncDateTimeDateTime(this.lastSfmsSyncDateTime)
-                .withSavedInSfms(this.savedInSfms);
+                .withSavedInSfms(this.savedInSfms)
+                .withReconciled(this.reconciled);
     }
 
     /**
@@ -142,6 +146,10 @@ public final class Requisition {
 
     public Requisition setSavedInSfms(boolean savedInSfms) {
         return copy().withSavedInSfms(savedInSfms).build();
+    }
+
+    public Requisition setReconiled(boolean reconciled) {
+        return copy().withReconciled(reconciled).build();
     }
 
     public int getRequisitionId() {
@@ -220,6 +228,10 @@ public final class Requisition {
         return savedInSfms;
     }
 
+    public boolean getReconciled() {
+        return reconciled;
+    }
+
     /**
      * Protected methods should only be used by implementations of the RequisitionState interface via the process/reject methods.
      */
@@ -266,6 +278,7 @@ public final class Requisition {
                 ", rejectedDateTime=" + rejectedDateTime +
                 ", lastSfmsSyncDateTime=" + lastSfmsSyncDateTime +
                 ", savedInSfms=" + savedInSfms +
+                ", reconciled=" + reconciled +
                 '}';
     }
 
@@ -274,56 +287,35 @@ public final class Requisition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Requisition that = (Requisition) o;
-        if (requisitionId != that.requisitionId) return false;
-        if (revisionId != that.revisionId) return false;
-        if (savedInSfms != that.savedInSfms) return false;
-        if (customer != null ? !customer.equals(that.customer) : that.customer != null) return false;
-        if (destination != null ? !destination.equals(that.destination) : that.destination != null) return false;
-        if (deliveryMethod != that.deliveryMethod) return false;
-        if (lineItems != null ? !lineItems.equals(that.lineItems) : that.lineItems != null) return false;
-        if (specialInstructions != null ? !specialInstructions.equals(that.specialInstructions) : that.specialInstructions != null)
-            return false;
-        if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
-        if (note != null ? !note.equals(that.note) : that.note != null) return false;
-        if (modifiedBy != null ? !modifiedBy.equals(that.modifiedBy) : that.modifiedBy != null) return false;
-        if (modifiedDateTime != null ? !modifiedDateTime.equals(that.modifiedDateTime) : that.modifiedDateTime != null)
-            return false;
-        if (orderedDateTime != null ? !orderedDateTime.equals(that.orderedDateTime) : that.orderedDateTime != null)
-            return false;
-        if (processedDateTime != null ? !processedDateTime.equals(that.processedDateTime) : that.processedDateTime != null)
-            return false;
-        if (completedDateTime != null ? !completedDateTime.equals(that.completedDateTime) : that.completedDateTime != null)
-            return false;
-        if (approvedDateTime != null ? !approvedDateTime.equals(that.approvedDateTime) : that.approvedDateTime != null)
-            return false;
-        if (rejectedDateTime != null ? !rejectedDateTime.equals(that.rejectedDateTime) : that.rejectedDateTime != null)
-            return false;
-        return lastSfmsSyncDateTime != null ? lastSfmsSyncDateTime.equals(that.lastSfmsSyncDateTime) : that.lastSfmsSyncDateTime == null;
+        return requisitionId == that.requisitionId &&
+                revisionId == that.revisionId &&
+                savedInSfms == that.savedInSfms &&
+                reconciled == that.reconciled &&
+                Objects.equals(customer, that.customer) &&
+                Objects.equals(destination, that.destination) &&
+                deliveryMethod == that.deliveryMethod &&
+                Objects.equals(lineItems, that.lineItems) &&
+                Objects.equals(specialInstructions, that.specialInstructions) &&
+                Objects.equals(state, that.state) &&
+                Objects.equals(issuer, that.issuer) &&
+                Objects.equals(note, that.note) &&
+                Objects.equals(modifiedBy, that.modifiedBy) &&
+                Objects.equals(modifiedDateTime, that.modifiedDateTime) &&
+                Objects.equals(orderedDateTime, that.orderedDateTime) &&
+                Objects.equals(processedDateTime, that.processedDateTime) &&
+                Objects.equals(completedDateTime, that.completedDateTime) &&
+                Objects.equals(approvedDateTime, that.approvedDateTime) &&
+                Objects.equals(rejectedDateTime, that.rejectedDateTime) &&
+                Objects.equals(lastSfmsSyncDateTime, that.lastSfmsSyncDateTime);
     }
 
     @Override
     public int hashCode() {
-        int result = requisitionId;
-        result = 31 * result + revisionId;
-        result = 31 * result + (customer != null ? customer.hashCode() : 0);
-        result = 31 * result + (destination != null ? destination.hashCode() : 0);
-        result = 31 * result + (deliveryMethod != null ? deliveryMethod.hashCode() : 0);
-        result = 31 * result + (lineItems != null ? lineItems.hashCode() : 0);
-        result = 31 * result + (specialInstructions != null ? specialInstructions.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (issuer != null ? issuer.hashCode() : 0);
-        result = 31 * result + (note != null ? note.hashCode() : 0);
-        result = 31 * result + (modifiedBy != null ? modifiedBy.hashCode() : 0);
-        result = 31 * result + (modifiedDateTime != null ? modifiedDateTime.hashCode() : 0);
-        result = 31 * result + (orderedDateTime != null ? orderedDateTime.hashCode() : 0);
-        result = 31 * result + (processedDateTime != null ? processedDateTime.hashCode() : 0);
-        result = 31 * result + (completedDateTime != null ? completedDateTime.hashCode() : 0);
-        result = 31 * result + (approvedDateTime != null ? approvedDateTime.hashCode() : 0);
-        result = 31 * result + (rejectedDateTime != null ? rejectedDateTime.hashCode() : 0);
-        result = 31 * result + (lastSfmsSyncDateTime != null ? lastSfmsSyncDateTime.hashCode() : 0);
-        result = 31 * result + (savedInSfms ? 1 : 0);
-        return result;
+
+        return Objects.hash(requisitionId, revisionId, customer, destination, deliveryMethod, lineItems,
+                specialInstructions, state, issuer, note, modifiedBy, modifiedDateTime, orderedDateTime,
+                processedDateTime, completedDateTime, approvedDateTime, rejectedDateTime, lastSfmsSyncDateTime,
+                savedInSfms, reconciled);
     }
 
     public static class Builder {
@@ -346,6 +338,7 @@ public final class Requisition {
         private LocalDateTime rejectedDateTime;
         private LocalDateTime lastSfmsSyncDateTime;
         private boolean savedInSfms;
+        private boolean reconciled;
 
         public Builder withRequisitionId(int requisitionId) {
             this.requisitionId = requisitionId;
@@ -439,6 +432,11 @@ public final class Requisition {
 
         public Builder withSavedInSfms(boolean savedInSfms) {
             this.savedInSfms = savedInSfms;
+            return this;
+        }
+
+        public Builder withReconciled(boolean reconciled){
+            this.reconciled = reconciled;
             return this;
         }
 

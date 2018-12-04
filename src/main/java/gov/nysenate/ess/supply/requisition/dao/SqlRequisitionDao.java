@@ -98,7 +98,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("toDate", toDate(query.getToDateTime()))
                 .addValue("issuerId", query.getIssuerId())
                 .addValue("itemId", query.getItemId())
-                .addValue("savedInSfms", query.getSavedInSfms());
+                .addValue("savedInSfms", query.getSavedInSfms())
+                .addValue("isReconciled", query.getReconciled());
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
@@ -126,7 +127,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("customerId", query.getCustomerId())
                 .addValue("statuses", extractEnumSetParams(query.getStatuses()))
                 .addValue("fromDate", toDate(query.getFromDateTime()))
-                .addValue("toDate", toDate(query.getToDateTime()));
+                .addValue("toDate", toDate(query.getToDateTime()))
+                .addValue("isReconciled", query.getReconciled());
         String sql = generateSearchQuery(SqlRequisitionQuery.ORDER_HISTORY_PARTIAL, query.getDateField(),
                 query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
@@ -151,6 +153,13 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         localNamedJdbc.update(sql, params);
     }
 
+    public void reconcile(int requisitionId, boolean reconciled){
+        MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
+        params.addValue("reconciled", reconciled);
+        String sql = SqlRequisitionQuery.SET_RECONCILED.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
     private MapSqlParameterSource requisitionParams(Requisition requisition) {
         return new MapSqlParameterSource()
                 .addValue("requisitionId", requisition.getRequisitionId())
@@ -170,7 +179,8 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                 .addValue("approvedDateTime", requisition.getApprovedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("rejectedDateTime", requisition.getRejectedDateTime().map(SqlBaseDao::toDate).orElse(null))
                 .addValue("last_sfms_sync_date_time", requisition.getLastSfmsSyncDateTime().map(SqlBaseDao::toDate).orElse(null))
-                .addValue("savedInSfms", requisition.getSavedInSfms());
+                .addValue("savedInSfms", requisition.getSavedInSfms())
+                .addValue("isReconciled", requisition.getReconciled());
     }
 
     /** Convert an EnumSet into a Set containing each enum's name. */
@@ -187,6 +197,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         GET_NEXT_REVISION_ID(
                 "SELECT nextval('${supplySchema}.requisition_content_revision_id_seq'::regclass)"
         ),
+
         INSERT_REQUISITION(
                 "INSERT INTO ${supplySchema}.requisition(current_revision_id, ordered_date_time, \n" +
                 "processed_date_time, completed_date_time, approved_date_time, rejected_date_time, saved_in_sfms) \n" +
@@ -206,10 +217,10 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         INSERT_REQUISITION_CONTENT(
                 "INSERT INTO ${supplySchema}.requisition_content(requisition_id, revision_id, destination, status, \n" +
                 "issuing_emp_id, note, customer_id, modified_by_id, modified_date_time, special_instructions,\n" +
-                "delivery_method) \n" +
+                "delivery_method, is_reconciled) \n" +
                 "VALUES (:requisitionId, :revisionId, :destination, :status::${supplySchema}.requisition_status, \n" +
                 ":issuerId, :note, :customerId, :modifiedBy, :modifiedDateTime, :specialInstructions,\n" +
-                ":deliveryMethod::${supplySchema}.delivery_method)"
+                ":deliveryMethod::${supplySchema}.delivery_method, :isReconciled)"
         ),
 
         GET_REQUISITION_BY_ID(
@@ -227,7 +238,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                         "WHERE c.destination LIKE :destination AND Coalesce(c.customer_id::text, '') LIKE :customerId \n" +
                         "AND Coalesce(c.issuing_emp_id::text, '') LIKE :issuerId \n" +
                         "AND c.revision_id IN (SELECT i.revision_id FROM ${supplySchema}.line_item i WHERE i.item_id::text LIKE :itemId) \n" +
-                        "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND r."
+                        "AND c.status::text IN (:statuses) AND r.saved_in_sfms::text LIKE :savedInSfms AND c.is_reconciled::text LIKE :isReconciled AND r."
         ),
 
         /** Must use {@link #generateSearchQuery(SqlRequisitionQuery, String, OrderBy, LimitOffset) generateSearchQuery}
@@ -247,6 +258,11 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         SET_SAVED_IN_SFMS(
                 "UPDATE ${supplySchema}.requisition \n" +
                         "SET saved_in_sfms = :succeed, last_sfms_sync_date_time =  CURRENT_TIMESTAMP" + "\n" +
+                "WHERE requisition_id = :requisitionId"
+        ),
+        SET_RECONCILED(
+                "UPDATE ${supplySchema}.requisition \n" +
+                        "SET reconciled = :reconciled" + "\n" +
                 "WHERE requisition_id = :requisitionId"
         )
         ;
@@ -303,6 +319,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withRejectedDateTime(getLocalDateTimeFromRs(rs, "rejected_date_time"))
                     .withLastSfmsSyncDateTimeDateTime(getLocalDateTimeFromRs(rs, "last_sfms_sync_date_time"))
                     .withSavedInSfms(rs.getBoolean("saved_in_sfms"))
+                    .withReconciled(rs.getBoolean("is_reconciled"))
                     .build();
         }
     }

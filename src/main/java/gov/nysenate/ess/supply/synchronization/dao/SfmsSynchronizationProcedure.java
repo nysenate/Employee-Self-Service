@@ -3,9 +3,11 @@ package gov.nysenate.ess.supply.synchronization.dao;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import gov.nysenate.ess.core.config.CoreConfig;
 import gov.nysenate.ess.core.config.JacksonConfig;
+import gov.nysenate.ess.core.dao.base.SqlQueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -23,13 +25,12 @@ import java.util.Map;
 @Repository
 public class SfmsSynchronizationProcedure extends StoredProcedure {
 
-    private static final String PROCEDURE_NAME = "SYNCHRONIZE_SUPPLY.synchronize_with_supply";
     private static final String RESPONSE = "response";
     private static final String PARAMETER = "requisitionXml";
 
     @Autowired
-    public SfmsSynchronizationProcedure(ComboPooledDataSource remoteDataSource) {
-        super(remoteDataSource, PROCEDURE_NAME);
+    public SfmsSynchronizationProcedure(ComboPooledDataSource remoteDataSource, @Qualifier("supplySyncProcedureName") String name) {
+        super(remoteDataSource, name);
         declareParameter(new SqlOutParameter(RESPONSE, Types.NUMERIC));
         declareParameter(new SqlParameter(PARAMETER, Types.CHAR));
         setFunction(true);

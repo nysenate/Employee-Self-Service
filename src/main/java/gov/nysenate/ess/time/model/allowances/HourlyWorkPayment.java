@@ -1,7 +1,8 @@
 package gov.nysenate.ess.time.model.allowances;
 
 import com.google.common.collect.Range;
-import org.apache.commons.lang3.NotImplementedException;
+import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.core.util.RangeUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,7 +42,7 @@ public class HourlyWorkPayment {
 
     @Override
     public String toString() {
-        return effectDate + " - " + endDate + " " + hoursPaid + "hrs $" + hoursPaid;
+        return effectDate + " - " + endDate + " " + hoursPaid + "hrs $" + moneyPaid;
     }
 
     /** --- Functional Getters / Setters */
@@ -62,9 +63,19 @@ public class HourlyWorkPayment {
         return BigDecimal.ZERO;
     }
 
-    /** Return the range of work dates that this payment is compensating for */
+    /** Return the range of work dates that this payment is compensating for.*/
     public Range<LocalDate> getWorkingRange() {
         return Range.closedOpen(effectDate, endDate.plusDays(1));
+    }
+
+    /** Return the range of work days in this payment for the given year. */
+    public Range<LocalDate> getWorkingRangeForYear(int year) {
+        Range<LocalDate> yearDateRange = DateUtils.yearDateRange(year);
+        Range<LocalDate> workingRange = getWorkingRange();
+        if (RangeUtils.intersects(workingRange, yearDateRange)) {
+            return workingRange.intersection(yearDateRange);
+        }
+        return null;
     }
 
     /** --- Getters / Setters --- */

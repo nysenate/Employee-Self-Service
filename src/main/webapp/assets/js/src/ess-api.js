@@ -214,13 +214,16 @@ essApi.factory('SupplyRequisitionRejectApi', ['$resource', 'appProps', function(
     return $resource(appProps.apiPath + '/supply/requisitions/:id/reject.json', {id: '@id'})
 }]);
 
-
 essApi.factory('SupplyRequisitionHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/history/:id.json', {id: '@id'})
 }]);
 
 essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', function($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/requisitions/orderHistory.json')
+}]);
+
+essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + "/supply/reconciliation")
 }]);
 
 /** --- Supply Employees API --- */
@@ -325,4 +328,3 @@ essApi.factory('TimeoutApi', ['$resource', 'appProps', function ($resource, appP
 essApi.factory('ErrorReportApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/report/error.json')
 }]);
-

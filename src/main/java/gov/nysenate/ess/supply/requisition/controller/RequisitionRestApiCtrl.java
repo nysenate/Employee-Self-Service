@@ -157,6 +157,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                                            @RequestParam(required = false) String dateField,
                                            @RequestParam(defaultValue = "All", required = false) String savedInSfms,
                                            @RequestParam(defaultValue = "All", required = false) String itemId,
+                                           @RequestParam(required = false) String reconciled,
                                            WebRequest webRequest) {
         checkPermission(RequisitionPermission.forAll(RequestMethod.GET));
 
@@ -171,8 +172,10 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .setSavedInSfms(savedInSfms)
                 .setIssuerId(issuerId)
                 .setItemId(itemId)
+                .setReconciled(reconciled)
                 .setLimitOffset(getLimitOffset(webRequest, 25))
                 .setOrderBy(new OrderBy(dateField, SortOrder.DESC));
+
 
         PaginatedList<Requisition> results = requisitionService.searchRequisitions(query);
         List<RequisitionView> resultViews = results.getResults().stream()

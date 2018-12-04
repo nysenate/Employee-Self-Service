@@ -20,7 +20,7 @@ public class LocationView implements ViewObject {
     public LocationView(Location loc) {
         this.locId = loc.toString();
         this.code = loc.getLocId().getCode();
-        this.locationType = loc.getLocId().getType().getName();
+        this.locationType = loc.getLocId().getType().fullName();
         this.locationTypeCode = loc.getLocId().getType().getCode();
         this.address = new AddressView(loc.getAddress());
         this.respCenterHead = new RespCenterHeadView(loc.getResponsibilityHead());

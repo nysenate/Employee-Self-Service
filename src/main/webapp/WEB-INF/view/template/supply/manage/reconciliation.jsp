@@ -12,12 +12,24 @@
   </div>
 
   <div class="content-container" ng-show="reconcilableSearch.response.$resolved && reconcilableSearch.items.length > 0">
+
+    <div id="reconciliation-error-messages" class="text-align-center padding-10">
+      <div ess-notification ng-show="reconciliationStatus.attempted == true && !inventory.isComplete()"
+           level="error"
+           title="Missing item quantities"
+           message="To reconcile, you must enter a quantity for all items on both pages.">
+      </div>
+    </div>
+
     <div style="display:inline-block; width:100%">
       <ul class="reconciliation-tab-links">
         <li ng-class="{'active-reconciliation-tab': currentPage === 1}"><a href="#" ng-click="setCurrentPage(1)">Page One</a></li>
         <li ng-class="{'active-reconciliation-tab': currentPage === 2}"><a href="#" ng-click="setCurrentPage(2)">Page Two</a></li>
       </ul>
+
       <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
+      <input class="submit-button no-print" style="float: right;" type="button" value="Reconcile" ng-click="reconcile()">
+
     </div>
 
     <%--Header--%>
@@ -26,28 +38,40 @@
         <div class="col-2-12">
           Commodity Code
         </div>
-        <div class="col-8-12">
+        <div class="col-7-12">
           Item
         </div>
         <div class="col-2-12">
           Quantity On Hand
         </div>
+        <div class="col-1-12 no-print">
+          <span ng-if="reconciliationStatus.resultErrorMap.size > 0">Difference</span>
+          <span ng-if="reconciliationStatus.resultErrorMap.size === 0">&nbsp</span>
+        </div>
       </div>
       <%--Item rows--%>
       <div class="supply-div-table-body print-gray-bottom-border"
-           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}">
+           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}" >
+
         <div class="supply-div-table-row"
-             ng-class="{'supply-highlight-row': isItemSelected(item)}"
-             ng-class-even="'dark-background'"
-             ng-click="setSelected(item)">
-          <div class="col-2-12">
+             ng-class="{'supply-highlight-row': isItemSelected(item), 'warn-important': isReconciliationError(item)}"
+             ng-class-even="'dark-background'">
+
+          <div class="col-2-12" ng-click="setSelected(item)">
             {{item.commodityCode}}
+
           </div>
-          <div class="col-8-12" style="overflow: hidden;">
+          <div class="col-7-12" style="overflow: hidden;" ng-click="setSelected(item)">
             {{item.description}}
           </div>
-          <div class="col-2-12">
-            &nbsp;
+          <div class="col-2-12 no-print">
+            <input type="number" style="width: 10em" ng-model="inventory.itemQuantities[item.id]" placeholder="Quantity"
+            ng-class="{'warn-important': reconciliationStatus.attempted === true && inventory.itemQuantities[item.id] === null}">
+          </div>
+          <div class="col-1-12">
+            <span class="bold-text no-print" ng-if="reconciliationStatus.resultErrorMap.size > 0">
+              {{reconciliationStatus.resultErrorMap.get(item.id).expectedQuantity - reconciliationStatus.resultErrorMap.get(item.id).actualQuantity}}</span>
+            <span ng-if="reconciliationStatus.resultErrorMap.size === 0">&nbsp</span>
           </div>
         </div>
 
@@ -81,5 +105,20 @@
 
     </div>
   </div>
-  <div modal-container></div>
+  <div modal-container>
+    <modal modal-id="reconciliation-success">
+      <div confirm-modal title="Successful reconciliation"
+           resolve-button="Ok"
+           confirm-class="approve-button">
+      </div>
+    </modal>
+
+    <modal modal-id="reconciliation-error">
+      <div confirm-modal title="Errors occurred in reconciliation"
+           confirm-message="One or more of the quantities entered is incorrect. Errors will be highlighted red."
+           resolve-button="Review Errors"
+           confirm-class="approve-button">
+      </div>
+    </modal>
+  </div>
 </div>
