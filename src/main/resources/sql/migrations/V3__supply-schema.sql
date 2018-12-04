@@ -16,8 +16,6 @@ SET client_min_messages = warning;
 CREATE SCHEMA IF NOT EXISTS supply;
 
 
-ALTER SCHEMA supply OWNER TO postgres;
-
 SET search_path = supply, pg_catalog;
 
 --
@@ -29,7 +27,6 @@ CREATE TYPE delivery_method AS ENUM (
   'PICKUP'
 );
 
-ALTER TYPE delivery_method OWNER TO postgres;
 
 --
 -- Name: requisition_status; Type: TYPE; Schema: supply; Owner: postgres
@@ -43,7 +40,6 @@ CREATE TYPE requisition_status AS ENUM (
   'APPROVED'
 );
 
-ALTER TYPE requisition_status OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -60,7 +56,6 @@ CREATE TABLE line_item (
 );
 
 
-ALTER TABLE line_item OWNER TO postgres;
 
 --
 -- Name: location_specific_items; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
@@ -73,7 +68,6 @@ CREATE TABLE location_specific_items (
 );
 
 
-ALTER TABLE location_specific_items OWNER TO postgres;
 
 --
 -- Name: TABLE location_specific_items; Type: COMMENT; Schema: supply; Owner: postgres
@@ -94,7 +88,6 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE location_specific_items_id_seq OWNER TO postgres;
 
 --
 -- Name: location_specific_items_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
@@ -120,7 +113,6 @@ CREATE TABLE requisition (
 );
 
 
-ALTER TABLE requisition OWNER TO postgres;
 
 --
 -- Name: requisition_content; Type: TABLE; Schema: supply; Owner: postgres; Tablespace:
@@ -141,7 +133,6 @@ CREATE TABLE requisition_content (
 );
 
 
-ALTER TABLE requisition_content OWNER TO postgres;
 
 --
 -- Name: COLUMN requisition_content.destination; Type: COMMENT; Schema: supply; Owner: postgres
@@ -176,7 +167,6 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE requisition_content_revision_id_seq OWNER TO postgres;
 
 --
 -- Name: requisition_content_revision_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
@@ -197,7 +187,6 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE requisition_requisition_id_seq OWNER TO postgres;
 
 --
 -- Name: requisition_requisition_id_seq; Type: SEQUENCE OWNED BY; Schema: supply; Owner: postgres
@@ -292,13 +281,3 @@ CREATE INDEX requisition_ordered_date_time_index
 
 CREATE INDEX requisition_approved_date_time_index
   ON supply.requisition (approved_date_time);
-
---
--- Permissions
---
-
-GRANT ALL PRIVILEGES ON SCHEMA supply TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA supply TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA supply TO PUBLIC;
-GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA supply TO PUBLIC;
-GRANT ALL PRIVILEGES ON TYPE requisition_status TO PUBLIC;
