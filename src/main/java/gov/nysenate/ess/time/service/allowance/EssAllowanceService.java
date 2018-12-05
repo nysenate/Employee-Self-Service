@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -74,60 +73,79 @@ public class EssAllowanceService implements AllowanceService {
     /** {@inheritDoc} */
     @Override
     public AllowanceUsage getAllowanceUsage(int empId, int year) {
-        return getAllowanceUsage(empId, LocalDate.ofYearDay(year + 1, 1), false);
+        return getAllowanceUsage(empId, DateUtils.yearDateRange(year));
     }
 
     /** {@inheritDoc} */
     @Override
     public AllowanceUsage getAllowanceUsage(int empId, LocalDate date) {
-        return getAllowanceUsage(empId, date, true);
+        return getAllowanceUsage(empId, DateUtils.yearToDate(date));
     }
 
     /** {@inheritDoc} */
     @Override
     public List<PeriodAllowanceUsage> getPeriodAllowanceUsage(int empId, int year) {
         SortedSet<PayPeriod> tempPeriods = getTempPeriods(empId, year);
-        PayPeriod firstPeriod = payPeriodService.getPayPeriod(AF, LocalDate.ofYearDay(year, 1));
 
         // Get relevant time and attendance records
         List<AttendanceRecord> attendRecords = attendanceDao.getAttendanceRecords(empId, year);
-        List<TimeRecord> timeRecords =
-                tRecS.getTimeRecords(Collections.singleton(empId), tempPeriods, TimeRecordStatus.getAll());
-
-        // Map of pay period num -> attendance record
-        Map<String, AttendanceRecord> attendRecordMap =
-                Maps.uniqueIndex(attendRecords, AttendanceRecord::getPayPeriodNum);
-        // Multimap of pay period num -> time records for that pay period
-        Multimap<String, TimeRecord> timeRecordMap = Multimaps.index(timeRecords, TimeRecord::getPayPeriodNum);
-
-        // Store running allowance usage to accumulate allowance usage for each period
-        PeriodAllowanceUsage runningAllowanceUsage = new PeriodAllowanceUsage(empId, year, firstPeriod);
+        List<TimeRecord> timeRecords = getValidTimeRecords(empId, year, attendRecords);
 
         List<PeriodAllowanceUsage> periodAllowanceUsages = new ArrayList<>();
         for (PayPeriod payPeriod : tempPeriods) {
-            runningAllowanceUsage = runningAllowanceUsage.getNextPerAllowanceUsage(payPeriod);
-            initAllowanceUsage(runningAllowanceUsage);
-            String periodNo = payPeriod.getPayPeriodNum();
-            // Calculate period allowance usage using relevant time and attendance records for period
-            calculatePeriodAllowanceUsage(runningAllowanceUsage,
-                    attendRecordMap.get(periodNo), timeRecordMap.get(periodNo));
-            periodAllowanceUsages.add(runningAllowanceUsage);
+            AllowanceUsage priorUsage = getAllowanceUsage(empId,
+                    DateUtils.yearToDate(payPeriod.getStartDate()),
+                    attendRecords, timeRecords);
+            AllowanceUsage periodUsage = getAllowanceUsage(empId,
+                    payPeriod.getDateRange(),
+                    attendRecords, timeRecords);
+            PeriodAllowanceUsage periodAllowanceUsage = new PeriodAllowanceUsage(payPeriod, priorUsage, periodUsage);
+            initAllowanceUsage(periodAllowanceUsage);
+            periodAllowanceUsages.add(periodAllowanceUsage);
         }
         return periodAllowanceUsages;
     }
 
     /* --- Internal Methods --- */
 
-    private AllowanceUsage getAllowanceUsage(int empId, LocalDate date, boolean yearOfDate) {
-        int year = yearOfDate ? date.getYear() : date.minusDays(1).getYear();
-        TransactionHistory transHistory = transService.getTransHistory(empId);
-        AllowanceUsage allowanceUsage = new AllowanceUsage(empId, year, date);
+    private int getAllowanceYear(Range<LocalDate> dateRange) {
+        LocalDate beginDate = DateUtils.startOfDateRange(dateRange);
+        LocalDate endDate = DateUtils.endOfDateRange(dateRange);
+        if (beginDate.getYear() != endDate.getYear()) {
+            throw new IllegalArgumentException("You cannot calculate allowance over multiple years: " + dateRange);
+        }
+        return beginDate.getYear();
+    }
+
+    private AllowanceUsage getAllowanceUsage(int empId, Range<LocalDate> dateRange) {
+        int year = getAllowanceYear(dateRange);
+        List<AttendanceRecord> attendRecs = attendanceDao.getAttendanceRecords(empId, year);
+        List<TimeRecord> tRecs = getValidTimeRecords(empId, year, attendRecs);
+        return getAllowanceUsage(empId, dateRange, attendRecs, tRecs);
+    }
+
+    private AllowanceUsage getAllowanceUsage(int empId, Range<LocalDate> dateRange,
+                                             List<AttendanceRecord> attendRecs, List<TimeRecord> tRecs) {
+        int year = getAllowanceYear(dateRange);
+        AllowanceUsage allowanceUsage = new AllowanceUsage(empId, year, dateRange);
         initAllowanceUsage(allowanceUsage);
+        TransactionHistory transHistory = transService.getTransHistory(empId);
+
+        // Initialize unpaid dates as all TE employed dates in during the given range
+        RangeSet<LocalDate> unpaidDates = RangeUtils.intersection(
+                ImmutableRangeSet.of(dateRange),
+                getAllowanceDates(allowanceUsage.getEmpId())
+        );
 
         // Set Allowance usage, getting dates not covered by hourly work payments
-        RangeSet<LocalDate> unpaidDates = calculatePaidAllowanceUsage(allowanceUsage, transHistory, date);
+        unpaidDates = calculatePaidAllowanceUsage(allowanceUsage, transHistory, unpaidDates,  attendRecs, tRecs);
+        // If some dates are still not accounted for, see if there are any applicable time records
         if (!unpaidDates.isEmpty()) {
-            calculateTimesheetAllowanceUsage(allowanceUsage, unpaidDates);
+            unpaidDates = calculateTimesheetAllowanceUsage(allowanceUsage, unpaidDates, tRecs);
+        }
+        // If dates are still not accounted for, see if there are any applicable attendance records
+        if (!unpaidDates.isEmpty()) {
+            calculateAttendRecordAllowanceUsage(allowanceUsage, unpaidDates, attendRecs);
         }
         return allowanceUsage;
     }
@@ -139,10 +157,7 @@ public class EssAllowanceService implements AllowanceService {
      */
     private void initAllowanceUsage(AllowanceUsage allowanceUsage) {
         TransactionHistory transHistory = transService.getTransHistory(allowanceUsage.getEmpId());
-        Range<LocalDate> effectiveRange = Range.closedOpen(
-                Year.of(allowanceUsage.getYear()).atDay(1),
-                allowanceUsage.getEndDate().plusDays(1)
-        );
+        Range<LocalDate> effectiveRange = allowanceUsage.getEffectiveRange();
 
         // Set Salary Recs
         allowanceUsage.setSalaryRecs(transHistory.getEffectiveSalaryRecs(effectiveRange).values());
@@ -162,45 +177,127 @@ public class EssAllowanceService implements AllowanceService {
      */
     private RangeSet<LocalDate> calculatePaidAllowanceUsage(AllowanceUsage allowanceUsage,
                                                             TransactionHistory transHistory,
-                                                            LocalDate beforeDate) {
+                                                            RangeSet<LocalDate> unpaidDates,
+                                                            List<AttendanceRecord> attendRecs,
+                                                            List<TimeRecord> timeRecords) {
         int year = allowanceUsage.getYear();
+        RangeSet<LocalDate> newUnpaidDates = TreeRangeSet.create(unpaidDates);
 
         List<HourlyWorkPayment> payments = getHourlyPayments(year, transHistory);
 
-        // Initialize unpaid dates as all TE employed dates in the year before beforeDate
-        RangeSet<LocalDate> unpaidDates = RangeUtils.intersection(Arrays.asList(
-                ImmutableRangeSet.of(DateUtils.yearDateRange(year)),
-                ImmutableRangeSet.of(Range.lessThan(beforeDate)),
-                getAllowanceDates(allowanceUsage.getEmpId())
-        ));
+        RangeMap<LocalDate, SalaryRec> salaryRecRangeMap = TreeRangeMap.create();
+        allowanceUsage.getSalaryRecs().forEach(salRec -> salaryRecRangeMap.put(salRec.getEffectiveRange(), salRec));
 
-        BigDecimal hoursPaid = ZERO;
-        BigDecimal moneyPaid = ZERO;
+        RangeMap<LocalDate, TimeRecord> timeRecRangeMap = TreeRangeMap.create();
+        timeRecords.forEach(trec -> timeRecRangeMap.put(trec.getDateRange(), trec));
+
+        BigDecimal totalHoursPaid = ZERO;
+        BigDecimal totalMoneyPaid = ZERO;
 
         // Add up hourly work payments to get the total hours/money paid for the year
         for (HourlyWorkPayment payment : payments) {
-            if (payment.getEndDate().isBefore(beforeDate)) {
-                unpaidDates.remove(payment.getWorkingRange());
-                hoursPaid = hoursPaid.add(payment.getHoursPaid());
-                moneyPaid = moneyPaid.add(payment.getMoneyPaidForYear(year));
+            Range<LocalDate> effectiveRange = payment.getWorkingRangeForYear(year);
+            if (!unpaidDates.encloses(effectiveRange)) {
+                continue;
+            }
+
+            BigDecimal hoursPaid = getHoursPaidInPayment(year, payment, attendRecs);
+            BigDecimal moneyPaid = getMoneyPaidInPayment(year, payment, salaryRecRangeMap, timeRecRangeMap, hoursPaid);
+
+            totalHoursPaid = totalHoursPaid.add(hoursPaid);
+            totalMoneyPaid = totalMoneyPaid.add(moneyPaid);
+
+            newUnpaidDates.remove(effectiveRange);
+        }
+
+        allowanceUsage.setBaseHoursUsed(totalHoursPaid);
+        allowanceUsage.setBaseMoneyUsed(totalMoneyPaid);
+
+        return newUnpaidDates;
+    }
+
+    /**
+     * Get the number of hours paid for in the given {@link HourlyWorkPayment}.
+     */
+    private BigDecimal getHoursPaidInPayment(int year, HourlyWorkPayment payment,
+                                             List<AttendanceRecord> attendRecs) {
+        Range<LocalDate> effectiveRange = payment.getWorkingRangeForYear(year);
+        // Normally, the hours paid are what the record says they are.
+        BigDecimal hoursPaid = payment.getHoursPaid();
+        // But things get tricky if the payment straddles multiple years
+        if (payment.getEndDate().getYear() != payment.getEffectDate().getYear()) {
+            if (payment.getMoneyPaidForYear(year).compareTo(ZERO) == 0) {
+                hoursPaid = ZERO;
+            } else if (payment.getMoneyPaidForYear(year).compareTo(payment.getMoneyPaid()) < 0 &&
+                    RangeUtils.intersects(attendRecs.get(0).getDateRange(), effectiveRange)) {
+                // If payment is split over multiple years, use attendance record hours
+                hoursPaid = attendRecs.stream()
+                        .filter(attRec -> RangeUtils.intersects(attRec.getDateRange(), effectiveRange))
+                        .map(attRec -> attRec.getWorkHours().orElse(ZERO))
+                        .reduce(ZERO, BigDecimal::add);
             }
         }
-        allowanceUsage.setBaseHoursUsed(hoursPaid);
-        allowanceUsage.setBaseMoneyUsed(moneyPaid);
-        return unpaidDates;
+        return hoursPaid;
+    }
+
+    /**
+     * Get the amount of money paid out by the given {@link HourlyWorkPayment}
+     */
+    private BigDecimal getMoneyPaidInPayment(int year, HourlyWorkPayment payment,
+                                             RangeMap<LocalDate, SalaryRec> salaryRecRangeMap,
+                                             RangeMap<LocalDate, TimeRecord> timeRecRangeMap,
+                                             BigDecimal hoursPaid) {
+        Range<LocalDate> effectiveRange = payment.getWorkingRangeForYear(year);
+        Collection<SalaryRec> effectiveSalaries =
+                salaryRecRangeMap.subRangeMap(effectiveRange).asMapOfRanges().values();
+        boolean salaryChanged = effectiveSalaries.stream()
+                .anyMatch(salaryRec -> salaryRec.getAuditDate().isAfter(payment.getAuditDate()));
+
+        // Normally, the record is correct about the amount of money paid for the year.
+        BigDecimal moneyPaid = payment.getMoneyPaidForYear(year);
+        // But if there was a retroactive salary change entered after the payment was made,
+        // the difference is not included in the payment, so we need to calculate the money paid.
+        if (salaryChanged) {
+            moneyPaid = ZERO;
+            Collection<TimeRecord> PaymentTRecs =
+                    timeRecRangeMap.subRangeMap(effectiveRange).asMapOfRanges().values();
+            BigDecimal remainingHours = hoursPaid;
+            // Only use time records if there are multiple salaries, which necessitate day by day calculation.
+            if (effectiveSalaries.size() > 1) {
+                for (TimeRecord tRec : PaymentTRecs) {
+                    for (TimeEntry e : tRec.getTimeEntries()) {
+                        if (!effectiveRange.contains(e.getDate()) || e.getPayType() != TE) {
+                            continue;
+                        }
+                        BigDecimal workHours = e.getWorkHours().orElse(ZERO);
+                        BigDecimal salary = Optional.ofNullable(salaryRecRangeMap.get(e.getDate()))
+                                .map(SalaryRec::getSalaryRate)
+                                .orElse(ZERO);
+                        remainingHours = remainingHours.subtract(workHours);
+                        moneyPaid = moneyPaid.add(workHours.multiply(salary));
+                    }
+                }
+            }
+            // It is possible that there are paid hours not covered by time records, or that they were not needed.
+            // Assume any hours not covered by time records are paid using the max salary for the effective range.
+            BigDecimal maxSalary = effectiveSalaries.stream()
+                    .map(SalaryRec::getSalaryRate).max(BigDecimal::compareTo).get();
+            moneyPaid = moneyPaid.add(remainingHours.multiply(maxSalary));
+        }
+        return moneyPaid;
     }
 
     /**
      * Calculate the number of hours and amount of money used as recorded on timesheets for the given unpaid pay periods
      * These hours / moneys are added to the allowance usage as record hours / money
+     * Return the range set of unpaid dates not covered by time records.
      */
-    private void calculateTimesheetAllowanceUsage(AllowanceUsage allowanceUsage, RangeSet<LocalDate> unpaidDates) {
-        // Get time record statuses for records not editable by employees
-        Set<TimeRecordStatus> submittedStatuses =
-                Sets.difference(TimeRecordStatus.getAll(), TimeRecordStatus.unlockedForEmployee());
-        Set<Integer> employeeIdSet = Collections.singleton(allowanceUsage.getEmpId());
-
-        List<TimeRecord> unpaidTimeRecords = tRecS.getTimeRecords(employeeIdSet, unpaidDates.span(), submittedStatuses);
+    private RangeSet<LocalDate> calculateTimesheetAllowanceUsage(AllowanceUsage allowanceUsage,
+                                                                 RangeSet<LocalDate> unpaidDates,
+                                                                 List<TimeRecord> timeRecords) {
+        List<TimeRecord> unpaidTimeRecords = timeRecords.stream()
+                .filter(tRec -> unpaidDates.intersects(tRec.getDateRange()))
+                .collect(toList());
 
         Pair<BigDecimal, BigDecimal> trecUsage =
                 getTimeRecordAllowanceUsage(allowanceUsage, unpaidTimeRecords, unpaidDates);
@@ -212,9 +309,10 @@ public class EssAllowanceService implements AllowanceService {
                 .map(TimeRecord::getDateRange)
                 .collect(collectingAndThen(toList(), TreeRangeSet::create));
 
-        unpaidDates.removeAll(appliedTimeRecordDates);
+        RangeSet<LocalDate> newUnpaidDates = TreeRangeSet.create(unpaidDates);
+        newUnpaidDates.removeAll(appliedTimeRecordDates);
 
-        calculateAttendRecordAllowanceUsage(allowanceUsage, unpaidDates);
+        return newUnpaidDates;
     }
 
     /**
@@ -232,6 +330,7 @@ public class EssAllowanceService implements AllowanceService {
 
         // Get non empty time entries falling within the set of valid dates
         Collection<TimeEntry> timeEntries = timeRecords.stream()
+                .filter(tRec -> validDates.intersects(tRec.getDateRange()))
                 .map(TimeRecord::getTimeEntries)
                 .flatMap(Collection::stream)
                 .filter(e -> e.getPayType() == TE &&
@@ -257,15 +356,15 @@ public class EssAllowanceService implements AllowanceService {
      * Calculate the number of hours used in attendance records for the given unpaid dates
      * These hours / moneys are added to the allowance usage as record hours / money
      * It is preferred to use electronic timesheet records for this purpose since they are broken down by day
-     * @see #calculateTimesheetAllowanceUsage(AllowanceUsage, RangeSet)
+     * @see #calculateTimesheetAllowanceUsage(AllowanceUsage, RangeSet, List)
      * This is necessary to handle those pesky paper timesheets that are only recorded as attendance records
      *
      * @param allowanceUsage AllowanceUsage
      * @param unpaidDates RangeSet<LocalDate>
      */
-    private void calculateAttendRecordAllowanceUsage(AllowanceUsage allowanceUsage, RangeSet<LocalDate> unpaidDates) {
-        List<AttendanceRecord> attendRecs = attendanceDao.getOpenAttendanceRecords(allowanceUsage.getEmpId());
-
+    private void calculateAttendRecordAllowanceUsage(AllowanceUsage allowanceUsage,
+                                                     RangeSet<LocalDate> unpaidDates,
+                                                     List<AttendanceRecord> attendRecs) {
         attendRecs.stream()
                 .filter(record -> unpaidDates.encloses(record.getDateRange()))
                 .forEach(record -> applyAttendRecordAllowanceUsage(record, allowanceUsage));
@@ -380,41 +479,21 @@ public class EssAllowanceService implements AllowanceService {
                 .collect(toCollection(TreeSet::new));
     }
 
-    /**
-     * Calculate period hours and money used for the given {@link PeriodAllowanceUsage}.
-     * Calculation is performed with given {@link AttendanceRecord} and {@link TimeRecord},
-     * which should correspond to the {@link PayPeriod} of the period allowance usage.
-     *
-     * @param periodUsage {@link PeriodAllowanceUsage}
-     * @param attendRec {@link AttendanceRecord}
-     * @param timeRecords {@link Collection<TimeRecord>}
-     */
-    private void calculatePeriodAllowanceUsage(PeriodAllowanceUsage periodUsage,
-                                               AttendanceRecord attendRec,
-                                               Collection<TimeRecord> timeRecords) {
-        RangeSet<LocalDate> allowanceDates = getAllowanceDates(periodUsage.getEmpId());
-        Range<LocalDate> periodDates = periodUsage.getPayPeriod().getDateRange();
-        RangeSet<LocalDate> periodAllowanceDates =
-                RangeUtils.intersection(allowanceDates, ImmutableRangeSet.of(periodDates));
+    private List<TimeRecord> getValidTimeRecords(int empId, int year, List<AttendanceRecord> attendRecs) {
+        Set<TimeRecordStatus> submittedStatuses =
+                Sets.difference(TimeRecordStatus.getAll(), TimeRecordStatus.unlockedForEmployee());
+        Set<Integer> employeeIdSet = Collections.singleton(empId);
 
-        Collection<TimeRecord> validTimeRecords = timeRecords;
+        List<TimeRecord> tRecs = tRecS.getTimeRecords(employeeIdSet, DateUtils.yearDateRange(year), submittedStatuses);
 
-        // Check time records against listed time record ids of attendance record
-        if (attendRec != null) {
-            validTimeRecords = attendRec.getTimeRecordCoverage(timeRecords);
-        }
+        RangeMap<LocalDate, AttendanceRecord> aRecRangeMap = TreeRangeMap.create();
+        attendRecs.forEach(arec -> aRecRangeMap.put(arec.getDateRange(), arec));
 
-        Pair<BigDecimal, BigDecimal> usage = Pair.of(ZERO, ZERO);
-
-        if (!validTimeRecords.isEmpty()) {
-            // use time records
-            usage = getTimeRecordAllowanceUsage(periodUsage, timeRecords, periodAllowanceDates);
-        } else if (attendRec != null) {
-            // use attend record
-            usage = getAttendRecordAllowanceUsage(periodUsage, attendRec);
-        }
-
-        periodUsage.setPeriodHoursUsed(usage.getLeft());
-        periodUsage.setPeriodMoneyUsed(usage.getRight());
+        return tRecs.stream()
+                .filter(tRec -> {
+                    AttendanceRecord aRec = aRecRangeMap.get(tRec.getBeginDate());
+                    return aRec == null || aRec.getTimesheetIds().contains(tRec.getTimeRecordId());
+                })
+                .collect(toList());
     }
 }

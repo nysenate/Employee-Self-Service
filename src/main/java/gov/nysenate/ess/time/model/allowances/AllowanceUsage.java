@@ -6,6 +6,7 @@ import com.google.common.collect.RangeMap;
 import com.google.common.collect.TreeRangeMap;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.payroll.SalaryRec;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 
@@ -18,8 +19,11 @@ public class AllowanceUsage {
     protected int empId;
     protected int year;
 
-    /** Sets the period of usage from the beginning of the year to this date */
-    protected LocalDate endDate;
+    /** Hours paid were worked before this date */
+    protected LocalDate toDate;
+
+    /** Hours paid were worked from this date */
+    protected LocalDate startDate;
 
     /** The amount of money allowed for the year */
     protected BigDecimal yearlyAllowance = BigDecimal.ZERO;
@@ -39,16 +43,18 @@ public class AllowanceUsage {
     /** The employees salary recs over the year */
     protected RangeMap<LocalDate, SalaryRec> salaryRecMap = TreeRangeMap.create();
 
-    public AllowanceUsage(int empId, int year, LocalDate endDate) {
+    public AllowanceUsage(int empId, int year, Range<LocalDate> dateRange) {
         this.empId = empId;
         this.year = year;
-        this.endDate = endDate;
+        this.toDate = DateUtils.endOfDateRange(dateRange);
+        this.startDate = DateUtils.startOfDateRange(dateRange);
     }
 
     public AllowanceUsage(AllowanceUsage other) {
         this.empId = other.empId;
         this.year = other.year;
-        this.endDate = other.endDate;
+        this.toDate = other.toDate;
+        this.startDate = other.startDate;
         this.yearlyAllowance = other.yearlyAllowance;
         this.baseMoneyUsed = other.baseMoneyUsed;
         this.recordMoneyUsed = other.recordMoneyUsed;
@@ -111,7 +117,7 @@ public class AllowanceUsage {
      * @return Range<LocalDate>
      */
     public Range<LocalDate> getEffectiveRange() {
-        return Range.closedOpen(LocalDate.ofYearDay(year, 1), endDate);
+        return Range.closedOpen(startDate, toDate);
     }
 
     /** --- Getters / Setters --- */
@@ -172,7 +178,11 @@ public class AllowanceUsage {
         this.recordHoursUsed = recordHoursUsed;
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
+    public LocalDate getToDate() {
+        return toDate;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
     }
 }
