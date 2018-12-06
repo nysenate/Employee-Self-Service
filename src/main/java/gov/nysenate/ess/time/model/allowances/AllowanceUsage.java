@@ -46,7 +46,7 @@ public class AllowanceUsage {
     public AllowanceUsage(int empId, int year, Range<LocalDate> dateRange) {
         this.empId = empId;
         this.year = year;
-        this.toDate = DateUtils.endOfDateRange(dateRange);
+        this.toDate = DateUtils.endOfDateRange(dateRange).plusDays(1);
         this.startDate = DateUtils.startOfDateRange(dateRange);
     }
 
