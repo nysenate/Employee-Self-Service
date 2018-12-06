@@ -9,10 +9,10 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('TravelApplicationCtrl',
-                     ['$scope', '$q', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
+                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
                       'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', 'AddressCountyService', travelAppController]);
 
-function travelAppController($scope, $q, appProps, modals, locationService, appInitApi, motApi, cancelApi, countyService) {
+function travelAppController($scope, $q, $window, appProps, modals, locationService, appInitApi, motApi, cancelApi, countyService) {
 
     $scope.STATES = {
         PURPOSE: 1,
@@ -188,7 +188,7 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
      * @param legs
      */
     $scope.normalizeTravelDates = function (legs) {
-        angular.forEach(legs, function(leg) {
+        angular.forEach(legs, function (leg) {
             if (leg.travelDate) {
                 leg.travelDate = $scope.normalizedDateFormat(leg.travelDate);
             }
@@ -209,6 +209,17 @@ function travelAppController($scope, $q, appProps, modals, locationService, appI
         }
         return undefined;
     };
+
+    /**
+     * Error handler for google maps api.
+     * Docs: https://developers.google.com/maps/documentation/javascript/events#auth-errors
+     * and https://developers.google.com/maps/documentation/javascript/error-messages
+     */
+    $window.gm_authFailure = function() {
+        $scope.$apply(function () {
+            $scope.handleErrorResponse("Google maps api authentication error.");
+        });
+    }
 }
 
 function Segment() {
