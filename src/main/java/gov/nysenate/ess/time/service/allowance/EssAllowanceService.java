@@ -111,7 +111,7 @@ public class EssAllowanceService implements AllowanceService {
     private int getAllowanceYear(Range<LocalDate> dateRange) {
         LocalDate beginDate = DateUtils.startOfDateRange(dateRange);
         LocalDate endDate = DateUtils.endOfDateRange(dateRange);
-        if (beginDate.getYear() != endDate.getYear()) {
+        if (beginDate.getYear() < endDate.getYear()) {
             throw new IllegalArgumentException("You cannot calculate allowance over multiple years: " + dateRange);
         }
         return beginDate.getYear();
