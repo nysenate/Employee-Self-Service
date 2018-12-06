@@ -188,12 +188,12 @@ public class TransactionHistory
         List<TransactionRecord> salRecs = new ArrayList<>();
         appointDocuments.values().stream()
                 .filter(trec -> trec.getTransType() == PAY)
-                .sorted(Comparator.reverseOrder())
-                .findFirst()
-                .ifPresent(salRecs::add);
+                .forEach(salRecs::add);
         getRecords(SAL).stream()
                 .filter(rec -> !appointDocuments.containsKey(rec.getDocumentId()))
                 .forEach(salRecs::add);
+
+        salRecs.sort(TransactionRecord::compareTo);
 
         TreeMap<LocalDate, SalaryRec> salaryRecs = new TreeMap<>();
         for (TransactionRecord rec : salRecs) {
