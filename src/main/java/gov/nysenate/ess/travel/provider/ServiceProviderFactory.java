@@ -14,7 +14,6 @@ import java.time.LocalDate;
 public class ServiceProviderFactory {
 
     private GsaAllowanceService gsaAllowanceService;
-
     private DodAllowanceService dodAllowanceService;
 
     @Autowired
@@ -23,23 +22,49 @@ public class ServiceProviderFactory {
         this.dodAllowanceService = dodAllowanceService;
     }
 
-
-    public Dollars fetchMealRate(LocalDate date, Address address) throws IOException {
-        if (determineDOD(address.getCountry(), address.getState())) {
-            return dodAllowanceService.fetchMealRate( determineDODLocationString(address.getCountry(), address.getState()), address.getCity(), date );
+    /**
+     * Gets the meal rate in Dollars for a given date and address.
+     * Queries one of multiple 3rd party providers to get the meal rate value.
+     * @param date The date of this meal rate.
+     * @param address The address of this meal rate.
+     * @return {@link Dollars} representing the meal rate value for this address and date.
+     * @throws ProviderException If there is an error communicating with our 3rd party meal rate providers.
+     */
+    public Dollars fetchMealRate(LocalDate date, Address address) {
+        Dollars mealRate;
+        try {
+            if (determineDOD(address.getCountry(), address.getState())) {
+                mealRate = dodAllowanceService.fetchMealRate(determineDODLocationString(address.getCountry(), address.getState()), address.getCity(), date);
+            } else {
+                mealRate = gsaAllowanceService.fetchMealRate(date, address);
+            }
         }
-        else {
-            return gsaAllowanceService.fetchMealRate(date, address);
+        catch (IOException ex) {
+            throw new ProviderException(ex);
         }
+        return mealRate;
     }
 
-    public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
-        if (determineDOD(address.getCountry(), address.getState())) {
-            return dodAllowanceService.fetchLodgingRate( determineDODLocationString(address.getCountry(), address.getState()), address.getCity(), date );
+    /**
+     * Calculates the lodging rate for the given address and date.
+     * @param date The date the lodging will occur.
+     * @param address The address where lodging will occur.
+     * @return {@link Dollars} representing the lodging rate for this address and date.
+     * @throws ProviderException If there is an error communicating with our 3rd party meal rate providers.
+     */
+    public Dollars fetchLodgingRate(LocalDate date, Address address) {
+        Dollars rate;
+        try {
+            if (determineDOD(address.getCountry(), address.getState())) {
+                rate = dodAllowanceService.fetchLodgingRate(determineDODLocationString(address.getCountry(), address.getState()), address.getCity(), date);
+            } else {
+                rate = gsaAllowanceService.fetchLodgingRate(date, address);
+            }
         }
-        else {
-            return gsaAllowanceService.fetchLodgingRate(date, address);
+        catch(IOException ex) {
+            throw new ProviderException(ex);
         }
+        return rate;
     }
 
     private boolean determineDOD(String country, String state) {
@@ -51,13 +76,11 @@ public class ServiceProviderFactory {
     }
 
     private String determineDODLocationString(String country, String state) {
-        if ( state.equalsIgnoreCase("Hawaii") ) {
+        if (state.equalsIgnoreCase("Hawaii")) {
             return "Hawaii";
-        }
-        else if ( state.equalsIgnoreCase("Alaska") ) {
+        } else if (state.equalsIgnoreCase("Alaska")) {
             return "Alaska";
-        }
-        else {
+        } else {
             return country;
         }
     }

@@ -15,6 +15,10 @@ public class Destinations {
         this.destinations = ImmutableList.copyOf(destinations);
     }
 
+    /**
+     * @param date Find destinations visited on this date.
+     * @return A List of destinations which will be visited at the given date.
+     */
     public ImmutableList<Destination> destinationsForDate(LocalDate date) {
         List<Destination> destinations = new ArrayList<>();
         for (Destination dest : getDestinations()) {

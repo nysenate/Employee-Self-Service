@@ -27,7 +27,7 @@ public class DodAllowanceService {
     }
 
     public Dollars fetchMealRate(String country, String city, LocalDate travelDate) throws IOException {
-        return new Dollars( getDodMealTier(country, city, travelDate).getTier() );
+        return new Dollars(getDodMealTier(country, city, travelDate).getTier());
     }
 
     public Dollars fetchLodgingRate(String country, String city, LocalDate travelDate) throws IOException {

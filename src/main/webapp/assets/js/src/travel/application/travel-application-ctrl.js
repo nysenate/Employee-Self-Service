@@ -210,6 +210,16 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
         return undefined;
     };
 
+    $scope.handleDataProviderError = function () {
+         modals.open("external-api-error")
+                    .then(function () {
+                        reload();
+                    })
+                    .catch(function () {
+                        locationService.go("/logout", true);
+                    });
+    };
+
     /**
      * Error handler for google maps api.
      * Docs: https://developers.google.com/maps/documentation/javascript/events#auth-errors

@@ -1,13 +1,12 @@
 package gov.nysenate.ess.travel.application.allowances.mileage;
 
-import com.google.maps.errors.ApiException;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,13 @@ public class MileageAllowanceFactory {
         this.mileageService = mileageService;
     }
 
-    public MileageAllowances calculateMileageAllowance(Route route) throws InterruptedException, ApiException, IOException {
+    /**
+     * Calculates the mileage allowance from the route.
+     * @param route The complete route of travel, must contain outbound and return legs.
+     * @return A MileageAllowance initialized from the given Route.
+     * @throws ProviderException if an error is encountered while communicating with our 3rd party distance provider.
+     */
+    public MileageAllowances calculateMileageAllowance(Route route) {
         List<MileageAllowance> outboundLegAllowances = new ArrayList<>();
         List<MileageAllowance> returnLegAllowances = new ArrayList<>();
 
@@ -44,7 +49,7 @@ public class MileageAllowanceFactory {
         return new MileageAllowances(outboundLegAllowances, returnLegAllowances);
     }
 
-    private MileageAllowance calculateLegAllowance(Leg leg) throws InterruptedException, ApiException, IOException {
+    private MileageAllowance calculateLegAllowance(Leg leg) {
         double miles = mileageService.drivingDistance(leg.getFrom(), leg.getTo());
         BigDecimal mileageRate = mileageService.getIrsRate(leg.getTravelDate());
         return new MileageAllowance(UUID.randomUUID(), leg, miles, mileageRate);

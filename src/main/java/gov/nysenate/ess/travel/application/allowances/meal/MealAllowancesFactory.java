@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
 import com.google.common.collect.ImmutableList;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.ServiceProviderFactory;
 import gov.nysenate.ess.travel.application.destination.Destination;
 import gov.nysenate.ess.travel.application.destination.Destinations;
@@ -22,7 +23,13 @@ public class MealAllowancesFactory {
         this.serviceProviderFactory = serviceProviderFactory;
     }
 
-    public MealAllowances createMealAllowances(Destinations destinations) throws IOException {
+    /**
+     * Calculates {@link MealAllowances}.
+     * @param destinations Destinations used in the meal allowance calculation.
+     * @return {@link MealAllowances}
+     * @throws ProviderException If there is an error communicating with our 3rd party meal rate providers.
+     */
+    public MealAllowances createMealAllowances(Destinations destinations) {
         List<MealAllowance> mealAllowances = new ArrayList<>();
 
         LocalDate tripStartDate = destinations.startDate();
@@ -47,7 +54,7 @@ public class MealAllowancesFactory {
      * @return
      * @throws IOException
      */
-    private MealAllowance getMostExpensiveMealAllowance(LocalDate date, ImmutableList<Destination> dateDestinations) throws IOException {
+    private MealAllowance getMostExpensiveMealAllowance(LocalDate date, ImmutableList<Destination> dateDestinations) {
         // Place Dollars and Destinations in an ordered map. The last key will be the most expensive MealTier.
         TreeMap<Dollars, Destination> ratesToDests = new TreeMap<>();
         for (Destination d : dateDestinations) {
@@ -58,7 +65,7 @@ public class MealAllowancesFactory {
         return createMealAllowance(date, ratesToDests.lastEntry().getValue());
     }
 
-    private MealAllowance createMealAllowance(LocalDate date, Destination destination) throws IOException {
+    private MealAllowance createMealAllowance(LocalDate date, Destination destination) {
         Dollars mealRate = serviceProviderFactory.fetchMealRate(date, destination.getAddress());
         return new MealAllowance(UUID.randomUUID(), destination.getAddress(), date, mealRate, true);
     }

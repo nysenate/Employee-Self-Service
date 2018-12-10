@@ -42,61 +42,48 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
 
     function displayMap() {
 
-        try {
-            var map;
-            var directionsDisplay = new google.maps.DirectionsRenderer();
-            var directionsService = new google.maps.DirectionsService();
+        var map;
+        var directionsDisplay = new google.maps.DirectionsRenderer();
+        var directionsService = new google.maps.DirectionsService();
 
-            // Create map centered on Albany.
-            var albany = new google.maps.LatLng(42.6680631, -73.8807209);
-            var mapOptions = {
-                zoom: 9,
-                center: albany
-            };
-            map = new google.maps.Map(document.getElementById('map'), mapOptions);
-            directionsDisplay.setMap(map);
+        // Create map centered on Albany.
+        var albany = new google.maps.LatLng(42.6680631, -73.8807209);
+        var mapOptions = {
+            zoom: 9,
+            center: albany
+        };
+        map = new google.maps.Map(document.getElementById('map'), mapOptions);
+        directionsDisplay.setMap(map);
 
-            // Create map api parameters.
-            // All intermediate destinations should be waypoints, final destination should be destination.
-            var destinations = $scope.reviewApp.accommodations;
-            var origin = $scope.reviewApp.route.origin.formattedAddress;
-            var waypoints = [];
-            angular.forEach(destinations.destinations, function (dest, index) {
-                waypoints.push({location: dest.address.formattedAddress});
-            });
-            // Last destination should be destination param, not waypoint.
-            var destination = waypoints.pop().location;
+        // Create map api parameters.
+        // All intermediate destinations should be waypoints, final destination should be destination.
+        var destinations = $scope.reviewApp.accommodations;
+        var origin = $scope.reviewApp.route.origin.formattedAddress;
+        var waypoints = [];
+        angular.forEach(destinations.destinations, function (dest, index) {
+            waypoints.push({location: dest.address.formattedAddress});
+        });
+        // Last destination should be destination param, not waypoint.
+        var destination = waypoints.pop().location;
 
-            // Set params
-            var request = {
-                origin: origin,
-                destination: destination,
-                waypoints: waypoints,
-                travelMode: 'DRIVING'
-            };
+        // Set params
+        var request = {
+            origin: origin,
+            destination: destination,
+            waypoints: waypoints,
+            travelMode: 'DRIVING'
+        };
 
-            console.log(request);
+        console.log(request);
 
-            // Get directions and display on map.
-            directionsService.route(request, function (result, status) {
-                if (status == 'OK') {
-                    directionsDisplay.setDirections(result);
-                }
-                else {
-                    console.log("Unsuccessful map query, status = " + status);
-                }
-            });
-        }
-        catch (err) {
-            modals.open("external-api-error")
-                .then(function (response) {
-                    locationService.go("/travel/application/travel-application", true);
-                })
-                .catch(function (response) {
-                    locationService.go("/logout", true);
-                });
-        }
-
-
+        // Get directions and display on map.
+        directionsService.route(request, function (result, status) {
+            if (status == 'OK') {
+                directionsDisplay.setDirections(result);
+            }
+            else {
+                console.log("Unsuccessful map query, status = " + status);
+            }
+        });
     }
 }

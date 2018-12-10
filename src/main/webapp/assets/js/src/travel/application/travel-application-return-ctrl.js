@@ -120,7 +120,12 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
             $scope.closeLoadingModal();
         }, function (error) {
             $scope.closeLoadingModal();
-            $scope.handleErrorResponse(error);
+            if (error.status === 502) {
+                $scope.handleDataProviderError();
+            }
+            else {
+                $scope.handleErrorResponse(error);
+            }
         });
     };
 

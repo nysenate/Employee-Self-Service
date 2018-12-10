@@ -4,22 +4,27 @@ import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.travel.application.allowances.AllowancesDtoView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
 import gov.nysenate.ess.travel.application.route.RouteView;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.utils.Dollars;
 import gov.nysenate.ess.travel.utils.UploadProcessor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
@@ -57,14 +62,14 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
 
     /**
      * Submits an application to be reviewed.
+     *
      * @param id The Uncompleted Application Id to be submitted.
      *
-     * <p>
-     *  (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
-     * </p>
-     *
-     * Path Params: id (string) - The id of an uncompleted travel application to submit.
-     *
+     *           <p>
+     *           (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
+     *           </p>
+     *           <p>
+     *           Path Params: id (string) - The id of an uncompleted travel application to submit.
      * @return
      */
     @RequestMapping(value = "/{id}/submit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -76,13 +81,13 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
 
     /**
      * Deletes the uncompleted travel application belonging the the specified employee.
-     *
+     * <p>
      * This allows users to reset their application and start over.
      *
      * <p>
-     *  (DELETE) /api/v1/travel/application/uncompleted/{empId}
+     * (DELETE) /api/v1/travel/application/uncompleted/{empId}
      * </p>
-     *      Path Params: empId (int) - The employee Id who's uncompleted applications should be deleted.
+     * Path Params: empId (int) - The employee Id who's uncompleted applications should be deleted.
      *
      * @param empId
      * @return
@@ -99,8 +104,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      * (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
      * <p>
-     *     Path Params: id (string) - The id of an uncompleted travel application to update with the given purpose.<br>
-     *     Body : The purpose of travel.
+     * Path Params: id (string) - The id of an uncompleted travel application to update with the given purpose.<br>
+     * Body : The purpose of travel.
      *
      * @param id
      * @param purpose
@@ -118,8 +123,8 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      * (PUT) /api/v1/travel/application/uncompleted/{id}/outbound
      * <p>
-     *     Path Params: id (String) - The id of an uncompleted travel application to update with the given outbound segments.<br>
-     *     Body : An array of SegmentView's
+     * Path Params: id (String) - The id of an uncompleted travel application to update with the given outbound segments.<br>
+     * Body : An array of SegmentView's
      */
     @RequestMapping(value = "/{id}/outbound", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse saveOutboundSegments(@PathVariable String id, @RequestBody RouteView route) {
@@ -133,11 +138,14 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * <p>
      * (PUT) /api/v1/travel/application/uncompleted/{id}/return
      * <p>
-     *     Path Params: id (String) - The id of an uncompleted travel application to update with the given return segments.<br>
-     *     Body : An array of SegmentView's
+     * Path Params: id (String) - The id of an uncompleted travel application to update with the given return segments.<br>
+     * Body : An array of SegmentView's
+     *
+     * @throws ProviderException if an error is encountered while communicating with any of our 3rd party data providers.
+     *                           This exception is handled by the {@link #handleProviderException(HttpServletRequest, ProviderException)} method.
      */
     @RequestMapping(value = "/{id}/return", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse saveReturnSegments(@PathVariable String id, @RequestBody RouteView route) throws IOException, ApiException, InterruptedException {
+    public BaseResponse saveReturnSegments(@PathVariable String id, @RequestBody RouteView route) {
         checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.saveReturnLegs(UUID.fromString(id), route.toRoute().getReturnLegs());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
@@ -238,6 +246,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
 
     /**
      * Delete an attachment
+     *
      * @param id
      * @param attachmentId
      * @return
@@ -248,5 +257,13 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
         app.deleteAttachment(attachmentId);
         uncompletedAppDao.saveUncompletedApplication(app);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
+    }
+
+    @ExceptionHandler(ProviderException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ResponseBody
+    public ErrorResponse handleProviderException(HttpServletRequest request, ProviderException ex) {
+        logger.error("Error communicating with 3rd party data providers.", ex);
+        return new ErrorResponse(ErrorCode.DATA_PROVIDER_ERROR);
     }
 }

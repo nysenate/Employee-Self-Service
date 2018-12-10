@@ -14,6 +14,7 @@ import gov.nysenate.ess.travel.application.destination.Destinations;
 import gov.nysenate.ess.travel.application.destination.DestinationsFactory;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.Route;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class UncompletedTravelApplicationService {
     /**
      * Gets the current Uncompleted travel application for an employee
      * or creates a new application if non currently exist.
+     *
      * @param travelerId
      * @param submitterId
      * @return
@@ -47,8 +49,7 @@ public class UncompletedTravelApplicationService {
         TravelApplication app;
         if (uncompletedAppDao.hasUncompletedApplication(traveler.getEmployeeId())) {
             app = uncompletedAppDao.selectUncompletedApplication(traveler.getEmployeeId());
-        }
-        else {
+        } else {
             app = new TravelApplication(UUID.randomUUID(), UUID.randomUUID(), traveler, submitter);
             uncompletedAppDao.saveUncompletedApplication(app);
         }
@@ -88,13 +89,12 @@ public class UncompletedTravelApplicationService {
     /**
      * Updates the return legs of an applications route.
      * Clears the applications destinations and derived allowances if these legs have been modified.
-     *
+     * <p>
      * Also calculates the destinations and derived allowances if they are missing.
-     * @throws InterruptedException
-     * @throws ApiException
-     * @throws IOException
+     *
+     * @throws ProviderException if an error is encountered while communicating with our mileage, meal rate, or lodging rate providers.
      */
-    public TravelApplication saveReturnLegs(UUID appId, List<Leg> returnLegs) throws InterruptedException, ApiException, IOException {
+    public TravelApplication saveReturnLegs(UUID appId, List<Leg> returnLegs) {
         TravelApplication app = uncompletedAppDao.selectUncompletedApplication(appId);
         app = addReturnLegs(app, returnLegs);
 
@@ -109,7 +109,7 @@ public class UncompletedTravelApplicationService {
         return app;
     }
 
-    private TravelApplication addReturnLegs(TravelApplication app, List<Leg> returnLegs) throws InterruptedException, ApiException, IOException {
+    private TravelApplication addReturnLegs(TravelApplication app, List<Leg> returnLegs) {
         List<Leg> previousLegs = app.getRoute().getReturnLegs();
         if (!previousLegs.equals(returnLegs)) {
             resetDestinations(app);
@@ -177,6 +177,7 @@ public class UncompletedTravelApplicationService {
 
     /**
      * Deletes the UncompletedTravelApplication for the given employee.
+     *
      * @param empId
      */
     public void deleteUncompletedTravelApplication(int empId) {
