@@ -20,7 +20,6 @@ public enum ErrorCode
 
     /** Supply Errors */
     REQUISITION_UPDATE_CONFLICT(201, "The provided requisition was out of date."),
-    SUPPLY_PERMISSON_DENIED(550, "Permission Denied"),
 
     /** Travel Errors */
     DATA_PROVIDER_ERROR(301, "An error occurred while communicating with 3rd party data providers."),
