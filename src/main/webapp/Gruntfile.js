@@ -90,6 +90,8 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
                         '<%= bowerRoot %>/nsPopover/src/nsPopover.js',
                         '<%= bowerRoot %>/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
+                        '<%= bowerRoot %>/sockjs-client/dist/sockjs.min.js',
+                        '<%= bowerRoot %>/stomp-websocket/lib/stomp.min.js',
                         '<%= bowerRoot %>/angular-bowser/src/angular-bowser.js'
                         ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':

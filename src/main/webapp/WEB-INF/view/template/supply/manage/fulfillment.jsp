@@ -10,7 +10,7 @@
 
   <%--   Pending Orders   --%>
   <%--Pending request loading animation. loader-indicator styling is bad inside a content-container this gets around that.--%>
-  <div ng-show="!pendingSearch.response.$resolved">
+  <div ng-show="!data.reqRequest.response.$resolved">
     <div class="content-container">
       <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
     </div>
@@ -18,14 +18,14 @@
   </div>
 
   <%-- Pending Done loading --%>
-  <div class="content-container" ng-show="pendingSearch.response.$resolved">
+  <div class="content-container" ng-show="data.reqRequest.response.$resolved">
     <h1 style="background: #d19525; color: white;">Pending Requisition Requests</h1>
 
-    <div class="content-info" ng-show="pendingSearch.matches.length === 0 && pendingSearch.error === false">
+    <div class="content-info" ng-show="data.reqs.pending.length === 0">
       <h2 class="dark-gray">No Pending Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="pendingSearch.matches.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="data.reqs.pending.length > 0">
       <thead>
       <tr>
         <th></th>
@@ -38,7 +38,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in pendingSearch.matches" ng-class="calculateHighlighting(requisition)"
+      <tr ng-repeat="requisition in data.reqs.pending | orderBy:'requisitionId':true"
+          ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
@@ -54,7 +55,7 @@
 
   <%--   Processing Orders   --%>
   <%--Loading indicator--%>
-  <div ng-show="!processingSearch.response.$resolved">
+  <div ng-show="!data.reqRequest.response.$resolved">
     <div class="content-container">
       <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
     </div>
@@ -62,14 +63,14 @@
   </div>
 
   <%--Processing Done Loading--%>
-  <div class="content-container" ng-show="processingSearch.response.$resolved">
+  <div class="content-container" ng-show="data.reqRequest.response.$resolved">
     <h1 style="background: #4196A7; color: white;">Processing Requisition Requests</h1>
 
-    <div class="content-info" ng-show="processingSearch.matches.length == 0 && processingSearch.error === false">
+    <div class="content-info" ng-show="data.reqs.processing.length == 0">
       <h2 class="dark-gray">No Processing Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="processingSearch.matches.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="data.reqs.processing.length > 0">
       <thead>
       <tr>
         <th></th>
@@ -82,7 +83,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in processingSearch.matches" ng-class="calculateHighlighting(requisition)"
+      <tr ng-repeat="requisition in data.reqs.processing | orderBy:'requisitionId':true"
+          ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
@@ -99,7 +101,7 @@
   <%--   Completed Orders   --%>
 
   <%--Loading indicator--%>
-  <div ng-show="!completedSearch.response.$resolved">
+  <div ng-show="!data.reqRequest.response.$resolved">
     <div class="content-container">
       <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
     </div>
@@ -107,14 +109,14 @@
   </div>
 
   <%--Done Loading Completed--%>
-  <div class="content-container" ng-show="completedSearch.response.$resolved">
+  <div class="content-container" ng-show="data.reqRequest.response.$resolved">
     <h1 style="background: #799933; color: white;">Completed Requisition Requests</h1>
 
-    <div class="content-info" ng-show="completedSearch.matches.length === 0 && completedSearch.error === false">
+    <div class="content-info" ng-show="data.reqs.completed.length === 0">
       <h2 class="dark-gray">No Completed Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="completedSearch.matches.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="data.reqs.completed.length > 0">
       <thead>
       <tr>
         <th></th>
@@ -128,7 +130,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in completedSearch.matches" ng-class="calculateHighlighting(requisition)"
+      <tr ng-repeat="requisition in data.reqs.completed | orderBy:'requisitionId':true"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
@@ -146,7 +148,7 @@
   <%--  Approved Orders   --%>
 
   <%--Loading indicator--%>
-  <div ng-show="!approvedSearch.response.$resolved">
+  <div ng-show="!data.reqRequest.response.$resolved">
     <div class="content-container">
       <h1 style="background: #6270BD; color: white;">Approved Requisition Requests</h1>
     </div>
@@ -154,14 +156,14 @@
   </div>
 
   <%--Done Loading Approved--%>
-  <div class="content-container" ng-show="approvedSearch.response.$resolved">
+  <div class="content-container" ng-show="data.reqRequest.response.$resolved">
     <h1 style="background: #6270BD; color: white;">Approved Requisition Requests</h1>
 
-    <div class="content-info" ng-show="approvedSearch.matches.length === 0 && approvedSearch.error === false">
+    <div class="content-info" ng-show="data.reqs.approved.length === 0">
       <h2 class="dark-gray">No Approved Requests.</h2>
     </div>
 
-    <table class="ess-table supply-listing-table" ng-show="approvedSearch.matches.length > 0">
+    <table class="ess-table supply-listing-table" ng-show="data.reqs.approved.length > 0">
       <thead>
       <tr>
         <th></th>
@@ -175,7 +177,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in approvedSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
+      <tr ng-repeat="requisition in data.reqs.approved | orderBy:'requisitionId':true"
+          ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
@@ -183,35 +186,8 @@
         <td>{{distinctItemQuantity(requisition)}}</td>
         <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
         <td>{{requisition.issuer.lastName}}</td>
-        <td><span class="tick" ng-show="requisition.lastSfmsSyncDateTime && requisition.savedInSfms"></span><span class="cross"  ng-show="requisition.lastSfmsSyncDateTime && !requisition.savedInSfms"></span></td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <%-- Sync Fail Shipments--%>
-  <div class="content-container" ng-show="syncFailedSearch.matches.length > 0">
-    <h1 style="background: #001f3f; color: white;">Sync Failed Requisition Requests</h1>
-
-    <table class="ess-table supply-listing-table" ng-show="syncFailedSearch.matches.length > 0">
-      <thead>
-      <tr>
-        <th>Id</th>
-        <th>Location</th>
-        <th>Employee</th>
-        <th>Order Date</th>
-        <th>Approved Date</th>
-        <th>Last Sync Time</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr ng-repeat="requisition in syncFailedSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
-        <td>{{requisition.requisitionId}}</td>
-        <td>{{requisition.destination.locId}}</td>
-        <td>{{requisition.customer.lastName}}</td>
-        <td>{{requisition.orderedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
-        <td>{{requisition.approvedDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
-        <td>{{requisition.lastSfmsSyncDateTime | date:'MM/dd/yyyy h:mm a'}}</td>
+        <td><span class="tick" ng-show="requisition.lastSfmsSyncDateTime && requisition.savedInSfms"></span>
+          <span class="cross"  ng-show="requisition.lastSfmsSyncDateTime && !requisition.savedInSfms"></span></td>
       </tr>
       </tbody>
     </table>
@@ -219,7 +195,7 @@
 
   <%--  Rejected Shipments   --%>
 
-  <div class="content-container" ng-show="canceledSearch.response.$resolved && canceledSearch.matches.length > 0">
+  <div class="content-container" ng-show="data.reqs.rejected.length > 0">
     <h1 style="background: #8D9892; color: white;">Rejected Requisition Requests</h1>
 
     <table class="ess-table supply-listing-table">
@@ -233,7 +209,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="requisition in canceledSearch.matches" ng-click="setRequisitionSearchParam(requisition.requisitionId)">
+      <tr ng-repeat="requisition in data.reqs.rejected | orderBy:'requisitionId':true"
+          ng-click="setRequisitionSearchParam(requisition.requisitionId)">
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>
@@ -244,12 +221,12 @@
     </table>
   </div>
 
-  <% /** Container for all modal dialogs */ %>
+  <%--Container for all modal dialogs--%>
   <div modal-container>
     <modal modal-id="fulfillment-editing-modal">
       <div fulfillment-editing-modal
-           supply-employees='supplyEmployees'
-           location-statistics='locationStatistics'>
+           supply-employees='data.supplyEmployees'
+           location-statistics='data.locationStatistics'>
       </div>
     </modal>
 
@@ -257,5 +234,4 @@
       <div fulfillment-immutable-modal></div>
     </modal>
   </div>
-
 </div>
