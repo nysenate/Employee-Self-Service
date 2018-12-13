@@ -1,7 +1,6 @@
 package gov.nysenate.ess.supply.requisition.controller;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Range;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -13,7 +12,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.unit.LocationService;
-import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -26,8 +24,8 @@ import gov.nysenate.ess.supply.requisition.exception.ConcurrentRequisitionUpdate
 import gov.nysenate.ess.supply.requisition.service.RequisitionService;
 import gov.nysenate.ess.supply.requisition.view.RequisitionView;
 import gov.nysenate.ess.supply.requisition.view.SubmitRequisitionView;
+import gov.nysenate.ess.supply.socket.RequisitionUpdateEvent;
 import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +65,9 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
                 .withOrderedDateTime(LocalDateTime.now())
                 .build();
         Requisition savedRequisition = requisitionService.submitRequisition(requisition);
-        return new ViewObjectResponse<>(new RequisitionView(savedRequisition));
+        RequisitionView requisitionView = new RequisitionView(savedRequisition);
+        eventBus.post(new RequisitionUpdateEvent(requisitionView));
+        return new ViewObjectResponse<>(requisitionView);
     }
 
     @RequestMapping("/{id}")
@@ -88,7 +88,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
 
         requisition = requisition.setModifiedBy(getModifiedBy());
-        requisitionService.saveRequisition(requisition);
+        requisition = requisitionService.saveRequisition(requisition);
+        eventBus.post(new RequisitionUpdateEvent(new RequisitionView(requisition)));
     }
 
     /**
@@ -108,7 +109,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
             requisition = requisition.setIssuer(getModifiedBy());
         }
         requisition = requisition.setModifiedBy(getModifiedBy());
-        requisitionService.processRequisition(requisition);
+        requisition = requisitionService.processRequisition(requisition);
+        eventBus.post(new RequisitionUpdateEvent(new RequisitionView(requisition)));
     }
 
     /**
@@ -122,7 +124,8 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         checkPermission(RequisitionPermission.forCustomer(requisition.getCustomer().getEmployeeId(), RequestMethod.POST));
 
         requisition = requisition.setModifiedBy(getModifiedBy());
-        requisitionService.rejectRequisition(requisition);
+        requisition = requisitionService.rejectRequisition(requisition);
+        eventBus.post(new RequisitionUpdateEvent(new RequisitionView(requisition)));
     }
 
     /**

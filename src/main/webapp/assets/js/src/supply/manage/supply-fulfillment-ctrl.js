@@ -1,77 +1,180 @@
-essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope',
+essSupply = angular.module('essSupply').controller('SupplyFulfillmentController', ['$scope', '$timeout', 'appProps',
                                                                                    'SupplyRequisitionApi', 'SupplyEmployeesApi', 'SupplyItemApi', 'modals', '$interval',
                                                                                    'LocationService', 'SupplyLocationStatisticsService', 'SupplyUtils', '$q', supplyFulfillmentController]);
 
-function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
+function supplyFulfillmentController($scope, $timeout, appProps, requisitionApi, supplyEmployeesApi,
                                      itemApi, modals, $interval, locationService,
                                      locationStatisticsService, supplyUtils, $q) {
 
-    const REQ_ID_SEARCH_PARAM = "requisitionId";
+    var REQ_ID_QUERY_PARAM = "requisitionId";
 
-    $scope.pendingSearch = {
-        matches: [],
-        response: {},
-        error: false
+    $scope.data = {
+        reqs: {             // Collections of requisitions
+            map: {},            // Map of requisitionId to requisition.
+            pending: [],        // Pending requisitions.
+            processing: [],     // Processing requisitions.
+            completed: [],      // Completed requisitions.
+            approved: [],       // Approved requisitions.
+            rejected: []        // Rejected requisitions.
+        },
+        reqRequest: {
+            response: {},
+            error: false
+        },
+        locationStatistics: undefined,
+        supplyEmployees: []     // List of supply employees used in edit modal to assign issuer.
     };
 
-    $scope.processingSearch = {
-        matches: [],
-        response: {},
-        error: false
-    };
-
-    $scope.completedSearch = {
-        matches: [],
-        response: {},
-        error: false
-    };
-
-    $scope.approvedSearch = {
-        matches: [],
-        response: {},
-        error: false
-    };
-
-    $scope.syncFailedSearch = {
-        matches: [],
-        response: {},
-        error: false
-    };
-
-    $scope.canceledSearch = {
-        matches: [],
-        response: {},
-        error: false
-    };
-
-    /** The response received from saving a requisition in the edit modal. */
+    /** The response received from saving a requisition in the edit modal.
+     * Used to display a requisition concurrent modification notification. */
     $scope.saveResponse = {
         response: {},
         error: false
     };
 
-    /** Used in edit modals to assign an issuer. */
-    $scope.supplyEmployees = [];
+    this.$onInit = function () {
+        initRequisitions()
+            .then(processQueryParams);
+        getSupplyEmployees();
+        getLocationStatistics();
+        $scope.connectToSocket();
+        scheduleReload()
+    };
 
-    $scope.locationStatistics = null;
+    this.$onDestroy = function () {
+        $scope.stompClient.disconnect();
+    };
 
-    function updateShipments() {
-        getPendingShipments();
-        getProcessingShipments();
-        getCompletedShipments();
-        getApprovedShipments();
-        getSyncFailedShipments();
-        getCanceledShipments();
+    function initRequisitions() {
+        var mostPromise = initMostReqs()
+            .then(addToMap);
+        var rejectedPromise = initRejectedReqs()
+            .then(addToMap);
+
+        var promises = [mostPromise, rejectedPromise];
+        return $q.all(promises).then(initReqCollections);
+
+        function addToMap(reqs) {
+            reqs.forEach(function (req) {
+                $scope.data.reqs.map[req.requisitionId] = req;
+            })
+        }
+
+        /**
+         * Gets all requisitions which have not been rejected or reconciled.
+         * @return A Promise which is resolved with an array of requisitions.
+         */
+        function initMostReqs() {
+            var params = {
+                status: ['PENDING', 'PROCESSING', 'COMPLETED', 'APPROVED'],
+                reconciled: 'false',
+                from: moment.unix(1).format(),
+                limit: 'ALL',
+                offset: 0
+            };
+            $scope.data.reqRequest.response = requisitionApi.get(params);
+            return $scope.data.reqRequest.response.$promise
+                .then(function (response) {
+                    return response.result;
+                })
+                .catch($scope.handleErrorResponse);
+        }
+
+        /**
+         * Gets requisitions which have been rejected today.
+         * @return A Promise which is resolved with an array of rejected requisitions.
+         */
+        function initRejectedReqs() {
+            var params = {
+                status: "REJECTED",
+                from: moment().startOf('day').format(),
+                dateField: "rejected_date_time",
+                limit: 'ALL',
+                offset: 0
+            };
+            return requisitionApi.get(params).$promise
+                .then(function (response) {
+                    return response.result;
+                })
+                .catch($scope.handleErrorResponse);
+        }
     }
 
-    // Refresh data every minute.
-    var intervalPromise = $interval(function () {
-        updateShipments()
-    }, 10000);
-    // Stop refreshing when we leave this page.
-    $scope.$on('$destroy', function () {
-        $interval.cancel(intervalPromise)
-    });
+    /**
+     * Initialize all individual requisition collections from the requisitions in the data.reqs.map
+     */
+    function initReqCollections() {
+        $scope.data.reqs.pending = [];
+        $scope.data.reqs.processing = [];
+        $scope.data.reqs.completed = [];
+        $scope.data.reqs.approved = [];
+        $scope.data.reqs.rejected = [];
+        var map = $scope.data.reqs.map;
+        angular.forEach(map, function (value, key) {
+            switch (value.status) {
+                case 'PENDING':
+                    $scope.data.reqs.pending.push(value);
+                    break;
+                case 'PROCESSING':
+                    $scope.data.reqs.processing.push(value);
+                    break;
+                case 'COMPLETED':
+                    $scope.data.reqs.completed.push(value);
+                    break;
+                case 'APPROVED':
+                    $scope.data.reqs.approved.push(value);
+                    break;
+                case 'REJECTED':
+                    $scope.data.reqs.rejected.push(value);
+                    break;
+                default:
+                    console.log("Unable to match status for requisition: " + value);
+            }
+        });
+    }
+
+    function processQueryParams() {
+        var reqIdQueryParamValue = locationService.getSearchParam(REQ_ID_QUERY_PARAM);
+        if (reqIdQueryParamValue) {
+            displayRequisitionWithId(reqIdQueryParamValue);
+        }
+    }
+
+    $scope.connectToSocket = function () {
+        var socket = new SockJS(appProps.ctxPath + '/socket');
+        $scope.stompClient = Stomp.over(socket);
+        $scope.stompClient.connect({}, function (frame) {
+            $scope.stompClient.subscribe('/event/requisition', function (event) {
+                var updatedReq = JSON.parse(event.body);
+                $scope.$apply(function () {
+                    $scope.data.reqs.map[updatedReq.requisitionId] = updatedReq;
+                    initReqCollections();
+                });
+            })
+        })
+    };
+
+    /**
+     * Reload once a day at 00:15.
+     * Since web sockets are now used for requisition updates, a user could use this page
+     * without ever refreshing it. However, the data listed below requires a daily refresh.
+     * To ensure this data is updated daily, schedule a page reload at 00:15.
+     *
+     * Data benefiting from daily updates:
+     *      - Rejected requisitions.
+     *      - Location statistics.
+     *      - Supply employee list.
+     */
+    function scheduleReload() {
+        var now = moment().valueOf();
+        var endOfDay = moment().endOf('day').add(15, 'minutes').valueOf();
+        var delay = endOfDay - now;
+        $timeout($scope.reload, delay);
+    }
+
+    $scope.reload = function () {
+        locationService.go("/supply/manage/fulfillment", true);
+    };
 
     /**
      * --- Api Calls ---
@@ -79,7 +182,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
 
     function getSupplyEmployees() {
         supplyEmployeesApi.get(function (response) {
-            $scope.supplyEmployees = response.result;
+            $scope.data.supplyEmployees = response.result;
         }, $scope.handleErrorResponse)
     }
 
@@ -88,134 +191,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
         var month = moment().month() + 1; // Moment is 0 indexed, API is not.
         locationStatisticsService.calculateLocationStatistics(year, month)
             .then(function (result) {
-                $scope.locationStatistics = result;
-            })
-            .catch($scope.handleErrorResponse);
-    }
-
-    /** Get all pending shipments */
-    function getPendingShipments() {
-        var params = {
-            status: "PENDING",
-            from: moment.unix(1).format(),
-            limit: 'ALL',
-            offset: 0
-        };
-        $scope.pendingSearch.response = requisitionApi.get(params);
-        return $scope.pendingSearch.response.$promise
-            .then(function (response) {
-                $scope.pendingSearch.matches = response.result;
-                $scope.pendingSearch.error = false;
-            })
-            .catch($scope.handleErrorResponse);
-    }
-
-    function getProcessingShipments() {
-        var params = {
-            status: "PROCESSING",
-            from: moment.unix(1).format(),
-            limit: 'ALL',
-            offset: 0
-        };
-        $scope.processingSearch.response = requisitionApi.get(params);
-        return $scope.processingSearch.response.$promise
-            .then(function (response) {
-                $scope.processingSearch.matches = response.result;
-                $scope.processingSearch.error = false;
-            })
-            .catch($scope.handleErrorResponse);
-    }
-
-    function getCompletedShipments() {
-        var params = {
-            status: "COMPLETED",
-            from: moment.unix(1).format(),
-            limit: 'ALL',
-            offset: 0
-
-        };
-        $scope.completedSearch.response = requisitionApi.get(params);
-        return $scope.completedSearch.response.$promise
-            .then(function (response) {
-                $scope.completedSearch.matches = response.result;
-                $scope.completedSearch.error = false;
-            })
-            .catch($scope.handleErrorResponse);
-    }
-
-    function getApprovedShipments() {
-        var params = {
-            status: "APPROVED",
-            from: moment.unix(1).format(),
-            limit: 'ALL',
-            reconciled: 'false',
-            offset: 0
-
-        };
-        $scope.approvedSearch.response = requisitionApi.get(params);
-        return $scope.approvedSearch.response.$promise
-            .then(function (response) {
-                $scope.approvedSearch.matches = response.result;
-                sortRequisitionsByIdDesc($scope.approvedSearch.matches);
-                $scope.approvedSearch.error = false;
-            })
-            .catch($scope.handleErrorResponse);
-    }
-
-    function sortRequisitionsByIdDesc(reqs) {
-        reqs.sort(function(a, b){
-            if (a.requisitionId < b.requisitionId) return 1;
-            if (a.requisitionId > b.requisitionId) return -1;
-            return 0;
-        });
-        return reqs;
-    }
-
-    /** Get all sync failures prior to today. */
-    function getSyncFailedShipments() {
-        var params = {
-            from: moment.unix(1).format(),
-            to: moment().startOf('day').format(),
-            status: "APPROVED",
-            dateField: "approved_date_time",
-            savedInSfms: false,
-            limit: 'ALL',
-            offset: 0
-        };
-        $scope.syncFailedSearch.response = requisitionApi.get(params);
-        return $scope.syncFailedSearch.response.$promise
-            .then(function (response) {
-                $scope.syncFailedSearch.matches = response.result;
-                $scope.syncFailedSearch.matches = removeNewPlaceReq($scope.syncFailedSearch.matches);
-                $scope.syncFailedSearch.error = false;
-            })
-            .catch($scope.handleErrorResponse);
-    }
-
-    /*remove new place req from failed sync*/
-    function removeNewPlaceReq(input) {
-        var result = [];
-        input.forEach(function (ele) {
-            if (ele.lastSfmsSyncDateTime != null) // if current req have not been sync , then it is a new one
-                result.push(ele);
-        });
-        return result;
-    }
-
-    /** Get shipments that have been canceled today. A shipment is canceled when its order is rejected. */
-    function getCanceledShipments() {
-        var params = {
-            status: "REJECTED",
-            from: moment().startOf('day').format(),
-            dateField: "rejected_date_time",
-            limit: 'ALL',
-            offset: 0
-        };
-        $scope.canceledSearch.response = requisitionApi.get(params);
-        return $scope.canceledSearch.response.$promise
-            .then(function (response) {
-                $scope.canceledSearch.matches = response.result;
-                $scope.canceledSearch.error = false;
+                $scope.data.locationStatistics = result;
             })
             .catch($scope.handleErrorResponse);
     }
@@ -237,13 +213,13 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
     };
 
     function isOverPerMonthMax(requisition) {
-        if ($scope.locationStatistics == null) {
+        if ($scope.data.locationStatistics == null) {
             return false;
         }
         var isOverPerMonthMax = false;
         angular.forEach(requisition.lineItems, function (lineItem) {
-            var monthToDateQty = $scope.locationStatistics.getQuantityForLocationAndItem(requisition.destination.locId,
-                                                                                         lineItem.item.commodityCode);
+            var monthToDateQty = $scope.data.locationStatistics.getQuantityForLocationAndItem(requisition.destination.locId,
+                                                                                              lineItem.item.commodityCode);
             if (monthToDateQty > lineItem.item.perMonthAllowance) {
                 isOverPerMonthMax = true;
             }
@@ -276,32 +252,33 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
             modals.open('fulfillment-immutable-modal', requisition)
                 .finally(resetSearchParams);
         }
+
+        function successfulSave(response) {
+            modals.resolve();
+        }
+
+        function errorSaving(response) {
+            if (response === undefined) {
+                // modal was rejected for a reason besides a failed update. E.g. clicking cancel button.
+                return;
+            }
+            if (response.status === 409) {
+                // Requisition Conflict error, display error notification.
+                $scope.saveResponse.error = true;
+            }
+            else {
+                // Any other server error, display internal error modal.
+                $scope.handleErrorResponse(response);
+            }
+            return response;
+        }
     };
 
-    function successfulSave(response) {
-        locationService.go("/supply/manage/fulfillment", true);
-    }
-
-    function errorSaving(response) {
-        if (response === undefined) {
-            // modal was rejected for a reason besides a failed update. E.g. clicking cancel button.
-            return;
-        }
-        if (response.status === 409) {
-            // Requisition Conflict error, display error notification.
-            $scope.saveResponse.error = true;
-        }
-        else {
-            // Any other server error, display internal error modal.
-            $scope.handleErrorResponse(response);
-        }
-        return response;
-    }
 
     /** --- Url Params --- */
 
     function resetSearchParams() {
-        locationService.setSearchParam(REQ_ID_SEARCH_PARAM, null);
+        locationService.setSearchParam(REQ_ID_QUERY_PARAM, null);
     }
 
     /**
@@ -312,7 +289,7 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
      * @param requisitionId
      */
     $scope.setRequisitionSearchParam = function (requisitionId) {
-        locationService.setSearchParam(REQ_ID_SEARCH_PARAM, requisitionId);
+        locationService.setSearchParam(REQ_ID_QUERY_PARAM, requisitionId);
     };
 
     /**
@@ -337,41 +314,6 @@ function supplyFulfillmentController($scope, requisitionApi, supplyEmployeesApi,
      * @returns The matching requisition or undefined if no match is found.
      */
     function findRequisitionById(requisitionId) {
-        var allReqs = $scope.pendingSearch.matches.concat($scope.processingSearch.matches,
-                                                          $scope.completedSearch.matches,
-                                                          $scope.approvedSearch.matches,
-                                                          $scope.syncFailedSearch.matches,
-                                                          $scope.canceledSearch.matches);
-        for (var i = 0; i < allReqs.length; i++) {
-            if (allReqs[i].requisitionId == requisitionId) {
-                return allReqs[i];
-            }
-        }
+        return $scope.data.reqs.map[requisitionId];
     }
-
-    /** --- Init --- */
-
-    $scope.init = function () {
-        // Gather all requisition api call promises so we can check when they are all resolved.
-        var reqApiPromises = [];
-        reqApiPromises.push(getPendingShipments());
-        reqApiPromises.push(getProcessingShipments());
-        reqApiPromises.push(getCompletedShipments());
-        reqApiPromises.push(getApprovedShipments());
-        reqApiPromises.push(getSyncFailedShipments());
-        reqApiPromises.push(getCanceledShipments());
-        // This is executed when all promises in reqApiPromises are resolved.
-        $q.all(reqApiPromises).then(
-            function () {
-                // If requisitionId set in search params, display the modal for that requisition.
-                // We cannot do this until all requisitions are loaded.
-                displayRequisitionWithId(locationService.getSearchParam(REQ_ID_SEARCH_PARAM));
-            }
-        );
-
-        getSupplyEmployees();
-        getLocationStatistics();
-    };
-
-    $scope.init();
 }

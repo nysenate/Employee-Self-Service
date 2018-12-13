@@ -13,6 +13,8 @@ import gov.nysenate.ess.supply.requisition.model.RequisitionStatus;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,13 +35,13 @@ public class RequisitionView implements ViewObject {
     protected EmployeeView issuer;
     protected String note;
     protected EmployeeView modifiedBy;
-    protected LocalDateTime modifiedDateTime;
-    protected LocalDateTime orderedDateTime;
-    protected LocalDateTime processedDateTime;
-    protected LocalDateTime completedDateTime;
-    protected LocalDateTime approvedDateTime;
-    protected LocalDateTime rejectedDateTime;
-    protected LocalDateTime lastSfmsSyncDateTime;
+    protected String modifiedDateTime;
+    protected String orderedDateTime;
+    protected String processedDateTime;
+    protected String completedDateTime;
+    protected String approvedDateTime;
+    protected String rejectedDateTime;
+    protected String lastSfmsSyncDateTime;
 
     protected boolean savedInSfms;
 
@@ -59,13 +61,13 @@ public class RequisitionView implements ViewObject {
         this.issuer = requisition.getIssuer().map(EmployeeView::new).orElse(null);
         this.note = requisition.getNote().orElse(null);
         this.modifiedBy = new EmployeeView(requisition.getModifiedBy());
-        this.modifiedDateTime = requisition.getModifiedDateTime().orElse(null);
-        this.orderedDateTime = requisition.getOrderedDateTime();
-        this.processedDateTime = requisition.getProcessedDateTime().orElse(null);
-        this.completedDateTime = requisition.getCompletedDateTime().orElse(null);
-        this.approvedDateTime = requisition.getApprovedDateTime().orElse(null);
-        this.rejectedDateTime = requisition.getRejectedDateTime().orElse(null);
-        this.lastSfmsSyncDateTime = requisition.getLastSfmsSyncDateTime().orElse(null);
+        this.modifiedDateTime = dateTimeToString(requisition.getModifiedDateTime());
+        this.orderedDateTime = requisition.getOrderedDateTime() == null ? null : requisition.getOrderedDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.processedDateTime = dateTimeToString(requisition.getProcessedDateTime());
+        this.completedDateTime = dateTimeToString(requisition.getCompletedDateTime());
+        this.approvedDateTime = dateTimeToString(requisition.getApprovedDateTime());
+        this.rejectedDateTime = dateTimeToString(requisition.getRejectedDateTime());
+        this.lastSfmsSyncDateTime = dateTimeToString(requisition.getLastSfmsSyncDateTime());
         this.savedInSfms = requisition.getSavedInSfms();
     }
 
@@ -83,15 +85,25 @@ public class RequisitionView implements ViewObject {
                 .withIssuer(issuer == null ? null : issuer.toEmployee())
                 .withNote(note)
                 .withModifiedBy(modifiedBy.toEmployee())
-                .withModifiedDateTime(modifiedDateTime)
-                .withOrderedDateTime(orderedDateTime)
-                .withProcessedDateTime(processedDateTime)
-                .withCompletedDateTime(completedDateTime)
-                .withApprovedDateTime(approvedDateTime)
-                .withRejectedDateTime(rejectedDateTime)
-                .withLastSfmsSyncDateTimeDateTime(lastSfmsSyncDateTime)
+                .withModifiedDateTime(stringToDateTime(modifiedDateTime))
+                .withOrderedDateTime(stringToDateTime(orderedDateTime))
+                .withProcessedDateTime(stringToDateTime(processedDateTime))
+                .withCompletedDateTime(stringToDateTime(completedDateTime))
+                .withApprovedDateTime(stringToDateTime(approvedDateTime))
+                .withRejectedDateTime(stringToDateTime(rejectedDateTime))
+                .withLastSfmsSyncDateTimeDateTime(stringToDateTime(lastSfmsSyncDateTime))
                 .withSavedInSfms(savedInSfms)
                 .build();
+    }
+
+    @JsonIgnore
+    private String dateTimeToString(Optional<LocalDateTime> dtOption) {
+        return dtOption.map(dt -> dt.format(DateTimeFormatter.ISO_DATE_TIME)).orElse(null);
+    }
+
+    @JsonIgnore
+    private LocalDateTime stringToDateTime(String dt) {
+        return dt == null ? null : LocalDateTime.parse(dt, DateTimeFormatter.ISO_DATE_TIME);
     }
 
     @XmlElement
@@ -150,37 +162,37 @@ public class RequisitionView implements ViewObject {
     }
 
     @XmlElement
-    public LocalDateTime getModifiedDateTime() {
+    public String getModifiedDateTime() {
         return modifiedDateTime;
     }
 
     @XmlElement
-    public LocalDateTime getOrderedDateTime() {
+    public String getOrderedDateTime() {
         return orderedDateTime;
     }
 
     @XmlElement
-    public LocalDateTime getProcessedDateTime() {
+    public String getProcessedDateTime() {
         return processedDateTime;
     }
 
     @XmlElement
-    public LocalDateTime getCompletedDateTime() {
+    public String getCompletedDateTime() {
         return completedDateTime;
     }
 
     @XmlElement
-    public LocalDateTime getApprovedDateTime() {
+    public String getApprovedDateTime() {
         return approvedDateTime;
     }
 
     @XmlElement
-    public LocalDateTime getRejectedDateTime() {
+    public String getRejectedDateTime() {
         return rejectedDateTime;
     }
 
     @XmlElement
-    public LocalDateTime getLastSfmsSyncDateTime() {
+    public String getLastSfmsSyncDateTime() {
         return lastSfmsSyncDateTime;
     }
 
