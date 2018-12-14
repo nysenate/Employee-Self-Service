@@ -16,7 +16,7 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
         response: {},
         error: false
     };
-    $scope.currentPage = 1;
+    $scope.activeItemGroup = 1;
 
     /** Map of item id's to shipments containing that item. */
     $scope.reconcilableItemMap = {};
@@ -90,8 +90,8 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
         locationService.go("/supply/requisition/requisition-view", false, "requisition=" + shipment.requisitionId + "&fromPage=reconciliation");
     };
 
-    $scope.setCurrentPage = function (page) {
-        $scope.currentPage = page;
+    $scope.setActiveItemGroup = function (page) {
+        $scope.activeItemGroup = page;
     };
 
     $scope.reconcile = function () {
