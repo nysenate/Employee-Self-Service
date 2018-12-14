@@ -11,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.text.Collator;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 @Component
@@ -106,7 +108,10 @@ public class DodClient {
 
         for (DodMealTier mealTier : dodMealTiers) {
             //see if we find a city match at all
-            if (city.equalsIgnoreCase(mealTier.getLocation()) && !matched) {
+            Collator usCollator = Collator.getInstance(Locale.US);
+            usCollator.setStrength(Collator.PRIMARY);
+
+            if (usCollator.compare(city,mealTier.getLocation()) == 0 && !matched) {
                 matched = true;
                 matchedMealTier = mealTier;
             }
