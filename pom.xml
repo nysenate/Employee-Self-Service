@@ -6,7 +6,7 @@
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.5.2</version>
+  <version>1.5.3</version>
   <packaging>war</packaging>
 
   <build>
@@ -220,6 +220,26 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
       <version>${spring.version}</version>
+    </dependency>
+
+    <!-- Spring web sockets -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-websocket</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <!--Spring messaging, used with sockets-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-messaging</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-websocket</artifactId>
+      <version>${tomcat.servlet.version}</version>
     </dependency>
 
     <!-- EhCache -->
