@@ -23,8 +23,8 @@
 
     <div style="display:inline-block; width:100%">
       <ul class="reconciliation-tab-links">
-        <li ng-class="{'active-reconciliation-tab': currentPage === 1}"><a href="#" ng-click="setCurrentPage(1)">Page One</a></li>
-        <li ng-class="{'active-reconciliation-tab': currentPage === 2}"><a href="#" ng-click="setCurrentPage(2)">Page Two</a></li>
+        <li ng-class="{'active-reconciliation-tab': activeItemGroup === 1}"><a href="#" ng-click="setActiveItemGroup(1)">Item group 1</a></li>
+        <li ng-class="{'active-reconciliation-tab': activeItemGroup === 2}"><a href="#" ng-click="setActiveItemGroup(2)">Item group 2</a></li>
       </ul>
 
       <a id="printPage" class="no-print" style="margin: 10px; float: right" ng-click="print()">Print</a>
@@ -51,7 +51,7 @@
       </div>
       <%--Item rows--%>
       <div class="supply-div-table-body print-gray-bottom-border"
-           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : currentPage}" >
+           ng-repeat="item in reconcilableSearch.items | filter : {'reconciliationPage' : activeItemGroup}" >
 
         <div class="supply-div-table-row"
              ng-class="{'supply-highlight-row': isItemSelected(item), 'warn-important': isReconciliationError(item)}"
