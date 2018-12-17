@@ -6,6 +6,7 @@ import com.google.common.collect.RangeSet;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.annotation.WorkInProgress;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.*;
@@ -16,7 +17,6 @@ import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
-import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -46,7 +46,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     @Autowired protected Environment env;
     @Autowired protected EmployeeDao employeeDao;
     @Autowired protected EmpTransactionService transService;
-    @Autowired private LocationService locationService;
+    @Autowired private LocationDao locationDao;
     @Autowired protected EventBus eventBus;
     @Autowired protected EhCacheManageService cacheManageService;
 
@@ -272,6 +272,6 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
         }
         String locCode = transHistory.latestValueOf("CDLOCAT", effectiveDate, true).get();
         // All employee assigned locations have a work location type.
-        return locationService.getLocation(new LocationId(locCode, LocationType.WORK));
+        return locationDao.getLocation(new LocationId(locCode, LocationType.WORK));
     }
 }

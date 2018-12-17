@@ -23,13 +23,9 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         // Agency
         "agcy.CDAGENCY AS AGCY_CDAGENCY, agcy.CDSTATUS AS AGCY_CDSTATUS,\n" +
         "agcy.DEAGENCYS AS AGCY_DEAGENCYS, agcy.DEAGENCYF AS AGCY_DEAGENCYF, agcy.DTTXNUPDATE AS AGCY_DTTXNUPDATE,\n" +
-        // Work location
-
+        // Work locationId
         "loc.CDLOCAT AS LOC_CDLOCAT, loc.CDLOCTYPE AS LOC_CDLOCTYPE,\n" +
-        "loc.DELOCAT AS LOC_DELOCAT,\n" +
-        "loc.FFADSTREET1 AS LOC_FFADSTREET1, loc.FFADSTREET2 AS LOC_FFADSTREET2,\n" +
-        "loc.FFADCITY AS LOC_FFADCITY, loc.ADSTATE AS LOC_ADSTATE,\n" +
-        "loc.ADZIPCODE AS LOC_ADZIPCODE, loc.DTTXNUPDATE AS LOC_DTTXNUPDATE, loc.CDSTATUS AS LOC_CDSTATUS\n"
+        "loc.DTTXNUPDATE AS LOC_DTTXNUPDATE\n"
     ),
     GET_EMP_SQL_TABLES(
         "FROM ${masterSchema}.PM21PERSONN per\n" +

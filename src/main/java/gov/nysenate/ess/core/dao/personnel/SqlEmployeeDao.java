@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.dao.personnel;
 import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
+import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
@@ -13,6 +14,7 @@ import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -26,6 +28,8 @@ import java.util.*;
 public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
 {
     private static final Logger logger = LoggerFactory.getLogger(SqlEmployeeDao.class);
+
+    @Autowired private LocationDao locationDao;
 
     /** {@inheritDoc} */
     @Override
@@ -149,7 +153,7 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     }
 
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
-    private static EmployeeRowMapper getEmployeeRowMapper() {
-        return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_");
+    private EmployeeRowMapper getEmployeeRowMapper() {
+        return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationDao);
     }
 }

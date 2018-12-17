@@ -7,11 +7,10 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.model.auth.SenatePerson;
+import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
@@ -46,7 +45,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
 
     @Autowired private RequisitionService requisitionService;
     @Autowired private EmployeeInfoService employeeService;
-    @Autowired private LocationService locationService;
+    @Autowired private LocationDao locationDao;
 
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitRequisition(@RequestBody SubmitRequisitionView submitRequisitionView) {
@@ -56,7 +55,7 @@ public class RequisitionRestApiCtrl extends BaseRestApiCtrl {
         }
         Requisition requisition = new Requisition.Builder()
                 .withCustomer(employeeService.getEmployee(submitRequisitionView.getCustomerId()))
-                .withDestination(locationService.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
+                .withDestination(locationDao.getLocation(new LocationId(submitRequisitionView.getDestinationId())))
                 .withDeliveryMethod(DeliveryMethod.valueOf(submitRequisitionView.getDeliveryMethod()))
                 .withLineItems(lineItems)
                 .withSpecialInstructions(submitRequisitionView.getSpecialInstructions())

@@ -28,7 +28,6 @@ public class TravelAddressFactory {
             return travelAddressDao.selectAddress(address);
         } else {
             TravelAddress ta = new TravelAddress(UUID.randomUUID(), address);
-            ta.setCounty(address.getCounty());
             travelAddressDao.insertAddress(ta);
             return ta;
         }

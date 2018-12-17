@@ -2,10 +2,10 @@ package gov.nysenate.ess.supply.requisition.dao;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.service.unit.LocationService;
 import gov.nysenate.ess.core.util.*;
 import gov.nysenate.ess.supply.requisition.model.*;
 import gov.nysenate.ess.supply.util.date.DateTimeFactory;
@@ -33,7 +33,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
 
     @Autowired private SqlLineItemDao lineItemDao;
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private LocationService locationService;
+    @Autowired private LocationDao locationDao;
     @Autowired private DateTimeFactory dateTimeFactory;
 
     @Override
@@ -83,7 +83,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public synchronized Optional<Requisition> getRequisitionById(int requisitionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         String sql = SqlRequisitionQuery.GET_REQUISITION_BY_ID.getSql(schemaMap());
-        RequisitionRowMapper rowMapper = new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao);
+        RequisitionRowMapper rowMapper = new RequisitionRowMapper(employeeInfoService, locationDao, lineItemDao);
         List<Requisition> results = localNamedJdbc.query(sql, params, rowMapper);
         return results.size() == 1 ? Optional.of(results.get(0)) : Optional.empty();
     }
@@ -103,7 +103,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         String sql = generateSearchQuery(SqlRequisitionQuery.SEARCH_REQUISITIONS_PARTIAL,
                 query.getDateField(), query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
-                "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+                "total_rows", new RequisitionRowMapper(employeeInfoService, locationDao, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
     }
@@ -132,7 +132,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
         String sql = generateSearchQuery(SqlRequisitionQuery.ORDER_HISTORY_PARTIAL, query.getDateField(),
                 query.getOrderBy(), query.getLimitOffset());
         PaginatedRowHandler<Requisition> paginatedRowHandler = new PaginatedRowHandler<>(query.getLimitOffset(),
-                "total_rows", new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+                "total_rows", new RequisitionRowMapper(employeeInfoService, locationDao, lineItemDao));
         localNamedJdbc.query(sql, params, paginatedRowHandler);
         return paginatedRowHandler.getList();
     }
@@ -141,7 +141,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     public ImmutableList<Requisition> getRequisitionHistory(int requisitionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("requisitionId", requisitionId);
         String sql = SqlRequisitionQuery.GET_REQUISITION_HISTORY.getSql(schemaMap(), new OrderBy("modified_date_time", SortOrder.ASC));
-        List<Requisition> requisitions =  localNamedJdbc.query(sql, params, new RequisitionRowMapper(employeeInfoService, locationService, lineItemDao));
+        List<Requisition> requisitions =  localNamedJdbc.query(sql, params, new RequisitionRowMapper(employeeInfoService, locationDao, lineItemDao));
         return ImmutableList.copyOf(requisitions);
     }
 
@@ -287,13 +287,13 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
     private class RequisitionRowMapper extends BaseRowMapper<Requisition> {
 
         private EmployeeInfoService employeeInfoService;
-        private LocationService locationService;
+        private LocationDao locationDao;
         private SqlLineItemDao lineItemDao;
 
-        protected RequisitionRowMapper(EmployeeInfoService employeeInfoService, LocationService locationService,
+        protected RequisitionRowMapper(EmployeeInfoService employeeInfoService, LocationDao locationDao,
                                     SqlLineItemDao lineItemDao) {
             this.employeeInfoService = employeeInfoService;
-            this.locationService = locationService;
+            this.locationDao = locationDao;
             this.lineItemDao = lineItemDao;
         }
 
@@ -303,7 +303,7 @@ public class SqlRequisitionDao extends SqlBaseDao implements RequisitionDao {
                     .withRequisitionId(rs.getInt("requisition_id"))
                     .withRevisionId(rs.getInt("revision_id"))
                     .withCustomer(employeeInfoService.getEmployee(rs.getInt("customer_id")))
-                    .withDestination(locationService.getLocation(LocationId.ofString(rs.getString("destination"))))
+                    .withDestination(locationDao.getLocation(LocationId.ofString(rs.getString("destination"))))
                     .withDeliveryMethod(DeliveryMethod.valueOf(rs.getString("delivery_method")))
                     .withLineItems(lineItemDao.getLineItems(rs.getInt("revision_id")))
                     .withSpecialInstructions(rs.getString("special_instructions"))
