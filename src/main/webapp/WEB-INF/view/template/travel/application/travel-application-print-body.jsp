@@ -3,6 +3,7 @@
     <h2 class="margin-5 bold">NEW YORK STATE SENATE</h2>
     <h3 class="margin-5">Secretary of the Senate</h3>
     <h2 class="margin-5">APPLICATION FOR TRAVEL APPROVAL</h2>
+    <h3 class="margin-5">Prior Approval for all travel must be obtained from the Secretary of the Senate</h3>
   </div>
 
   <div class="margin-20 travel-print-info-container">
