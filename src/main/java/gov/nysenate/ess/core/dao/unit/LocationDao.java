@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,9 +79,9 @@ public class LocationDao implements CachingService<String> {
      * Get active locations that are managed by the given {@code responsibilityHead}.
      * @return A list of matching locations or an empty list if no matches were found.
      */
-    public List<Location> getLocationsByResponsibilityHead(ResponsibilityHead responsibilityHead) {
+    public List<Location> getLocationsByResponsibilityHeads(Collection<ResponsibilityHead> responsibilityHeads) {
         return getLocations(true).stream()
-                .filter(loc -> loc.getResponsibilityHead().equals(responsibilityHead))
+                .filter(loc -> responsibilityHeads.contains(loc.getResponsibilityHead()))
                 .collect(Collectors.toList());
     }
 

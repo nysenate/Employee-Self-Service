@@ -11,7 +11,6 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
-import gov.nysenate.ess.supply.authorization.responsibilityhead.TempResponsibilityHead;
 import gov.nysenate.ess.supply.authorization.responsibilityhead.TempResponsibilityHeadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +51,7 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
             Employee employee = employeeService.getEmployee(empId);
             List<ResponsibilityHead> rchs =  trchService.tempRchForEmp(employee);
             rchs.add(employee.getRespCenter().getHead());
-            locations = workLocationsIn(locationDao.getLocationsByResponsibilityHead(rchs));
+            locations = workLocationsIn(locationDao.getLocationsByResponsibilityHeads(rchs));
         }
         return ListViewResponse.of(locations.stream()
                                             .map(LocationView::new)

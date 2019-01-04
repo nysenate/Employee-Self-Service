@@ -29,7 +29,8 @@ function googlePlaceService() {
         }
 
         function parseCounty(place) {
-            return getTypeName(place, 'administrative_area_level_2');
+            var fullCounty = getTypeName(place, 'administrative_area_level_2');
+            return fullCounty.replace(" County", "")
         }
 
         function parseState(place) {

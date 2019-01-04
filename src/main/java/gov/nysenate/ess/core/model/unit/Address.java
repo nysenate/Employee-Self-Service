@@ -67,7 +67,7 @@ public class Address {
             return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
                     + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
                     + (!city.isEmpty() ? " " + city + "," : "")
-                    + (!county.isEmpty() ? " " + county + "," : "")
+                    + (!county.isEmpty() ? " " + county + " County" + "," : "")
                     + (!state.isEmpty() ? " " + state : "")
                     + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-" + zip4 : "")).trim();
         }
