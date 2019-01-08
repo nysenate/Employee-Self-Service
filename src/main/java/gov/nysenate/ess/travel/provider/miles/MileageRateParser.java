@@ -1,60 +1,47 @@
 package gov.nysenate.ess.travel.provider.miles;
 
 import gov.nysenate.ess.core.util.DateUtils;
+import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+@Component
 public class MileageRateParser {
 
     /**
-     * Parses a Map of {@link }'s from the gsa
-     * Meal and Incidental expenses webpage html.
-     * Webpage available at:
+     * Parses the gsa irs reimbursement rates website to extract the current {@link MileageRate}.
      * https://www.gsa.gov/travel/plan-book/transportation-airfare-rates-pov-rates-etc/privately-owned-vehicle-pov-mileage-reimbursement-rates
      *
-     * @param content
+     * @param content The HTML content of the website.
      * @return
      */
     public MileageRate parseMileageRate(String content) {
+        checkArgument(content != null, "content cannot be null.");
+        checkArgument(!content.isEmpty(), "content cannot be an empty string.");
+
+        // Parse mileage rate.
         Document document = Jsoup.parse(content);
-        Elements rows = document.select("tbody>tr[class=odd]");
-        return getMileageInfoFromTableRows(rows);
-    }
+        Element bodyContentEl = document.getElementById("asto-content");
+        Element tableBodyEl = bodyContentEl.getElementsByTag("tbody").first();
+        Element autoRowEl = tableBodyEl.getElementsByTag("tr").get(1);
+        Element autoRateEl = autoRowEl.getElementsByTag("td").last();
+        String rate = autoRateEl.text().replace("$", "");
 
-    private MileageRate getMileageInfoFromTableRows(Elements rows) {
-        Elements tds = rows.get(0).getElementsByTag("td");
+        // Parse rate's start date.
+        Element startDateEl = autoRowEl.select("td strong").first();
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+        LocalDate startDate = LocalDate.parse(startDateEl.text(), dateFormat);
 
-        Element middle_td_strong = tds.get(1);
-        Element last_td = tds.get(2);
-
-        String mileageRate = format(last_td.text());
-        LocalDate finalStartdate;
-        LocalDate endDate;
-
-        String startDateRaw = middle_td_strong.getElementsByTag("Strong").text();
-        startDateRaw = startDateRaw.replace(",","");
-        String[] splitStartDate = startDateRaw.split(" ");
-
-        finalStartdate = LocalDate.of(
-                Integer.parseInt(splitStartDate[2]),
-                Month.valueOf(splitStartDate[0].toUpperCase()),
-                Integer.parseInt(splitStartDate[1])
-        );
-
-        endDate = DateUtils.THE_FUTURE;
-        return new MileageRate(finalStartdate, endDate, mileageRate);
-
-    }
-
-    /**
-     * Remove the dollar sign from the values.
-     */
-    private String format(String text) {
-        return text.replace("$", "");
+        return new MileageRate(startDate, DateUtils.THE_FUTURE, rate);
     }
 }

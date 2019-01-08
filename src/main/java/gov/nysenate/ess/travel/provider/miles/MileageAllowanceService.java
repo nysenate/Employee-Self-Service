@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
 @Service
 public class MileageAllowanceService {
 
@@ -29,7 +28,8 @@ public class MileageAllowanceService {
     private DistrictAssignmentService districtAssignmentService;
     @Autowired
     private EmployeeInfoService employeeInfoService;
-
+    @Autowired
+    private MileageRateScraper mileageRateScraper;
 
     /**
      * Calculates the driving mileage from one address to another
@@ -53,14 +53,14 @@ public class MileageAllowanceService {
         return irsMileageRateDao.getMileageRate(date).getRate();
     }
 
-    public MileageRate ensureCurrentMileageRate() {
-        MileageRateScraper scraper = new MileageRateScraper();
+    public MileageRate scrapeCurrentMileageRate() {
         try {
-            MileageRate scrapedRate = scraper.scrapeMileRates();
+            MileageRate scrapedRate = mileageRateScraper.scrapeMileRates();
             MileageRate currentRate = irsMileageRateDao.getMileageRate(LocalDate.now());
-            if (!scrapedRate.getStartDate().isEqual(currentRate.getStartDate())) {
+            if (scrapedRate.getStartDate().isAfter(currentRate.getStartDate())) {
                 irsMileageRateDao.updateEndDate(currentRate.getStartDate(), scrapedRate.getStartDate().minusDays(1));
                 irsMileageRateDao.insertIrsRate(scrapedRate);
+                logger.info("IRS mileage rates have been updated.");
             } else {
                 logger.info("The mileage rate did not change. No updates were made to the database");
             }
@@ -74,6 +74,6 @@ public class MileageAllowanceService {
     @Scheduled(cron = "${cache.cron.mileage.rate:0 0 0 * * *}")
     private void scrapeMileageRate() {
         logger.info("Scraping Mileage Rates...");
-        ensureCurrentMileageRate();
+        scrapeCurrentMileageRate();
     }
 }

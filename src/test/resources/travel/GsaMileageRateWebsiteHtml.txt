@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]>
+<html class="ie6" lang="en-us">
+<![endif]-->
+<!--[if IE 7 ]>
+<html class="ie7" lang="en-us">
+<![endif]-->
+<!--[if IE 8 ]>
+<html class="ie8" lang="en-us">
+<![endif]-->
+<!--[if IE 9 ]>
+<html class="ie9" lang="en-us">
+<![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+<html class="" lang="en-us">
+<!--<![endif]-->
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="google-site-verification" content="aQpQL1MEsT30Wi80WMg3pp5fKqUJ7NjSOi9NHajrTC8" />
+    <meta property="og:image" content="https://www.gsa.gov/sites/gsa.gov/templates/resources/images/inner-nav-logo.jpg" />
+<link rel="canonical" href="/travel/plan-book/transportation-airfare-rates-pov-rates/privately-owned-vehicle-pov-mileage-reimbursement-rates" />
+<link rel="shortlink" href="/node/86775" />
+<link rel="shortcut icon" href="https://www.gsa.gov/sites/gsa.gov/templates/resources/favicon.ico" type="image/vnd.microsoft.icon" />
+<script type="text/javascript">dataLayer = [{"entityType":"node","entityBundle":"cmp_page","entityId":"86775","entityLabel":"Privately Owned Vehicle (POV) Mileage Reimbursement Rates","entityLanguage":"und","entityTnid":"0","entityVid":"117381","entityName":"ASTO Migration","entityUid":"53","entityCreated":"1502650846","entityStatus":"1","drupalLanguage":"en","userUid":0}];</script>
+<meta property="og:description" content="The following lists the Privately Owned Vehicle (POV) reimbursement rates for automobiles, motorcycles, and airplanes." />
+<meta property="og:title" content="Privately Owned Vehicle (POV) Mileage Reimbursement Rates" />
+<meta name="program" content="MTT" />
+
+    <style type="text/css" media="all">
+@import url("https://www.gsa.gov/modules/system/system.base.css?pkq413");
+@import url("https://www.gsa.gov/modules/system/system.menus.css?pkq413");
+@import url("https://www.gsa.gov/modules/system/system.messages.css?pkq413");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.gsa.gov/modules/comment/comment.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/modules/contrib/date/date_api/date.css?pkq413");
+@import url("https://www.gsa.gov/modules/field/theme/field.css?pkq413");
+@import url("https://www.gsa.gov/modules/node/node.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/modules/patched/relation_add/relation_add.css?pkq413");
+@import url("https://www.gsa.gov/modules/search/search.css?pkq413");
+@import url("https://www.gsa.gov/modules/user/user.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/modules/contrib/views/css/views.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/modules/patched/ckeditor/css/ckeditor.css?pkq413");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.gsa.gov/sites/all/modules/contrib/ctools/css/ctools.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/reactions/css/chatter.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/reactions/css/ewm-visibility.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/reactions/css/global.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/reactions/css/jquery.dataTables.min.css?pkq413");
+@import url("https://www.gsa.gov/sites/all/reactions/css/text-asset-consistency.css?pkq413");
+@import url("https://www.gsa.gov/sites/gsa.gov/reactions/css/bootstrap_float_fixes.css?pkq413");
+@import url("https://www.gsa.gov/sites/gsa.gov/reactions/css/hide-tabs.css?pkq413");
+@import url("https://www.gsa.gov/sites/gsa.gov/reactions/css/responsive_USmap_fixes.css?pkq413");
+</style>
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" href="https://www.gsa.gov/themes/bartik/css/ie.css?pkq413" media="all" />
+<![endif]-->
+
+<!--[if IE 6]>
+<link type="text/css" rel="stylesheet" href="https://www.gsa.gov/themes/bartik/css/ie6.css?pkq413" media="all" />
+<![endif]-->
+
+    <script type="text/javascript">
+<!--//--><![CDATA[//><!--
+
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/all/modules/contrib/jquery_update/replace/jquery/2.1/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript" src="https://www.gsa.gov/misc/jquery.once.js?v=1.2"></script>
+<script type="text/javascript" src="https://www.gsa.gov/misc/drupal.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/all/libraries/data-layer-helper/data-layer-helper.js?pkq413"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+
+                /* DevNote: This script is stored in JavaScript-CssJsQueryString.php */
+                css_js_query_string = 'pkq413';
+
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery(document).ready( function () {
+            jQuery('a[href^="/admin/config/emergencybanner"]').hide();
+
+        });
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+site_structure_nav_changed = 1544556416
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/all/reactions/js/dataTables.min.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/all/reactions/js/elevator.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/all/reactions/js/global.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/reactions/js/IE-ForceImageRender.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/reactions/js/hashLinkOffsetFixer.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/reactions/js/juicebox.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/reactions/js/mailtofix.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/reactions/js/ncshare.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/reactions/js/validator.min.js?pkq413"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+
+                /* DevNote; This script comes from AjaxCache-Expry.php */
+                function clearLocalStorageCacheIfNessesary() {
+
+                    var css_js_query_string = 'pkq413';
+
+                    // Bail if this browser dosnt support local-storage
+                    if ( typeof localStorage == 'undefined' ) return;
+
+                    // Bail if there is no previously seen css_js_query_string
+                    var last_css_js_query_string = localStorage.getItem('last_css_js_query_string');
+                    localStorage.setItem('last_css_js_query_string', css_js_query_string);
+                    if ( last_css_js_query_string == null ) return;
+
+                    // If the css_js_query_string is the same as last time, no need to flush the cache
+                    if ( last_css_js_query_string == css_js_query_string ) return;
+
+                    // If we have not returned by this line, then it is time to flush the local-storage cache
+                    localStorage.removeItem('featuredblocks');
+                    localStorage.removeItem('gsanavigation');
+                    console.log('Since the css_js_query_string, the local-storage cache has been cleared');
+
+                };
+
+                clearLocalStorageCacheIfNessesary();
+
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/all/modules/contrib/datalayer/datalayer.js?pkq413"></script>
+<script type="text/javascript" src="https://www.gsa.gov/sites/gsa.gov/modules/custom/gsa_menu/gsa_menu.js?pkq413"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+
+                /* DevNote; This wrapping comes from GoogleTagManager-DelayLoadOfGTM.php */
+                jQuery(document).ready( function () {
+
+                    (function(w,d,s,l,i){
+
+  w[l]=w[l]||[];
+  w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+  var f=d.getElementsByTagName(s)[0];
+  var j=d.createElement(s);
+  var dl=l!='dataLayer'?'&l='+l:'';
+  j.type='text/javascript';
+  j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;
+  j.async=true;
+  f.parentNode.insertBefore(j,f);
+
+})(window,document,'script','dataLayer','GTM-M5HQ8X');
+                });
+
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"bartik","theme_token":"92Q-7pwzAJtHVP1bMl0oEr06jkkbkidHdJODFwTbCEs","js":{"0":1,"sites\/all\/modules\/contrib\/jquery_update\/replace\/jquery\/2.1\/jquery.min.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/libraries\/data-layer-helper\/data-layer-helper.js":1,"1":1,"2":1,"3":1,"sites\/all\/reactions\/js\/dataTables.min.js":1,"sites\/all\/reactions\/js\/elevator.js":1,"sites\/all\/reactions\/js\/global.js":1,"sites\/gsa.gov\/reactions\/js\/IE-ForceImageRender.js":1,"sites\/gsa.gov\/reactions\/js\/hashLinkOffsetFixer.js":1,"sites\/gsa.gov\/reactions\/js\/juicebox.js":1,"sites\/gsa.gov\/reactions\/js\/mailtofix.js":1,"sites\/gsa.gov\/reactions\/js\/ncshare.js":1,"sites\/gsa.gov\/reactions\/js\/validator.min.js":1,"4":1,"sites\/all\/modules\/contrib\/datalayer\/datalayer.js":1,"sites\/gsa.gov\/modules\/custom\/gsa_menu\/gsa_menu.js":1,"5":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/comment\/comment.css":1,"sites\/all\/modules\/contrib\/date\/date_api\/date.css":1,"modules\/field\/theme\/field.css":1,"sites\/all\/modules\/custom\/hooks_reaction\/feeds_queue.css":1,"modules\/node\/node.css":1,"sites\/all\/modules\/patched\/relation_add\/relation_add.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/contrib\/views\/css\/views.css":1,"sites\/all\/modules\/patched\/ckeditor\/css\/ckeditor.css":1,"sites\/all\/modules\/contrib\/ctools\/css\/ctools.css":1,"sites\/all\/reactions\/css\/chatter.css":1,"sites\/all\/reactions\/css\/ewm-visibility.css":1,"sites\/all\/reactions\/css\/global.css":1,"sites\/all\/reactions\/css\/jquery.dataTables.min.css":1,"sites\/all\/reactions\/css\/text-asset-consistency.css":1,"sites\/gsa.gov\/reactions\/css\/bootstrap_float_fixes.css":1,"sites\/gsa.gov\/reactions\/css\/hide-tabs.css":1,"sites\/gsa.gov\/reactions\/css\/responsive_USmap_fixes.css":1,"themes\/bartik\/css\/ie.css":1,"themes\/bartik\/css\/ie6.css":1}},"currentPath":"node\/86775","currentPathIsAdmin":false,"dataLayer":{"languages":{"en":{"language":"en","name":"English","native":"English","direction":0,"enabled":1,"plurals":0,"formula":"","domain":"","prefix":"","weight":0,"javascript":""}}}});
+//--><!]]>
+</script>
+
+    <script>$=jQuery;</script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/sites/gsa.gov/templates/resources/images/favicon.ico" />
+    <meta property="og:url" content="https://www.gsa.gov/travel/plan-book/transportation-airfare-rates-pov-rates/privately-owned-vehicle-pov-mileage-reimbursement-rates" />
+    <meta name="description" content="The following lists the Privately Owned Vehicle (POV) reimbursement rates for automobiles, motorcycles, and airplanes.">
+    <meta name="last_modified" content="2018-08-22">
+
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/gsa-theme-styles.css" type="text/css" />
+    <!-- Theme specific css files: defaultTheme -->
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/gsa-default-styles.css" type="text/css" />
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/directives.css?pkq413" type="text/css" />
+    <!-- SEPARATED TYLESHEETS TO EVENTUALLY BREAK OUT BY THEME -->
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/gsa-events.css" type="text/css" />
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/gsa-popup-styles.css" type="text/css" />
+    <!-- FANCYBOX -->
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/fancybox/jquery.fancybox.min.css" type="text/css" />
+
+            <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/asto_1.1/all.css?pkq413" type="text/css"/>
+
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/css/asto_1.1/print.css?pkq413" type="text/css" media="print" />
+    <link rel="stylesheet" href="/sites/gsa.gov/templates/resources/blueimp-gallery.min.css">
+
+    <script type="text/javascript" src="//script.crazyegg.com/pages/scripts/0080/3716.js" async="async"></script>
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/ddaccordion_content.js"></script>
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/helper.js?pkq413"></script>
+
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/gsaFeedback.js?pkq413"></script>
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/need-more-data-plugin.js?pkq413"></script>
+
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/custom.js?pkq413"></script>
+    <script type="text/javascript" src="/sites/gsa.gov/templates/resources/js/emergencyResponse.js?pkq413"></script>
+
+    <script type="text/javascript">
+
+        var uri = '/portal';
+
+        function getRFBChunk(infoId, divId) {
+            var url =  uri + "/rfbchunk/" + infoId;
+            document.getElementById(divId).innerHTML='<img src="/sites/gsa.gov/templates/resources/images/loading.gif" border="0"/>';
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function(msg){
+                    document.getElementById(divId).innerHTML= msg;
+                    $('#rfb').slideShow();
+                }
+            });
+        }
+        function getRss(rssFeedUrl, divId, rssStyle, count) {
+            var url =  uri + "/rss/items?rssFeedUrl=" + rssFeedUrl
+                + "&rssItemCount=" + count + "&rssStyle=" + rssStyle;
+            setAjaxBlock(url, divId);
+        }
+
+        // Pass the actionUrl starting with / Example: /portal/getAcronyms
+        function getActionResult(actionUrl, divId) {
+            var url =  uri + actionUrl;
+            //alert(url);
+            setAjaxBlock(url, divId);
+        }
+
+        function getAcronymBySearch(actionUrl,divId){
+            //alert("Inside the acronym Method..");
+            var acronymName = document.getElementById('acronymName').value;
+            //alert(acronymName)
+            if(acronymName==""){
+                acronymName="";
+            }
+            var url =  uri + actionUrl+"?acronymName="+acronymName;
+            //alert(url);
+            setAjaxDialogBlock(url, divId);
+        }
+
+        function setAjaxBlock(url, divId) {
+            document.getElementById(divId).innerHTML='<img src="/sites/gsa.gov/templates/resources/images/loading.gif" border="0"/>';
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function(msg){
+                    document.getElementById(divId).innerHTML= msg;
+                }
+            });
+        }
+
+        function setAjaxDialogBlock(url, divId) {
+            document.getElementById(divId).innerHTML='<img src="/sites/gsa.gov/templates/resources/images/loading.gif" border="0"/>';
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function(msg){
+                    document.getElementById(divId).innerHTML= msg;
+                    //$(divId).dialog({height: 200,modal: true});
+
+                    //alert("After msg="+msg);
+                }
+
+            });
+        }
+
+    </script>
+
+    <script src="/sites/gsa.gov/templates/resources/fancybox/jquery.fancybox.min.js" type="text/javascript"></script>
+    <script src="/sites/gsa.gov/templates/resources/js/infiniteCarousel.js" type="text/javascript"></script>
+    <script src="/sites/gsa.gov/templates/resources/js/rss-plugin.js" type="text/javascript"></script>
+    <!-- ASTO 1.01 -->
+        <script src="/sites/gsa.gov/templates/resources/js/asto_1.1/respond.js"></script>
+
+    <script src="/sites/gsa.gov/templates/resources/js/asto_1.1/handlebars-v4.0.2.js"></script>
+    <script src="/sites/gsa.gov/templates/resources/js/asto_1.1/snap.svg-min.js"></script>
+    <script src="/sites/gsa.gov/templates/resources/js/asto_1.1/snap_plugins.js"></script>
+    <script src="/sites/gsa.gov/templates/resources/js/asto_1.1/jquery.hashchange.v1.3.min.js"></script>
+
+    <script src="/sites/gsa.gov/templates/resources/js/asto_1.1/custom.js?pkq413"></script>
+
+            <script src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=GSA&subagency=OGP&sp=query&enhlink=true&yt=false"></script>
+
+        <title>
+      Privately Owned Vehicle (POV) Mileage Reimbursement Rates | GSA    </title>
+    <meta property="twitter:account_id" content="61583656" />
+
+        <script type="text/javascript">
+        jQuery(document).ready(function($){
+            $('ul#main-nav > li').each(function(){
+                if ($(this).children('a').html().trim() == 'Travel')
+                   $(this).addClass('active');
+                   //$(this).css({'background-color':'inherit'});
+            });
+        });
+    </script>
+</head>
+<body>
+<!-- Emergency Banner -->
+<!--googleoff: all-->
+<div style="display:none;visibility:hidden">
+    <noscript>
+        <iframe src="//www.googletagmanager.com/ns.html?id=GTM-M5HQ8X" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+</div>
+
+<!--[if lte IE 8]>
+<script>
+  alert("You are using an outdated version of Internet Explorer and this website will not appear correctly.  For security reasons you should upgrade your browser. Please go to Windows Updates and install the latest version.");
+</script>
+<![endif]-->
+
+<script id="main-nav-template" type="text/x-handlebars-template">
+    {{#each navigation}}
+    <li><a href="{{ link }}">{{ text }}</a> {{#if children}}
+        <ul class="dropdown-menu">
+            {{#each children}}
+            <li><a href="{{ link }}">{{ text }}</a> {{#if children}}
+                <ul class="dropdown-menu">
+                    {{#each children}}
+                    <li><a href="{{ link }}">{{ text }}</a></li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+            </li>
+            {{/each}}
+            <span class="divider-vertical"></span>
+            <div class="featured-navigation-content" id="featured-nav-{{featured.ID}}">
+            </div>
+        </ul>
+        {{/if}}
+    </li>
+    {{/each}}
+</script>
+<script id="mobile-nav-template" type="text/x-handlebars-template">
+    {{#each navigation}}
+    <li><a class="toggle-submenu" href="{{ link }}">{{ text }}<span class="icon-arrow-down"></span></a> {{#if children}}
+        <ul>
+            {{#each children}}
+            <li><a class="toggle-second-level-submenu" href="{{ link }}">{{ text }}{{#if children}}<span class="icon-arrow-down"></span>{{/if}}</a> {{#if children}}
+                <ul>
+                    {{#each children}}
+                    <li><a href="{{ link }}">{{ text }}</a></li>
+                    {{/each}}
+                </ul>
+                {{/if}}
+            </li>
+            {{/each}}
+        </ul>
+        {{/if}}
+    </li>
+    {{/each}}
+</script>
+
+<!-- mobile header -->
+<header id="mobile-header">
+    <div id="mobile-port">
+        <div class="container no-pad-container position-relative">
+          <figure id="mobile-logo">
+            <a title="GSA Home" href="/"><img src="/sites/gsa.gov/templates/resources/images/nav-logo.png" class="img-responsive" alt="GSA Logo"></a>
+          </figure>
+          <button id="hamburger-toggle" class="cmn-toggle-switch cmn-toggle-switch__htx toggled toggled-off">
+            <span>toggle menu</span>
+          </button>
+
+
+                      <a data-fancybox title="Perdiem Lookup" data-filter="#content-wrapper" data-type="ajax" data-src="/node/90883" id="perdiem-button" class="pull-right" href="#per-diem">
+              <span class="sr-only">Per Diem Lookup</span>
+            </a>
+
+          <a title="Search" id="search-toggle" href="#search-gsa" aria-label="Search GSA on your mobile device">
+            <span class="sr-only">Mobile Search GSA.gov</span>
+          </a>
+          <form accept-charset="UTF-8" action="https://search.gsa.gov/search" id="mobile-search" method="get">
+            <input name="affiliate" type="hidden" value="gsa.gov">
+            <input name="utf8" type="hidden" value="✓">
+            <div class="form-group">
+              <label class="sr-only" for="mobile_query">Enter Search Term(s):</label>
+              <input autocomplete="off" class="form-control usagov-search-autocomplete ui-autocomplete-input" id="mobile_query" name="query" type="text" role="textbox" aria-autocomplete="list" aria-haspopup="true" placeholder="Search GSA.gov" required="required">
+              <button id="submit-search" type="submit"><div class="sr-only">Search</div><span class="icon-arrow-right"></span></button>
+            </div>
+          </form>
+          <nav id="slideout-menu">
+            <ul>
+              <!-- TEMPLATE FOR MOBILE NAV -->
+            </ul>
+          </nav>
+        </div>
+    </div>
+</header>
+
+<div class="visible-print">
+    <img class="img-responsive" src="/sites/gsa.gov/templates/resources/images/logo-with-text.png" alt="GSA logo for print" title="U.S. General Services Administration">
+</div>
+<!-- /mobile header -->
+<div id="inner-main-navigation" class="navbar-fixed-top">
+
+    <div id="skip"><a href="#page-content">Skip to Main Content</a></div>
+
+  <!-- Ticket gsa_gov-2619 -->
+    <div id="gsa_header">
+      <div class="container no-pad-container">
+        <ul class="list-unstyled list-inline pull-right">
+          <li>
+            <a title="Search" id="main-nav-search-button" aria-label="Search GSA on Desktop" href="#search-gsa">
+                <span>Search GSA.gov</span>
+            </a>
+          </li>
+          <li>
+                        <a data-fancybox title="Perdiem Lookup" data-filter="#content-wrapper" data-type="ajax" data-src="/node/90883" id="perdiem-button" href="#per-diem">
+              <span>Per Diem Lookup</span>
+            </a>
+                      </li>
+        </ul>
+      </div>
+    </div>
+    <nav class="navbar navbar-default container" role="navigation">
+        <div class="navbar-header">
+            <a title="GSA Home" class="navbar-brand" href="/"><img class="img-responsive" src="/sites/gsa.gov/templates/resources/images/nav-logo.png" alt="GSA Logo" title="U.S. General Services Administration"></a>
+        </div>
+        <!-- search form -->
+        <form class="main-nav-search-field" accept-charset="UTF-8" action="https://search.gsa.gov/search" id="search_form" method="get">
+            <div class="search-input form-group">
+                <input name="utf8" type="hidden" value="?">
+                <input id="affiliate" name="affiliate" type="hidden" value="gsa.gov">
+                <div style="position:relative">
+                    <label for="query" class="sr-only">Enter Search Term(s):</label>
+                    <input autocomplete="off" class="usagov-search-autocomplete ui-autocomplete-input fsrVisible form-control" id="query" name="query" type="text" role="textbox" aria-autocomplete="list" aria-haspopup="true" placeholder="Search GSA.gov" required="required">
+                    <button type="submit" id="submit-gsa-search" name="commit" class="icon-arrow-right"><div class="sr-only">Search</div></button>
+                    <a class="position-absolute" title="cancel search" id="cancel-gsa-search" href="javascript:;"><div class="sr-only">Cancel Search</div>
+                      <svg viewBox="0 0 32 32"><path d="M10,10 L22,22 M22,10 L10,22"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </form>
+        <ul class="nav navbar-nav" id="main-nav">
+          <!-- TEMPLATE OF NAV GOES HERE -->
+        </ul>
+    </nav>
+</div>
+
+    <nav id="breadcrumbs">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Home</a><span>></span><a href="/travel-resources">Travel</a><span>></span><a href="/travel/plan-and-book">Plan &amp; Book</a><span>></span><a href="/travel/plan-book/transportation-airfare-rates-pov-rates-etc">Transportation (Airfare Rates, POV Rates</a><span>></span>Privately Owned Vehicle (POV) Rates            </div>
+        </div>
+    </nav>
+
+<!-- CHECK IF THE LAYOUT IS homePage or a TAB PAGE or a LANDING PAGE -->
+<!-- ELSE the layout is not the homepage -->
+<!-- Ommit page-content and content-wrapper for perdiem -->
+<div class="portal container" id="page-content" role="main" tabindex="-1">
+    <div id="content-wrapper" class="row">
+
+
+    <div class="col-sm-3" id="left-sidebar">
+        <div class="category-nav">
+            <div class="category-nav-name">
+                Plan & Book                <span class='icon-arrow-down'></span><span class='icon-arrow-up'></span>
+            </div>
+            <div class="category-nav-wrapper">
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/node/79739">
+                            Overview                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/travel/plan-book/per-diem-rates">
+                            Per Diem Rates                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/travel/plan-book/transportation-airfare-rates-pov-rates-etc">
+                            Transportation (Airfare Rates, POV Rates                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-second-level active-nav-item'>
+                        <span class="icon-arrow-right"></span>                        <a href="/travel/plan-book/transportation-airfare-rates-pov-rates/privately-owned-vehicle-pov-mileage-reimbursement-rates">
+                            Privately Owned Vehicle (POV) Rates                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-third-level'>
+                                                <a href="/travel/plan-book/transportation-airfare-rates-pov-rates/privately-owned-vehicle-pov-rates/pov-mileage-rates-archived">
+                             POV Mileage Rates (Archived)                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-second-level'>
+                                                <a href="/travel/plan-book/transportation-airfare-rates-pov-rates/city-pair-program-cpp">
+                            Airfare Rates - City Pairs Programs                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-second-level'>
+                                                <a href="/travel/plan-book/transportation-airfare-rates-pov-rates/rail-travel">
+                            Rail Travel                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-second-level'>
+                                                <a href="/travel/plan-book/transportation-airfare-rates-pov-rates/car-sharing">
+                            Car Sharing                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/travel/plan-book/gsa-lodging">
+                            GSA Lodging                         </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/travel/plan-book/for-conference-meeting-planning">
+                            Conference and Meeting Planning                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/travel/plan-book/state-tax-exemption-information-for-government-charge-cards">
+                            State Tax Rates & Exemption Info                        </a>
+                    </div>
+
+                                    <div class='category-nav-item  category-nav-first-level'>
+                                                <a href="/travel/plan-book/travel-charge-card">
+                            Travel Charge Card                        </a>
+                    </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+<div class="col-sm-9">
+    <div id="asto-content" class="">
+
+
+        <!-- CONTENT: 86775 -->
+        <!--googleon: all-->
+
+        <div class="row">
+            <div class="col-sm-9 text-asset-container" id="main-column">
+                                    <h1>Privately Owned Vehicle (POV) Mileage Reimbursement Rates</h1>
+
+                <?xml encoding="UTF-8"><p><script type="text/javascript">
+    $(function(){
+      $('body').gsaFeedback({
+        'tabText': 'Rate this Page',
+        'headerText': 'Was this page helpful?',
+        'queryText' : '',
+        'queryType' : 'oneFive',
+        'oneText' : 'Not at all helpful',
+        'fiveText' : 'Very helpful',
+        'commentText' : 'How can this page be improved? (optional)',
+        'thankYouText' : 'Thank you!',
+        'formAction' : 'https://docs.google.com/a/gsa.gov/forms/d/e/1FAIpQLSeLoaoybGAwW1MqeIpruUBOpkfyDnt280c4sV68eC0FFPm_0w/formResponse'
+      });
+    });
+  </script></p><div class="boxed-text tan"><em>GSA has adjusted all POV mileage reimbursement rates effective January 1, 2019.</em></div><table class="stripedTable responsive" width="100%">
+	<thead>
+		<tr>
+			<th scope="col">Modes of Transportation</th>
+			<th scope="col">Effective/Applicability Date</th>
+			<th scope="col">Rate per mile</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Airplane*</td>
+			<td><strong>January 1, 2019</strong></td>
+			<td>$1.26</td>
+		</tr>
+		<tr>
+			<td>If use of privately owned automobile is authorized or if no Government-furnished automobile is available</td>
+			<td><strong>January 1, 2019</strong></td>
+			<td>$0.58</td>
+		</tr>
+		<tr>
+			<td>If Government-furnished automobile is available</td>
+			<td><strong>January 1, 2019</strong></td>
+			<td>$0.20</td>
+		</tr>
+		<tr>
+			<td>Motorcycle</td>
+			<td><strong>January 1, 2019</strong></td>
+			<td>$0.55</td>
+		</tr>
+	</tbody>
+</table><p><br>
+ </p><table class="stripedTable responsive" width="100%">
+	<thead>
+		<tr>
+			<th scope="col">Relocation</th>
+			<th scope="col"> </th>
+			<th scope="col"> </th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Standard mileage rates for moving purposes</td>
+			<td><strong>January 1, 2019</strong></td>
+			<td>$0.20</td>
+		</tr>
+	</tbody>
+</table><p><br>
+* Airplane nautical miles (NMs) should be converted into statute miles (SMs) or regular miles when submitting a voucher using the formula (1 NM equals 1.15077945 SMs). </p><p>For calculating the mileage difference between airports, please visit the U.S. Department of Transportation's <a href="http://www.transtats.bts.gov/Distance.asp?pn=0">Inter-Airport Distance </a>web site.</p><p>QUESTIONS:<br>
+For all travel policy questions, e-mail <a href="mailto:travelpolicy@gsa.gov">travelpolicy@gsa.gov</a></p><p>The shortcut to this page is <a href="http://www.gsa.gov/mileage">www.gsa.gov/mileage</a>.</p>
+
+                </div>            <!-- end col-sm-9 -->
+
+            <div class="col-sm-3" id="right-sidebar" >
+
+
+                                            <div class="infoblock">
+                                                            <h5>
+
+
+                                    questions
+
+                                </h5>
+
+                            <?xml encoding="UTF-8"><p>For all travel policy questions, email <a href="mailto:travelpolicy@gsa.gov">travelpolicy@gsa.gov</a>.</p>
+                        </div>
+
+
+                </div>            <!-- col-sm-3 -->
+
+            </div>
+        <!--googleoff: all-->
+    </div>
+    <input type="hidden" name="blnNewBlock1" id="blnNewBlock1"/>
+    <script type="text/javascript">
+        var currentPage = window.location.href;
+        var addthis_share = {
+            url: currentPage,
+            templates: {
+                twitter: '{{title}} {{url}} via @USGSA'
+            }
+        }
+        var addthis_config = {
+            services_compact:'facebook, twitter, favorites, email'
+        }
+
+        jQuery(document).ready(function() {
+            var removeClass = false;
+
+            if ( (jQuery('.table').length > 0 && (jQuery('.table').hasClass('dataTable') || jQuery('.table').hasClass('plainTable')))){
+
+                removeClass = true;
+
+                //jQuery('.table').addClass('stripe');
+                jQuery('.table').removeClass('table');
+            }
+
+            if (jQuery("div.feature-block").length > 0 && jQuery(".feature-block").css("background-image").length > 0) {
+                jQuery('div.feature-block > h1').remove();
+                if (jQuery('div.feature-block:has(div.no-pad-container)')){
+                    jQuery('div.feature-block > div.no-pad-container > h1').remove();
+                    jQuery('h1').appendTo(jQuery('div.feature-block > div.no-pad-container'));
+                }
+                else {
+                    // move h1 inside the block
+                    jQuery('h1').appendTo(jQuery('div.feature-block'));
+                }
+                removeClass = true;
+            }
+
+            if (jQuery('h1').text() == "Explore by Timeline" || jQuery('.timeline-year').length > 0){
+                removeClass = true;
+            }
+
+            if (removeClass){
+
+                jQuery('.text-asset-container').removeClass('text-asset-container'); // it is breaking pages for these kind of pages
+            }
+            jQuery('.stripedTable').addClass('stripe');
+
+        });
+
+    </script>
+    <div class="clearfix"></div>
+    <div class="addthis_toolbox addthis_default_style clearfix">
+        <a id="addthis-print" class="at300b print-page" href="#" title="Print" style="display: block; float: left; padding-right: 10px; overflow: hidden;">
+            <span class="icon-Print">
+                <span class="path1" style="background-image: url('/sites/gsa.gov/templates/resources/images/print.png'); width: 29px; height: 30px; display: inline-block; color: rgba(0,0,0,0);">print</span>
+            </span>
+        </a>
+        <a id="ncshare" href="#" onfocus="jQuery(this).trigger('mouseover');">
+            <img alt="Share Icon" src="/sites/gsa.gov/templates/resources/images/share.png" border="0" />
+        </a>
+        <script>var imagePath = "/sites/gsa.gov/templates/resources/images/";</script>
+        <small style="color:#5b616b;" class="pull-right">
+            Last Reviewed 2019-01-08        </small>
+    </div>
+</div>
+
+            </div>
+</div>
+
+<div class="clearfix"></div>
+<script id="footer-links-template" type="text/x-handlebars-template">
+    {{#each footer}}
+    <ul class="list-unstyled col-sm-2">
+        <h4><a href="{{ link }}">{{ header }}</a></h4> {{#if children}} {{#each children}}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+        {{/each}} {{/if}}
+    </ul>
+    {{/each}}
+</script>
+<footer id="footer">
+    <div class="container">
+        <div class="row" id="footer-links">
+
+                <div class="col-sm-4 col-md-2">
+
+                                                    <h4><a href="/">Home</a></h4>
+
+                        <h4>
+                                                            <a href="/resources-for">
+                                    Resources for …                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="/resources-for/how-gsa-helps-citizens-and-consumers">
+                                        Citizens & Consumers                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/resources-for/resources-for-americans-with-disabilities">
+                                        Americans with Disabilities                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/resources-for/for-federal-employees">
+                                        Federal Employees                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/real-estate/real-estate-services/for-federal-customers-overview">
+                                        Federal Agencies                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/reference/for-gsa-employees">
+                                        GSA Employees                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/resources-for/native-american-tribes">
+                                        Native American Tribes                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/resources-for/programs-for-state-and-local-governments">
+                                        State and Local Governments                                    </a>
+                                </li>
+                                                    </ul>
+
+
+                </div>
+
+
+                <div class="col-sm-4 col-md-2">
+
+
+                        <h4>
+                                                            <a href="/governmentwide-initiatives">
+                                    Governmentwide Initiatives                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="/technology/government-it-initiatives/digital-strategy">
+                                        Digital Strategy                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/technology/government-it-initiatives/cybersecurity">
+                                        Cybersecurity                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/technology/government-it-initiatives/fedramp">
+                                        FedRAMP                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/data">
+                                        GSA Open Data                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/icam">
+                                        Identity, Credentials, and Access Management                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/governmentwide-initiatives/gsas-open-government-initiatives">
+                                        Open Government                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/governmentwide-initiatives/plain-language">
+                                        Plain Language                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/governmentwide-initiatives/presidential-transition">
+                                        Presidential Transition                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/sustainability">
+                                        Sustainability                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/governmentwide-initiatives/telework">
+                                        Telework                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/totalworkplace">
+                                        Total Workplace                                    </a>
+                                </li>
+                                                    </ul>
+
+
+                </div>
+
+
+                <div class="col-sm-4 col-md-2">
+
+
+                        <h4>
+                                                            <a href="/gsa-customer-support">
+                                    Customer Support                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="/about-us/contact-us">
+                                        Contact Us                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/about-us/organization/federal-acquisition-service/customer-and-stakeholder-engagement/customer-service-directors">
+                                        Customer Service Directors                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/tools/supply-procurement-etools/vendor-support-center">
+                                        Vendor Support Center                                    </a>
+                                </li>
+                                                    </ul>
+
+
+
+                        <h4>
+                                                            <a href="/organization">
+                                    Organization                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="/leadershipdirectory">
+                                        Leadership Directory                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/about-us/organization/civilian-board-of-contract-appeals-overview">
+                                        Board of Contract Appeals                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.gsaig.gov/">
+                                        Office of Inspector General                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/staffDirectory/searchStaffDirectory">
+                                        Staff Directory                                    </a>
+                                </li>
+                                                    </ul>
+
+
+                </div>
+
+
+                <div class="col-sm-4 col-md-2">
+
+
+                        <h4>
+                                                            <a href="/reference-overview">
+                                    Reference                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="/reference/reports/budget-performance/annual-reports">
+                                        Agency Financial Report                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/reference/reports/budget-performance">
+                                        Budget and Performance                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/about-us/organization/federal-acquisition-service/customer-and-stakeholder-engagement/centralized-mailing-list-service-cmls">
+                                        Catalogs                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/directives-library">
+                                        Orders & Directives                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/reference/forms">
+                                        Forms                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/reference/freedom-of-information-act-foia">
+                                        Freedom of Information Act Requests                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/about-us/organization/office-of-civil-rights/notification-and-federal-employee-antidiscrimination-and-retaliation-act-of-2002">
+                                        No FEAR Act                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/reference/gsa-plans-and-reports">
+                                        Reports                                    </a>
+                                </li>
+                                                    </ul>
+
+
+                </div>
+
+
+                <div class="col-sm-4 col-md-2">
+
+
+                        <h4>
+                                                            <a href="/using-the-gsagov-website">
+                                    Website Information                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="/website-information/az-index">
+                                        A-Z Index                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/website-information/accessibility-aids">
+                                        Accessibility                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/website-information/linking-policy">
+                                        Linking                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/website-information/privacy-and-security-notice">
+                                        Privacy and Security                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/portal/site/map/">
+                                        Sitemap                                    </a>
+                                </li>
+                                                    </ul>
+
+
+                </div>
+
+
+                <div class="col-sm-4 col-md-2">
+
+
+                        <h4>
+                                                            Also of Interest                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="http://www.data.gov/">
+                                        Data.gov                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.usa.gov/">
+                                        USA.gov                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="https://www.whitehouse.gov/">
+                                        Whitehouse.gov                                    </a>
+                                </li>
+                                                    </ul>
+
+
+
+                        <h4>
+                                                            <a href="/etools-overview">
+                                    Tools                                </a>
+                                                    </h4>
+
+                        <ul class="list-unstyled">
+                                                            <li>
+                                    <a href="https://corporateapps.gsa.gov/hr-links/">
+                                        HR Links                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/tools/supply-procurement-etools/ebuy">
+                                        eBuy                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="http://www.gsaelibrary.gsa.gov/ElibMain/home.do">
+                                        eLibrary                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/tools/supply-procurement-etools/gsa-advantage">
+                                        GSA Advantage                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/gsaauctions">
+                                        GSA Auctions                                    </a>
+                                </li>
+                                                            <li>
+                                    <a href="/etools-overview">
+                                        All GSA Web Tools                                    </a>
+                                </li>
+                                                    </ul>
+
+
+                </div>
+
+                    </div>
+    </div>
+</footer>
+<div id="footer-bar">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-7">
+                <h3 title="GSA Logo">U.S. General Services Administration</h3>
+            </div>
+            <div class="col-sm-5 social-links">
+                <ul class="list-unstyled list-inline">
+                    <li><a class="gsa-icon-Facebook" href="https://www.facebook.com/gsa" title="Facebook" target="_blank"><div class="sr-only">Facebook</div></a></li>
+                    <li><a class="gsa-icon-Twitter" href="https://twitter.com/usgsa" title="Twitter" target="_blank"><div class="sr-only">Twitter</div></a></li>
+                    <li><a class="gsa-icon-YouTube" href="https://www.youtube.com/usgsa" title="Youtube" target="_blank"><div class="sr-only">Youtube</div></a></li>
+                    <li><a class="gsa-icon-Instagram" href="https://www.instagram.com/usgsa" title="Instagram" target="_blank"><div class="sr-only">Instagram</div></a></li>
+                    <li><a class="gsa-icon-Blog" href="/blog" title="Blog" target="_blank"><div class="sr-only">Blog</div></a></li>
+                    <li><a class="gsa-icon-email" data-fancybox data-type="iframe" href="javascript:;" data-src="https://public.govdelivery.com/accounts/USGSA/subscriber/new" title="Email" target="_blank"><div class="sr-only">Email</div></a></li>
+                </ul>
+                <h5>Join the Conversation</h5>
+              <span class="pull-right">
+                <img alt="American Flag" src="/sites/gsa.gov/templates/resources/images/icn-us-flag-21px.png" class="display-inline"/><small>&nbsp;Official website of the U.S. Government</small>
+              </span>
+            </div>
+        </div>
+      <div id="backtotop" class="hidden-print pos-abs pos-right">
+        <a href="javascript:;" class="elevator-button" title="Back to Top"><span>Top</span></a>
+      </div>
+    </div>
+</div>
+<!-- Script For Navigations -->
+<script src="/sites/gsa.gov/templates/resources/js/jquery.smartmenus.min.js"></script>
+<script src="/sites/gsa.gov/templates/resources/js/jquery.smartmenus.bootstrap.min.js"></script>
+<!-- end -->
+<!--  Removed foresee code task #00023720 -->
+<!-- Theme specific script files -->
+<!-- End: Theme specific script files -->
+<!-- Layout specific script files -->
+<!-- End: Layout specific script files -->
+<!--  @buildlabel@ -->
+<!-- app : ~stsgsa1app~~8021 -->
+<!--googleon: all-->
+<div class="hidden_text">
+
+</div>
+<!--googleoff: all-->
+<script type="text/javascript">
+    //<![CDATA[
+
+    jQuery(document).ready( function () {
+
+        var usasearch_config = { siteHandle:"gsa.gov" };
+
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "https://search.usa.gov/javascripts/remote.loader.js";
+        document.getElementsByTagName("head")[0].appendChild(script);
+    });
+
+    //]]>
+</script>
+
+<!-- gsa_gov-2407 - DAP Federated Analytics -->
+<script id="_fed_an_ua_tag" type="text/javascript" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=GSA&sp=query&enhlink=true&yt=false"></script>
+<!-- gsa_gov-2323 - SiteImprove code implementation -->
+<script type="text/javascript">
+    /*<![CDATA[*/
+    (function() {
+        var sz = document.createElement('script'); sz.type = 'text/javascript'; sz.async = true;
+        sz.src = '//siteimproveanalytics.com/js/siteanalyze_8808.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(sz, s);
+    })();
+    /*]]>*/
+</script>
+</body>
+</html>

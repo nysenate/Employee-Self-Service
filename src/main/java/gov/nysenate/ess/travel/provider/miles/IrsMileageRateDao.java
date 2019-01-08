@@ -18,21 +18,21 @@ public class IrsMileageRateDao extends SqlBaseDao {
 
     public void insertIrsRate(MileageRate mileageRate) {
         MapSqlParameterSource params = new MapSqlParameterSource("rate", mileageRate.getRate());
-        params.addValue("startDate", mileageRate.getStartDate());
-        params.addValue("endDate", mileageRate.getEndDate());
+        params.addValue("startDate", toDate(mileageRate.getStartDate()));
+        params.addValue("endDate", toDate(mileageRate.getEndDate()));
         String sql = IrsMileageRateDao.SqlIrsRateQuery.INSERT_MILEAGE_RATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
     public void updateEndDate(LocalDate oldStartDate, LocalDate newEndDate) {
         MapSqlParameterSource params = new MapSqlParameterSource("old_start_date", Date.valueOf(oldStartDate));
-        params.addValue("new_end_date", Date.valueOf(newEndDate));
+        params.addValue("new_end_date", toDate(newEndDate));
         String sql = SqlIrsRateQuery.UPDATE_END_DATE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
     public MileageRate getMileageRate(LocalDate startDate) {
-        MapSqlParameterSource params = new MapSqlParameterSource("date", Date.valueOf(startDate));
+        MapSqlParameterSource params = new MapSqlParameterSource("date", toDate(startDate));
         String sql = SqlIrsRateQuery.GET_MILEAGE_RATE.getSql(schemaMap());
         IrsMileageRateDao.MileageRateMapper mapper = new MileageRateMapper();
         return localNamedJdbc.queryForObject(sql, params, mapper);
