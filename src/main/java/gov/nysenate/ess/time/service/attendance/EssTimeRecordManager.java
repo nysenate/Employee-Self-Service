@@ -216,6 +216,8 @@ public class EssTimeRecordManager implements TimeRecordManager
                         .map(range -> createTimeRecord(empId, range))
                         .peek(recordsToSave::add)
                         .count();
+            } else {
+                logger.warn("Inhibiting new record creation for emp #{} due to an incomplete employee record.", empId);
             }
 
             recordsToSave.forEach(timeRecordService::saveRecord);
