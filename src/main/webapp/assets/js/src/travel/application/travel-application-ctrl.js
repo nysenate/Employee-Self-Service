@@ -231,26 +231,3 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
         });
     }
 }
-
-function Segment() {
-    this.from = {};
-    this.to = {};
-    this.departureDate = ''; // Use setter to ensure formatted as ISO date.
-    this.arrivalDate = ''; // Use setter to ensure formatted as ISO date.
-    this.travelDate = '';
-    this.modeOfTransportation = undefined;
-    this.isMileageRequested = true;
-    this.isMealsRequested = true;
-    this.isLodgingRequested = true;
-
-    // Used as callback method for travel-address-autocomplete
-    this.setFrom = function (address) {
-        this.from = address;
-    };
-
-    // Used as callback method for travel-address-autocomplete
-    this.setTo = function (address) {
-        this.to = address;
-    };
-}
-

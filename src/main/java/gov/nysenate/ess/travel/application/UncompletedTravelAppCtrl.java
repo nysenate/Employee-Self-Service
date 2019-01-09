@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application;
 
-import com.google.maps.errors.ApiException;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;

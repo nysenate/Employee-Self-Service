@@ -14,7 +14,7 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
 
         if ($scope.route.returnLegs.length === 0) {
             // Init return leg
-            var segment = new Segment();
+            var segment = {};
             segment.from = angular.copy($scope.route.outboundLegs[$scope.route.outboundLegs.length - 1].to);
             segment.to = angular.copy($scope.route.outboundLegs[0].from);
             // If only 1 outbound mode of transportation, initialize to that.
@@ -42,7 +42,7 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
         }
 
         // Initialize new leg
-        var segment = new Segment();
+        var segment = {};
         var prevSeg = $scope.route.returnLegs[$scope.route.returnLegs.length - 1];
         segment.from = prevSeg.to;
         segment.to = angular.copy($scope.route.outboundLegs[0].from);

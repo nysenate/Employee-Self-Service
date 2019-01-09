@@ -7,13 +7,12 @@ import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowancesV
 import gov.nysenate.ess.travel.application.destination.DestinationsView;
 import gov.nysenate.ess.travel.application.route.RouteView;
 
-
 /**
  * Very similar to {@link TravelApplicationView} except this class
- * uses id's for employees instead of employee views due to issues with
- * serialization/deserialization.
+ * uses id's for employees instead of full employee views. It also omits some
+ * fields not relevant to an uncompleted application, such as submitted date time.
  *
- * Also omits some fields not relevant to an uncompleted application, such as submitted date time.
+ * This is used when persisting an uncompleted TravelApplication as a json object.
  */
 public class UncompletedTravelApplicationView implements ViewObject {
 

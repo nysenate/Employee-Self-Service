@@ -2,8 +2,6 @@ package gov.nysenate.ess.travel.application.address;
 
 import gov.nysenate.ess.core.client.view.AddressView;
 
-import java.util.UUID;
-
 public class TravelAddressView extends AddressView {
 
     String id;
@@ -16,7 +14,7 @@ public class TravelAddressView extends AddressView {
     }
 
     public TravelAddress toTravelAddress() {
-        return TravelAddressService.createTravelAddress(super.toAddress());
+        return TravelAddressFactory.createTravelAddress(super.toAddress());
     }
 
     public String getId() {

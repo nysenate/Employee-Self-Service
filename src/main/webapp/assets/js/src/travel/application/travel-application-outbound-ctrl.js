@@ -12,7 +12,7 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
         $scope.dirtyApp = angular.copy($scope.data.app);
 
         if ($scope.dirtyApp.route.outboundLegs.length === 0) {
-            var segment = new Segment();
+            var segment = {};
             // Init from address to employees work address.
             segment.from = $scope.data.app.traveler.empWorkLocation.address;
             $scope.dirtyApp.route.outboundLegs.push(segment);
@@ -21,7 +21,7 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
 
     $scope.addSegment = function () {
         // Initialize new leg
-        var segment = new Segment();
+        var segment = {};
         var prevSeg = $scope.dirtyApp.route.outboundLegs[$scope.dirtyApp.route.outboundLegs.length - 1];
         segment.from = prevSeg.to;
         segment.modeOfTransportation = prevSeg.modeOfTransportation;
