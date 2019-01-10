@@ -41,10 +41,10 @@ public class TravelApplication {
     private boolean isDeleted;
 
     public TravelApplication(UUID id, UUID versionId, Employee traveler, Employee submitter) {
-        this.id = id;
-        this.versionId = versionId;
-        this.traveler = Objects.requireNonNull(traveler, "Travel Application requires non null traveler.");
-        this.submitter = Objects.requireNonNull(submitter, "Travel Application requires non null submitter.");
+        this.id = Objects.requireNonNull(id, "Travel Application requires a non null id.");
+        this.versionId = Objects.requireNonNull(versionId, "Travel Application requires a non null versionId.");
+        this.traveler = Objects.requireNonNull(traveler, "Travel Application requires a non null traveler.");
+        this.submitter = Objects.requireNonNull(submitter, "Travel Application requires a non null submitter.");
         this.purposeOfTravel = "";
         this.route = Route.EMPTY_ROUTE;
         this.destinations = new Destinations(ImmutableList.of());

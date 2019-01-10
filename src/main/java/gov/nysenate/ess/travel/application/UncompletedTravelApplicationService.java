@@ -171,16 +171,14 @@ public class UncompletedTravelApplicationService {
     public TravelApplication submitApplication(UUID appId) {
         TravelApplication app = uncompletedAppDao.selectUncompletedApplication(appId);
         app = applicationService.insertTravelApplication(app);
-        uncompletedAppDao.deleteUncompletedApplication(app.getTraveler().getEmployeeId());
+        uncompletedAppDao.deleteUncompletedApplication(appId);
         return app;
     }
 
     /**
-     * Deletes the UncompletedTravelApplication for the given employee.
-     *
-     * @param empId
+     * Deletes the UncompletedTravelApplication with the given id.
      */
-    public void deleteUncompletedTravelApplication(int empId) {
-        uncompletedAppDao.deleteUncompletedApplication(empId);
+    public void deleteUncompletedTravelApplication(UUID id) {
+        uncompletedAppDao.deleteUncompletedApplication(id);
     }
 }

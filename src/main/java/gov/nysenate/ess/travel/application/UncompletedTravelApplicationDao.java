@@ -1,7 +1,5 @@
 package gov.nysenate.ess.travel.application;
 
-import gov.nysenate.ess.travel.application.TravelApplication;
-
 import java.util.UUID;
 
 /**
@@ -17,5 +15,5 @@ public interface UncompletedTravelApplicationDao {
 
     boolean hasUncompletedApplication(int travelerId);
 
-    void deleteUncompletedApplication(int travelerId);
+    void deleteUncompletedApplication(UUID id);
 }

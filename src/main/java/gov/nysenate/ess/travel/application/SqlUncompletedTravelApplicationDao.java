@@ -89,8 +89,8 @@ public class SqlUncompletedTravelApplicationDao extends SqlBaseDao implements Un
     }
 
     @Override
-    public void deleteUncompletedApplication(int travelerId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("travelerId", travelerId);
+    public void deleteUncompletedApplication(UUID id) {
+        MapSqlParameterSource params = new MapSqlParameterSource("id", id.toString());
         String sql = SqlUncompletedTravelApplicationQuery.DELETE_UNCOMPLETED_TRAVEL_APP.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -118,7 +118,7 @@ public class SqlUncompletedTravelApplicationDao extends SqlBaseDao implements Un
         ),
         DELETE_UNCOMPLETED_TRAVEL_APP(
                 "DELETE FROM ${travelSchema}.uncompleted_travel_application \n" +
-                        "WHERE traveler_id = :travelerId"
+                        "WHERE id = :id::uuid"
         )
         ;
 

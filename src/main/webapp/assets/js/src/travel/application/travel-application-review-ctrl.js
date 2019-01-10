@@ -27,7 +27,7 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
         modals.open('submit-confirm')
             .then(function () {
                 modals.open("submit-progress");
-                submitApi.update({id: $scope.data.app.id}).$promise
+                submitApi.save({id: $scope.data.app.id}).$promise
                     .then(function (response) {
                         modals.resolve({});
                     })

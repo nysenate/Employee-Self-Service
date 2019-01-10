@@ -55,7 +55,7 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/init", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse getSavedTravelApplication(@RequestParam int empId) {
         TravelApplication app = uncompletedAppService.getSavedTravelApplication(empId, getSubjectEmployeeId());
-        checkWritePermissions(app.getTraveler().getEmployeeId());
+        checkReadPermissions(app.getTraveler().getEmployeeId());
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
@@ -65,13 +65,12 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
      * @param id The Uncompleted Application Id to be submitted.
      *
      *           <p>
-     *           (PUT) /api/v1/travel/application/uncompleted/{id}/purpose
+     *           (POST) /api/v1/travel/application/uncompleted/{id}/submit
      *           </p>
      *           <p>
      *           Path Params: id (string) - The id of an uncompleted travel application to submit.
-     * @return
      */
-    @RequestMapping(value = "/{id}/submit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/{id}/submit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public BaseResponse submitTravelApp(@PathVariable String id) {
         checkWritePermissions(id);
         TravelApplication app = uncompletedAppService.submitApplication(UUID.fromString(id));
@@ -79,22 +78,22 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Deletes the uncompleted travel application belonging the the specified employee.
+     * Deletes a uncompleted travel application.
      * <p>
      * This allows users to reset their application and start over.
      *
      * <p>
-     * (DELETE) /api/v1/travel/application/uncompleted/{empId}
+     * (DELETE) /api/v1/travel/application/uncompleted/{id}
      * </p>
-     * Path Params: empId (int) - The employee Id who's uncompleted applications should be deleted.
+     * Path Params: id (string) - The id of an uncompleted travel application which will be deleted.
      *
-     * @param empId
+     * @param id The application id
      * @return
      */
-    @RequestMapping(value = "/{empId}", method = RequestMethod.DELETE)
-    public BaseResponse cancelApplication(@PathVariable int empId) {
-        checkWritePermissions(empId);
-        uncompletedAppService.deleteUncompletedTravelApplication(empId);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public BaseResponse cancelApplication(@PathVariable String id) {
+        checkWritePermissions(id);
+        uncompletedAppService.deleteUncompletedTravelApplication(UUID.fromString(id));
         return new SimpleResponse(true, "Successfully canceled travel application", "travel-app-cancel");
     }
 
@@ -194,11 +193,11 @@ public class UncompletedTravelAppCtrl extends BaseRestApiCtrl {
     // Checks that the logged in user is allowed to modify this application.
     private void checkWritePermissions(String appId) {
         TravelApplication app = uncompletedAppDao.selectUncompletedApplication(UUID.fromString(appId));
-        checkWritePermissions(app.getTraveler().getEmployeeId());
+        checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), TRAVEL_APPLICATION, RequestMethod.POST));
     }
 
-    // Checks that the logged in user is allowed to modify applications where the traveler's empId = empId.
-    private void checkWritePermissions(int empId) {
+    // Checks that the logged in user is allowed to view applications belonging to empId.
+    private void checkReadPermissions(int empId) {
         checkPermission(new CorePermission(empId, TRAVEL_APPLICATION, RequestMethod.GET));
     }
 

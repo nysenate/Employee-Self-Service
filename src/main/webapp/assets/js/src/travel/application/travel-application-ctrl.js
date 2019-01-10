@@ -88,7 +88,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
     };
 
     function cancelApplication() {
-        cancelApi.remove({empId: $scope.data.app.traveler.employeeId})
+        cancelApi.remove({id: $scope.data.app.id})
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)

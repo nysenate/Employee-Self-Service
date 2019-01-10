@@ -30,7 +30,6 @@ public class LegView implements ViewObject {
     }
 
     public Leg toLeg() {
-        // TODO
         if (id == null) {
             id = UUID.randomUUID().toString();
         }
