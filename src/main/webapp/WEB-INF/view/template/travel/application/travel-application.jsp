@@ -109,12 +109,13 @@
     <modal modal-id="submit-results">
       <div confirm-modal rejectable="true"
            title="Your travel application has been saved."
-           <%--confirm-message="What would you like to do next?"--%>
+      <%--confirm-message="What would you like to do next?"--%>
            resolve-button="Go back to ESS"
            reject-button="Log out of ESS">
         <div style="padding-bottom: 20px;">
           <p>
-            You should now <a class="bold" target="_blank" ng-href="${ctxPath}/travel/application/travel-application-print?id={{data.app.id}}&print=true">print</a>,
+            You should now <a class="bold" target="_blank"
+                              ng-href="${ctxPath}/travel/application/travel-application-print?id={{data.app.id}}&print=true">print</a>,
             sign and deliver your application to your department head.
           </p>
         </div>
@@ -137,12 +138,18 @@
     <modal modal-id="external-api-error">
       <div confirm-modal rejectable="true"
            title="Failed to Create Travel Request"
-           confirm-message=
-           "ESS is unable to communicate with some 3rd party services required to create the travel estimate.
-           Please try submitting your travel application again later.
-           What would you like to do next?"
            resolve-button="Go back to ESS"
            reject-button="Log out of ESS">
+        <div>
+          <p style="text-align: left;">
+            ESS is unable to communicate with some 3rd party services required to create the travel estimate.
+            Please try submitting your travel application again later. If you continue to get this error please contact
+            STS.
+          </p>
+          <h4>
+            What would you like to do next?
+          </h4>
+        </div>
       </div>
     </modal>
 

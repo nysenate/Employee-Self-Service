@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.provider;
 
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.core.model.util.UnsuccessfulHttpReqException;
 import gov.nysenate.ess.travel.provider.dod.DodAllowanceService;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -39,7 +40,7 @@ public class ServiceProviderFactory {
                 mealRate = gsaAllowanceService.fetchMealRate(date, address);
             }
         }
-        catch (IOException ex) {
+        catch (IOException | UnsuccessfulHttpReqException ex) {
             throw new ProviderException(ex);
         }
         return mealRate;
@@ -61,7 +62,7 @@ public class ServiceProviderFactory {
                 rate = gsaAllowanceService.fetchLodgingRate(date, address);
             }
         }
-        catch(IOException ex) {
+        catch (IOException | UnsuccessfulHttpReqException ex) {
             throw new ProviderException(ex);
         }
         return rate;
