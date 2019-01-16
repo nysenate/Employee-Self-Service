@@ -529,7 +529,31 @@ table.attendance-entry-sub-table {
 
 /** --- View Pay Period Calendar Page --- */
 
+@ppcHoliday: #d4ff60;
+@ppcPpe: #B8E3EB;
+@ppcPartialGradient: repeating-linear-gradient(
+        45deg,
+        @ppcHoliday,
+        @ppcHoliday 3px,
+        #fafafa 3px,
+        #fafafa 6px
+);
+
+.pay-period-cal-holiday {
+  background: @ppcHoliday;
+}
+
+.pay-period-cal-partial-holiday {
+  background: @ppcHoliday;
+  background: @ppcPartialGradient
+}
+
+.pay-period-cal-pay-period-end {
+  background: @ppcPpe;
+}
+
 .pay-period-cal-container {
+
   .legend-container {
     color:#777;
 
@@ -577,26 +601,34 @@ table.attendance-entry-sub-table {
 
         .holiday-date {
           span {
-            background: #d4ff60;
+            &:extend(.pay-period-cal-holiday);
+          }
+        }
+
+        .holiday-date.partial-holiday-date {
+          span {
+            &:extend(.pay-period-cal-partial-holiday);
           }
         }
 
         .pay-period-end-date {
           span {
-            background: #B8E3EB;
+            &:extend(.pay-period-cal-pay-period-end);
           }
         }
 
         .holiday-date.pay-period-end-date {
           span {
-            background: #d4ff60; /* Old browsers */
-            background: -moz-linear-gradient(45deg,  #d4ff60 49%, #B8E3EB 52%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left bottom, right top, color-stop(49%,#d4ff60), color-stop(52%,#B8E3EB)); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(45deg,  #d4ff60 49%,#B8E3EB 52%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(45deg,  #d4ff60 49%,#B8E3EB 52%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(45deg,  #d4ff60 49%,#B8E3EB 52%); /* IE10+ */
-            background: linear-gradient(45deg,  #d4ff60 49%,#B8E3EB 52%); /* W3C */
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d4ff60', endColorstr='#B8E3EB',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+            background: @ppcHoliday; /* Old browsers */
+            background: linear-gradient(45deg, @ppcHoliday 49%, @ppcPpe 52%); /* W3C */
+          }
+        }
+
+        .holiday-date.partial-holiday-date.pay-period-end-date {
+          span {
+            background: @ppcHoliday;
+            // Overlay transparent/period end color gradient over the partial holiday gradient.
+            background: linear-gradient(45deg, transparent, transparent 50%, @ppcPpe 50%), @ppcPartialGradient;
           }
         }
       }

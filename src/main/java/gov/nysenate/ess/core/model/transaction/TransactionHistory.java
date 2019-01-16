@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.SAL;
 import static gov.nysenate.ess.core.model.transaction.TransactionType.PAY;
+import static gov.nysenate.ess.core.model.transaction.TransactionType.PER;
 
 /**
  * The TransactionHistory maintains an ordered collection of TransactionRecords. This class is intended to be
@@ -243,11 +244,6 @@ public class TransactionHistory
      *      ie. they have received a PER and a PAY transaction for the last appointment
      */
     public boolean isFullyAppointed() {
-        Range<LocalDate> testRange = Range.closed(LocalDate.now().minusDays(1), LocalDate.now());
-        // Return true if the employee is not currently appointed
-        if (getEffectiveEmpStatus(testRange).isEmpty() || !getEffectiveEmpStatus(testRange).lastEntry().getValue()) {
-            return true;
-        }
         String latestAppointDoc = null;
         LocalDate latestAppDocDate = LocalDate.MIN;
         for (String appointDoc : appointDocuments.keySet()) {
@@ -257,12 +253,28 @@ public class TransactionHistory
                 latestAppDocDate = firstRecord.getEffectDate();
             }
         }
-        return latestAppointDoc != null &&
-                // the latest appoint document has records of both transaction types
-                appointDocuments.get(latestAppointDoc).stream()
-                        .map(TransactionRecord::getTransType)
-                        .distinct()
-                        .count() > 1;
+        Set<TransactionType> appointTransTypes = appointDocuments.get(latestAppointDoc).stream()
+                .map(TransactionRecord::getTransType)
+                .collect(Collectors.toSet());
+        // Return false if the latest appoint doc does not contain transactions from both personnel and payroll.
+        if (!appointTransTypes.containsAll(EnumSet.of(PER, PAY))) {
+            return false;
+        }
+
+        // Check to make sure certain critical values are present.
+        List<TreeMap> requiredFieldMaps = ImmutableList.of(
+                getEffectiveAgencyCodes(Range.all()),
+                getEffectiveSupervisorIds(Range.all()),
+                getEffectivePersonnelStatus(Range.all()),
+                getEffectivePayTypes(Range.all())
+        );
+        for (TreeMap fieldMap : requiredFieldMaps) {
+            if (fieldMap.isEmpty() || fieldMap.lastEntry().getValue() == null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /* --- Functional Getters/Setters --- */

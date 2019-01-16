@@ -12,8 +12,9 @@
 
     <div class="content-container pay-period-cal-container">
         <div class="content-info legend-container">
-            <div class="legend-block" style="background:#B8E3EB;">&nbsp;</div>Pay Period End Date
-            <div class="legend-block" style="background:#d4ff60;">&nbsp;</div>Senate Holiday
+            <div class="legend-block pay-period-cal-pay-period-end">&nbsp;</div>Pay Period End Date
+            <div class="legend-block pay-period-cal-holiday">&nbsp;</div>Senate Holiday
+            <div class="legend-block pay-period-cal-partial-holiday">&nbsp;</div>Partial Senate Holiday
         </div>
         <div class="pay-period-cal">
             <div ng-repeat="(i, month) in months" class="pay-period-month">
