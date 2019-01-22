@@ -23,14 +23,16 @@ public class EssTimePayTypePermissionFactory implements PermissionFactory {
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
         PayType payType = employee.getPayType();
         ImmutableList.Builder<Permission> permListBldr = ImmutableList.builder();
-        switch (payType) {
-            case SA:
-            case RA:
-                permListBldr.add(ACCRUAL_PROJECTIONS.getPermission());
-                break;
-            case TE:
-                permListBldr.add(ALLOWANCE_PAGE.getPermission());
-                break;
+        if (payType != null) {
+            switch (payType) {
+                case SA:
+                case RA:
+                    permListBldr.add(ACCRUAL_PROJECTIONS.getPermission());
+                    break;
+                case TE:
+                    permListBldr.add(ALLOWANCE_PAGE.getPermission());
+                    break;
+            }
         }
         return permListBldr.build();
     }
