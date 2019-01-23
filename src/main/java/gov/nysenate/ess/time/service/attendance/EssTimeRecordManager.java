@@ -319,7 +319,7 @@ public class EssTimeRecordManager implements TimeRecordManager
 
         Iterator<Range<LocalDate>> rangeIterator = ranges.iterator();
 
-        if (rangeIterator.hasNext()) {
+        if (!rangeIterator.hasNext()) {
             throw new IllegalArgumentException("Cannot split time record with no given ranges.  " +
                     "empId: " + record.getEmployeeId() +
                     " dates: " + record.getDateRange() +
