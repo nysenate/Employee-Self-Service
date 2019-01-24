@@ -392,6 +392,8 @@ public class EssTimeRecordManager implements TimeRecordManager
             if (!validEntry(entry, record, correctPayType)) {
                 modifiedEntries = true;
                 entry.setActive(false);
+                logger.info("Deactivating entry empId: {} date: {}, pay type: {}",
+                        entry.getEmpId(), entry.getDate(), entry.getPayType());
             }
             // Check and potentially switch the pay types for each entry
             else if (!Objects.equals(entry.getPayType(), correctPayType)) {

@@ -43,7 +43,8 @@ public class RemoteEntryRowMapper extends BaseRowMapper<TimeEntry>
         te.setUpdateDate(getLocalDateTimeFromRs(rs, pfx + "DTTXNUPDATE"));
         te.setActive(rs.getString(pfx + "CDSTATUS").equals("A"));
         te.setEmpComment(rs.getString(pfx + "DECOMMENTS"));
-        te.setPayType(PayType.valueOf(rs.getString(pfx + "CDPAYTYPE")));
+        String payTypeStr = rs.getString(pfx + "CDPAYTYPE");
+        te.setPayType(payTypeStr != null ? PayType.valueOf(payTypeStr) : null);
         return te;
     }
 }
