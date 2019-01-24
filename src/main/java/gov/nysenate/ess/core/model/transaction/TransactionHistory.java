@@ -22,8 +22,10 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.model.transaction.TransactionCode.APP;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.SAL;
 import static gov.nysenate.ess.core.model.transaction.TransactionType.PAY;
+import static gov.nysenate.ess.core.model.transaction.TransactionType.PER;
 
 /**
  * The TransactionHistory maintains an ordered collection of TransactionRecords. This class is intended to be
@@ -51,7 +53,7 @@ public class TransactionHistory
     protected LinkedListMultimap<TransactionCode, TransactionRecord> recordsByCode;
 
     /** Creates a full snapshot view from the records containing every column and grouped by effective date. */
-    protected TreeMap<LocalDate, Map<String, String>> recordSnapshots;
+    protected NavigableMap<LocalDate, Map<String, String>> recordSnapshots;
 
     /* --- Constructors --- */
 
@@ -243,11 +245,6 @@ public class TransactionHistory
      *      ie. they have received a PER and a PAY transaction for the last appointment
      */
     public boolean isFullyAppointed() {
-        Range<LocalDate> testRange = Range.closed(LocalDate.now().minusDays(1), LocalDate.now());
-        // Return true if the employee is not currently appointed
-        if (getEffectiveEmpStatus(testRange).isEmpty() || !getEffectiveEmpStatus(testRange).lastEntry().getValue()) {
-            return true;
-        }
         String latestAppointDoc = null;
         LocalDate latestAppDocDate = LocalDate.MIN;
         for (String appointDoc : appointDocuments.keySet()) {
@@ -257,12 +254,28 @@ public class TransactionHistory
                 latestAppDocDate = firstRecord.getEffectDate();
             }
         }
-        return latestAppointDoc != null &&
-                // the latest appoint document has records of both transaction types
-                appointDocuments.get(latestAppointDoc).stream()
-                        .map(TransactionRecord::getTransType)
-                        .distinct()
-                        .count() > 1;
+        Set<TransactionType> appointTransTypes = appointDocuments.get(latestAppointDoc).stream()
+                .map(TransactionRecord::getTransType)
+                .collect(Collectors.toSet());
+        // Return false if the latest appoint doc does not contain transactions from both personnel and payroll.
+        if (!appointTransTypes.containsAll(EnumSet.of(PER, PAY))) {
+            return false;
+        }
+
+        // Check to make sure certain critical values are present.
+        List<TreeMap> requiredFieldMaps = ImmutableList.of(
+                getEffectiveAgencyCodes(Range.all()),
+                getEffectiveSupervisorIds(Range.all()),
+                getEffectivePersonnelStatus(Range.all()),
+                getEffectivePayTypes(Range.all())
+        );
+        for (TreeMap fieldMap : requiredFieldMaps) {
+            if (fieldMap.isEmpty() || fieldMap.lastEntry().getValue() == null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /* --- Functional Getters/Setters --- */
@@ -446,54 +459,53 @@ public class TransactionHistory
     /* --- Internal Methods --- */
 
     /**
-     * Adds a transaction record to the history queue.
-     *
-     * @param record TransactionRecord
-     */
-    private void addTransactionRecord(TransactionRecord record) {
-        if (record != null) {
-            recordsByCode.put(record.getTransCode(), record);
-            LocalDate effectDate = record.getEffectDate();
-            if (recordSnapshots.isEmpty()) {
-                // Initialize the snapshot map
-                recordSnapshots.put(effectDate, record.getValueMap());
-                // Add the first record as an appoint transaction if no proper appoint transactions were found
-                if (appointDocuments.isEmpty()) {
-                    appointDocuments.put(PRE_SFMS_APP_DOC_ID, record);
-                }
-            } else {
-                // Update the previous map with the newly updated values
-                Map<String, String> valueMap = Maps.newHashMap(recordSnapshots.lastEntry().getValue());
-                // If the transaction record belongs to an appoint document, and has a transaction type different from the appoint transaction
-                //  extract the values of all columns of the record's transaction type as effective values
-                if (appointDocuments.containsKey(PRE_SFMS_APP_DOC_ID) &&
-                        appointDocuments.get(PRE_SFMS_APP_DOC_ID).size() == 1 &&
-                        appointDocuments.get(PRE_SFMS_APP_DOC_ID).first().getTransType() != record.getTransType()) {
-                    valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
-                    appointDocuments.put(PRE_SFMS_APP_DOC_ID, record);
-                } else if (appointDocuments.keySet().contains(record.getDocumentId()) &&
-                        appointDocuments.get(record.getDocumentId()).first().getTransType() != record.getTransType()) {
-                    valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
-                    appointDocuments.put(record.getDocumentId(), record);
-                } else {
-                    valueMap.putAll(record.getValuesForCode());
-                }
-                recordSnapshots.put(effectDate, valueMap);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Cannot add a null record to the transaction history!");
-        }
-    }
-
-    /**
      * Adds a collection of transaction records to their respective history queue.
      *
      * @param recordsList List<TransactionRecord>
      */
     private void addTransactionRecords(List<TransactionRecord> recordsList) {
         getInitDocIds(recordsList);
-        recordsList.forEach(this::addTransactionRecord);
+        // Multimap of appoint doc -> transaction types already processed for that appointment
+        HashMultimap<String, TransactionType> appointTypeCoverage = HashMultimap.create();
+        appointDocuments.forEach((docId, tRec) -> appointTypeCoverage.put(docId, tRec.getTransType()));
+
+        for (TransactionRecord record : recordsList) {
+            if (record == null) {
+                throw new IllegalArgumentException("Cannot add a null record to the transaction history!");
+            }
+            recordsByCode.put(record.getTransCode(), record);
+
+            // Create a new value map based on the latest values
+            Map<String, String> valueMap = recordSnapshots.isEmpty()
+                    ? new HashMap<>()
+                    : new HashMap<>(recordSnapshots.lastEntry().getValue());
+
+            // Determine the record's status as belonging to an appointment
+            String appDocId = null;
+            if (appointDocuments.containsKey(record.getDocumentId())) {
+                appDocId = record.getDocumentId();
+            } else if (appointDocuments.isEmpty() || appointDocuments.containsKey(PRE_SFMS_APP_DOC_ID)) {
+                // If no appoint docs exist, it may be the first of its trans type and treated as an appoint. (see below)
+                appDocId = PRE_SFMS_APP_DOC_ID;
+            }
+            // If the record was part of an appoint and was the first of its trans type, use all cols of that type
+            if (appDocId != null && !appointTypeCoverage.containsEntry(appDocId, record.getTransType())) {
+                valueMap.putAll(record.getValuesForCols(TransactionCode.getTypeDbColumnsList(record.getTransType())));
+                appointDocuments.put(appDocId, record);
+                appointTypeCoverage.put(appDocId, record.getTransType());
+            } else {
+                // Otherwise, use only columns specified by the record's transaction code.
+                valueMap.putAll(record.getValuesForCode());
+            }
+            recordSnapshots.put(record.getEffectDate(), valueMap);
+        }
+        // If there was an APP transaction, cut off any snapshots before its effect date just to be safe
+        if (recordsByCode.containsKey(APP)) {
+            TransactionRecord appRecord = recordsByCode.get(APP).get(0);
+            recordSnapshots.navigableKeySet()
+                    .headSet(appRecord.getEffectDate(), false)
+                    .forEach(recordSnapshots::remove);
+        }
     }
 
     /**

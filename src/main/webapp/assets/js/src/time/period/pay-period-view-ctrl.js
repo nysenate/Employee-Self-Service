@@ -1,16 +1,23 @@
 var essTime = angular.module('essTime');
 
 essTime.controller('PayPeriodCalendarCtrl',
-    ['$scope', '$http', 'PayPeriodApi', 'HolidayApi', 'modals',
-    function($scope, $http, PayPeriodApi, HolidayApi, modals) {
+    ['$scope', '$http', 'PayPeriodApi', 'HolidayApi', 'modals', 'LocationService',
+    function($scope, $http, PayPeriodApi, HolidayApi, modals, locationService) {
+
+    var currentYear = moment().year();
 
     $scope.state = {
-        year: moment().year(),
+        year: currentYear,
         currentDayMoment: moment().startOf('day')
     };
-    $scope.yearList = Array.apply(0, Array(10)).map(function (x, y) { return (($scope.state.year + 2) - y - 1); });
+    $scope.yearList = Array.apply(0, Array(10)).map(function (x, y) { return ((currentYear + 2) - y - 1); });
     $scope.months = [];
     $scope.periods = [];
+
+    var paramYear = locationService.getSearchParam('year');
+    if (!isNaN(paramYear) && $scope.yearList.indexOf(parseInt(paramYear)) > 0) {
+        $scope.state.year = parseInt(paramYear);
+    }
 
     $scope.getPayPeriods = function(year, callback) {
         $scope.periodResp = PayPeriodApi.get({
@@ -28,8 +35,13 @@ essTime.controller('PayPeriodCalendarCtrl',
     $scope.getHolidays = function(year, callback) {
         $scope.holidaysResp = HolidayApi.get({year: year}, function() {
             $scope.holidays = $scope.holidaysResp.holidays;
-            $scope.holidayMap = $scope.holidays.reduce(function(res, curr) { res[curr.date] = curr; return res; }, {});
-            if (callback) callback();
+            $scope.holidayMap = $scope.holidays.reduce(function(res, curr) {
+                res[curr.date] = curr;
+                return res;
+            }, {});
+            if (callback) {
+                callback();
+            }
         });
     };
 
@@ -46,6 +58,7 @@ essTime.controller('PayPeriodCalendarCtrl',
                 $scope.generateMonths(year);
             });
         });
+        locationService.setSearchParam('year', year, year !== currentYear);
     });
 
     /**
@@ -69,13 +82,18 @@ essTime.controller('PayPeriodCalendarCtrl',
                 if ($scope.holidayMap[mDateStr]) {
                     toolTips.push($scope.holidayMap[mDateStr]['name']);
                     cssClasses.push('holiday-date');
+                    var hours = $scope.holidayMap[mDateStr].hours;
+                    if (hours < 7) {
+                        toolTips.push(hours + ' hours holiday time');
+                        cssClasses.push('partial-holiday-date')
+                    }
                 }
                 if ($scope.periodMap[mDateStr] && !$scope.periodMap[mDateStr].endYearSplit) {
                     toolTips.push('Last Day of Pay Period ' + $scope.periodMap[mDateStr]['payPeriodNum']);
                     cssClasses.push('pay-period-end-date');
                 }
             }
-            return [false, cssClasses.join(' '), toolTips.join(' \\ ')];
+            return [false, cssClasses.join(' '), toolTips.join('\n')];
         }
     }
 }]);

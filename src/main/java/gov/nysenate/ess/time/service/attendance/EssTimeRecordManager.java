@@ -216,6 +216,8 @@ public class EssTimeRecordManager implements TimeRecordManager
                         .map(range -> createTimeRecord(empId, range))
                         .peek(recordsToSave::add)
                         .count();
+            } else {
+                logger.warn("Inhibiting new record creation for emp #{} due to an incomplete employee record.", empId);
             }
 
             recordsToSave.forEach(timeRecordService::saveRecord);
@@ -316,32 +318,43 @@ public class EssTimeRecordManager implements TimeRecordManager
         }
 
         Iterator<Range<LocalDate>> rangeIterator = ranges.iterator();
+
+        logger.info("{} record empId: {} dates: {} new dates: {}",
+                ranges.size() > 1 ? "Splitting" : "Re-sizing",
+                record.getEmployeeId(),
+                record.getDateRange(),
+                ranges
+        );
+
+        if (!rangeIterator.hasNext()) {
+            throw new IllegalArgumentException("Cannot split time record with no given ranges.  " +
+                    "empId: " + record.getEmployeeId() +
+                    " dates: " + record.getDateRange() +
+                    " recordId: " + record.getTimeRecordId());
+        }
+
         List<TimeRecord> splitResult = new LinkedList<>();
 
-        if (rangeIterator.hasNext()) {
-            // Adjust the begin and end dates of the existing record to match the first range
-            // patch the existing record + entries, ensuring correct supervisor and pay types
-            record.setDateRange(rangeIterator.next());
+        // Adjust the begin and end dates of the existing record to match the first range
+        // patch the existing record + entries, ensuring correct supervisor and pay types
+        record.setDateRange(rangeIterator.next());
+        splitResult.add(record);
 
-            // Prune any existing entries with dates outside of the first range,
-            // saving them to be added to any appropriate new records that are created
-            TreeMap<LocalDate, TimeEntry> existingEntryMap = new TreeMap<>();
-            record.getTimeEntries().stream()
-                    .map(TimeEntry::getDate)
-                    .filter(date -> !record.getDateRange().contains(date))
-                    .map(record::removeEntry)
-                    .forEach(entry -> existingEntryMap.put(entry.getDate(), entry));
+        // Range map of dates -> new records that cover them
+        RangeMap<LocalDate, TimeRecord> newRecordMap = TreeRangeMap.create();
 
-            splitResult.add(record);
+        // Generate time records for the remaining ranges, adding the existing time records as appropriate
+        rangeIterator.forEachRemaining(range -> {
+            TimeRecord newRecord = createTimeRecord(record.getEmployeeId(), range);
+            newRecordMap.put(range, newRecord);
+            splitResult.add(newRecord);
+        });
 
-            // Generate time records for the remaining ranges, adding the existing time records as appropriate
-            rangeIterator.forEachRemaining(range -> {
-                TimeRecord newRecord = createTimeRecord(record.getEmployeeId(), range);
-                existingEntryMap.subMap(newRecord.getBeginDate(), true, newRecord.getEndDate(), true)
-                        .values().forEach(newRecord::addTimeEntry);
-                splitResult.add(newRecord);
-            });
-        }
+        // Move existing entries to the new records if applicable.
+        record.getTimeEntries().stream()
+                .map(TimeEntry::getDate)
+                .filter(date -> !record.getDateRange().contains(date) && newRecordMap.get(date) != null)
+                .forEach(date -> newRecordMap.get(date).addTimeEntry(record.removeEntry(date)));
 
         return splitResult;
     }

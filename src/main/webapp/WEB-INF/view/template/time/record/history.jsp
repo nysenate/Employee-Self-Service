@@ -13,6 +13,14 @@
 
   <div loader-indicator class="loader" ng-show="state.searching === true"></div>
 
+  <div class="content-container" ng-hide="isLoading() || records.employee.length > 0 || records.other.length > 0">
+    <ess-notification level="info" title="No records found for selected year">
+      <p>
+        Please contact Senate Personnel at (518) 455-3376 if you require any assistance.
+      </p>
+    </ess-notification>
+  </div>
+
   <div class="content-container" ng-show="records.employee.length > 0">
     <h1>Active Attendance Records</h1>
     <p class="content-info">The following time records are in progress or awaiting submission.
