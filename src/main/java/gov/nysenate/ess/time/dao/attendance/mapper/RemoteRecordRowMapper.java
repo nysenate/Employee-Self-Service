@@ -39,6 +39,7 @@ public class RemoteRecordRowMapper extends BaseRowMapper<TimeRecord>
         record.setExceptionDetails(rs.getString(pfx + "DEEXCEPTION"));
         record.setProcessedDate(getLocalDateFromRs(rs, pfx + "DTPROCESS"));
         record.setRespHeadCode(rs.getString(pfx + "CDRESPCTRHD"));
+        record.setApprovalEmpId(rs.getInt(pfx + "NUXREFAPR"));
         return record;
     }
 }

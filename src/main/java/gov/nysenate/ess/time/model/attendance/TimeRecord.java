@@ -82,6 +82,7 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.updateUserId = other.updateUserId;
         this.createdDate = other.createdDate;
         this.updateDate = other.updateDate;
+        this.approvalEmpId = other.approvalEmpId;
         other.getTimeEntries().stream()
                 .map(TimeEntry::new)
                 .forEach(this::addTimeEntry);
@@ -109,14 +110,15 @@ public class TimeRecord implements Comparable<TimeRecord>
                 Objects.equal(updateUserId, that.updateUserId) &&
                 Objects.equal(createdDate, that.createdDate) &&
                 Objects.equal(updateDate, that.updateDate) &&
-                Objects.equal(timeEntryMap, that.timeEntryMap);
+                Objects.equal(timeEntryMap, that.timeEntryMap) &&
+                Objects.equal(approvalEmpId, that.approvalEmpId);
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(timeRecordId, employeeId, supervisorId, lastUser, respHeadCode, active, beginDate,
                 endDate, payPeriod, remarks, exceptionDetails, processedDate, recordStatus, originalUserId,
-                updateUserId, createdDate, updateDate, timeEntryMap);
+                updateUserId, createdDate, updateDate, timeEntryMap, approvalEmpId);
     }
 
     @Override
@@ -421,7 +423,11 @@ public class TimeRecord implements Comparable<TimeRecord>
         this.respHeadCode = respHeadCode;
     }
 
-    public void setApprovalEmpId(Integer approvalEmpId) { this.approvalEmpId = approvalEmpId; }
+    public void setApprovalEmpId(Integer approvalEmpId) {
+        this.approvalEmpId = approvalEmpId;
+    }
 
-    public Integer getApprovalEmpId() { return approvalEmpId; };
+    public Integer getApprovalEmpId() {
+        return approvalEmpId;
+    }
 }
