@@ -113,9 +113,9 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                         var supName = supEmpGroupService.getName(empGroup.supId);
                         empGroup.dropDownLabel = supName.fullName;
                     } else {
-                        var supId = supEmpGroupService.getSupId(empGroup.supId);
-                        var supName = supEmpGroupService.getName(supId);
-                        empGroup.group = 'Supervisors Under ' + supName.fullName;
+                        var supSupId = empGroup.supSupId;
+                        var supSupName = supEmpGroupService.getName(supSupId);
+                        empGroup.group = 'Supervisors Under ' + supSupName.fullName;
                         setDropDownLabel(empGroup);
                     }
                 });

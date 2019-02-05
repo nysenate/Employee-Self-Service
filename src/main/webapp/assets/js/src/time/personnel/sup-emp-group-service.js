@@ -235,7 +235,10 @@ angular.module('essTime').factory('supEmpGroupService', [
                     fullName: empInfo.empFirstName + ' ' + empInfo.empLastName
                 };
 
-                supIdMap[empInfo.empId] = empInfo.supId;
+                if (!empInfo.empOverride) {
+                    // Don't track supervisors of emp override.
+                    supIdMap[empInfo.empId] = empInfo.supId;
+                }
             });
 
             nameMap[appProps.user.employeeId] = {

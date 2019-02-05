@@ -122,7 +122,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         while (!supInfoQueue.isEmpty()) {
             EmployeeSupInfo supInfo = supInfoQueue.remove();
             try {
-                PrimarySupEmpGroup subEmpGroup = getPrimarySupEmpGroup(supInfo.getEmpId());
+                SecondarySupEmpGroup subEmpGroup =
+                        new SecondarySupEmpGroup(getPrimarySupEmpGroup(supInfo.getEmpId()), supInfo.getSupId());
                 subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
 
                 // The employee may not be supervising any employees for their time under this supervisor

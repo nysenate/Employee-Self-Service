@@ -461,7 +461,7 @@ function recordManageCtrl($scope, $q, $filter,
                 var supId = empGroup.supId,
                     name = supEmpGroupService.getName(supId),
                     baseLabel = getSupNameLabel(name),
-                    supSupId = supEmpGroupService.getSupId(empGroup.supId),
+                    supSupId = empGroup.supSupId,
                     supSupName = supEmpGroupService.getName(supSupId),
                     extSupGroup = 'Supervisors Under ' + supSupName.fullName;
                 return {
