@@ -8,15 +8,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A {@link SupervisorEmpGroup} that also contains {@link PrimarySupEmpGroup}s for each supervisor
+ * A {@link SupervisorEmpGroup} that also contains {@link SecondarySupEmpGroup}s for each supervisor
  * directly under the target supervisor
  */
 public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
 
     /**
-     * {@link PrimarySupEmpGroup}s for each direct employee that is a supervisor
+     * {@link SecondarySupEmpGroup}s for each direct employee that is a supervisor
      */
-    private Multimap<Integer, PrimarySupEmpGroup> employeeSupEmpGroups = HashMultimap.create();
+    private Multimap<Integer, SecondarySupEmpGroup> employeeSupEmpGroups = HashMultimap.create();
 
     /**
      * Initialize based on a supervisor emp group
@@ -28,15 +28,15 @@ public class ExtendedSupEmpGroup extends SupervisorEmpGroup {
 
     /* --- Functional Getters / Setters --- */
 
-    public ImmutableMultimap<Integer, PrimarySupEmpGroup> getEmployeeSupEmpGroups() {
+    public ImmutableMultimap<Integer, SecondarySupEmpGroup> getEmployeeSupEmpGroups() {
         return ImmutableMultimap.copyOf(employeeSupEmpGroups);
     }
 
-    public void setEmployeeSupEmpGroups(Multimap<Integer, PrimarySupEmpGroup> employeeSupEmpGroups) {
+    public void setEmployeeSupEmpGroups(Multimap<Integer, SecondarySupEmpGroup> employeeSupEmpGroups) {
         this.employeeSupEmpGroups = HashMultimap.create(employeeSupEmpGroups);
     }
 
-    public void addEmployeeSupEmpGroup(PrimarySupEmpGroup supervisorEmpGroup) {
+    public void addEmployeeSupEmpGroup(SecondarySupEmpGroup supervisorEmpGroup) {
         employeeSupEmpGroups.put(supervisorEmpGroup.getSupervisorId(), supervisorEmpGroup);
     }
 

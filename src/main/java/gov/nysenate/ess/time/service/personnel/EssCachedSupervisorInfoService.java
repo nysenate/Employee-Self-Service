@@ -122,7 +122,8 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         while (!supInfoQueue.isEmpty()) {
             EmployeeSupInfo supInfo = supInfoQueue.remove();
             try {
-                PrimarySupEmpGroup subEmpGroup = getPrimarySupEmpGroup(supInfo.getEmpId());
+                SecondarySupEmpGroup subEmpGroup =
+                        new SecondarySupEmpGroup(getPrimarySupEmpGroup(supInfo.getEmpId()), supInfo.getSupId());
                 subEmpGroup.setActiveDates(supInfo.getEffectiveDateRange());
 
                 // The employee may not be supervising any employees for their time under this supervisor
@@ -267,13 +268,14 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         }
 
         for (SupervisorOverride override : overrides) {
+            // Only use the override if it is currently effective.
+            if (!override.isInEffect()) {
+                continue;
+            }
             switch (override.getSupOverrideType()) {
                 case SUPERVISOR:
-                    // Only add the override if it is effective now
-                    if (override.getEffectiveDateRange().contains(LocalDate.now())) {
-                        getSupOverrideEmps(override)
-                                .forEach(empGroup::addSupOverrideEmployee);
-                    }
+                    getSupOverrideEmps(override)
+                            .forEach(empGroup::addSupOverrideEmployee);
                     break;
                 case EMPLOYEE:
                     getEmpOverrideEmp(override).forEach(empGroup::addOverrideEmployee);

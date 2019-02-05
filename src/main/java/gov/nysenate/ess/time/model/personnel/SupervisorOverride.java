@@ -64,6 +64,10 @@ public class SupervisorOverride
         return effectiveRange.canonical(DateUtils.getLocalDateDiscreteDomain());
     }
 
+    public boolean isInEffect() {
+        return isActive() && getEffectiveDateRange().contains(LocalDate.now());
+    }
+
     /* --- Overrides --- */
 
     @Override

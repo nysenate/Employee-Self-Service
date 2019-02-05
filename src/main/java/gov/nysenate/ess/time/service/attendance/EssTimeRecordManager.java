@@ -44,6 +44,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.payroll.PayType.TE;
+import static gov.nysenate.ess.time.model.attendance.TimeRecordScope.PERSONNEL;
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.APPROVED_PERSONNEL;
+import static gov.nysenate.ess.time.model.attendance.TimeRecordStatus.SUBMITTED;
 
 @Service
 public class EssTimeRecordManager implements TimeRecordManager
@@ -370,6 +373,14 @@ public class EssTimeRecordManager implements TimeRecordManager
         if (!record.checkEmployeeInfo(empInfo)) {
             modifiedRecord = true;
             record.setEmpInfo(empInfo);
+            // If the record was approved by a supervisor that is no longer valid, revert it to submitted
+            if (record.getScope() == PERSONNEL && !Objects.equals(record.getApprovalEmpId(), record.getSupervisorId())) {
+                logger.info("Reverting approved record to {} due to sup change.  " +
+                        "Emp: {}, dates: {}, appr. sup: {}, new sup: {}",
+                        SUBMITTED, record.getEmployeeId(), record.getDateRange(),
+                        record.getApprovalEmpId(), record.getSupervisorId());
+                record.setRecordStatus(SUBMITTED);
+            }
         }
 
         return patchEntries(record) || modifiedRecord;
@@ -451,12 +462,24 @@ public class EssTimeRecordManager implements TimeRecordManager
         // Get date ranges where the employee was a senator
         RangeSet<LocalDate> senatorDates = transHistory.getSenatorDates();
 
+        // Get dates for which the employee has an attendance record.
         RangeSet<LocalDate> attendanceRecDates = TreeRangeSet.create();
         attendanceRecords.stream().map(AttendanceRecord::getDateRange).forEach(attendanceRecDates::add);
 
-        List<TimeRecord> apRecords = timeRecordService.getTimeRecords(
-                Collections.singleton(empId), periods, Collections.singleton(TimeRecordStatus.APPROVED_PERSONNEL));
-        RangeSet<LocalDate> apRecordRanges = apRecords.stream()
+        List<TimeRecord> timeRecords = timeRecordService.getTimeRecords(
+                Collections.singleton(empId), periods, EnumSet.allOf(TimeRecordStatus.class));
+
+        // Get begin dates of existing records
+        // We are respecting all record divisions to prevent the need for record merging, which is messy at this point
+        Set<LocalDate> existingRecordDates = timeRecords.stream()
+                .map(TimeRecord::getBeginDate)
+                .collect(Collectors.toSet());
+
+        // Combine new supervisor dates and existing record dates to get all dates where splits are needed
+        Set<LocalDate> periodSplitDates = Sets.union(existingRecordDates, newSupDates);
+
+        RangeSet<LocalDate> apRecordRanges = timeRecords.stream()
+                .filter(tr -> tr.getRecordStatus() == APPROVED_PERSONNEL)
                 .map(TimeRecord::getDateRange)
                 .reduce(ImmutableRangeSet.<LocalDate>builder(),
                         ImmutableRangeSet.Builder::add,
@@ -466,8 +489,8 @@ public class EssTimeRecordManager implements TimeRecordManager
         return periods.stream()
                 .sorted()
                 .map(PayPeriod::getDateRange)
-                // split any ranges that contain dates where there was a supervisor change
-                .flatMap(periodRange -> RangeUtils.splitRange(periodRange, newSupDates).stream())
+                // split any ranges according to computed period split dates
+                .flatMap(periodRange -> RangeUtils.splitRange(periodRange, periodSplitDates).stream())
                 // Trim ranges, eliminating dates where the employee was not employed
                 .flatMap(range -> activeDates.subRangeSet(range).asRanges().stream())
                 // Trim ranges, eliminating dates where the employee was a senator
