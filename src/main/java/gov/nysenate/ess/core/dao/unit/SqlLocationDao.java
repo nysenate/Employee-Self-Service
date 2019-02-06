@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class SqlLocationDao extends SqlBaseDao implements LocationDao {
@@ -48,6 +50,7 @@ public class SqlLocationDao extends SqlBaseDao implements LocationDao {
         return remoteNamedJdbc.queryForObject(sql, params, locationRowMapper);
     }
 
+    /** {@inheritDoc} */
     @Override
     public ImmutableCollection<Location> searchLocations(String term) {
         MapSqlParameterSource params = new MapSqlParameterSource("term", "%" + StringUtils.upperCase(term) + "%");
@@ -58,9 +61,13 @@ public class SqlLocationDao extends SqlBaseDao implements LocationDao {
 
     /** {@inheritDoc} */
     @Override
-    public List<Location> getLocationsByResponsibilityHead(ResponsibilityHead responsibilityHead) {
-        MapSqlParameterSource params = new MapSqlParameterSource("responsibilityHead", responsibilityHead.getCode());
-        String sql = SqlLocationQuery.GET_LOCATIONS_BY_RESPONSIBILITY_HEAD.getSql(schemaMap());
+    public List<Location> getLocationsByResponsibilityHead(List<ResponsibilityHead> responsibilityHeads) {
+        if (responsibilityHeads.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<String> rchCodes = responsibilityHeads.stream().map(ResponsibilityHead::getCode).collect(Collectors.toList());
+        MapSqlParameterSource params = new MapSqlParameterSource("rchCodes", rchCodes);
+        String sql = SqlLocationQuery.GET_LOCATIONS_BY_RESPONSIBILITY_HEADS.getSql(schemaMap());
         LocationRowMapper locationRowMapper = new LocationRowMapper("LOC_", "RCTRHD_");
         return remoteNamedJdbc.query(sql, params, locationRowMapper);
     }

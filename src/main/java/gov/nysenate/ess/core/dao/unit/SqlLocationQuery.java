@@ -36,9 +36,10 @@ public enum SqlLocationQuery implements BasicSqlQuery {
             GET_LOCATIONS.getSql() + " \n" +
             "AND loc.cdlocat like :term"
     ),
-    GET_LOCATIONS_BY_RESPONSIBILITY_HEAD(
-            GET_LOCATIONS.getSql() + " AND loc.CDRESPCTRHD = :responsibilityHead"
-    );
+    GET_LOCATIONS_BY_RESPONSIBILITY_HEADS(
+            GET_LOCATIONS.getSql() + " AND loc.CDRESPCTRHD IN (:rchCodes)"
+    )
+    ;
 
     private String sql;
 

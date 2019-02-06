@@ -24,7 +24,7 @@ public interface LocationDao {
     ImmutableCollection<Location> searchLocations(String term);
 
     /**
-     * Get locations that are managed by the give {@code responsibilityHead}.
+     * Get locations that are managed by any of the given {@code responsibilityHeads}
      */
-    List<Location> getLocationsByResponsibilityHead(ResponsibilityHead responsibilityHead);
+    List<Location> getLocationsByResponsibilityHead(List<ResponsibilityHead> responsibilityHeads);
 }

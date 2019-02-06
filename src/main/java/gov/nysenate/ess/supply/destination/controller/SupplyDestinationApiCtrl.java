@@ -6,10 +6,13 @@ import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
+import gov.nysenate.ess.supply.authorization.responsibilityhead.TempResponsibilityHead;
+import gov.nysenate.ess.supply.authorization.responsibilityhead.TempResponsibilityHeadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,7 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
 
     @Autowired private LocationDao locationDao;
     @Autowired private EmployeeInfoService employeeService;
+    @Autowired private TempResponsibilityHeadService trchService;
 
     /**
      * This API is used to get the list of locations an employee is
@@ -46,7 +50,9 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
             locations = workLocationsIn(locationDao.getLocations());
         } else {
             Employee employee = employeeService.getEmployee(empId);
-            locations = workLocationsIn(locationDao.getLocationsByResponsibilityHead(employee.getRespCenter().getHead()));
+            List<ResponsibilityHead> rchs =  trchService.tempRchForEmp(employee);
+            rchs.add(employee.getRespCenter().getHead());
+            locations = workLocationsIn(locationDao.getLocationsByResponsibilityHead(rchs));
         }
         return ListViewResponse.of(locations.stream()
                                             .map(LocationView::new)
