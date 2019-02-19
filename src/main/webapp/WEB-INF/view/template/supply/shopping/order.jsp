@@ -11,23 +11,18 @@
   <div loader-indicator class="loader" ng-show="state.isLoading()"></div>
 
   <div class="content-container content-controls"
-       ng-show="state.isSelectingDestination()">
+       ng-if="state.isSelectingDestination()">
     <%--Location Selection--%>
     <div class="content-info">
       <form name="selectDestinationForm" novalidate>
         <h4 style="display: inline-block;">Please select a destination: </h4>
-        <input type="text"
-               name="destination"
-               ng-model="destinationCode"
-               ui-autocomplete="getLocationAutocompleteOptions()"
-               destination-validator
-               ng-model-options="{debounce: 300}"
-               style="width: 80px;"
-               capitalize/>
+        <select ng-model="destination"
+                required="required"
+                ng-options="loc.selectDescription for loc in allowedDestinations() | orderBy:'code' track by loc.code "></select>
         <input type="button" value="Confirm" class="submit-button"
-               ng-disabled="selectDestinationForm.destination.$error.destination"
+               ng-disabled="selectDestinationForm.$invalid"
                ng-click="confirmDestination()">
-        <div ng-show="selectDestinationForm.destination.$error.destination"
+        <div ng-show="selectDestinationForm.$invalid"
              class="warning-text">
           Invalid location
         </div>
@@ -43,7 +38,7 @@
         <div style="display: inline-block;">
           <span class="supply-text">Destination: &nbsp;&nbsp; <a ng-click="resetDestination()">[change]</a></span>
           <div>
-            {{destinationCode}} ({{destinationDescription}})
+            {{destination.code}} ({{destination.locationDescription}})
           </div>
         </div>
         <div style="display: inline-block;">

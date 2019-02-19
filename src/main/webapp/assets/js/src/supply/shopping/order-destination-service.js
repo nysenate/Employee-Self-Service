@@ -28,9 +28,9 @@ function orderDestinationService(appProps, storageService, empInfoApi, locationA
          * Sets the destination corresponding to the given location code.
          * If code is valid sets the destination, otherwise returns false.
          */
-        setDestination: function (code) {
-            if (locationAutocompleteService.isValidCode(code)) {
-                storageService.save(KEY, locationAutocompleteService.getLocationFromCode(code));
+        setDestination: function (destination) {
+            if (locationAutocompleteService.isValidCode(destination.code)) { // TODO this is no longer needed?
+                storageService.save(KEY, destination);
                 return true;
             }
             return false;

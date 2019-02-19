@@ -11,14 +11,16 @@ import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.model.unit.LocationType;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
-import gov.nysenate.ess.supply.authorization.responsibilityhead.TempResponsibilityHead;
 import gov.nysenate.ess.supply.authorization.responsibilityhead.TempResponsibilityHeadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,25 +46,33 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/{empId}")
     public BaseResponse getDestinationsForEmployee(@PathVariable int empId) {
-        List<Location> locations;
+        Set<Location> locations;
         // If a supply employee, can deliver to any location.
         if (getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
             locations = workLocationsIn(locationDao.getLocations());
         } else {
             Employee employee = employeeService.getEmployee(empId);
-            List<ResponsibilityHead> rchs =  trchService.tempRchForEmp(employee);
+
+            // Locations for all temp rch's and employees rch.
+            List<ResponsibilityHead> rchs = trchService.tempRchForEmp(employee);
             rchs.add(employee.getRespCenter().getHead());
-            locations = workLocationsIn(locationDao.getLocationsByResponsibilityHead(rchs));
+            locations = new HashSet<>(locationDao.getLocationsByResponsibilityHead(rchs));
+
+            // Add the employees work location
+            locations.add(employee.getWorkLocation());
+
+            // Filter out any non work type locations.
+            locations = workLocationsIn(locations);
         }
         return ListViewResponse.of(locations.stream()
-                                            .map(LocationView::new)
-                                            .collect(Collectors.toList()));
+                .map(LocationView::new)
+                .collect(Collectors.toList()));
     }
 
-    private List<Location> workLocationsIn(List<Location> locations) {
+    private Set<Location> workLocationsIn(Collection<Location> locations) {
         return locations
                 .stream()
                 .filter(loc -> loc.getLocId().getType() == LocationType.WORK)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

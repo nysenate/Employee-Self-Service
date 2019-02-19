@@ -31,9 +31,8 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
      */
     $scope.displayedLineItems = [];
 
-    // The user specified destination code. Defaults to the code of the employees work location.
-    $scope.destinationCode = "";
-    $scope.destinationDescription = "";
+    // The selected destination for this order.
+    $scope.destination = {};
 
     /** --- Initialization --- */
 
@@ -59,15 +58,15 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     /** --- State --- */
 
     function loadSelectDestinationState() {
-        locationAutocompleteService.initWithResponsibilityHeadLocations()
+        locationAutocompleteService.initWithUsersAllowedDestinations()
             .then(destinationService.queryDefaultDestination)
-            .then(setDestinationCode)
+            .then(setDestination)
             .then(setToSelectingDestinationState)
             .catch($scope.handleErrorResponse);
     }
 
-    function setDestinationCode() {
-        $scope.destinationCode = destinationService.getDefaultCode();
+    function setDestination() {
+        $scope.destination = locationAutocompleteService.getLocationFromCode(destinationService.getDefaultCode());
     }
 
     function setToSelectingDestinationState() {
@@ -76,11 +75,10 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     function loadShoppingState() {
         $scope.state.toLoading();
-        $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
-        itemApi.itemsForLoc(destinationService.getDestination().locId)
+        $scope.destination = destinationService.getDestination();
+        itemApi.itemsForLoc($scope.destination.locId)
             .then(initializeCart)
             .then(sortAndFilterLineItems)
-            .then(setDestinationDescription)
             .then(setToShoppingState);
     }
 
@@ -97,10 +95,6 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     function setToShoppingState() {
         $scope.state.toShopping();
-    }
-
-    function setDestinationDescription() {
-        $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
     }
 
     /** --- Search --- */
@@ -158,14 +152,18 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     /** --- Location selection --- */
 
     $scope.confirmDestination = function () {
-        var success = destinationService.setDestination($scope.destinationCode);
+        var success = destinationService.setDestination($scope.destination);
         if (success) {
             loadShoppingState();
         }
     };
 
-    $scope.getLocationAutocompleteOptions = function () {
-        return locationAutocompleteService.getLocationAutocompleteOptions();
+    $scope.allowedDestinations = function () {
+        locs = locationAutocompleteService.getLocations();
+        locs.forEach(function (loc) {
+            loc['selectDescription'] = loc.code + ' (' + loc.locationDescription + ')'
+        });
+        return locs;
     };
 
     $scope.resetDestination = function () {
@@ -217,26 +215,3 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         modals.open('large-item-image-modal', {item: item}, true)
     }
 }
-
-/**
- * Directive for validating destination selection.
- */
-essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService', function (locationAutocompleteService) {
-    return {
-        require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
-            ctrl.$validators.destination = function (modelValue, viewValue) {
-                return locationAutocompleteService.isValidCode(modelValue) || modelValue.length === 0;
-            };
-
-            /**
-             * THIS IS A HACKY WAY TO SOLVE   #10625
-             */
-            elm.on('autocompleteselect', function (a, object, e, c) {
-                angular.element("form[name=selectDestinationForm]").scope().selectDestinationForm.destination.$error.destination = false;
-                if (!angular.element("form[name=selectDestinationForm]").scope().destinationCode)
-                    angular.element("form[name=selectDestinationForm]").scope().destinationCode = object.item.label.split("(")[0].trim()
-            });
-        }
-    }
-}]);

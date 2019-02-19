@@ -51,12 +51,16 @@ function locationAutocompleteService(appProps, locationApi, destinationApi) {
         },
 
         /** Only get locations that fall under the logged in users responsibility Head. */
-        initWithResponsibilityHeadLocations: function () {
+        initWithUsersAllowedDestinations: function () {
             reset();
             return destinationApi.get({empId: appProps.user.employeeId}).$promise
                 .then(setLocations)
                 .then(setCodes)
                 .then(setCodesToLocationMap);
+        },
+
+        getLocations: function () {
+            return locations;
         },
 
         getCodes: function () {
