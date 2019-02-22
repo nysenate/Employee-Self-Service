@@ -18,13 +18,19 @@
         <h4 style="display: inline-block;">Please select a destination: </h4>
         <select ng-model="$parent.destination"
                 required="required"
-                ng-options="loc.selectDescription for loc in allowedDestinations() | orderBy:'code' track by loc.code "></select>
+                ng-options="loc.selectDescription for loc in allowedDestinations() | orderBy:'code' track by loc.code ">
+        </select>
         <input type="button" value="Confirm" class="submit-button"
                ng-disabled="selectDestinationForm.$invalid"
                ng-click="confirmDestination()">
         <div ng-show="selectDestinationForm.$invalid"
              class="warning-text">
           Invalid location
+        </div>
+        <div ng-show="isErrorWithWorkLocation || hasPotentialRchErrors()"
+             class="warning-text">
+          The destinations shown may be limited due to inconsistencies in your employee data. <br/>
+          If your missing a necessary destination, contact the STS Helpline at (518) 455-2011 for assistance.
         </div>
       </form>
     </div>

@@ -1,15 +1,15 @@
 var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController',
-                ['$scope', 'LocationService', 'SupplyCartService', 'PaginationModel',
+                ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel',
                  'SupplyLocationAutocompleteService', 'SupplyItemApi',
                  'SupplyOrderDestinationService', 'modals', 'SupplyLineItemService',
-                 'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService',
+                 'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService', 'EmpInfoApi',
                  supplyOrderController]);
 
-function supplyOrderController($scope, locationService, supplyCart, paginationModel,
+function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel,
                                locationAutocompleteService, itemApi, destinationService,
                                modals, lineItemService, itemFilterService,
-                               categoryService, stateService) {
+                               categoryService, stateService, empInfoApi) {
 
     // A reference to the stateService on the scope for checking the state in jsp.
     $scope.state = stateService;
@@ -31,8 +31,11 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
      */
     $scope.displayedLineItems = [];
 
+    $scope.employee = {}; // The logged in employee
+
     // The selected destination for this order.
     $scope.destination = {};
+    $scope.isErrorWithWorkLocation = false;
 
     /** --- Initialization --- */
 
@@ -40,10 +43,11 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         $scope.state.toLoading();
         $scope.paginate.itemsPerPage = 16;
         updateFiltersFromUrlParams();
+        queryEmployee();
+
         if (!destinationService.isDestinationConfirmed()) {
             loadSelectDestinationState();
-        }
-        else {
+        } else {
             loadShoppingState();
         }
     };
@@ -55,6 +59,13 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         $scope.state.toInvalid();
     });
 
+    function queryEmployee() {
+        empInfoApi.get({empId: appProps.user.employeeId, detail: true}).$promise
+            .then(function (response) {
+                $scope.employee = response.employee;
+            });
+    }
+
     /** --- State --- */
 
     function loadSelectDestinationState() {
@@ -65,8 +76,18 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
             .catch($scope.handleErrorResponse);
     }
 
+    // Defaults the destination selection to the employees work location if possible.
+    // If the work location is not in the allowed destination list, set a flag so a warning message can be shown.
     function setDestination() {
-        $scope.destination = locationAutocompleteService.getLocationFromCode(destinationService.getDefaultCode());
+        var defaultLocation = locationAutocompleteService.getLocationFromCode(destinationService.getDefaultCode());
+        if (defaultLocation) {
+            $scope.isErrorWithWorkLocation = false;
+            $scope.destination = defaultLocation;
+        } else {
+            $scope.isErrorWithWorkLocation = true;
+            // If the employee work location was not in allowed destination list, default to the first destination.
+            $scope.destination = locationAutocompleteService.getLocations()[0];
+        }
     }
 
     function setToSelectingDestinationState() {
@@ -182,6 +203,16 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         }
     };
 
+    $scope.hasPotentialRchErrors = function () {
+        var missingRchLocation = true;
+        angular.forEach(locationAutocompleteService.getLocations(), function (loc) {
+            if (loc.respCenterHead.code === $scope.employee.respCtr.respCenterHead.code) {
+                missingRchLocation = false;
+            }
+        });
+        return missingRchLocation;
+    };
+
     /** --- Sorting  --- */
 
     /**
@@ -198,11 +229,10 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
                 if (a.item.description > b.item.description) return 1;
                 return 0;
             });
-        }
-        else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
+        } else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
             lineItems.sort(function (a, b) {
                 if (a.item.category < b.item.category) return -1;
-                if (a.item.category> b.item.category) return 1;
+                if (a.item.category > b.item.category) return 1;
                 return 0;
             });
         }

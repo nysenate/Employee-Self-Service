@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -65,7 +66,10 @@ public class SqlLocationDao extends SqlBaseDao implements LocationDao {
         if (responsibilityHeads.isEmpty()) {
             return new ArrayList<>();
         }
-        List<String> rchCodes = responsibilityHeads.stream().map(ResponsibilityHead::getCode).collect(Collectors.toList());
+        List<String> rchCodes = responsibilityHeads.stream()
+                .filter(Objects::nonNull)
+                .map(ResponsibilityHead::getCode)
+                .collect(Collectors.toList());
         MapSqlParameterSource params = new MapSqlParameterSource("rchCodes", rchCodes);
         String sql = SqlLocationQuery.GET_LOCATIONS_BY_RESPONSIBILITY_HEADS.getSql(schemaMap());
         LocationRowMapper locationRowMapper = new LocationRowMapper("LOC_", "RCTRHD_");
