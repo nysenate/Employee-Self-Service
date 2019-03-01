@@ -16,7 +16,7 @@
     <div class="content-info">
       <form name="selectDestinationForm" novalidate>
         <h4 style="display: inline-block;">Please select a destination: </h4>
-        <select ng-model="destination"
+        <select ng-model="$parent.destination"
                 required="required"
                 ng-options="loc.selectDescription for loc in allowedDestinations() | orderBy:'code' track by loc.code "></select>
         <input type="button" value="Confirm" class="submit-button"
