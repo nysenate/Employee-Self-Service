@@ -21,7 +21,6 @@
     "floatThead": "~1.2.13",
     "angular-float-thead": "~0.1.1",
     "angular-utils-pagination": "0.9.3",
-    "ui-autocomplete": "^0.6.1",
     "nsPopover": "^0.6.8",
     "angular-cookies": "^1.5.8",
     "json2": "*",
@@ -31,7 +30,8 @@
     "ngInfiniteScroll": "^1.3.4",
     "angular-bowser": "^0.0.4",
     "sockjs-client": "~1.3.0",
-    "stomp-websocket": "2.3.4"
+    "stomp-websocket": "2.3.4",
+    "angular-ui-select": "~0.19.8"
   },
   "resolutions": {
     "angular": "^1.5.8"

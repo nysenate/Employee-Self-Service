@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.destination.controller;
 
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.view.LocationView;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,7 +41,9 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{empId}")
     public BaseResponse getDestinationsForEmployee(@PathVariable int empId) {
         Employee employee = employeeService.getEmployee(empId);
-        Set<Location> locations = destinationService.employeeDestinations(employee);
+        List<Location> locations = Lists.newArrayList(destinationService.employeeDestinations(employee));
+
+        Collections.sort(locations, (l1, l2) -> (l1.getLocId().getCode().compareTo(l2.getLocId().getCode())));
 
         return ListViewResponse.of(locations.stream()
                 .map(LocationView::new)

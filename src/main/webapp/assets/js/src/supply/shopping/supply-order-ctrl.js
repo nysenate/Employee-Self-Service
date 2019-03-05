@@ -1,13 +1,13 @@
 var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController',
                 ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel',
-                 'SupplyLocationAutocompleteService', 'SupplyItemApi',
+                 'SupplyDestinationApi', 'SupplyItemApi',
                  'SupplyOrderDestinationService', 'modals', 'SupplyLineItemService',
                  'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService', 'EmpInfoApi',
                  supplyOrderController]);
 
 function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel,
-                               locationAutocompleteService, itemApi, destinationService,
+                               destinationApi, itemApi, destinationService,
                                modals, lineItemService, itemFilterService,
                                categoryService, stateService, empInfoApi) {
 
@@ -33,9 +33,12 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     $scope.employee = {}; // The logged in employee
 
-    // The selected destination for this order.
-    $scope.destination = {};
-    $scope.isErrorWithWorkLocation = false;
+    $scope.destinations = {
+        allowed: [],
+        selected: undefined,
+        isWorkLocationError: false,
+        isRchLocationError: false
+    };
 
     /** --- Initialization --- */
 
@@ -43,12 +46,13 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.state.toLoading();
         $scope.paginate.itemsPerPage = 16;
         updateFiltersFromUrlParams();
-        queryEmployee();
 
         if (!destinationService.isDestinationConfirmed()) {
-            loadSelectDestinationState();
+            queryEmployee()
+                .then(loadSelectDestinationState)
         } else {
-            loadShoppingState();
+            queryEmployee()
+                .then(loadShoppingState);
         }
     };
 
@@ -60,7 +64,7 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     });
 
     function queryEmployee() {
-        empInfoApi.get({empId: appProps.user.employeeId, detail: true}).$promise
+        return empInfoApi.get({empId: appProps.user.employeeId, detail: true}).$promise
             .then(function (response) {
                 $scope.employee = response.employee;
             });
@@ -69,25 +73,49 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- State --- */
 
     function loadSelectDestinationState() {
-        locationAutocompleteService.initWithUsersAllowedDestinations()
-            .then(destinationService.queryDefaultDestination)
-            .then(setDestination)
+        $scope.state.toLoading();
+        initAllowedDestinations()
+            .then(selectDefaultDestination)
+            .then(checkForLocationErrors)
             .then(setToSelectingDestinationState)
             .catch($scope.handleErrorResponse);
     }
 
-    // Defaults the destination selection to the employees work location if possible.
-    // If the work location is not in the allowed destination list, set a flag so a warning message can be shown.
-    function setDestination() {
-        var defaultLocation = locationAutocompleteService.getLocationFromCode(destinationService.getDefaultCode());
-        if (defaultLocation) {
-            $scope.isErrorWithWorkLocation = false;
-            $scope.destination = defaultLocation;
-        } else {
-            $scope.isErrorWithWorkLocation = true;
-            // If the employee work location was not in allowed destination list, default to the first destination.
-            $scope.destination = locationAutocompleteService.getLocations()[0];
+    function initAllowedDestinations() {
+        return destinationApi.get({empId: appProps.user.employeeId}).$promise
+            .then(saveDestinations);
+
+        function saveDestinations(response) {
+            $scope.destinations.allowed = response.result;
         }
+    }
+
+    function selectDefaultDestination() {
+        $scope.destinations.allowed.forEach(function (dest) {
+            if ($scope.employee.empWorkLocation.code === dest.code) {
+                $scope.destinations.selected = dest;
+            }
+        });
+
+        // If selected did not get set default it to the first.
+        if ($scope.destinations.selected === undefined) {
+            $scope.destinations.selected = $scope.destinations.allowed[0];
+        }
+    }
+
+    function checkForLocationErrors() {
+        $scope.destinations.isWorkLocationError = true;
+        $scope.destinations.isRchLocationError = true;
+
+        $scope.destinations.allowed.forEach(function (dest) {
+            if ($scope.employee.empWorkLocation.code === dest.code) {
+                $scope.destinations.isWorkLocationError = false;
+            }
+
+            if ($scope.employee.respCtr.respCenterHead.code === dest.respCenterHead.code) {
+                $scope.destinations.isRchLocationError = false;
+            }
+        });
     }
 
     function setToSelectingDestinationState() {
@@ -173,18 +201,10 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     /** --- Location selection --- */
 
     $scope.confirmDestination = function () {
-        var success = destinationService.setDestination($scope.destination);
+        var success = destinationService.setDestination($scope.destinations.selected);
         if (success) {
             loadShoppingState();
         }
-    };
-
-    $scope.allowedDestinations = function () {
-        locs = locationAutocompleteService.getLocations();
-        locs.forEach(function (loc) {
-            loc['selectDescription'] = loc.code + ' (' + loc.locationDescription + ')'
-        });
-        return locs;
     };
 
     $scope.resetDestination = function () {
@@ -203,15 +223,6 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         }
     };
 
-    $scope.hasPotentialRchErrors = function () {
-        var missingRchLocation = true;
-        angular.forEach(locationAutocompleteService.getLocations(), function (loc) {
-            if (loc.respCenterHead.code === $scope.employee.respCtr.respCenterHead.code) {
-                missingRchLocation = false;
-            }
-        });
-        return missingRchLocation;
-    };
 
     /** --- Sorting  --- */
 

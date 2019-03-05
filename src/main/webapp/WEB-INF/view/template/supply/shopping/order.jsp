@@ -16,18 +16,26 @@
     <div class="content-info">
       <form name="selectDestinationForm" novalidate>
         <h4 style="display: inline-block;">Please select a destination: </h4>
-        <select ng-model="$parent.destination"
-                required="required"
-                ng-options="loc.selectDescription for loc in allowedDestinations() | orderBy:'code' track by loc.code ">
-        </select>
+        <span class="margin-10" style="text-align: left;">
+          <ui-select ng-model="destinations.selected" style="min-width: 175px;">
+            <ui-select-match>
+              <span ng-bind="$select.selected.code"></span>
+            </ui-select-match>
+            <ui-select-choices
+                repeat="dest in destinations.allowed | filter: $select.search track by dest.code">
+              <div ng-bind-html="dest.code | highlight: $select.search"></div>
+              <small>
+                <span ng-bind-html="dest.locationDescription | highlight: $select.search"></span>
+              </small>
+            </ui-select-choices>
+          </ui-select>
+        </span>
+
         <input type="button" value="Confirm" class="submit-button"
                ng-disabled="selectDestinationForm.$invalid"
                ng-click="confirmDestination()">
-        <div ng-show="selectDestinationForm.$invalid"
-             class="warning-text">
-          Invalid location
-        </div>
-        <div ng-show="isErrorWithWorkLocation || hasPotentialRchErrors()"
+
+        <div ng-show="destinations.isWorkLocationError || destinations.isRchLocationError"
              class="warning-text">
           The destinations shown may be limited due to inconsistencies in your employee data. <br/>
           If your missing a necessary destination, contact the STS Helpline at (518) 455-2011 for assistance.
