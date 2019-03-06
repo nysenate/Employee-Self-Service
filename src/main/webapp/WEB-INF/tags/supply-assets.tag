@@ -11,10 +11,6 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/service/supply-category-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/location/supply-location-autocomplete-service.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/supply/items/supply-item-autocomplete-service.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/supply/api/supply-item-api.js?v=${releaseVersion}"></script>
 
         <%-- History --%>

@@ -72,7 +72,6 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.dialog.min.js',
                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.datepicker.min.js',
                         '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.menu.min.js',
-                        '<%= bowerRoot %>/jquery-ui/ui/minified/jquery.ui.autocomplete.min.js',
                         // AngularJs
                         '<%= bowerRoot %>/angular/angular.min.js',
                         '<%= bowerRoot %>/angular-route/angular-route.min.js',
@@ -87,12 +86,12 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/floatThead/dist/jquery.floatThead.min.js',
                         '<%= bowerRoot %>/angular-float-thead/angular-floatThead.js',
                         '<%= bowerRoot %>/underscore/underscore-min.js',
-                        '<%= bowerRoot %>/ui-autocomplete/autocomplete.js',
                         '<%= bowerRoot %>/nsPopover/src/nsPopover.js',
                         '<%= bowerRoot %>/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
                         '<%= bowerRoot %>/sockjs-client/dist/sockjs.min.js',
                         '<%= bowerRoot %>/stomp-websocket/lib/stomp.min.js',
-                        '<%= bowerRoot %>/angular-bowser/src/angular-bowser.js'
+                        '<%= bowerRoot %>/angular-ui-select/dist/select.min.js',
+                        '<%= bowerRoot %>/angular-bowser/src/angular-bowser.js' // Dont try to load anything after this. An error occurs and stops execution.
                         ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
