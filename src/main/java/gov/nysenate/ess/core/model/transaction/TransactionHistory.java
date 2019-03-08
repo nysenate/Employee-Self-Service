@@ -502,9 +502,13 @@ public class TransactionHistory
         // If there was an APP transaction, cut off any snapshots before its effect date just to be safe
         if (recordsByCode.containsKey(APP)) {
             TransactionRecord appRecord = recordsByCode.get(APP).get(0);
-            recordSnapshots.navigableKeySet()
+            Iterator<LocalDate> preAppDates = recordSnapshots.navigableKeySet()
                     .headSet(appRecord.getEffectDate(), false)
-                    .forEach(recordSnapshots::remove);
+                    .iterator();
+            while (preAppDates.hasNext()) {
+                preAppDates.next();
+                preAppDates.remove();
+            }
         }
     }
 
