@@ -11,24 +11,14 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
         displayMap();
     };
 
-    $scope.displayLodgingDetails = function () {
-        modals.open('travel-lodging-details-modal', {app: $scope.reviewApp}, true);
-    };
-
-    $scope.displayMealDetails = function () {
-        modals.open('travel-meal-details-modal', {app: $scope.reviewApp}, true);
-    };
-
-    $scope.displayMileageDetails = function () {
-        modals.open('travel-mileage-details-modal', {app: $scope.reviewApp}, true);
-    };
 
     $scope.next = function () {
         modals.open('submit-confirm')
             .then(function () {
                 modals.open("submit-progress");
-                submitApi.save({id: $scope.data.app.id}).$promise
+                submitApi.save({}).$promise
                     .then(function (response) {
+                        $scope.data.app = response.result;
                         modals.resolve({});
                     })
                     .then(function () {
@@ -57,12 +47,15 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
 
         // Create map api parameters.
         // All intermediate destinations should be waypoints, final destination should be destination.
-        var destinations = $scope.reviewApp.accommodations;
-        var origin = $scope.reviewApp.route.origin.formattedAddress;
+
+        var origin = $scope.reviewApp.route.origin.address.formattedAddress;
+
+        // TODO Use destinations in views
         var waypoints = [];
-        angular.forEach(destinations.destinations, function (dest, index) {
-            waypoints.push({location: dest.address.formattedAddress});
+        $scope.reviewApp.route.outboundLegs.forEach(function (leg) {
+            waypoints.push({location: leg.to.address.formattedAddress});
         });
+
         // Last destination should be destination param, not waypoint.
         var destination = waypoints.pop().location;
 
@@ -80,8 +73,7 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
         directionsService.route(request, function (result, status) {
             if (status == 'OK') {
                 directionsDisplay.setDirections(result);
-            }
-            else {
+            } else {
                 console.log("Unsuccessful map query, status = " + status);
             }
         });

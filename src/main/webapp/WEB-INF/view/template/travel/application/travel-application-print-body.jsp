@@ -83,14 +83,14 @@
             Departure:
           </div>
           <div class="col-10-12">
-            {{(app.route.origin.formattedAddressWithCounty) || NOT_AVAILABLE}}
+            {{(app.route.origin.address.formattedAddressWithCounty) || NOT_AVAILABLE}}
           </div>
         </div>
       </div>
 
       <div class="col-12-12 row">
         <div class="grid">
-          <span ng-repeat="dest in app.accommodations.destinations" style="font-weight: normal;">
+          <span ng-repeat="dest in app.route.destinations" style="font-weight: normal;">
           <div class="col-2-12 travel-print-label">
             <span ng-if="$first">Destination:</span>
             <span ng-if="!$first">&nbsp;</span>
@@ -142,13 +142,14 @@
 
     <div class="travel-print-allowances-box">
       <h4 style="margin: 0px 0px 10px 0px;">Estimated Travel Costs</h4>
-      <label>Transportation</label><span>{{(app.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Food</label><span>{{(app.mealAllowance.totalMealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Lodging</label><span>{{(app.lodgingAllowance.totalLodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Parking/Tolls</label><span>{{(tollsAndParking() | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Taxi/Bus/Subway</label><span>{{(app.alternateAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Registration Fee</label><span>{{(app.registrationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>TOTAL</label><span>{{(app.totalAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Transportation</label><span>{{(app.allowances.transportation | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Food</label><span>{{(app.allowances.meals | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Lodging</label><span>{{(app.allowances.lodging | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Parking/Tolls</label><span>{{(app.allowances.tollsAndParking | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Taxi/Bus/Subway</label><span>{{(app.allowances.alternateTransportation | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Registration
+        Fee</label><span>{{(app.allowances.registration | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>TOTAL</label><span>{{(app.allowances.total | currency) || NOT_AVAILABLE}}</span><br/>
     </div>
   </div>
 

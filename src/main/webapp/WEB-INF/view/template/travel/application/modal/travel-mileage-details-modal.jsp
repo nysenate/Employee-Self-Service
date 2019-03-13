@@ -1,5 +1,5 @@
 <div class="content-container no-top-margin text-align-center">
-  <h3 class="content-info">Mileage Details</h3>
+  <h3 class="content-info">Calculated Mileage Expenses</h3>
   <div class="margin-20">
     <table class="travel-table">
       <thead>
@@ -8,23 +8,26 @@
         <td>To</td>
         <td>Miles</td>
         <td>Rate</td>
+        <td>Mode of Transportation</td>
         <td>Allowance</td>
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="allowance in mileageAllowances">
-        <td>{{allowance.leg.from.formattedAddress}}</td>
-        <td>{{allowance.leg.to.formattedAddress}}</td>
-        <td>{{allowance.miles}}</td>
-        <td>{{allowance.mileageRate}}</td>
-        <td>{{allowance.allowance | currency}}</td>
+      <tr ng-repeat="leg in legs">
+        <td>{{leg.from.address.formattedAddress}}</td>
+        <td>{{leg.to.address.formattedAddress}}</td>
+        <td>{{leg.miles}}</td>
+        <td>{{leg.mileageRate}}</td>
+        <td>{{leg.modeOfTransportation.displayName}}</td>
+        <td>{{leg.mileageExpense | currency}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.mileageAllowance.totalMiles}}</td>
+        <td class="bold">{{app.route.totalMiles}}</td>
         <td></td>
-        <td class="bold">{{app.mileageAllowance.totalMileageAllowance | currency}}<span ng-if="displayRequirements">*</span></td>
+        <td></td>
+        <td class="bold">{{app.route.mileageExpense | currency}}<span ng-if="displayRequirements">*</span></td>
       </tr>
       </tbody>
     </table>

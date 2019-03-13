@@ -44,8 +44,8 @@
               ng-click="viewApplicationDetails(app)">
             <td>{{app.startDate | date:'M/d/yyyy'}}</td>
             <td>{{app.traveler.lastName}}</td>
-            <td>{{shortAddress(app)}}</td>
-            <td>{{app.totalAllowance | currency}}</td>
+            <td>{{getDestinations(app)}}</td>
+            <td>{{app.allowances.total | currency}}</td>
           </tr>
           </tbody>
         </table>

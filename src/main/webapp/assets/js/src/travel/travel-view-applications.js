@@ -60,9 +60,12 @@ function historyController($scope, appProps, modals, travelerAppApi) {
             .catch(function() {})
     };
 
-    $scope.shortAddress = function(app) {
-        var addr = app.accommodations.destinations[0].address;
-        return addr.city || addr.county || addr.addr1;
+    $scope.getDestinations = function(app) {
+        var destinations = app.route.destinations[0].address.city || app.route.destinations[0].address.addr1 || "";
+        if (app.route.destinations.length > 1) {
+            destinations += " ..."
+        }
+        return destinations;
     };
 
     $scope.init();

@@ -10,9 +10,11 @@ essTravel.directive('travelLodgingDetailsModal', ['appProps', function (appProps
 
 function lodgingDetailsModalCtrl($scope, modals) {
 
-    $scope.app = modals.params().app;
+    this.$onInit = function () {
+        $scope.app = modals.params().app;
+    };
 
-    $scope.closeModal = function() {
+    $scope.closeModal = function () {
         modals.resolve();
     };
 }

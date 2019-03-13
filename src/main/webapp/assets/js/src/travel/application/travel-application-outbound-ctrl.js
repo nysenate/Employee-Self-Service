@@ -10,18 +10,19 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
             form: {}
         };
         $scope.dirtyApp = angular.copy($scope.data.app);
+        console.log($scope.dirtyApp);
 
         if ($scope.dirtyApp.route.outboundLegs.length === 0) {
-            var segment = {};
+            var leg = new Leg();
             // Init from address to employees work address.
-            segment.from = $scope.data.app.traveler.empWorkLocation.address;
-            $scope.dirtyApp.route.outboundLegs.push(segment);
+            leg.from.address = $scope.data.app.traveler.empWorkLocation.address;
+            $scope.dirtyApp.route.outboundLegs.push(leg);
         }
     };
 
     $scope.addSegment = function () {
         // Initialize new leg
-        var segment = {};
+        var segment = new Leg();
         var prevSeg = $scope.dirtyApp.route.outboundLegs[$scope.dirtyApp.route.outboundLegs.length - 1];
         segment.from = prevSeg.to;
         segment.modeOfTransportation = prevSeg.modeOfTransportation;
@@ -32,11 +33,11 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
     };
 
     $scope.setFromAddress = function (leg, address) {
-        leg.from = address;
+        leg.from.address = address;
     };
 
     $scope.setToAddress = function (leg, address) {
-        leg.to = address;
+        leg.to.address = address;
     };
 
     $scope.isLastSegment = function (index) {
@@ -57,7 +58,7 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
     };
 
     $scope.continue = function () {
-        outboundApi.update({id: $scope.data.app.id}, $scope.dirtyApp.route, function (response) {
+        outboundApi.update($scope.dirtyApp.route, function (response) {
             $scope.data.app = response.result;
             $scope.nextState();
         }, $scope.handleErrorResponse);
@@ -76,3 +77,4 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
 
     };
 }
+

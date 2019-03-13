@@ -1,7 +1,6 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.application.address.TravelAddress;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,36 +1,42 @@
 package gov.nysenate.ess.travel.application.route;
 
-import gov.nysenate.ess.travel.application.address.TravelAddress;
+import gov.nysenate.ess.travel.application.route.destination.Destination;
+import gov.nysenate.ess.travel.utils.Dollars;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
 
 public class Leg {
 
-    private final UUID id;
-    private final TravelAddress from;
-    private final TravelAddress to;
+    private int id;
+    private final Destination from;
+    private final Destination to;
     private final ModeOfTransportation modeOfTransportation;
     private final LocalDate travelDate;
+    private final double miles;
+    private final BigDecimal mileageRate;
 
-    public Leg(UUID id, TravelAddress from, TravelAddress to, ModeOfTransportation modeOfTransportation, LocalDate travelDate) {
+    public Leg(int id, Destination from, Destination to, ModeOfTransportation modeOfTransportation,
+               LocalDate travelDate, double miles, BigDecimal mileageRate) {
         this.id = id;
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
         this.modeOfTransportation = Objects.requireNonNull(modeOfTransportation);
         this.travelDate = Objects.requireNonNull(travelDate);
+        this.miles = miles;
+        this.mileageRate = mileageRate;
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 
-    public TravelAddress getFrom() {
+    public Destination getFrom() {
         return from;
     }
 
-    public TravelAddress getTo() {
+    public Destination getTo() {
         return to;
     }
 
@@ -38,17 +44,43 @@ public class Leg {
         return travelDate;
     }
 
-    public ModeOfTransportation getModeOfTransportation() {
+    public Dollars mileageExpense() {
+        if (qualifiesForMileageReimbursement()) {
+            return new Dollars(getMileageRate().multiply(new BigDecimal(miles)));
+        }
+        return Dollars.ZERO;
+    }
+
+    ModeOfTransportation getModeOfTransportation() {
         return modeOfTransportation;
+    }
+
+    boolean qualifiesForMileageReimbursement() {
+        return getModeOfTransportation().qualifiesForMileageReimbursement();
+    }
+
+    void setId(int id) {
+        this.id = id;
+    }
+
+    double getMiles() {
+        return miles;
+    }
+
+    BigDecimal getMileageRate() {
+        return mileageRate;
     }
 
     @Override
     public String toString() {
         return "Leg{" +
-                "from=" + from +
+                "id=" + id +
+                ", from=" + from +
                 ", to=" + to +
                 ", modeOfTransportation=" + modeOfTransportation +
                 ", travelDate=" + travelDate +
+                ", miles=" + miles +
+                ", mileageRate=" + mileageRate +
                 '}';
     }
 
@@ -57,14 +89,16 @@ public class Leg {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Leg leg = (Leg) o;
-        return Objects.equals(from, leg.from) &&
+        return Double.compare(leg.miles, miles) == 0 &&
+                Objects.equals(from, leg.from) &&
                 Objects.equals(to, leg.to) &&
                 Objects.equals(modeOfTransportation, leg.modeOfTransportation) &&
-                Objects.equals(travelDate, leg.travelDate);
+                Objects.equals(travelDate, leg.travelDate) &&
+                Objects.equals(mileageRate, leg.mileageRate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, modeOfTransportation, travelDate);
+        return Objects.hash(from, to, modeOfTransportation, travelDate, miles, mileageRate);
     }
 }

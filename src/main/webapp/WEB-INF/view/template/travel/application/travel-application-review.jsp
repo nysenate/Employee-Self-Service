@@ -30,7 +30,7 @@
           <div class="itinerary-address">
             <label>From</label><br/>
             <input travel-address-autocomplete
-                   ng-model="leg.from.formattedAddress"
+                   ng-model="leg.from.address.formattedAddress"
                    callback="leg.setFrom(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text" size="40">
@@ -44,7 +44,7 @@
           <div class="itinerary-address">
             <label>To</label><br/>
             <input travel-address-autocomplete
-                   ng-model="leg.to.formattedAddress"
+                   ng-model="leg.to.address.formattedAddress"
                    callback="leg.setTo(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text"
@@ -82,7 +82,7 @@
           <div class="itinerary-address">
             <label>From</label><br/>
             <input travel-address-autocomplete
-                   ng-model="leg.from.formattedAddress"
+                   ng-model="leg.from.address.formattedAddress"
                    callback="leg.setFrom(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text" size="40">
@@ -96,7 +96,7 @@
           <div class="itinerary-address">
             <label>To</label><br/>
             <input travel-address-autocomplete
-                   ng-model="leg.to.formattedAddress"
+                   ng-model="leg.to.address.formattedAddress"
                    callback="leg.setTo(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text"
@@ -129,70 +129,55 @@
           Meals:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.mealAllowance.totalMealAllowance | currency}}
-          <span ng-if="reviewApp.mealAllowance.totalMealAllowance > 0"
-                class="icon-info pointer"
-                ng-click="displayMealDetails()"
-                title="View detailed meal expense info">
-          </span>
+          {{reviewApp.allowances.meals | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Lodging:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.lodgingAllowance.totalLodgingAllowance | currency}}
-          <span ng-if="reviewApp.lodgingAllowance.totalLodgingAllowance > 0"
-                class="icon-info pointer"
-                ng-click="displayLodgingDetails()"
-                title="View detailed lodging expense info">
-          </span>
+          {{reviewApp.allowances.lodging | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Mileage:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.mileageAllowance.totalMileageAllowance | currency}}
-          <span ng-if="reviewApp.mileageAllowance.totalMileageAllowance > 0"
-                class="icon-info pointer"
-                ng-click="displayMileageDetails()"
-                title="View detailed mileage expense info">
-          </span>
+          {{reviewApp.allowances.mileage | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Tolls:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.tollsAllowance | currency}}
+          {{reviewApp.allowances.tolls | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Parking:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.parkingAllowance | currency}}
+          {{reviewApp.allowances.parking | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Taxi/Bus/Subway:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.alternateAllowance | currency}}
+          {{reviewApp.allowances.alternateTransportation | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Train/Airplane:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.trainAndAirplaneAllowance | currency}}
+          {{reviewApp.allowances.trainAndPlane | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           Registration Fee:
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.registrationAllowance | currency}}
+          {{reviewApp.allowances.registration | currency}}
         </div>
         <div class="col-6-12 margin-bottom-5">
           <span class="bold">Total:</span>
         </div>
         <div class="col-6-12 margin-bottom-5">
-          {{reviewApp.totalAllowance | currency}}
+          {{reviewApp.allowances.total | currency}}
         </div>
       </div>
     </div>

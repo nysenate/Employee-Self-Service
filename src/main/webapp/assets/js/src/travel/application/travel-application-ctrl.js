@@ -88,7 +88,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
     };
 
     function cancelApplication() {
-        cancelApi.remove({id: $scope.data.app.id})
+        cancelApi.remove({})
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)
@@ -175,9 +175,9 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
 
         function findAddressesWithoutCounty(legs) {
             var addresses = legs.map(function (leg) {
-                return leg.from;
+                return leg.from.address;
             }).concat(legs.map(function (leg) {
-                return leg.to;
+                return leg.to.address;
             }));
             return countyService.addressesMissingCounty(addresses);
         }
@@ -230,4 +230,25 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
             $scope.handleErrorResponse("Google maps api authentication error.");
         });
     }
+}
+
+function Leg () {
+    this.from = new Destination();
+    this.to = new Destination();
+    this.travelDate = "";
+}
+
+function Destination () {
+    this.address = new Address();
+}
+
+function Address () {
+    this.addr1 = "";
+    this.addr2 = "";
+    this.city = "";
+    this.county = "";
+    this.state = "";
+    this.zip4 = "";
+    this.zip5 = "";
+    this.country = "";
 }

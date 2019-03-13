@@ -17,77 +17,71 @@
       </ess-notification>
     </div>
 
-    <travel-inner-container title="Miscellaneous Expenses (Optional)">
+    <travel-inner-container title="Miscellaneous Expenses">
       <div class="text-align-center" style="width: 70%; margin: auto;">
         <div class="grid" style="min-width: 0;">
+          <div class="col-6-12 padding-bottom-10" title="Meal Expenses">
+            <label class="travel-allowance-label">Meals: $</label>
+            <input ng-model="dirtyApp.allowances.meals" type="number" step="0.01" min="0"
+                   style="width: 5em;">
+            <span ng-if="dirtyApp.allowances.meals"
+                  class="icon-info pointer"
+                  ng-click="displayMealDetails()"
+                  title="View calculated meal expense info"
+                  style="position: fixed; padding-top: 6px; padding-left: 2px;">
+          </span>
+          </div>
+          <div class="col-6-12 padding-bottom-10">
+            <label class="travel-allowance-label">Lodging: $</label>
+            <input ng-model="dirtyApp.allowances.lodging" type="number" step="0.01" min="0"
+                   style="width: 5em;">
+            <span ng-if="dirtyApp.allowances.lodging"
+                  class="icon-info pointer"
+                  ng-click="displayLodgingDetails()"
+                  title="View calculated lodging expense info"
+                  style="position: fixed; padding-top: 6px; padding-left: 2px;">
+            </span>
+          </div>
+          <div class="col-6-12 padding-bottom-10">
+            <label class="travel-allowance-label">Mileage: $</label>
+            <input ng-model="dirtyApp.allowances.mileage" type="number" step="0.01" min="0"
+                   style="width: 5em;"/>
+            <span ng-if="dirtyApp.allowances.mileage"
+                  class="icon-info pointer"
+                  ng-click="displayMileageDetails()"
+                  title="View calculated mileage expense info"
+                  style="position: fixed; padding-top: 6px; padding-left: 2px;">
+          </span>
+          </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Tolls: $</label>
-            <input ng-model="allowances.tollsAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+            <input ng-model="dirtyApp.allowances.tolls" type="number" step="0.01" min="0"
+                   style="width: 5em;">
           </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Parking: $</label>
-            <input ng-model="allowances.parkingAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+            <input ng-model="dirtyApp.allowances.parking" type="number" step="0.01" min="0"
+                   style="width: 5em;">
           </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Taxi/Bus/Subway: $</label>
-            <input ng-model="allowances.alternateAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+            <input ng-model="dirtyApp.allowances.alternateTransportation" type="number" step="0.01"
+                   min="0" style="width: 5em;">
           </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Train/Airplane: $</label>
-            <input ng-model="allowances.trainAndAirplaneAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+            <input ng-model="dirtyApp.allowances.trainAndPlane" type="number" step="0.01" min="0"
+                   style="width: 5em;">
           </div>
           <div class="col-6-12">
             <label class="travel-allowance-label">Registration Fee: $</label>
-            <input ng-model="allowances.registrationAllowance" type="number" step="0.01" min="0" style="width: 5em;">
+            <input ng-model="dirtyApp.allowances.registration" type="number" step="0.01" min="0"
+                   style="width: 5em;">
           </div>
         </div>
         <p class="travel-text-bold">
-          Note: Meals, lodging, and mileage expenses will be calculated automatically.
+          Note: Meals, lodging, and mileage expenses were calculated automatically.
         </p>
-      </div>
-    </travel-inner-container>
-
-    <travel-inner-container title="Meals Adjustment (Optional)">
-      <p class="travel-text">
-        You qualify for the following meal reimbursements. Uncheck anything you would <span class="bold">not</span> like
-        to be reimbursed for.
-      </p>
-      <div class="grid">
-        <div ng-repeat="allowance in dirtyApp.mealAllowance.mealAllowances">
-          <div class="expenses-opt-out-list">
-            <div class="col-6-12">
-              {{allowance.address.formattedAddress}}
-            </div>
-            <div class="col-3-12">
-              {{allowance.date | date: 'shortDate'}}
-            </div>
-            <div class="col-3-12">
-              <label>Meals: </label><input type="checkbox" ng-model="allowance.isMealsRequested">
-            </div>
-          </div>
-        </div>
-      </div>
-    </travel-inner-container>
-
-    <travel-inner-container title="Lodging Adjustment (Optional)" ng-show="tripHasLodging()">
-      <p class="travel-text">
-        You qualify for the following lodging reimbursements. Uncheck anything you would <span class="bold">not</span>
-        like to be reimbursed for.
-      </p>
-      <div class="grid">
-        <div ng-repeat="allowance in dirtyApp.lodgingAllowance.lodgingAllowances">
-          <div class="expenses-opt-out-list">
-            <div class="col-6-12">
-              {{allowance.address.formattedAddress}}
-            </div>
-            <div class="col-3-12">
-              {{previousDay(allowance.date) | date: 'shortDate'}} - {{allowance.date | date: 'shortDate'}}
-            </div>
-            <div class="col-3-12">
-              <label>Lodging: </label><input type="checkbox" ng-model="allowance.isLodgingRequested">
-            </div>
-          </div>
-        </div>
       </div>
     </travel-inner-container>
 

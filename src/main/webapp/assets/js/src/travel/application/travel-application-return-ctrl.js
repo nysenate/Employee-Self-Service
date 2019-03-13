@@ -13,15 +13,16 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
         $scope.route = angular.copy($scope.data.app.route);
 
         if ($scope.route.returnLegs.length === 0) {
+            console.log($scope.route);
             // Init return leg
-            var segment = {};
-            segment.from = angular.copy($scope.route.outboundLegs[$scope.route.outboundLegs.length - 1].to);
-            segment.to = angular.copy($scope.route.outboundLegs[0].from);
+            var leg = new Leg();
+            leg.from = angular.copy($scope.route.outboundLegs[$scope.route.outboundLegs.length - 1].to);
+            leg.to = angular.copy($scope.route.outboundLegs[0].from);
             // If only 1 outbound mode of transportation, initialize to that.
             if (numDistinctModesOfTransportation($scope.data.app) === 1) {
-                segment.modeOfTransportation = angular.copy($scope.route.outboundLegs[0].modeOfTransportation);
+                leg.modeOfTransportation = angular.copy($scope.route.outboundLegs[0].modeOfTransportation);
             }
-            $scope.route.returnLegs.push(segment);
+            $scope.route.returnLegs.push(leg);
         }
 
         function numDistinctModesOfTransportation(app) {
@@ -54,11 +55,11 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
     };
 
     $scope.setFromAddress = function (leg, address) {
-        leg.from = address;
+        leg.from.address = address;
     };
 
     $scope.setToAddress = function (leg, address) {
-        leg.to = address;
+        leg.to.address = address;
     };
 
     $scope.isLastSegment = function (index) {
@@ -114,7 +115,7 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
 
     $scope.continue = function () {
         $scope.openLoadingModal();
-        returnApi.update({id: $scope.data.app.id}, $scope.route, function (response) {
+        returnApi.update($scope.route, function (response) {
             $scope.data.app = response.result;
             $scope.nextState();
             $scope.closeLoadingModal();
