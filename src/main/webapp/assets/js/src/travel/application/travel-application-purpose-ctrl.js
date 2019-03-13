@@ -10,7 +10,7 @@ function purposeCtrl($scope, appProps, $http, purposeApi, deleteAttachmentApi) {
     };
 
     $scope.next = function () {
-        purposeApi.update({id: $scope.data.app.id}, $scope.dirtyApp.purposeOfTravel, function (response) {
+        purposeApi.update($scope.dirtyApp.purposeOfTravel, function (response) {
             $scope.data.app = response.result;
             $scope.nextState();
         }, $scope.handleErrorResponse)

@@ -1,53 +1,69 @@
 package gov.nysenate.ess.travel.application.route;
 
-import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.address.TravelAddressView;
+import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 public class LegView implements ViewObject {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private String id;
-    private TravelAddressView from;
-    private TravelAddressView to;
+    private DestinationView from;
+    private DestinationView to;
     private ModeOfTransportationView modeOfTransportation;
     private String travelDate;
+    private String miles;
+    private String mileageRate;
+    private String mileageExpense;
 
     public LegView() {
     }
 
     public LegView(Leg leg) {
-        this.id = leg.getId().toString();
-        this.from = new TravelAddressView(leg.getFrom());
-        this.to = new TravelAddressView(leg.getTo());
+        this.id = String.valueOf(leg.getId());
+        this.from = new DestinationView(leg.getFrom());
+        this.to = new DestinationView(leg.getTo());
         this.modeOfTransportation = new ModeOfTransportationView(leg.getModeOfTransportation());
         this.travelDate = leg.getTravelDate().format(DATE_FORMAT);
+        this.miles = String.valueOf(leg.getMiles());
+        this.mileageRate = leg.getMileageRate().toString();
+        this.mileageExpense = leg.mileageExpense().toString();
     }
 
     public Leg toLeg() {
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        return new Leg(UUID.fromString(id), from.toTravelAddress(), to.toTravelAddress(),
+        int legId = id == null || id.isEmpty() ? 0 : Integer.valueOf(id);
+        return new Leg(
+                legId,
+                from.toDestination(),
+                to.toDestination(),
                 modeOfTransportation.toModeOfTransportation(),
-                LocalDate.parse(travelDate, DATE_FORMAT));
+                LocalDate.parse(travelDate, DATE_FORMAT),
+                miles == null ? 0 : Double.valueOf(miles),
+                mileageRate == null ? new BigDecimal("0") : new BigDecimal(mileageRate));
     }
 
     public String getId() {
         return id;
     }
 
-    public AddressView getFrom() {
+    public DestinationView getFrom() {
         return from;
     }
 
-    public AddressView getTo() {
+    public DestinationView getTo() {
         return to;
+    }
+
+    public String getMiles() {
+        return miles;
+    }
+
+    public String getMileageRate() {
+        return mileageRate;
     }
 
     public ModeOfTransportationView getModeOfTransportation() {
@@ -56,6 +72,10 @@ public class LegView implements ViewObject {
 
     public String getTravelDate() {
         return travelDate;
+    }
+
+    public String getMileageExpense() {
+        return mileageExpense;
     }
 
     @Override

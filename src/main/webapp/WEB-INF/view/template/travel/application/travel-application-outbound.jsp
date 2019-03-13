@@ -35,7 +35,7 @@
           <label>From</label><br/>
           <input travel-address-autocomplete
                  name="fromAddress_{{$index}}"
-                 ng-model="leg.from.formattedAddress"
+                 ng-model="leg.from.address.formattedAddress"
                  leg="leg"
                  callback="setFromAddress(leg, address)"
                  autocomplete-address-validator
@@ -52,7 +52,7 @@
           <label>To</label><br/>
           <input travel-address-autocomplete
                  name="toAddress_{{$index}}"
-                 ng-model="leg.to.formattedAddress"
+                 ng-model="leg.to.address.formattedAddress"
                  leg="leg"
                  callback="setToAddress(leg, address)"
                  placeholder="To Address"

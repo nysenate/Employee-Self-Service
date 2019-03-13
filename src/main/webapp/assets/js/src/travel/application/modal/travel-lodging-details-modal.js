@@ -10,9 +10,34 @@ essTravel.directive('travelLodgingDetailsModal', ['appProps', function (appProps
 
 function lodgingDetailsModalCtrl($scope, modals) {
 
-    $scope.app = modals.params().app;
+    this.$onInit = function () {
+        $scope.app = modals.params().app;
+        $scope.lodgingExpenses = [];
 
-    $scope.closeModal = function() {
+        $scope.app.route.destinations.forEach(function (dest) {
+            for (var date in dest.lodgingPerDiems) {
+                if (dest.lodgingPerDiems.hasOwnProperty(date)) {
+                    $scope.lodgingExpenses.push(
+                        {
+                            date: date,
+                            address: dest.address,
+                            lodgingExpense: parseFloat(dest.lodgingPerDiems[date])
+                        }
+                    )
+                }
+            }
+        });
+    };
+
+    $scope.sumLodgingExpenses = function () {
+        return $scope.lodgingExpenses.reduce(sumLodging, 0);
+
+        function sumLodging(accumulator, currentValue) {
+            return accumulator + parseFloat(currentValue.lodgingExpense);
+        }
+    };
+
+    $scope.closeModal = function () {
         modals.resolve();
     };
 }

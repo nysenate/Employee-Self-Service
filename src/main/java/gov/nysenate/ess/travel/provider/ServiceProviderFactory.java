@@ -69,7 +69,7 @@ public class ServiceProviderFactory {
     }
 
     private boolean determineDOD(String country, String state) {
-        if (!country.equals("United States") || state.equalsIgnoreCase("Hawaii")
+        if ((!country.trim().isEmpty() && !country.equals("United States")) || state.equalsIgnoreCase("Hawaii")
                 || state.equalsIgnoreCase("Alaska")) {
             return true;
         }

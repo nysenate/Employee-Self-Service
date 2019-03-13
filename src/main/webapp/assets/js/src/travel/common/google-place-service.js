@@ -62,6 +62,8 @@ function googlePlaceService() {
             return '';
         }
 
+        console.log(address);
+
         return address;
     }
 }

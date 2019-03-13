@@ -1,27 +1,26 @@
 <div class="content-container no-top-margin text-align-center">
-  <h3 class="content-info">Lodging Details</h3>
+  <h3 class="content-info">Calculated Lodging Expenses</h3>
   <div class="margin-20">
     <table class="travel-table">
       <thead>
       <tr>
         <td>Date</td>
         <td>Address</td>
-        <td>Nightly Rate</td>
+        <td>Lodging PerDiem</td>
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="lodgingAllowance in app.lodgingAllowance.lodgingAllowances"
-          ng-if="lodgingAllowance.isLodgingRequested">
-        <td>{{lodgingAllowance.date | date: 'shortDate'}}</td>
-        <td>{{lodgingAllowance.address.formattedAddress}}</td>
-        <td>{{lodgingAllowance.allowance | currency}}</td>
+      <tr ng-repeat="expense in lodgingExpenses">
+        <td>{{expense.date | date: 'shortDate'}}</td>
+        <td>{{expense.address.formattedAddress}}</td>
+        <td>{{expense.lodgingExpense | currency}}</td>
       </tr>
       </tbody>
       <tbody>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.lodgingAllowance.totalLodgingAllowance | currency}}</td>
+        <td class="bold">{{sumLodgingExpenses() | currency}}</td>
       </tr>
       </tbody>
     </table>
