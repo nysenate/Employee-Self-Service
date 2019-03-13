@@ -12,8 +12,8 @@ var essApp = angular.module('ess', [
     // Local modules
     'essCore', 'essMyInfo', 'essTime', 'essSupply', 'essHelp',
     // Third party modules
-    'floatThead', 'angularUtils.directives.dirPagination', 'ui.autocomplete', 'nsPopover', 'infinite-scroll',
-    'jlareau.bowser']);
+    'floatThead', 'angularUtils.directives.dirPagination', 'nsPopover', 'infinite-scroll',
+    'jlareau.bowser', 'ui.select']);
 
 /** Transfers properties stored on the global window var into the root module. */
 essCore.constant('appProps', globalProps);
@@ -67,3 +67,6 @@ essCore.config(['$routeProvider', '$httpProvider', function ($routeProvider, $ht
     $httpProvider.defaults.headers.common['Expires'] = '-1';
 }]);
 
+essApp.config(['uiSelectConfig', function(uiSelectConfig) {
+    uiSelectConfig.theme = 'select2';
+}]);

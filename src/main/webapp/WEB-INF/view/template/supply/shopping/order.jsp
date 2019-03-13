@@ -11,25 +11,34 @@
   <div loader-indicator class="loader" ng-show="state.isLoading()"></div>
 
   <div class="content-container content-controls"
-       ng-show="state.isSelectingDestination()">
+       ng-if="state.isSelectingDestination()">
     <%--Location Selection--%>
     <div class="content-info">
       <form name="selectDestinationForm" novalidate>
         <h4 style="display: inline-block;">Please select a destination: </h4>
-        <input type="text"
-               name="destination"
-               ng-model="destinationCode"
-               ui-autocomplete="getLocationAutocompleteOptions()"
-               destination-validator
-               ng-model-options="{debounce: 300}"
-               style="width: 80px;"
-               capitalize/>
+        <span class="margin-10" style="text-align: left;">
+          <ui-select ng-model="destinations.selected" style="min-width: 175px;">
+            <ui-select-match>
+              <span ng-bind="$select.selected.code"></span>
+            </ui-select-match>
+            <ui-select-choices
+                repeat="dest in destinations.allowed | filter: $select.search track by dest.code">
+              <div ng-bind-html="dest.code | highlight: $select.search"></div>
+              <small>
+                <span ng-bind-html="dest.locationDescription | highlight: $select.search"></span>
+              </small>
+            </ui-select-choices>
+          </ui-select>
+        </span>
+
         <input type="button" value="Confirm" class="submit-button"
-               ng-disabled="selectDestinationForm.destination.$error.destination"
+               ng-disabled="selectDestinationForm.$invalid"
                ng-click="confirmDestination()">
-        <div ng-show="selectDestinationForm.destination.$error.destination"
+
+        <div ng-show="destinations.isWorkLocationError || destinations.isRchLocationError"
              class="warning-text">
-          Invalid location
+          The destinations shown may be limited due to inconsistencies in your employee data. <br/>
+          If your missing a necessary destination, contact the STS Helpline at (518) 455-2011 for assistance.
         </div>
       </form>
     </div>
@@ -43,7 +52,7 @@
         <div style="display: inline-block;">
           <span class="supply-text">Destination: &nbsp;&nbsp; <a ng-click="resetDestination()">[change]</a></span>
           <div>
-            {{destinationCode}} ({{destinationDescription}})
+            {{destination.code}} ({{destination.locationDescription}})
           </div>
         </div>
         <div style="display: inline-block;">

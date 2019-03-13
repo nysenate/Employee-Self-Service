@@ -26,13 +26,24 @@
       <%--Add item--%>
       <div class="padding-10">
         <label> Add Commodity Code:
-          <input type="text"
-                 ng-model="newItemCommodityCode"
-                 ng-change="resetCode()"
-                 ui-autocomplete="getItemAutocompleteOptions()"
-                 style="width: 100px; height: 20px;" capitalize>
-
+          <span style="text-align: left;">
+          <ui-select ng-model="items.selected" style="min-width:200px;">
+            <ui-select-match>
+              <span ng-bind="$select.selected.commodityCode"></span>
+            </ui-select-match>
+            <ui-select-choices
+                repeat="item in items.all | filter: {commodityCode: $select.search} track by item.commodityCode"
+                refresh="refreshItems()"
+                refresh-delay="0">
+              <div ng-bind-html="item.commodityCode | highlight: $select.search"></div>
+                <small style="font-size: 70%;">
+                  <span ng-bind="item.description"></span>
+                </small>
+            </ui-select-choices>
+          </ui-select>
+        </span>
         </label>
+
         <input ng-click="addItem()" class="neutral-button" type="button" value="Add Item">
         <p class="redorange" ng-show="warning">Item: {{newItemCommodityCode}} already exists in this order. Please
           adjust the quantity if it's not correct.</p>
@@ -58,17 +69,28 @@
 
       <%--Change Location--%>
       <h4>Location</h4>
-      <input type="text"
-             ng-model="newLocationCode"
-             ui-autocomplete="getLocationAutocompleteOptions()"
-             ng-change="onLocationUpdated()"
-             style="width: 100px;">
+      <span style="text-align: left;">
+          <ui-select ng-model="destinations.selected" style="min-width:175px;">
+            <ui-select-match>
+              <span ng-bind="$select.selected.code"></span>
+            </ui-select-match>
+            <ui-select-choices
+                repeat="dest in destinations.allowed | filter: $select.search track by dest.code"
+                refresh="refreshDestination()"
+                refresh-delay="0">
+              <div ng-bind-html="dest.code | highlight: $select.search" style="margin-bottom: 0px;"></div>
+              <small>
+                <span ng-bind-html="dest.locationDescription | highlight: $select.search"></span>
+              </small>
+            </ui-select-choices>
+          </ui-select>
+        </span>
 
-        <h4>Delivery Method</h4>
-        <select ng-model="editableRequisition.deliveryMethod"
-                ng-options="m for m in deliveryMethods"
-                ng-change="onUpdate()">
-        </select>
+      <h4>Delivery Method</h4>
+      <select ng-model="editableRequisition.deliveryMethod"
+              ng-options="m for m in deliveryMethods"
+              ng-change="onUpdate()">
+      </select>
 
       <h4>Special Instructions</h4>
       <div

@@ -1,15 +1,15 @@
 var essSupply = angular.module('essSupply')
     .controller('SupplyOrderController',
-                ['$scope', 'LocationService', 'SupplyCartService', 'PaginationModel',
-                 'SupplyLocationAutocompleteService', 'SupplyItemApi',
+                ['$scope', 'appProps', 'LocationService', 'SupplyCartService', 'PaginationModel',
+                 'SupplyDestinationApi', 'SupplyItemApi',
                  'SupplyOrderDestinationService', 'modals', 'SupplyLineItemService',
-                 'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService',
+                 'SupplyItemFilterService', 'SupplyCategoryService', 'SupplyOrderPageStateService', 'EmpInfoApi',
                  supplyOrderController]);
 
-function supplyOrderController($scope, locationService, supplyCart, paginationModel,
-                               locationAutocompleteService, itemApi, destinationService,
+function supplyOrderController($scope, appProps, locationService, supplyCart, paginationModel,
+                               destinationApi, itemApi, destinationService,
                                modals, lineItemService, itemFilterService,
-                               categoryService, stateService) {
+                               categoryService, stateService, empInfoApi) {
 
     // A reference to the stateService on the scope for checking the state in jsp.
     $scope.state = stateService;
@@ -31,9 +31,14 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
      */
     $scope.displayedLineItems = [];
 
-    // The user specified destination code. Defaults to the code of the employees work location.
-    $scope.destinationCode = "";
-    $scope.destinationDescription = "";
+    $scope.employee = {}; // The logged in employee
+
+    $scope.destinations = {
+        allowed: [],
+        selected: undefined,
+        isWorkLocationError: false,
+        isRchLocationError: false
+    };
 
     /** --- Initialization --- */
 
@@ -41,11 +46,13 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         $scope.state.toLoading();
         $scope.paginate.itemsPerPage = 16;
         updateFiltersFromUrlParams();
+
         if (!destinationService.isDestinationConfirmed()) {
-            loadSelectDestinationState();
-        }
-        else {
-            loadShoppingState();
+            queryEmployee()
+                .then(loadSelectDestinationState)
+        } else {
+            queryEmployee()
+                .then(loadShoppingState);
         }
     };
 
@@ -56,18 +63,59 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         $scope.state.toInvalid();
     });
 
+    function queryEmployee() {
+        return empInfoApi.get({empId: appProps.user.employeeId, detail: true}).$promise
+            .then(function (response) {
+                $scope.employee = response.employee;
+            });
+    }
+
     /** --- State --- */
 
     function loadSelectDestinationState() {
-        locationAutocompleteService.initWithResponsibilityHeadLocations()
-            .then(destinationService.queryDefaultDestination)
-            .then(setDestinationCode)
+        $scope.state.toLoading();
+        initAllowedDestinations()
+            .then(selectDefaultDestination)
+            .then(checkForLocationErrors)
             .then(setToSelectingDestinationState)
             .catch($scope.handleErrorResponse);
     }
 
-    function setDestinationCode() {
-        $scope.destinationCode = destinationService.getDefaultCode();
+    function initAllowedDestinations() {
+        return destinationApi.get({empId: appProps.user.employeeId}).$promise
+            .then(saveDestinations);
+
+        function saveDestinations(response) {
+            $scope.destinations.allowed = response.result;
+        }
+    }
+
+    function selectDefaultDestination() {
+        $scope.destinations.allowed.forEach(function (dest) {
+            if ($scope.employee.empWorkLocation.code === dest.code) {
+                $scope.destinations.selected = dest;
+            }
+        });
+
+        // If selected did not get set default it to the first.
+        if ($scope.destinations.selected === undefined) {
+            $scope.destinations.selected = $scope.destinations.allowed[0];
+        }
+    }
+
+    function checkForLocationErrors() {
+        $scope.destinations.isWorkLocationError = true;
+        $scope.destinations.isRchLocationError = true;
+
+        $scope.destinations.allowed.forEach(function (dest) {
+            if ($scope.employee.empWorkLocation.code === dest.code) {
+                $scope.destinations.isWorkLocationError = false;
+            }
+
+            if ($scope.employee.respCtr.respCenterHead.code === dest.respCenterHead.code) {
+                $scope.destinations.isRchLocationError = false;
+            }
+        });
     }
 
     function setToSelectingDestinationState() {
@@ -76,11 +124,10 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     function loadShoppingState() {
         $scope.state.toLoading();
-        $scope.destinationCode = destinationService.getDestination().code; // Too much coupling with validator. If this is put in promise, errors occur.
-        itemApi.itemsForLoc(destinationService.getDestination().locId)
+        $scope.destination = destinationService.getDestination();
+        itemApi.itemsForLoc($scope.destination.locId)
             .then(initializeCart)
             .then(sortAndFilterLineItems)
-            .then(setDestinationDescription)
             .then(setToShoppingState);
     }
 
@@ -97,10 +144,6 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
 
     function setToShoppingState() {
         $scope.state.toShopping();
-    }
-
-    function setDestinationDescription() {
-        $scope.destinationDescription = destinationService.getDestination().locationDescription || "";
     }
 
     /** --- Search --- */
@@ -158,14 +201,10 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
     /** --- Location selection --- */
 
     $scope.confirmDestination = function () {
-        var success = destinationService.setDestination($scope.destinationCode);
+        var success = destinationService.setDestination($scope.destinations.selected);
         if (success) {
             loadShoppingState();
         }
-    };
-
-    $scope.getLocationAutocompleteOptions = function () {
-        return locationAutocompleteService.getLocationAutocompleteOptions();
     };
 
     $scope.resetDestination = function () {
@@ -184,6 +223,7 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         }
     };
 
+
     /** --- Sorting  --- */
 
     /**
@@ -200,11 +240,10 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
                 if (a.item.description > b.item.description) return 1;
                 return 0;
             });
-        }
-        else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
+        } else if ($scope.sorting[$scope.sortBy] == $scope.sorting.Category) {
             lineItems.sort(function (a, b) {
                 if (a.item.category < b.item.category) return -1;
-                if (a.item.category> b.item.category) return 1;
+                if (a.item.category > b.item.category) return 1;
                 return 0;
             });
         }
@@ -217,26 +256,3 @@ function supplyOrderController($scope, locationService, supplyCart, paginationMo
         modals.open('large-item-image-modal', {item: item}, true)
     }
 }
-
-/**
- * Directive for validating destination selection.
- */
-essSupply.directive('destinationValidator', ['SupplyLocationAutocompleteService', function (locationAutocompleteService) {
-    return {
-        require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
-            ctrl.$validators.destination = function (modelValue, viewValue) {
-                return locationAutocompleteService.isValidCode(modelValue) || modelValue.length === 0;
-            };
-
-            /**
-             * THIS IS A HACKY WAY TO SOLVE   #10625
-             */
-            elm.on('autocompleteselect', function (a, object, e, c) {
-                angular.element("form[name=selectDestinationForm]").scope().selectDestinationForm.destination.$error.destination = false;
-                if (!angular.element("form[name=selectDestinationForm]").scope().destinationCode)
-                    angular.element("form[name=selectDestinationForm]").scope().destinationCode = object.item.label.split("(")[0].trim()
-            });
-        }
-    }
-}]);

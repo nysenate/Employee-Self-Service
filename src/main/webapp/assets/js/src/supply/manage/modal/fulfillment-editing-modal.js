@@ -18,25 +18,46 @@ var essSupply = angular.module('essSupply')
         }
     }])
     .controller('FulfillmentEditingModal', ['$scope', 'appProps', 'modals', 'SupplyRequisitionByIdApi', 'SupplyRequisitionRejectApi',
-        'SupplyRequisitionProcessApi', 'SupplyLocationAutocompleteService', 'SupplyItemAutocompleteService', fulfillmentEditingModal]);
+                                            'SupplyRequisitionProcessApi', 'SupplyItemApi', 'SupplyDestinationApi', fulfillmentEditingModal]);
 
 function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqRejectApi, reqProcessApi,
-                                 locationAutocompleteService, itemAutocompleteService) {
+                                 itemApi, destinationApi) {
     $scope.dirty = false;
     $scope.originalRequisition = {};
     $scope.editableRequisition = {};
-    $scope.newLocationCode = ""; // model for editing the location.
-    $scope.newItemCommodityCode = ""; // model for adding an item.
     $scope.deliveryMethods = ['DELIVERY', 'PICKUP'];
     $scope.displayRejectInstructions = false;
     $scope.selfApprove = false;
 
+    $scope.items = {
+        all: [],
+        selected: undefined
+    };
+
+    $scope.destinations = {
+        allowed: [],
+        selected: undefined
+    };
+
     $scope.init = function () {
         $scope.originalRequisition = modals.params();
         $scope.editableRequisition = angular.copy($scope.originalRequisition);
-        $scope.newLocationCode = $scope.editableRequisition.destination.code;
-        itemAutocompleteService.initWithAllItems();
-        if (appProps.user.employeeId === $scope.originalRequisition.customer.employeeId){
+
+        destinationApi.get({empId: appProps.user.employeeId}, function (response) {
+            $scope.destinations.allowed = response.result;
+            $scope.destinations.allowed.forEach(function (dest) {
+                if (dest.code === $scope.editableRequisition.destination.code) {
+                    $scope.destinations.selected = dest;
+                }
+            });
+        });
+
+        itemApi.items()
+            .then(function (result) {
+                $scope.items.all = result;
+            });
+
+        if (appProps.user.employeeId === $scope.originalRequisition.customer.employeeId) {
             $scope.selfApprove = true;
         }
     };
@@ -75,8 +96,7 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
     $scope.rejectOrder = function () {
         if ($scope.editableRequisition.note == null || $scope.editableRequisition.note.length === 0) {
             $scope.displayRejectInstructions = true;
-        }
-        else {
+        } else {
             $scope.rejectReq();
         }
     };
@@ -88,26 +108,19 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
         $scope.dirty = angular.toJson($scope.originalRequisition) !== angular.toJson($scope.editableRequisition);
     };
 
-    /** --- Location Autocomplete --- */
+    /** --- Destination Selection--- */
 
     /**
-     * Updates editableRequisition's destination to the location selected
-     * in the edit location autocomplete.
+     * Updates editableRequisition's destination to the location selected if different.
      * If the selected destination is invalid, reset it to the original location instead.
      */
-    $scope.onLocationUpdated = function () {
-        var loc = locationAutocompleteService.getLocationFromCode($scope.newLocationCode);
-        if (loc) {
-            $scope.editableRequisition.destination = loc;
+    $scope.refreshDestination = function () {
+        if ($scope.destinations.selected) { // If destinations have been loaded and initialized.
+            if ($scope.destinations.selected.code !== $scope.originalRequisition.destination.code) {
+                $scope.editableRequisition.destination = $scope.destinations.selected;
+            }
+            $scope.onUpdate();
         }
-        else {
-            $scope.editableRequisition.destination = $scope.originalRequisition.destination;
-        }
-        $scope.onUpdate();
-    };
-
-    $scope.getLocationAutocompleteOptions = function () {
-        return locationAutocompleteService.getLocationAutocompleteOptions(100);
     };
 
     /** -- Highlighting --- */
@@ -141,10 +154,12 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
         return lineItem.quantity > lineItem.item.perMonthAllowance || lineItem.item.specialRequest;
     };
     $scope.warning = false;
+
     /** --- Add Item --- **/
+
     $scope.addItem = function () {
         $scope.warning = false;
-        var newItem = itemAutocompleteService.getItemFromCommodityCode($scope.newItemCommodityCode);
+        var newItem = $scope.items.selected;
         if (!newItem)
             return false;
         if (isItemADuplicate(newItem)) {
@@ -153,13 +168,13 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
         }
         $scope.warning = false;
         $scope.editableRequisition.lineItems.push({item: newItem, quantity: 1});
-        $scope.newItemCommodityCode = "";
         $scope.onUpdate();
     };
+
     /**
-     * reset warning message
+     * Reset warning message on change to select
      */
-    $scope.resetCode = function () {
+    $scope.refreshItems = function () {
         $scope.warning = false;
     };
 
@@ -172,9 +187,5 @@ function fulfillmentEditingModal($scope, appProps, modals, reqSaveApi, reqReject
         });
         return duplicateItem;
     }
-
-    $scope.getItemAutocompleteOptions = function () {
-        return itemAutocompleteService.getItemAutocompleteOptions();
-    };
 }
 

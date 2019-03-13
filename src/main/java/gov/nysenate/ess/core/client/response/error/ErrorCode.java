@@ -12,6 +12,11 @@ public enum ErrorCode
     ACK_DOC_NOT_FOUND(7, "The requested acknowledged document was not found."),
     DUPLICATE_ACK(8, "The requested document has already been acknowledged"),
 
+    /** Errors with Personnel Records */
+    INVALID_RC_ERROR(50, "There is an issue with your responsibility center in your personnel records"),
+    INVALID_RCH_ERROR(51, "There is an issue with your responsibility center head in your personnel records"),
+    INVALID_WORK_LOC_ERROR(52, "There is an issue with your work location in your personnel records"),
+
     /** Time Errors */
     INVALID_TIME_RECORD(101, "The provided time record contained invalid data"),
     EMPLOYEE_NOT_SUPERVISOR(102, "The given employee is not a supervisor"),
@@ -21,6 +26,7 @@ public enum ErrorCode
     /** Supply Errors */
     REQUISITION_UPDATE_CONFLICT(201, "The provided requisition was out of date."),
     SUPPLY_PERMISSON_DENIED(550, "Permission Denied"),
+
     ;
 
     /** Unique ID for error code */
