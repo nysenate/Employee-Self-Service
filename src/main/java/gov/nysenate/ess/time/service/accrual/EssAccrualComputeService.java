@@ -479,7 +479,7 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         }
         // Otherwise check if there is a time record to apply accrual usage from.
         else {
-            while (!timeRecords.isEmpty() && gapPeriod.getEndDate().isAfter(timeRecords.get(0).getBeginDate())) {
+            while (!timeRecords.isEmpty() && !gapPeriod.getEndDate().isBefore(timeRecords.get(0).getBeginDate())) {
                 TimeRecord record = timeRecords.remove(0);
                 if (gapPeriod.getDateRange().contains(record.getBeginDate())) {
                     accrualState.addPeriodAccUsage(record.getPeriodAccUsage());
