@@ -22,6 +22,18 @@ public class Route {
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
+    public PerDiemList mealPerDiems() {
+        return PerDiemList.ofLists(destinations().stream()
+                .map(Destination::mealPerDiems)
+                .collect(Collectors.toList()));
+    }
+
+    public PerDiemList lodgingPerDiems() {
+        return PerDiemList.ofLists(destinations().stream()
+        .map(Destination::lodgingPerDiems)
+        .collect(Collectors.toList()));
+    }
+
     public double totalMiles() {
         return getAllLegs().stream()
                 .map(Leg::getMiles)
@@ -35,18 +47,6 @@ public class Route {
 
         return getAllLegs().stream()
                 .map(Leg::mileageExpense)
-                .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    public Dollars mealExpense() {
-        return destinations().stream()
-                .map(Destination::mealPerDiem)
-                .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    public Dollars lodgingExpense() {
-        return destinations().stream()
-                .map(Destination::lodgingPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 

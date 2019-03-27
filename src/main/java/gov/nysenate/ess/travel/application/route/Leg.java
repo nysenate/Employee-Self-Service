@@ -44,19 +44,19 @@ public class Leg {
         return travelDate;
     }
 
+    public Dollars mileageExpense() {
+        if (qualifiesForMileageReimbursement()) {
+            return new Dollars(getMileageRate().multiply(new BigDecimal(miles)));
+        }
+        return Dollars.ZERO;
+    }
+
     ModeOfTransportation getModeOfTransportation() {
         return modeOfTransportation;
     }
 
     boolean qualifiesForMileageReimbursement() {
         return getModeOfTransportation().qualifiesForMileageReimbursement();
-    }
-
-    Dollars mileageExpense() {
-        if (qualifiesForMileageReimbursement()) {
-            return new Dollars(getMileageRate().multiply(new BigDecimal(miles)));
-        }
-        return new Dollars("0");
     }
 
     void setId(int id) {

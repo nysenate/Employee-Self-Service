@@ -10,17 +10,17 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="expense in lodgingExpenses">
-        <td>{{expense.date | date: 'shortDate'}}</td>
-        <td>{{expense.address.formattedAddress}}</td>
-        <td>{{expense.lodgingExpense | currency}}</td>
+      <tr ng-repeat="perDiem in app.route.lodgingPerDiems.perDiems">
+        <td>{{perDiem.date | date: 'shortDate'}}</td>
+        <td>{{perDiem.address.formattedAddress}}</td>
+        <td>{{perDiem.dollars | currency}}</td>
       </tr>
       </tbody>
       <tbody>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{sumLodgingExpenses() | currency}}</td>
+        <td class="bold">{{app.route.lodgingPerDiems.total | currency}}</td>
       </tr>
       </tbody>
     </table>

@@ -2,10 +2,13 @@ package gov.nysenate.ess.travel.application.route.destination;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.route.PerDiem;
+import gov.nysenate.ess.travel.application.route.PerDiemList;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Destination {
 
@@ -29,43 +32,25 @@ public class Destination {
         this.lodgingPerDiems = new TreeMap<>(lodgingPerDiems);
     }
 
+    public PerDiemList mealPerDiems() {
+        return new PerDiemList(getMealPerDiems().entrySet().stream()
+                .map(entry -> new PerDiem(getAddress(), entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList()));
+    }
+
+    public PerDiemList lodgingPerDiems() {
+        return new PerDiemList(getLodgingPerDiems().entrySet().stream()
+                .map(entry -> new PerDiem(getAddress(), entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList()));
+
+    }
+
     public int getId() {
         return id;
     }
 
     public Address getAddress() {
         return address;
-    }
-
-    /**
-     * @return The planned date of arrival.
-     */
-    public LocalDate arrivalDate() {
-        return getDateRange().lowerEndpoint();
-    }
-
-    /**
-     * @return The planned date of departure.
-     */
-    public LocalDate departureDate() {
-        return getDateRange().upperEndpoint();
-    }
-
-    /**
-     * The sum of all meal per diem's for this destination.
-     * @return
-     */
-    public Dollars mealPerDiem() {
-        return getMealPerDiems().values().stream()
-                .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    /**
-     * @return The sum of all lodging per diem's for this destination.
-     */
-    public Dollars lodgingPerDiem() {
-        return getLodgingPerDiems().values().stream()
-                .reduce(Dollars.ZERO, Dollars::add);
     }
 
     /**
@@ -102,6 +87,14 @@ public class Destination {
 
     void setId(int id) {
         this.id = id;
+    }
+
+    LocalDate arrivalDate() {
+        return getDateRange().lowerEndpoint();
+    }
+
+    LocalDate departureDate() {
+        return getDateRange().upperEndpoint();
     }
 
     Range<LocalDate> getDateRange() {

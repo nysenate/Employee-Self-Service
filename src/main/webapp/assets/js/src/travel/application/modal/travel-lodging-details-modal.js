@@ -12,29 +12,6 @@ function lodgingDetailsModalCtrl($scope, modals) {
 
     this.$onInit = function () {
         $scope.app = modals.params().app;
-        $scope.lodgingExpenses = [];
-
-        $scope.app.route.destinations.forEach(function (dest) {
-            for (var date in dest.lodgingPerDiems) {
-                if (dest.lodgingPerDiems.hasOwnProperty(date)) {
-                    $scope.lodgingExpenses.push(
-                        {
-                            date: date,
-                            address: dest.address,
-                            lodgingExpense: parseFloat(dest.lodgingPerDiems[date])
-                        }
-                    )
-                }
-            }
-        });
-    };
-
-    $scope.sumLodgingExpenses = function () {
-        return $scope.lodgingExpenses.reduce(sumLodging, 0);
-
-        function sumLodging(accumulator, currentValue) {
-            return accumulator + parseFloat(currentValue.lodgingExpense);
-        }
     };
 
     $scope.closeModal = function () {

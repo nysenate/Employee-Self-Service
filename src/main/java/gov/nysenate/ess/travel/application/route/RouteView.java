@@ -16,6 +16,9 @@ public class RouteView implements ViewObject{
     private String totalMiles;
     private String mileageExpense;
 
+    private PerDiemListView mealPerDiems;
+    private PerDiemListView lodgingPerDiems;
+
     public RouteView() {
     }
     public RouteView(Route route) {
@@ -31,11 +34,22 @@ public class RouteView implements ViewObject{
         destinations = route.destinations().stream()
                 .map(DestinationView::new)
                 .collect(Collectors.toList());
+
+        this.mealPerDiems = new PerDiemListView(route.mealPerDiems());
+        this.lodgingPerDiems = new PerDiemListView(route.lodgingPerDiems());
     }
 
     public Route toRoute() {
         return new Route(outboundLegs.stream().map(LegView::toLeg).collect(ImmutableList.toImmutableList()),
                 returnLegs.stream().map(LegView::toLeg).collect(ImmutableList.toImmutableList()));
+    }
+
+    public PerDiemListView getLodgingPerDiems() {
+        return lodgingPerDiems;
+    }
+
+    public PerDiemListView getMealPerDiems() {
+        return mealPerDiems;
     }
 
     public List<LegView> getOutboundLegs() {
