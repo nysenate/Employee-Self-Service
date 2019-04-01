@@ -1,9 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService',
-                                                     'TravelApplicationSubmitApi', reviewCtrl]);
+essTravel.controller('TravelApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService', 'TravelApplicationByIdApi', reviewCtrl]);
 
-function reviewCtrl($scope, $q, modals, locationService, submitApi) {
+function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
 
     $scope.init = function () {
         $scope.reviewApp = angular.copy($scope.data.app);
@@ -16,7 +15,7 @@ function reviewCtrl($scope, $q, modals, locationService, submitApi) {
         modals.open('submit-confirm')
             .then(function () {
                 modals.open("submit-progress");
-                submitApi.save({}).$promise
+                appIdApi.update({id: $scope.data.app.id}, {action: "submit"}).$promise
                     .then(function (response) {
                         $scope.data.app = response.result;
                         modals.resolve({});

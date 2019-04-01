@@ -1,16 +1,16 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationPurposeCtrl', ['$scope', 'appProps', '$http', 'TravelApplicationPurposeApi',
+essTravel.controller('TravelApplicationPurposeCtrl', ['$scope', 'appProps', '$http', 'TravelApplicationByIdApi',
                                                       'TravelAttachmentDelete', purposeCtrl]);
 
-function purposeCtrl($scope, appProps, $http, purposeApi, deleteAttachmentApi) {
+function purposeCtrl($scope, appProps, $http, appApi, deleteAttachmentApi) {
 
     this.$onInit = function () {
         $scope.dirtyApp = angular.copy($scope.data.app);
     };
 
     $scope.next = function () {
-        purposeApi.update($scope.dirtyApp.purposeOfTravel, function (response) {
+        appApi.update({id: $scope.data.app.id}, {purposeOfTravel: $scope.dirtyApp.purposeOfTravel}, function (response) {
             $scope.data.app = response.result;
             $scope.nextState();
         }, $scope.handleErrorResponse)

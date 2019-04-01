@@ -1,9 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals',
-                                                       'TravelApplicationOutboundApi', outboundCtrl]);
+essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals', outboundCtrl]);
 
-function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
+function outboundCtrl($scope, $q, $timeout, geocoder, modals) {
 
     this.$onInit = function () {
         $scope.outbound = {
@@ -58,10 +57,8 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals, outboundApi) {
     };
 
     $scope.continue = function () {
-        outboundApi.update($scope.dirtyApp.route, function (response) {
-            $scope.data.app = response.result;
-            $scope.nextState();
-        }, $scope.handleErrorResponse);
+        $scope.data.app.route.outboundLegs = $scope.dirtyApp.route.outboundLegs;
+        $scope.nextState();
     };
 
     /**

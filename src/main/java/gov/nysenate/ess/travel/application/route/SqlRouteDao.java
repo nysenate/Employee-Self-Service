@@ -29,7 +29,8 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         Route previousRoute = selectRoute(previousAppVersionId);
         if (previousRoute.equals(route)) {
             // If Route did not change, just update the join table with the new versionId.
-            for (Leg leg : route.getAllLegs()) {
+            for (Leg leg : previousRoute.getAllLegs()) {
+                // Use the previous route because it has the correct Leg.id's
                 joinLegWithAppVersion(leg, appVersionId);
             }
         }

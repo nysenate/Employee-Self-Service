@@ -4,6 +4,7 @@ import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -102,5 +103,25 @@ public class Allowances {
 
     public void setRegistration(Dollars dollars) {
         typeToAllowance.get(AllowanceType.REGISTRATION).dollars = dollars;
+    }
+
+    @Override
+    public String toString() {
+        return "Allowances{" +
+                "typeToAllowance=" + typeToAllowance +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Allowances that = (Allowances) o;
+        return Objects.equals(typeToAllowance, that.typeToAllowance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(typeToAllowance);
     }
 }

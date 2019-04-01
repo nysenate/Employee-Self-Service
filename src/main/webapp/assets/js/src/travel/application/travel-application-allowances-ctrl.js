@@ -1,16 +1,17 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'modals', 'TravelApplicationExpensesApi', allowancesCtrl]);
+essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'modals', 'TravelApplicationByIdApi', allowancesCtrl]);
 
-function allowancesCtrl($scope, modals, expensesApi, mealAllowancesApi, lodgingAllowancesApi) {
+function allowancesCtrl($scope, modals, appIdApi) {
 
     this.$onInit = function () {
         $scope.dirtyApp = angular.copy($scope.data.app);
+        console.log($scope.dirtyApp);
     };
 
     $scope.next = function () {
         // Updates must be done sequentially as the entire app is overwritten with every save.
-        expensesApi.update($scope.dirtyApp.allowances, function (response) {
+        appIdApi.update({id: $scope.data.app.id}, {allowances: JSON.stringify($scope.dirtyApp.allowances)}, function (response) {
             $scope.data.app = response.result;
             $scope.nextState();
         }, $scope.handleErrorResponse)

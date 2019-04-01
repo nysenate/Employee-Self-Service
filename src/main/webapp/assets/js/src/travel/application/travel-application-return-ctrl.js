@@ -1,9 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals',
-                                                     'TravelApplicationReturnApi', returnCtrl]);
+essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals', 'TravelApplicationByIdApi', returnCtrl]);
 
-function returnCtrl($scope, $timeout, $q, modals, returnApi) {
+function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
 
     this.$onInit = function () {
         $scope.return = {
@@ -115,7 +114,7 @@ function returnCtrl($scope, $timeout, $q, modals, returnApi) {
 
     $scope.continue = function () {
         $scope.openLoadingModal();
-        returnApi.update($scope.route, function (response) {
+        appIdApi.update({id: $scope.data.app.id}, {route: JSON.stringify($scope.route)}, function (response) {
             $scope.data.app = response.result;
             $scope.nextState();
             $scope.closeLoadingModal();

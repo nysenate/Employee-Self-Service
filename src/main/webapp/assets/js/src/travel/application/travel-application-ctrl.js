@@ -9,10 +9,10 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('TravelApplicationCtrl',
-                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService', 'TravelApplicationInitApi',
-                      'TravelModeOfTransportationApi', 'TravelApplicationCancelApi', 'AddressCountyService', travelAppController]);
+                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService','TravelApplicationApi', 'TravelApplicationByIdApi',
+                      'TravelModeOfTransportationApi', 'AddressCountyService', travelAppController]);
 
-function travelAppController($scope, $q, $window, appProps, modals, locationService, appInitApi, motApi, cancelApi, countyService) {
+function travelAppController($scope, $q, $window, appProps, modals, locationService, appApi, appIdApi, motApi, countyService) {
 
     $scope.STATES = {
         PURPOSE: 1,
@@ -45,18 +45,18 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
          * @param travelerId
          */
         function initApplication(travelerId) {
-            appInitApi.save({empId: travelerId}, {}, function (response) {
+            appApi.get({travelerId: travelerId}, {}, function (response) {
                 $scope.data.app = response.result;
                 if (hasUncompleteApplication()) {
                     modals.open('travel-continue-application-modal')
                         .catch(function () { // Restart application on modal rejection.
-                            cancelApplication()
+                            cancelApplication() // TODO replace this functionality
                         });
                 }
             }, $scope.handleErrorResponse);
 
             function hasUncompleteApplication() {
-                return $scope.data.app.purposeOfTravel.length > 0;
+                return $scope.data.app.purposeOfTravel !== "";
             }
         }
 
@@ -88,7 +88,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
     };
 
     function cancelApplication() {
-        cancelApi.remove({})
+        appIdApi.remove({id: $scope.data.app.id})
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)

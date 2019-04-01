@@ -19,7 +19,7 @@ public class SqlAllowancesDao extends SqlBaseDao {
 
     public void saveAllowances(Allowances allowances, int appVersionId, int previousAppVersionId) {
         Allowances previousAllowances = selectAllowances(previousAppVersionId);
-        if (previousAllowances.equals(allowances)) {
+        if (previousAllowances.equals(allowances) && previousAppVersionId != 0) {
             // If Allowances did not change, just update the join table.
             for (Allowance allowance : allowances.typeToAllowance.values()) {
                 joinAllowanceWithAppVersion(allowance, appVersionId);

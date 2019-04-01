@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RouteView implements ViewObject{
@@ -20,6 +21,10 @@ public class RouteView implements ViewObject{
     private PerDiemListView lodgingPerDiems;
 
     public RouteView() {
+    }
+
+    public RouteView(Map<String, Object> map) {
+
     }
     public RouteView(Route route) {
         outboundLegs = route.getOutgoingLegs().stream()

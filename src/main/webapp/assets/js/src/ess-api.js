@@ -248,32 +248,12 @@ essApi.factory('TravelApplicationInitApi', ['$resource', 'appProps', function ($
     return $resource(appProps.apiPath + '/travel/application/uncompleted/init.json')
 }]);
 
-essApi.factory('TravelApplicationCancelApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted.json')
-}]);
-
-essApi.factory('TravelApplicationPurposeApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/purpose.json', {}, {'update': {method: 'PUT'}})
-}]);
-
-essApi.factory('TravelApplicationOutboundApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/outbound.json', {}, {'update': {method: 'PUT'}})
-}]);
-
-essApi.factory('TravelApplicationReturnApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/return.json', {}, {'update': {method: 'PUT'}})
-}]);
-
-essApi.factory('TravelApplicationExpensesApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/expenses.json', {}, {'update': {method: 'PUT'}})
-}]);
-
-essApi.factory('TravelApplicationSubmitApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/uncompleted/submit.json')
+essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/application.json')
 }]);
 
 essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/:id.json', {id: '@id'})
+    return $resource(appProps.apiPath + '/travel/application/:id.json', {id: '@id'}, {'update': {method: 'PATCH'}})
 }]);
 
 essApi.factory('TravelApplicationsForTravelerApi', ['$resource', 'appProps', function ($resource, appProps) {

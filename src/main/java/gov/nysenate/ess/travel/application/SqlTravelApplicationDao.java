@@ -40,6 +40,13 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         allowancesDao.saveAllowances(app.getAllowances(), app.getVersionId(), previousAppVersionId);
     }
 
+    @Override
+    public void deleteTravelApplication(int appId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
+        String sql = SqlTravelApplicationQuery.DELETE_APP.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
     private int fetchNextVersionId() {
         String sql = SqlTravelApplicationQuery.FETCH_NEXT_VERSION_ID.getSql(schemaMap());
         return localNamedJdbc.query(sql, (rs, i) -> rs.getInt("nextval")).get(0);
@@ -67,8 +74,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appId", app.getAppId())
                 .addValue("versionId", app.getVersionId())
-                .addValue("travelerId", app.getTraveler().getEmployeeId())
-                .addValue("submittedDateTime", toDate(app.getSubmittedDateTime()));
+                .addValue("travelerId", app.getTraveler().getEmployeeId());
 
         String updateSql = SqlTravelApplicationQuery.UPDATE_APP.getSql(schemaMap());
         boolean wasUpdated = localNamedJdbc.update(updateSql, params) == 1;
@@ -85,7 +91,8 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .addValue("appId", app.getAppId())
                 .addValue("versionId", app.getVersionId())
                 .addValue("purposeOfTravel", app.getPurposeOfTravel())
-                .addValue("createdBy", app.getModifiedBy().getEmployeeId());
+                .addValue("createdBy", app.getModifiedBy().getEmployeeId())
+                .addValue("submittedDateTime", toDate(app.getSubmittedDateTime()));
         String sql = SqlTravelApplicationQuery.INSERT_APP_VERSION.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -95,23 +102,27 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 "SELECT nextval('${travelSchema}.app_version_app_version_id_seq'::regclass)"
         ),
         UPDATE_APP(
-                "UPDATE ${travelSchema}.app SET app_version_id = :versionId\n" +
+                "UPDATE ${travelSchema}.app SET app_version_id = :versionId \n" +
                         " WHERE app_id = :appId"
         ),
         INSERT_APP(
-                "INSERT INTO ${travelSchema}.app(app_version_id, traveler_id, submitted_date_time) \n" +
-                        "VALUES (:versionId, :travelerId, :submittedDateTime)"
+                "INSERT INTO ${travelSchema}.app(app_version_id, traveler_id) \n" +
+                        "VALUES (:versionId, :travelerId)"
+        ),
+        DELETE_APP(
+                "DELETE FROM ${travelSchema}.app" +
+                        " WHERE app_id = :appId"
         ),
 
         INSERT_APP_VERSION(
                 "INSERT INTO ${travelSchema}.app_version \n" +
-                        "(app_version_id, app_id, purpose_of_travel, created_by) \n" +
-                        "VALUES (:versionId, :appId, :purposeOfTravel, :createdBy)"
+                        "(app_version_id, app_id, purpose_of_travel, created_by, submitted_date_time) \n" +
+                        "VALUES (:versionId, :appId, :purposeOfTravel, :createdBy, :submittedDateTime)"
         ),
         TRAVEL_APP_SELECT(
-                "SELECT app.app_id, app.app_version_id, app.traveler_id, app.submitted_date_time,\n" +
+                "SELECT app.app_id, app.app_version_id, app.traveler_id,\n" +
                         " app_version.purpose_of_travel, app_version.created_date_time as modified_date_time," +
-                        " app_version.created_by as modified_by \n" +
+                        " app_version.created_by as modified_by, app_version.submitted_date_time \n" +
                         "FROM ${travelSchema}.app \n" +
                         "INNER JOIN ${travelSchema}.app_version ON app.app_version_id = app_version.app_version_id"
         ),
