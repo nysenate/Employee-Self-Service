@@ -37,7 +37,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         insertApplicationVersion(app);
 
         routeDao.saveRoute(app.getRoute(), app.getVersionId(), previousAppVersionId);
-        allowancesDao.insertAllowances(app.getVersionId(), app.getAllowances());
+        allowancesDao.saveAllowances(app.getAllowances(), app.getVersionId(), previousAppVersionId);
     }
 
     private int fetchNextVersionId() {

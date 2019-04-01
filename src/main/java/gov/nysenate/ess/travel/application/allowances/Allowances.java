@@ -9,23 +9,17 @@ import java.util.stream.Collectors;
 
 public class Allowances {
 
-    /**
-     * Map of {@link AllowanceType} to the value of that allowance.
-     */
-    protected Map<AllowanceType, Dollars> typeToAllowance;
+    protected Map<AllowanceType, Allowance> typeToAllowance;
 
     public Allowances() {
         // Initialize all allowances to $0
         typeToAllowance = EnumSet.allOf(AllowanceType.class).stream()
-                .collect(Collectors.toMap(Function.identity(), t -> Dollars.ZERO));
-    }
-
-    public Allowances(Map<AllowanceType, Dollars> typeToAllowance) {
-        this.typeToAllowance = typeToAllowance;
+                .collect(Collectors.toMap(Function.identity(), type -> new Allowance(type, Dollars.ZERO)));
     }
 
     public Dollars total() {
         return typeToAllowance.values().stream()
+                .map(a -> a.dollars)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 
@@ -47,66 +41,66 @@ public class Allowances {
     }
 
     public Dollars mileage() {
-        return typeToAllowance.get(AllowanceType.MILEAGE);
+        return typeToAllowance.get(AllowanceType.MILEAGE).dollars;
     }
 
     public void setMileage(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.MILEAGE, dollars);
+        typeToAllowance.get(AllowanceType.MILEAGE).dollars = dollars;
     }
 
     public Dollars meals() {
-        return typeToAllowance.get(AllowanceType.MEALS);
+        return typeToAllowance.get(AllowanceType.MEALS).dollars;
     }
 
     public void setMeals(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.MEALS, dollars);
+        typeToAllowance.get(AllowanceType.MEALS).dollars = dollars;
     }
 
     public Dollars lodging() {
-        return typeToAllowance.get(AllowanceType.LODGING);
+        return typeToAllowance.get(AllowanceType.LODGING).dollars;
     }
 
     public void setLodging(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.LODGING, dollars);
+        typeToAllowance.get(AllowanceType.LODGING).dollars = dollars;
     }
 
     public Dollars tolls() {
-        return typeToAllowance.get(AllowanceType.TOLLS);
+        return typeToAllowance.get(AllowanceType.TOLLS).dollars;
     }
 
     public void setTolls(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.TOLLS, dollars);
+        typeToAllowance.get(AllowanceType.TOLLS).dollars = dollars;
     }
 
     public Dollars parking() {
-        return typeToAllowance.get(AllowanceType.PARKING);
+        return typeToAllowance.get(AllowanceType.PARKING).dollars;
     }
 
     public void setParking(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.PARKING, dollars);
+        typeToAllowance.get(AllowanceType.PARKING).dollars = dollars;
     }
 
     public Dollars trainAndPlane() {
-        return typeToAllowance.get(AllowanceType.TRAIN_AND_PLANE);
+        return typeToAllowance.get(AllowanceType.TRAIN_AND_PLANE).dollars;
     }
 
     public void setTrainAndPlane(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.TRAIN_AND_PLANE, dollars);
+        typeToAllowance.get(AllowanceType.TRAIN_AND_PLANE).dollars = dollars;
     }
 
     public Dollars alternateTransportation() {
-        return typeToAllowance.get(AllowanceType.ALTERNATE_TRANSPORTATION);
+        return typeToAllowance.get(AllowanceType.ALTERNATE_TRANSPORTATION).dollars;
     }
 
     public void setAlternateTransportation(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.ALTERNATE_TRANSPORTATION, dollars);
+        typeToAllowance.get(AllowanceType.ALTERNATE_TRANSPORTATION).dollars = dollars;
     }
 
     public Dollars registration() {
-        return typeToAllowance.get(AllowanceType.REGISTRATION);
+        return typeToAllowance.get(AllowanceType.REGISTRATION).dollars;
     }
 
     public void setRegistration(Dollars dollars) {
-        typeToAllowance.put(AllowanceType.REGISTRATION, dollars);
+        typeToAllowance.get(AllowanceType.REGISTRATION).dollars = dollars;
     }
 }
