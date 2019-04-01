@@ -25,25 +25,32 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     @Override
     @Transactional(value = "localTxManager")
-    public void insertRoute(int appVersionId, Route route) {
-        // TODO Only insert if it has changed. Select first and then check via .equals()
-
-        // FIXME leg.to and nextLeg.from should reference same db row.
-        List<Destination> destinations = route.getAllLegs().stream()
-                .flatMap(leg -> Stream.of(leg.getFrom(), leg.getTo()))
-                .collect(Collectors.toList());
-        destinationDao.insertDestinations(destinations);
-
-        int sequenceNo = 0;
-        for (Leg leg : route.getOutgoingLegs()) {
-            insertLeg(leg, true, sequenceNo);
-            joinLegWithAppVersion(leg, appVersionId);
-            sequenceNo++;
+    public void saveRoute(Route route, int appVersionId, int previousAppVersionId) {
+        Route previousRoute = selectRoute(previousAppVersionId);
+        if (previousRoute.equals(route)) {
+            // If Route did not change, just update the join table with the new versionId.
+            for (Leg leg : route.getAllLegs()) {
+                joinLegWithAppVersion(leg, appVersionId);
+            }
         }
-        for (Leg leg : route.getReturnLegs()) {
-            insertLeg(leg, false, sequenceNo);
-            joinLegWithAppVersion(leg, appVersionId);
-            sequenceNo++;
+        else {
+            // FIXME leg.to and nextLeg.from should reference same db row.
+            List<Destination> destinations = route.getAllLegs().stream()
+                    .flatMap(leg -> Stream.of(leg.getFrom(), leg.getTo()))
+                    .collect(Collectors.toList());
+            destinationDao.insertDestinations(destinations);
+
+            int sequenceNo = 0;
+            for (Leg leg : route.getOutgoingLegs()) {
+                insertLeg(leg, true, sequenceNo);
+                joinLegWithAppVersion(leg, appVersionId);
+                sequenceNo++;
+            }
+            for (Leg leg : route.getReturnLegs()) {
+                insertLeg(leg, false, sequenceNo);
+                joinLegWithAppVersion(leg, appVersionId);
+                sequenceNo++;
+            }
         }
     }
 
@@ -79,12 +86,15 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
                 .addValue("sequenceNo", sequenceNo);
     }
 
-
     @Override
     public Route selectRoute(int appVersionId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appVersionId", appVersionId);
         String sql = SqlRouteQuery.SELECT_LEGS_FOR_VERSION.getSql(schemaMap());
         List<Integer> appVersionLegIds = localNamedJdbc.queryForList(sql, params, Integer.class);
+
+        if (appVersionLegIds.isEmpty()) {
+            return Route.EMPTY_ROUTE;
+        }
 
         MapSqlParameterSource routeParams = new MapSqlParameterSource("legIds", appVersionLegIds);
         String routeSql = SqlRouteQuery.SELECT_ROUTE.getSql(schemaMap());

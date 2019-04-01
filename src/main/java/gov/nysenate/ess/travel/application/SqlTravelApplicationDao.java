@@ -31,11 +31,12 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     @Override
     @Transactional(value = "localTxManager")
     public synchronized void insertTravelApplication(TravelApplication app) {
+        int previousAppVersionId = app.getVersionId();
         app.setVersionId(fetchNextVersionId());
         insertApplication(app);
         insertApplicationVersion(app);
 
-        routeDao.insertRoute(app.getVersionId(), app.getRoute());
+        routeDao.saveRoute(app.getRoute(), app.getVersionId(), previousAppVersionId);
         allowancesDao.insertAllowances(app.getVersionId(), app.getAllowances());
     }
 
