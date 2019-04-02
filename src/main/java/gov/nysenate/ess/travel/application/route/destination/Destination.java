@@ -45,10 +45,6 @@ public class Destination {
 
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Address getAddress() {
         return address;
     }
@@ -83,6 +79,10 @@ public class Destination {
 
     public void addLodgingPerDiem(LocalDate date, Dollars perDiem) {
         getLodgingPerDiems().put(date, perDiem);
+    }
+
+    public int getId() {
+        return id;
     }
 
     void setId(int id) {

@@ -69,7 +69,7 @@ function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
         $scope.route.returnLegs.pop();
     };
 
-    // Ensure user does not select a return travel date before the outbound travel date.
+    // Ensure user does not select a return travel date before the outgoing travel date.
     $scope.fromDate = function () {
         return $scope.route.outboundLegs.slice(-1)[0].travelDate;
     };

@@ -24,7 +24,6 @@ public class DestinationView implements ViewObject {
     }
 
     public DestinationView(Destination destination) {
-        this.id = String.valueOf(destination.getId());
         this.address = new AddressView(destination.getAddress());
         this.arrival = destination.getDateRange() == null ? null : destination.arrivalDate().format(ISO_DATE);
         this.departure = destination.getDateRange() == null ? null : destination.departureDate().format(ISO_DATE);

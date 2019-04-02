@@ -31,8 +31,7 @@ public class TravelApplicationService {
     }
 
     public void updateRoute(TravelApplication app, RouteView routeView) {
-        Route partialRoute = routeView.toRoute();
-        Route fullRoute = routeService.initializeRoute(partialRoute);
+        Route fullRoute = routeService.initializeRoute(routeView.toRoute());
         app.setRoute(fullRoute);
         setAllowancesFromRoute(app.getAllowances(), fullRoute);
         saveTravelApplication(app);

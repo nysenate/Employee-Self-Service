@@ -42,7 +42,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
             destinationDao.insertDestinations(destinations);
 
             int sequenceNo = 0;
-            for (Leg leg : route.getOutgoingLegs()) {
+            for (Leg leg : route.getOutboundLegs()) {
                 insertLeg(leg, true, sequenceNo);
                 joinLegWithAppVersion(leg, appVersionId);
                 sequenceNo++;

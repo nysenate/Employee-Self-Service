@@ -14,11 +14,12 @@ public class Route {
 
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of());
     private static final double MILE_THRESHOLD = 35.0;
-    private final ImmutableList<Leg> outgoingLegs;
+
+    private final ImmutableList<Leg> outboundLegs;
     private final ImmutableList<Leg> returnLegs;
 
-    public Route(List<Leg> outgoingLegs, List<Leg> returnLegs) {
-        this.outgoingLegs = ImmutableList.copyOf(outgoingLegs);
+    public Route(List<Leg> outboundLegs, List<Leg> returnLegs) {
+        this.outboundLegs = ImmutableList.copyOf(outboundLegs);
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
@@ -51,8 +52,8 @@ public class Route {
     }
 
     public Destination origin() {
-        if (getOutgoingLegs().size() > 0) {
-            return getOutgoingLegs().get(0).getFrom();
+        if (getOutboundLegs().size() > 0) {
+            return getOutboundLegs().get(0).getFrom();
         }
         return null;
     }
@@ -61,7 +62,7 @@ public class Route {
      * @return A list of destinations the employee is visiting on the outgoing portion of their trip.
      */
     public List<Destination> destinations() {
-        return getOutgoingLegs().stream()
+        return getOutboundLegs().stream()
                 .map(Leg::getTo)
                 .collect(Collectors.toList());
     }
@@ -70,10 +71,10 @@ public class Route {
      * @return The first day of travel.
      */
     public LocalDate startDate() {
-        if (getOutgoingLegs().size() == 0) {
+        if (getOutboundLegs().size() == 0) {
             return null;
         }
-        return getOutgoingLegs().stream()
+        return getOutboundLegs().stream()
                 .map(Leg::getTravelDate)
                 .min(LocalDate::compareTo)
                 .get();
@@ -92,8 +93,8 @@ public class Route {
                 .get();
     }
 
-    public ImmutableList<Leg> getOutgoingLegs() {
-        return outgoingLegs;
+    public ImmutableList<Leg> getOutboundLegs() {
+        return outboundLegs;
     }
 
     public ImmutableList<Leg> getReturnLegs() {
@@ -101,12 +102,12 @@ public class Route {
     }
 
     protected ImmutableList<Leg> getAllLegs() {
-        return Stream.concat(getOutgoingLegs().stream(), getReturnLegs().stream())
+        return Stream.concat(getOutboundLegs().stream(), getReturnLegs().stream())
                 .collect(ImmutableList.toImmutableList());
     }
 
     private double outgoingReimbursableMiles() {
-        return getOutgoingLegs().stream()
+        return getOutboundLegs().stream()
                 .filter(leg -> leg.qualifiesForMileageReimbursement())
                 .mapToDouble(Leg::getMiles)
                 .sum();
@@ -115,7 +116,7 @@ public class Route {
     @Override
     public String toString() {
         return "Route{" +
-                "outgoingLegs=" + outgoingLegs +
+                "outgoingLegs=" + outboundLegs +
                 ", returnLegs=" + returnLegs +
                 '}';
     }
@@ -125,12 +126,12 @@ public class Route {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Route route = (Route) o;
-        return Objects.equals(outgoingLegs, route.outgoingLegs) &&
+        return Objects.equals(outboundLegs, route.outboundLegs) &&
                 Objects.equals(returnLegs, route.returnLegs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(outgoingLegs, returnLegs);
+        return Objects.hash(outboundLegs, returnLegs);
     }
 }

@@ -51,6 +51,14 @@ public class Leg {
         return Dollars.ZERO;
     }
 
+    public double getMiles() {
+        return miles;
+    }
+
+    public BigDecimal getMileageRate() {
+        return mileageRate;
+    }
+
     ModeOfTransportation getModeOfTransportation() {
         return modeOfTransportation;
     }
@@ -63,13 +71,6 @@ public class Leg {
         this.id = id;
     }
 
-    double getMiles() {
-        return miles;
-    }
-
-    BigDecimal getMileageRate() {
-        return mileageRate;
-    }
 
     @Override
     public String toString() {

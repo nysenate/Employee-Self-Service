@@ -32,13 +32,13 @@ public class RouteService {
      */
     public Route initializeRoute(Route partialRoute) {
         List<Leg> outboundLegs = new ArrayList<>();
-        for (int i = 0; i < partialRoute.getOutgoingLegs().size(); i++) {
+        for (int i = 0; i < partialRoute.getOutboundLegs().size(); i++) {
             Leg leg = createLeg(partialRoute, i);
             outboundLegs.add(leg);
         }
 
         List<Leg> returnLegs = new ArrayList<>();
-        for (int i = partialRoute.getOutgoingLegs().size(); i < partialRoute.getAllLegs().size(); i++) {
+        for (int i = partialRoute.getOutboundLegs().size(); i < partialRoute.getAllLegs().size(); i++) {
             Leg leg = createLeg(partialRoute, i);
             returnLegs.add(leg);
         }
