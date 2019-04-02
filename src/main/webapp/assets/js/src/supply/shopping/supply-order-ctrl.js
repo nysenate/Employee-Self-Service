@@ -47,16 +47,22 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
         $scope.paginate.itemsPerPage = 16;
         updateFiltersFromUrlParams();
 
-        if (!destinationService.isDestinationConfirmed()) {
-            queryEmployee()
-                .then(loadSelectDestinationState)
-        } else {
-            queryEmployee()
-                .then(loadShoppingState);
-        }
+        queryEmployee()
+            .then(initAllowedDestinations)
+            .then(initState)
+            .catch($scope.handleErrorResponse);
+
     };
 
     $scope.init();
+
+    function initState() {
+        if (!destinationService.isDestinationConfirmed()) {
+            loadSelectDestinationState()
+        } else {
+            loadShoppingState();
+        }
+    }
 
     // Set state to invalid when leaving the order page.
     $scope.$on('$destroy', function () {
@@ -74,11 +80,9 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
 
     function loadSelectDestinationState() {
         $scope.state.toLoading();
-        initAllowedDestinations()
-            .then(selectDefaultDestination)
-            .then(checkForLocationErrors)
-            .then(setToSelectingDestinationState)
-            .catch($scope.handleErrorResponse);
+        selectDefaultDestination();
+        checkForLocationErrors();
+        setToSelectingDestinationState();
     }
 
     function initAllowedDestinations() {
@@ -125,6 +129,16 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
     function loadShoppingState() {
         $scope.state.toLoading();
         $scope.destination = destinationService.getDestination();
+
+        // Validate the destination saved in cookies.
+        var matches = $scope.destinations.allowed.filter(function (dest) {
+            return dest.locId === $scope.destination.locId;
+        });
+        if (matches.length === 0) {
+            // Destination from cookies is invalid, clear and reload the page.
+            reset();
+        }
+
         itemApi.itemsForLoc($scope.destination.locId)
             .then(initializeCart)
             .then(sortAndFilterLineItems)
@@ -214,15 +228,14 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
             modals.open('order-canceling-modal')
                 .then(reset);
         }
-
-        function reset() {
-            $scope.state.toLoading();
-            supplyCart.reset();
-            destinationService.reset();
-            locationService.go("/supply/shopping/order", true);
-        }
     };
 
+    function reset() {
+        $scope.state.toLoading();
+        supplyCart.reset();
+        destinationService.reset();
+        locationService.go("/supply/shopping/order", true);
+    }
 
     /** --- Sorting  --- */
 
