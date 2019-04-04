@@ -5,7 +5,7 @@ import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteService;
-import gov.nysenate.ess.travel.application.route.RouteView;
+import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +30,8 @@ public class TravelApplicationService {
         }
     }
 
-    public void updateRoute(TravelApplication app, RouteView routeView) {
-        Route fullRoute = routeService.initializeRoute(routeView.toRoute());
+    public void updateRoute(TravelApplication app, SimpleRouteView simpleRouteView) {
+        Route fullRoute = routeService.createRoute(simpleRouteView);
         app.setRoute(fullRoute);
         setAllowancesFromRoute(app.getAllowances(), fullRoute);
         saveTravelApplication(app);

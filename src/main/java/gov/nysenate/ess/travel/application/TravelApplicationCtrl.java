@@ -9,7 +9,7 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
-import gov.nysenate.ess.travel.application.route.RouteView;
+import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
         checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
-        TravelApplicationView appView = new TravelApplicationView(app);
+        SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
         return new ViewObjectResponse(appView);
     }
 
@@ -54,7 +54,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                     travelApplicationService.updatePurposeOfTravel(app, patch.getValue());
                     break;
                 case "route":
-                    travelApplicationService.updateRoute(app, OutputUtils.jsonToObject(patch.getValue(), RouteView.class));
+                    travelApplicationService.updateRoute(app, OutputUtils.jsonToObject(patch.getValue(), SimpleRouteView.class));
                     break;
                 case "allowances":
                     travelApplicationService.updateAllowances(app, OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class));
@@ -66,7 +66,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
             }
         }
-        TravelApplicationView appView = new TravelApplicationView(app);
+        SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
         return new ViewObjectResponse(appView);
     }
 
@@ -75,15 +75,15 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         checkPermission(new CorePermission(travelerId, CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
 
         TravelApplication app = travelApplicationService.uncompleteAppForTraveler(travelerId);
-        return new ViewObjectResponse(new TravelApplicationView(app));
+        return new ViewObjectResponse(new SimpleTravelApplicationView(app));
     }
 
     @RequestMapping(value = "/traveler/{travelerId}")
     public BaseResponse getActiveTravelApps(@PathVariable int travelerId) {
         checkPermission(new CorePermission(travelerId, CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
         List<TravelApplication> apps = travelApplicationService.selectTravelApplications(travelerId);
-        List<TravelApplicationView> appViews = apps.stream()
-                .map(TravelApplicationView::new)
+        List<SimpleTravelApplicationView> appViews = apps.stream()
+                .map(SimpleTravelApplicationView::new)
                 .collect(Collectors.toList());
         return ListViewResponse.of(appViews);
     }

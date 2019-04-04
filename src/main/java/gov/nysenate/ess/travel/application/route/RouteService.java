@@ -20,26 +20,26 @@ public class RouteService {
     @Autowired private MileageAllowanceService mileageService;
 
     /**
-     * Creates a fully populated route from a partial route entered through the UI.
+     * Creates a fully populated route from a SimpleRouteView entered through the UI.
      * <p>
      * This method should be run after any changes to a route.
      * <p>
      * This populates destination arrival date, departure date, meal per diems, and lodging per diems.
      * Along with the miles and mileage rate for each leg.
      *
-     * @param partialRoute
+     * @param simpleRoute
      * @return
      */
-    public Route initializeRoute(Route partialRoute) {
+    public Route createRoute(SimpleRouteView simpleRoute) {
         List<Leg> outboundLegs = new ArrayList<>();
-        for (int i = 0; i < partialRoute.getOutboundLegs().size(); i++) {
-            Leg leg = createLeg(partialRoute, i);
+        for (int i = 0; i < simpleRoute.getOutboundLegs().size(); i++) {
+            Leg leg = createLeg(simpleRoute, i);
             outboundLegs.add(leg);
         }
 
         List<Leg> returnLegs = new ArrayList<>();
-        for (int i = partialRoute.getOutboundLegs().size(); i < partialRoute.getAllLegs().size(); i++) {
-            Leg leg = createLeg(partialRoute, i);
+        for (int i = simpleRoute.getOutboundLegs().size(); i < simpleRoute.getAllLegs().size(); i++) {
+            Leg leg = createLeg(simpleRoute, i);
             returnLegs.add(leg);
         }
 
@@ -49,6 +49,7 @@ public class RouteService {
         return route;
     }
 
+    // Set per diems on each destination. If a day has multiple per diems only use the highest one.
     private void setDestinationPerDiems(Route route) {
         LocalDate start = route.startDate();
         LocalDate end = route.endDate().plusDays(1);
@@ -86,42 +87,42 @@ public class RouteService {
                 .collect(Collectors.toSet());
     }
 
-    private Leg createLeg(Route partialRoute, int legIndex) {
-        Leg previousLeg = getLegOrNull(partialRoute, legIndex - 1);
-        Leg currentLeg = getLegOrNull(partialRoute, legIndex);
-        Leg nextLeg = getLegOrNull(partialRoute, legIndex + 1);
+    private Leg createLeg(SimpleRouteView simpleRoute, int legIndex) {
+        SimpleLegView previousLeg = getLegOrNull(simpleRoute, legIndex - 1);
+        SimpleLegView currentLeg = getLegOrNull(simpleRoute, legIndex);
+        SimpleLegView nextLeg = getLegOrNull(simpleRoute, legIndex + 1);
 
         Destination from = createFromDestination(previousLeg, currentLeg);
         Destination to = createToDestination(nextLeg, currentLeg);
 
         double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
-        BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.getTravelDate());
-        return new Leg(0, from, to, currentLeg.getModeOfTransportation(),
-                currentLeg.getTravelDate(), miles, mileageRate);
+        BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
+        return new Leg(0, from, to, currentLeg.modeOfTransportation(),
+                currentLeg.travelDate(), miles, mileageRate);
     }
 
-    private Leg getLegOrNull(Route partialRoute, int legIndex) {
+    private SimpleLegView getLegOrNull(SimpleRouteView simpleRoute, int legIndex) {
         try {
-            return partialRoute.getAllLegs().get(legIndex);
+            return simpleRoute.getAllLegs().get(legIndex);
         } catch (Exception ex) {
             return null;
         }
     }
 
-    private Destination createFromDestination(Leg previousLeg, Leg currentLeg) {
-        Address address = currentLeg.getFrom().getAddress();
-        LocalDate arrival = previousLeg == null ? currentLeg.getTravelDate() : previousLeg.getTravelDate();
-        LocalDate departure = currentLeg.getTravelDate();
+    private Destination createFromDestination(SimpleLegView previousLeg, SimpleLegView currentLeg) {
+        Address address = currentLeg.getFrom().toAddress();
+        LocalDate arrival = previousLeg == null ? currentLeg.travelDate() : previousLeg.travelDate();
+        LocalDate departure = currentLeg.travelDate();
 
-        return new Destination(currentLeg.getFrom().getAddress(), arrival, departure);
+        return new Destination(address, arrival, departure);
     }
 
-    private Destination createToDestination(Leg nextLeg, Leg currentLeg) {
-        Address address = currentLeg.getTo().getAddress();
-        LocalDate arrival = currentLeg.getTravelDate();
-        LocalDate departure = nextLeg == null ? currentLeg.getTravelDate() : nextLeg.getTravelDate();
+    private Destination createToDestination(SimpleLegView nextLeg, SimpleLegView currentLeg) {
+        Address address = currentLeg.getTo().toAddress();
+        LocalDate arrival = currentLeg.travelDate();
+        LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
 
-        return new Destination(currentLeg.getTo().getAddress(), arrival, departure);
+        return new Destination(address, arrival, departure);
     }
 
 }

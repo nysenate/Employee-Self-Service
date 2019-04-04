@@ -43,6 +43,10 @@ public class ModeOfTransportation {
         this.description = description;
     }
 
+    public ModeOfTransportation(String methodOfTravel, String description) {
+        this(MethodOfTravel.valueOf(methodOfTravel), description);
+    }
+
     public boolean qualifiesForMileageReimbursement() {
         return getMethodOfTravel().qualifiesForMileageReimbursement();
     }
