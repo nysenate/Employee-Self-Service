@@ -39,8 +39,8 @@ public class TravelApplicationService {
 
     private void setAllowancesFromRoute(Allowances allowances, Route route) {
         allowances.setMileage(route.mileageExpense());
-        allowances.setMeals(route.mealPerDiems().total());
-        allowances.setLodging(route.lodgingPerDiems().total());
+        allowances.setMeals(route.mealAllowances().totalRequestedAllowance());
+        allowances.setLodging(route.lodgingAllowances().totalRequestedAllowance());
     }
 
     public void updateAllowances(TravelApplication app, AllowancesView allowancesView) {

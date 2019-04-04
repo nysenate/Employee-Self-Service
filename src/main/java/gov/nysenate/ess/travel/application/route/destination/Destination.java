@@ -2,8 +2,11 @@ package gov.nysenate.ess.travel.application.route.destination;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.application.route.PerDiem;
-import gov.nysenate.ess.travel.application.route.PerDiemList;
+import gov.nysenate.ess.travel.application.allowances.*;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
+import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
@@ -15,16 +18,16 @@ public class Destination {
     private int id;
     private final Address address;
     private final Range<LocalDate> dateRange;
-    private final TreeMap<LocalDate, Dollars> mealPerDiems;
-    private final TreeMap<LocalDate, Dollars> lodgingPerDiems;
+    private final TreeMap<LocalDate, PerDiem> mealPerDiems;
+    private final TreeMap<LocalDate, PerDiem> lodgingPerDiems;
 
     public Destination(Address address, LocalDate arrival, LocalDate departure) {
         this(0, address, arrival, departure, new TreeMap<>(), new TreeMap<>());
     }
 
     public Destination(int id, Address address, LocalDate arrival, LocalDate departure,
-                       Map<LocalDate, Dollars> mealPerDiems,
-                       Map<LocalDate, Dollars> lodgingPerDiems) {
+                       Map<LocalDate, PerDiem> mealPerDiems,
+                       Map<LocalDate, PerDiem> lodgingPerDiems) {
         this.id = id;
         this.address = address;
         this.dateRange = arrival != null && departure != null ? Range.closed(arrival, departure) : null;
@@ -32,17 +35,16 @@ public class Destination {
         this.lodgingPerDiems = new TreeMap<>(lodgingPerDiems);
     }
 
-    public PerDiemList mealPerDiems() {
-        return new PerDiemList(getMealPerDiems().entrySet().stream()
-                .map(entry -> new PerDiem(getAddress(), entry.getKey(), entry.getValue()))
+    public MealAllowances mealAllowances() {
+        return new MealAllowances(getMealPerDiems().entrySet().stream()
+                .map(entry -> new MealPerDiem(getAddress(), entry.getValue()))
                 .collect(Collectors.toList()));
     }
 
-    public PerDiemList lodgingPerDiems() {
-        return new PerDiemList(getLodgingPerDiems().entrySet().stream()
-                .map(entry -> new PerDiem(getAddress(), entry.getKey(), entry.getValue()))
+    public LodgingAllowances lodgingAllowances() {
+        return new LodgingAllowances(getLodgingPerDiems().entrySet().stream()
+                .map(entry -> new LodgingPerDiem(getAddress(), entry.getValue()))
                 .collect(Collectors.toList()));
-
     }
 
     public Address getAddress() {
@@ -73,12 +75,12 @@ public class Destination {
         return nights;
     }
 
-    public void addMealPerDiem(LocalDate date, Dollars perDiem) {
-        getMealPerDiems().put(date, perDiem);
+    public void addMealPerDiem(LocalDate date, Dollars dollars) {
+        getMealPerDiems().put(date, new PerDiem(date, dollars));
     }
 
-    public void addLodgingPerDiem(LocalDate date, Dollars perDiem) {
-        getLodgingPerDiems().put(date, perDiem);
+    public void addLodgingPerDiem(LocalDate date, Dollars dollars) {
+        getLodgingPerDiems().put(date, new PerDiem(date, dollars));
     }
 
     public int getId() {
@@ -101,18 +103,19 @@ public class Destination {
         return dateRange;
     }
 
-    TreeMap<LocalDate, Dollars> getMealPerDiems() {
+    TreeMap<LocalDate, PerDiem> getMealPerDiems() {
         return mealPerDiems;
     }
 
-    TreeMap<LocalDate, Dollars> getLodgingPerDiems() {
+    TreeMap<LocalDate, PerDiem> getLodgingPerDiems() {
         return lodgingPerDiems;
     }
 
     @Override
     public String toString() {
         return "Destination{" +
-                "address=" + address +
+                "id=" + id +
+                ", address=" + address +
                 ", dateRange=" + dateRange +
                 ", mealPerDiems=" + mealPerDiems +
                 ", lodgingPerDiems=" + lodgingPerDiems +
@@ -124,7 +127,8 @@ public class Destination {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Destination that = (Destination) o;
-        return Objects.equals(address, that.address) &&
+        return id == that.id &&
+                Objects.equals(address, that.address) &&
                 Objects.equals(dateRange, that.dateRange) &&
                 Objects.equals(mealPerDiems, that.mealPerDiems) &&
                 Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
@@ -132,6 +136,6 @@ public class Destination {
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, dateRange, mealPerDiems, lodgingPerDiems);
+        return Objects.hash(id, address, dateRange, mealPerDiems, lodgingPerDiems);
     }
 }

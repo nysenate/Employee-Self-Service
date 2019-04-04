@@ -1,6 +1,8 @@
 package gov.nysenate.ess.travel.application.route;
 
 import com.google.common.collect.ImmutableList;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
+import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -23,16 +25,18 @@ public class Route {
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
-    public PerDiemList mealPerDiems() {
-        return PerDiemList.ofLists(destinations().stream()
-                .map(Destination::mealPerDiems)
+    public MealAllowances mealAllowances() {
+        return new MealAllowances(destinations().stream()
+                .map(Destination::mealAllowances)
+                .flatMap(m -> m.allMealPerDiems().stream())
                 .collect(Collectors.toList()));
     }
 
-    public PerDiemList lodgingPerDiems() {
-        return PerDiemList.ofLists(destinations().stream()
-        .map(Destination::lodgingPerDiems)
-        .collect(Collectors.toList()));
+    public LodgingAllowances lodgingAllowances() {
+        return new LodgingAllowances(destinations().stream()
+                .map(Destination::lodgingAllowances)
+                .flatMap(l -> l.allLodgingPerDiems().stream())
+                .collect(Collectors.toList()));
     }
 
     public double totalMiles() {

@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -51,11 +52,12 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertMealPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, Dollars> mealPerDiems : destination.getMealPerDiems().entrySet()) {
+        for (Map.Entry<LocalDate, PerDiem> mealPerDiems : destination.getMealPerDiems().entrySet()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
                     .addValue("date", toDate(mealPerDiems.getKey()))
-                    .addValue("perDiem", mealPerDiems.getValue().toString());
+                    .addValue("dollars", mealPerDiems.getValue().toString())
+                    .addValue("isReimbursementRequested", mealPerDiems.getValue().isReimbursementRequested());
             paramList.add(params);
         }
 
@@ -67,11 +69,12 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertLodgingPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, Dollars> lodgingPerDiem : destination.getLodgingPerDiems().entrySet()) {
+        for (Map.Entry<LocalDate, PerDiem> lodgingPerDiem : destination.getLodgingPerDiems().entrySet()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
                     .addValue("date", toDate(lodgingPerDiem.getKey()))
-                    .addValue("perDiem", lodgingPerDiem.getValue().toString());
+                    .addValue("dollars", lodgingPerDiem.getValue().toString())
+                    .addValue("isReimbursementRequested", lodgingPerDiem.getValue().isReimbursementRequested());
             paramList.add(params);
         }
 
@@ -99,19 +102,20 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         ),
         INSERT_MEAL_PER_DIEMS(
                 "INSERT INTO ${travelSchema}.app_leg_destination_meal_per_diem" +
-                        " (destination_id, date, per_diem)\n" +
-                        " VALUES (:destinationId, :date, :perDiem)"
+                        " (destination_id, date, dollars, is_reimbursement_requested)\n" +
+                        " VALUES (:destinationId, :date, :dollars, :isReimbursementRequested)"
         ),
         INSERT_LODGING_PER_DIEMS(
                 "INSERT INTO ${travelSchema}.app_leg_destination_lodging_per_diem" +
-                        " (destination_id, date, per_diem)\n" +
-                        " VALUES (:destinationId, :date, :perDiem)"
+                        " (destination_id, date, dollars, is_reimbursement_requested)\n" +
+                        " VALUES (:destinationId, :date, :dollars, :isReimbursementRequested)"
         ),
         SELECT_DESTINATION(
                 "SELECT dest.destination_id, dest.arrival_date, dest.departure_date," +
                         " dest.street_1, dest.street_2, dest.city, dest.county," +
-                        " dest.state, dest.zip_5, dest.zip_4, dest.country, m.date as meal_date," +
-                        " m.per_diem as meal_per_diem, l.date as lodging_date, l.per_diem as lodging_per_diem\n" +
+                        " dest.state, dest.zip_5, dest.zip_4, dest.country, " +
+                        " m.date as meal_date, m.dollars as meal_dollars, m.is_reimbursement_requested as meal_requested," +
+                        " l.date as lodging_date, l.dollars as lodging_dollars, l.is_reimbursement_requested as lodging_requested\n" +
                         " FROM ${travelSchema}.app_leg_destination dest\n" +
                         "   LEFT JOIN ${travelSchema}.app_leg_destination_meal_per_diem m ON dest.destination_id = m.destination_id" +
                         "   LEFT JOIN ${travelSchema}.app_leg_destination_lodging_per_diem l ON dest.destination_id = l.destination_id" +
@@ -141,8 +145,8 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         private LocalDate arrivalDate;
         private LocalDate departureDate;
         private Address address;
-        private TreeMap<LocalDate, Dollars> mealPerDiems;
-        private TreeMap<LocalDate, Dollars> lodgingPerDiems;
+        private TreeMap<LocalDate, PerDiem> mealPerDiems;
+        private TreeMap<LocalDate, PerDiem> lodgingPerDiems;
 
         DestinationHandler() {
             this.mealPerDiems = new TreeMap<>();
@@ -173,15 +177,17 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
             }
 
             LocalDate mealDate = getLocalDate(rs, "meal_date");
-            Dollars mealPerDiem = new Dollars(rs.getString("meal_per_diem"));
+            Dollars mealDollars = new Dollars(rs.getString("meal_dollars"));
+            boolean isMealRequested = rs.getBoolean("meal_requested");
             if (mealDate != null) {
-                mealPerDiems.put(mealDate, mealPerDiem);
+                mealPerDiems.put(mealDate, new PerDiem(mealDate, mealDollars, isMealRequested));
             }
 
             LocalDate lodgingDate = getLocalDate(rs, "lodging_date");
-            Dollars lodgingPerDiem = new Dollars(rs.getString("lodging_per_diem"));
+            Dollars lodgingDollars = new Dollars(rs.getString("lodging_dollars"));
+            boolean isLodgingRequested = rs.getBoolean("lodging_requested");
             if (lodgingDate != null) {
-                lodgingPerDiems.put(lodgingDate, lodgingPerDiem);
+                lodgingPerDiems.put(lodgingDate, new PerDiem(lodgingDate, lodgingDollars, isLodgingRequested));
             }
         }
 

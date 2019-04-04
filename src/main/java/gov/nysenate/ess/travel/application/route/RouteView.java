@@ -2,12 +2,14 @@ package gov.nysenate.ess.travel.application.route;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RouteView implements ViewObject{
+public class RouteView implements ViewObject {
 
     private List<LegView> outboundLegs;
     private List<LegView> returnLegs;
@@ -16,8 +18,8 @@ public class RouteView implements ViewObject{
     private String totalMiles;
     private String mileageExpense;
 
-    private PerDiemListView mealPerDiems;
-    private PerDiemListView lodgingPerDiems;
+    private MealAllowancesView mealAllowances;
+    private LodgingAllowancesView lodgingAllowances;
 
     public RouteView() {
     }
@@ -36,8 +38,8 @@ public class RouteView implements ViewObject{
                 .map(DestinationView::new)
                 .collect(Collectors.toList());
 
-        this.mealPerDiems = new PerDiemListView(route.mealPerDiems());
-        this.lodgingPerDiems = new PerDiemListView(route.lodgingPerDiems());
+        this.mealAllowances = new MealAllowancesView(route.mealAllowances());
+        this.lodgingAllowances = new LodgingAllowancesView(route.lodgingAllowances());
     }
 
     public Route toRoute() {
@@ -45,12 +47,12 @@ public class RouteView implements ViewObject{
                 returnLegs.stream().map(LegView::toLeg).collect(ImmutableList.toImmutableList()));
     }
 
-    public PerDiemListView getLodgingPerDiems() {
-        return lodgingPerDiems;
+    public MealAllowancesView getMealAllowances() {
+        return mealAllowances;
     }
 
-    public PerDiemListView getMealPerDiems() {
-        return mealPerDiems;
+    public LodgingAllowancesView getLodgingAllowances() {
+        return lodgingAllowances;
     }
 
     public List<LegView> getOutboundLegs() {
