@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class MealAllowances {
 
-    private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::getDate);
+    private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
 
     public MealAllowances(Collection<MealPerDiem> mealPerDiems) {
@@ -19,9 +19,15 @@ public class MealAllowances {
                 .build();
     }
 
-    public Dollars totalRequestedAllowance() {
+    public Dollars maximumAllowance() {
         return allMealPerDiems().stream()
-                .map(MealPerDiem::totalRequestedAllowance)
+                .map(MealPerDiem::maximumAllowance)
+                .reduce(Dollars.ZERO, Dollars::add);
+    }
+
+    public Dollars requestedAllowance() {
+        return requestedMealPerDiems().stream()
+                .map(MealPerDiem::requestedAllowance)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 

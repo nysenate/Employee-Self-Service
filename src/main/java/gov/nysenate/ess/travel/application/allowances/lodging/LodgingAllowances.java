@@ -9,7 +9,7 @@ import java.util.Objects;
 
 public class LodgingAllowances {
 
-    private final static Comparator<LodgingPerDiem> dateComparator = Comparator.comparing(LodgingPerDiem::getDate);
+    private final static Comparator<LodgingPerDiem> dateComparator = Comparator.comparing(LodgingPerDiem::date);
     private final ImmutableSortedSet<LodgingPerDiem> lodgingPerDiems;
 
     public LodgingAllowances(Collection<LodgingPerDiem> lodgingPerDiems) {
@@ -19,9 +19,15 @@ public class LodgingAllowances {
                 .build();
     }
 
-    public Dollars totalRequestedAllowance() {
+    public Dollars maximumAllowance() {
         return allLodgingPerDiems().stream()
-                .map(LodgingPerDiem::totalRequestedAllowance)
+                .map(LodgingPerDiem::maximumAllowance)
+                .reduce(Dollars.ZERO, Dollars::add);
+    }
+
+    public Dollars requestedAllowance() {
+        return requestedLodgingPerDiems().stream()
+                .map(LodgingPerDiem::requestedAllowance)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 

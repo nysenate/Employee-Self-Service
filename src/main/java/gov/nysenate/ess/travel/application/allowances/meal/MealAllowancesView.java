@@ -9,7 +9,8 @@ public class MealAllowancesView implements ViewObject {
 
     private List<MealPerDiemView> allMealPerDiems;
     private List<MealPerDiemView> requestedMealPerDiems;
-    private String totalRequestedAllowance;
+    private String requestedAllowance;
+    private String maximumAllowance;
 
     public MealAllowancesView() {
     }
@@ -21,7 +22,8 @@ public class MealAllowancesView implements ViewObject {
         this.requestedMealPerDiems = ma.requestedMealPerDiems().stream()
                 .map(MealPerDiemView::new)
                 .collect(Collectors.toList());
-        this.totalRequestedAllowance = ma.totalRequestedAllowance().toString();
+        this.requestedAllowance = ma.requestedAllowance().toString();
+        this.maximumAllowance = ma.maximumAllowance().toString();
     }
 
     public List<MealPerDiemView> getAllMealPerDiems() {
@@ -32,8 +34,12 @@ public class MealAllowancesView implements ViewObject {
         return requestedMealPerDiems;
     }
 
-    public String getTotalRequestedAllowance() {
-        return totalRequestedAllowance;
+    public String getRequestedAllowance() {
+        return requestedAllowance;
+    }
+
+    public String getMaximumAllowance() {
+        return maximumAllowance;
     }
 
     @Override

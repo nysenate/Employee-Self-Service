@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.route;
 
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.ServiceProviderFactory;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
@@ -33,13 +34,13 @@ public class RouteService {
     public Route createRoute(SimpleRouteView simpleRoute) {
         List<Leg> outboundLegs = new ArrayList<>();
         for (int i = 0; i < simpleRoute.getOutboundLegs().size(); i++) {
-            Leg leg = createLeg(simpleRoute, i);
+            Leg leg = createLeg(simpleRoute, i, true);
             outboundLegs.add(leg);
         }
 
         List<Leg> returnLegs = new ArrayList<>();
         for (int i = simpleRoute.getOutboundLegs().size(); i < simpleRoute.getAllLegs().size(); i++) {
-            Leg leg = createLeg(simpleRoute, i);
+            Leg leg = createLeg(simpleRoute, i, false);
             returnLegs.add(leg);
         }
 
@@ -50,6 +51,50 @@ public class RouteService {
     }
 
     // Set per diems on each destination. If a day has multiple per diems only use the highest one.
+    private Set<Destination> destinationsVisitedOn(Route route, LocalDate date) {
+        return route.destinations().stream()
+                .filter(d -> d.wasVisitedOn(date))
+                .collect(Collectors.toSet());
+    }
+
+    private Leg createLeg(SimpleRouteView simpleRoute, int legIndex, boolean isOutbound) {
+        SimpleLegView previousLeg = getLegOrNull(simpleRoute, legIndex - 1);
+        SimpleLegView currentLeg = getLegOrNull(simpleRoute, legIndex);
+        SimpleLegView nextLeg = getLegOrNull(simpleRoute, legIndex + 1);
+
+        Destination from = createFromDestination(previousLeg, currentLeg);
+        Destination to = createToDestination(nextLeg, currentLeg);
+
+        double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
+        BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
+        PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate);
+        return new Leg(0, from, to, currentLeg.modeOfTransportation(), miles, perDiem, isOutbound);
+    }
+
+    private SimpleLegView getLegOrNull(SimpleRouteView simpleRoute, int legIndex) {
+        try {
+            return simpleRoute.getAllLegs().get(legIndex);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private Destination createFromDestination(SimpleLegView previousLeg, SimpleLegView currentLeg) {
+        Address address = currentLeg.getFrom().toAddress();
+        LocalDate arrival = previousLeg == null ? currentLeg.travelDate() : previousLeg.travelDate();
+        LocalDate departure = currentLeg.travelDate();
+
+        return new Destination(address, arrival, departure);
+    }
+
+    private Destination createToDestination(SimpleLegView nextLeg, SimpleLegView currentLeg) {
+        Address address = currentLeg.getTo().toAddress();
+        LocalDate arrival = currentLeg.travelDate();
+        LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
+
+        return new Destination(address, arrival, departure);
+    }
+
     private void setDestinationPerDiems(Route route) {
         LocalDate start = route.startDate();
         LocalDate end = route.endDate().plusDays(1);
@@ -80,49 +125,4 @@ public class RouteService {
             }
         }
     }
-
-    private Set<Destination> destinationsVisitedOn(Route route, LocalDate date) {
-        return route.destinations().stream()
-                .filter(d -> d.wasVisitedOn(date))
-                .collect(Collectors.toSet());
-    }
-
-    private Leg createLeg(SimpleRouteView simpleRoute, int legIndex) {
-        SimpleLegView previousLeg = getLegOrNull(simpleRoute, legIndex - 1);
-        SimpleLegView currentLeg = getLegOrNull(simpleRoute, legIndex);
-        SimpleLegView nextLeg = getLegOrNull(simpleRoute, legIndex + 1);
-
-        Destination from = createFromDestination(previousLeg, currentLeg);
-        Destination to = createToDestination(nextLeg, currentLeg);
-
-        double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
-        BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
-        return new Leg(0, from, to, currentLeg.modeOfTransportation(),
-                currentLeg.travelDate(), miles, mileageRate);
-    }
-
-    private SimpleLegView getLegOrNull(SimpleRouteView simpleRoute, int legIndex) {
-        try {
-            return simpleRoute.getAllLegs().get(legIndex);
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    private Destination createFromDestination(SimpleLegView previousLeg, SimpleLegView currentLeg) {
-        Address address = currentLeg.getFrom().toAddress();
-        LocalDate arrival = previousLeg == null ? currentLeg.travelDate() : previousLeg.travelDate();
-        LocalDate departure = currentLeg.travelDate();
-
-        return new Destination(address, arrival, departure);
-    }
-
-    private Destination createToDestination(SimpleLegView nextLeg, SimpleLegView currentLeg) {
-        Address address = currentLeg.getTo().toAddress();
-        LocalDate arrival = currentLeg.travelDate();
-        LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
-
-        return new Destination(address, arrival, departure);
-    }
-
 }

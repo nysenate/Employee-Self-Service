@@ -17,20 +17,24 @@ public final class LodgingPerDiem {
         this.perDiem = perDiem;
     }
 
-    public Dollars totalRequestedAllowance() {
-        return isReimbursementRequested() ? getDollars() : Dollars.ZERO;
+    public Dollars maximumAllowance() {
+        return rate();
     }
 
-    public Address getAddress() {
+    public Dollars requestedAllowance() {
+        return isReimbursementRequested() ? maximumAllowance() : Dollars.ZERO;
+    }
+
+    public Address address() {
         return address;
     }
 
-    public LocalDate getDate() {
+    public LocalDate date() {
         return perDiem.getDate();
     }
 
-    public Dollars getDollars() {
-        return perDiem.getDollars();
+    public Dollars rate() {
+        return new Dollars(perDiem.getRate());
     }
 
     public boolean isReimbursementRequested() {

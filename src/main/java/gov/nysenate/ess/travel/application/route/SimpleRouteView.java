@@ -15,12 +15,6 @@ public class SimpleRouteView implements ViewObject {
     private List<AddressView> destinations;
     private AddressView origin;
 
-//    private String totalMiles;
-//    private String mileageExpense;
-
-//    private MealAllowancesView mealAllowances;
-//    private LodgingAllowancesView lodgingAllowances;
-
     public SimpleRouteView() {
     }
 
@@ -31,15 +25,10 @@ public class SimpleRouteView implements ViewObject {
         returnLegs = route.getReturnLegs().stream()
                 .map(SimpleLegView::new)
                 .collect(Collectors.toList());
-        origin = route.origin() == null ? null : new AddressView(route.origin().getAddress());
-//        totalMiles = String.valueOf(route.totalMiles());
-//        mileageExpense = route.mileageExpense().toString();
+        origin = route.origin() == null ? null : new AddressView(route.origin());
         destinations = route.destinations().stream()
                 .map(d -> new AddressView(d.getAddress()))
                 .collect(Collectors.toList());
-
-//        this.mealAllowances = new MealAllowancesView(route.mealAllowances());
-//        this.lodgingAllowances = new LodgingAllowancesView(route.lodgingAllowances());
     }
 
     @JsonIgnore

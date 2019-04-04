@@ -1,10 +1,11 @@
 package gov.nysenate.ess.travel.application.route;
 
 import com.google.common.collect.ImmutableList;
+import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowances;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +16,6 @@ import java.util.stream.Stream;
 public class Route {
 
     public static final Route EMPTY_ROUTE = new Route(ImmutableList.of(), ImmutableList.of());
-    private static final double MILE_THRESHOLD = 35.0;
 
     private final ImmutableList<Leg> outboundLegs;
     private final ImmutableList<Leg> returnLegs;
@@ -39,25 +39,13 @@ public class Route {
                 .collect(Collectors.toList()));
     }
 
-    public double totalMiles() {
-        return getAllLegs().stream()
-                .map(Leg::getMiles)
-                .reduce(0.0, Double::sum);
+    public MileageAllowances mileageAllowances() {
+        return new MileageAllowances(getAllLegs());
     }
 
-    public Dollars mileageExpense() {
-        if (outgoingReimbursableMiles() < MILE_THRESHOLD) {
-            return new Dollars("0");
-        }
-
-        return getAllLegs().stream()
-                .map(Leg::mileageExpense)
-                .reduce(Dollars.ZERO, Dollars::add);
-    }
-
-    public Destination origin() {
+    public Address origin() {
         if (getOutboundLegs().size() > 0) {
-            return getOutboundLegs().get(0).getFrom();
+            return getOutboundLegs().get(0).fromAddress();
         }
         return null;
     }
@@ -79,7 +67,7 @@ public class Route {
             return null;
         }
         return getOutboundLegs().stream()
-                .map(Leg::getTravelDate)
+                .map(Leg::travelDate)
                 .min(LocalDate::compareTo)
                 .get();
     }
@@ -92,7 +80,7 @@ public class Route {
             return null;
         }
         return getReturnLegs().stream()
-                .map(Leg::getTravelDate)
+                .map(Leg::travelDate)
                 .max(LocalDate::compareTo)
                 .get();
     }
@@ -108,13 +96,6 @@ public class Route {
     protected ImmutableList<Leg> getAllLegs() {
         return Stream.concat(getOutboundLegs().stream(), getReturnLegs().stream())
                 .collect(ImmutableList.toImmutableList());
-    }
-
-    private double outgoingReimbursableMiles() {
-        return getOutboundLegs().stream()
-                .filter(leg -> leg.qualifiesForMileageReimbursement())
-                .mapToDouble(Leg::getMiles)
-                .sum();
     }
 
     @Override

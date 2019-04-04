@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowancesView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 
 import java.util.List;
@@ -21,15 +22,15 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String purposeOfTravel;
     private SimpleRouteView route;
     private AllowancesView allowances;
+    private MealAllowancesView mealAllowances;
+    private LodgingAllowancesView lodgingAllowances;
+    private MileageAllowancesView mileageAllowances;
     private String submittedDateTime;
     private String modifiedDateTime;
     private DetailedEmployeeView modifiedBy;
     private List<TravelAttachmentView> attachments;
-
     private String startDate;
     private String endDate;
-    private MealAllowancesView mealAllowances;
-    private LodgingAllowancesView lodgingAllowances;
 
     public SimpleTravelApplicationView() {
     }
@@ -50,6 +51,7 @@ public class SimpleTravelApplicationView implements ViewObject {
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
         mealAllowances = new MealAllowancesView(app.getRoute().mealAllowances());
         lodgingAllowances = new LodgingAllowancesView(app.getRoute().lodgingAllowances());
+        mileageAllowances = new MileageAllowancesView(app.getRoute().mileageAllowances());
     }
 
     public String getId() {
@@ -76,6 +78,18 @@ public class SimpleTravelApplicationView implements ViewObject {
         return allowances;
     }
 
+    public MealAllowancesView getMealAllowances() {
+        return mealAllowances;
+    }
+
+    public LodgingAllowancesView getLodgingAllowances() {
+        return lodgingAllowances;
+    }
+
+    public MileageAllowancesView getMileageAllowances() {
+        return mileageAllowances;
+    }
+
     public String getSubmittedDateTime() {
         return submittedDateTime;
     }
@@ -98,14 +112,6 @@ public class SimpleTravelApplicationView implements ViewObject {
 
     public String getEndDate() {
         return endDate;
-    }
-
-    public MealAllowancesView getMealAllowances() {
-        return mealAllowances;
-    }
-
-    public LodgingAllowancesView getLodgingAllowances() {
-        return lodgingAllowances;
     }
 
     @Override

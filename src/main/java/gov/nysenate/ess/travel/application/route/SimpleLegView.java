@@ -17,23 +17,17 @@ public class SimpleLegView implements ViewObject {
     private String methodOfTravel;
     private String methodOfTravelDescription;
     private String travelDate;
-//    private String miles;
-//    private String mileageRate;
-//    private String mileageExpense;
 
     public SimpleLegView() {
     }
 
     public SimpleLegView(Leg leg) {
         this.id = String.valueOf(leg.getId());
-        this.from = new AddressView(leg.getFrom().getAddress());
-        this.to = new AddressView(leg.getTo().getAddress());
-        this.methodOfTravel = leg.getModeOfTransportation().getMethodOfTravel().toString();
-        this.methodOfTravelDescription = leg.getModeOfTransportation().getDescription();
-        this.travelDate = leg.getTravelDate().format(DATE_FORMAT);
-//        this.miles = String.valueOf(leg.getMiles());
-//        this.mileageRate = leg.getMileageRate().toString();
-//        this.mileageExpense = leg.mileageExpense().toString();
+        this.from = new AddressView(leg.fromAddress());
+        this.to = new AddressView(leg.toAddress());
+        this.methodOfTravel = leg.methodOfTravel();
+        this.methodOfTravelDescription = leg.methodOfTravelDescription();
+        this.travelDate = leg.travelDate().format(DATE_FORMAT);
     }
 
     @JsonIgnore

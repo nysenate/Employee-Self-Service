@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.route;
 
 import gov.nysenate.ess.core.dao.base.*;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.application.route.destination.DestinationDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
                 // Use the previous route because it has the correct Leg.id's
                 joinLegWithAppVersion(leg, appVersionId);
             }
-        }
-        else {
+        } else {
             // FIXME leg.to and nextLeg.from should reference same db row.
             List<Destination> destinations = route.getAllLegs().stream()
                     .flatMap(leg -> Stream.of(leg.getFrom(), leg.getTo()))
@@ -78,13 +78,14 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         return new MapSqlParameterSource()
                 .addValue("fromDestinationId", leg.getFrom().getId())
                 .addValue("toDestinationId", leg.getTo().getId())
-                .addValue("travelDate", toDate(leg.getTravelDate()))
-                .addValue("methodOfTravel", leg.getModeOfTransportation().getMethodOfTravel().name())
-                .addValue("methodOfTravelDescription", leg.getModeOfTransportation().getDescription())
-                .addValue("miles", String.valueOf(leg.getMiles()))
-                .addValue("mileageRate", leg.getMileageRate().toString())
+                .addValue("travelDate", toDate(leg.travelDate()))
+                .addValue("methodOfTravel", leg.methodOfTravel())
+                .addValue("methodOfTravelDescription", leg.methodOfTravelDescription())
+                .addValue("miles", String.valueOf(leg.miles()))
+                .addValue("mileageRate", leg.mileageRate().toString())
                 .addValue("isOutbound", isOutbound)
-                .addValue("sequenceNo", sequenceNo);
+                .addValue("sequenceNo", sequenceNo)
+                .addValue("isReimbursementRequested", leg.isReimbursementRequested());
     }
 
     @Override
@@ -107,9 +108,9 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
     private enum SqlRouteQuery implements BasicSqlQuery {
         INSERT_ROUTE(
                 "INSERT INTO ${travelSchema}.app_leg(from_destination_id, to_destination_id, travel_date," +
-                        " method_of_travel, method_of_travel_description, miles, mileage_rate, is_outbound, sequence_no) \n" +
+                        " method_of_travel, method_of_travel_description, miles, mileage_rate, is_outbound, sequence_no, is_reimbursement_requested) \n" +
                         " VALUES(:fromDestinationId, :toDestinationId, :travelDate," +
-                        " :methodOfTravel, :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :sequenceNo)"
+                        " :methodOfTravel, :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :sequenceNo, :isReimbursementRequested)"
         ),
         INSERT_JOIN_TABLE(
                 "INSERT INTO ${travelSchema}.app_version_leg(app_version_id, leg_id)\n" +
@@ -122,7 +123,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         ),
         SELECT_ROUTE(
                 "SELECT leg_id, from_destination_id, to_destination_id, travel_date, method_of_travel," +
-                        " method_of_travel_description, miles, mileage_rate, is_outbound\n" +
+                        " method_of_travel_description, miles, mileage_rate, is_outbound, is_reimbursement_requested\n" +
                         " FROM ${travelSchema}.app_leg\n" +
                         " WHERE leg_id IN (:legIds)\n" +
                         " ORDER BY sequence_no ASC"
@@ -184,15 +185,17 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
         @Override
         public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
+            PerDiem perDiem = new PerDiem(getLocalDate(rs, "travel_date"),
+                    new BigDecimal(rs.getString("mileage_rate")),
+                    rs.getBoolean("is_reimbursement_requested"));
             return new Leg(
                     rs.getInt("leg_id"),
                     destinationDao.selectDestination(rs.getInt("from_destination_id")),
                     destinationDao.selectDestination(rs.getInt("to_destination_id")),
                     new ModeOfTransportation(MethodOfTravel.valueOf(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
-                    getLocalDate(rs, "travel_date"),
                     Double.valueOf(rs.getString("miles")),
-                    new BigDecimal(rs.getString("mileage_rate"))
-            );
+                    perDiem,
+                    rs.getBoolean("is_outbound"));
         }
     }
 }

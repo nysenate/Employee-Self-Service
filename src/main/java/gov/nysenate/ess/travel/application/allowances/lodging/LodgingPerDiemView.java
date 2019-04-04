@@ -9,19 +9,21 @@ public class LodgingPerDiemView implements ViewObject {
 
     private String date;
     private AddressView address;
-    private String dollars;
+    private String rate;
     private boolean reimbursementRequested;
-    private String totalRequestedAllowance;
+    private String requestedAllowance;
+    private String maximumAllowance;
 
     public LodgingPerDiemView() {
     }
 
     public LodgingPerDiemView(LodgingPerDiem lpd) {
-        this.date = lpd.getDate().format(DateTimeFormatter.ISO_DATE);
-        this.address = new AddressView(lpd.getAddress());
-        this.dollars = lpd.getDollars().toString();
+        this.date = lpd.date().format(DateTimeFormatter.ISO_DATE);
+        this.address = new AddressView(lpd.address());
+        this.rate = lpd.rate().toString();
         this.reimbursementRequested = lpd.isReimbursementRequested();
-        this.totalRequestedAllowance = lpd.totalRequestedAllowance().toString();
+        this.requestedAllowance = lpd.requestedAllowance().toString();
+        this.maximumAllowance = lpd.maximumAllowance().toString();
     }
 
     public String getDate() {
@@ -32,16 +34,20 @@ public class LodgingPerDiemView implements ViewObject {
         return address;
     }
 
-    public String getDollars() {
-        return dollars;
+    public String getRate() {
+        return rate;
     }
 
     public boolean isReimbursementRequested() {
         return reimbursementRequested;
     }
 
-    public String getTotalRequestedAllowance() {
-        return totalRequestedAllowance;
+    public String getRequestedAllowance() {
+        return requestedAllowance;
+    }
+
+    public String getMaximumAllowance() {
+        return maximumAllowance;
     }
 
     @Override

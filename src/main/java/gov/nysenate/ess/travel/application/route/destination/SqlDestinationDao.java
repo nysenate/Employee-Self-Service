@@ -6,13 +6,13 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -177,14 +177,14 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
             }
 
             LocalDate mealDate = getLocalDate(rs, "meal_date");
-            Dollars mealDollars = new Dollars(rs.getString("meal_dollars"));
+            BigDecimal mealDollars = new BigDecimal(rs.getString("meal_dollars"));
             boolean isMealRequested = rs.getBoolean("meal_requested");
             if (mealDate != null) {
                 mealPerDiems.put(mealDate, new PerDiem(mealDate, mealDollars, isMealRequested));
             }
 
             LocalDate lodgingDate = getLocalDate(rs, "lodging_date");
-            Dollars lodgingDollars = new Dollars(rs.getString("lodging_dollars"));
+            BigDecimal lodgingDollars = new BigDecimal(rs.getString("lodging_dollars"));
             boolean isLodgingRequested = rs.getBoolean("lodging_requested");
             if (lodgingDate != null) {
                 lodgingPerDiems.put(lodgingDate, new PerDiem(lodgingDate, lodgingDollars, isLodgingRequested));

@@ -9,7 +9,8 @@ public class LodgingAllowancesView implements ViewObject {
 
     private List<LodgingPerDiemView> allLodgingPerDiems;
     private List<LodgingPerDiemView> requestedLodgingPerDiems;
-    private String totalRequestedAllowance;
+    private String requestedAllowance;
+    private String maximumAllowance;
 
     public LodgingAllowancesView() {
     }
@@ -21,7 +22,8 @@ public class LodgingAllowancesView implements ViewObject {
         this.requestedLodgingPerDiems = la.requestedLodgingPerDiems().stream()
                 .map(LodgingPerDiemView::new)
                 .collect(Collectors.toList());
-        this.totalRequestedAllowance = la.totalRequestedAllowance().toString();
+        this.requestedAllowance = la.requestedAllowance().toString();
+        this.maximumAllowance = la.maximumAllowance().toString();
     }
 
     public List<LodgingPerDiemView> getAllLodgingPerDiems() {
@@ -32,8 +34,12 @@ public class LodgingAllowancesView implements ViewObject {
         return requestedLodgingPerDiems;
     }
 
-    public String getTotalRequestedAllowance() {
-        return totalRequestedAllowance;
+    public String getRequestedAllowance() {
+        return requestedAllowance;
+    }
+
+    public String getMaximumAllowance() {
+        return maximumAllowance;
     }
 
     @Override

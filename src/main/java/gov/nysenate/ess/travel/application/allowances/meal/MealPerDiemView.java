@@ -9,19 +9,21 @@ public class MealPerDiemView implements ViewObject {
 
     private String date;
     private AddressView address;
-    private String dollars;
+    private String rate;
     private boolean reimbursementRequested;
-    private String totalRequestedAllowance;
+    private String requestedAllowance;
+    private String maximumAllowance;
 
     public MealPerDiemView() {
     }
 
     public MealPerDiemView(MealPerDiem mpd) {
-        this.date = mpd.getDate().format(DateTimeFormatter.ISO_DATE);
-        this.address = new AddressView(mpd.getAddress());
-        this.dollars = mpd.getDollars().toString();
+        this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
+        this.address = new AddressView(mpd.address());
+        this.rate = mpd.rate().toString();
         this.reimbursementRequested = mpd.isReimbursementRequested();
-        this.totalRequestedAllowance = mpd.totalRequestedAllowance().toString();
+        this.requestedAllowance = mpd.requestedAllowance().toString();
+        this.maximumAllowance = mpd.maximumAllowance().toString();
     }
 
     public String getDate() {
@@ -32,16 +34,20 @@ public class MealPerDiemView implements ViewObject {
         return address;
     }
 
-    public String getDollars() {
-        return dollars;
+    public String getRate() {
+        return rate;
     }
 
     public boolean isReimbursementRequested() {
         return reimbursementRequested;
     }
 
-    public String getTotalRequestedAllowance() {
-        return totalRequestedAllowance;
+    public String getRequestedAllowance() {
+        return requestedAllowance;
+    }
+
+    public String getMaximumAllowance() {
+        return maximumAllowance;
     }
 
     @Override
