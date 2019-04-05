@@ -16,7 +16,7 @@ public class Leg {
     private final Destination to;
     private final ModeOfTransportation modeOfTransportation;
     private final double miles;
-    private final PerDiem perDiem;
+    private PerDiem perDiem;
     private final boolean isOutbound;
 
     public Leg(int id, Destination from, Destination to, ModeOfTransportation modeOfTransportation,
@@ -35,7 +35,7 @@ public class Leg {
      *
      * @return
      */
-    public Dollars maximumAllowance() {
+    public Dollars maximumPerDiem() {
         return qualifiesForMileageReimbursement()
                 ? new Dollars(mileageRate().multiply(new BigDecimal(miles)))
                 : Dollars.ZERO;
@@ -46,9 +46,9 @@ public class Leg {
      *
      * @return
      */
-    public Dollars requestedAllowance() {
+    public Dollars requestedPerDiem() {
         return isReimbursementRequested()
-                ? maximumAllowance()
+                ? maximumPerDiem()
                 : Dollars.ZERO;
     }
 
@@ -64,11 +64,11 @@ public class Leg {
         return to.getAddress();
     }
 
-    public Destination getFrom() {
+    public Destination from() {
         return from;
     }
 
-    public Destination getTo() {
+    public Destination to() {
         return to;
     }
 
@@ -88,6 +88,10 @@ public class Leg {
         return modeOfTransportation.getMethodOfTravel().name();
     }
 
+    public String methodOfTravelDisplayName() {
+        return modeOfTransportation.getMethodOfTravel().getDisplayName();
+    }
+
     public String methodOfTravelDescription() {
         return modeOfTransportation.getDescription();
     }
@@ -100,13 +104,16 @@ public class Leg {
         return isOutbound;
     }
 
-    void setId(int id) {
-        this.id = id;
+    public boolean qualifiesForMileageReimbursement() {
+        return modeOfTransportation.qualifiesForMileageReimbursement();
     }
 
-    // A leg qualifies for mileage reimbursement if its mode of transportation is personal auto.
-    private boolean qualifiesForMileageReimbursement() {
-        return modeOfTransportation.qualifiesForMileageReimbursement();
+    public void setPerDiem(PerDiem perDiem) {
+        this.perDiem = perDiem;
+    }
+
+    void setId(int id) {
+        this.id = id;
     }
 
     @Override

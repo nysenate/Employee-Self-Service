@@ -44,7 +44,14 @@ public class ModeOfTransportation {
     }
 
     public ModeOfTransportation(String methodOfTravel, String description) {
-        this(MethodOfTravel.valueOf(methodOfTravel), description);
+        this.methodOfTravel = MethodOfTravel.of(methodOfTravel);
+        // Only use description if OTHER, otherwise default to the MethodOfTravel's display name.
+        if (MethodOfTravel.of(methodOfTravel) == MethodOfTravel.OTHER) {
+            this.description = description;
+        }
+        else {
+            this.description = MethodOfTravel.of(methodOfTravel).getDisplayName();
+        }
     }
 
     public boolean qualifiesForMileageReimbursement() {

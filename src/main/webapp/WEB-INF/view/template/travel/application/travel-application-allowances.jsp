@@ -20,39 +20,6 @@
     <travel-inner-container title="Miscellaneous Expenses">
       <div class="text-align-center" style="width: 70%; margin: auto;">
         <div class="grid" style="min-width: 0;">
-          <div class="col-6-12 padding-bottom-10" title="Meal Expenses">
-            <label class="travel-allowance-label">Meals: $</label>
-            <input ng-model="dirtyApp.allowances.meals" type="number" step="0.01" min="0"
-                   style="width: 5em;">
-            <span ng-if="dirtyApp.allowances.meals"
-                  class="icon-info pointer"
-                  ng-click="displayMealDetails()"
-                  title="View calculated meal expense info"
-                  style="position: fixed; padding-top: 6px; padding-left: 2px;">
-          </span>
-          </div>
-          <div class="col-6-12 padding-bottom-10">
-            <label class="travel-allowance-label">Lodging: $</label>
-            <input ng-model="dirtyApp.allowances.lodging" type="number" step="0.01" min="0"
-                   style="width: 5em;">
-            <span ng-if="dirtyApp.allowances.lodging"
-                  class="icon-info pointer"
-                  ng-click="displayLodgingDetails()"
-                  title="View calculated lodging expense info"
-                  style="position: fixed; padding-top: 6px; padding-left: 2px;">
-            </span>
-          </div>
-          <div class="col-6-12 padding-bottom-10">
-            <label class="travel-allowance-label">Mileage: $</label>
-            <input ng-model="dirtyApp.allowances.mileage" type="number" step="0.01" min="0"
-                   style="width: 5em;"/>
-            <span ng-if="dirtyApp.allowances.mileage"
-                  class="icon-info pointer"
-                  ng-click="displayMileageDetails()"
-                  title="View calculated mileage expense info"
-                  style="position: fixed; padding-top: 6px; padding-left: 2px;">
-          </span>
-          </div>
           <div class="col-6-12 padding-bottom-10">
             <label class="travel-allowance-label">Tolls: $</label>
             <input ng-model="dirtyApp.allowances.tolls" type="number" step="0.01" min="0"
@@ -82,6 +49,81 @@
         <p class="travel-text-bold">
           Note: Meals, lodging, and mileage expenses were calculated automatically.
         </p>
+      </div>
+    </travel-inner-container>
+
+    <travel-inner-container title="Meals Adjustment (Optional)">
+      <p class="travel-text margin-bottom-20">
+        You qualify for the following meal reimbursements. Uncheck anything you would <span class="bold">not</span> like
+        to be reimbursed for.
+      </p>
+      <div>
+      <table class="travel-table">
+        <thead>
+        <tr>
+          <td>Address</td>
+          <td>Date</td>
+          <td>Request Reimbursement?</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="perDiem in dirtyApp.mealPerDiems.allMealPerDiems">
+          <td>{{perDiem.address.formattedAddress}}</td>
+          <td>{{perDiem.date | date: 'shortDate'}}</td>
+          <td><label>Request Meals: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
+        </tr>
+        </tbody>
+      </table>
+</div>
+    </travel-inner-container>
+
+    <travel-inner-container title="Lodging Adjustment (Optional)" ng-show="tripHasLodging()">
+      <p class="travel-text margin-bottom-20">
+        You qualify for the following lodging reimbursements. Uncheck anything you would <span class="bold">not</span>
+        like to be reimbursed for.
+      </p>
+      <div>
+        <table class="travel-table">
+          <thead>
+          <tr>
+            <td>Address</td>
+            <td>Date</td>
+            <td>Request Reimbursement?</td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="perDiem in dirtyApp.lodgingPerDiems.allLodgingPerDiems">
+            <td>{{perDiem.address.formattedAddress}}</td>
+            <td>{{previousDay(perDiem.date) | date: 'shortDate'}} - {{perDiem.date | date: 'shortDate'}}</td>
+            <td><label>Request Lodging: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </travel-inner-container>
+
+    <travel-inner-container title="Mileage Adjustment (Optional)" ng-show="tripHasMileage()">
+      <p class="travel-text margin-bottom-20">
+        You qualify for the following mileage reimbursements. Uncheck anything you would <span class="bold">not</span>
+        like to be reimbursed for.
+      </p>
+      <div>
+        <table class="travel-table">
+          <thead>
+          <tr>
+            <td>From</td>
+            <td>To</td>
+            <td>Request Reimbursement?</td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="leg in dirtyApp.mileagePerDiems.qualifyingLegs">
+            <td>{{leg.from.formattedAddress}}</td>
+            <td>{{leg.to.formattedAddress}}</td>
+            <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested"></td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </travel-inner-container>
 

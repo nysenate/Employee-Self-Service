@@ -19,10 +19,14 @@ public enum MethodOfTravel {
         this.isMileageReimbursable = isMileageReimbursable;
     }
 
-    public static MethodOfTravel of(String displayName) {
-        MethodOfTravel mot = map.get(displayName);
+    /**
+     * Attempts to map a name to a MethodOfTravel.
+     * Both the enum name and display name are checked.
+     */
+    public static MethodOfTravel of(String name) {
+        MethodOfTravel mot = map.get(name);
         if (mot == null) {
-            throw new IllegalArgumentException("Invalid display name: " + displayName);
+            mot = MethodOfTravel.valueOf(name);
         }
         return mot;
     }

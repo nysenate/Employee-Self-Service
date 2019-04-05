@@ -7,27 +7,27 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class MealAllowances {
+public class MealPerDiems {
 
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
 
-    public MealAllowances(Collection<MealPerDiem> mealPerDiems) {
+    public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(mealPerDiems)
                 .build();
     }
 
-    public Dollars maximumAllowance() {
+    public Dollars maximumPerDiem() {
         return allMealPerDiems().stream()
-                .map(MealPerDiem::maximumAllowance)
+                .map(MealPerDiem::maximumPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 
-    public Dollars requestedAllowance() {
+    public Dollars requestedPerDiem() {
         return requestedMealPerDiems().stream()
-                .map(MealPerDiem::requestedAllowance)
+                .map(MealPerDiem::requestedPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 
@@ -59,7 +59,7 @@ public class MealAllowances {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealAllowances that = (MealAllowances) o;
+        MealPerDiems that = (MealPerDiems) o;
         return Objects.equals(mealPerDiems, that.mealPerDiems);
     }
 

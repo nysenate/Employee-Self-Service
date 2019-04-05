@@ -2,9 +2,9 @@ package gov.nysenate.ess.travel.application.route;
 
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
-import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
-import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowances;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 
 import java.time.LocalDate;
@@ -25,22 +25,22 @@ public class Route {
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
-    public MealAllowances mealAllowances() {
-        return new MealAllowances(destinations().stream()
+    public MealPerDiems mealAllowances() {
+        return new MealPerDiems(destinations().stream()
                 .map(Destination::mealAllowances)
                 .flatMap(m -> m.allMealPerDiems().stream())
                 .collect(Collectors.toList()));
     }
 
-    public LodgingAllowances lodgingAllowances() {
-        return new LodgingAllowances(destinations().stream()
+    public LodgingPerDiems lodgingAllowances() {
+        return new LodgingPerDiems(destinations().stream()
                 .map(Destination::lodgingAllowances)
                 .flatMap(l -> l.allLodgingPerDiems().stream())
                 .collect(Collectors.toList()));
     }
 
-    public MileageAllowances mileageAllowances() {
-        return new MileageAllowances(getAllLegs());
+    public MileagePerDiems mileageAllowances() {
+        return new MileagePerDiems(getAllLegs());
     }
 
     public Address origin() {
@@ -55,7 +55,7 @@ public class Route {
      */
     public List<Destination> destinations() {
         return getOutboundLegs().stream()
-                .map(Leg::getTo)
+                .map(Leg::to)
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +93,7 @@ public class Route {
         return returnLegs;
     }
 
-    protected ImmutableList<Leg> getAllLegs() {
+    public ImmutableList<Leg> getAllLegs() {
         return Stream.concat(getOutboundLegs().stream(), getReturnLegs().stream())
                 .collect(ImmutableList.toImmutableList());
     }

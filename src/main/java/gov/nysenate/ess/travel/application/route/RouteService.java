@@ -67,7 +67,7 @@ public class RouteService {
 
         double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
         BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
-        PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate);
+        PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate, true);
         return new Leg(0, from, to, currentLeg.modeOfTransportation(), miles, perDiem, isOutbound);
     }
 
@@ -114,14 +114,16 @@ public class RouteService {
                     highestDest = entry.getKey();
                 }
             }
-            highestDest.addMealPerDiem(date, highestMealRate);
+            PerDiem pd = new PerDiem(date, highestMealRate, true);
+            highestDest.addMealPerDiem(pd);
         }
 
         // Lodging Rates
         for (Destination dest : route.destinations()) {
             for (LocalDate night : dest.nights()) {
                 Dollars lodgingPerDiem = serviceProviderFactory.fetchLodgingRate(night, dest.getAddress());
-                dest.addLodgingPerDiem(night, lodgingPerDiem);
+                PerDiem pd = new PerDiem(night, lodgingPerDiem, true);
+                dest.addLodgingPerDiem(pd);
             }
         }
     }

@@ -2,12 +2,11 @@ package gov.nysenate.ess.travel.application.route.destination;
 
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.unit.Address;
-import gov.nysenate.ess.travel.application.allowances.*;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowances;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
-import gov.nysenate.ess.travel.application.allowances.meal.MealAllowances;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
-import gov.nysenate.ess.travel.utils.Dollars;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -35,14 +34,14 @@ public class Destination {
         this.lodgingPerDiems = new TreeMap<>(lodgingPerDiems);
     }
 
-    public MealAllowances mealAllowances() {
-        return new MealAllowances(getMealPerDiems().entrySet().stream()
+    public MealPerDiems mealAllowances() {
+        return new MealPerDiems(getMealPerDiems().entrySet().stream()
                 .map(entry -> new MealPerDiem(getAddress(), entry.getValue()))
                 .collect(Collectors.toList()));
     }
 
-    public LodgingAllowances lodgingAllowances() {
-        return new LodgingAllowances(getLodgingPerDiems().entrySet().stream()
+    public LodgingPerDiems lodgingAllowances() {
+        return new LodgingPerDiems(getLodgingPerDiems().entrySet().stream()
                 .map(entry -> new LodgingPerDiem(getAddress(), entry.getValue()))
                 .collect(Collectors.toList()));
     }
@@ -75,12 +74,12 @@ public class Destination {
         return nights;
     }
 
-    public void addMealPerDiem(LocalDate date, Dollars dollars) {
-        getMealPerDiems().put(date, new PerDiem(date, dollars));
+    public void addMealPerDiem(PerDiem perDiem) {
+        getMealPerDiems().put(perDiem.getDate(), perDiem);
     }
 
-    public void addLodgingPerDiem(LocalDate date, Dollars dollars) {
-        getLodgingPerDiems().put(date, new PerDiem(date, dollars));
+    public void addLodgingPerDiem(PerDiem perDiem) {
+        getLodgingPerDiems().put(perDiem.getDate(), perDiem);
     }
 
     public int getId() {

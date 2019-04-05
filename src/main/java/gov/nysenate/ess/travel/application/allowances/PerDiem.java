@@ -12,12 +12,8 @@ public final class PerDiem {
     private final BigDecimal rate;
     private boolean reimbursementRequested;
 
-    public PerDiem(LocalDate date, Dollars rate) {
-        this(date, new BigDecimal(rate.toString()), true);
-    }
-
-    public PerDiem(LocalDate date, BigDecimal rate) {
-        this(date, rate, true);
+    public PerDiem(LocalDate date, Dollars rate, boolean reimbursementRequested) {
+        this(date, new BigDecimal(rate.toString()), reimbursementRequested);
     }
 
     public PerDiem(LocalDate date, BigDecimal rate, boolean reimbursementRequested) {

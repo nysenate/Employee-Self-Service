@@ -17,12 +17,12 @@ public final class LodgingPerDiem {
         this.perDiem = perDiem;
     }
 
-    public Dollars maximumAllowance() {
+    public Dollars maximumPerDiem() {
         return rate();
     }
 
-    public Dollars requestedAllowance() {
-        return isReimbursementRequested() ? maximumAllowance() : Dollars.ZERO;
+    public Dollars requestedPerDiem() {
+        return isReimbursementRequested() ? maximumPerDiem() : Dollars.ZERO;
     }
 
     public Address address() {

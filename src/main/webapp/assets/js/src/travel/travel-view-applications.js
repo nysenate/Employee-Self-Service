@@ -19,7 +19,7 @@ function historyController($scope, appProps, modals, travelerAppApi) {
     };
 
     $scope.init = function() {
-        fetchApplications(appProps.user.employeeId)
+        fetchApplications(appProps.user.employeeId);
     };
 
     function fetchApplications(empId) {
@@ -28,6 +28,7 @@ function historyController($scope, appProps, modals, travelerAppApi) {
         function onSuccess (resp) {
             parseResponse(resp);
             $scope.applyFilters();
+            console.log($scope.apps.all);
         }
 
         function parseResponse(resp) {
@@ -61,7 +62,7 @@ function historyController($scope, appProps, modals, travelerAppApi) {
     };
 
     $scope.getDestinations = function(app) {
-        var destinations = app.route.destinations[0].address.city || app.route.destinations[0].address.addr1 || "";
+        var destinations = app.route.destinations[0].city || app.route.destinations[0].addr1 || "N/A";
         if (app.route.destinations.length > 1) {
             destinations += " ..."
         }

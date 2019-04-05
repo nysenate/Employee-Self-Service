@@ -7,27 +7,27 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class LodgingAllowances {
+public class LodgingPerDiems {
 
     private final static Comparator<LodgingPerDiem> dateComparator = Comparator.comparing(LodgingPerDiem::date);
     private final ImmutableSortedSet<LodgingPerDiem> lodgingPerDiems;
 
-    public LodgingAllowances(Collection<LodgingPerDiem> lodgingPerDiems) {
+    public LodgingPerDiems(Collection<LodgingPerDiem> lodgingPerDiems) {
         this.lodgingPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(lodgingPerDiems)
                 .build();
     }
 
-    public Dollars maximumAllowance() {
+    public Dollars maximumPerDiem() {
         return allLodgingPerDiems().stream()
-                .map(LodgingPerDiem::maximumAllowance)
+                .map(LodgingPerDiem::maximumPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 
-    public Dollars requestedAllowance() {
+    public Dollars requestedPerDiem() {
         return requestedLodgingPerDiems().stream()
-                .map(LodgingPerDiem::requestedAllowance)
+                .map(LodgingPerDiem::requestedPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }
 
@@ -53,7 +53,7 @@ public class LodgingAllowances {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LodgingAllowances that = (LodgingAllowances) o;
+        LodgingPerDiems that = (LodgingPerDiems) o;
         return Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
     }
 

@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.application;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.route.Route;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +32,68 @@ public class TravelApplication {
         this.route = Route.EMPTY_ROUTE;
         this.allowances = new Allowances();
         this.attachments = new ArrayList<>();
+    }
+
+    public Dollars mileageAllowance() {
+        return getRoute().mileageAllowances().requestedPerDiem();
+    }
+
+    public Dollars mealAllowance() {
+        return getRoute().mealAllowances().requestedPerDiem();
+    }
+
+    public Dollars lodgingAllowance() {
+        return getRoute().lodgingAllowances().requestedPerDiem();
+    }
+
+    public Dollars tollsAllowance() {
+        return getAllowances().tolls();
+    }
+
+    public Dollars parkingAllowance() {
+        return getAllowances().parking();
+    }
+
+    public Dollars trainAndPlaneAllowance() {
+        return getAllowances().trainAndPlane();
+    }
+
+    public Dollars alternateTransportationAllowance() {
+        return getAllowances().trainAndPlane();
+    }
+
+    public Dollars registrationAllowance() {
+        return allowances.registration();
+    }
+
+    /**
+     * Total transportation allowance.
+     * Used as a field on the print form.
+     */
+    public Dollars transportationAllowance() {
+        return mileageAllowance().add(trainAndPlaneAllowance());
+    }
+
+    /**
+     * Sum of tolls and parking allowances.
+     * Used as a field on the print form.
+     */
+    public Dollars tollsAndParkingAllowance() {
+        return tollsAllowance().add(parkingAllowance());
+    }
+
+    /**
+     * Total allowance for this travel application.
+     */
+    public Dollars totalAllowance() {
+        return mileageAllowance()
+                .add(mealAllowance())
+                .add(lodgingAllowance())
+                .add(tollsAllowance())
+                .add(parkingAllowance())
+                .add(trainAndPlaneAllowance())
+                .add(alternateTransportationAllowance())
+                .add(registrationAllowance());
     }
 
     /**

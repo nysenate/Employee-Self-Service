@@ -8,26 +8,23 @@
         <td>To</td>
         <td>Miles</td>
         <td>Rate</td>
-        <td>Mode of Transportation</td>
         <td>Allowance</td>
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="leg in legs">
-        <td>{{leg.from.address.formattedAddress}}</td>
-        <td>{{leg.to.address.formattedAddress}}</td>
+      <tr ng-repeat="leg in app.mileagePerDiems.requestedLegs">
+        <td>{{leg.from.formattedAddress}}</td>
+        <td>{{leg.to.formattedAddress}}</td>
         <td>{{leg.miles}}</td>
         <td>{{leg.mileageRate}}</td>
-        <td>{{leg.modeOfTransportation.displayName}}</td>
-        <td>{{leg.mileageExpense | currency}}</td>
+        <td>{{leg.requestedPerDiem | currency}}</td>
       </tr>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.route.totalMiles}}</td>
         <td></td>
         <td></td>
-        <td class="bold">{{app.route.mileageExpense | currency}}<span ng-if="displayRequirements">*</span></td>
+        <td class="bold">{{app.mileagePerDiems.requestedPerDiem | currency}}<span ng-if="displayRequirements">*</span></td>
       </tr>
       </tbody>
     </table>

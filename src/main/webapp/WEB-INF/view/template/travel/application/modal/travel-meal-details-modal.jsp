@@ -10,17 +10,17 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="perDiem in app.route.mealPerDiems.perDiems">
+      <tr ng-repeat="perDiem in app.mealPerDiems.requestedMealPerDiems">
         <td>{{perDiem.date | date: 'shortDate'}}</td>
         <td>{{perDiem.address.formattedAddress}}</td>
-        <td>{{perDiem.dollars | currency}}</td>
+        <td>{{perDiem.rate | currency}}</td>
       </tr>
       </tbody>
       <tbody>
       <tr>
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.route.mealPerDiems.total | currency}}</td>
+        <td class="bold">{{app.mealPerDiems.requestedPerDiem | currency}}</td>
       </tr>
       </tbody>
     </table>

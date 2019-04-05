@@ -62,7 +62,10 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
 
         function initMethodsOfTravel() {
             motApi.get({}, function (response) {
-                $scope.modesOfTransportation = response.result;
+                $scope.methodsOfTravel = [];
+                    response.result.forEach(function (modeOfTransportation) {
+                        $scope.methodsOfTravel.push(modeOfTransportation.displayName);
+                    });
             }, $scope.handleErrorResponse);
         }
     };
@@ -175,9 +178,9 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
 
         function findAddressesWithoutCounty(legs) {
             var addresses = legs.map(function (leg) {
-                return leg.from.address;
+                return leg.from;
             }).concat(legs.map(function (leg) {
-                return leg.to.address;
+                return leg.to;
             }));
             return countyService.addressesMissingCounty(addresses);
         }

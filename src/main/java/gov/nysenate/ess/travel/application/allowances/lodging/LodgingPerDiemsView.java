@@ -5,25 +5,25 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LodgingAllowancesView implements ViewObject {
+public class LodgingPerDiemsView implements ViewObject {
 
     private List<LodgingPerDiemView> allLodgingPerDiems;
     private List<LodgingPerDiemView> requestedLodgingPerDiems;
-    private String requestedAllowance;
-    private String maximumAllowance;
+    private String requestedPerDiem;
+    private String maximumPerDiem;
 
-    public LodgingAllowancesView() {
+    public LodgingPerDiemsView() {
     }
 
-    public LodgingAllowancesView(LodgingAllowances la) {
+    public LodgingPerDiemsView(LodgingPerDiems la) {
         this.allLodgingPerDiems = la.allLodgingPerDiems().stream()
                 .map(LodgingPerDiemView::new)
                 .collect(Collectors.toList());
         this.requestedLodgingPerDiems = la.requestedLodgingPerDiems().stream()
                 .map(LodgingPerDiemView::new)
                 .collect(Collectors.toList());
-        this.requestedAllowance = la.requestedAllowance().toString();
-        this.maximumAllowance = la.maximumAllowance().toString();
+        this.requestedPerDiem = la.requestedPerDiem().toString();
+        this.maximumPerDiem = la.maximumPerDiem().toString();
     }
 
     public List<LodgingPerDiemView> getAllLodgingPerDiems() {
@@ -34,12 +34,12 @@ public class LodgingAllowancesView implements ViewObject {
         return requestedLodgingPerDiems;
     }
 
-    public String getRequestedAllowance() {
-        return requestedAllowance;
+    public String getRequestedPerDiem() {
+        return requestedPerDiem;
     }
 
-    public String getMaximumAllowance() {
-        return maximumAllowance;
+    public String getMaximumPerDiem() {
+        return maximumPerDiem;
     }
 
     @Override

@@ -29,6 +29,18 @@ function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
             })
     };
 
+    $scope.displayLodgingDetails = function () {
+        modals.open('travel-lodging-details-modal', {app: $scope.reviewApp}, true);
+    };
+
+    $scope.displayMealDetails = function () {
+        modals.open('travel-meal-details-modal', {app: $scope.reviewApp}, true);
+    };
+
+    $scope.displayMileageDetails = function () {
+        modals.open('travel-mileage-details-modal', {app: $scope.reviewApp}, true);
+    };
+
     function displayMap() {
 
         var map;
@@ -47,12 +59,12 @@ function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
         // Create map api parameters.
         // All intermediate destinations should be waypoints, final destination should be destination.
 
-        var origin = $scope.reviewApp.route.origin.address.formattedAddress;
+        var origin = $scope.reviewApp.route.origin.formattedAddress;
 
         // TODO Use destinations in views
         var waypoints = [];
         $scope.reviewApp.route.outboundLegs.forEach(function (leg) {
-            waypoints.push({location: leg.to.address.formattedAddress});
+            waypoints.push({location: leg.to.formattedAddress});
         });
 
         // Last destination should be destination param, not waypoint.

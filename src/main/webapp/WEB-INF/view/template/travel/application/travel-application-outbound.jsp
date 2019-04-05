@@ -35,7 +35,7 @@
           <label>From</label><br/>
           <input travel-address-autocomplete
                  name="fromAddress_{{$index}}"
-                 ng-model="leg.from.address.formattedAddress"
+                 ng-model="leg.from.formattedAddress"
                  leg="leg"
                  callback="setFromAddress(leg, address)"
                  autocomplete-address-validator
@@ -52,7 +52,7 @@
           <label>To</label><br/>
           <input travel-address-autocomplete
                  name="toAddress_{{$index}}"
-                 ng-model="leg.to.address.formattedAddress"
+                 ng-model="leg.to.formattedAddress"
                  leg="leg"
                  callback="setToAddress(leg, address)"
                  placeholder="To Address"
@@ -65,16 +65,16 @@
         <div class="itinerary-mot-container">
           <div class="itinerary-mot">
             <label>Mode of Transportation:</label><br/>
-            <select mot-validator name="mot_{{$index}}" ng-model="leg.modeOfTransportation"
-                    ng-options="mode.displayName for mode in modesOfTransportation track by mode.methodOfTravel"
+            <select mot-validator name="mot_{{$index}}" ng-model="leg.methodOfTravelDisplayName"
+                    ng-options="name for name in methodsOfTravel"
                     ng-change="motChange(leg, $index)"
                     ></select>
           </div>
-          <div class="itinerary-mot-write-in" ng-if="leg.modeOfTransportation.methodOfTravel === 'OTHER'">
+          <div class="itinerary-mot-write-in" ng-if="leg.methodOfTravelDisplayName === 'Other'">
             <label>Please Specify:</label><br/>
             <input mot-description-validator id="outboundMotOtherInput_{{$index}}" name="motOther_{{$index}}"
                    <%--ng-required="leg.modeOfTransportation.methodOfTravel === 'OTHER'"--%>
-                   type="text" size="17" ng-model="leg.modeOfTransportation.description">
+                   type="text" size="17" ng-model="leg.methodOfTravelDescription">
           </div>
         </div>
         <div class="clear"></div>

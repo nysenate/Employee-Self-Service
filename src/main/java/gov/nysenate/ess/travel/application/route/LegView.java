@@ -1,48 +1,74 @@
 package gov.nysenate.ess.travel.application.route;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.unit.Address;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class LegView implements ViewObject {
 
-    private String requestedAllowance;
-    private String maximumAllowance;
+    private String requestedPerDiem;
+    private String maximumPerDiem;
     private AddressView from;
     private AddressView to;
     private String date;
     private String miles;
     private String mileageRate;
-    private String methodOfTravel;
+    private String methodOfTravelDisplayName;
     private String methodOfTravelDescription;
-    private boolean reimbursementRequested;
-    private boolean outbound;
+    @JsonProperty("isReimbursementRequested")
+    private boolean isReimbursementRequested;
+    @JsonProperty("isOutbound")
+    private boolean isOutbound;
 
     public LegView() {
     }
 
     public LegView(Leg leg) {
-        this.requestedAllowance = leg.requestedAllowance().toString();
-        this.maximumAllowance = leg.maximumAllowance().toString();
+        this.requestedPerDiem = leg.requestedPerDiem().toString();
+        this.maximumPerDiem = leg.maximumPerDiem().toString();
         this.from = new AddressView(leg.fromAddress());
         this.to = new AddressView(leg.toAddress());
         this.date = leg.travelDate().format(DateTimeFormatter.ISO_DATE);
         this.miles = new BigDecimal(leg.miles()).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
         this.mileageRate = leg.mileageRate().toString();
-        this.methodOfTravel = leg.methodOfTravel();
+        this.methodOfTravelDisplayName = leg.methodOfTravelDisplayName();
         this.methodOfTravelDescription = leg.methodOfTravelDescription();
-        this.reimbursementRequested = leg.isReimbursementRequested();
-        this.outbound = leg.isOutbound();
+        this.isReimbursementRequested = leg.isReimbursementRequested();
+        this.isOutbound = leg.isOutbound();
     }
 
-    public String getRequestedAllowance() {
-        return requestedAllowance;
+    @JsonIgnore
+    public LocalDate date() {
+        return LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
     }
 
-    public String getMaximumAllowance() {
-        return maximumAllowance;
+    @JsonIgnore
+    public Address fromAddress() {
+        return from.toAddress();
+    }
+
+    @JsonIgnore
+    public Address toAddress() {
+        return to.toAddress();
+    }
+
+    @JsonIgnore
+    public BigDecimal rate() {
+        return new BigDecimal(mileageRate);
+    }
+
+    public String getRequestedPerDiem() {
+        return requestedPerDiem;
+    }
+
+    public String getMaximumPerDiem() {
+        return maximumPerDiem;
     }
 
     public AddressView getFrom() {
@@ -65,8 +91,8 @@ public class LegView implements ViewObject {
         return mileageRate;
     }
 
-    public String getMethodOfTravel() {
-        return methodOfTravel;
+    public String getMethodOfTravelDisplayName() {
+        return methodOfTravelDisplayName;
     }
 
     public String getMethodOfTravelDescription() {
@@ -74,11 +100,11 @@ public class LegView implements ViewObject {
     }
 
     public boolean isReimbursementRequested() {
-        return reimbursementRequested;
+        return isReimbursementRequested;
     }
 
     public boolean isOutbound() {
-        return outbound;
+        return isOutbound;
     }
 
     @Override

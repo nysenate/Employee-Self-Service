@@ -45,7 +45,7 @@
             <td>{{app.startDate | date:'M/d/yyyy'}}</td>
             <td>{{app.traveler.lastName}}</td>
             <td>{{getDestinations(app)}}</td>
-            <td>{{app.allowances.total | currency}}</td>
+            <td>{{app.totalAllowance | currency}}</td>
           </tr>
           </tbody>
         </table>

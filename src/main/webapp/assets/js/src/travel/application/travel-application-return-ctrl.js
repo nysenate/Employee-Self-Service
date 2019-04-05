@@ -19,14 +19,15 @@ function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
             leg.to = angular.copy($scope.route.outboundLegs[0].from);
             // If only 1 outbound mode of transportation, initialize to that.
             if (numDistinctModesOfTransportation($scope.data.app) === 1) {
-                leg.modeOfTransportation = angular.copy($scope.route.outboundLegs[0].modeOfTransportation);
+                leg.methodOfTravelDisplayName = angular.copy($scope.route.outboundLegs[0].methodOfTravelDisplayName);
+                leg.methodOfTravelDescription = angular.copy($scope.route.outboundLegs[0].methodOfTravelDescription);
             }
             $scope.route.returnLegs.push(leg);
         }
 
         function numDistinctModesOfTransportation(app) {
             var mots = (app.route.outboundLegs.concat(app.route.returnLegs)).map(function (leg) {
-                return leg.modeOfTransportation.description;
+                return leg.methodOfTravelDisplayName;
             });
             var distinct = _.uniq(mots);
             return distinct.length;
@@ -46,19 +47,17 @@ function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
         var prevSeg = $scope.route.returnLegs[$scope.route.returnLegs.length - 1];
         segment.from = prevSeg.to;
         segment.to = angular.copy($scope.route.outboundLegs[0].from);
-        segment.modeOfTransportation = prevSeg.modeOfTransportation;
-        segment.isMileageRequested = prevSeg.isMileageRequested;
-        segment.isMealsRequested = prevSeg.isMealsRequested;
-        segment.isLodgingRequested = prevSeg.isLodgingRequested;
+        segment.methodOfTravelDisplayName = prevSeg.methodOfTravelDisplayName;
+        segment.methodOfTravelDescription = prevSeg.methodOfTravelDescription;
         $scope.route.returnLegs.push(segment);
     };
 
     $scope.setFromAddress = function (leg, address) {
-        leg.from.address = address;
+        leg.from = address;
     };
 
     $scope.setToAddress = function (leg, address) {
-        leg.to.address = address;
+        leg.to = address;
     };
 
     $scope.isLastSegment = function (index) {
@@ -104,8 +103,7 @@ function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
                     .catch(function () {
                         deferred.reject();
                     })
-            }
-            else {
+            } else {
                 deferred.resolve();
             }
             return deferred.promise;
@@ -122,20 +120,18 @@ function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
             $scope.closeLoadingModal();
             if (error.status === 502) {
                 $scope.handleDataProviderError();
-            }
-            else {
+            } else {
                 $scope.handleErrorResponse(error);
             }
         });
     };
 
     /**
-     * Sets the focus on the Other MOT input box when selecting Other MOT.
-     * @param leg
+     * Focuses the Other box when mode of transportation is Other.
      */
     $scope.motChange = function (leg, index) {
         $timeout(function () { // Execute on next digest cycle, giving the input a chance to render.
-            if (leg.modeOfTransportation.methodOfTravel === 'OTHER') {
+            if (leg.methodOfTravelDisplayName === 'Other') {
                 document.getElementById('returnMotOtherInput_' + index).focus();
             }
         });

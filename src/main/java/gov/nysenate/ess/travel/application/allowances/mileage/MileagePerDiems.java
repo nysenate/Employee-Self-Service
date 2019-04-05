@@ -7,13 +7,13 @@ import gov.nysenate.ess.travel.utils.Dollars;
 import java.util.Collection;
 import java.util.Comparator;
 
-public class MileageAllowances {
+public class MileagePerDiems {
 
     private static final double MILE_THRESHOLD = 35.0;
     private static final Comparator<Leg> dateComparator = Comparator.comparing(Leg::travelDate);
     private final ImmutableSortedSet<Leg> mileagePerDiems;
 
-    public MileageAllowances(Collection<Leg> legs) {
+    public MileagePerDiems(Collection<Leg> legs) {
         this.mileagePerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(legs)
@@ -25,10 +25,10 @@ public class MileageAllowances {
      *
      * @return
      */
-    public Dollars maximumAllowance() {
+    public Dollars maximumPerDiem() {
         if (tripQualifiesForReimbursement()) {
             return allLegs().stream()
-                    .map(Leg::maximumAllowance)
+                    .map(Leg::maximumPerDiem)
                     .reduce(Dollars.ZERO, Dollars::add);
         } else {
             return Dollars.ZERO;
@@ -43,10 +43,10 @@ public class MileageAllowances {
      *
      * @return
      */
-    public Dollars requestedAllowance() {
+    public Dollars requestedPerDiem() {
         if (tripQualifiesForReimbursement()) {
             return requestedLegs().stream()
-                    .map(Leg::requestedAllowance)
+                    .map(Leg::requestedPerDiem)
                     .reduce(Dollars.ZERO, Dollars::add);
         } else {
             return Dollars.ZERO;
@@ -57,8 +57,21 @@ public class MileageAllowances {
         return mileagePerDiems;
     }
 
-    public ImmutableSortedSet<Leg> requestedLegs() {
+    /**
+     * Legs that are allowed to be reimbursed for travel.
+     */
+    public ImmutableSortedSet<Leg> qualifyingLegs() {
         return mileagePerDiems.stream()
+                .filter(Leg::qualifiesForMileageReimbursement)
+                .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
+    }
+
+    /**
+     * Legs that are allowed to be reimbursed for travel and the travel
+     * has requested reimbursement.
+     */
+    public ImmutableSortedSet<Leg> requestedLegs() {
+        return qualifyingLegs().stream()
                 .filter(Leg::isReimbursementRequested)
                 .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
     }
@@ -70,7 +83,7 @@ public class MileageAllowances {
     }
 
     private boolean tripQualifiesForReimbursement() {
-        double outboundMiles = outboundLegs().stream()
+        double outboundMiles = qualifyingLegs().stream()
                 .mapToDouble(Leg::miles)
                 .sum();
         return outboundMiles > MILE_THRESHOLD;

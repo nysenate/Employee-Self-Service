@@ -12,17 +12,13 @@ travel.directive('travelAppPrintBody', ['appProps', 'TravelModeOfTransportationA
             console.log($scope.app);
             $scope.NOT_AVAILABLE = "N/A";
 
-            $scope.tollsAndParking = function () {
-                return Number($scope.app.tollsAllowance) + Number($scope.app.parkingAllowance);
-            };
-
             $scope.containsMot = function (mot) {
                 var appModesOfTransportation = [];
                 $scope.app.route.outboundLegs.forEach(function (leg) {
-                    appModesOfTransportation.push(leg.modeOfTransportation.methodOfTravel);
+                    appModesOfTransportation.push(leg.methodOfTravelDisplayName);
                 });
 
-                return appModesOfTransportation.includes(mot.methodOfTravel);
+                return appModesOfTransportation.includes(mot.displayName);
             };
 
             function init() {

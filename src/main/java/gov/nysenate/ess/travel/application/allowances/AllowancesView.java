@@ -14,10 +14,6 @@ public class AllowancesView implements ViewObject {
     double alternateTransportation;
     double registration;
 
-    double transportation;
-    double tollsAndParking;
-    double total;
-
     public AllowancesView() {
     }
 
@@ -30,10 +26,6 @@ public class AllowancesView implements ViewObject {
         this.trainAndPlane = Double.valueOf(allowances.trainAndPlane().toString());
         this.alternateTransportation = Double.valueOf(allowances.alternateTransportation().toString());
         this.registration = Double.valueOf(allowances.registration().toString());
-
-        this.transportation = Double.valueOf(allowances.transportation().toString());
-        this.tollsAndParking = Double.valueOf(allowances.tollsAndParking().toString());
-        this.total = Double.valueOf(allowances.total().toString());
     }
 
     public Allowances toAllowances() {
@@ -79,18 +71,6 @@ public class AllowancesView implements ViewObject {
 
     public double getRegistration() {
         return registration;
-    }
-
-    public double getTransportation() {
-        return transportation;
-    }
-
-    public double getTollsAndParking() {
-        return tollsAndParking;
-    }
-
-    public double getTotal() {
-        return total;
     }
 
     @Override

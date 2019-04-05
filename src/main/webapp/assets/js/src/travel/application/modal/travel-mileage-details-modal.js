@@ -12,7 +12,6 @@ function mileageDetailsModalCtrl($scope, modals) {
 
     this.$onInit = function () {
         $scope.app = modals.params().app;
-        $scope.legs = $scope.app.route.outboundLegs.concat($scope.app.route.returnLegs);
     };
 
     $scope.closeModal = function() {

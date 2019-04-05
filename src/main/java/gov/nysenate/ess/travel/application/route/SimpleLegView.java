@@ -14,7 +14,7 @@ public class SimpleLegView implements ViewObject {
     private String id;
     private AddressView from;
     private AddressView to;
-    private String methodOfTravel;
+    private String methodOfTravelDisplayName;
     private String methodOfTravelDescription;
     private String travelDate;
 
@@ -25,7 +25,7 @@ public class SimpleLegView implements ViewObject {
         this.id = String.valueOf(leg.getId());
         this.from = new AddressView(leg.fromAddress());
         this.to = new AddressView(leg.toAddress());
-        this.methodOfTravel = leg.methodOfTravel();
+        this.methodOfTravelDisplayName = leg.methodOfTravelDisplayName();
         this.methodOfTravelDescription = leg.methodOfTravelDescription();
         this.travelDate = leg.travelDate().format(DATE_FORMAT);
     }
@@ -37,7 +37,7 @@ public class SimpleLegView implements ViewObject {
 
     @JsonIgnore
     public ModeOfTransportation modeOfTransportation() {
-        return new ModeOfTransportation(methodOfTravel, methodOfTravelDescription);
+        return new ModeOfTransportation(methodOfTravelDisplayName, methodOfTravelDescription);
     }
 
     public String getId() {
@@ -52,8 +52,8 @@ public class SimpleLegView implements ViewObject {
         return to;
     }
 
-    public String getMethodOfTravel() {
-        return methodOfTravel;
+    public String getMethodOfTravelDisplayName() {
+        return methodOfTravelDisplayName;
     }
 
     public String getMethodOfTravelDescription() {

@@ -83,7 +83,7 @@
             Departure:
           </div>
           <div class="col-10-12">
-            {{(app.route.origin.address.formattedAddressWithCounty) || NOT_AVAILABLE}}
+            {{(app.route.origin.formattedAddressWithCounty) || NOT_AVAILABLE}}
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
             <span ng-if="!$first">&nbsp;</span>
           </div>
           <div class="col-10-12 float-left">
-            {{(dest.address.formattedAddressWithCounty) || NOT_AVAILABLE}}
+            {{(dest.formattedAddressWithCounty) || NOT_AVAILABLE}}
           </div>
         </span>
         </div>
@@ -142,14 +142,14 @@
 
     <div class="travel-print-allowances-box">
       <h4 style="margin: 0px 0px 10px 0px;">Estimated Travel Costs</h4>
-      <label>Transportation</label><span>{{(app.allowances.transportation | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Food</label><span>{{(app.allowances.meals | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Lodging</label><span>{{(app.allowances.lodging | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Parking/Tolls</label><span>{{(app.allowances.tollsAndParking | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>Taxi/Bus/Subway</label><span>{{(app.allowances.alternateTransportation | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Transportation</label><span>{{(app.transportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Food</label><span>{{(app.mealAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Lodging</label><span>{{(app.lodgingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Parking/Tolls</label><span>{{(app.tollsAndParkingAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>Taxi/Bus/Subway</label><span>{{(app.alternateTransportationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
       <label>Registration
-        Fee</label><span>{{(app.allowances.registration | currency) || NOT_AVAILABLE}}</span><br/>
-      <label>TOTAL</label><span>{{(app.allowances.total | currency) || NOT_AVAILABLE}}</span><br/>
+        Fee</label><span>{{(app.registrationAllowance | currency) || NOT_AVAILABLE}}</span><br/>
+      <label>TOTAL</label><span>{{(app.totalAllowance | currency) || NOT_AVAILABLE}}</span><br/>
     </div>
   </div>
 

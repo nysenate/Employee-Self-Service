@@ -9,6 +9,9 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +51,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
         checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST));
 
+        // Perform all updates specified in the patch.
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "purposeOfTravel":
@@ -59,13 +63,24 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 case "allowances":
                     travelApplicationService.updateAllowances(app, OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class));
                     break;
+                case "mealPerDiems":
+                    travelApplicationService.updateMealPerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class));
+                    break;
+                case "lodgingPerDiems":
+                    travelApplicationService.updateLodgingPerDiems(app, OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class));
+                    break;
+                case "mileagePerDiems":
+                    travelApplicationService.updateMileagePerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class));
+                    break;
                 case "action":
                     if (patch.getValue().equals("submit")) {
                         travelApplicationService.submitTravelApplication(app);
                     }
-
             }
         }
+        // Save after all changes are applied.
+        travelApplicationService.saveTravelApplication(app);
+
         SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
         return new ViewObjectResponse(appView);
     }

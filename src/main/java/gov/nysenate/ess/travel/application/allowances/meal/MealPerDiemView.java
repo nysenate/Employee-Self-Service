@@ -1,8 +1,12 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class MealPerDiemView implements ViewObject {
@@ -10,9 +14,10 @@ public class MealPerDiemView implements ViewObject {
     private String date;
     private AddressView address;
     private String rate;
-    private boolean reimbursementRequested;
-    private String requestedAllowance;
-    private String maximumAllowance;
+    @JsonProperty("isReimbursementRequested")
+    private boolean isReimbursementRequested;
+    private String requestedPerDiem;
+    private String maximumPerDiem;
 
     public MealPerDiemView() {
     }
@@ -21,10 +26,21 @@ public class MealPerDiemView implements ViewObject {
         this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
         this.address = new AddressView(mpd.address());
         this.rate = mpd.rate().toString();
-        this.reimbursementRequested = mpd.isReimbursementRequested();
-        this.requestedAllowance = mpd.requestedAllowance().toString();
-        this.maximumAllowance = mpd.maximumAllowance().toString();
+        this.isReimbursementRequested = mpd.isReimbursementRequested();
+        this.requestedPerDiem = mpd.requestedPerDiem().toString();
+        this.maximumPerDiem = mpd.maximumPerDiem().toString();
     }
+
+    @JsonIgnore
+    public LocalDate date() {
+        return LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
+    }
+
+    @JsonIgnore
+    public BigDecimal rate() {
+        return new BigDecimal(rate);
+    }
+
 
     public String getDate() {
         return date;
@@ -39,15 +55,15 @@ public class MealPerDiemView implements ViewObject {
     }
 
     public boolean isReimbursementRequested() {
-        return reimbursementRequested;
+        return isReimbursementRequested;
     }
 
-    public String getRequestedAllowance() {
-        return requestedAllowance;
+    public String getRequestedPerDiem() {
+        return requestedPerDiem;
     }
 
-    public String getMaximumAllowance() {
-        return maximumAllowance;
+    public String getMaximumPerDiem() {
+        return maximumPerDiem;
     }
 
     @Override

@@ -3,9 +3,9 @@ package gov.nysenate.ess.travel.application;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingAllowancesView;
-import gov.nysenate.ess.travel.application.allowances.meal.MealAllowancesView;
-import gov.nysenate.ess.travel.application.allowances.mileage.MileageAllowancesView;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 
 import java.util.List;
@@ -22,15 +22,29 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String purposeOfTravel;
     private SimpleRouteView route;
     private AllowancesView allowances;
-    private MealAllowancesView mealAllowances;
-    private LodgingAllowancesView lodgingAllowances;
-    private MileageAllowancesView mileageAllowances;
+    private MealPerDiemsView mealPerDiems;
+    private LodgingPerDiemsView lodgingPerDiems;
+    private MileagePerDiemsView mileagePerDiems;
     private String submittedDateTime;
     private String modifiedDateTime;
     private DetailedEmployeeView modifiedBy;
     private List<TravelAttachmentView> attachments;
+
     private String startDate;
     private String endDate;
+
+    private String mileageAllowance;
+    private String mealAllowance;
+    private String lodgingAllowance;
+    private String tollsAllowance;
+    private String parkingAllowance;
+    private String trainAndPlaneAllowance;
+    private String alternateTransportationAllowance;
+    private String registrationAllowance;
+    private String transportationAllowance;
+    private String tollsAndParkingAllowance;
+    private String totalAllowance;
+
 
     public SimpleTravelApplicationView() {
     }
@@ -49,9 +63,21 @@ public class SimpleTravelApplicationView implements ViewObject {
 
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
-        mealAllowances = new MealAllowancesView(app.getRoute().mealAllowances());
-        lodgingAllowances = new LodgingAllowancesView(app.getRoute().lodgingAllowances());
-        mileageAllowances = new MileageAllowancesView(app.getRoute().mileageAllowances());
+        mealPerDiems = new MealPerDiemsView(app.getRoute().mealAllowances());
+        lodgingPerDiems = new LodgingPerDiemsView(app.getRoute().lodgingAllowances());
+        mileagePerDiems = new MileagePerDiemsView(app.getRoute().mileageAllowances());
+
+        mileageAllowance = app.mileageAllowance().toString();
+        mealAllowance = app.mealAllowance().toString();
+        lodgingAllowance = app.lodgingAllowance().toString();
+        tollsAllowance = app.tollsAllowance().toString();
+        parkingAllowance = app.parkingAllowance().toString();
+        trainAndPlaneAllowance = app.trainAndPlaneAllowance().toString();
+        alternateTransportationAllowance = app.alternateTransportationAllowance().toString();
+        registrationAllowance = app.registrationAllowance().toString();
+        transportationAllowance = app.transportationAllowance().toString();
+        tollsAndParkingAllowance = app.tollsAndParkingAllowance().toString();
+        totalAllowance = app.totalAllowance().toString();
     }
 
     public String getId() {
@@ -78,16 +104,16 @@ public class SimpleTravelApplicationView implements ViewObject {
         return allowances;
     }
 
-    public MealAllowancesView getMealAllowances() {
-        return mealAllowances;
+    public MealPerDiemsView getMealPerDiems() {
+        return mealPerDiems;
     }
 
-    public LodgingAllowancesView getLodgingAllowances() {
-        return lodgingAllowances;
+    public LodgingPerDiemsView getLodgingPerDiems() {
+        return lodgingPerDiems;
     }
 
-    public MileageAllowancesView getMileageAllowances() {
-        return mileageAllowances;
+    public MileagePerDiemsView getMileagePerDiems() {
+        return mileagePerDiems;
     }
 
     public String getSubmittedDateTime() {
@@ -112,6 +138,50 @@ public class SimpleTravelApplicationView implements ViewObject {
 
     public String getEndDate() {
         return endDate;
+    }
+
+    public String getMileageAllowance() {
+        return mileageAllowance;
+    }
+
+    public String getMealAllowance() {
+        return mealAllowance;
+    }
+
+    public String getLodgingAllowance() {
+        return lodgingAllowance;
+    }
+
+    public String getTollsAllowance() {
+        return tollsAllowance;
+    }
+
+    public String getParkingAllowance() {
+        return parkingAllowance;
+    }
+
+    public String getTrainAndPlaneAllowance() {
+        return trainAndPlaneAllowance;
+    }
+
+    public String getAlternateTransportationAllowance() {
+        return alternateTransportationAllowance;
+    }
+
+    public String getRegistrationAllowance() {
+        return registrationAllowance;
+    }
+
+    public String getTransportationAllowance() {
+        return transportationAllowance;
+    }
+
+    public String getTollsAndParkingAllowance() {
+        return tollsAndParkingAllowance;
+    }
+
+    public String getTotalAllowance() {
+        return totalAllowance;
     }
 
     @Override

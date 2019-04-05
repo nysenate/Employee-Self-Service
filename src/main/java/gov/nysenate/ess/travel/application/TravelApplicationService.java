@@ -1,11 +1,15 @@
 package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
-import gov.nysenate.ess.travel.application.route.Route;
-import gov.nysenate.ess.travel.application.route.RouteService;
-import gov.nysenate.ess.travel.application.route.SimpleRouteView;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemView;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
+import gov.nysenate.ess.travel.application.route.*;
+import gov.nysenate.ess.travel.application.route.destination.Destination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,29 +27,16 @@ public class TravelApplicationService {
 
 
     public void updatePurposeOfTravel(TravelApplication app, String purposeOfTravel) {
-        TravelApplication previousApp = getTravelApplication(app.getAppId());
-        if (!previousApp.getPurposeOfTravel().equals(purposeOfTravel)) {
-            app.setPurposeOfTravel(purposeOfTravel);
-            saveTravelApplication(app);
-        }
+        app.setPurposeOfTravel(purposeOfTravel);
     }
 
     public void updateRoute(TravelApplication app, SimpleRouteView simpleRouteView) {
         Route fullRoute = routeService.createRoute(simpleRouteView);
         app.setRoute(fullRoute);
-        setAllowancesFromRoute(app.getAllowances(), fullRoute);
-        saveTravelApplication(app);
-    }
-
-    private void setAllowancesFromRoute(Allowances allowances, Route route) {
-        allowances.setMileage(route.mileageAllowances().requestedAllowance());
-        allowances.setMeals(route.mealAllowances().requestedAllowance());
-        allowances.setLodging(route.lodgingAllowances().requestedAllowance());
     }
 
     public void updateAllowances(TravelApplication app, AllowancesView allowancesView) {
         app.setAllowances(allowancesView.toAllowances());
-        saveTravelApplication(app);
     }
 
     /**
@@ -94,7 +85,6 @@ public class TravelApplicationService {
      */
     public TravelApplication submitTravelApplication(TravelApplication app) {
         app.setSubmittedDateTime(LocalDateTime.now());
-        saveTravelApplication(app);
         return app;
     }
 
@@ -118,5 +108,35 @@ public class TravelApplicationService {
                 .collect(Collectors.toList());
     }
 
+    public void updateMealPerDiems(TravelApplication app, MealPerDiemsView mealPerDiemsView) {
+        for (MealPerDiemView perDiemView : mealPerDiemsView.getAllMealPerDiems()) {
+            for (Destination dest : app.getRoute().destinations()) {
+                if (dest.getAddress().equals(perDiemView.getAddress().toAddress())) {
+                    dest.addMealPerDiem(new PerDiem(perDiemView.date(), perDiemView.rate(), perDiemView.isReimbursementRequested()));
+                }
+            }
+        }
+    }
 
+    public void updateLodgingPerDiems(TravelApplication app, LodgingPerDiemsView lodgingPerDiemsView) {
+        for (LodgingPerDiemView perDiemView : lodgingPerDiemsView.getAllLodgingPerDiems()) {
+            for (Destination dest : app.getRoute().destinations()) {
+                if (dest.getAddress().equals(perDiemView.getAddress().toAddress())) {
+                    dest.addLodgingPerDiem(new PerDiem(perDiemView.date(), perDiemView.rate(), perDiemView.isReimbursementRequested()));
+                }
+            }
+        }
+    }
+
+    public void updateMileagePerDiems(TravelApplication app, MileagePerDiemsView mileagePerDiemView) {
+        for (LegView legView : mileagePerDiemView.getQualifyingLegs()) {
+            for (Leg leg : app.getRoute().getAllLegs()) {
+                if (leg.fromAddress().equals(legView.fromAddress())
+                        && leg.toAddress().equals(legView.toAddress())
+                        && leg.travelDate().equals(legView.date())) {
+                    leg.setPerDiem(new PerDiem(legView.date(), legView.rate(), legView.isReimbursementRequested()));
+                }
+            }
+        }
+    }
 }

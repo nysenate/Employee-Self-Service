@@ -5,25 +5,25 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MealAllowancesView implements ViewObject {
+public class MealPerDiemsView implements ViewObject {
 
     private List<MealPerDiemView> allMealPerDiems;
     private List<MealPerDiemView> requestedMealPerDiems;
-    private String requestedAllowance;
-    private String maximumAllowance;
+    private String requestedPerDiem;
+    private String maximumPerDiem;
 
-    public MealAllowancesView() {
+    public MealPerDiemsView() {
     }
 
-    public MealAllowancesView(MealAllowances ma) {
+    public MealPerDiemsView(MealPerDiems ma) {
         this.allMealPerDiems = ma.allMealPerDiems().stream()
                 .map(MealPerDiemView::new)
                 .collect(Collectors.toList());
         this.requestedMealPerDiems = ma.requestedMealPerDiems().stream()
                 .map(MealPerDiemView::new)
                 .collect(Collectors.toList());
-        this.requestedAllowance = ma.requestedAllowance().toString();
-        this.maximumAllowance = ma.maximumAllowance().toString();
+        this.requestedPerDiem = ma.requestedPerDiem().toString();
+        this.maximumPerDiem = ma.maximumPerDiem().toString();
     }
 
     public List<MealPerDiemView> getAllMealPerDiems() {
@@ -34,12 +34,12 @@ public class MealAllowancesView implements ViewObject {
         return requestedMealPerDiems;
     }
 
-    public String getRequestedAllowance() {
-        return requestedAllowance;
+    public String getRequestedPerDiem() {
+        return requestedPerDiem;
     }
 
-    public String getMaximumAllowance() {
-        return maximumAllowance;
+    public String getMaximumPerDiem() {
+        return maximumPerDiem;
     }
 
     @Override

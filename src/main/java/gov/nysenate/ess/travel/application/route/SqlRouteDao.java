@@ -37,7 +37,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         } else {
             // FIXME leg.to and nextLeg.from should reference same db row.
             List<Destination> destinations = route.getAllLegs().stream()
-                    .flatMap(leg -> Stream.of(leg.getFrom(), leg.getTo()))
+                    .flatMap(leg -> Stream.of(leg.from(), leg.to()))
                     .collect(Collectors.toList());
             destinationDao.insertDestinations(destinations);
 
@@ -76,8 +76,8 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     private MapSqlParameterSource legParams(Leg leg, boolean isOutbound, int sequenceNo) {
         return new MapSqlParameterSource()
-                .addValue("fromDestinationId", leg.getFrom().getId())
-                .addValue("toDestinationId", leg.getTo().getId())
+                .addValue("fromDestinationId", leg.from().getId())
+                .addValue("toDestinationId", leg.to().getId())
                 .addValue("travelDate", toDate(leg.travelDate()))
                 .addValue("methodOfTravel", leg.methodOfTravel())
                 .addValue("methodOfTravelDescription", leg.methodOfTravelDescription())
@@ -192,7 +192,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
                     rs.getInt("leg_id"),
                     destinationDao.selectDestination(rs.getInt("from_destination_id")),
                     destinationDao.selectDestination(rs.getInt("to_destination_id")),
-                    new ModeOfTransportation(MethodOfTravel.valueOf(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
+                    new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
                     Double.valueOf(rs.getString("miles")),
                     perDiem,
                     rs.getBoolean("is_outbound"));
