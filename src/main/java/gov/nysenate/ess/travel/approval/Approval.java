@@ -5,6 +5,10 @@ import gov.nysenate.ess.travel.TravelRole;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * A single approval as part of a {@link ApplicationApproval}.
+ */
 public class Approval {
 
     private final Employee employee;

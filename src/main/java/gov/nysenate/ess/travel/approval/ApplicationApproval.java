@@ -9,8 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The entire approval process for a single {@link TravelApplication}.
+ */
 public class ApplicationApproval {
 
+    private int approvalId;
     private TravelApplication application;
     private List<Approval> approvals;
 
