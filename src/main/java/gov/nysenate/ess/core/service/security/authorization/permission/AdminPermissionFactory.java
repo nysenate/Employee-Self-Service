@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.security.authorization;
+package gov.nysenate.ess.core.service.security.authorization.permission;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -6,7 +6,6 @@ import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.Permission;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class AdminPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         return roles.contains(EssRole.ADMIN)
                 ? ImmutableList.of(SimpleEssPermission.ADMIN.getPermission())
                 : ImmutableList.of();

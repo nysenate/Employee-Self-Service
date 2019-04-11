@@ -2,15 +2,13 @@ package gov.nysenate.ess.web.security.realm;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.auth.LdapAuthResult;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.security.authentication.LdapAuthService;
-import gov.nysenate.ess.core.service.security.authorization.EssPermissionService;
-import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
+import gov.nysenate.ess.core.service.security.authorization.permission.EssPermissionService;
+import gov.nysenate.ess.core.service.security.authorization.role.EssRoleService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.pam.UnsupportedTokenException;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -44,9 +42,8 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
     @Value("${auth.master.pass}") private String masterPass;
 
     @Autowired private LdapAuthService essLdapAuthService;
-    @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private RoleDao roleDao;
+    @Autowired private EssRoleService essRoleService;
     @Autowired private EssPermissionService essPermissionService;
 
     @Override
@@ -132,8 +129,10 @@ public class EssLdapDbAuthzRealm extends AuthorizingRealm
             Employee employee = employeeInfoService.getEmployee(empId);
 
             // Get and set employee roles
-            ImmutableSet<EssRole> roles = roleDao.getRoles(employee);
-            List<String> roleStrings = roles.stream().map(EssRole::name).collect(Collectors.toList());
+            ImmutableSet<Enum> roles = essRoleService.getRoles(employee).collect(ImmutableSet.toImmutableSet());
+            List<String> roleStrings = roles.stream()
+                    .map(Enum::name)
+                    .collect(Collectors.toList());
             authInfo.addRoles(roleStrings);
 
             // Get and set employee permissions

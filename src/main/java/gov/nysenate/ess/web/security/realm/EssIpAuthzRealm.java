@@ -2,7 +2,7 @@ package gov.nysenate.ess.web.security.realm;
 
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.EssRole;
-import gov.nysenate.ess.core.service.security.authorization.AdminPermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.permission.AdminPermissionFactory;
 import gov.nysenate.ess.web.security.IpAuthenticationToken;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;

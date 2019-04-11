@@ -1,8 +1,7 @@
-package gov.nysenate.ess.core.service.security.authorization;
+package gov.nysenate.ess.core.service.security.authorization.permission;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.Permission;
@@ -17,7 +16,7 @@ import static gov.nysenate.ess.core.model.auth.EssRole.TIMEOUT_EXEMPT;
 public class TimeoutExemptPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         return roles.contains(TIMEOUT_EXEMPT)
                 ? ImmutableList.of(SimpleEssPermission.TIMEOUT_EXEMPT.getPermission())
                 : ImmutableList.of();
