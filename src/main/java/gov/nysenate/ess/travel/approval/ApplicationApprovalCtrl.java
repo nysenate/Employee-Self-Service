@@ -15,7 +15,7 @@ public class ApplicationApprovalCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getPendingApprovals() {
-        getSubject().is
+//        getSubject().is
         int userEmpId = getSubjectEmployeeId();
         return null;
     }

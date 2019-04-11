@@ -1,9 +1,9 @@
-package gov.nysenate.ess.travel;
+package gov.nysenate.ess.travel.authorization.role;
 
 import java.util.Optional;
 
 public enum TravelRole {
-    DEPARTMENT_HEAD,
+    SUPERVISOR,
     DEPUTY_EXECUTIVE_ASSISTANT,
     SECRETARY_OF_THE_SENATE,
     MAJORITY_LEADER;

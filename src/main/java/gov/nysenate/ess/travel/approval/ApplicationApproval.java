@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.approval;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.TravelRole;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.application.TravelApplication;
 
 import java.time.LocalDateTime;
@@ -43,7 +43,7 @@ public class ApplicationApproval {
 
     public Optional<TravelRole> nextApprover() {
         if (approvals.isEmpty()) {
-            return Optional.of(TravelRole.DEPARTMENT_HEAD);
+            return Optional.of(TravelRole.SUPERVISOR);
         }
         return previousApprover().flatMap(TravelRole::next);
     }

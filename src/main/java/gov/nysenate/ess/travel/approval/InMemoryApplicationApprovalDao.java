@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ public class InMemoryApplicationApprovalDao {
 
     @PostConstruct
     private void init() {
+        approvals = new HashMap<>();
         List<TravelApplication> apps = applicationService.selectTravelApplications(11168);
         for (TravelApplication app : apps) {
             approvals.put(approvals.size(), new ApplicationApproval(app));

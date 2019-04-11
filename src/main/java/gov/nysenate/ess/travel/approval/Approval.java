@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.approval;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.TravelRole;
+import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.time.LocalDateTime;
 

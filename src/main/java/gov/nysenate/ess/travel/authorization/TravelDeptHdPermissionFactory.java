@@ -5,9 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.permission.PermissionFactory;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermission;
@@ -27,7 +26,7 @@ public class TravelDeptHdPermissionFactory implements PermissionFactory {
     @Autowired private SupervisorInfoService supInfoService;
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> permissions = new ArrayList<>();
         if (supInfoService.isSupervisor(employee.getEmployeeId())) {
             permissions.add(TravelPermission.TRAVEL_UI_APPROVAL.getPermission());
