@@ -1,8 +1,7 @@
-package gov.nysenate.ess.core.service.security.authorization;
+package gov.nysenate.ess.core.service.security.authorization.permission;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import org.apache.shiro.authz.Permission;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public class EssPermissionService {
     /**
      * Get a list of an employee's permissions across all ESS applications
      */
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         return permissionFactories.stream()
                 .map(pFactory -> pFactory.getPermissions(employee, roles))
                 .flatMap(Collection::stream)

@@ -1,8 +1,7 @@
-package gov.nysenate.ess.core.service.security.authorization;
+package gov.nysenate.ess.core.service.security.authorization.permission;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.DepartmentalWhitelistService;
@@ -23,7 +22,7 @@ public class DepartmentAccessPermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         return deptWhitelistService.isAllowed(employee)
                 ? ImmutableList.of(SimpleEssPermission.DEPARTMENT_ACCESS.getPermission())
                 : ImmutableList.of();

@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.permission.PermissionFactory;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
 import org.apache.shiro.authz.Permission;
@@ -25,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class EssTimePersonnelPermissionFactory implements PermissionFactory {
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> personnelPermissions = new ArrayList<>();
 
         if (roles.contains(EssRole.TIME_MANAGER)) {

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.EnumSet;
 import java.util.List;
 
 @Repository
@@ -29,13 +28,7 @@ public class SqlRoleDao extends SqlBaseDao implements RoleDao {
         String sql = SqlRoleQuery.GET_EMPLOYEE_ROLES.getSql(schemaMap());
         List<EssRole> roles = localNamedJdbc.query(sql, params,
                 (rs, i) -> EssRole.valueOf(rs.getString("role")));
-        // Everyone has the senate employee role by default.
-        roles.add(EssRole.SENATE_EMPLOYEE);
-        // Add the senator role if the employee is a senator
-        if (employee.isSenator()) {
-            roles.add(EssRole.SENATOR);
-        }
-        return ImmutableSet.copyOf(EnumSet.copyOf(roles));
+        return ImmutableSet.copyOf(roles);
     }
 
     @Override

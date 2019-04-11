@@ -2,9 +2,8 @@ package gov.nysenate.ess.time.service.security.authorization;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.permission.PermissionFactory;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import org.apache.shiro.authz.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class EssTimeAccrualPermissionFactory implements PermissionFactory {
     }
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         int empId = employee.getEmployeeId();
         SortedSet<Integer> accrualYears = accInfoService.getAccrualYears(empId);
         // Permit access to accrual pages only if employee has ever been eligible for accruals

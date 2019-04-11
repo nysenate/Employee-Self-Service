@@ -3,10 +3,9 @@ package gov.nysenate.ess.time.service.security.authorization;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.payroll.PayType;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.permission.PermissionFactory;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.model.auth.SimpleTimePermission;
@@ -41,7 +40,7 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
     @Autowired private TimeRecordService timeRecordService;
 
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         int empId = employee.getEmployeeId();
         if (supInfoService.isSupervisor(empId) ||
                 timeRecordService.hasActiveEmployeeRecord(empId)) {
