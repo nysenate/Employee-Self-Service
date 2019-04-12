@@ -6,8 +6,7 @@ import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -17,19 +16,32 @@ public class TravelRoleFactory implements RoleFactory {
 
     @Override
     public Stream<Enum> getRoles(Employee employee) {
-        List<Enum> roles = new ArrayList<>();
+        return travelRoleForEmp(employee)
+                .map(role -> (Enum) role)
+                .map(Stream::of)
+                .orElse(Stream.empty());
+    }
+
+    /**
+     * An employee is only granted a single travel role. If they qualifty for multiple they will be granted
+     * the 'highest' in the hierarchy.
+     *
+     * @return The TravelRole for an employee.
+     */
+    public Optional<TravelRole> travelRoleForEmp(Employee employee) {
+        TravelRole role = null;
         if (supervisorInfoService.isSupervisor(employee.getEmployeeId())) {
-            roles.add(TravelRole.SUPERVISOR);
+            role = TravelRole.SUPERVISOR;
         }
         if (employee.getJobTitle().equals("Deputy Executive Assistant")) {
-            roles.add(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT);
+            role = TravelRole.DEPUTY_EXECUTIVE_ASSISTANT;
         }
         if (employee.getJobTitle().equals("Secretary of the Senate")) {
-            roles.add(TravelRole.SECRETARY_OF_THE_SENATE);
+            role = TravelRole.SECRETARY_OF_THE_SENATE;
         }
         if (employee.getEmployeeId() == 8944) {
-            roles.add(TravelRole.MAJORITY_LEADER);
+            role = TravelRole.MAJORITY_LEADER;
         }
-        return roles.stream();
+        return Optional.ofNullable(role);
     }
 }

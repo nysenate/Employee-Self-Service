@@ -72,14 +72,20 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 case "mileagePerDiems":
                     travelApplicationService.updateMileagePerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class));
                     break;
+            }
+        }
+        // Save after all changes are applied.
+        travelApplicationService.saveTravelApplication(app);
+
+        // Perform actions like submitting separately.
+        for (Map.Entry<String, String> patch : patches.entrySet()) {
+            switch (patch.getKey()) {
                 case "action":
                     if (patch.getValue().equals("submit")) {
                         travelApplicationService.submitTravelApplication(app);
                     }
             }
         }
-        // Save after all changes are applied.
-        travelApplicationService.saveTravelApplication(app);
 
         SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
         return new ViewObjectResponse(appView);
