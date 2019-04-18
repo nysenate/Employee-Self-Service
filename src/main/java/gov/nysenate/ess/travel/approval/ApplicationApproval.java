@@ -1,11 +1,11 @@
 package gov.nysenate.ess.travel.approval;
 
 import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.approval.reviewer.*;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * The entire approval process for a single {@link TravelApplication}.
@@ -16,12 +16,32 @@ public class ApplicationApproval {
     private TravelApplication application;
     private TravelRole travelerRole;
     private List<Action> actions;
+    private ReviewerStrategy reviewerStrategy;
 
     public ApplicationApproval(int approvalId, TravelApplication application, TravelRole travelerRole, List<Action> actions) {
         this.approvalId = approvalId;
         this.application = application;
         this.travelerRole = travelerRole;
         this.actions = actions;
+
+        if (travelerRole == TravelRole.NONE) {
+            reviewerStrategy = new RegularReviewerStrategy();
+        }
+        else if (travelerRole == TravelRole.MAJORITY_LEADER) {
+            reviewerStrategy = new MajReviewerStrategy();
+        }
+        else if (application.getTraveler().isSenator()) {
+            reviewerStrategy = new SenatorReviewerStrategy();
+        }
+        else if (travelerRole == TravelRole.SUPERVISOR) {
+            reviewerStrategy = new SupervisorReviewerStrategy();
+        }
+        else if (travelerRole == TravelRole.DEPUTY_EXECUTIVE_ASSISTANT) {
+            reviewerStrategy = new DeaReviewerStrategy();
+        }
+        else if (travelerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
+            reviewerStrategy = new SosReviewerStrategy();
+        }
     }
 
     public ApplicationApproval(TravelApplication application, TravelRole travelerRole) {
@@ -38,18 +58,11 @@ public class ApplicationApproval {
 //        return actions.add(new Action(approver, approverRole, notes, dateTime));
 //    }
 
-    public Optional<TravelRole> nextReviewerRole() {
-        if (actions.isEmpty()) {
-            return Optional.of(TravelRole.SUPERVISOR);
-        }
-        return previousReviewerRole().flatMap(TravelRole::next);
-    }
-
-    public Optional<TravelRole> previousReviewerRole() {
-        if (actions.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(actions.get(actions.size() - 1).role());
+    /**
+     * Returns the role which needs to approve the application next.
+     */
+    public TravelRole nextReviewerRole() {
+        return reviewerStrategy.after(previousReviewerRole());
     }
 
     public TravelApplication application() {
@@ -70,5 +83,12 @@ public class ApplicationApproval {
 
     void setApprovalId(int approvalId) {
         this.approvalId = approvalId;
+    }
+
+    private TravelRole previousReviewerRole() {
+        if (actions.isEmpty()) {
+            return null;
+        }
+        return actions.get(actions.size() - 1).role();
     }
 }

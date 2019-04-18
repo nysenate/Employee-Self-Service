@@ -60,8 +60,8 @@ public class SqlApplicationApprovalDao extends SqlBaseDao implements Application
         return new MapSqlParameterSource()
                 .addValue("approvalId", appApproval.getApprovalId())
                 .addValue("appId", appApproval.application().getAppId())
-                .addValue("travelerRole", appApproval.travelerRole())
-                .addValue("nextReviewerRole", appApproval.nextReviewerRole().map(Enum::name).orElse(null));
+                .addValue("travelerRole", appApproval.travelerRole().name())
+                .addValue("nextReviewerRole", appApproval.nextReviewerRole().name());
     }
 
     private void updateApplicationApproval(ApplicationApproval appApproval) {

@@ -24,11 +24,11 @@ public class ApplicationApprovalCtrl extends BaseRestApiCtrl {
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
-     * Get approvals which need approval by the logged in user.
+     * Get approvals which need review by the logged in user.
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getPendingApprovals() throws AuthenticationException {
-        TravelRole role = subjectRole();
+        TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         List<ApplicationApproval> pendingApprovals = approvalService.pendingApprovalsForRole(employee, role);
         return ListViewResponse.of(pendingApprovals.stream()
@@ -36,8 +36,12 @@ public class ApplicationApprovalCtrl extends BaseRestApiCtrl {
                 .collect(Collectors.toList()));
     }
 
-    private TravelRole subjectRole() throws AuthenticationException {
-        TravelRole role = null;
+    /**
+     * @return The TravelRole assigned to the user.
+     * @throws AuthenticationException if the user lacks a travel role.
+     */
+    private TravelRole checkSubjectRole() throws AuthenticationException {
+        TravelRole role = TravelRole.NONE;
         if (getSubject().hasRole(TravelRole.SUPERVISOR.name())) {
             role = TravelRole.SUPERVISOR;
         }
@@ -51,7 +55,7 @@ public class ApplicationApprovalCtrl extends BaseRestApiCtrl {
             role = TravelRole.MAJORITY_LEADER;
         }
 
-        if (role == null) {
+        if (role == TravelRole.NONE) {
             throw new UnauthorizedException("Missing a required role.");
         }
 

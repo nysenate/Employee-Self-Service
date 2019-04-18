@@ -20,7 +20,7 @@ public class ApplicationApprovalService {
     @Autowired private TravelRoleFactory travelRoleFactory;
 
     public ApplicationApproval createApplicationApproval(TravelApplication app) {
-        TravelRole travelerRole = travelRoleFactory.travelRoleForEmp(app.getTraveler()).orElse(null);
+        TravelRole travelerRole = travelRoleFactory.travelRoleForEmp(app.getTraveler()).orElse(TravelRole.NONE);
         ApplicationApproval approval = new ApplicationApproval(app, travelerRole);
         return approval;
     }
@@ -29,16 +29,19 @@ public class ApplicationApprovalService {
         approvalDao.saveApplicationApproval(approval);
     }
 
-    // FIXME very partial implementation
     public List<ApplicationApproval> pendingApprovalsForRole(Employee employee, TravelRole role) {
-        // Get all approvals requiring supervisor action. FIXME does not handle other roles
-        // Supervisor object?
-        List<ApplicationApproval> reqSupAction = approvalDao.selectApprovalsByNextRole(role).stream()
-                .collect(Collectors.toList());
+        List<ApplicationApproval> pending = approvalDao.selectApprovalsByNextRole(role);
+        if (role == TravelRole.SUPERVISOR) {
+            pending = pending.stream()
+                    .filter(a -> isSupervisor(employee, a))
+                    .collect(Collectors.toList());
+        }
 
-        return reqSupAction.stream()
-                .filter(a ->
-                        supervisorInfoService.getSupervisorIdForEmp(a.application().getTraveler().getEmployeeId(), LocalDate.now()) == employee.getEmployeeId())
-                .collect(Collectors.toList());
+        return pending;
+    }
+
+    // Is the given employee a supervisor for the traveling employee.
+    private boolean isSupervisor(Employee employee, ApplicationApproval applicationApproval) {
+        return supervisorInfoService.getSupervisorIdForEmp(applicationApproval.application().getTraveler().getEmployeeId(), LocalDate.now()) == employee.getEmployeeId();
     }
 }
