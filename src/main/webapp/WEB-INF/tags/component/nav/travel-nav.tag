@@ -1,3 +1,4 @@
+<%@ tag import="gov.nysenate.ess.travel.authorization.permission.TravelPermission" %>
 <%@tag description="Left navigation menu for Travel screens" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
@@ -12,10 +13,11 @@
       <li class="sub-topic orange"><a href="${ctxPath}/travel/view-applications">View Applications</a></li>
       <%--<li class="sub-topic"><a href="${ctxPath}/travel/travel-user-config">User Configuration</a></li>--%>
     </ul>
-    <%--<h3 class="main-topic">Manage Requests</h3>--%>
-    <%--<ul class="sub-topic-list">--%>
-      <%--<li class="sub-topic"><a href="${ctxPath}/travel/manage/review-travel-requests">Review Travel Requests</a></li>--%>
-      <%--<li class="sub-topic"><a href="${ctxPath}/travel/manage/travel-manage-history">Travel Request History</a></li>--%>
-    <%--</ul>--%>
+    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_APPROVAL.getPermissionString() %>">
+    <h3 class="main-topic">Manage Travel</h3>
+      <ul class="sub-topic-list">
+        <li class="sub-topic orange"><a href="${ctxPath}/travel/manage/review">Review Travel Applications</a></li>
+      </ul>
+    </shiro:hasPermission>
   </section>
 </div>

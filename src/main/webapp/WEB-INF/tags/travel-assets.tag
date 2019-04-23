@@ -13,6 +13,9 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-review-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-print-body.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-print-ctrl.js?v=${releaseVersion}"></script>
+
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/travel-review-ctrl.js?v=${releaseVersion}"></script>
+
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/address-county-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/travel-lodging-details-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/travel-continue-application-modal.js?v=${releaseVersion}"></script>

@@ -12,16 +12,17 @@ import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermission;
 import org.apache.shiro.authz.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Department Head permission factory for Travel.
- * // FIXME Currently uses supervisors instead of dept heads since dept head data is not in the database.
+ * Supervisor permission factory for Travel.
  */
-public class TravelDeptHdPermissionFactory implements PermissionFactory {
+@Service
+public class TravelSupervisorPermissionFactory implements PermissionFactory {
 
     @Autowired private SupervisorInfoService supInfoService;
 

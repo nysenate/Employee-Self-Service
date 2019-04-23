@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/approval")
-public class ApplicationApprovalCtrl extends BaseRestApiCtrl {
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/review")
+public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     @Autowired private ApplicationApprovalService approvalService;
     @Autowired private EmployeeInfoService employeeInfoService;
@@ -27,7 +27,7 @@ public class ApplicationApprovalCtrl extends BaseRestApiCtrl {
      * Get approvals which need review by the logged in user.
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public BaseResponse getPendingApprovals() throws AuthenticationException {
+    public BaseResponse getPendingReviews() throws AuthenticationException {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         List<ApplicationApproval> pendingApprovals = approvalService.pendingApprovalsForRole(employee, role);
