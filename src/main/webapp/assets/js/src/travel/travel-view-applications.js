@@ -61,13 +61,5 @@ function historyController($scope, appProps, modals, travelerAppApi) {
             .catch(function() {})
     };
 
-    $scope.getDestinations = function(app) {
-        var destinations = app.route.destinations[0].city || app.route.destinations[0].addr1 || "N/A";
-        if (app.route.destinations.length > 1) {
-            destinations += " ..."
-        }
-        return destinations;
-    };
-
     $scope.init();
 }

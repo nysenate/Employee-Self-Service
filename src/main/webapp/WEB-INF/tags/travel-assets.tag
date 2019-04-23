@@ -14,6 +14,13 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-print-body.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-print-ctrl.js?v=${releaseVersion}"></script>
 
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-application-table.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-address-autocomplete-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-destination-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-inner-container.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/address-geocoder.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/google-place-service.js?v=${releaseVersion}"></script>
+
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/travel-review-ctrl.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/address-county-service.js?v=${releaseVersion}"></script>
@@ -26,11 +33,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-view-applications.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/travel-manage-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/travel-history-detail-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-address-autocomplete-directive.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-destination-directive.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-inner-container.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/address-geocoder.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/google-place-service.js?v=${releaseVersion}"></script>
+
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/validators/autocomplete-address-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/validators/date-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/validators/mot-validator.js?v=${releaseVersion}"></script>

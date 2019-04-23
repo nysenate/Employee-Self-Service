@@ -3,7 +3,8 @@
     <h2>View Applications</h2>
   </div>
   <div class="content-container travel-content-controls">
-    <h4 class="travel-content-info travel-text-bold" style="margin-bottom: 0px;">Search submitted travel applications by date</h4>
+    <h4 class="travel-content-info travel-text-bold" style="margin-bottom: 0px;">Search submitted travel applications by
+      date</h4>
     <div class="text-align-center">
       <div class="padding-10 inline-block">
         <label class="bold">From:</label>
@@ -20,45 +21,17 @@
     </div>
   </div>
 
-  <div loader-indicator class="loader" ng-show="appRequest.$resolved === false"></div>
-
-  <div class="content-container" ng-show="appRequest.$resolved === true">
-    <div class="content-info" ng-show="apps.all.length === 0">
-      <h2 class="dark-gray">No results were found.</h2>
-    </div>
-
-    <div ng-show="apps.all.length > 0">
-      <div class="padding-10">
-        <table class="travel-table travel-hover">
-          <thead>
-          <tr>
-            <th>Travel Date</th>
-            <th>Employee</th>
-            <th>Destination</th>
-            <th>Allotted Funds</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr dir-paginate="app in apps.filtered | orderBy: '-travelDate' : true | itemsPerPage : 10"
-              pagination-id="travel-history-pagination"
-              ng-click="viewApplicationDetails(app)">
-            <td>{{app.startDate | date:'M/d/yyyy'}}</td>
-            <td>{{app.traveler.lastName}}</td>
-            <td>{{getDestinations(app)}}</td>
-            <td>{{app.totalAllowance | currency}}</td>
-          </tr>
-          </tbody>
-        </table>
-        <div>
-          <dir-pagination-controls class="text-align-center" pagination-id="travel-history-pagination"
-                                   boundary-links="true" max-size="10"></dir-pagination-controls>
-        </div>
-      </div>
-    </div>
-    <div modal-container>
-      <modal modal-id="travel-history-detail-modal">
-        <div travel-history-detail-modal></div>
-      </modal>
-    </div>
+  <div ng-if="appRequest.$resolved === true">
+    <travel-application-table
+        apps="apps.filtered"
+        onclick="viewApplicationDetails(app)">
+    </travel-application-table>
   </div>
+
+  <div modal-container>
+    <modal modal-id="travel-history-detail-modal">
+      <div travel-history-detail-modal></div>
+    </modal>
+  </div>
+</div>
 </div>
