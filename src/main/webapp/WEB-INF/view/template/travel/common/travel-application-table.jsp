@@ -1,9 +1,4 @@
 <div class="content-container">
-
-  <div class="content-info" ng-show="apps.length === 0">
-    <h2 class="dark-gray">No results were found.</h2>
-  </div>
-
   <div ng-show="apps.length > 0">
     <div class="padding-10">
 
@@ -19,7 +14,7 @@
         <tbody>
         <tr dir-paginate="app in apps | orderBy: '-travelDate' : true | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
-            ng-click="onclick({app: app})">
+            ng-click="onRowClick({app: app})">
           <td>{{app.startDate | date:'M/d/yyyy'}}</td>
           <td>{{app.traveler.lastName}}</td>
           <td>{{getDestinations(app)}}</td>

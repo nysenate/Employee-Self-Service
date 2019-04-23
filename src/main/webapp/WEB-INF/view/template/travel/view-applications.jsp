@@ -22,16 +22,25 @@
   </div>
 
   <div ng-if="appRequest.$resolved === true">
-    <travel-application-table
-        apps="apps.filtered"
-        onclick="viewApplicationDetails(app)">
-    </travel-application-table>
+    <div ng-if="apps.filtered.length === 0">
+      <div class="content-container">
+        <div class="content-info">
+          <h2 class="dark-gray">No results were found.</h2>
+        </div>
+      </div>
+    </div>
+
+    <div ng-if="apps.filtered.length > 0">
+      <travel-application-table
+          apps="apps.filtered"
+          on-row-click="viewApplicationForm(app)">
+      </travel-application-table>
+    </div>
   </div>
 
   <div modal-container>
-    <modal modal-id="travel-history-detail-modal">
-      <div travel-history-detail-modal></div>
+    <modal modal-id="travel-form-modal">
+      <div travel-form-modal></div>
     </modal>
   </div>
-</div>
 </div>

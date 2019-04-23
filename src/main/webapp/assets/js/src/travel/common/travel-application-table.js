@@ -5,8 +5,8 @@ essTravel.directive('travelApplicationTable', ['appProps', function (appProps) {
         restrict: 'E',
         templateUrl: appProps.ctxPath + '/template/travel/common/travel-application-table',
         scope: {
-            apps: '=',      // An array of applications to display in the table.
-            onclick: '&'    // Method to be called when a row is clicked, Must take 1 param named 'app'
+            apps: '=',          // An array of applications to display in the table.
+            onRowClick: '&'    // Method to be called when a row is clicked, Must take 1 param named 'app'
         },
         link: function ($scope, $elem, $attrs) {
 

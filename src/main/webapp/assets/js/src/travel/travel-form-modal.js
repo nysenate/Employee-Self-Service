@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('travelHistoryDetailModal', ['appProps', function (appProps) {
+essTravel.directive('travelFormModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/travel-history-detail-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/travel-form-modal',
         scope: {},
         controller: 'TravelHistoryDetailCtrl'
     }
