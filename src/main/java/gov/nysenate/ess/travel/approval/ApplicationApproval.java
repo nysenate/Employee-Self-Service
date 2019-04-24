@@ -48,6 +48,13 @@ public class ApplicationApproval {
         this(0, application, travelerRole, new ArrayList<>());
     }
 
+    public void addAction(Action action) {
+        //TODO
+        // Verify correct role is doing the action.
+        // Verify this approval can receive mroe actions
+        actions.add(action);
+    }
+
 //    public boolean addApproval(Employee approver, TravelRole approverRole, String notes, LocalDateTime dateTime) {
 //        if (!nextApprover().isPresent()) {
 //            // TODO: Cannot approve anymore!

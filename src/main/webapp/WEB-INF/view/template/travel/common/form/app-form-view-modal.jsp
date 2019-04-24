@@ -5,7 +5,7 @@
   </div>
 
   <div class="travel-button-container">
-    <input type="button" class="travel-neutral-button" value="Exit"
+    <input type="button" class="travel-neutral-button" value="Close"
            ng-click="exit()">
     <a target="_blank" ng-href="${ctxPath}/travel/application/print?id={{app.id}}&print=true">Print</a>
   </div>

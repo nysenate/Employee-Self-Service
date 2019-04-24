@@ -26,8 +26,8 @@
   </div>
 
   <div modal-container>
-    <modal modal-id="app-form-view-modal">
-      <div app-form-view-modal></div>
+    <modal modal-id="app-review-form-modal">
+      <div app-review-form-modal></div>
     </modal>
   </div>
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +20,21 @@ public class ApplicationApprovalService {
     @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private TravelRoleFactory travelRoleFactory;
 
+    // TODO include notes
+    public void approveApplication(ApplicationApproval applicationApproval, Employee approver, TravelRole approverRole) {
+        Action approvalAction = new Action(0, approver, approverRole, ActionType.APPROVE, "", LocalDateTime.now());
+        applicationApproval.addAction(approvalAction);
+        saveApplicationApproval(applicationApproval);
+    }
+
     public ApplicationApproval createApplicationApproval(TravelApplication app) {
         TravelRole travelerRole = travelRoleFactory.travelRoleForEmp(app.getTraveler()).orElse(TravelRole.NONE);
         ApplicationApproval approval = new ApplicationApproval(app, travelerRole);
         return approval;
+    }
+
+    public ApplicationApproval getApplicationApproval(int approvalId) {
+        return approvalDao.selectApprovalById(approvalId);
     }
 
     public void saveApplicationApproval(ApplicationApproval approval) {

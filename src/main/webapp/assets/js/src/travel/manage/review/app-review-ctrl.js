@@ -1,21 +1,23 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'TravelApplicationReviewApi', reviewController]);
+essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'LocationService', 'TravelApplicationApprovalApi', reviewController]);
 
-function reviewController($scope, modals, reviewApi) {
+function reviewController($scope, modals, locationService, appApprovalApi) {
 
     this.$onInit = function () {
         $scope.data = {
             apiRequest: {},
-            apps: []
+            apps: [],
+            approvals: []
         };
 
         initData();
     };
 
     function initData() {
-        $scope.data.apiRequest = reviewApi.get({}, function (response) {
+        $scope.data.apiRequest = appApprovalApi.get({}, function (response) {
             response.result.forEach(function (result) {
+                $scope.data.approvals.push(result);
                 $scope.data.apps.push(result.travelApplication);
             });
             sortByTravelDateAsc($scope.data.apps);
@@ -32,6 +34,15 @@ function reviewController($scope, modals, reviewApi) {
     }
 
     $scope.viewApplicationForm = function (app) {
-        modals.open("app-form-view-modal", app, true);
+        var appApproval = {};
+        $scope.data.approvals.forEach(function (a) {
+            if (a.travelApplication.id === app.id) {
+                appApproval = a;
+            }
+        });
+        modals.open("app-review-form-modal", appApproval, true)
+            .then(function () {
+                locationService.go("/travel/manage/review", true);
+            });
     }
 }

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class ApplicationApprovalView implements ViewObject {
 
+    private int approvalId;
     private SimpleTravelApplicationView travelApplication;
     private List<ActionView> actions;
 
@@ -15,10 +16,15 @@ public class ApplicationApprovalView implements ViewObject {
     }
 
     public ApplicationApprovalView(ApplicationApproval appApproval) {
+        approvalId = appApproval.getApprovalId();
         travelApplication = new SimpleTravelApplicationView(appApproval.application());
         actions = appApproval.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
+    }
+
+    public int getApprovalId() {
+        return approvalId;
     }
 
     public SimpleTravelApplicationView getTravelApplication() {

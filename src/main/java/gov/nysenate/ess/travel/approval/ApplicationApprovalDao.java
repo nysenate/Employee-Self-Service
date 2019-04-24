@@ -9,4 +9,6 @@ public interface ApplicationApprovalDao {
     void saveApplicationApproval(ApplicationApproval appApproval);
 
     List<ApplicationApproval> selectApprovalsByNextRole(TravelRole nextReviewerRole);
+
+    ApplicationApproval selectApprovalById(int approvalId);
 }

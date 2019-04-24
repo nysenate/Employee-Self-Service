@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.authorization;
+package gov.nysenate.ess.travel.authorization.permission;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.security.authorization.permission.PermissionFactory;
 import gov.nysenate.ess.time.model.personnel.SupervisorEmpGroup;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
-import gov.nysenate.ess.travel.authorization.permission.TravelPermission;
 import org.apache.shiro.authz.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

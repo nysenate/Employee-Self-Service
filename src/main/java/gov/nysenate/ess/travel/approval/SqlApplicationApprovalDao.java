@@ -47,6 +47,14 @@ public class SqlApplicationApprovalDao extends SqlBaseDao implements Application
         return localNamedJdbc.query(sql, params, new ApplicationApprovalRowMapper(travelApplicationDao, employeeInfoService, actionDao));
     }
 
+    @Override
+    public ApplicationApproval selectApprovalById(int approvalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("approvalId", approvalId);
+        String sql = SqlApplicationApprovalQuery.SELECT_APPLICATION_APPROVAL_BY_ID.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new ApplicationApprovalRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+    }
+
     public void insertApplicationApproval(ApplicationApproval appApproval) {
         MapSqlParameterSource params = applicationApprovalParams(appApproval);
         String sql = SqlApplicationApprovalQuery.INSERT_APPLICATION_APPROVAL.getSql(schemaMap());
@@ -85,6 +93,11 @@ public class SqlApplicationApprovalDao extends SqlBaseDao implements Application
                 "SELECT app_approval_id, app_id, traveler_role, next_reviewer_role\n" +
                         " FROM ${travelSchema}.app_approval\n" +
                         " WHERE next_reviewer_role = :nextReviewerRole"
+        ),
+        SELECT_APPLICATION_APPROVAL_BY_ID(
+                "SELECT app_approval_id, app_id, traveler_role, next_reviewer_role\n" +
+                        " FROM ${travelSchema}.app_approval\n" +
+                        " WHERE app_approval_id = :approvalId"
         );
 
         private String sql;

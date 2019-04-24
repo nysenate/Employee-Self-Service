@@ -2,12 +2,14 @@ package gov.nysenate.ess.travel.approval;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/review")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/approval")
 public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     @Autowired private ApplicationApprovalService approvalService;
@@ -34,6 +36,15 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(pendingApprovals.stream()
                 .map(ApplicationApprovalView::new)
                 .collect(Collectors.toList()));
+    }
+
+    @RequestMapping(value = "/{approvalId}", method = RequestMethod.POST)
+    public BaseResponse approveApplication(@PathVariable int approvalId) throws AuthenticationException {
+        TravelRole role = checkSubjectRole();
+        Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
+        ApplicationApproval approval = approvalService.getApplicationApproval(approvalId);
+        approvalService.approveApplication(approval, employee, role);
+        return new ViewObjectResponse<>(new ApplicationApprovalView(approval));
     }
 
     /**
