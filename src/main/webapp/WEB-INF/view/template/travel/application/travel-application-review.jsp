@@ -3,20 +3,20 @@
     Please review your application.
   </p>
 
-  <travel-inner-container title="Purpose of Travel">
+  <ess-travel-inner-container title="Purpose of Travel">
     <div style="white-space:pre-wrap;">
       {{reviewApp.purposeOfTravel}}
     </div>
-  </travel-inner-container>
+  </ess-travel-inner-container>
 
-  <travel-inner-container title="Attachments" ng-if="reviewApp.attachments.length > 0">
+  <ess-travel-inner-container title="Attachments" ng-if="reviewApp.attachments.length > 0">
     <div ng-repeat="attachment in reviewApp.attachments" class="travel-attachment-container padding-10">
       <div class="travel-attachment-filename">{{attachment.originalName}}</div>
     </div>
-  </travel-inner-container>
+  </ess-travel-inner-container>
 
 
-  <travel-inner-container title="Segments">
+  <ess-travel-inner-container title="Segments">
 
     <form name="outboundForm">
       <fieldset disabled="disabled" style="border: none;">
@@ -29,7 +29,7 @@
 
           <div class="itinerary-address">
             <label>From</label><br/>
-            <input travel-address-autocomplete
+            <input ess-address-autocomplete
                    ng-model="leg.from.formattedAddress"
                    callback="leg.setFrom(address)"
                    placeholder="200 State St, Albany NY 12210"
@@ -43,7 +43,7 @@
 
           <div class="itinerary-address">
             <label>To</label><br/>
-            <input travel-address-autocomplete
+            <input ess-address-autocomplete
                    ng-model="leg.to.formattedAddress"
                    callback="leg.setTo(address)"
                    placeholder="200 State St, Albany NY 12210"
@@ -81,7 +81,7 @@
 
           <div class="itinerary-address">
             <label>From</label><br/>
-            <input travel-address-autocomplete
+            <input ess-address-autocomplete
                    ng-model="leg.from.formattedAddress"
                    callback="leg.setFrom(address)"
                    placeholder="200 State St, Albany NY 12210"
@@ -95,7 +95,7 @@
 
           <div class="itinerary-address">
             <label>To</label><br/>
-            <input travel-address-autocomplete
+            <input ess-address-autocomplete
                    ng-model="leg.to.formattedAddress"
                    callback="leg.setTo(address)"
                    placeholder="200 State St, Albany NY 12210"
@@ -120,9 +120,9 @@
 
       </fieldset>
     </form>
-  </travel-inner-container>
+  </ess-travel-inner-container>
 
-  <travel-inner-container title="Expenses">
+  <ess-travel-inner-container title="Expenses">
     <div>
       <div class="grid" style="padding-left: 300px; padding-right: 200px;">
         <div class="col-6-12 margin-bottom-5">
@@ -196,13 +196,13 @@
         </div>
       </div>
     </div>
-  </travel-inner-container>
+  </ess-travel-inner-container>
 
 
-  <travel-inner-container title="Driving Route">
+  <ess-travel-inner-container title="Driving Route">
     <div id="map" class="margin-top-20"
          style="width: 650px; height: 375px; margin-left: auto; margin-right: auto;"></div>
-  </travel-inner-container>
+  </ess-travel-inner-container>
 
   <div class="travel-button-container" style="border: none;">
     <input type="button" class="neutral-button" value="Cancel"

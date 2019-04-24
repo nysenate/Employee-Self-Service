@@ -1,7 +1,7 @@
-<div id="travel-app-print" ng-controller="TravelApplicationPrintCtrl">
+<div id="app-form-print" ng-controller="AppFormPrintCtrl">
   <div class="content-container padding-10 clearfix" style="width: 700px;">
 
-    <travel-app-print-body app="app"></travel-app-print-body>
+    <ess-app-form-body app="app"></ess-app-form-body>
 
     <div id="traveler-signature" class="print-signature">
       <span class="signature-name">Signature of Traveler</span>

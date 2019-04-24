@@ -1,12 +1,12 @@
 var travel = angular.module('essTravel');
 
-travel.directive('travelAppPrintBody', ['appProps', 'TravelModeOfTransportationApi', function (appProps, motApi) {
+travel.directive('essAppFormBody', ['appProps', 'TravelModeOfTransportationApi', function (appProps, motApi) {
     return {
         restrict: 'E',
         scope: {
             app: '='
         },
-        templateUrl: appProps.ctxPath + '/template/travel/application/travel-application-print-body',
+        templateUrl: appProps.ctxPath + '/template/travel/common/form/app-form-body-directive',
         link: function ($scope, $elem, $attrs) {
 
             console.log($scope.app);
@@ -21,7 +21,7 @@ travel.directive('travelAppPrintBody', ['appProps', 'TravelModeOfTransportationA
                 return appModesOfTransportation.includes(mot.displayName);
             };
 
-            function init() {
+            (function init() {
                 motApi.get().$promise
                     .then(extractMots)
                     .catch($scope.handleErrorResponse);
@@ -29,9 +29,7 @@ travel.directive('travelAppPrintBody', ['appProps', 'TravelModeOfTransportationA
                 function extractMots(response) {
                     $scope.modeOfTransportations = response.result;
                 }
-            }
-
-            init();
+            })();
         }
     }
 }]);

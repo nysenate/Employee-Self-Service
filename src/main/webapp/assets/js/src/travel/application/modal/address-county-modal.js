@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('addressCountyModal', ['appProps', function (appProps) {
+essTravel.directive('essAddressCountyModal', ['appProps', function (appProps) {
     return {
         scope: {},
         templateUrl: appProps.ctxPath + '/template/travel/application/modal/address-county-modal',
@@ -21,7 +21,6 @@ function addressCountyModalCtrl($scope, modals) {
     };
 
     $scope.cancel = function () {
-        console.log("Canceling Modal");
         modals.reject();
     };
 }

@@ -17,7 +17,7 @@
       </ess-notification>
     </div>
 
-    <travel-inner-container title="Miscellaneous Expenses">
+    <ess-travel-inner-container title="Miscellaneous Expenses">
       <div class="text-align-center" style="width: 70%; margin: auto;">
         <div class="grid" style="min-width: 0;">
           <div class="col-6-12 padding-bottom-10">
@@ -50,9 +50,9 @@
           Note: Meals, lodging, and mileage expenses were calculated automatically.
         </p>
       </div>
-    </travel-inner-container>
+    </ess-travel-inner-container>
 
-    <travel-inner-container title="Meals Adjustment (Optional)">
+    <ess-travel-inner-container title="Meals Adjustment (Optional)">
       <p class="travel-text margin-bottom-20">
         You qualify for the following meal reimbursements. Uncheck anything you would <span class="bold">not</span> like
         to be reimbursed for.
@@ -75,9 +75,9 @@
         </tbody>
       </table>
 </div>
-    </travel-inner-container>
+    </ess-travel-inner-container>
 
-    <travel-inner-container title="Lodging Adjustment (Optional)" ng-show="tripHasLodging()">
+    <ess-travel-inner-container title="Lodging Adjustment (Optional)" ng-show="tripHasLodging()">
       <p class="travel-text margin-bottom-20">
         You qualify for the following lodging reimbursements. Uncheck anything you would <span class="bold">not</span>
         like to be reimbursed for.
@@ -100,9 +100,9 @@
           </tbody>
         </table>
       </div>
-    </travel-inner-container>
+    </ess-travel-inner-container>
 
-    <travel-inner-container title="Mileage Adjustment (Optional)" ng-show="tripHasMileage()">
+    <ess-travel-inner-container title="Mileage Adjustment (Optional)" ng-show="tripHasMileage()">
       <p class="travel-text margin-bottom-20">
         You qualify for the following mileage reimbursements. Uncheck anything you would <span class="bold">not</span>
         like to be reimbursed for.
@@ -125,7 +125,7 @@
           </tbody>
         </table>
       </div>
-    </travel-inner-container>
+    </ess-travel-inner-container>
 
     <div class="travel-button-container">
       <input type="button" class="neutral-button" value="Cancel"

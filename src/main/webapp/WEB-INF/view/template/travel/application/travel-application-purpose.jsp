@@ -11,14 +11,14 @@
       <ess-notification level="error" message="Purpose of Travel is required."></ess-notification>
     </div>
 
-    <travel-inner-container title="Purpose of Travel">
+    <ess-travel-inner-container title="Purpose of Travel">
       <div class="text-align-center">
         <textarea ng-model="dirtyApp.purposeOfTravel" cols="80" rows="6"
                   placeholder="Why will you be traveling?" required></textarea>
       </div>
-    </travel-inner-container>
+    </ess-travel-inner-container>
 
-    <travel-inner-container ng-if="false" title="Supporting Documentation">
+    <ess-travel-inner-container ng-if="false" title="Supporting Documentation">
       <div class="text-align-center">
         <div ng-repeat="attachment in app.attachments" class="travel-attachment-container">
           <div class="travel-attachment-filename">{{attachment.originalName}}
@@ -34,7 +34,7 @@
         <%--<input type="submit" ng-click="save()">--%>
         <%--</form>--%>
       </div>
-    </travel-inner-container>
+    </ess-travel-inner-container>
 
     <div class="travel-button-container">
       <input type="button" class="neutral-button" value="Cancel"

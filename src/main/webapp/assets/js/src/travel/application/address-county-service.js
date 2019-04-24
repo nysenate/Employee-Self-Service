@@ -64,7 +64,7 @@ function addressCountyService($q, $timeout, modals, geocoder) {
          */
         (function displayCountyModal() {
             var addr = addresses.shift();
-            if (modals.isTop('address-county-modal')) {
+            if (modals.isTop('ess-address-county-modal')) {
                 modals.resolve();
             }
             if (addr == undefined) {
@@ -75,7 +75,7 @@ function addressCountyService($q, $timeout, modals, geocoder) {
                 if (modals.isTop('loading')) {
                     modals.resolve();
                 }
-                modals.open('address-county-modal', {address: addr})
+                modals.open('ess-address-county-modal', {address: addr})
                     .then(function () {
                         modals.open('loading');
                         // This timeout serves 2 purposes. One, It makes it more noticeable to the user

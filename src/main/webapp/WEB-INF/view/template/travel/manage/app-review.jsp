@@ -1,12 +1,10 @@
-<div ng-controller="TravelReviewCtrl">
+<div ng-controller="AppReviewCtrl">
   <div>
     <div class="travel-hero">
-      <h2>Review Travel Applications</h2>
+      <h2>Review Applications</h2>
     </div>
     <div class="content-container content-controls">
-      <div class="padding-10 text-align-center">
-        The following travel applications require your review.
-      </div>
+      <h4 class="travel-content-info travel-text-bold">The following travel applications require your review.</h4>
     </div>
   </div>
 
@@ -20,16 +18,16 @@
     </div>
 
     <div ng-if="data.apps.length > 0">
-      <travel-application-table
+      <ess-app-summary-table
           apps="data.apps"
           on-row-click="viewApplicationForm(app)">>
-      </travel-application-table>
+      </ess-app-summary-table>
     </div>
   </div>
 
   <div modal-container>
-    <modal modal-id="travel-form-modal">
-      <div travel-form-modal></div>
+    <modal modal-id="app-form-view-modal">
+      <div app-form-view-modal></div>
     </modal>
   </div>
 

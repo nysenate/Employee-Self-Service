@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.service('AddressDistrictAssigner', ['TravelDistrictAssignApi', addressGeocoderService]);
+essTravel.service('AddressDistrictAssignmentService', ['TravelDistrictAssignApi', addressDistrictAssignService]);
 
 function addressDistrictAssignService(districtAssignApi) {
 

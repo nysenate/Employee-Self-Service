@@ -33,7 +33,7 @@
 
         <div class="itinerary-address">
           <label>From</label><br/>
-          <input travel-address-autocomplete
+          <input ess-address-autocomplete
                  name="fromAddress_{{$index}}"
                  ng-model="leg.from.formattedAddress"
                  leg="leg"
@@ -50,7 +50,7 @@
 
         <div class="itinerary-address">
           <label>To</label><br/>
-          <input travel-address-autocomplete
+          <input ess-address-autocomplete
                  name="toAddress_{{$index}}"
                  ng-model="leg.to.formattedAddress"
                  leg="leg"

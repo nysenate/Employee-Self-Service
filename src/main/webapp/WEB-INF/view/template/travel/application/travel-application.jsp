@@ -58,8 +58,8 @@
   <div modal-container>
 
     <%--Continue application modal--%>
-    <modal modal-id="travel-continue-application-modal">
-      <div travel-continue-application-modal></div>
+    <modal modal-id="ess-continue-saved-app-modal">
+      <div ess-continue-saved-app-modal></div>
     </modal>
 
 
@@ -79,8 +79,8 @@
     </modal>
 
     <%--County information modal--%>
-    <modal modal-id="address-county-modal">
-      <div address-county-modal></div>
+    <modal modal-id="ess-address-county-modal">
+      <div ess-address-county-modal></div>
     </modal>
 
     <modal modal-id="long-trip-warning">
@@ -115,7 +115,7 @@
         <div style="padding-bottom: 20px;">
           <p>
             You should now <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/travel-application-print?id={{data.app.id}}&print=true">print</a>,
+                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>,
             sign and deliver your application to your department head.
           </p>
         </div>
@@ -123,16 +123,16 @@
     </modal>
 
     <%-- Review detail modals --%>
-    <modal modal-id="travel-lodging-details-modal">
-      <div travel-lodging-details-modal></div>
+    <modal modal-id="ess-lodging-details-modal">
+      <div ess-lodging-details-modal></div>
     </modal>
 
-    <modal modal-id="travel-meal-details-modal">
-      <div travel-meal-details-modal></div>
+    <modal modal-id="ess-meal-details-modal">
+      <div ess-meal-details-modal></div>
     </modal>
 
-    <modal modal-id="travel-mileage-details-modal">
-      <div travel-mileage-details-modal></div>
+    <modal modal-id="ess-mileage-details-modal">
+      <div ess-mileage-details-modal></div>
     </modal>
 
     <modal modal-id="external-api-error">

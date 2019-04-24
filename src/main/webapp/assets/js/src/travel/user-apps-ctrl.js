@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelHistoryController', ['$scope', 'appProps', 'modals', 'TravelApplicationsForTravelerApi', 'PaginationModel', historyController]);
+essTravel.controller('UserAppsCtrl', ['$scope', 'appProps', 'modals', 'TravelApplicationsForTravelerApi', 'PaginationModel', userAppsCtrl]);
 
-function historyController($scope, appProps, modals, travelerAppApi) {
+function userAppsCtrl($scope, appProps, modals, travelerAppApi) {
 
     var DATE_FORMAT = "MM/DD/YYYY";
 
@@ -57,7 +57,7 @@ function historyController($scope, appProps, modals, travelerAppApi) {
     }
 
     $scope.viewApplicationForm = function(app) {
-        modals.open("travel-form-modal", app, true)
+        modals.open("app-form-view-modal", app, true)
             .catch(function() {})
     };
 

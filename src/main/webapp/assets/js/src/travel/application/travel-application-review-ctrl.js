@@ -30,15 +30,15 @@ function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
     };
 
     $scope.displayLodgingDetails = function () {
-        modals.open('travel-lodging-details-modal', {app: $scope.reviewApp}, true);
+        modals.open('ess-lodging-details-modal', {app: $scope.reviewApp}, true);
     };
 
     $scope.displayMealDetails = function () {
-        modals.open('travel-meal-details-modal', {app: $scope.reviewApp}, true);
+        modals.open('ess-meal-details-modal', {app: $scope.reviewApp}, true);
     };
 
     $scope.displayMileageDetails = function () {
-        modals.open('travel-mileage-details-modal', {app: $scope.reviewApp}, true);
+        modals.open('ess-mileage-details-modal', {app: $scope.reviewApp}, true);
     };
 
     function displayMap() {

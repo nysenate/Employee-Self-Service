@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelReviewCtrl', ['$scope', 'modals', 'TravelApplicationReviewApi', reviewController]);
+essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'TravelApplicationReviewApi', reviewController]);
 
 function reviewController($scope, modals, reviewApi) {
 
@@ -32,6 +32,6 @@ function reviewController($scope, modals, reviewApi) {
     }
 
     $scope.viewApplicationForm = function (app) {
-        modals.open("travel-form-modal", app, true);
+        modals.open("app-form-view-modal", app, true);
     }
 }

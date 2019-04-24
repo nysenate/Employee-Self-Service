@@ -1,4 +1,4 @@
-<div ng-controller="TravelHistoryController">
+<div ng-controller="UserAppsCtrl">
   <div class="travel-hero">
     <h2>View Applications</h2>
   </div>
@@ -31,16 +31,16 @@
     </div>
 
     <div ng-if="apps.filtered.length > 0">
-      <travel-application-table
+      <ess-app-summary-table
           apps="apps.filtered"
           on-row-click="viewApplicationForm(app)">
-      </travel-application-table>
+      </ess-app-summary-table>
     </div>
   </div>
 
   <div modal-container>
-    <modal modal-id="travel-form-modal">
-      <div travel-form-modal></div>
+    <modal modal-id="app-form-view-modal">
+      <div app-form-view-modal></div>
     </modal>
   </div>
 </div>

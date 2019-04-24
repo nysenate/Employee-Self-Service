@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('travelInnerContainer', [function () {
+essTravel.directive('essTravelInnerContainer', [function () {
     return {
         restrict: 'E',
         scope: {

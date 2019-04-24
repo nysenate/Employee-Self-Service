@@ -48,7 +48,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
             appApi.get({travelerId: travelerId}, {}, function (response) {
                 $scope.data.app = response.result;
                 if (hasUncompleteApplication()) {
-                    modals.open('travel-continue-application-modal')
+                    modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
                             cancelApplication() // TODO replace this functionality
                         });

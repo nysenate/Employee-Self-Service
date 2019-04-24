@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationPrintCtrl',
+essTravel.controller('AppFormPrintCtrl',
                      ['$scope', 'LocationService', 'TravelApplicationByIdApi', '$timeout', '$window', appPrintCtrl]);
 
 /**
@@ -12,8 +12,9 @@ function appPrintCtrl($scope, locationService, travelAppApi, $timeout, $window) 
 
     $scope.app = {};
 
-    $scope.init = function () {
+    this.$onInit = function () {
         var appId = locationService.getSearchParam('id');
+
         travelAppApi.get({id: appId}).$promise
             .then(extractApplication)
             .then(printIfRequested)
@@ -31,7 +32,5 @@ function appPrintCtrl($scope, locationService, travelAppApi, $timeout, $window) 
                 }, 600) // If timeout is reduced, printed page is blank. Should work with 0 timeout, not sure whats going on.
             }
         }
-    };
-
-    $scope.init();
+    }
 }

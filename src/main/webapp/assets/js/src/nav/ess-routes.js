@@ -183,24 +183,20 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/application/travel-application'
     });
 
-    $routeProvider.when(ctxPath + '/travel/application/travel-application-print', {
-        templateUrl: ctxPath + '/template/travel/application/travel-application-print'
+    $routeProvider.when(ctxPath + '/travel/application/print', {
+        templateUrl: ctxPath + '/template/travel/common/form/app-form-print'
     });
 
-    $routeProvider.when(ctxPath + '/travel/view-applications', {
-        templateUrl: ctxPath + '/template/travel/view-applications'
+    $routeProvider.when(ctxPath + '/travel/apps', {
+        templateUrl: ctxPath + '/template/travel/user-apps'
     });
 
-    $routeProvider.when(ctxPath + '/travel/travel-user-config', {
-        templateUrl: ctxPath + '/template/travel/travel-user-config'
-    });
-
-    $routeProvider.when(ctxPath + '/travel/manage/travel-manage-history', {
-        templateUrl: ctxPath + '/template/travel/manage/travel-manage-history'
+    $routeProvider.when(ctxPath + '/travel/config', {
+        templateUrl: ctxPath + '/template/travel/user-config'
     });
 
     $routeProvider.when(ctxPath + '/travel/manage/review', {
-        templateUrl: ctxPath + '/template/travel/manage/review'
+        templateUrl: ctxPath + '/template/travel/manage/app-review'
     });
 
 
