@@ -19,6 +19,7 @@ public class TravelApplication {
     private String purposeOfTravel;
     private Route route;
     private Allowances allowances;
+    private TravelApplicationStatus status;
     private List<TravelAttachment> attachments;
     private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
     private LocalDateTime modifiedDateTime; // DateTime this app was last updated.
@@ -31,6 +32,7 @@ public class TravelApplication {
         this.purposeOfTravel = "";
         this.route = Route.EMPTY_ROUTE;
         this.allowances = new Allowances();
+        this.status = TravelApplicationStatus.PENDING;
         this.attachments = new ArrayList<>();
     }
 
@@ -152,6 +154,14 @@ public class TravelApplication {
 
     void setAllowances(Allowances allowances) {
         this.allowances = allowances;
+    }
+
+    public TravelApplicationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TravelApplicationStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getSubmittedDateTime() {

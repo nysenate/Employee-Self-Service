@@ -3,6 +3,8 @@ package gov.nysenate.ess.travel.approval;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.application.TravelApplicationService;
+import gov.nysenate.ess.travel.application.TravelApplicationStatus;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +19,21 @@ import java.util.stream.Collectors;
 public class ApplicationApprovalService {
 
     @Autowired private ApplicationApprovalDao approvalDao;
+    @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private TravelRoleFactory travelRoleFactory;
 
     // TODO include notes
+    // TODO Transactional
     public void approveApplication(ApplicationApproval applicationApproval, Employee approver, TravelRole approverRole) {
         Action approvalAction = new Action(0, approver, approverRole, ActionType.APPROVE, "", LocalDateTime.now());
         applicationApproval.addAction(approvalAction);
         saveApplicationApproval(applicationApproval);
+
+        if (applicationApproval.nextReviewerRole() == TravelRole.NONE) {
+            applicationApproval.application().setStatus(TravelApplicationStatus.APPROVED);
+            travelApplicationService.saveTravelApplication(applicationApproval.application());
+        }
     }
 
     public ApplicationApproval createApplicationApproval(TravelApplication app) {

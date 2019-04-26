@@ -22,6 +22,7 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String purposeOfTravel;
     private SimpleRouteView route;
     private AllowancesView allowances;
+    private String status;
     private MealPerDiemsView mealPerDiems;
     private LodgingPerDiemsView lodgingPerDiems;
     private MileagePerDiemsView mileagePerDiems;
@@ -56,6 +57,7 @@ public class SimpleTravelApplicationView implements ViewObject {
         purposeOfTravel = app.getPurposeOfTravel();
         route = new SimpleRouteView(app.getRoute());
         allowances = new AllowancesView(app.getAllowances());
+        status = app.getStatus().name();
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         modifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
         modifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
@@ -102,6 +104,10 @@ public class SimpleTravelApplicationView implements ViewObject {
 
     public AllowancesView getAllowances() {
         return allowances;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public MealPerDiemsView getMealPerDiems() {
