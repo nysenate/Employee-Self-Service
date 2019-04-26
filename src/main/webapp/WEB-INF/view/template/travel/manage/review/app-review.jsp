@@ -20,7 +20,7 @@
     <div ng-if="data.apps.length > 0">
       <ess-app-summary-table
           apps="data.apps"
-          on-row-click="viewApplicationForm(app)">>
+          on-row-click="viewApplicationForm(app)">
       </ess-app-summary-table>
     </div>
   </div>

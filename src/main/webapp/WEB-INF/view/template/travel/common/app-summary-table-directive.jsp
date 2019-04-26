@@ -9,16 +9,21 @@
           <th>Employee</th>
           <th>Destination</th>
           <th>Allotted Funds</th>
+          <th ng-if="options.showStatus">Status</th>
         </tr>
         </thead>
+
         <tbody>
         <tr dir-paginate="app in apps | orderBy: '-travelDate' : true | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
             ng-click="onRowClick({app: app})">
-          <td>{{app.startDate | date:'M/d/yyyy'}}</td>
-          <td>{{app.traveler.lastName}}</td>
-          <td>{{getDestinations(app)}}</td>
-          <td>{{app.totalAllowance | currency}}</td>
+
+          <td ng-bind="::app.startDate | date:'M/d/yyyy'"></td>
+          <td ng-bind="::app.traveler.lastName"></td>
+          <td ng-bind="::destinationSummary(app)"></td>
+          <td ng-bind="::app.totalAllowance | currency"></td>
+          <td ng-if="options.showStatus" ng-class="statusClass(app)" ng-bind="::statusDescription(app)"></td>
+
         </tr>
         </tbody>
       </table>

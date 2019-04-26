@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationService;
-import gov.nysenate.ess.travel.application.TravelApplicationStatus;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class ApplicationApprovalService {
         saveApplicationApproval(applicationApproval);
 
         if (applicationApproval.nextReviewerRole() == TravelRole.NONE) {
-            applicationApproval.application().setStatus(TravelApplicationStatus.APPROVED);
+            applicationApproval.application().approve();
             travelApplicationService.saveTravelApplication(applicationApproval.application());
         }
     }

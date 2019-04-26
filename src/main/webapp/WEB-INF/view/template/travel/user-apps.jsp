@@ -33,7 +33,8 @@
     <div ng-if="apps.filtered.length > 0">
       <ess-app-summary-table
           apps="apps.filtered"
-          on-row-click="viewApplicationForm(app)">
+          on-row-click="viewApplicationForm(app)"
+          show-status>
       </ess-app-summary-table>
     </div>
   </div>

@@ -112,6 +112,26 @@ public class TravelApplication {
         return getRoute().endDate();
     }
 
+    public boolean isPending() {
+        return status == TravelApplicationStatus.PENDING;
+    }
+
+    public boolean isApproved() {
+        return status == TravelApplicationStatus.APPROVED;
+    }
+
+    public boolean isDisapproved() {
+        return status == TravelApplicationStatus.DISAPPROVED;
+    }
+
+    public void approve() {
+        this.status = TravelApplicationStatus.APPROVED;
+    }
+
+    public void disapprove() {
+        this.status = TravelApplicationStatus.DISAPPROVED;
+    }
+
     public int getAppId() {
         return appId;
     }
@@ -156,14 +176,6 @@ public class TravelApplication {
         this.allowances = allowances;
     }
 
-    public TravelApplicationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TravelApplicationStatus status) {
-        this.status = status;
-    }
-
     public LocalDateTime getSubmittedDateTime() {
         return submittedDateTime;
     }
@@ -202,5 +214,13 @@ public class TravelApplication {
 
     void deleteAttachment(String attachmentId) {
         getAttachments().removeIf(a -> a.getId().equals(attachmentId));
+    }
+
+    TravelApplicationStatus getStatus() {
+        return status;
+    }
+
+    void setStatus(TravelApplicationStatus status) {
+        this.status = status;
     }
 }
