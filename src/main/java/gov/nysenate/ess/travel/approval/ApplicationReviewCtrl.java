@@ -38,12 +38,21 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .collect(Collectors.toList()));
     }
 
-    @RequestMapping(value = "/{approvalId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{approvalId}/approve", method = RequestMethod.POST)
     public BaseResponse approveApplication(@PathVariable int approvalId) throws AuthenticationException {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationApproval approval = approvalService.getApplicationApproval(approvalId);
         approvalService.approveApplication(approval, employee, role);
+        return new ViewObjectResponse<>(new ApplicationApprovalView(approval));
+    }
+
+    @RequestMapping(value = "/{approvalId}/disapprove", method = RequestMethod.POST)
+    public BaseResponse disapproveApplication(@PathVariable int approvalId) throws AuthenticationException {
+        TravelRole role = checkSubjectRole();
+        Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
+        ApplicationApproval approval = approvalService.getApplicationApproval(approvalId);
+        approvalService.disapproveApplication(approval, employee, role);
         return new ViewObjectResponse<>(new ApplicationApprovalView(approval));
     }
 

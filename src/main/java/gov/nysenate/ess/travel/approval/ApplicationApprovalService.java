@@ -35,6 +35,15 @@ public class ApplicationApprovalService {
         }
     }
 
+    public void disapproveApplication(ApplicationApproval applicationApproval, Employee approver, TravelRole approverRole) {
+        Action approvalAction = new Action(0, approver, approverRole, ActionType.DISAPPROVE, "", LocalDateTime.now());
+        applicationApproval.addAction(approvalAction);
+        saveApplicationApproval(applicationApproval);
+
+        applicationApproval.application().disapprove();
+        travelApplicationService.saveTravelApplication(applicationApproval.application());
+    }
+
     public ApplicationApproval createApplicationApproval(TravelApplication app) {
         TravelRole travelerRole = travelRoleFactory.travelRoleForEmp(app.getTraveler()).orElse(TravelRole.NONE);
         ApplicationApproval approval = new ApplicationApproval(app, travelerRole);
@@ -59,8 +68,8 @@ public class ApplicationApprovalService {
 
         return pending;
     }
-
     // Is the given employee a supervisor for the traveling employee.
+
     private boolean isSupervisor(Employee employee, ApplicationApproval applicationApproval) {
         return supervisorInfoService.getSupervisorIdForEmp(applicationApproval.application().getTraveler().getEmployeeId(), LocalDate.now()) == employee.getEmployeeId();
     }
