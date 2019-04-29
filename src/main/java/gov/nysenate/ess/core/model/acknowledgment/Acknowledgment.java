@@ -2,6 +2,11 @@ package gov.nysenate.ess.core.model.acknowledgment;
 
 import java.time.LocalDateTime;
 
+/**
+ * @deprecated
+ * @see gov.nysenate.ess.core.model.pec.PersonnelEmployeeTask a generic model that covers acknowledgments.
+ */
+@Deprecated
 public class Acknowledgment {
 
     private Integer empId;

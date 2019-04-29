@@ -12,11 +12,10 @@ public class PersonnelTaskId implements Comparable<PersonnelTaskId> {
 
     /**
      * Identifies the specific task within the context of the type.
-     * Come types consist of only one task, and will have a null taskNumber.
      */
-    private Integer taskNumber;
+    private int taskNumber;
 
-    public PersonnelTaskId(@Nonnull PersonnelTaskType taskType, Integer taskNumber) {
+    public PersonnelTaskId(@Nonnull PersonnelTaskType taskType, int taskNumber) {
         this.taskType = Objects.requireNonNull(taskType);
         this.taskNumber = taskNumber;
     }
@@ -47,11 +46,7 @@ public class PersonnelTaskId implements Comparable<PersonnelTaskId> {
 
     @Override
     public String toString() {
-        String str = taskType.name();
-        if (taskNumber != null) {
-            str += "#" + taskNumber;
-        }
-        return str;
+        return taskType.name() + "#" + taskNumber;
     }
 
     /* --- Getters --- */
@@ -60,7 +55,7 @@ public class PersonnelTaskId implements Comparable<PersonnelTaskId> {
         return taskType;
     }
 
-    public Integer getTaskNumber() {
+    public int getTaskNumber() {
         return taskNumber;
     }
 }

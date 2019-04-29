@@ -79,7 +79,7 @@ public class PersonnelEmployeeTask implements Comparable<PersonnelEmployeeTask> 
         return taskId.getTaskType();
     }
 
-    public Integer getTaskNumber() {
+    public int getTaskNumber() {
         return taskId.getTaskNumber();
     }
 

@@ -1,11 +1,10 @@
 package gov.nysenate.ess.core.model.pec;
 
 /**
- * Enumeration of possible personnel tasks.
+ * Enumeration for types of personnel tasks.
  */
 public enum PersonnelTaskType {
     DOCUMENT_ACKNOWLEDGMENT,
-    ETHICS_ORIENTATION,
-    ETHICS_REVIEW,
-    HARASSMENT_TRAINING,
+    MOODLE_COURSE,
+    CODE_ENTRY,
 }

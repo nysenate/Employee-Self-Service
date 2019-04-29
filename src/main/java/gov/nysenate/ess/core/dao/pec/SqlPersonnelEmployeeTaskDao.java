@@ -40,7 +40,7 @@ public class SqlPersonnelEmployeeTaskDao extends SqlBaseDao implements Personnel
                     rs.getInt("emp_id"),
                     new PersonnelTaskId(
                             PersonnelTaskType.valueOf(rs.getString("task_type")),
-                            getNullableInt(rs, "task_id")
+                            rs.getInt("task_number")
                     ),
                     getLocalDateTime(rs, "timestamp"),
                     getNullableInt(rs, "update_user_id"),
@@ -55,7 +55,7 @@ public class SqlPersonnelEmployeeTaskDao extends SqlBaseDao implements Personnel
     private MapSqlParameterSource getPETParams(PersonnelEmployeeTask task) {
         return getEmpIdParams(task.getEmpId())
                 .addValue("taskType", task.getTaskType().name())
-                .addValue("taskId", task.getTaskNumber())
+                .addValue("taskNumber", task.getTaskNumber())
                 .addValue("timestamp", toDate(task.getTimestamp()))
                 .addValue("updateUserId", task.getUpdateUserId())
                 .addValue("completed", task.isCompleted());

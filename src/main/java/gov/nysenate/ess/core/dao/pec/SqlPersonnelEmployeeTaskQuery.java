@@ -13,14 +13,14 @@ public enum SqlPersonnelEmployeeTaskQuery implements BasicSqlQuery {
 
     INSERT_TASK("" +
             "INSERT INTO ${essSchema}.personnel_employee_task\n" +
-            "        (emp_id, task_type, task_id, timestamp, update_user_id, completed)\n" +
-            "VALUES (:empId, :taskType::ess.personnel_task_type, :taskId, :timestamp, :updateUserId, :completed)"
+            "        (emp_id, task_type, task_number, timestamp, update_user_id, completed)\n" +
+            "VALUES (:empId, :taskType::ess.personnel_task_type, :taskNumber, :timestamp, :updateUserId, :completed)"
     ),
 
     UPDATE_TASK("" +
             "UPDATE ${essSchema}.personnel_employee_task\n" +
             "SET timestamp = :timestamp, update_user_id = :updateUserId, completed = :completed\n" +
-            "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_id = :taskId"
+            "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_number = :taskNumber"
     ),
 
     ;
