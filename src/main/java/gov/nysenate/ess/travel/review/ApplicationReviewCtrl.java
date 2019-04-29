@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.approval;
+package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
@@ -19,41 +19,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/approval")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/review")
 public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
-    @Autowired private ApplicationApprovalService approvalService;
+    @Autowired private ApplicationReviewService appReviewService;
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
-     * Get approvals which need review by the logged in user.
+     * Get app reviews which need review by the logged in user.
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getPendingReviews() throws AuthenticationException {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        List<ApplicationApproval> pendingApprovals = approvalService.pendingApprovalsForRole(employee, role);
-        return ListViewResponse.of(pendingApprovals.stream()
-                .map(ApplicationApprovalView::new)
+        List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviewsForEmpWithRole(employee, role);
+        return ListViewResponse.of(pendingReviews.stream()
+                .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));
     }
 
-    @RequestMapping(value = "/{approvalId}/approve", method = RequestMethod.POST)
-    public BaseResponse approveApplication(@PathVariable int approvalId) throws AuthenticationException {
+    @RequestMapping(value = "/{appReviewId}/approve", method = RequestMethod.POST)
+    public BaseResponse approveApplication(@PathVariable int appReviewId) throws AuthenticationException {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        ApplicationApproval approval = approvalService.getApplicationApproval(approvalId);
-        approvalService.approveApplication(approval, employee, role);
-        return new ViewObjectResponse<>(new ApplicationApprovalView(approval));
+        ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
+        appReviewService.approveApplication(appReview, employee, role);
+        return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 
-    @RequestMapping(value = "/{approvalId}/disapprove", method = RequestMethod.POST)
-    public BaseResponse disapproveApplication(@PathVariable int approvalId) throws AuthenticationException {
+    @RequestMapping(value = "/{appReviewId}/disapprove", method = RequestMethod.POST)
+    public BaseResponse disapproveApplication(@PathVariable int appReviewId) throws AuthenticationException {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        ApplicationApproval approval = approvalService.getApplicationApproval(approvalId);
-        approvalService.disapproveApplication(approval, employee, role);
-        return new ViewObjectResponse<>(new ApplicationApprovalView(approval));
+        ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
+        appReviewService.disapproveApplication(appReview, employee, role);
+        return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 
     /**

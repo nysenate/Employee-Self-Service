@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.approval.reviewer;
+package gov.nysenate.ess.travel.review.strategy;
 
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 

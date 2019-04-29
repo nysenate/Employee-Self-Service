@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.approval;
+package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.SimpleTravelApplicationView;
@@ -6,25 +6,25 @@ import gov.nysenate.ess.travel.application.SimpleTravelApplicationView;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ApplicationApprovalView implements ViewObject {
+public class ApplicationReviewView implements ViewObject {
 
-    private int approvalId;
+    private int appReviewId;
     private SimpleTravelApplicationView travelApplication;
     private List<ActionView> actions;
 
-    public ApplicationApprovalView() {
+    public ApplicationReviewView() {
     }
 
-    public ApplicationApprovalView(ApplicationApproval appApproval) {
-        approvalId = appApproval.getApprovalId();
-        travelApplication = new SimpleTravelApplicationView(appApproval.application());
-        actions = appApproval.actions().stream()
+    public ApplicationReviewView(ApplicationReview appReview) {
+        appReviewId = appReview.getAppReviewId();
+        travelApplication = new SimpleTravelApplicationView(appReview.application());
+        actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
     }
 
-    public int getApprovalId() {
-        return approvalId;
+    public int getAppReviewId() {
+        return appReviewId;
     }
 
     public SimpleTravelApplicationView getTravelApplication() {
@@ -37,6 +37,6 @@ public class ApplicationApprovalView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "application-approval";
+        return "application-review";
     }
 }

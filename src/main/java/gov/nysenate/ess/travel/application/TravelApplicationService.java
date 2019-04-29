@@ -10,8 +10,8 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.*;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.approval.ApplicationApproval;
-import gov.nysenate.ess.travel.approval.ApplicationApprovalService;
+import gov.nysenate.ess.travel.review.ApplicationReview;
+import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class TravelApplicationService {
     @Autowired private TravelApplicationDao applicationDao;
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private RouteService routeService;
-    @Autowired private ApplicationApprovalService approvalService;
+    @Autowired private ApplicationReviewService appReviewService;
 
 
     public void updatePurposeOfTravel(TravelApplication app, String purposeOfTravel) {
@@ -91,8 +91,8 @@ public class TravelApplicationService {
         app.setSubmittedDateTime(LocalDateTime.now());
         saveTravelApplication(app);
 
-        ApplicationApproval approval = approvalService.createApplicationApproval(app);
-        approvalService.saveApplicationApproval(approval);
+        ApplicationReview appReview = appReviewService.createApplicationReview(app);
+        appReviewService.saveApplicationReview(appReview);
 
         return app;
     }

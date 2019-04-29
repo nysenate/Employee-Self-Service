@@ -1,25 +1,25 @@
-package gov.nysenate.ess.travel.approval;
+package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.travel.application.TravelApplication;
-import gov.nysenate.ess.travel.approval.reviewer.*;
+import gov.nysenate.ess.travel.review.strategy.*;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The entire approval process for a single {@link TravelApplication}.
+ * The entire review process for a single {@link TravelApplication}.
  */
-public class ApplicationApproval {
+public class ApplicationReview {
 
-    private int approvalId;
+    private int appReviewId;
     private TravelApplication application;
     private TravelRole travelerRole;
     private List<Action> actions;
     private ReviewerStrategy reviewerStrategy;
 
-    public ApplicationApproval(int approvalId, TravelApplication application, TravelRole travelerRole, List<Action> actions) {
-        this.approvalId = approvalId;
+    public ApplicationReview(int appReviewId, TravelApplication application, TravelRole travelerRole, List<Action> actions) {
+        this.appReviewId = appReviewId;
         this.application = application;
         this.travelerRole = travelerRole;
         this.actions = actions;
@@ -44,7 +44,7 @@ public class ApplicationApproval {
         }
     }
 
-    public ApplicationApproval(TravelApplication application, TravelRole travelerRole) {
+    public ApplicationReview(TravelApplication application, TravelRole travelerRole) {
         this(0, application, travelerRole, new ArrayList<>());
     }
 
@@ -84,12 +84,12 @@ public class ApplicationApproval {
         return travelerRole;
     }
 
-    int getApprovalId() {
-        return approvalId;
+    int getAppReviewId() {
+        return appReviewId;
     }
 
-    void setApprovalId(int approvalId) {
-        this.approvalId = approvalId;
+    void setAppReviewId(int appReviewId) {
+        this.appReviewId = appReviewId;
     }
 
     private TravelRole previousReviewerRole() {

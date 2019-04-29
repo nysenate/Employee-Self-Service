@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.unit.approval.reviewer;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.travel.approval.reviewer.MajReviewerStrategy;
+import gov.nysenate.ess.travel.review.strategy.MajReviewerStrategy;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.junit.Before;
 import org.junit.Test;

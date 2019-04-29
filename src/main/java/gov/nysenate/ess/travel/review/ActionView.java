@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.approval;
+package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
@@ -46,6 +46,6 @@ public class ActionView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "approval";
+        return "application-review-approval";
     }
 }

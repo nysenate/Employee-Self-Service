@@ -1,7 +1,7 @@
 <div class="content-container no-top-margin padding-top-5">
 
   <div>
-    <ess-app-form-body app="appApproval.travelApplication"></ess-app-form-body>
+    <ess-app-form-body app="appReview.travelApplication"></ess-app-form-body>
   </div>
 
   <div class="travel-button-container">

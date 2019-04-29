@@ -1,4 +1,4 @@
-package gov.nysenate.ess.travel.approval;
+package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
@@ -24,60 +24,60 @@ public class SqlActionDao extends SqlBaseDao {
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
-     * Save the actions from an application approval.
+     * Save the actions from an application review.
      *
      * Only saves new actions, old actions should never be updated.
      *
      * @param actions
-     * @param approvalId
+     * @param appReviewId
      */
-    public void saveApprovalActions(Collection<Action> actions, int approvalId) {
+    public void saveAppReviewActions(Collection<Action> actions, int appReviewId) {
         Collection<Action> newActions = actions.stream()
                 .filter(a -> a.getActionId() == 0)
                 .collect(Collectors.toList());
 
         for (Action action : newActions) {
-            insertApprovalAction(action, approvalId);
+            insertReviewAction(action, appReviewId);
         }
     }
 
     /**
-     * Select all actions for a given application approval id.
-     * @param approvalId
+     * Select all actions for a given application review id.
+     * @param appReviewId
      * @return
      */
-    public List<Action> selectActionsByApprovalId(int approvalId) {
+    public List<Action> selectActionsByApprovalId(int appReviewId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("approvalId", approvalId);
-        String sql = SqlActionQuery.SELECT_ACTIONS_BY_APPROVAL_ID.getSql(schemaMap());
+                .addValue("appReviewId", appReviewId);
+        String sql = SqlActionQuery.SELECT_ACTIONS_BY_REVIEW_ID.getSql(schemaMap());
         return localNamedJdbc.query(sql, params, new ActionRowMapper(employeeInfoService));
     }
 
-    private void insertApprovalAction(Action action, int approvalId) {
+    private void insertReviewAction(Action action, int appReviewId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("approvalId", approvalId)
+                .addValue("appReviewId", appReviewId)
                 .addValue("employeeId", action.user().getEmployeeId())
                 .addValue("role", action.role().name())
                 .addValue("type", action.type().name())
                 .addValue("notes", action.notes())
                 .addValue("dateTime", toDate(action.dateTime()));
 
-        String sql = SqlActionQuery.INSERT_APPROVAL_ACTION.getSql(schemaMap());
+        String sql = SqlActionQuery.INSERT_REVIEW_ACTION.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        action.setActionId((Integer) keyHolder.getKeys().get("app_approval_action_id"));
+        action.setActionId((Integer) keyHolder.getKeys().get("app_review_action_id"));
     }
 
     private enum SqlActionQuery implements BasicSqlQuery {
-        INSERT_APPROVAL_ACTION(
-                "INSERT INTO ${travelSchema}.app_approval_action\n" +
-                        " (app_approval_id, employee_id, role, type, notes, date_time)\n" +
-                        " VALUES (:approvalId, :employeeId, :role, :type, :notes, :dateTime)"
+        INSERT_REVIEW_ACTION(
+                "INSERT INTO ${travelSchema}.app_review_action\n" +
+                        " (app_review_id, employee_id, role, type, notes, date_time)\n" +
+                        " VALUES (:appReviewId, :employeeId, :role, :type, :notes, :dateTime)"
         ),
-        SELECT_ACTIONS_BY_APPROVAL_ID(
-                "SELECT app_approval_action_id, employee_id, role, type, notes, date_time\n" +
-                        " FROM ${travelSchema}.app_approval_action\n" +
-                        " WHERE app_approval_id = :approvalId"
+        SELECT_ACTIONS_BY_REVIEW_ID(
+                "SELECT app_review_action_id, employee_id, role, type, notes, date_time\n" +
+                        " FROM ${travelSchema}.app_review_action\n" +
+                        " WHERE app_review_id = :appReviewId"
         )
         ;
 
@@ -109,7 +109,7 @@ public class SqlActionDao extends SqlBaseDao {
         @Override
         public Action mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Action(
-                    rs.getInt("app_approval_action_id"),
+                    rs.getInt("app_review_action_id"),
                     employeeInfoService.getEmployee(rs.getInt("employee_id")),
                     TravelRole.valueOf(rs.getString("role")),
                     ActionType.valueOf(rs.getString("type")),

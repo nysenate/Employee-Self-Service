@@ -1,23 +1,23 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'LocationService', 'TravelApplicationApprovalApi', reviewController]);
+essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'LocationService', 'TravelApplicationReviewApi', reviewController]);
 
-function reviewController($scope, modals, locationService, appApprovalApi) {
+function reviewController($scope, modals, locationService, appReviewApi) {
 
     this.$onInit = function () {
         $scope.data = {
             apiRequest: {},
             apps: [],
-            approvals: []
+            appReviews: []
         };
 
         initData();
     };
 
     function initData() {
-        $scope.data.apiRequest = appApprovalApi.get({}, function (response) {
+        $scope.data.apiRequest = appReviewApi.get({}, function (response) {
             response.result.forEach(function (result) {
-                $scope.data.approvals.push(result);
+                $scope.data.appReviews.push(result);
                 $scope.data.apps.push(result.travelApplication);
             });
             sortByTravelDateAsc($scope.data.apps);
@@ -34,13 +34,13 @@ function reviewController($scope, modals, locationService, appApprovalApi) {
     }
 
     $scope.viewApplicationForm = function (app) {
-        var appApproval = {};
-        $scope.data.approvals.forEach(function (a) {
+        var appReview = {};
+        $scope.data.appReviews.forEach(function (a) {
             if (a.travelApplication.id === app.id) {
-                appApproval = a;
+                appReview = a;
             }
         });
-        modals.open("app-review-form-modal", appApproval, true)
+        modals.open("app-review-form-modal", appReview, true)
             .then(function () {
                 locationService.go("/travel/manage/review", true);
             });
