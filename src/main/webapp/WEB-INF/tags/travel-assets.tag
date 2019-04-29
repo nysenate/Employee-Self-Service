@@ -5,21 +5,28 @@
 
 <c:choose>
     <c:when test="${runtimeLevel eq 'dev'}">
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-purpose-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-outbound-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-return-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-allowances-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/travel-application-review-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/address-county-service.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/lodging-details-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/continue-saved-app-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/meal-details-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/mileage-details-modal.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/application/modal/address-county-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-purpose-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-outbound-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-return-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-allowances-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-review-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/address-county-service.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/modal/lodging-details-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/modal/continue-saved-app-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/modal/meal-details-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/modal/mileage-details-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/modal/address-county-modal.js?v=${releaseVersion}"></script>
+
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/review/app-review-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/review/app-review-form-modal.js?v=${releaseVersion}"></script>
+
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/user-config/user-config-ctrl.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/view-applications/view-applications-ctrl.js?v=${releaseVersion}"></script>
+
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/print-app/print-app-ctrl.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-form-body-directive.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-form-print-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-form-view-modal.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app-summary-table-directive.js?v=${releaseVersion}"></script>
@@ -27,12 +34,6 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-inner-container-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/address-geocoder-service.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/google-place-service.js?v=${releaseVersion}"></script>
-
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/review/app-review-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/manage/review/app-review-form-modal.js?v=${releaseVersion}"></script>
-
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/user-config-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/user-apps-ctrl.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/autocomplete-address-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/date-validator.js?v=${releaseVersion}"></script>

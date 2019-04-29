@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals', outboundCtrl]);
+essTravel.controller('NewApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals', outboundCtrl]);
 
 function outboundCtrl($scope, $q, $timeout, geocoder, modals) {
 

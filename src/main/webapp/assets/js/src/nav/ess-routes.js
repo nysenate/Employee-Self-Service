@@ -175,28 +175,29 @@ essApp.config(function ($routeProvider, $locationProvider) {
     });
 
     /** Travel */
+
     $routeProvider.when(ctxPath + '/travel', {
-        redirectTo: ctxPath + 'travel/application/travel-application'
+        redirectTo: ctxPath + 'travel/applications'
     });
 
-    $routeProvider.when(ctxPath + '/travel/application/travel-application', {
-        templateUrl: ctxPath + '/template/travel/application/travel-application'
+    $routeProvider.when(ctxPath + '/travel/application/new', {
+        templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/applications', {
+        templateUrl: ctxPath + '/template/travel/component/view-applications/view-applications'
     });
 
     $routeProvider.when(ctxPath + '/travel/application/print', {
-        templateUrl: ctxPath + '/template/travel/common/form/app-form-print'
-    });
-
-    $routeProvider.when(ctxPath + '/travel/apps', {
-        templateUrl: ctxPath + '/template/travel/user-apps'
+        templateUrl: ctxPath + '/template/travel/component/print-app/print-app'
     });
 
     $routeProvider.when(ctxPath + '/travel/config', {
-        templateUrl: ctxPath + '/template/travel/user-config'
+        templateUrl: ctxPath + '/template/travel/component/user-config/user-config'
     });
 
-    $routeProvider.when(ctxPath + '/travel/manage/review', {
-        templateUrl: ctxPath + '/template/travel/manage/review/app-review'
+    $routeProvider.when(ctxPath + '/travel/review', {
+        templateUrl: ctxPath + '/template/travel/component/review/app-review'
     });
 
 

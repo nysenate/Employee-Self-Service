@@ -1,4 +1,4 @@
-<div id="app-form-print" ng-controller="AppFormPrintCtrl">
+<div id="app-form-print" ng-controller="PrintAppCtrl">
   <div class="content-container padding-10 clearfix" style="width: 700px;">
 
     <ess-app-form-body app="app"></ess-app-form-body>

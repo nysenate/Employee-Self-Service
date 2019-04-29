@@ -1,6 +1,6 @@
 <div ng-controller="UserAppsCtrl">
   <div class="travel-hero">
-    <h2>View Applications</h2>
+    <h2>View Travel Applications</h2>
   </div>
   <div class="content-container travel-content-controls">
     <h4 class="travel-content-info travel-text-bold" style="margin-bottom: 0px;">Search submitted travel applications by

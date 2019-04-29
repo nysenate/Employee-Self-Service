@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('UserAppsCtrl', ['$scope', 'appProps', 'modals', 'TravelApplicationsForTravelerApi', 'PaginationModel', userAppsCtrl]);
+essTravel.controller('UserAppsCtrl', ['$scope', 'appProps', 'modals', 'TravelApplicationsForTravelerApi', 'PaginationModel', viewApplicationsCtrl]);
 
-function userAppsCtrl($scope, appProps, modals, travelerAppApi) {
+function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
 
     var DATE_FORMAT = "MM/DD/YYYY";
 

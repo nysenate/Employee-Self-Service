@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationPurposeCtrl', ['$scope', 'appProps', '$http', 'TravelApplicationByIdApi',
+essTravel.controller('NewApplicationPurposeCtrl', ['$scope', 'appProps', '$http', 'TravelApplicationByIdApi',
                                                       'TravelAttachmentDelete', purposeCtrl]);
 
 function purposeCtrl($scope, appProps, $http, appApi, deleteAttachmentApi) {

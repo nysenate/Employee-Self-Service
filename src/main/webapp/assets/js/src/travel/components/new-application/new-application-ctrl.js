@@ -8,7 +8,7 @@ var essTravel = angular.module('essTravel');
  * These page directives don't modify the application directly, but call callback functions
  * that are defined in this Parent controller.
  */
-essTravel.controller('TravelApplicationCtrl',
+essTravel.controller('NewApplicationCtrl',
                      ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService','TravelApplicationApi', 'TravelApplicationByIdApi',
                       'TravelModeOfTransportationApi', 'AddressCountyService', travelAppController]);
 

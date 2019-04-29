@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals', 'TravelApplicationByIdApi', returnCtrl]);
+essTravel.controller('NewApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals', 'TravelApplicationByIdApi', returnCtrl]);
 
 function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
 

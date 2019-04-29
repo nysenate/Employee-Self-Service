@@ -1,4 +1,4 @@
-<div ng-controller="TravelApplicationCtrl">
+<div ng-controller="NewApplicationCtrl">
   <div class="travel-hero">
     <h2>Travel Application</h2>
   </div>
@@ -25,32 +25,32 @@
 
   <div ng-if="data.app">
     <div ng-if="pageState === STATES.PURPOSE">
-      <div ng-controller="TravelApplicationPurposeCtrl">
-        <ng-include src="'/template/travel/application/travel-application-purpose'"></ng-include>
+      <div ng-controller="NewApplicationPurposeCtrl">
+        <ng-include src="'/template/travel/component/new-application/new-application-purpose'"></ng-include>
       </div>
     </div>
 
     <div ng-if="pageState === STATES.OUTBOUND">
-      <div ng-controller="TravelApplicationOutboundCtrl">
-        <ng-include src="'/template/travel/application/travel-application-outbound'"></ng-include>
+      <div ng-controller="NewApplicationOutboundCtrl">
+        <ng-include src="'/template/travel/component/new-application/new-application-outbound'"></ng-include>
       </div>
     </div>
 
     <div ng-if="pageState === STATES.RETURN">
-      <div ng-controller="TravelApplicationReturnCtrl">
-        <ng-include src="'/template/travel/application/travel-application-return'"></ng-include>
+      <div ng-controller="NewApplicationReturnCtrl">
+        <ng-include src="'/template/travel/component/new-application/new-application-return'"></ng-include>
       </div>
     </div>
 
     <div ng-if="pageState === STATES.ALLOWANCES">
-      <div ng-controller="TravelApplicationAllowancesCtrl">
-        <ng-include src="'/template/travel/application/travel-application-allowances'"></ng-include>
+      <div ng-controller="NewApplicationAllowancesCtrl">
+        <ng-include src="'/template/travel/component/new-application/new-application-allowances'"></ng-include>
       </div>
     </div>
 
     <div ng-if="pageState === STATES.REVIEW">
-      <div ng-controller="TravelApplicationReviewCtrl">
-        <ng-include src="'/template/travel/application/travel-application-review'" onload="init()"></ng-include>
+      <div ng-controller="NewApplicationReviewCtrl">
+        <ng-include src="'/template/travel/component/new-application/new-application-review'" onload="init()"></ng-include>
       </div>
     </div>
   </div>

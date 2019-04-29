@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService', 'TravelApplicationByIdApi', reviewCtrl]);
+essTravel.controller('NewApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService', 'TravelApplicationByIdApi', reviewCtrl]);
 
 function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
 
@@ -22,7 +22,7 @@ function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
                     })
                     .then(function () {
                         modals.open("submit-results").then(function () {
-                            locationService.go("/travel/application/travel-application", true);
+                            locationService.go("/travel", true);
                         });
                     })
                     .catch($scope.handleErrorResponse);

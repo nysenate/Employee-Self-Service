@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('AppFormPrintCtrl',
+essTravel.controller('PrintAppCtrl',
                      ['$scope', 'LocationService', 'TravelApplicationByIdApi', '$timeout', '$window', appPrintCtrl]);
 
 /**

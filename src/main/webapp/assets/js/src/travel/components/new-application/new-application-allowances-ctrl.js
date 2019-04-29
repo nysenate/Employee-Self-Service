@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationAllowancesCtrl', ['$scope', 'modals', 'TravelApplicationByIdApi', allowancesCtrl]);
+essTravel.controller('NewApplicationAllowancesCtrl', ['$scope', 'modals', 'TravelApplicationByIdApi', allowancesCtrl]);
 
 function allowancesCtrl($scope, modals, appIdApi) {
 
