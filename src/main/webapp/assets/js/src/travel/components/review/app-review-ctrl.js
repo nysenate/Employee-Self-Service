@@ -42,7 +42,7 @@ function reviewController($scope, modals, locationService, appReviewApi) {
         });
         modals.open("app-review-form-modal", appReview, true)
             .then(function () {
-                locationService.go("/travel/manage/review", true);
+                locationService.go("/travel/review", true);
             });
     }
 }

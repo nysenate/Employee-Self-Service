@@ -13,7 +13,7 @@
       <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">View Travel Applications</a></li>
       <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
     </ul>
-    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_APPROVAL.getPermissionString() %>">
+    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
     <h3 class="main-topic">Manage Travel</h3>
       <ul class="sub-topic-list">
         <li class="sub-topic orange"><a href="${ctxPath}/travel/review">Review Applications</a></li>

@@ -24,7 +24,7 @@ public class TravelDeaPermissionFactory implements PermissionFactory {
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> permissions = new ArrayList<>();
         if (roles.contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
-            permissions.add(TravelPermission.TRAVEL_UI_APPROVAL.getPermission());
+            permissions.add(TravelPermission.TRAVEL_UI_REVIEW.getPermission());
             permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
             permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST));
             permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION_APPROVAL, RequestMethod.GET));

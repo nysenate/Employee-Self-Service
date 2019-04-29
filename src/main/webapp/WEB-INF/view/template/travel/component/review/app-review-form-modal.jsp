@@ -12,7 +12,7 @@
 
     <div style="float: right;">
       <a class="margin-10" target="_blank"
-         ng-href="${ctxPath}/travel/application/print?id={{appApproval.travelApplication.id}}&print=true">Print</a>
+         ng-href="${ctxPath}/travel/application/print?id={{appReview.travelApplication.id}}&print=true">Print</a>
       <input type="button" class="travel-neutral-button" value="Cancel"
              ng-click="exit()">
     </div>

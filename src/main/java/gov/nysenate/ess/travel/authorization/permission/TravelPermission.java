@@ -5,7 +5,7 @@ import org.apache.shiro.authz.permission.WildcardPermission;
 public enum TravelPermission {
 
     // Allows user to access ui pages for approving applications.
-    TRAVEL_UI_APPROVAL("travel:ui:approval")
+    TRAVEL_UI_REVIEW("travel:ui:approval")
     ;
 
     private String permissionString;
