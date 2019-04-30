@@ -14,7 +14,7 @@
         </thead>
 
         <tbody>
-        <tr dir-paginate="app in apps | orderBy: '-travelDate' : true | itemsPerPage : 10"
+        <tr dir-paginate="app in apps | orderBy: '-startDate' : true | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
             ng-click="onRowClick({app: app})">
 

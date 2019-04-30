@@ -38,6 +38,8 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/autocomplete-address-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/date-validator.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/validators/mot-validator.js?v=${releaseVersion}"></script>
+
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/api/application-review-api.js?v=${releaseVersion}"></script>
     </c:when>
     <c:when test="${runtimeLevel eq 'test'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/dest/ess-travel.min.js?v=${releaseVersion}"></script>

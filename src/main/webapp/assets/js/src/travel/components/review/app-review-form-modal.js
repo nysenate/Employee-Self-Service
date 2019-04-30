@@ -7,23 +7,19 @@ essTravel.directive('appReviewFormModal', ['appProps', function (appProps) {
         controller: 'AppReviewFormCtrl'
     }
 }])
-    .controller('AppReviewFormCtrl', ['$scope', 'modals', 'TravelApplicationReviewApproveApi', 'TravelApplicationReviewDisapproveApi', appReviewFormCtrl]);
+    .controller('AppReviewFormCtrl', ['$scope', 'modals', 'ApplicationReviewApi', appReviewFormCtrl]);
 
-function appReviewFormCtrl($scope, modals, appReviewApproveApi, appReviewDisapproveApi) {
+function appReviewFormCtrl($scope, modals, appReviewApi) {
 
     $scope.appReview = modals.params();
 
     $scope.approve = function () {
-        appReviewApproveApi.save({appReviewId: $scope.appReview.appReviewId}, function (response) {
-            console.log(response);
-        });
+        appReviewApi.approve($scope.appReview.appReviewId);
         modals.resolve();
     };
 
     $scope.disapprove = function () {
-        appReviewDisapproveApi.save({appReviewId: $scope.appReview.appReviewId}, function (response) {
-            console.log(response);
-        });
+        appReviewApi.disapprove($scope.appReview.appReviewId);
         modals.resolve();
     };
 

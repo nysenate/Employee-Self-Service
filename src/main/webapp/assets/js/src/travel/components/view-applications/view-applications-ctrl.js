@@ -45,16 +45,7 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
             return Date.parse(app.startDate) >= Date.parse($scope.date.from) &&
                 Date.parse(app.startDate) <= Date.parse($scope.date.to)
         });
-        sortByTravelDateAsc($scope.apps.filtered);
     };
-
-    function sortByTravelDateAsc(apps) {
-        apps.sort(function(a, b) {
-            // Turn your strings into dates, and then subtract them
-            // to get a value that is either negative, positive, or zero.
-            return new Date(b.startDate) - new Date(a.startDate);
-        });
-    }
 
     $scope.viewApplicationForm = function(app) {
         modals.open("app-form-view-modal", app, true)

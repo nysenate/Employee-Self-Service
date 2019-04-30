@@ -281,18 +281,6 @@ essApi.factory('TravelModeOfTransportationApi', ['$resource', 'appProps', functi
     return $resource(appProps.apiPath + '/travel/mode-of-transportation.json')
 }]);
 
-essApi.factory('TravelApplicationReviewApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/review.json')
-}]);
-
-essApi.factory('TravelApplicationReviewApproveApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/review/:appReviewId/approve.json', {approvalId: '@appReviewId'})
-}]);
-
-essApi.factory('TravelApplicationReviewDisapproveApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove.json', {approvalId: '@appReviewId'})
-}]);
-
 essApi.factory('TravelGeocodeApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/geocode')
 }]);

@@ -8,7 +8,7 @@
     </div>
   </div>
 
-  <div ng-if="data.apiRequest.$resolved === true">
+  <div ng-if="data.isLoading === false">
     <div ng-if="data.apps.length === 0">
       <div class="content-container">
         <div class="content-info">
@@ -20,7 +20,7 @@
     <div ng-if="data.apps.length > 0">
       <ess-app-summary-table
           apps="data.apps"
-          on-row-click="viewApplicationForm(app)">
+          on-row-click="displayReviewFormModal(app)">
       </ess-app-summary-table>
     </div>
   </div>

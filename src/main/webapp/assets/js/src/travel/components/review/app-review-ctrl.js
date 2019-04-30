@@ -1,12 +1,12 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'LocationService', 'TravelApplicationReviewApi', reviewController]);
+essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'LocationService', 'ApplicationReviewApi', reviewController]);
 
 function reviewController($scope, modals, locationService, appReviewApi) {
 
     this.$onInit = function () {
         $scope.data = {
-            apiRequest: {},
+            isLoading: true,
             apps: [],
             appReviews: []
         };
@@ -15,25 +15,18 @@ function reviewController($scope, modals, locationService, appReviewApi) {
     };
 
     function initData() {
-        $scope.data.apiRequest = appReviewApi.get({}, function (response) {
-            response.result.forEach(function (result) {
-                $scope.data.appReviews.push(result);
-                $scope.data.apps.push(result.travelApplication);
+        appReviewApi.pendingReviews()
+            .then(function (appReviews) {
+                appReviews.forEach(function (review) {
+                    $scope.data.appReviews.push(review);
+                    $scope.data.apps.push(review.travelApplication);
+                });
+
+                $scope.data.isLoading = false;
             });
-            sortByTravelDateAsc($scope.data.apps);
-        })
     }
 
-    // Duplicated in travel-view-applications
-    function sortByTravelDateAsc(apps) {
-        apps.sort(function(a, b) {
-            // Turn your strings into dates, and then subtract them
-            // to get a value that is either negative, positive, or zero.
-            return new Date(b.startDate) - new Date(a.startDate);
-        });
-    }
-
-    $scope.viewApplicationForm = function (app) {
+    $scope.displayReviewFormModal = function (app) {
         var appReview = {};
         $scope.data.appReviews.forEach(function (a) {
             if (a.travelApplication.id === app.id) {
