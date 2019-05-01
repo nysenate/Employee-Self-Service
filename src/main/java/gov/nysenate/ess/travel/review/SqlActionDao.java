@@ -41,18 +41,6 @@ public class SqlActionDao extends SqlBaseDao {
         }
     }
 
-    /**
-     * Select all actions for a given application review id.
-     * @param appReviewId
-     * @return
-     */
-    public List<Action> selectActionsByApprovalId(int appReviewId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appReviewId", appReviewId);
-        String sql = SqlActionQuery.SELECT_ACTIONS_BY_REVIEW_ID.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ActionRowMapper(employeeInfoService));
-    }
-
     private void insertReviewAction(Action action, int appReviewId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId)
@@ -68,6 +56,24 @@ public class SqlActionDao extends SqlBaseDao {
         action.setActionId((Integer) keyHolder.getKeys().get("app_review_action_id"));
     }
 
+    /**
+     * Select all actions for a given application review id.
+     * @param appReviewId
+     * @return
+     */
+    public List<Action> selectActionsByApprovalId(int appReviewId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("appReviewId", appReviewId);
+        String sql = SqlActionQuery.SELECT_ACTIONS_BY_REVIEW_ID.getSql(schemaMap());
+        return localNamedJdbc.query(sql, params, new ActionRowMapper(employeeInfoService));
+    }
+
+    public List<Integer> selectAppReviewIdsByEmployee(int employeeId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("employeeId", employeeId);
+        String sql = SqlActionQuery.SELECT_APP_REVIEW_IDS_BY_EMP.getSql(schemaMap());
+        return localNamedJdbc.queryForList(sql, params, Integer.class);
+    }
+
     private enum SqlActionQuery implements BasicSqlQuery {
         INSERT_REVIEW_ACTION(
                 "INSERT INTO ${travelSchema}.app_review_action\n" +
@@ -78,6 +84,11 @@ public class SqlActionDao extends SqlBaseDao {
                 "SELECT app_review_action_id, employee_id, role, type, notes, date_time\n" +
                         " FROM ${travelSchema}.app_review_action\n" +
                         " WHERE app_review_id = :appReviewId"
+        ),
+        SELECT_APP_REVIEW_IDS_BY_EMP(
+                "SELECT DISTINCT app_review_id" +
+                        " FROM ${travelSchema}.app_review_action" +
+                        " WHERE employee_id = :employeeId"
         )
         ;
 

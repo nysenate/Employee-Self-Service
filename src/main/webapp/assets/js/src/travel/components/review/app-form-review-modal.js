@@ -1,15 +1,15 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('appReviewFormModal', ['appProps', function (appProps) {
+essTravel.directive('appFormReviewModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/component/review/app-review-form-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/component/review/app-form-review-modal',
         scope: {},
-        controller: 'AppReviewFormCtrl'
+        controller: 'AppFormReviewCtrl'
     }
 }])
-    .controller('AppReviewFormCtrl', ['$scope', 'modals', 'ApplicationReviewApi', appReviewFormCtrl]);
+    .controller('AppFormReviewCtrl', ['$scope', 'modals', 'ApplicationReviewApi', appFormReviewCtrl]);
 
-function appReviewFormCtrl($scope, modals, appReviewApi) {
+function appFormReviewCtrl($scope, modals, appReviewApi) {
 
     $scope.appReview = modals.params();
 

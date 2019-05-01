@@ -28,9 +28,17 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
     }
 
     @RequestMapping(value = "/component/review/app-review")
-    public String applicationReview() {
+    public String applicationReview(HttpServletRequest request) {
         if (SecurityUtils.getSubject().isPermitted(TravelPermission.TRAVEL_UI_REVIEW.getPermission())) {
-            return TRAVEL_TMPL_BASE_URL + "/component/review/app-review";
+            return request.getRequestURI();
+        }
+        return NOT_AUTHORIZED_PAGE;
+    }
+
+    @RequestMapping(value = "/component/review-history/review-history")
+    public String reviewHistory(HttpServletRequest request) {
+        if (SecurityUtils.getSubject().isPermitted(TravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission())) {
+            return request.getRequestURI();
         }
         return NOT_AUTHORIZED_PAGE;
     }

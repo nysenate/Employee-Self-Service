@@ -200,6 +200,9 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/review/app-review'
     });
 
+    $routeProvider.when(ctxPath + '/travel/review/history', {
+        templateUrl: ctxPath + '/template/travel/component/review-history/review-history'
+    });
 
     /** Help */
 

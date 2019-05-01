@@ -33,7 +33,7 @@ function reviewController($scope, modals, locationService, appReviewApi) {
                 appReview = a;
             }
         });
-        modals.open("app-review-form-modal", appReview, true)
+        modals.open("app-form-review-modal", appReview, true)
             .then(function () {
                 locationService.go("/travel/review", true);
             });

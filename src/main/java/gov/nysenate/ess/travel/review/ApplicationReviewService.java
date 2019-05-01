@@ -68,7 +68,10 @@ public class ApplicationReviewService {
 
         return pendingReviews;
     }
-    // Is the given employee a supervisor for the traveling employee.
+
+    public List<ApplicationReview> appReviewHistoryForEmp(int employeeId) {
+        return appReviewDao.selectReviewHistoryForEmp(employeeId);
+    }
 
     private boolean isSupervisor(Employee employee, ApplicationReview applicationReview) {
         return supervisorInfoService.getSupervisorIdForEmp(applicationReview.application().getTraveler().getEmployeeId(), LocalDate.now()) == employee.getEmployeeId();

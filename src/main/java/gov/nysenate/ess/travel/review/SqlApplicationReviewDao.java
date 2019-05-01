@@ -27,6 +27,9 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private SqlActionDao actionDao;
 
+    /**
+     * Save an Application Review
+     */
     @Override
     @Transactional(value = "localTxManager")
     public void saveApplicationReview(ApplicationReview appReview) {
@@ -39,23 +42,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         actionDao.saveAppReviewActions(appReview.actions(), appReview.getAppReviewId());
     }
 
-    @Override
-    public List<ApplicationReview> selectAppReviewsByNextRole(TravelRole nextReviewerRole) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name());
-        String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE.getSql(schemaMap());
-        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
-    }
-
-    @Override
-    public ApplicationReview selectAppReviewsById(int appReviewId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appReviewId", appReviewId);
-        String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
-    }
-
-    public void insertApplicationReview(ApplicationReview appApproval) {
+    private void insertApplicationReview(ApplicationReview appApproval) {
         MapSqlParameterSource params = appReviewParams(appApproval);
         String sql = SqlApplicationReviewQuery.INSERT_APPLICATION_REVIEW.getSql(schemaMap());
 
@@ -64,18 +51,54 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
         appApproval.setAppReviewId((Integer) keyHolder.getKeys().get("app_review_id"));
     }
 
+    private void updateApplicationReview(ApplicationReview appApproval) {
+        MapSqlParameterSource params = appReviewParams(appApproval);
+        String sql = SqlApplicationReviewQuery.UPDATE_APPLICATION_REVIEW.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
+    /**
+     * Get an ApplicationReview by its id.
+     */
+    @Override
+    public ApplicationReview selectAppReviewsById(int appReviewId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("appReviewId", appReviewId);
+        String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_ID.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+    }
+
+    /**
+     * Get all ApplicationReview's which needed to be reviewed by the provided role.
+     */
+    @Override
+    public List<ApplicationReview> selectAppReviewsByNextRole(TravelRole nextReviewerRole) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name());
+        String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE.getSql(schemaMap());
+        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
+    }
+
+    /**
+     * Get a list of ApplicationReviews where the given employeeId has performed an action on it.
+     */
+    @Override
+    public List<ApplicationReview> selectReviewHistoryForEmp(int employeeId) {
+        List<ApplicationReview> reviews = new ArrayList<>();
+        List<Integer> appReviewIds = actionDao.selectAppReviewIdsByEmployee(employeeId);
+        // TODO improve performance
+        for (Integer id : appReviewIds) {
+            reviews.add(selectAppReviewsById(id));
+        }
+        return reviews;
+    }
+
     private MapSqlParameterSource appReviewParams(ApplicationReview appApproval) {
         return new MapSqlParameterSource()
                 .addValue("appReviewId", appApproval.getAppReviewId())
                 .addValue("appId", appApproval.application().getAppId())
                 .addValue("travelerRole", appApproval.travelerRole().name())
                 .addValue("nextReviewerRole", appApproval.nextReviewerRole().name());
-    }
-
-    private void updateApplicationReview(ApplicationReview appApproval) {
-        MapSqlParameterSource params = appReviewParams(appApproval);
-        String sql = SqlApplicationReviewQuery.UPDATE_APPLICATION_REVIEW.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
     }
 
     private enum SqlApplicationReviewQuery implements BasicSqlQuery {

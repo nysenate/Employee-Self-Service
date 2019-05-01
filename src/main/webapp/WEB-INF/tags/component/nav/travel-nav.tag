@@ -1,5 +1,5 @@
 <%@ tag import="gov.nysenate.ess.travel.authorization.permission.TravelPermission" %>
-<%@tag description="Left navigation menu for Travel screens" pageEncoding="UTF-8"%>
+<%@tag description="Left navigation menu for Travel screens" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ess-component-nav" tagdir="/WEB-INF/tags/component/nav" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
@@ -13,10 +13,15 @@
       <li class="sub-topic orange"><a href="${ctxPath}/travel/applications">View Travel Applications</a></li>
       <%--<li class="sub-topic"><a href="${ctxPath}/travel/config">User Configuration</a></li>--%>
     </ul>
-    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
-    <h3 class="main-topic">Manage Travel</h3>
+    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_MANAGE.getPermissionString() %>">
+      <h3 class="main-topic">Manage Travel</h3>
       <ul class="sub-topic-list">
-        <li class="sub-topic orange"><a href="${ctxPath}/travel/review">Review Applications</a></li>
+        <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
+          <li class="sub-topic orange"><a href="${ctxPath}/travel/review">Review Applications</a></li>
+        </shiro:hasPermission>
+        <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermissionString() %>">
+          <li class="sub-topic orange"><a href="${ctxPath}/travel/review/history">Review History</a></li>
+        </shiro:hasPermission>
       </ul>
     </shiro:hasPermission>
   </section>

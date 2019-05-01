@@ -8,7 +8,9 @@ public interface ApplicationReviewDao {
 
     void saveApplicationReview(ApplicationReview appReview);
 
+    ApplicationReview selectAppReviewsById(int approvalId);
+
     List<ApplicationReview> selectAppReviewsByNextRole(TravelRole nextReviewerRole);
 
-    ApplicationReview selectAppReviewsById(int approvalId);
+    List<ApplicationReview> selectReviewHistoryForEmp(int employeeId);
 }

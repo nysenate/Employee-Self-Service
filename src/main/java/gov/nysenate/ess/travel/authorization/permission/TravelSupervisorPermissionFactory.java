@@ -29,7 +29,9 @@ public class TravelSupervisorPermissionFactory implements PermissionFactory {
     public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         List<Permission> permissions = new ArrayList<>();
         if (supInfoService.isSupervisor(employee.getEmployeeId())) {
+            permissions.add(TravelPermission.TRAVEL_UI_MANAGE.getPermission());
             permissions.add(TravelPermission.TRAVEL_UI_REVIEW.getPermission());
+            permissions.add(TravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
             permissions.addAll(empGroupPermissions(employee));
         }
         return ImmutableList.copyOf(permissions);

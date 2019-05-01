@@ -28,12 +28,23 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     /**
      * Get app reviews which need review by the logged in user.
      */
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "/pending", method = RequestMethod.GET)
     public BaseResponse getPendingReviews() throws AuthenticationException {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviewsForEmpWithRole(employee, role);
         return ListViewResponse.of(pendingReviews.stream()
+                .map(ApplicationReviewView::new)
+                .collect(Collectors.toList()));
+    }
+
+    /**
+     * @return A list of ApplicationReviews where the logged in user performed a review action.
+     */
+    @RequestMapping(value = "/history")
+    public BaseResponse reviewHistory() {
+        List<ApplicationReview> reviewHistory = appReviewService.appReviewHistoryForEmp(getSubjectEmployeeId());
+        return ListViewResponse.of(reviewHistory.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));
     }

@@ -2,7 +2,8 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
     '$resource', 'appProps', 'modals', 'RestErrorService',
     function ($resource, appProps, modals, restErrorService) {
 
-        var appReviewApi = $resource(appProps.apiPath + '/travel/review.json');
+        var pendingReviewsApi = $resource(appProps.apiPath + '/travel/review/pending.json');
+        var reviewHistoryApi = $resource(appProps.apiPath + '/travel/review/history.json');
         var approveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/approve.json', {approvalId: '@appReviewId'});
         var disapproveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove.json', {approvalId: '@appReviewId'});
 
@@ -10,7 +11,13 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
          * Get all application reviews which need to be reviewed by the logged in user.
          */
         function pendingReviews () {
-            return appReviewApi.get({}).$promise
+            return pendingReviewsApi.get({}).$promise
+                .then(getResult)
+                .catch(restErrorService.handleErrorResponse);
+        }
+
+        function reviewHistory () {
+            return reviewHistoryApi.get({}).$promise
                 .then(getResult)
                 .catch(restErrorService.handleErrorResponse);
         }
@@ -31,6 +38,7 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
 
         return {
             pendingReviews: pendingReviews,
+            reviewHistory: reviewHistory,
             approve: approve,
             disapprove: disapprove
         }
