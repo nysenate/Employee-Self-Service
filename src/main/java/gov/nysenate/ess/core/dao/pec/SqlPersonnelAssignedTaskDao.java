@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.dao.pec;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.pec.PersonnelEmployeeTask;
+import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,23 +10,23 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static gov.nysenate.ess.core.dao.pec.SqlPersonnelEmployeeTaskQuery.*;
+import static gov.nysenate.ess.core.dao.pec.SqlPersonnelAssignedTaskQuery.*;
 
 @Repository
-public class SqlPersonnelEmployeeTaskDao extends SqlBaseDao implements PersonnelEmployeeTaskDao {
+public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements PersonnelAssignedTaskDao {
 
     @Override
-    public List<PersonnelEmployeeTask> getTasksForEmp(int empId) {
+    public List<PersonnelAssignedTask> getTasksForEmp(int empId) {
         return localNamedJdbc.query(
                 SELECT_TASKS_FOR_EMP.getSql(schemaMap()),
                 getEmpIdParams(empId),
-                petRowMapper
+                patRowMapper
         );
     }
 
     @Override
-    public void updatePersonnelEmployeeTask(PersonnelEmployeeTask task) {
-        MapSqlParameterSource params = getPETParams(task);
+    public void updatePersonnelAssignedTask(PersonnelAssignedTask task) {
+        MapSqlParameterSource params = getPATParams(task);
         int updated = localNamedJdbc.update(UPDATE_TASK.getSql(schemaMap()), params);
         if (updated == 0) {
             localNamedJdbc.update(INSERT_TASK.getSql(schemaMap()), params);
@@ -35,8 +35,8 @@ public class SqlPersonnelEmployeeTaskDao extends SqlBaseDao implements Personnel
         }
     }
 
-    private static final RowMapper<PersonnelEmployeeTask> petRowMapper = (rs, rowNum) ->
-            new PersonnelEmployeeTask(
+    private static final RowMapper<PersonnelAssignedTask> patRowMapper = (rs, rowNum) ->
+            new PersonnelAssignedTask(
                     rs.getInt("emp_id"),
                     new PersonnelTaskId(
                             PersonnelTaskType.valueOf(rs.getString("task_type")),
@@ -52,7 +52,7 @@ public class SqlPersonnelEmployeeTaskDao extends SqlBaseDao implements Personnel
         return new MapSqlParameterSource("empId", empId);
     }
 
-    private MapSqlParameterSource getPETParams(PersonnelEmployeeTask task) {
+    private MapSqlParameterSource getPATParams(PersonnelAssignedTask task) {
         return getEmpIdParams(task.getEmpId())
                 .addValue("taskType", task.getTaskType().name())
                 .addValue("taskNumber", task.getTaskNumber())

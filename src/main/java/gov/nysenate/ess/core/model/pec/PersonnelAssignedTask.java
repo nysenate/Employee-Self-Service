@@ -8,9 +8,9 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * A personnel related task that an employee must complete.
+ * A personnel related task assigned to a specific employee.
  */
-public class PersonnelEmployeeTask implements Comparable<PersonnelEmployeeTask> {
+public class PersonnelAssignedTask implements Comparable<PersonnelAssignedTask> {
 
     /** Id of task assignee. */
     private final int empId;
@@ -23,7 +23,7 @@ public class PersonnelEmployeeTask implements Comparable<PersonnelEmployeeTask> 
     /** Whether or not the task is fully completed */
     private final boolean completed;
 
-    public PersonnelEmployeeTask(int empId,
+    public PersonnelAssignedTask(int empId,
                                  @Nonnull PersonnelTaskId taskId,
                                  LocalDateTime timestamp,
                                  Integer updateUserId,
@@ -40,8 +40,8 @@ public class PersonnelEmployeeTask implements Comparable<PersonnelEmployeeTask> 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PersonnelEmployeeTask)) return false;
-        PersonnelEmployeeTask that = (PersonnelEmployeeTask) o;
+        if (!(o instanceof PersonnelAssignedTask)) return false;
+        PersonnelAssignedTask that = (PersonnelAssignedTask) o;
         return empId == that.empId &&
                 completed == that.completed &&
                 com.google.common.base.Objects.equal(taskId, that.taskId) &&
@@ -55,7 +55,7 @@ public class PersonnelEmployeeTask implements Comparable<PersonnelEmployeeTask> 
     }
 
     @Override
-    public int compareTo(PersonnelEmployeeTask o) {
+    public int compareTo(PersonnelAssignedTask o) {
         return ComparisonChain.start()
                 .compare(empId, o.empId)
                 .compare(taskId, o.taskId)
@@ -64,7 +64,7 @@ public class PersonnelEmployeeTask implements Comparable<PersonnelEmployeeTask> 
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", PersonnelEmployeeTask.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", PersonnelAssignedTask.class.getSimpleName() + "[", "]")
                 .add("empId=" + empId)
                 .add("taskId=" + taskId)
                 .add("timestamp=" + timestamp)

@@ -3,7 +3,7 @@ package gov.nysenate.ess.core.dao.pec;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 
-public enum SqlPersonnelEmployeeTaskQuery implements BasicSqlQuery {
+public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
 
     SELECT_TASKS_FOR_EMP("" +
             "SELECT *\n" +
@@ -27,7 +27,7 @@ public enum SqlPersonnelEmployeeTaskQuery implements BasicSqlQuery {
 
     private final String sql;
 
-    SqlPersonnelEmployeeTaskQuery(String sql) {
+    SqlPersonnelAssignedTaskQuery(String sql) {
         this.sql = sql;
     }
 
