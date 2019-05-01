@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static gov.nysenate.ess.core.dao.pec.SqlPersonnelAssignedTaskQuery.*;
 
@@ -20,6 +21,15 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
         return localNamedJdbc.query(
                 SELECT_TASKS_FOR_EMP.getSql(schemaMap()),
                 getEmpIdParams(empId),
+                patRowMapper
+        );
+    }
+
+    @Override
+    public List<PersonnelAssignedTask> getTasks(PATQueryBuilder query) {
+        return localNamedJdbc.query(
+                SELECT_TASKS_QUERY.getSql(schemaMap()),
+                getPATQueryParams(query),
                 patRowMapper
         );
     }
@@ -59,5 +69,14 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
                 .addValue("timestamp", toDate(task.getTimestamp()))
                 .addValue("updateUserId", task.getUpdateUserId())
                 .addValue("completed", task.isCompleted());
+    }
+
+    private MapSqlParameterSource getPATQueryParams(PATQueryBuilder queryBuilder) {
+        return new MapSqlParameterSource()
+                .addValue("empId", queryBuilder.getEmpId())
+                .addValue("taskType",
+                        Optional.ofNullable(queryBuilder.getTaskType()).map(Enum::name).orElse(null))
+                .addValue("taskNumber", queryBuilder.getTaskNumber())
+                .addValue("completed", queryBuilder.getCompleted());
     }
 }

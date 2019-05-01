@@ -18,6 +18,14 @@ public interface PersonnelAssignedTaskDao {
     List<PersonnelAssignedTask> getTasksForEmp(int empId);
 
     /**
+     * Get a list of tasks matching the given query
+     *
+     * @param query {@link PATQueryBuilder}
+     * @return {@link List<PersonnelAssignedTask>}
+     */
+    List<PersonnelAssignedTask> getTasks(PATQueryBuilder query);
+
+    /**
      * Add or update the given {@link PersonnelAssignedTask} to the db.
      *
      * @param task {@link PersonnelAssignedTask}

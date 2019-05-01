@@ -7,18 +7,27 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
 
     SELECT_TASKS_FOR_EMP("" +
             "SELECT *\n" +
-            "FROM ${essSchema}.personnel_employee_task\n" +
+            "FROM ${essSchema}.personnel_assigned_task\n" +
             "WHERE emp_id = :empId"
     ),
 
+    SELECT_TASKS_QUERY("" +
+            "SELECT *\n" +
+            "FROM ${essSchema}.personnel_assigned_task\n" +
+            "WHERE (:empId::int IS NULL OR emp_id = :empId)\n" +
+            "  AND (:taskType::ess.personnel_task_type IS NULL OR task_type = :taskType::ess.personnel_task_type)\n" +
+            "  AND (:taskNumber::int IS NULL OR task_number = :taskNumber)\n" +
+            "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)"
+    ),
+
     INSERT_TASK("" +
-            "INSERT INTO ${essSchema}.personnel_employee_task\n" +
+            "INSERT INTO ${essSchema}.personnel_assigned_task\n" +
             "        (emp_id, task_type, task_number, timestamp, update_user_id, completed)\n" +
             "VALUES (:empId, :taskType::ess.personnel_task_type, :taskNumber, :timestamp, :updateUserId, :completed)"
     ),
 
     UPDATE_TASK("" +
-            "UPDATE ${essSchema}.personnel_employee_task\n" +
+            "UPDATE ${essSchema}.personnel_assigned_task\n" +
             "SET timestamp = :timestamp, update_user_id = :updateUserId, completed = :completed\n" +
             "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_number = :taskNumber"
     ),
