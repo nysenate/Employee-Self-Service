@@ -59,6 +59,7 @@
 
 .travel-content-controls {
   .content-controls;
+
   p, label {
     .travel-text-bold;
   }
@@ -86,6 +87,7 @@ h2.travel-subheader {
   .margin-top-20;
   padding: 10px;
   background: #f9f9f9;
+
   input[type="button"] {
     margin-right: 5px;
   }
@@ -94,9 +96,11 @@ h2.travel-subheader {
 .expenses-opt-out-list {
   .clear;
   padding-top: 15px;
+
   div {
     margin-top: 3px;
     .travel-text;
+
     &.col-6-12 {
       .travel-text-bold;
     }
@@ -131,9 +135,11 @@ h2.travel-subheader {
   input, select, textarea {
     &.ng-invalid {
       border: 1px solid #ccc;
+
       &.ng-touched {
         border: 1px solid @redorange;
       }
+
       &.ng-dirty {
         border: 1px solid @redorange;
       }
@@ -142,15 +148,21 @@ h2.travel-subheader {
 }
 
 
-
-
-
-
-@travel-location-box-core: { display: inline-block; width: 100%; padding: 5px; height: 50px; text-align: center; line-height: 20px; background: #F6F6F6; border-radius: 5px; div {
+@travel-location-box-core: {
   display: inline-block;
+  width: 100%;
+  padding: 5px;
+  height: 50px;
   text-align: center;
-  vertical-align: top;
-} };
+  line-height: 20px;
+  background: #F6F6F6;
+  border-radius: 5px;
+  div {
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+  }
+};
 
 .travel-origin-display-box {
   @travel-location-box-core();
@@ -158,14 +170,17 @@ h2.travel-subheader {
 
 .travel-destination-display-box {
   @travel-location-box-core();
+
   :nth-child(1) {
     float: left;
     width: 25%;
     font-size: 0.8em;
   }
+
   :nth-child(2) {
     width: 50%
   }
+
   :nth-child(3) {
     float: right;
     width: 25%;
@@ -176,12 +191,15 @@ h2.travel-subheader {
 .travel-table {
   width: 100%;
   .text-align-center;
+
   thead {
     background: white;
+
     tr {
       color: #333;
       font-size: .9em;
       border-bottom: 1px solid #155C69;
+
       th {
         padding: 10px 5px;
       }
@@ -193,6 +211,7 @@ h2.travel-subheader {
       &:nth-child(odd) {
         background: #fafafa;
       }
+
       td {
         .padding-10;
       }
@@ -230,17 +249,20 @@ h2.travel-subheader {
   position: relative;
   //.box-shadow(0px 1px 2px #aaa);
   border: solid @travelLightGray 1px;
+
   h3 {
     color: @travelDarkGray;
     //padding: 10px;
     margin: 10px;
   }
+
   > .outbound {
     //color: @green;
     //border-bottom: solid @green 1px;
     border-bottom: solid @travelLightGray 1px;
     //background: @travelPrimaryColor;
   }
+
   > .return {
     //color: @teal;
     border-bottom: solid @travelLightGray 1px;
@@ -248,6 +270,7 @@ h2.travel-subheader {
     //border-bottom: solid @teal 1px;
     //background: @travelSecondaryColor;
   }
+
   input {
     background: #ffffff;
   }
@@ -267,10 +290,12 @@ h2.travel-subheader {
 
 .travel-attachment-container {
   .margin-10;
+
   & > .travel-attachment-filename {
     .margin-5;
     color: darken(@gray, 15%);
     font-family: monospace;
+
     & > .icon-cross {
       .margin-5;
       vertical-align: middle;
@@ -300,9 +325,11 @@ h2.travel-subheader {
   width: 40%;
   margin: 1%;
   float: right;
+
   .itinerary-mot {
     float: left;
   }
+
   .itinerary-mot-write-in {
     float: right;
     margin-right: 10px;
@@ -320,49 +347,54 @@ h2.travel-subheader {
   }
 }
 
-.travel-print-info-container {
-  // Overwrite grid col spacing to 10px for print form.
-  [class*='col-2'] {
-    padding-right: 5px !important;
-  }
-  .row {
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
-  div {
-    &.travel-print-label {
-      .bold;
-    }
-  }
+.app-form-container {
+  display: flex;
+  flex-direction: column;
 }
 
-.travel-print-mot-box {
-  float: left;
-  text-align: center;
-  width: 30%;
+.app-form-grid {
+  display: flex;
+  padding: 3px;
+}
+
+.app-form-label {
+  width: 125px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.app-form-s-col {
+  width: 150px;
+  margin-right: 10px;
+}
+
+.app-form-m-col {
+  width: 380px;
+  margin-right: 10px;
+}
+
+.app-form-l-col {
+  width: 650px;
+  margin-right: 10px;
+}
+
+.app-form-mot-box {
+  width: 220px;
+  margin: 10px 30px 10px 100px;
   border: 1px solid grey;
-  margin-left: 100px;
   .padding-10;
-  label {
-    float: left;
-    font-weight: normal;
-  }
+
   input {
     float: right;
   }
 }
 
-.travel-print-allowances-box {
-  float: right;
-  text-align: center;
-  width: 35%;
+.app-form-allowances-box {
+  width: 275px;
+  margin: 10px 30px 10px 100px;
   border: 1px solid grey;
-  margin-right: 100px;
   .padding-10;
-  label {
-    float: left;
-    font-weight: normal;
-  }
+
   span {
     float: right;
   }
@@ -371,9 +403,11 @@ h2.travel-subheader {
 .print-signature {
   width: 350px;
   border-top: 1px solid black;
+
   > .signature-name {
     float: left;
   }
+
   > .signature-date {
     float: right;
   }
@@ -484,6 +518,7 @@ h2.travel-subheader {
   &.navigable {
     @navigableColor: lighten(@stepColorCompleted, 10%);
     cursor: pointer;
+
     &:hover {
       background: @navigableColor;
 
