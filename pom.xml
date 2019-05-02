@@ -118,6 +118,7 @@
 
   <properties>
     <apache.shiro.version>1.2.3</apache.shiro.version>
+    <apache.http.client.version>4.5.8</apache.http.client.version>
     <commons.io.version>2.4</commons.io.version>
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.validator.version>1.6</commons.validator.version>
@@ -170,6 +171,12 @@
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <version>${commons.validator.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${apache.http.client.version}</version>
     </dependency>
 
     <!-- Spring Core | Core Framework packages. -->
