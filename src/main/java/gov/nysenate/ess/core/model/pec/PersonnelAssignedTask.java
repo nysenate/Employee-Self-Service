@@ -35,6 +35,10 @@ public class PersonnelAssignedTask implements Comparable<PersonnelAssignedTask> 
         this.completed = completed;
     }
 
+    public static PersonnelAssignedTask newTask(int empId, @Nonnull PersonnelTaskId taskId) {
+        return new PersonnelAssignedTask(empId, taskId, null, null, false);
+    }
+
     /* --- Overrides --- */
 
     @Override

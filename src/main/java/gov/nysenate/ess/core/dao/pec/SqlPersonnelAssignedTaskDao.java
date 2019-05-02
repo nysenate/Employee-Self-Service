@@ -55,7 +55,6 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
                     getLocalDateTime(rs, "timestamp"),
                     getNullableInt(rs, "update_user_id"),
                     rs.getBoolean("completed")
-
             );
 
     private MapSqlParameterSource getEmpIdParams(int empId) {
