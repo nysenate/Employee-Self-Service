@@ -10,15 +10,15 @@ import java.math.BigDecimal;
 public class EmpAccrualState
 {
     protected int payPeriodCount;
-    protected boolean employeeActive;
+    protected boolean employeeAccruing;
     protected PayType payType;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
 
-    public EmpAccrualState(int payPeriodCount, boolean employeeActive, PayType payType, BigDecimal minTotalHours,
+    public EmpAccrualState(int payPeriodCount, boolean employeeAccruing, PayType payType, BigDecimal minTotalHours,
                            BigDecimal minHoursToEnd) {
         this.payPeriodCount = payPeriodCount;
-        this.employeeActive = employeeActive;
+        this.employeeAccruing = employeeAccruing;
         this.payType = payType;
         this.minTotalHours = minTotalHours;
         this.minHoursToEnd = minHoursToEnd;
@@ -27,7 +27,7 @@ public class EmpAccrualState
     public EmpAccrualState(AccrualState accrualState) {
         if (accrualState != null) {
             this.payPeriodCount = accrualState.payPeriodCount;
-            this.employeeActive = accrualState.empAccruing;
+            this.employeeAccruing = accrualState.empAccruing;
             this.payType = accrualState.payType;
             this.minTotalHours = accrualState.minTotalHours;
             this.minHoursToEnd = accrualState.minHoursToEnd;
@@ -38,8 +38,8 @@ public class EmpAccrualState
         return payPeriodCount;
     }
 
-    public boolean isEmployeeActive() {
-        return employeeActive;
+    public boolean isEmployeeAccruing() {
+        return employeeAccruing;
     }
 
     public PayType getPayType() {
