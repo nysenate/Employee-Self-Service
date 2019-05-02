@@ -1,11 +1,29 @@
-<div style="width: 1000px;">
-  <div class="grid">
-    <div class="col-8-12">
+<div style="width: 1200px;">
+  <div style="display: flex;">
+    <div>
       <ess-app-form-body app="appReview.travelApplication"></ess-app-form-body>
     </div>
 
-    <div class="col-4-12">
-      2nd column on right
+    <div style="flex-grow: 1; margin-right: 0px; border-left: 2px solid #e6e6e6;">
+      <div style="margin-left: 10px;">
+        <div ng-if="!hasActions">
+          <h3 class="dark-gray text-align-center">No Previous Actions</h3>
+        </div>
+
+        <div ng-if="hasActions">
+          <h3 class="text-align-center">Previous Actions</h3>
+
+          <table class="travel-table">
+            <tbody>
+            <tr ng-repeat="action in appReview.actions | orderBy: 'dateTime'">
+              <td ng-bind="::action.dateTime | date: 'shortDate'" ></td>
+              <td ng-bind="::action.user.lastName"></td>
+              <td ess-action-type-cell="action.type"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -4,7 +4,7 @@
     <ess-app-review-form-body app-review="appReview"></ess-app-review-form-body>
   </div>
 
-  <div class="travel-button-container">
+  <div class="travel-button-container" style="margin-top: 0px !important;">
     <input type="button" class="submit-button" value="Approve Application"
            ng-click="approve()">
     <input type="button" class="reject-button" value="Disapprove Application"

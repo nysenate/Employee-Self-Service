@@ -9,6 +9,11 @@ travel.directive('essAppReviewFormBody', ['appProps', function (appProps) {
         templateUrl: appProps.ctxPath + '/template/travel/common/form/app-review-form-body-directive',
         link: function ($scope, $elem, $attrs) {
 
+            $scope.hasActions = $scope.appReview.actions.length > 0;
+
+            $scope.actionCellStyle = {
+                flex: '1'
+            }
         }
     }
 }]);

@@ -22,20 +22,6 @@ essTravel.directive('essAppSummaryTable', ['appProps', function (appProps) {
                 }
                 return destinations;
             };
-
-            $scope.statusClass = function (app) {
-                return app.isPending ? 'pending-cell'
-                                     : app.isApproved ? 'approved-cell'
-                                                      : app.isDisapproved ? 'disapproved-cell'
-                                                                          : '';
-            };
-
-            $scope.statusDescription = function (app) {
-                return app.isPending ? 'Pending'
-                                     : app.isApproved ? 'Approved'
-                                                      : app.isDisapproved ? 'Disapproved'
-                                                                          : '';
-            }
         }
     }
 }]);

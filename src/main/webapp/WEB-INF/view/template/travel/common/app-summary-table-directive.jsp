@@ -14,7 +14,7 @@
         </thead>
 
         <tbody>
-        <tr dir-paginate="app in apps | orderBy: '-startDate' : true | itemsPerPage : 10"
+        <tr dir-paginate="app in apps | orderBy: 'startDate' | itemsPerPage : 10"
             pagination-id="travel-table-pagination"
             ng-click="onRowClick({app: app})">
 
@@ -22,7 +22,7 @@
           <td ng-bind="::app.traveler.lastName"></td>
           <td ng-bind="::destinationSummary(app)"></td>
           <td ng-bind="::app.totalAllowance | currency"></td>
-          <td ng-if="options.showStatus" ng-class="statusClass(app)" ng-bind="::statusDescription(app)"></td>
+          <td ess-app-status-cell="app" ng-if="options.showStatus"></td>
 
         </tr>
         </tbody>
