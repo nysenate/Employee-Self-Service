@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.controller.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
@@ -45,9 +46,11 @@ public class PersonnelTaskApiCtrl {
      * @return String
      * */
     @RequestMapping(value = "/moodle/receive", method = {POST})
-    public void receiveMoodleCallback(HttpServletRequest request) throws IOException {
+    public SimpleResponse receiveMoodleCallback(HttpServletRequest request) throws IOException {
         JsonNode json = moodleRecordService.convertStreamtoJson(request.getInputStream());
         moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
+        return new SimpleResponse(true,
+                "moodle callback successfully processed", "moodle-callback");
     }
 
 
@@ -69,7 +72,7 @@ public class PersonnelTaskApiCtrl {
      * @return String
      * */
     @RequestMapping(value = "/moodle/generate", method = {GET})
-    public void generateMoodleReport(HttpServletRequest request,
+    public SimpleResponse generateMoodleReport(HttpServletRequest request,
                                      @RequestParam LocalDateTime from,
                                      @RequestParam LocalDateTime to,
                                      @RequestParam String organization) throws IOException {
@@ -77,6 +80,8 @@ public class PersonnelTaskApiCtrl {
         //Change specifics of moodle api call once it is available
         JsonNode json = moodleRecordService.contactMoodleForNewRecords(from, to, organization);
         moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
+        return new SimpleResponse(true,
+                "moodle report generated successfully", "moodle-report-generation");
     }
 
 
@@ -100,9 +105,11 @@ public class PersonnelTaskApiCtrl {
      * @return String
      * */
     @RequestMapping(value = "/moodle/update", method = {POST})
-    public void personnelUpdateMoodleRecord(HttpServletRequest request) throws IOException {
-        JsonNode json = moodleRecordService.convertStreamtoJson(request.getInputStream());
+    public SimpleResponse personnelUpdateMoodleRecord(HttpServletRequest request) throws IOException {
 
+         SimpleResponse simpleResponse = new SimpleResponse(false,
+                "invalid post data", "manual-moodle-record-update");
+        JsonNode json = moodleRecordService.convertStreamtoJson(request.getInputStream());
         boolean valid = moodleRecordService.verifyMoodleUpdateJson(json);
 
         if (valid) {
@@ -111,8 +118,10 @@ public class PersonnelTaskApiCtrl {
             PersonnelAssignedTask personnelAssignedTask = new PersonnelAssignedTask(json.get("empId").asInt(),
                     personnelTaskId, updateTime, json.get("updateEmpId").asInt(), json.get("completed").asBoolean());
             personnelAssignedTaskDao.updatePersonnelAssignedTask(personnelAssignedTask);
+            simpleResponse.success = true;
+            simpleResponse.message = "manual moodle record updated successfully";
         }
-
+        return simpleResponse;
     }
 
 }
