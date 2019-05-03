@@ -20,24 +20,24 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.MOODLE_COURSE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Controller
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task")
-public class PersonnelTaskApiCtrl {
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/moodle/")
+public class MoodleApiCtrl {
 
     private MoodleRecordService moodleRecordService;
     private PersonnelAssignedTaskDao personnelAssignedTaskDao;
 
     @Autowired
-    public PersonnelTaskApiCtrl(MoodleRecordService moodleRecordService,
-                                PersonnelAssignedTaskDao personnelAssignedTaskDao) {
+    public MoodleApiCtrl(MoodleRecordService moodleRecordService,
+                         PersonnelAssignedTaskDao personnelAssignedTaskDao) {
         this.moodleRecordService = moodleRecordService;
         this.personnelAssignedTaskDao = personnelAssignedTaskDao;
     }
 
     /**
-     * Personnel Employee Task - Moodle callback
-     * ----------------------------------
+     * Personnel Employee Task - Moodle Save Records
+     * ---------------------------------------------
      *
-     * Api Call used by moodle to
+     * Api Call used by moodle to send ESS course data
      *
      * Usage:
      * (POST)    /api/v1/personnel/task/moodle/receive
@@ -45,8 +45,8 @@ public class PersonnelTaskApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/moodle/receive", method = {POST})
-    public SimpleResponse receiveMoodleCallback(HttpServletRequest request) throws IOException {
+    @RequestMapping(value = "/receive", method = {POST})
+    public SimpleResponse saveMoodleRecords(HttpServletRequest request) throws IOException {
         JsonNode json = moodleRecordService.convertStreamtoJson(request.getInputStream());
         moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
         return new SimpleResponse(true,
@@ -55,10 +55,10 @@ public class PersonnelTaskApiCtrl {
 
 
     /**
-     * Personnel Employee Task - Moodle Generation
-     * ----------------------------------
+     * Personnel Employee Task - Moodle Import
+     * ---------------------------------------
      *
-     * Returns a list of all years that contain an ack doc regardless of its active status.
+     * ESS contacts moodle for course data
      *
      * Usage:
      * (GET)    /api/v1/personnel/task/moodle/generate
@@ -66,13 +66,13 @@ public class PersonnelTaskApiCtrl {
      * @Param from, the beginning of the date range needed for the records
      * @Param to, the end of the date range needed for the records
      *
-     * Organization is always senate
+     * @Param Organization, is always senate
      *
      *
      * @return String
      * */
-    @RequestMapping(value = "/moodle/generate", method = {GET})
-    public SimpleResponse generateMoodleReport(HttpServletRequest request,
+    @RequestMapping(value = "/generate", method = {GET})
+    public SimpleResponse runMoodleImport(HttpServletRequest request, //run moodle import
                                      @RequestParam LocalDateTime from,
                                      @RequestParam LocalDateTime to,
                                      @RequestParam String organization) throws IOException {
@@ -89,7 +89,7 @@ public class PersonnelTaskApiCtrl {
 
     /**
      * Personnel Employee Task - Moodle Personnel Update
-     * ----------------------------------
+     * --------------------------------------------------
      *
      * Returns a list of all years that contain an ack doc regardless of its active status.
      *
