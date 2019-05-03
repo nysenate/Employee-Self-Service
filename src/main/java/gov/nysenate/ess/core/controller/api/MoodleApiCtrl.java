@@ -3,25 +3,29 @@ package gov.nysenate.ess.core.controller.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
+import gov.nysenate.ess.core.model.pec.MoodleEmployeeRecord;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.service.pec.MoodleRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.MOODLE_COURSE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Controller
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/moodle/")
-public class MoodleApiCtrl {
+public class MoodleApiCtrl extends BaseRestApiCtrl {
 
     private MoodleRecordService moodleRecordService;
     private PersonnelAssignedTaskDao personnelAssignedTaskDao;
@@ -46,9 +50,10 @@ public class MoodleApiCtrl {
      * @return String
      * */
     @RequestMapping(value = "/receive", method = {POST})
-    public SimpleResponse saveMoodleRecords(HttpServletRequest request) throws IOException {
-        JsonNode json = moodleRecordService.convertStreamtoJson(request.getInputStream());
-        moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
+    public SimpleResponse saveMoodleRecords(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            @RequestBody List<MoodleEmployeeRecord> moodleEmployeeRecords) throws IOException {
+        moodleRecordService.processMoodleEmployeeRecords(moodleEmployeeRecords);
         return new SimpleResponse(true,
                 "moodle callback successfully processed", "moodle-callback");
     }
@@ -72,7 +77,8 @@ public class MoodleApiCtrl {
      * @return String
      * */
     @RequestMapping(value = "/generate", method = {GET})
-    public SimpleResponse runMoodleImport(HttpServletRequest request, //run moodle import
+    public SimpleResponse runMoodleImport(HttpServletRequest request,
+                                          HttpServletResponse response,
                                      @RequestParam LocalDateTime from,
                                      @RequestParam LocalDateTime to,
                                      @RequestParam String organization) throws IOException {
