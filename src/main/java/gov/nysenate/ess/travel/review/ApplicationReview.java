@@ -66,10 +66,16 @@ public class ApplicationReview {
 //    }
 
     /**
-     * Returns the role which needs to approve the application next.
+     * Returns the role which needs to review the application next.
+     * If the application has been disapproved there is no need to continue the review workflow.
      */
     public TravelRole nextReviewerRole() {
-        return reviewerStrategy.after(previousReviewerRole());
+        if (application.isDisapproved()) {
+            return TravelRole.NONE;
+        }
+        else {
+            return reviewerStrategy.after(previousReviewerRole());
+        }
     }
 
     public TravelApplication application() {
