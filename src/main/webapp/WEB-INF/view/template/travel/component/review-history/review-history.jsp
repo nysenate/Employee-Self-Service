@@ -19,15 +19,15 @@
       <div ng-if="data.apps.length > 0">
         <ess-app-summary-table
             apps="data.apps"
-            on-row-click="displayAppFormViewModal(app)"
+            on-row-click="displayAppReviewViewModal(app)"
             show-status>
         </ess-app-summary-table>
       </div>
     </div>
 
     <div modal-container>
-      <modal modal-id="app-form-view-modal">
-        <div app-form-view-modal></div>
+      <modal modal-id="app-review-view-modal">
+        <div app-review-view-modal></div>
       </modal>
     </div>
 

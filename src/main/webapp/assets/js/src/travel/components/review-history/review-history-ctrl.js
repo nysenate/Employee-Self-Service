@@ -21,7 +21,13 @@ function reviewHistory($scope, modals, appReviewApi) {
             })
     };
 
-    $scope.displayAppFormViewModal = function (app) {
-        modals.open("app-form-view-modal", app, true);
+    $scope.displayAppReviewViewModal = function (app) {
+        var appReview;
+        $scope.data.appReviews.forEach(function (ar) {
+            if (app.id === ar.travelApplication.id) {
+                appReview = ar;
+            }
+        });
+        modals.open("app-review-view-modal", appReview, true);
     }
 }
