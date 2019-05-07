@@ -20,7 +20,7 @@
           <li class="sub-topic orange">
             <a href="${ctxPath}/travel/review">Review Applications</a>
             <badge title="Applications pending review"
-                   badge-id="travelPendingAppReviewCount" hide-empty="false"></badge>
+                   badge-id="travelPendingAppReviewCount" hide-empty="false" color="orange"></badge>
           </li>
         </shiro:hasPermission>
         <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermissionString() %>">
