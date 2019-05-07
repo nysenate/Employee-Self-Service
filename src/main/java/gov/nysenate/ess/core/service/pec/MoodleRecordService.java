@@ -88,20 +88,4 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         return objectMapper.readTree(response.getEntity().getContent());
     }
 
-    public boolean verifyMoodleUpdateJson(JsonNode json) {
-        boolean empiId = false;
-        boolean updateEmpId = false;
-        boolean completed = false;
-        if (json.hasNonNull("empId")) {
-            empiId = true;
-        }
-        if (json.hasNonNull("updateEmpId") ) {
-            updateEmpId = true;
-        }
-        if (json.hasNonNull("completed")) {
-            completed = true;
-        }
-        return (empiId && updateEmpId && completed);
-    }
-
 }

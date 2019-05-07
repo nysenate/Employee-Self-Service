@@ -41,11 +41,4 @@ public interface ESSMoodleRecordService {
      * @throws IOException
      */
     public JsonNode contactMoodleForNewRecords(LocalDateTime from, LocalDateTime to, String organization) throws IOException;
-
-    /**
-     * Verifies input from an api call meant to update a personnel task record
-     * @param json
-     * @return
-     */
-    public boolean verifyMoodleUpdateJson(JsonNode json);
 }
