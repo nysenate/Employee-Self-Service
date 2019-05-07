@@ -33,7 +33,7 @@
       <li class="sub-topic teal">
         <a href="${ctxPath}/time/record/manage">Review Time Records</a>
         <badge title="Records needing action" style="cursor: default"
-               badge-id="pendingRecordCount" hide-empty="true"></badge>
+               badge-id="pendingRecordCount" hide-empty="true" color="teal"></badge>
       </li>
       <li class="sub-topic teal"><a href="${ctxPath}/time/record/emphistory">Employee Attendance History</a></li>
       <shiro:hasPermission name="<%= SimpleTimePermission.EMPLOYEE_ALLOWANCE_PAGE.getPermissionString()%>">
