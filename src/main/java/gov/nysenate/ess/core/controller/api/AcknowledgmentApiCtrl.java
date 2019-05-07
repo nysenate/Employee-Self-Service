@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -164,7 +163,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/acks", method = {GET, HEAD})
     public ListViewResponse<AcknowledgmentView> getAcknowledgments(@RequestParam int empId) {
-        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGMENT, GET));
+        checkPermission(new CorePermission(empId, CorePermissionObject.PERSONNEL_TASK, GET));
 
         List<Acknowledgment> acknowledgments = ackDocDao.getAllAcknowledgmentsForEmp(empId);
 
@@ -194,7 +193,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/acks", method = POST)
     public SimpleResponse acknowledgeDocument(@RequestParam int empId,
                                               @RequestParam int ackDocId) {
-        checkPermission(new CorePermission(empId, CorePermissionObject.ACKNOWLEDGMENT, POST));
+        checkPermission(new CorePermission(empId, CorePermissionObject.PERSONNEL_TASK, POST));
 
         int authedEmpId = ShiroUtils.getAuthenticatedEmpId();
         boolean personnelAcked = authedEmpId != empId;
@@ -234,7 +233,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     public void getCompleteReportForAckDoc(@PathVariable int ackDocId,
                                            HttpServletResponse response) throws IOException {
 
-        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
+        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
         AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
         String csvFileName = ackDoc.getTitle()+"_"+ "SenateAckReport_" + LocalDateTime.now().withNano(0)+".csv";
 
@@ -297,7 +296,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/report/acks/emp", method = {GET, HEAD})
     public EmpAckReport getAllAcksFromEmployee(@RequestParam int empId) {
-        checkPermission(SimpleEssPermission.ACK_REPORT_GENERATION.getPermission());
+        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
         return ackReportService.getAllAcksFromEmployee(empId);
     }
 

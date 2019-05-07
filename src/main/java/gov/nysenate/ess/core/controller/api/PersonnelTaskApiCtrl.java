@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.view.PersonnelAssignedTaskUpdateView;
 import gov.nysenate.ess.core.client.view.PersonnelAssignedTaskView;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
+import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
@@ -23,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static gov.nysenate.ess.core.model.auth.CorePermissionObject.PERSONNEL_TASK;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
@@ -60,6 +62,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/emp/{empId}", method = {GET, HEAD})
     public ListViewResponse<PersonnelAssignedTaskView> getTasksForEmployee(@PathVariable int empId) {
+        checkPermission(new CorePermission(empId, PERSONNEL_TASK, POST));
+
         List<PersonnelAssignedTask> tasks = taskDao.getTasksForEmp(empId);
         List<PersonnelAssignedTaskView> taskViews =
                 tasks.stream().map(PersonnelAssignedTaskView::new).collect(Collectors.toList());
@@ -84,10 +88,14 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse updatePersonnelAssignedTask(@RequestBody PersonnelAssignedTaskUpdateView update) {
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
         LocalDateTime updateTimestamp = LocalDateTime.now();
-        PersonnelAssignedTask personnelAssignedTask =
+        PersonnelAssignedTask task =
                 update.toPersonnelAssignedTask(authenticatedEmpId, updateTimestamp);
-        verifyTask(personnelAssignedTask);
-        taskDao.updatePersonnelAssignedTask(personnelAssignedTask);
+
+        verifyTask(task);
+
+        checkPermission(new CorePermission(task.getEmpId(), PERSONNEL_TASK, POST));
+
+        taskDao.updatePersonnelAssignedTask(task);
         return new SimpleResponse(true,
                 "personnel assigned task updated",
                 "personnel-assigned-task-update-success"
