@@ -13,7 +13,7 @@
     <li class="sub-topic green">
       <a href="${ctxPath}/myinfo/personnel/acknowledgments">Acknowledgments</a>
       <badge title="Pending Acknowledgments"
-             badge-id="unacknowledgedDocuments" hide-empty="true"></badge>
+             badge-id="unacknowledgedDocuments" hide-empty="false" color="green"></badge>
     </li>
   </ul>
   <shiro:hasPermission name="<%= SimpleEssPermission.ACK_REPORT_GENERATION.getPermissionString() %>">

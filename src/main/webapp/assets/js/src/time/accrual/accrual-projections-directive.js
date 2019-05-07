@@ -200,7 +200,7 @@ function accrualProjectionDirective($timeout, $rootScope, appProps, AccrualHisto
              *                          and the employee is able to accrue/use accruals
              */
             function isValidProjection(acc) {
-                return acc.computed && !acc.submitted && acc.empState.payType !== 'TE' && acc.empState.employeeActive;
+                return acc.computed && !acc.submitted && acc.empState.payType !== 'TE' && acc.empState.employeeAccruing;
             }
 
             /** Indicates delta fields that are used for input, used to init projection */

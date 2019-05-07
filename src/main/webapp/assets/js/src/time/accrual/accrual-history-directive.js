@@ -243,8 +243,6 @@ function accrualHistoryDirective($timeout, $rootScope, appProps, modals,
                 if (accrualRecord.empState) {
                     // Employee must not be temporary
                     displayRecord = displayRecord && accrualRecord.empState.payType !== 'TE';
-                    // Employee must be active
-                    displayRecord = displayRecord && accrualRecord.empState.employeeActive;
                 }
 
                 return displayRecord;
