@@ -15,7 +15,7 @@
 <ess-layout:body>
   <jsp:body>
     <ess-component-nav:top-nav activeTopic="travel"/>
-    <section class="content-wrapper">
+    <section class="content-wrapper" ng-controller="TravelMainCtrl">
       <ess-component-nav:travel-nav/>
       <div class="view-animate-container">
         <div ng-view class="view-animate"></div>

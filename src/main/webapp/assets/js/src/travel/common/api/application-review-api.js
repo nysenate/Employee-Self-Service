@@ -4,8 +4,8 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
 
         var pendingReviewsApi = $resource(appProps.apiPath + '/travel/review/pending.json');
         var reviewHistoryApi = $resource(appProps.apiPath + '/travel/review/history.json');
-        var approveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/approve.json', {approvalId: '@appReviewId'});
-        var disapproveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove.json', {approvalId: '@appReviewId'});
+        var approveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/approve.json', {appReviewId: '@appReviewId'});
+        var disapproveApi = $resource(appProps.apiPath + '/travel/review/:appReviewId/disapprove.json', {appReviewId: '@appReviewId'});
 
         /**
          * Get all application reviews which need to be reviewed by the logged in user.

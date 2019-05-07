@@ -2,14 +2,14 @@ var essTravel = angular.module('essTravel');
 
 essTravel.directive('appReviewViewModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/component/review/app-review-view-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/component/review-history/app-review-view-modal',
         scope: {},
         controller: 'AppReviewViewCtrl'
     }
 }])
-    .controller('AppReviewViewCtrl', ['$scope', appReviewViewCtrl]);
+    .controller('AppReviewViewCtrl', ['$scope', 'modals', appReviewViewCtrl]);
 
-function appReviewViewCtrl($scope) {
+function appReviewViewCtrl($scope, modals) {
 
     $scope.appReview = modals.params();
 

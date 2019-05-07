@@ -17,7 +17,11 @@
       <h3 class="main-topic">Manage Travel</h3>
       <ul class="sub-topic-list">
         <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
-          <li class="sub-topic orange"><a href="${ctxPath}/travel/review">Review Applications</a></li>
+          <li class="sub-topic orange">
+            <a href="${ctxPath}/travel/review">Review Applications</a>
+            <badge title="Applications pending review"
+                   badge-id="travelPendingAppReviewCount" hide-empty="false"></badge>
+          </li>
         </shiro:hasPermission>
         <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermissionString() %>">
           <li class="sub-topic orange"><a href="${ctxPath}/travel/review/history">Review History</a></li>

@@ -34,6 +34,7 @@
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-form-view-modal.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-review-form-body-directive.js?v=${releaseVersion}"></script>
 
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/travel-main-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app-summary-table-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app-status-cell-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/action-type-cell-directive.js?v=${releaseVersion}"></script>
