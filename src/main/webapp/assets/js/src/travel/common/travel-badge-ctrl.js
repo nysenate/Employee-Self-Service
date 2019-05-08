@@ -11,6 +11,9 @@ function travelBadgeCtrl($scope, badgeService, appReviewApi) {
         appReviewApi.pendingReviews()
             .then(function (appReviews) {
                 badgeService.setBadgeValue(travelBadgeId, appReviews.length);
+            })
+            .catch(function () {
+                console.log("not authorized");
             });
     })
 }

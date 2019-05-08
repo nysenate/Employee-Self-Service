@@ -1,4 +1,4 @@
-<div ng-controller="UserAppsCtrl">
+<div ng-controller="UserAppsCtrl as vm">
   <div class="travel-hero">
     <h2>View Travel Applications</h2>
   </div>
@@ -9,20 +9,20 @@
       <div class="padding-10 inline-block">
         <label class="bold">From:</label>
         <input datepicker readonly='true' id="dateFrom" style="margin-left: 1px;"
-               ng-model="date.from" to-date="date.to"
-               ng-change="applyFilters()"/>
+               ng-model="vm.date.from" to-date="vm.date.to"
+               ng-change="vm.applyFilters()"/>
       </div>
       <div class="padding-10 inline-block">
         <label class="bold">To:</label>
         <input datepicker readonly='true' id="dateTo" style="margin-left: 1px;"
-               ng-model="date.to" from-date="date.from"
-               ng-change="applyFilters()"/>
+               ng-model="vm.date.to" from-date="vm.date.from"
+               ng-change="vm.applyFilters()"/>
       </div>
     </div>
   </div>
 
-  <div ng-if="appRequest.$resolved === true">
-    <div ng-if="apps.filtered.length === 0">
+  <div ng-if="vm.appRequest.$resolved === true">
+    <div ng-if="vm.apps.filtered.length === 0">
       <div class="content-container">
         <div class="content-info">
           <h2 class="dark-gray">No results were found.</h2>
@@ -30,10 +30,10 @@
       </div>
     </div>
 
-    <div ng-if="apps.filtered.length > 0">
+    <div ng-if="vm.apps.filtered.length > 0">
       <ess-app-summary-table
-          apps="apps.filtered"
-          on-row-click="viewApplicationForm(app)"
+          apps="vm.apps.filtered"
+          on-row-click="vm.viewApplicationForm(app)"
           show-status>
       </ess-app-summary-table>
     </div>
