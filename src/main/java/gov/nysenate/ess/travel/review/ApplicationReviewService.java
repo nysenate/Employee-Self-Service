@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,10 @@ public class ApplicationReviewService {
     }
 
     public List<ApplicationReview> pendingAppReviewsForEmpWithRole(Employee employee, TravelRole role) {
+        if (role == TravelRole.NONE) {
+            return new ArrayList<>();
+        }
+
         List<ApplicationReview> pendingReviews = appReviewDao.selectAppReviewsByNextRole(role);
         if (role == TravelRole.SUPERVISOR) {
             pendingReviews = pendingReviews.stream()

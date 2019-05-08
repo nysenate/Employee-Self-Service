@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelMainCtrl', ['$scope', 'badgeService', 'ApplicationReviewApi', travelMainCtrl]);
+essTravel.controller('TravelBadgeCtrl', ['$scope', 'badgeService', 'ApplicationReviewApi', travelBadgeCtrl]);
 
-function travelMainCtrl($scope, badgeService, appReviewApi) {
+function travelBadgeCtrl($scope, badgeService, appReviewApi) {
 
     const travelBadgeId = "travelPendingAppReviewCount";
 

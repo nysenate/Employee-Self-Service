@@ -7,14 +7,12 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
-import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +27,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      * Get app reviews which need review by the logged in user.
      */
     @RequestMapping(value = "/pending", method = RequestMethod.GET)
-    public BaseResponse getPendingReviews() throws AuthenticationException {
+    public BaseResponse getPendingReviews() {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviewsForEmpWithRole(employee, role);
@@ -50,7 +48,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/{appReviewId}/approve", method = RequestMethod.POST)
-    public BaseResponse approveApplication(@PathVariable int appReviewId) throws AuthenticationException {
+    public BaseResponse approveApplication(@PathVariable int appReviewId) {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
@@ -59,7 +57,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/{appReviewId}/disapprove", method = RequestMethod.POST)
-    public BaseResponse disapproveApplication(@PathVariable int appReviewId) throws AuthenticationException {
+    public BaseResponse disapproveApplication(@PathVariable int appReviewId) {
         TravelRole role = checkSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
@@ -69,9 +67,8 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     /**
      * @return The TravelRole assigned to the user.
-     * @throws AuthenticationException if the user lacks a travel role.
      */
-    private TravelRole checkSubjectRole() throws AuthenticationException {
+    private TravelRole checkSubjectRole() {
         TravelRole role = TravelRole.NONE;
         if (getSubject().hasRole(TravelRole.SUPERVISOR.name())) {
             role = TravelRole.SUPERVISOR;
@@ -85,11 +82,6 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
         if (getSubject().hasRole(TravelRole.MAJORITY_LEADER.name())) {
             role = TravelRole.MAJORITY_LEADER;
         }
-
-        if (role == TravelRole.NONE) {
-            throw new UnauthorizedException("Missing a required role.");
-        }
-
         return role;
     }
 }
