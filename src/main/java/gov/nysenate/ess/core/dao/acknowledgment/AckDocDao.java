@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.dao.acknowledgment;
 
-import gov.nysenate.ess.core.model.acknowledgment.*;
+import gov.nysenate.ess.core.model.pec.acknowledgment.*;
 
 import java.util.List;
 

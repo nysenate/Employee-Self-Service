@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.model.acknowledgment;
+package gov.nysenate.ess.core.model.pec.acknowledgment;
 
 /**
  * An exception thrown when an {@link AckDoc} cannot be found for a specific id.

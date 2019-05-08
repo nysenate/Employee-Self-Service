@@ -1,13 +1,14 @@
-package gov.nysenate.ess.core.client.view.acknowledgment;
+package gov.nysenate.ess.core.client.view.pec.acknowledgment;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
+import gov.nysenate.ess.core.model.pec.acknowledgment.Acknowledgment;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
 @XmlRootElement
+@Deprecated
 public class AcknowledgmentView implements ViewObject {
 
     private Integer empId;

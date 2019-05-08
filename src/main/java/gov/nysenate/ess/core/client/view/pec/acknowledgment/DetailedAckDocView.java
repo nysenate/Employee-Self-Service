@@ -1,6 +1,6 @@
-package gov.nysenate.ess.core.client.view.acknowledgment;
+package gov.nysenate.ess.core.client.view.pec.acknowledgment;
 
-import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import javax.xml.bind.annotation.XmlElement;

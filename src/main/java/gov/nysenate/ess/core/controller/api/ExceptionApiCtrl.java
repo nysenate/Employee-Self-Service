@@ -16,6 +16,7 @@ import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -66,6 +68,20 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
         ParameterView parameterView = new ParameterView(ex.getParameterName(), ex.getParameterType());
         logger.warn("Missing parameter for request: {}\n{}", request.getRequestURI(), toJson(parameterView));
         return new ViewObjectErrorResponse(ErrorCode.MISSING_PARAMETERS, parameterView);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    protected ErrorResponse handleBadMethodTypeException(HttpServletRequest request,
+                                                         MethodArgumentTypeMismatchException ex) {
+        MethodParameter param = ex.getParameter();
+        ParameterView parameterView = new ParameterView(
+                param.getParameterName(),
+                param.getParameterType().getSimpleName()
+        );
+        logger.warn("Invalid param type for request: {}\n{}", request.getRequestURI(), toJson(parameterView));
+        return new ViewObjectErrorResponse(ErrorCode.INVALID_PARAM_TYPE, parameterView);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

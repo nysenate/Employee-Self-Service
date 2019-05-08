@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.acknowledgment;
 
-import gov.nysenate.ess.core.model.acknowledgment.EmpAckReport;
+import gov.nysenate.ess.core.model.pec.acknowledgment.EmpAckReport;
 
 import java.util.ArrayList;
 

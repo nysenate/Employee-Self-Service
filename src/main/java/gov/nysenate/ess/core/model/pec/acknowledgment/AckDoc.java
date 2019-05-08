@@ -1,5 +1,6 @@
-package gov.nysenate.ess.core.model.acknowledgment;
+package gov.nysenate.ess.core.model.pec.acknowledgment;
 
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 /**
  * A document that must be acknowledged by active employees.
  */
-public class AckDoc {
+public class AckDoc implements PersonnelTask {
 
     /** Document title */
     private String title;
@@ -31,17 +32,19 @@ public class AckDoc {
         this.effectiveDateTime = effectiveDateTime;
     }
 
-    /* --- Functional Getters --- */
+    /* --- Personnel Task Methods  --- */
 
+    @Override
     public PersonnelTaskId getTaskId() {
         return new PersonnelTaskId(PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT, id);
     }
 
-    /* --- Getters / Setters --- */
-
+    @Override
     public String getTitle() {
         return title;
     }
+
+    /* --- Getters / Setters --- */
 
     public void setTitle(String title) {
         this.title = title;

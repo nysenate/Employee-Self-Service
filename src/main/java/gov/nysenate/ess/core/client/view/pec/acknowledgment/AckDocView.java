@@ -1,19 +1,21 @@
-package gov.nysenate.ess.core.client.view.acknowledgment;
+package gov.nysenate.ess.core.client.view.pec.acknowledgment;
 
-import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.client.view.pec.PersonnelTaskIdView;
+import gov.nysenate.ess.core.client.view.pec.PersonnelTaskView;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
 @XmlRootElement
-public class AckDocView implements ViewObject {
+public class AckDocView implements PersonnelTaskView {
 
     private String title;
     private String path;
-    private Boolean active;
-    private Integer id;
+    private boolean active;
+    private int id;
     private LocalDateTime effectiveDateTime;
 
     protected AckDocView() {
@@ -27,6 +29,13 @@ public class AckDocView implements ViewObject {
         this.effectiveDateTime = ackDoc.getEffectiveDateTime();
     }
 
+    @Override
+    @XmlElement
+    public PersonnelTaskIdView getTaskId() {
+        return new PersonnelTaskIdView(PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT, id);
+    }
+
+    @Override
     @XmlElement
     public String getTitle() {
         return title;
@@ -38,12 +47,12 @@ public class AckDocView implements ViewObject {
     }
 
     @XmlElement
-    public Boolean getActive() {
+    public boolean getActive() {
         return active;
     }
 
     @XmlElement
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

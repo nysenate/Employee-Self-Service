@@ -1,7 +1,9 @@
 package gov.nysenate.ess.core.service.pec;
 
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,4 +16,19 @@ public interface PersonnelTaskSource {
      * @return {@link Set<PersonnelTaskId>}
      */
     Set<PersonnelTaskId> getAllPersonnelTaskIds();
+
+    /**
+     * Get task details given a task id.
+     *
+     * @param taskId {@link PersonnelTaskId}
+     * @return {@link PersonnelTask}
+     * @throws PersonnelTaskNotFoundEx - if no task is found with the given id.
+     */
+    PersonnelTask getPersonnelTask(PersonnelTaskId taskId) throws PersonnelTaskNotFoundEx;
+
+    /**
+     * Get a list of all active personnel tasks.
+     * @return {@link List<PersonnelTask>}
+     */
+    List<PersonnelTask> getActivePersonnelTasks();
 }

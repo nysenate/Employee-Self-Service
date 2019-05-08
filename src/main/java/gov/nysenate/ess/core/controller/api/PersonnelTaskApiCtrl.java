@@ -1,27 +1,27 @@
 package gov.nysenate.ess.core.controller.api;
 
+import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
-import gov.nysenate.ess.core.client.view.PersonnelAssignedTaskUpdateView;
-import gov.nysenate.ess.core.client.view.PersonnelAssignedTaskView;
+import gov.nysenate.ess.core.client.view.pec.*;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.pec.PersonnelTaskSource;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.ShiroUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.auth.CorePermissionObject.PERSONNEL_TASK;
@@ -38,12 +38,16 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     private final PersonnelAssignedTaskDao taskDao;
     private final EmployeeInfoService empInfoService;
 
+    private final Map<Class, PersonnelTaskViewFactory> viewFactoryMap;
+
     public PersonnelTaskApiCtrl(PersonnelTaskSource taskSource,
                                 PersonnelAssignedTaskDao taskDao,
-                                EmployeeInfoService empInfoService) {
+                                EmployeeInfoService empInfoService,
+                                List<PersonnelTaskViewFactory> taskViewFactories) {
         this.taskSource = taskSource;
         this.taskDao = taskDao;
         this.empInfoService = empInfoService;
+        this.viewFactoryMap = Maps.uniqueIndex(taskViewFactories, PersonnelTaskViewFactory::getTaskClass);
     }
 
     /**
@@ -61,12 +65,20 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * @return {@link ListViewResponse<PersonnelAssignedTaskView>} list of tasks assigned to given emp.
      */
     @RequestMapping(value = "/emp/{empId}", method = {GET, HEAD})
-    public ListViewResponse<PersonnelAssignedTaskView> getTasksForEmployee(@PathVariable int empId) {
+    public ListViewResponse<PersonnelAssignedTaskView> getTasksForEmployee(
+            @PathVariable int empId,
+            @RequestParam(defaultValue = "false") boolean detail) {
+
         checkPermission(new CorePermission(empId, PERSONNEL_TASK, POST));
 
+        // Determine method to use to generate view objects.
+        Function<PersonnelAssignedTask, PersonnelAssignedTaskView> viewMapper =
+                detail ? this::getDetailedTaskView : PersonnelAssignedTaskView::new;
+
         List<PersonnelAssignedTask> tasks = taskDao.getTasksForEmp(empId);
-        List<PersonnelAssignedTaskView> taskViews =
-                tasks.stream().map(PersonnelAssignedTaskView::new).collect(Collectors.toList());
+        List<PersonnelAssignedTaskView> taskViews = tasks.stream()
+                .map(viewMapper)
+                .collect(Collectors.toList());
         return ListViewResponse.of(taskViews, "tasks");
     }
 
@@ -102,6 +114,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         );
     }
 
+    /* --- Internal Methods --- */
+
     /**
      * Verifies the given task to make sure the contents are valid.
      */
@@ -118,6 +132,21 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
             throw new InvalidRequestParamEx(Objects.toString(task.getTaskId()), "taskId",
                     "personnel-task-id", "task id must refer to an active task");
         }
+    }
+
+    /**
+     * Generate a detailed task view from the given task.
+     * This involves loading task details and packinging it with the task.
+     */
+    @SuppressWarnings("unchecked")
+    private DetailPersonnelAssignedTaskView getDetailedTaskView(PersonnelAssignedTask assignedTask) {
+        PersonnelTask personnelTask = taskSource.getPersonnelTask(assignedTask.getTaskId());
+        Class<? extends PersonnelTask> taskClass = personnelTask.getClass();
+        if (!viewFactoryMap.containsKey(taskClass)) {
+            throw new IllegalArgumentException("No view factory exists for PersonnelTasks of class: " + taskClass.getName());
+        }
+        PersonnelTaskView taskView = viewFactoryMap.get(taskClass).getView(personnelTask);
+        return new DetailPersonnelAssignedTaskView(assignedTask, taskView);
     }
 
 }

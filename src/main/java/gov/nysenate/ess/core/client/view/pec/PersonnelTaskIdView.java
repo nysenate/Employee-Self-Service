@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.client.view;
+package gov.nysenate.ess.core.client.view.pec;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
@@ -14,7 +14,7 @@ public class PersonnelTaskIdView implements ViewObject {
 
     protected PersonnelTaskIdView() {}
 
-    protected PersonnelTaskIdView(PersonnelTaskType taskType, int taskNumber) {
+    public PersonnelTaskIdView(PersonnelTaskType taskType, int taskNumber) {
         this.taskType = Objects.requireNonNull(taskType);
         this.taskNumber = taskNumber;
     }

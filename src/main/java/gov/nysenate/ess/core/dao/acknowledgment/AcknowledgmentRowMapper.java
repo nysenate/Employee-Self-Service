@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.dao.acknowledgment;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
-import gov.nysenate.ess.core.model.acknowledgment.Acknowledgment;
+import gov.nysenate.ess.core.model.pec.acknowledgment.Acknowledgment;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.dao.acknowledgment;
 
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.acknowledgment.*;
+import gov.nysenate.ess.core.model.pec.acknowledgment.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;

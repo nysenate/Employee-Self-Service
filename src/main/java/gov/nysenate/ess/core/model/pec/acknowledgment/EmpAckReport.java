@@ -1,11 +1,8 @@
-package gov.nysenate.ess.core.model.acknowledgment;
+package gov.nysenate.ess.core.model.pec.acknowledgment;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.unit.Location;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class EmpAckReport {

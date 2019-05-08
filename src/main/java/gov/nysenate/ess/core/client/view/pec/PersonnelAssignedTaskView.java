@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.client.view;
+package gov.nysenate.ess.core.client.view.pec;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
