@@ -7,7 +7,7 @@
     <div style="flex-grow: 1; margin-right: 0px; border-left: 2px solid #e6e6e6;">
       <div style="margin-left: 10px;">
         <div ng-if="!hasActions">
-          <h3 class="dark-gray text-align-center">No Previous Actions</h3>
+          <h3 class="dark-gray text-align-center">No Actions</h3>
         </div>
 
         <div ng-if="hasActions">

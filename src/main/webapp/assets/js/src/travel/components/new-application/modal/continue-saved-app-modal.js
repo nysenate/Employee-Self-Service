@@ -2,7 +2,7 @@ var essTravel = angular.module('essTravel');
 
 essTravel.directive('essContinueSavedAppModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/modal/continue-saved-app-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/component/new-application/modal/continue-saved-app-modal',
         controller: 'ContinueApplicationModalCtrl'
     }
 }])
