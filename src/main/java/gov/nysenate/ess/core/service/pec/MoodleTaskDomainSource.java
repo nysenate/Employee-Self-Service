@@ -13,15 +13,16 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.MOODLE_COURSE;
 
 /**
  * Provides all active tasks related to the Moodle Ethics Training Course.
+ *
+ * Currently, only the leg ethics course is in Moodle.
  */
-
 @Service
-public class MooldeTaskDomainSource implements PersonnelTaskDomainSource<SimplePersonnelTask> {
+public class MoodleTaskDomainSource implements PersonnelTaskDomainSource<SimplePersonnelTask> {
 
     private final PersonnelTaskId personnelTaskId = new PersonnelTaskId(MOODLE_COURSE, 1);
 
     @Autowired
-    public MooldeTaskDomainSource() {}
+    public MoodleTaskDomainSource() {}
 
     @Override
     public Set<PersonnelTaskId> getActiveTaskIds() {
@@ -39,6 +40,6 @@ public class MooldeTaskDomainSource implements PersonnelTaskDomainSource<SimpleP
     @Override
     public SimplePersonnelTask getPersonnelTask(int taskNumber) throws PersonnelTaskNotFoundEx {
        return new SimplePersonnelTask(personnelTaskId,
-               "Moodle Ethics Training Course");
+               "LegEthics Training Course");
     }
 }
