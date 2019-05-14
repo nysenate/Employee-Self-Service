@@ -35,15 +35,21 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     @Override
     public void assignTasks() {
+        logger.info("Determining and assigning personnel tasks for all active employees...");
         Set<PersonnelTaskId> activeTaskIds = getAllActiveTaskIds();
         Set<Integer> activeEmpIds = empInfoService.getActiveEmpIds();
-        activeEmpIds.forEach(empId -> assignTasks(empId, activeTaskIds));
+        activeEmpIds.stream()
+                .sorted()
+                .forEach(empId -> assignTasks(empId, activeTaskIds));
+        logger.info("Personnel task assignment completed...");
     }
 
     @Override
     public void assignTasks(int empId) {
+        logger.info("Determining personnel tasks for emp #{} ...", empId);
         Set<PersonnelTaskId> activeTaskIds = getAllActiveTaskIds();
         assignTasks(empId, activeTaskIds);
+        logger.info("Completed task assignment for emp #{} ...", empId);
     }
 
     /* --- Internal Methods --- */
@@ -65,6 +71,11 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         List<PersonnelAssignedTask> newTasks = difference.stream()
                 .map(taskId -> PersonnelAssignedTask.newTask(empId, taskId))
                 .collect(Collectors.toList());
+
+        if (!newTasks.isEmpty()) {
+            logger.info("Assigning {} personnel tasks to emp #{} :", newTasks.size(), empId);
+            newTasks.forEach(task -> logger.info("\t{}", task.getTaskId()));
+        }
 
         newTasks.forEach(taskDao::updatePersonnelAssignedTask);
     }

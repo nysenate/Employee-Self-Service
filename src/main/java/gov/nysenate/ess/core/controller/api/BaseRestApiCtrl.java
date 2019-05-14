@@ -5,6 +5,9 @@ import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
@@ -40,6 +43,7 @@ public class BaseRestApiCtrl
     /** Maximum number of results that can be requested via the query params. */
     private static final int MAX_LIMIT = 1000;
 
+    @Autowired private EmployeeInfoService empInfoService;
     @Autowired protected EventBus eventBus;
 
     @PostConstruct
@@ -47,7 +51,7 @@ public class BaseRestApiCtrl
         this.eventBus.register(this);
     }
 
-    /** --- Request Parsers / Getters --- */
+    /* --- Request Parsers / Getters --- */
 
     /**
      * @return The currently authenticated subject
@@ -263,5 +267,50 @@ public class BaseRestApiCtrl
             offset = NumberUtils.toInt(webRequest.getParameter("offset"), 0);
         }
         return new LimitOffset(limit, offset);
+    }
+
+    /**
+     * Checks to make sure the given emp id is valid.
+     *
+     * @param empId int
+     * @param paramName String
+     * @throws InvalidRequestParamEx if the given emp doesn't exist.
+     */
+    protected void ensureEmpIdExists(int empId, String paramName) throws InvalidRequestParamEx {
+        try {
+            empInfoService.getEmployee(empId);
+        } catch (EmployeeNotFoundEx ex) {
+            throw new InvalidRequestParamEx(
+                    Integer.toString(empId),
+                    paramName,
+                    "int",
+                    "employee id must correspond to an employee"
+            );
+        }
+    }
+
+    /**
+     * Checks to make sure the given emp id corresponds to an active employee.
+     *
+     * @param empId int
+     * @param paramName String
+     * @throws InvalidRequestParamEx if the given emp id is not active or doesn't exist
+     */
+    protected void ensureEmpIdActive(int empId, String paramName) throws InvalidRequestParamEx {
+        boolean empActive;
+        try {
+            Employee employee = empInfoService.getEmployee(empId);
+            empActive = employee.isActive();
+        } catch (EmployeeNotFoundEx ex) {
+            empActive = false;
+        }
+        if (!empActive) {
+            throw new InvalidRequestParamEx(
+                    Integer.toString(empId),
+                    paramName,
+                    "int",
+                    "employee id must correspond to a currently active employee"
+            );
+        }
     }
 }

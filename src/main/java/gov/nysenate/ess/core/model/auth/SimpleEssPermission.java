@@ -21,6 +21,9 @@ public enum SimpleEssPermission {
 
     /**Granted to users who should be able to generate out acknowledgment reports */
     COMPLIANCE_REPORT_GENERATION("core:ack-report-generation"),
+
+    /** Allows user to manually run personnel task assigner */
+    RUN_PERSONNEL_TASK_ASSIGNER("admin:personnel-task-assigner"),
     ;
 
     private String permissionString;
