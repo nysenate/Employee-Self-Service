@@ -29,39 +29,59 @@ function StateService() {
         return this.currState === this.STATES.PURPOSE;
     };
 
-    StateService.prototype.isOutboundState = function () {
-        return this.currState === this.STATES.OUTBOUND;
-    };
-
-    StateService.prototype.isReturnState = function () {
-        return this.currState === this.STATES.RETURN;
-    };
-
-    StateService.prototype.isAllowancesState = function () {
-        return this.currState === this.STATES.ALLOWANCES;
-    };
-
-    StateService.prototype.isReviewState = function () {
-        return this.currState === this.STATES.REVIEW;
-    };
-
     StateService.prototype.setPurposeState = function () {
         this.currState = this.STATES.PURPOSE;
+    };
+
+    StateService.prototype.isPurposeNavigable = function () {
+        return this.STATES.PURPOSE < this.currState;
+    };
+
+    StateService.prototype.isOutboundState = function () {
+        return this.currState === this.STATES.OUTBOUND;
     };
 
     StateService.prototype.setOutboundState = function () {
         this.currState = this.STATES.OUTBOUND;
     };
 
+    StateService.prototype.isOutboundNavigable = function () {
+        return this.STATES.OUTBOUND < this.currState;
+    };
+
+    StateService.prototype.isReturnState = function () {
+        return this.currState === this.STATES.RETURN;
+    };
+
     StateService.prototype.setReturnState = function () {
         this.currState = this.STATES.RETURN;
+    };
+
+    StateService.prototype.isReturnNavigable = function () {
+        return this.STATES.RETURN < this.currState;
+    };
+
+    StateService.prototype.isAllowancesState = function () {
+        return this.currState === this.STATES.ALLOWANCES;
     };
 
     StateService.prototype.setAllowancesState = function () {
         this.currState = this.STATES.ALLOWANCES;
     };
 
+    StateService.prototype.isAllowancesNavigable = function () {
+        return this.STATES.ALLOWANCES < this.currState;
+    };
+
+    StateService.prototype.isReviewState = function () {
+        return this.currState === this.STATES.REVIEW;
+    };
+
     StateService.prototype.setReviewState = function () {
         this.currState = this.STATES.REVIEW;
+    };
+
+    StateService.prototype.isReviewNavigable = function () {
+        return this.STATES.REVIEW < this.currState;
     };
 };

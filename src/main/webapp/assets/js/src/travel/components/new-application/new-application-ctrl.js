@@ -91,35 +91,6 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
     }
 
     /**
-     * Determines when a step indicator/breadcrumb should be highlighted.
-     * @param state
-     * @return {boolean}
-     */
-    $scope.highlightStep = function (state) {
-        return state <= $scope.pageState;
-    };
-
-    /**
-     * Determines if the user is allowed to click on this step indicator.
-     * Users can only click on steps they have already completed.
-     * @param state
-     */
-    $scope.stepNavigable = function (state) {
-        return state < $scope.pageState;
-    };
-
-    /**
-     * Attempts to go to state page.
-     * Only allowed to go to a page if it goes backwards in the application.
-     * @param state an instance of $scope.STATES.
-     */
-    $scope.gotoStep = function (state) {
-        if (state < $scope.pageState) {
-            $scope.pageState = state;
-        }
-    };
-
-    /**
      * ---- Functions shared by child scopes ---
      */
 

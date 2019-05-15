@@ -8,18 +8,7 @@
     </div>
   </div>
 
-  <div class="step-indicator">
-    <span class="step completed" ng-click="gotoStep(STATES.PURPOSE)"
-          ng-class="{navigable: stepNavigable(STATES.PURPOSE)}">Purpose</span>
-    <span class="step" ng-click="gotoStep(STATES.OUTBOUND)"
-          ng-class="{completed: highlightStep(STATES.OUTBOUND), navigable: stepNavigable(STATES.OUTBOUND)}">Outbound</span>
-    <span class="step" ng-click="gotoStep(STATES.RETURN)"
-          ng-class="{completed: highlightStep(STATES.RETURN), navigable: stepNavigable(STATES.RETURN)}">Return</span>
-    <span class="step" ng-click="gotoStep(STATES.ALLOWANCES)"
-          ng-class="{completed: highlightStep(STATES.ALLOWANCES), navigable: stepNavigable(STATES.ALLOWANCES)}">Expenses</span>
-    <span class="step"
-          ng-class="{completed: highlightStep(STATES.REVIEW)}">Review</span>
-  </div>
+  <ess-app-edit-breadcrumbs></ess-app-edit-breadcrumbs>
 
   <div loader-indicator class="loader" ng-show="!data.app"></div>
 
@@ -48,7 +37,8 @@
 
     <div ng-if="stateService.isReviewState()">
       <div ng-controller="NewApplicationReviewCtrl">
-        <ng-include src="'/template/travel/component/new-application/new-application-review'" onload="init()"></ng-include>
+        <ng-include src="'/template/travel/component/new-application/new-application-review'"
+                    onload="init()"></ng-include>
       </div>
     </div>
   </div>
