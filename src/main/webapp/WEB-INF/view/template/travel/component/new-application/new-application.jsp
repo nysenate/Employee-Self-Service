@@ -24,31 +24,29 @@
   <div loader-indicator class="loader" ng-show="!data.app"></div>
 
   <div ng-if="data.app">
-    <div ng-if="pageState === STATES.PURPOSE">
-      <div ng-controller="NewApplicationPurposeCtrl">
-        <ng-include src="'/template/travel/component/new-application/new-application-purpose'"></ng-include>
-      </div>
+    <div ng-if="stateService.isPurposeState()">
+      <ess-purpose-edit-form app="data.app"></ess-purpose-edit-form>
     </div>
 
-    <div ng-if="pageState === STATES.OUTBOUND">
+    <div ng-if="stateService.isOutboundState()">
       <div ng-controller="NewApplicationOutboundCtrl">
         <ng-include src="'/template/travel/component/new-application/new-application-outbound'"></ng-include>
       </div>
     </div>
 
-    <div ng-if="pageState === STATES.RETURN">
+    <div ng-if="stateService.isReturnState()">
       <div ng-controller="NewApplicationReturnCtrl">
         <ng-include src="'/template/travel/component/new-application/new-application-return'"></ng-include>
       </div>
     </div>
 
-    <div ng-if="pageState === STATES.ALLOWANCES">
+    <div ng-if="stateService.isAllowancesState()">
       <div ng-controller="NewApplicationAllowancesCtrl">
         <ng-include src="'/template/travel/component/new-application/new-application-allowances'"></ng-include>
       </div>
     </div>
 
-    <div ng-if="pageState === STATES.REVIEW">
+    <div ng-if="stateService.isReviewState()">
       <div ng-controller="NewApplicationReviewCtrl">
         <ng-include src="'/template/travel/component/new-application/new-application-review'" onload="init()"></ng-include>
       </div>

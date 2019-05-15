@@ -6,7 +6,6 @@
 <c:choose>
     <c:when test="${runtimeLevel eq 'dev'}">
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-purpose-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-outbound-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-return-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/new-application/new-application-allowances-ctrl.js?v=${releaseVersion}"></script>
@@ -29,6 +28,9 @@
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/components/print-app/print-app-ctrl.js?v=${releaseVersion}"></script>
 
+
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app/purpose-edit-form-directive.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/app/app-edit-state-service.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-form-body-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/common/form/app-form-view-modal.js?v=${releaseVersion}"></script>

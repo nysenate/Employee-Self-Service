@@ -9,21 +9,10 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('NewApplicationCtrl',
-                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService','TravelApplicationApi', 'TravelApplicationByIdApi',
+                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi',
                       'TravelModeOfTransportationApi', 'AddressCountyService', travelAppController]);
 
-function travelAppController($scope, $q, $window, appProps, modals, locationService, appApi, appIdApi, motApi, countyService) {
-
-    $scope.STATES = {
-        PURPOSE: 1,
-        OUTBOUND: 2,
-        RETURN: 3,
-        ALLOWANCES: 4,
-        REVIEW: 5
-    };
-
-    // The current state.
-    $scope.pageState = undefined;
+function travelAppController($scope, $q, $window, appProps, modals, locationService, stateService, appApi, appIdApi, motApi, countyService) {
 
     // Common data shared between all child controllers.
     $scope.data = {
@@ -31,7 +20,8 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
     };
 
     this.$onInit = function () {
-        $scope.pageState = $scope.STATES.PURPOSE;
+        $scope.stateService = stateService;
+        $scope.stateService.setPurposeState();
         initApplication(appProps.user.employeeId);
         initMethodsOfTravel();
 
@@ -53,6 +43,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
                             cancelApplication() // TODO replace this functionality
                         });
                 }
+                console.log($scope.data.app.id);
             }, $scope.handleErrorResponse);
 
             function hasUncompleteApplication() {
@@ -67,18 +58,6 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
                         $scope.methodsOfTravel.push(modeOfTransportation.displayName);
                     });
             }, $scope.handleErrorResponse);
-        }
-    };
-
-    $scope.nextState = function () {
-        if ($scope.pageState < $scope.STATES.REVIEW) {
-            $scope.pageState++;
-        }
-    };
-
-    $scope.previousState = function () {
-        if ($scope.pageState > $scope.STATES.PURPOSE) {
-            $scope.pageState--;
         }
     };
 
