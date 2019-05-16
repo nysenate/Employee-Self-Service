@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essReviewEditForm', ['appProps', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', reviewEditForm]);
+essTravel.directive('essReviewEditForm', ['$compile', 'appProps', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', reviewEditForm]);
 
-function reviewEditForm(appProps, modals, stateService, appByIdApi) {
+function reviewEditForm($compile, appProps, modals, stateService, appByIdApi) {
     return {
         restrict: 'E',
         scope: {

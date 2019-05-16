@@ -15,10 +15,6 @@ essTravel.controller('NewApplicationCtrl',
 function travelAppController($scope, $q, $window, appProps, modals, locationService, stateService, appApi, appIdApi, motApi, countyService) {
 
     $scope.stateService = stateService;
-    $scope.$watch('stateService.currState', function (curr, old) {
-        console.log("Switching from State " + old + " to State " + curr);
-        console.log($scope.data.app);
-    });
     // Common data shared between all child controllers.
     $scope.data = {
         app: undefined

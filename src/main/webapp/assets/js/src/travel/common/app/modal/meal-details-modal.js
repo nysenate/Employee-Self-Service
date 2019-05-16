@@ -2,7 +2,7 @@ var essTravel = angular.module('essTravel');
 
 essTravel.directive('essMealDetailsModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/modal/meal-details-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/common/app/modal/meal-details-modal',
         controller: 'MealDetailsModalCtrl'
     }
 }])

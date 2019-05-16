@@ -3,7 +3,7 @@ var essTravel = angular.module('essTravel');
 essTravel.directive('essAddressCountyModal', ['appProps', function (appProps) {
     return {
         scope: {},
-        templateUrl: appProps.ctxPath + '/template/travel/application/modal/address-county-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/common/app/modal/address-county-modal',
         controller: 'AddressCountyModalCtrl'
     }
 }])

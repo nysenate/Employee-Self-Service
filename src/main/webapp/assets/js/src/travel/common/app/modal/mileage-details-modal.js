@@ -2,7 +2,7 @@ var essTravel = angular.module('essTravel');
 
 essTravel.directive('essMileageDetailsModal', ['appProps', function (appProps) {
     return {
-        templateUrl: appProps.ctxPath + '/template/travel/application/modal/mileage-details-modal',
+        templateUrl: appProps.ctxPath + '/template/travel/common/app/modal/mileage-details-modal',
         controller: 'MileageDetailsModalCtrl'
     }
 }])
