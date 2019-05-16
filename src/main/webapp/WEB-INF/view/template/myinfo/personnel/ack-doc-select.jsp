@@ -6,7 +6,7 @@
   <ul class="ack-doc-list">
     <li ng-repeat="doc in ackDocsInSelectedYear">
       <a ng-href="{{ctxPath}}/api/v1/acknowledgment/report/complete/{{doc.id}}" ng-bind="doc.title" target="_blank"
-      class="ack-doc-list-item-title"></a>
+      class="personnel-task-list-item-title"></a>
     </li>
   </ul>
 </div>

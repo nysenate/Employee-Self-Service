@@ -11,9 +11,9 @@
     <li class="sub-topic green"><a href="${ctxPath}/myinfo/personnel/summary">Current Info</a></li>
     <li class="sub-topic green"><a href="${ctxPath}/myinfo/personnel/emergency-alert-info">Emergency Alert Info</a></li>
     <li class="sub-topic green">
-      <a href="${ctxPath}/myinfo/personnel/acknowledgments">Acknowledgments</a>
-      <badge title="Pending Acknowledgments"
-             badge-id="unacknowledgedDocuments" hide-empty="false" color="green"></badge>
+      <a href="${ctxPath}/myinfo/personnel/todo">To-Do List</a>
+      <badge title="Personnel Tasks Needing Attention"
+             badge-id="incompleteTasks" hide-empty="true" color="green"></badge>
     </li>
   </ul>
   <shiro:hasPermission name="<%= SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermissionString() %>">

@@ -22,8 +22,8 @@
     </p>
 
     <div class="ack-doc-view-nav">
-      <a ng-href="{{ackDocPageUrl}}">
-        Return to Acknowledgments page
+      <a ng-href="{{todoPageUrl}}">
+        Return to Personnel To-Do List
       </a>
       <a ng-href="{{ctxPath + state.document.path}}" target="_blank">
         Open Printable View
@@ -70,7 +70,7 @@
     <modal modal-id="acknowledge-success">
       <div confirm-modal rejectable="true" title="Acknowledgment Complete"
            confirm-message="You have successfully acknowledged this policy/document."
-           resolve-button="Return to Acknowledgments" resolve-class="time-neutral-button"
+           resolve-button="Return to To-Do List" resolve-class="time-neutral-button"
            reject-button="Remain Here" reject-class="time-neutral-button">
       </div>
     </modal>

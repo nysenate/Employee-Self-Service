@@ -3,44 +3,27 @@ var essTime = angular.module('essMyInfo');
 /**
  * The wrapping controller that is the parent of the nav menu and view content.
  */
-essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'AckDocApi', 'AcknowledgmentApi',
-   function($scope, $q, appProps, badgeService, ackDocApi, ackApi) {
+essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'PersonnelTaskEmpApi',
+   function($scope, $q, appProps, badgeService, empTaskApi) {
 
-       $scope.updateAckBadge = function () {
-           var docs = [];
-           var acks = {};
+       $scope.updatePersonnelTaskBadge = function () {
+           var params = {
+               empId: appProps.user.employeeId,
+               detail: true
+           };
 
-           var params = {empId: appProps.user.employeeId};
+           return empTaskApi.get(params, setCount, $scope.handleErrorResponse);
 
-           var requests =
-               [
-                  ackDocApi.get({}, setDocs, $scope.handleErrorResponse).$promise,
-                  ackApi.get(params, setAcks, $scope.handleErrorResponse).$promise
-               ];
-
-           $q.all(requests).then(setCount);
-
-           function setAcks(resp) {
-               angular.forEach(resp.acknowledgments, function (ack) {
-                   acks[ack.ackDocId] = ack;
-               });
-           }
-
-           function setDocs(resp) {
-               docs = resp.documents;
-           }
-
-           function setCount() {
-               var count = 0;
-               angular.forEach(docs, function (doc) {
-                   if (!acks.hasOwnProperty(doc.id)) {
-                       count++;
-                   }
-               });
-               badgeService.setBadgeValue('unacknowledgedDocuments', count);
+           function setCount(resp) {
+               var count = resp.tasks
+                   .filter(function (task) {
+                       return task.hasOwnProperty('completed') && !task.completed
+                   })
+                   .length;
+               badgeService.setBadgeValue('incompleteTasks', count);
            }
        };
 
-       $scope.updateAckBadge();
+       $scope.updatePersonnelTaskBadge();
    }
 ]);

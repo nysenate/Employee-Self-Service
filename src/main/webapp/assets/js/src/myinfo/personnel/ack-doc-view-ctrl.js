@@ -2,13 +2,13 @@
 
 angular.module('essMyInfo')
     .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce',
-                                   'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
+                                   'appProps', 'modals', 'AckDocApi', 'TaskUtils', 'PersonnelTaskUpdateApi',
                                         acknowledgmentCtrl]);
 
 function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce,
-                            appProps, modals, documentApi, ackApi) {
+                            appProps, modals, documentApi, taskUtils, taskUpdateApi) {
 
-    $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgments';
+    $scope.todoPageUrl = appProps.ctxPath + '/myinfo/personnel/todo';
 
     /** Flag indicating that the window scroll handler was bound */
     var windowScrollBound = false;
@@ -19,7 +19,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     var initialState = {
         docId: null,
         document: null,
-        acknowledgments: {},
+        task: null,
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
@@ -38,10 +38,10 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     function init() {
         bindWindowScrollHandler();
         $scope.state = angular.copy(initialState);
-        $scope.state.docId = $routeParams.ackDocId;
+        $scope.state.docId = parseInt($routeParams.ackDocId);
         $q.all([
                    getDocument(),
-                   getAcknowledgments()
+                   getTask()
                ])
             .then(processAcknowledgment)
             .then(showPdf)
@@ -75,11 +75,11 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
                 return postAcknowledgment()
             })
             .then(function () {
-                $scope.updateAckBadge();
+                $scope.updatePersonnelTaskBadge();
                 return modals.open('acknowledge-success');
             })
             .then(function () {
-                $location.url($scope.ackDocPageUrl)
+                $location.url($scope.todoPageUrl)
             })
     };
 
@@ -129,53 +129,52 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     }
 
     /**
-     * Get all acknowledgments for the currently authenticated employee.
+     * Get the task that corresponds to this ack doc
      */
-    function getAcknowledgments() {
-        $scope.state.acknowledgments = {};
-
-        var params = {
-            empId: appProps.user.employeeId
-        };
-
+    function getTask() {
         $scope.state.request.ackGet = true;
-        return ackApi.get(params, onSuccess, $scope.handleErrorResponse)
-            .$promise.finally(function () {
+        return taskUtils.getEmpTasks(appProps.user.employeeId)
+            .then(findAckTask, $scope.handleErrorResponse)
+            .finally(function () {
                 $scope.state.request.ackGet = false;
             });
 
-        function onSuccess(resp) {
-            angular.forEach(resp.acknowledgments, function (ack) {
-                $scope.state.acknowledgments[ack.ackDocId] = ack;
+        function findAckTask(tasks) {
+            angular.forEach(tasks, function (task) {
+                var type = task.taskId.taskType,
+                    num = task.taskId.taskNumber;
+                if (type === 'DOCUMENT_ACKNOWLEDGMENT' && num === $scope.state.docId) {
+                    $scope.state.task = task;
+                }
             });
         }
     }
 
     function postAcknowledgment() {
-        var params = {
+        var body = {
             empId: appProps.user.employeeId,
-            ackDocId: $scope.state.document.id
+            taskId: $scope.state.task.taskId,
+            completed: true
         };
 
         $scope.state.request.ackPost = true;
-        return ackApi.save(params, {}, init, $scope.handleErrorResponse)
+        return taskUpdateApi.save({}, body, init, $scope.handleErrorResponse)
             .$promise.finally(function () {
                 $scope.state.request.ackPost = false;
             });
     }
 
     /**
-     * Determine whether the document was acknowledged based on received acknowledgments
+     * Determine whether the document was acknowledged based on received task
      */
     function processAcknowledgment() {
-        var acknowledgments = $scope.state.acknowledgments;
-        var docId = $scope.state.document.id;
-        if (acknowledgments.hasOwnProperty(docId)) {
-            var ack = acknowledgments[docId];
-            $scope.state.ackTimestamp = ack.timestamp;
-            $scope.state.acknowledged = true
+        var task = $scope.state.task;
+        if (task && task.hasOwnProperty('completed')) {
+            $scope.state.acknowledged = task.completed;
+            $scope.state.ackTimestamp = task.timestamp;
         } else {
-            $scope.state.acknowledged = false
+            console.warn('No task found for ack doc');
+            throw 'No corresponding task for ack doc!';
         }
     }
 

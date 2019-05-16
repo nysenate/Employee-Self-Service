@@ -119,16 +119,24 @@ essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, ap
     return $resource(appProps.apiPath + '/alert-info');
 }]);
 
+/** --- Personnel Task API --- */
+
+essApi.factory('PersonnelTaskEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/emp/:empId', {
+        empId: '@empId'
+    });
+}]);
+
+essApi.factory('PersonnelTaskUpdateApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/update');
+}]);
+
 /** --- Acknowledgment API --- */
 
 essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/acknowledgment/documents/:ackDocId', {
             ackDocId: '@ackDocId'
         });
-}]);
-
-essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/acks');
 }]);
 
 essApi.factory('AcknowledgmentYearApi', ['$resource', 'appProps', function ($resource, appProps) {

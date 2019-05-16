@@ -99,43 +99,44 @@
   }
 }
 
-/** --- Acknowledgment Page --- */
+/** --- Personnel To-do Page --- */
 
-.ack-doc-display {
+.personnel-todo-instructions {
+  max-width: 45em;
+  margin: auto;
+  text-align: left;
+  span {
+    padding: 0;
+  }
+}
+
+.personnel-task-display {
   width: 45em;
   margin: auto;
   padding-bottom: 1em;
-
-  //label.year-select {
-  //  font-weight: normal;
-  //  display: inline-block;
-  //  margin-top: 30px;
-  //}
 
   h2 {
     margin-top: 30px;
   }
 }
 
-.ack-doc-list-item-title {
+.personnel-task-list-item-title {
   text-decoration: underline;
 }
 
-.unacknowledged-doc-list .ack-doc-list-item {
+.personnel-task-incomplete-list .personnel-task-list-item {
   font-weight: bold;
 }
 
-.ack-doc-list-item:hover {
+.personnel-task-list-item:hover {
   background: #fafafa;
 }
 
-.ack-doc-list-item-ack-date {
+.personnel-task-list-item-action-date {
   color: rgba(34,34,34,0.5);
 }
 
-.acknowledgment-instructions {
-  text-align: left;
-}
+/* --- Ack Doc View --- */
 
 .ack-doc-container {
   padding-bottom: 10px;

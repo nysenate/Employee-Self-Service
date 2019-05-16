@@ -9,7 +9,9 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/alert-ctrl.js"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/myinfo/personnel/acknowledgment-ctrl.js"></script>
+                src="${ctxPath}/assets/js/src/myinfo/personnel/task-utils.js"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/todo-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/ack-doc-report-ctrl.js"></script>
         <script type="text/javascript"
