@@ -6,17 +6,21 @@ function purposeEditLink(appProps, stateService, appByIdApi, attachmentDeleteApi
     return {
         restrict: 'E',
         scope: {
-            app: '='
+            // An object which contains a field named 'app' containing the application being edited.
+            // This is necessary for two way binding of app data when doing reference reassignment.
+            appContainer: '='
         },
+        controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.app);
+            scope.dirtyApp = angular.copy(scope.appContainer.app);
 
             scope.next = function () {
                 appByIdApi.update({id: scope.dirtyApp.id}, {purposeOfTravel: scope.dirtyApp.purposeOfTravel}, function (response) {
-                    // Update 2 way binding with updated application object.
-                    scope.app = response.result;
+                    // Reassign the app reference to the updated application new object.
+                    // If app was not in a container object this change would not update in the parent.
+                    scope.appContainer.app = response.result;
                     stateService.nextState();
                 }, scope.handleErrorResponse)
             };

@@ -14,6 +14,11 @@ essTravel.controller('NewApplicationCtrl',
 
 function travelAppController($scope, $q, $window, appProps, modals, locationService, stateService, appApi, appIdApi, motApi, countyService) {
 
+    $scope.stateService = stateService;
+    $scope.$watch('stateService.currState', function (curr, old) {
+        console.log("Switching from State " + old + " to State " + curr);
+        console.log($scope.data.app);
+    });
     // Common data shared between all child controllers.
     $scope.data = {
         app: undefined
@@ -23,7 +28,6 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
         $scope.stateService = stateService;
         $scope.stateService.setPurposeState();
         initApplication(appProps.user.employeeId);
-        initMethodsOfTravel();
 
         /**
          * Checks to see if the logged in employee has an uncompleted travel application in progress.
@@ -51,39 +55,6 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
             }
         }
 
-        function initMethodsOfTravel() {
-            motApi.get({}, function (response) {
-                $scope.methodsOfTravel = [];
-                    response.result.forEach(function (modeOfTransportation) {
-                        $scope.methodsOfTravel.push(modeOfTransportation.displayName);
-                    });
-            }, $scope.handleErrorResponse);
-        }
-    };
-
-    $scope.cancel = function () {
-        modals.open("cancel-application").then(function () {
-            modals.resolve({});
-            $scope.openLoadingModal();
-            cancelApplication();
-        });
-    };
-
-    function cancelApplication() {
-        appIdApi.remove({id: $scope.data.app.id})
-            .$promise
-            .then(reload)
-            .catch($scope.handleErrorResponse)
-    }
-
-    $scope.openLoadingModal = function () {
-        modals.open('loading');
-    };
-
-    $scope.closeLoadingModal = function () {
-        if (modals.isTop('loading')) {
-            modals.resolve();
-        }
     };
 
     function reload() {
@@ -94,74 +65,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
      * ---- Functions shared by child scopes ---
      */
 
-    // Set all form elements as touched so they can be styled appropriately if they have errors.
-    $scope.setFormElementsTouched = function (form) {
-        for (var prop in form) {
-            if (form[prop] && typeof(form[prop].$setTouched) === 'function') {
-                form[prop].$setTouched();
-            }
-        }
-    };
 
-    $scope.checkCounties = function (legs) {
-        var deferred = $q.defer();
-        var addrsMissingCounty = findAddressesWithoutCounty(legs);
-
-        if (addrsMissingCounty.isEmpty) {
-            deferred.resolve();
-        }
-        else {
-            $scope.openLoadingModal();
-            countyService.updateWithGeocodeCounty(addrsMissingCounty)
-                .then(countyService.addressesMissingCounty) // filter out addresses that were updated with a county.
-                .then(countyService.promptUserForCounty)
-                .then($scope.closeLoadingModal)
-                .then(function () {
-                    deferred.resolve();
-                })
-                .catch(function () {
-                    deferred.reject();
-                })
-        }
-        return deferred.promise;
-
-
-        function findAddressesWithoutCounty(legs) {
-            var addresses = legs.map(function (leg) {
-                return leg.from;
-            }).concat(legs.map(function (leg) {
-                return leg.to;
-            }));
-            return countyService.addressesMissingCounty(addresses);
-        }
-    };
-
-    /**
-     * Modifies the given legs, normalizing each travel date to MM/DD/YYYY format.
-     * @param legs
-     */
-    $scope.normalizeTravelDates = function (legs) {
-        angular.forEach(legs, function (leg) {
-            if (leg.travelDate) {
-                leg.travelDate = $scope.normalizedDateFormat(leg.travelDate);
-            }
-        })
-    };
-
-    /**
-     * Returns a date representing the given date in MM/DD/YYYY format.
-     * Returns undefined if the given date format cannot be converted.
-     * @param date String representation of a date.
-     */
-    $scope.normalizedDateFormat = function (date) {
-        if (moment(date, 'M/D/YY', true).isValid()) {
-            return moment(date, 'M/D/YY', true).format("MM/DD/YYYY");
-        }
-        else if (moment(date, 'M/D/YYYY', true).isValid()) {
-            return moment(date, 'M/D/YYYY', true).format("MM/DD/YYYY");
-        }
-        return undefined;
-    };
 
     $scope.handleDataProviderError = function () {
          modals.open("external-api-error")

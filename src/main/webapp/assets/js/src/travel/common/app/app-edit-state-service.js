@@ -1,6 +1,9 @@
 var essTravel = angular.module('essTravel');
 essTravel.service('AppEditStateService', [StateService]);
 
+/**
+ * Stores and mutates the page state when editing an application.
+ */
 function StateService() {
 
     this.currState = undefined;

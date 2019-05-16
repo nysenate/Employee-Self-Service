@@ -14,32 +14,23 @@
 
   <div ng-if="data.app">
     <div ng-if="stateService.isPurposeState()">
-      <ess-purpose-edit-form app="data.app"></ess-purpose-edit-form>
+      <ess-purpose-edit-form app-container="data"></ess-purpose-edit-form>
     </div>
 
     <div ng-if="stateService.isOutboundState()">
-      <div ng-controller="NewApplicationOutboundCtrl">
-        <ng-include src="'/template/travel/component/new-application/new-application-outbound'"></ng-include>
-      </div>
+      <ess-outbound-edit-form app-container="data"></ess-outbound-edit-form>
     </div>
 
     <div ng-if="stateService.isReturnState()">
-      <div ng-controller="NewApplicationReturnCtrl">
-        <ng-include src="'/template/travel/component/new-application/new-application-return'"></ng-include>
-      </div>
+      <ess-return-edit-form app-container="data"></ess-return-edit-form>
     </div>
 
     <div ng-if="stateService.isAllowancesState()">
-      <div ng-controller="NewApplicationAllowancesCtrl">
-        <ng-include src="'/template/travel/component/new-application/new-application-allowances'"></ng-include>
-      </div>
+      <ess-allowances-edit-form app-container="data"></ess-allowances-edit-form>
     </div>
 
     <div ng-if="stateService.isReviewState()">
-      <div ng-controller="NewApplicationReviewCtrl">
-        <ng-include src="'/template/travel/component/new-application/new-application-review'"
-                    onload="init()"></ng-include>
-      </div>
+      <ess-review-edit-form app-container="data"></ess-review-edit-form>
     </div>
   </div>
 
