@@ -1,10 +1,11 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('NewApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AddressGeocoder', 'modals', outboundCtrl]);
+essTravel.controller('NewApplicationOutboundCtrl', ['$scope', '$q', '$timeout', 'AppEditStateService', 'AddressGeocoder', 'modals', outboundCtrl]);
 
-function outboundCtrl($scope, $q, $timeout, geocoder, modals) {
+function outboundCtrl($scope, $q, $timeout, stateService, geocoder, modals) {
 
     this.$onInit = function () {
+        $scope.stateService = stateService;
         $scope.outbound = {
             form: {}
         };
@@ -56,7 +57,7 @@ function outboundCtrl($scope, $q, $timeout, geocoder, modals) {
 
     $scope.continue = function () {
         $scope.data.app.route.outboundLegs = $scope.dirtyApp.route.outboundLegs;
-        $scope.nextState();
+        stateService.nextState();
     };
 
     /**

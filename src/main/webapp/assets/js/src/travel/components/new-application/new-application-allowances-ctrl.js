@@ -1,10 +1,11 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('NewApplicationAllowancesCtrl', ['$scope', 'modals', 'TravelApplicationByIdApi', allowancesCtrl]);
+essTravel.controller('NewApplicationAllowancesCtrl', ['$scope', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', allowancesCtrl]);
 
-function allowancesCtrl($scope, modals, appIdApi) {
+function allowancesCtrl($scope, modals, stateService, appIdApi) {
 
     this.$onInit = function () {
+        $scope.stateService = stateService;
         $scope.dirtyApp = angular.copy($scope.data.app);
         console.log($scope.dirtyApp);
     };
@@ -18,7 +19,7 @@ function allowancesCtrl($scope, modals, appIdApi) {
         };
         appIdApi.update({id: $scope.data.app.id}, patches, function (response) {
                 $scope.data.app = response.result;
-                $scope.nextState();
+                stateService.nextState();
             }, $scope.handleErrorResponse)
     };
 

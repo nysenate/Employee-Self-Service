@@ -1,10 +1,12 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('NewApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService', 'TravelApplicationByIdApi', reviewCtrl]);
+essTravel.controller('NewApplicationReviewCtrl', ['$scope', '$q', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationByIdApi', reviewCtrl]);
 
-function reviewCtrl($scope, $q, modals, locationService, appIdApi) {
+function reviewCtrl($scope, $q, modals, locationService, stateService, appIdApi) {
+
 
     $scope.init = function () {
+        $scope.stateService = stateService;
         $scope.reviewApp = angular.copy($scope.data.app);
         console.log($scope.reviewApp);
         displayMap();

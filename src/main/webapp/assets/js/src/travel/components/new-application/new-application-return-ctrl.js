@@ -1,10 +1,11 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('NewApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals', 'TravelApplicationByIdApi', returnCtrl]);
+essTravel.controller('NewApplicationReturnCtrl', ['$scope', '$timeout', '$q', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', returnCtrl]);
 
-function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
+function returnCtrl($scope, $timeout, $q, modals, stateService, appIdApi) {
 
     this.$onInit = function () {
+        $scope.stateService = stateService;
         $scope.return = {
             form: {}
         };
@@ -114,7 +115,7 @@ function returnCtrl($scope, $timeout, $q, modals, appIdApi) {
         $scope.openLoadingModal();
         appIdApi.update({id: $scope.data.app.id}, {route: JSON.stringify($scope.route)}, function (response) {
             $scope.data.app = response.result;
-            $scope.nextState();
+            stateService.nextState();
             $scope.closeLoadingModal();
         }, function (error) {
             $scope.closeLoadingModal();

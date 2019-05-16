@@ -96,7 +96,7 @@
         <input type="button" class="neutral-button" value="Cancel"
                ng-click="cancel()">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="previousState()">
+               ng-click="stateService.previousState()">
         <input type="submit" class="submit-button" value="Next"
                ng-click="next()">
       </div>
