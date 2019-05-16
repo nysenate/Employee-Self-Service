@@ -1,9 +1,13 @@
 package gov.nysenate.ess.core.model.pec;
 
+import java.util.Comparator;
+
 /**
  * Interface representing a personnel task.
  */
-public interface PersonnelTask {
+public interface PersonnelTask extends Comparable<PersonnelTask> {
+
+    Comparator<PersonnelTask> personnelTaskComparator = Comparator.comparing(PersonnelTask::getTaskId);
 
     /** Get a unique identifier for the task */
     PersonnelTaskId getTaskId();
@@ -15,4 +19,9 @@ public interface PersonnelTask {
 
     /** Get a title describing the task */
     String getTitle();
+
+    @Override
+    default int compareTo(PersonnelTask o) {
+        return personnelTaskComparator.compare(this, o);
+    }
 }
