@@ -57,8 +57,15 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
 
     };
 
+    function cancelApplication() {
+        appIdApi.remove({id: $scope.data.app.id})
+            .$promise
+            .then(reload)
+            .catch($scope.handleErrorResponse)
+    }
+
     function reload() {
-        locationService.go("/travel/application/travel-application", true);
+        locationService.go("/travel/application/new", true);
     }
 
     /**
