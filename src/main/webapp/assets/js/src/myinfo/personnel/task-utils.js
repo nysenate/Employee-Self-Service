@@ -66,7 +66,7 @@
         }
 
         function AcknowledgmentTask(task) {
-            var ackBaseUrl = appProps.ctxPath + "/myinfo/personnel/acknowledgments/";
+            var ackBaseUrl = appProps.ctxPath + "/myinfo/personnel/todo/acknowledgment/";
 
             PersonnelTask.apply(this, arguments);
 

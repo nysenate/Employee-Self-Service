@@ -34,7 +34,7 @@
             You do not have any tasks needing attention.
           </li>
           <li ng-repeat="task in state.tasks.incomplete">
-            <a ng-href="{{task.getActionUrl()}}" target="{{task.getActionUrlTarget()}}">
+            <a ng-href="{{task.getActionUrl()}}">
               <p class="personnel-task-list-item">
                 <span class="{{task.getIconClass()}}"></span>
                 <span class="personnel-task-list-item-title">
