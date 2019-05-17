@@ -28,6 +28,13 @@ angular.module('essMyInfo')
             };
 
             /**
+             * Defines action link click behavior.  Defaults to open in same tab.
+             */
+            this.getActionUrlTarget = function () {
+                return "_self";
+            };
+
+            /**
              * Verb describing task action.  Default "Complete".
              */
             this.getActionVerb = function () {
@@ -72,12 +79,14 @@ angular.module('essMyInfo')
         }
 
         function MoodleTask(task) {
-            var moodleBaseUrl = appProps.ctxPath + "/idk/";
-
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
-                return moodleBaseUrl;
+                return task.taskDetails.url;
+            };
+
+            this.getActionUrlTarget = function () {
+                return "_blank";
             };
 
             this.getIconClass = function () {

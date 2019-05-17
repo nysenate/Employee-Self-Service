@@ -181,6 +181,10 @@ resource.location = /assets/
 login.url = /login
 login.success.url = /time/record/entry
 
+# LegEthics Training URL
+# A URL that points to the LegEthics training site.
+legethics.url =
+
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
