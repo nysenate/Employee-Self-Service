@@ -20,6 +20,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         docId: null,
         document: null,
         task: null,
+        taskFound: false,
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
@@ -133,20 +134,30 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
      */
     function getTask() {
         $scope.state.request.ackGet = true;
-        return taskUtils.getEmpTasks(appProps.user.employeeId)
-            .then(findAckTask, $scope.handleErrorResponse)
+        $scope.state.taskFound = false;
+        var empId = appProps.user.employeeId,
+            taskType = 'DOCUMENT_ACKNOWLEDGMENT',
+            taskNumber = $scope.state.docId;
+        return taskUtils.getPersonnelAssignedTask(empId, taskType, taskNumber)
+            .then(setAckTask)
+            .catch(onError)
             .finally(function () {
                 $scope.state.request.ackGet = false;
             });
 
-        function findAckTask(tasks) {
-            angular.forEach(tasks, function (task) {
-                var type = task.taskId.taskType,
-                    num = task.taskId.taskNumber;
-                if (type === 'DOCUMENT_ACKNOWLEDGMENT' && num === $scope.state.docId) {
-                    $scope.state.task = task;
-                }
-            });
+        function setAckTask(task) {
+            $scope.state.task = task;
+            $scope.state.taskFound = true;
+        }
+
+        function onError(resp) {
+            var errorCode = ((resp || {}).data || {}).errorCode;
+            if (errorCode === 'PERSONNEL_ASSIGNED_TASK_NOT_FOUND') {
+                $scope.state.taskFound = false;
+                console.warn("Could not find personnel assigned task:", empId, taskType, taskNumber);
+            } else {
+                $scope.handleErrorResponse(resp)
+            }
         }
     }
 

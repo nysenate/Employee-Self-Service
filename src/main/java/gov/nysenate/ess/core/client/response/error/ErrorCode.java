@@ -12,6 +12,7 @@ public enum ErrorCode
     ACK_DOC_NOT_FOUND(7, "The requested acknowledged document was not found."),
     DUPLICATE_ACK(8, "The requested document has already been acknowledged"),
     INVALID_PARAM_TYPE(9, "One of the provided parameters could not be converted to the correct type"),
+    PERSONNEL_ASSIGNED_TASK_NOT_FOUND(10, "The requested personnel assigned task could not be found."),
 
     /** Errors with Personnel Records */
     INVALID_RC_ERROR(50, "There is an issue with your responsibility center in your personnel records"),

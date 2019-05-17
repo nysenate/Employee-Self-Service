@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,20 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
                 getEmpIdParams(empId),
                 patRowMapper
         );
+    }
+
+    @Override
+    public PersonnelAssignedTask getTaskForEmp(int empId, PersonnelTaskId taskId)
+            throws PersonnelAssignedTaskNotFoundEx {
+        try {
+            return localNamedJdbc.queryForObject(
+                    SELECT_SPECIFIC_TASK_FOR_EMP.getSql(schemaMap()),
+                    getEmpIdTaskIdParams(empId, taskId),
+                    patRowMapper
+            );
+        } catch (EmptyResultDataAccessException ex) {
+            throw new PersonnelAssignedTaskNotFoundEx(empId, taskId);
+        }
     }
 
     @Override
@@ -59,6 +74,12 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
 
     private MapSqlParameterSource getEmpIdParams(int empId) {
         return new MapSqlParameterSource("empId", empId);
+    }
+
+    private MapSqlParameterSource getEmpIdTaskIdParams(int empId, PersonnelTaskId taskId) {
+        return getEmpIdParams(empId)
+                .addValue("taskType", taskId.getTaskType().name())
+                .addValue("taskNumber", taskId.getTaskNumber());
     }
 
     private MapSqlParameterSource getPATParams(PersonnelAssignedTask task) {

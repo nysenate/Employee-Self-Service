@@ -3,8 +3,8 @@ var essTime = angular.module('essMyInfo');
 /**
  * The wrapping controller that is the parent of the nav menu and view content.
  */
-essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'PersonnelTaskEmpApi',
-   function($scope, $q, appProps, badgeService, empTaskApi) {
+essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'PersonnelTasksForEmpApi',
+                                     function($scope, $q, appProps, badgeService, empTaskApi) {
 
        $scope.updatePersonnelTaskBadge = function () {
            var params = {

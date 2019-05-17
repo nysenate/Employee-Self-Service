@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.dao.pec;
 
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 
 import java.util.List;
 
@@ -16,6 +17,16 @@ public interface PersonnelAssignedTaskDao {
      * @return {@link List<PersonnelAssignedTask>}
      */
     List<PersonnelAssignedTask> getTasksForEmp(int empId);
+
+    /**
+     * Get a specific task assigned to the given employee.
+     *
+     * @param empId int
+     * @param taskId {@link List<PersonnelAssignedTask>}
+     * @return {@link PersonnelAssignedTask}
+     * @throws PersonnelAssignedTaskNotFoundEx if no such task exists.
+     */
+    PersonnelAssignedTask getTaskForEmp(int empId, PersonnelTaskId taskId) throws PersonnelAssignedTaskNotFoundEx;
 
     /**
      * Get a list of tasks matching the given query

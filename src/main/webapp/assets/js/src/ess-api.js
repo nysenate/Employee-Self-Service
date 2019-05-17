@@ -121,9 +121,17 @@ essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, ap
 
 /** --- Personnel Task API --- */
 
-essApi.factory('PersonnelTaskEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
+essApi.factory('PersonnelTasksForEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/personnel/task/emp/:empId', {
         empId: '@empId'
+    });
+}]);
+
+essApi.factory('PersonnelAssignedTaskApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/emp/:empId/:taskType/:taskNumber', {
+        empId: '@empId',
+        taskType: '@taskType',
+        taskNumber: '@taskNumber'
     });
 }]);
 

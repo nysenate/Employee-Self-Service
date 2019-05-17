@@ -1,12 +1,17 @@
-angular.module('essMyInfo')
-    .service('TaskUtils', ['PersonnelTaskEmpApi', 'appProps', function (empTaskApi, appProps) {
+(function () {
+
+    angular.module('essMyInfo')
+        .service('TaskUtils', ['PersonnelTasksForEmpApi', 'PersonnelAssignedTaskApi', 'appProps', taskUtils]);
+
+    function taskUtils(tasksForEmpApi, patApi, appProps) {
 
         AcknowledgmentTask.prototype = new PersonnelTask();
         MoodleTask.prototype = new PersonnelTask();
 
         return {
             parseTask: parseTask,
-            getEmpTasks: getEmpTasks
+            getEmpTasks: getEmpTasks,
+            getPersonnelAssignedTask: getPersonnelAssignedTask
         };
 
         /**
@@ -94,6 +99,12 @@ angular.module('essMyInfo')
             }
         }
 
+        /**
+         * Parse the task json into the appropriate PersonnelTask
+         *
+         * @param task
+         * @return PersonnelTask
+         */
         function parseTask(task) {
             var taskType = task.taskId.taskType;
             switch (taskType) {
@@ -107,17 +118,48 @@ angular.module('essMyInfo')
             }
         }
 
+        /**
+         * Get all tasks assigned to the given employee.
+         *
+         * @param empId
+         * @param detail
+         * @return a promise that passes the task list to the callback.
+         */
         function getEmpTasks(empId, detail) {
             var params = {
                 empId: empId,
                 detail: detail
             };
 
-            return empTaskApi.get(params).$promise
+            return tasksForEmpApi.get(params).$promise
                 .then(processTasks);
 
             function processTasks(resp) {
                 return resp.tasks.map(parseTask);
             }
         }
-    }]);
+
+        /**
+         * Get a single personnel assigned task.
+         *
+         * @param empId
+         * @param taskType
+         * @param taskNumber
+         * @return a promise that passes the loaded task to the callback.
+         */
+        function getPersonnelAssignedTask(empId, taskType, taskNumber) {
+            var params = {
+                empId: empId,
+                taskType: taskType,
+                taskNumber: taskNumber
+            };
+
+            return patApi.get(params).$promise
+                .then(processTask);
+
+            function processTask(resp) {
+                return parseTask(resp.task);
+            }
+        }
+    }
+})();

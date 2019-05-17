@@ -11,6 +11,12 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
             "WHERE emp_id = :empId"
     ),
 
+    SELECT_SPECIFIC_TASK_FOR_EMP("" +
+            SELECT_TASKS_FOR_EMP.sql + "\n" +
+            "  AND task_type = :taskType::ess.personnel_task_type\n" +
+            "  AND task_number = :taskNumber"
+    ),
+
     SELECT_TASKS_QUERY("" +
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_assigned_task\n" +

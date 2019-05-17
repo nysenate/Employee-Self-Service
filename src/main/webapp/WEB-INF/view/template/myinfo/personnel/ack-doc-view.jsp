@@ -10,7 +10,19 @@
 
   <div loader-indicator class="loader" ng-show="isLoading()"></div>
 
-  <div class="content-container ack-doc-container" ng-cloak ng-if="!isLoading()">
+  <ess-notification level="info" title="Document not found" ng-show="!isLoading() && !state.docFound">
+    The requested document was not found.
+  </ess-notification>
+
+  <ess-notification level="warn"
+                    title="Acknowledgment task not found"
+                    ng-show="!isLoading() && state.docFound && !state.taskFound">
+    No acknowledgment task record exists for the given document.  Please contact the helpline.
+  </ess-notification>
+
+  <div class="content-container ack-doc-container"
+       ng-cloak
+       ng-if="!isLoading() && state.docFound && state.taskFound">
 
     <p class="content-info" ng-hide="state.acknowledged">
       Please review this policy/document and click the button to acknowledge it.
