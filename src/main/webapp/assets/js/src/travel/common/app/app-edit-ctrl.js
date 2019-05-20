@@ -122,3 +122,24 @@ function appEditCtrl($scope, $q, modals, countyService, motApi) {
 
     };
 }
+
+function Leg () {
+    this.from = new Destination();
+    this.to = new Destination();
+    this.travelDate = "";
+}
+
+function Destination () {
+    this.address = new Address();
+}
+
+function Address () {
+    this.addr1 = "";
+    this.addr2 = "";
+    this.city = "";
+    this.county = "";
+    this.state = "";
+    this.zip4 = "";
+    this.zip5 = "";
+    this.country = "";
+}

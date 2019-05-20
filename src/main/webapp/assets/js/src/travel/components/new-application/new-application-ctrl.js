@@ -9,10 +9,9 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('NewApplicationCtrl',
-                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi',
-                      'TravelModeOfTransportationApi', 'AddressCountyService', travelAppController]);
+                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi', travelAppController]);
 
-function travelAppController($scope, $q, $window, appProps, modals, locationService, stateService, appApi, appIdApi, motApi, countyService) {
+function travelAppController($scope, $q, $window, appProps, modals, locationService, stateService, appApi, appIdApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
@@ -90,25 +89,4 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
             $scope.handleErrorResponse("Google maps api authentication error.");
         });
     }
-}
-
-function Leg () {
-    this.from = new Destination();
-    this.to = new Destination();
-    this.travelDate = "";
-}
-
-function Destination () {
-    this.address = new Address();
-}
-
-function Address () {
-    this.addr1 = "";
-    this.addr2 = "";
-    this.city = "";
-    this.county = "";
-    this.state = "";
-    this.zip4 = "";
-    this.zip5 = "";
-    this.country = "";
 }

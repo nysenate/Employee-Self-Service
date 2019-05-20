@@ -1,46 +1,37 @@
-<div ng-controller="NewApplicationCtrl">
+<div ng-controller="EditApplicationCtrl as vm">
   <div class="travel-hero">
-    <h2>Travel Application</h2>
+    <h2>Edit Travel Application</h2>
   </div>
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
-      Travel application for: <span class="bold">{{data.app.traveler.firstName}} {{data.app.traveler.lastName}}</span>
+      <span class="disapproved-text">Editing</span> Travel application for: <span class="bold" ng-bind="::vm.data.app.traveler.fullName"></span>
     </div>
   </div>
 
-  <ess-new-app-breadcrumbs></ess-new-app-breadcrumbs>
+  <ess-edit-app-breadcrumbs></ess-edit-app-breadcrumbs>
 
-  <div loader-indicator class="loader" ng-show="!data.app"></div>
-
-  <div ng-if="data.app">
-    <div ng-if="stateService.isPurposeState()">
-      <ess-purpose-edit-form app-container="data"></ess-purpose-edit-form>
-    </div>
-
-    <div ng-if="stateService.isOutboundState()">
-      <ess-outbound-edit-form app-container="data"></ess-outbound-edit-form>
-    </div>
-
-    <div ng-if="stateService.isReturnState()">
-      <ess-return-edit-form app-container="data"></ess-return-edit-form>
-    </div>
-
-    <div ng-if="stateService.isAllowancesState()">
-      <ess-allowances-edit-form app-container="data"></ess-allowances-edit-form>
-    </div>
-
-    <div ng-if="stateService.isReviewState()">
-      <ess-review-edit-form app-container="data"></ess-review-edit-form>
-    </div>
+  <div ng-if="vm.stateService.isPurposeState()">
+    <ess-purpose-edit-form app-container="vm.data"></ess-purpose-edit-form>
   </div>
+
+  <div ng-if="vm.stateService.isOutboundState()">
+    <ess-outbound-edit-form app-container="vm.data"></ess-outbound-edit-form>
+  </div>
+
+  <div ng-if="vm.stateService.isReturnState()">
+    <ess-return-edit-form app-container="vm.data"></ess-return-edit-form>
+  </div>
+
+  <div ng-if="vm.stateService.isAllowancesState()">
+    <ess-allowances-edit-form app-container="vm.data"></ess-allowances-edit-form>
+  </div>
+
+  <div ng-if="vm.stateService.isReviewState()">
+    <ess-review-edit-form app-container="vm.data"></ess-review-edit-form>
+  </div>
+
 
   <div modal-container>
-
-    <%--Continue application modal--%>
-    <modal modal-id="ess-continue-saved-app-modal">
-      <div ess-continue-saved-app-modal></div>
-    </modal>
-
 
     <%--Cancel Modal--%>
     <modal modal-id="cancel-application">
@@ -134,5 +125,4 @@
 
   </div>
 
-</div>
 </div>
