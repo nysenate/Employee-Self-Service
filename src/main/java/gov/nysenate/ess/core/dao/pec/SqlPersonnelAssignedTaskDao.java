@@ -4,6 +4,8 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,6 +18,8 @@ import static gov.nysenate.ess.core.dao.pec.SqlPersonnelAssignedTaskQuery.*;
 
 @Repository
 public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements PersonnelAssignedTaskDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(SqlPersonnelAssignedTaskDao.class);
 
     @Override
     public List<PersonnelAssignedTask> getTasksForEmp(int empId) {
@@ -57,6 +61,16 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
             localNamedJdbc.update(INSERT_TASK.getSql(schemaMap()), params);
         } else if (updated != 1) {
             throw new IllegalStateException("Too many updates (" + updated + ") occurred for " + task);
+        }
+    }
+
+    @Override
+    public void deactivatePersonnelAssignedTask(int empId, PersonnelTaskId taskId) {
+        MapSqlParameterSource empIdTaskIdParams = getEmpIdTaskIdParams(empId, taskId);
+        int updated = localNamedJdbc.update(DEACTIVATE_TASK.getSql(schemaMap()), empIdTaskIdParams);
+        if (updated != 1) {
+            logger.warn("Unexpected update count for PAT deactivation!");
+            logger.warn("empId={}, taskId={}, update_count={}", empId, taskId, updated);
         }
     }
 

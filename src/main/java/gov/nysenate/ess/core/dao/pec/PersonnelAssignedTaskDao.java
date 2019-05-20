@@ -42,4 +42,12 @@ public interface PersonnelAssignedTaskDao {
      * @param task {@link PersonnelAssignedTask}
      */
     void updatePersonnelAssignedTask(PersonnelAssignedTask task);
+
+    /**
+     * Deactivates the task assignment.
+     *
+     * @param empId int
+     * @param taskId {@link PersonnelTaskId}
+     */
+    void deactivatePersonnelAssignedTask(int empId, PersonnelTaskId taskId);
 }

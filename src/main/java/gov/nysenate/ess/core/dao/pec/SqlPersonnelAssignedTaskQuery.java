@@ -8,7 +8,8 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
     SELECT_TASKS_FOR_EMP("" +
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_assigned_task\n" +
-            "WHERE emp_id = :empId"
+            "WHERE emp_id = :empId\n" +
+            "  AND active = TRUE"
     ),
 
     SELECT_SPECIFIC_TASK_FOR_EMP("" +
@@ -20,7 +21,8 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
     SELECT_TASKS_QUERY("" +
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_assigned_task\n" +
-            "WHERE (:empId::int IS NULL OR emp_id = :empId)\n" +
+            "WHERE active = TRUE\n" +
+            "  AND (:empId::int IS NULL OR emp_id = :empId)\n" +
             "  AND (:taskType::ess.personnel_task_type IS NULL OR task_type = :taskType::ess.personnel_task_type)\n" +
             "  AND (:taskNumber::int IS NULL OR task_number = :taskNumber)\n" +
             "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)"
@@ -28,13 +30,19 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
 
     INSERT_TASK("" +
             "INSERT INTO ${essSchema}.personnel_assigned_task\n" +
-            "        (emp_id, task_type, task_number, timestamp, update_user_id, completed)\n" +
-            "VALUES (:empId, :taskType::ess.personnel_task_type, :taskNumber, :timestamp, :updateUserId, :completed)"
+            "        (emp_id, task_type, task_number, timestamp, update_user_id, completed, active)\n" +
+            "VALUES (:empId, :taskType::ess.personnel_task_type, :taskNumber, :timestamp, :updateUserId, :completed, TRUE)"
     ),
 
     UPDATE_TASK("" +
             "UPDATE ${essSchema}.personnel_assigned_task\n" +
-            "SET timestamp = :timestamp, update_user_id = :updateUserId, completed = :completed\n" +
+            "SET timestamp = :timestamp, update_user_id = :updateUserId, completed = :completed, active = TRUE\n" +
+            "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_number = :taskNumber"
+    ),
+
+    DEACTIVATE_TASK("" +
+            "UPDATE ${essSchema}.personnel_assigned_task\n" +
+            "SET active = FALSE\n" +
             "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_number = :taskNumber"
     ),
 

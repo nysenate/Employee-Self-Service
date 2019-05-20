@@ -66,18 +66,27 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
                 .map(PersonnelAssignedTask::getTaskId)
                 .collect(Collectors.toSet());
 
-        Set<PersonnelTaskId> difference = Sets.difference(activeTaskIds, existingTaskIds);
+        // Get active tasks that are not currently assigned to the employee.
+        Set<PersonnelTaskId> activeUnassigned = Sets.difference(activeTaskIds, existingTaskIds);
+        // Get tasks assigned to the employee that are not active.
+        Set<PersonnelTaskId> inactiveAssigned = Sets.difference(existingTaskIds, activeTaskIds);
 
-        List<PersonnelAssignedTask> newTasks = difference.stream()
+        // Assign new tasks for active unassigned.
+        List<PersonnelAssignedTask> newTasks = activeUnassigned.stream()
                 .map(taskId -> PersonnelAssignedTask.newTask(empId, taskId))
                 .collect(Collectors.toList());
-
         if (!newTasks.isEmpty()) {
             logger.info("Assigning {} personnel tasks to emp #{} :", newTasks.size(), empId);
             newTasks.forEach(task -> logger.info("\t{}", task.getTaskId()));
         }
-
         newTasks.forEach(taskDao::updatePersonnelAssignedTask);
+
+        // Deactivate assigned tasks that are inactive.
+        if (!inactiveAssigned.isEmpty()) {
+            logger.info("Deactivating {} inactive tasks for emp #{} :", inactiveAssigned.size(), empId);
+            inactiveAssigned.forEach(taskId -> logger.info("\t{}", taskId));
+        }
+        inactiveAssigned.forEach(taskId -> taskDao.deactivatePersonnelAssignedTask(empId, taskId));
     }
 
 }
