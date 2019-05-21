@@ -15,10 +15,23 @@ public class GsaResponse {
     /** The meal and incidental expense tier/row to use for meal rates. */
     private final String mealTier;
 
+    /** These 2 variables are only used when processing batch GSA responses. */
+    private String city = "";
+    private String county = "";
+
     public GsaResponse(GsaResponseId id, Map<Month, BigDecimal> lodgingRates, String mealTier) {
         this.id = id;
         this.lodgingRates = lodgingRates;
         this.mealTier = mealTier;
+    }
+
+    public GsaResponse(GsaResponseId id, Map<Month, BigDecimal> lodgingRates, String mealTier,
+                       String city, String county) {
+        this.id = id;
+        this.lodgingRates = lodgingRates;
+        this.mealTier = mealTier;
+        this.city = city;
+        this.county = county;
     }
 
     public BigDecimal getLodging(LocalDate date) {
@@ -31,6 +44,26 @@ public class GsaResponse {
 
     public GsaResponseId getId() {
         return id;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
+    }
+
+    public Map<Month, BigDecimal> getLodgingRates() {
+        return lodgingRates;
     }
 
     @Override

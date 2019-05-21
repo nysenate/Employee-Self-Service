@@ -69,7 +69,7 @@ public class GsaResponseParser {
         return record;
     }
 
-    private Map<Month, BigDecimal> parseLodgingRates(JsonNode record) {
+    public Map<Month, BigDecimal> parseLodgingRates(JsonNode record) {
         Map<Month, BigDecimal> lodgingRates = new HashMap<>();
         lodgingRates.put(Month.JANUARY, new BigDecimal(record.get("Jan").asText()));
         lodgingRates.put(Month.FEBRUARY, new BigDecimal(record.get("Feb").asText()));
