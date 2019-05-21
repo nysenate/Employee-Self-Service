@@ -29,6 +29,10 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/myinfo/personnel/todo'
     });
 
+    $routeProvider.when(ctxPath + '/myinfo/personnel/todo/legethics', {
+        templateUrl: ctxPath + '/template/myinfo/personnel/legethics'
+    });
+
     $routeProvider.when(ctxPath + '/myinfo/personnel/todo/acknowledgment/:ackDocId', {
         templateUrl: ctxPath + '/template/myinfo/personnel/ack-doc-view'
     });

@@ -1,9 +1,10 @@
 (function () {
 
     angular.module('essMyInfo')
-        .service('TaskUtils', ['PersonnelTasksForEmpApi', 'PersonnelAssignedTaskApi', 'appProps', taskUtils]);
+        .service('TaskUtils', ['PersonnelTasksForEmpApi', 'PersonnelAssignedTaskApi', 'appProps', 'RestErrorService',
+                               taskUtils]);
 
-    function taskUtils(tasksForEmpApi, patApi, appProps) {
+    function taskUtils(tasksForEmpApi, patApi, appProps, restErrorService) {
 
         AcknowledgmentTask.prototype = new PersonnelTask();
         MoodleTask.prototype = new PersonnelTask();
@@ -87,6 +88,11 @@
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
+                // fixme this only works for the legethics course
+                return appProps.ctxPath + "/myinfo/personnel/todo/legethics";
+            };
+
+            this.getCourseUrl = function () {
                 return task.taskDetails.url;
             };
 
@@ -155,10 +161,21 @@
             };
 
             return patApi.get(params).$promise
-                .then(processTask);
+                .then(processTask)
+                .catch(onError);
 
             function processTask(resp) {
                 return parseTask(resp.task);
+            }
+
+            function onError(resp) {
+                var errorCode = ((resp || {}).data || {}).errorCode;
+                if (errorCode === 'PERSONNEL_ASSIGNED_TASK_NOT_FOUND') {
+                    console.warn("Could not find personnel assigned task:", empId, taskType, taskNumber);
+                } else {
+                    restErrorService.handleErrorResponse(resp)
+                }
+                throw resp;
             }
         }
     }

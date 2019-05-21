@@ -140,7 +140,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
             taskNumber = $scope.state.docId;
         return taskUtils.getPersonnelAssignedTask(empId, taskType, taskNumber)
             .then(setAckTask)
-            .catch(onError)
             .finally(function () {
                 $scope.state.request.ackGet = false;
             });
@@ -148,16 +147,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         function setAckTask(task) {
             $scope.state.task = task;
             $scope.state.taskFound = true;
-        }
-
-        function onError(resp) {
-            var errorCode = ((resp || {}).data || {}).errorCode;
-            if (errorCode === 'PERSONNEL_ASSIGNED_TASK_NOT_FOUND') {
-                $scope.state.taskFound = false;
-                console.warn("Could not find personnel assigned task:", empId, taskType, taskNumber);
-            } else {
-                $scope.handleErrorResponse(resp)
-            }
         }
     }
 

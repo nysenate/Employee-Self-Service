@@ -17,14 +17,12 @@
     </ess-notification>
 
     <div ng-show="anyTasks()">
-      <div class="content-info">
-        <p class="personnel-todo-instructions">
+      <p class="content-info personnel-todo-instructions">
         Listed below are personnel tasks that require your attention.<br>
         Click on a task link to take action on that task.<br>
         <span class="bold-text">FAILURE TO RESPOND MAY RESULT IN THE HOLDING OF YOUR PAYCHECK.</span><br>
         Contact the Personnel Office (518-455-3376) if you have any questions.
-        </p>
-      </div>
+      </p>
 
       <div class="personnel-task-display">
 

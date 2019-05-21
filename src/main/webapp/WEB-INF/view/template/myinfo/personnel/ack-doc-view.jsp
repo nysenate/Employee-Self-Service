@@ -24,7 +24,7 @@
        ng-cloak
        ng-if="!isLoading() && state.docFound && state.taskFound">
 
-    <p class="content-info" ng-hide="state.acknowledged">
+    <p class="content-info personnel-todo-instructions" ng-hide="state.acknowledged">
       Please review this policy/document and click the button to acknowledge it.
       <br/><span class="bold-text">You must scroll to the end of the page for the button to become available.</span>
       <br/>If desired, click "Open Printable View" to open a separate tab to print the document.
@@ -33,7 +33,7 @@
       You acknowledged this policy/document on {{state.ackTimestamp | moment:'LL'}}
     </p>
 
-    <div class="ack-doc-view-nav">
+    <div class="todo-task-view-nav">
       <a ng-href="{{todoPageUrl}}">
         Return to Personnel To-Do List
       </a>
