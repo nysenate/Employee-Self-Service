@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class AccrualStateView implements ViewObject
 {
     protected String payType;
-    protected boolean employeeActive;
+    protected boolean employeeAccruing;
     protected int payPeriodCount;
     protected BigDecimal minTotalHours;
     protected BigDecimal minHoursToEnd;
@@ -19,7 +19,7 @@ public class AccrualStateView implements ViewObject
     public AccrualStateView(EmpAccrualState accrualState) {
         if (accrualState != null) {
             this.payType = (accrualState.getPayType() != null) ? accrualState.getPayType().name() : null;
-            this.employeeActive = accrualState.isEmployeeActive();
+            this.employeeAccruing = accrualState.isEmployeeAccruing();
             this.payPeriodCount = accrualState.getPayPeriodCount();
             this.minTotalHours = accrualState.getMinTotalHours();
             this.minHoursToEnd = accrualState.getMinHoursToEnd();
@@ -32,8 +32,8 @@ public class AccrualStateView implements ViewObject
     }
 
     @XmlElement
-    public boolean isEmployeeActive() {
-        return employeeActive;
+    public boolean isEmployeeAccruing() {
+        return employeeAccruing;
     }
 
     @XmlElement

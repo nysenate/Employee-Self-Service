@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.service.security.authorization;
+package gov.nysenate.ess.core.service.security.authorization.permission;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -22,5 +22,5 @@ public interface PermissionFactory {
      * @param roles {@link ImmutableSet<EssRole>} - a set of roles assigned to the authenticated user
      * @return {@link ImmutableList<Permission>} - a list of permissions granted
      */
-    ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles);
+    ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles);
 }

@@ -5,5 +5,6 @@
 **.properties
 grunt.properties.json
 src/main/resources/*.xml
+src/test/resources/*.xml
 src/main/resources/flyway.conf
 ${sys:catalina.base}

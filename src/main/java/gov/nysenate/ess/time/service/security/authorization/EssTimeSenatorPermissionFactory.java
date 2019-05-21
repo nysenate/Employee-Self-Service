@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.security.authorization.PermissionFactory;
+import gov.nysenate.ess.core.service.security.authorization.permission.PermissionFactory;
 import org.apache.shiro.authz.Permission;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class EssTimeSenatorPermissionFactory implements PermissionFactory {
 
     /** {@inheritDoc} */
     @Override
-    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<EssRole> roles) {
+    public ImmutableList<Permission> getPermissions(Employee employee, ImmutableSet<Enum> roles) {
         if (roles.contains(EssRole.SENATOR)) {
             return getSenatorPermissions();
         }
