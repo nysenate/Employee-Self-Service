@@ -1,31 +1,25 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essAllowancesEditForm', ['appProps', 'AppEditStateService', 'TravelApplicationByIdApi', allowancesEditForm]);
+essTravel.directive('essAllowancesEditForm', ['appProps', allowancesEditForm]);
 
-function allowancesEditForm(appProps, stateService, appIdApi) {
+function allowancesEditForm(appProps) {
     return {
         restrict: 'E',
         scope: {
-            appContainer: '='
+            app: '<',               // The application being edited.
+            title: '@',             // The title
+            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
+            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/allowances-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.stateService = stateService;
-            scope.dirtyApp = angular.copy(scope.appContainer.app);
+            scope.dirtyApp = angular.copy(scope.app);
 
             scope.next = function () {
-                var patches = {
-                    allowances: JSON.stringify(scope.dirtyApp.allowances),
-                    mealPerDiems: JSON.stringify(scope.dirtyApp.mealPerDiems),
-                    lodgingPerDiems: JSON.stringify(scope.dirtyApp.lodgingPerDiems),
-                    mileagePerDiems: JSON.stringify(scope.dirtyApp.mileagePerDiems)
-                };
-                appIdApi.update({id: scope.appContainer.app.id}, patches, function (response) {
-                    scope.appContainer.app = response.result;
-                    stateService.nextState();
-                }, scope.handleErrorResponse)
+                scope.positiveCallback({app: scope.dirtyApp});
             };
 
             scope.previousDay = function (date) {
@@ -38,6 +32,14 @@ function allowancesEditForm(appProps, stateService, appIdApi) {
 
             scope.tripHasMileage = function () {
                 return scope.dirtyApp.mileagePerDiems.qualifyingLegs.length > 0;
+            };
+
+            scope.back = function () {
+                scope.neutralCallback({app: scope.dirtyApp});
+            };
+
+            scope.cancel = function () {
+                scope.negativeCallback({app: scope.dirtyApp});
             }
         }
     }

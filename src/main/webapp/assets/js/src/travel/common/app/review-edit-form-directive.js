@@ -1,38 +1,38 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essReviewEditForm', ['$compile', 'appProps', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', reviewEditForm]);
+essTravel.directive('essReviewEditForm', ['$compile', 'appProps', 'modals', reviewEditForm]);
 
-function reviewEditForm($compile, appProps, modals, stateService, appByIdApi) {
+function reviewEditForm($compile, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            appContainer: '='
+            app: '<',               // The application being edited.
+            title: '@',             // The title
+            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
+            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/review-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.stateService = stateService;
-            scope.reviewApp = angular.copy(scope.appContainer.app);
+            scope.reviewApp = angular.copy(scope.app);
 
             displayMap();
 
             scope.next = function () {
                 modals.open('submit-confirm')
                     .then(function () {
-                        modals.open("submit-progress");
-                        appIdApi.update({id: scope.appContainer.app.id}, {action: "submit"}).$promise
-                            .then(function (response) {
-                                scope.appContainer.app = response.result;
-                                modals.resolve({});
-                            })
-                            .then(function () {
-                                modals.open("submit-results").then(function () {
-                                    locationService.go("/travel", true);
-                                });
-                            })
-                            .catch(scope.handleErrorResponse);
+                        scope.positiveCallback({app: scope.reviewApp});
                     })
+            };
+
+            scope.back = function () {
+                scope.neutralCallback({app: scope.dirtyApp});
+            };
+
+            scope.cancel = function () {
+                scope.negativeCallback({app: scope.reviewApp});
             };
 
             scope.displayLodgingDetails = function () {

@@ -1,7 +1,5 @@
 <div class="content-container">
-  <p class="travel-content-info travel-text-bold">
-    Enter your purpose of travel.
-  </p>
+  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
   <form name="purposeForm" id="purposeForm"
   <%--Only call the callback function if form is valid--%>
@@ -38,8 +36,10 @@
 
     <div class="travel-button-container">
       <input type="button" class="neutral-button" value="Cancel"
+             title="Cancel"
              ng-click="cancel()">
-      <input type="submit" class="submit-button" value="Next">
+      <input type="submit" class="submit-button"
+             title="Save purpose and continue" value="Save Purpose">
     </div>
 
   </form>

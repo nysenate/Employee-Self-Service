@@ -14,23 +14,47 @@
 
   <div ng-if="data.app">
     <div ng-if="stateService.isPurposeState()">
-      <ess-purpose-edit-form app-container="data"></ess-purpose-edit-form>
+      <ess-purpose-edit-form app="data.app"
+                             title="Enter your purpose of travel."
+                             positive-callback="savePurpose(app)"
+                             negative-callback="cancel(app)">
+      </ess-purpose-edit-form>
     </div>
 
     <div ng-if="stateService.isOutboundState()">
-      <ess-outbound-edit-form app-container="data"></ess-outbound-edit-form>
+      <ess-outbound-edit-form app="data.app"
+                              title="Enter your outbound route starting from the origin and including all destinations."
+                              positive-callback="saveOutbound(app)"
+                              neutral-callback="previousStep(app)"
+                              negative-callback="cancel(app)">
+      </ess-outbound-edit-form>
     </div>
 
     <div ng-if="stateService.isReturnState()">
-      <ess-return-edit-form app-container="data"></ess-return-edit-form>
+      <ess-return-edit-form app="data.app"
+                            title="Enter your return route from the last destination to the origin."
+                            positive-callback="saveRoute(app)"
+                            neutral-callback="previousStep(app)"
+                            negative-callback="cancel(app)">
+      </ess-return-edit-form>
     </div>
 
     <div ng-if="stateService.isAllowancesState()">
-      <ess-allowances-edit-form app-container="data"></ess-allowances-edit-form>
+      <ess-allowances-edit-form app="data.app"
+                                title="Enter your estimated expenses for the following categories."
+                                positive-callback="saveAllowances(app)"
+                                neutral-callback="previousStep(app)"
+                                negative-callback="cancel(app)">
+      </ess-allowances-edit-form>
     </div>
 
     <div ng-if="stateService.isReviewState()">
-      <ess-review-edit-form app-container="data"></ess-review-edit-form>
+      <ess-review-edit-form app="data.app"
+                            title="Please review your application."
+                            positive-callback="submitApplication(app)"
+                            neutral-callback="previousStep(app)"
+                            negative-callback="cancel(app)">
+      </ess-review-edit-form>
     </div>
   </div>
 

@@ -1,9 +1,5 @@
 <div class="content-container">
-  <p class="travel-content-info travel-text-bold">
-    <%--Enter travel from origin to all destinations.--%>
-    <%--Enter outbound route from the origin to all destinations.--%>
-      Enter your outbound route starting from the origin and including all destinations.
-  </p>
+  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
   <form novalidate name="outbound.form" id="outboundForm">
 
@@ -94,10 +90,13 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="neutral-button" value="Cancel"
+               title="Cancel"
                ng-click="cancel()">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="stateService.previousState()">
+               title="Back"
+               ng-click="back()">
         <input type="submit" class="submit-button" value="Next"
+               title="Continue"
                ng-click="next()">
       </div>
     </div>

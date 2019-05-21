@@ -1,9 +1,5 @@
 <div class="content-container">
-  <p class="travel-content-info travel-text-bold">
-    <%--Enter travel from last destination back to origin.--%>
-    <%--Enter return route from the last destination to the origin.--%>
-    Enter your return route from the last destination to the origin.
-  </p>
+  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
   <form novalidate name="return.form" id="returnForm">
 
@@ -94,10 +90,13 @@
     <div class="text-align-center">
       <div class="travel-button-container">
         <input type="button" class="neutral-button" value="Cancel"
+               title="Cancel"
                ng-click="cancel()">
         <input type="button" class="travel-neutral-button" value="Back"
-               ng-click="stateService.previousState()">
-        <input type="submit" class="submit-button" value="Next"
+               title="Back"
+               ng-click="back()">
+        <input type="submit" class="submit-button" value="Save Route"
+               title="Save route and continue"
                ng-click="next()">
       </div>
     </div>

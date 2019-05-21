@@ -1,7 +1,7 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
-                     ['$scope', 'LocationService', 'AppEditStateService', 'TravelApplicationByIdApi', editAppCtrl]);
+                     ['$scope', 'LocationService', 'NewAppStateService', 'TravelApplicationByIdApi', editAppCtrl]);
 
 function editAppCtrl($scope, locationService, stateService, appByIdApi) {
 

@@ -3,9 +3,9 @@ var essTravel = angular.module('essTravel');
 /**
  * This controller contains function shared by app edit form directives such as purpose-edit-form-directive.js
  */
-essTravel.controller('AppEditCtrl', ['$scope', '$q', 'modals', 'AddressCountyService', 'TravelModeOfTransportationApi', appEditCtrl]);
+essTravel.controller('AppEditCtrl', ['$scope', '$timeout', '$q', 'modals', 'AddressCountyService', 'TravelModeOfTransportationApi', appEditCtrl]);
 
-function appEditCtrl($scope, $q, modals, countyService, motApi) {
+function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
 
     this.$onInit = function () {
         motApi.get({}, function (response) {
@@ -15,21 +15,6 @@ function appEditCtrl($scope, $q, modals, countyService, motApi) {
             });
         }, $scope.handleErrorResponse);
     };
-
-    $scope.cancel = function () {
-        modals.open("cancel-application").then(function () {
-            modals.resolve({});
-            $scope.openLoadingModal();
-            cancelApplication();
-        });
-    };
-
-    function cancelApplication() {
-        appIdApi.remove({id: $scope.data.app.id})
-            .$promise
-            .then(reload)
-            .catch($scope.handleErrorResponse)
-    }
 
     $scope.openLoadingModal = function () {
         modals.open('loading');

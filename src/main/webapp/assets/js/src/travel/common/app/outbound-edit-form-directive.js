@@ -1,24 +1,27 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essOutboundEditForm', ['appProps', '$timeout', 'AppEditStateService', outboundEditLink]);
+essTravel.directive('essOutboundEditForm', ['appProps', outboundEditLink]);
 
-function outboundEditLink(appProps, $timeout, stateService) {
+function outboundEditLink(appProps) {
     return {
         restrict: 'E',
         scope: {
-            appContainer: '='
+            app: '<',               // The application being edited.
+            title: '@',             // The title
+            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
+            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/outbound-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.stateService = stateService;
-            scope.dirtyApp = angular.copy(scope.appContainer.app);
+            scope.dirtyApp = angular.copy(scope.app);
 
             if (scope.dirtyApp.route.outboundLegs.length === 0) {
                 var leg = new Leg();
                 // Init from address to employees work address.
-                leg.from = scope.appContainer.app.traveler.empWorkLocation.address;
+                leg.from = scope.app.traveler.empWorkLocation.address;
                 scope.dirtyApp.route.outboundLegs.push(leg);
             }
 
@@ -53,13 +56,18 @@ function outboundEditLink(appProps, $timeout, stateService) {
                 if (scope.outbound.form.$valid) {
                     scope.normalizeTravelDates(scope.dirtyApp.route.outboundLegs);
                     scope.checkCounties(scope.dirtyApp.route.outboundLegs)
-                        .then(scope.continue);
+                        .then(function () {
+                            scope.positiveCallback({app: scope.dirtyApp});
+                        });
                 }
             };
 
-            scope.continue = function () {
-                scope.appContainer.app.route.outboundLegs = scope.dirtyApp.route.outboundLegs;
-                stateService.nextState();
+            scope.back = function () {
+                scope.neutralCallback({app: scope.dirtyApp});
+            };
+
+            scope.cancel = function () {
+                scope.negativeCallback({app: scope.dirtyApp});
             };
         }
     }

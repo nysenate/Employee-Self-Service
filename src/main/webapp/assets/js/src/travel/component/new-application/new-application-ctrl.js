@@ -9,9 +9,9 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('NewApplicationCtrl',
-                     ['$scope', '$q', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi', travelAppController]);
+                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'NewAppStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi', travelAppController]);
 
-function travelAppController($scope, $q, $window, appProps, modals, locationService, stateService, appApi, appIdApi) {
+function travelAppController($scope, $window, appProps, modals, locationService, stateService, appApi, appIdApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
@@ -49,7 +49,74 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
                 return $scope.data.app.purposeOfTravel !== "";
             }
         }
+    };
 
+    $scope.savePurpose = function (app) {
+        appIdApi.update({id: $scope.data.app.id}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
+            $scope.data.app = response.result;
+            stateService.nextState();
+        }, $scope.handleErrorResponse)
+    };
+
+    $scope.saveOutbound = function (app) {
+        $scope.data.app.route.outboundLegs = app.route.outboundLegs;
+        stateService.nextState();
+    };
+
+    $scope.saveRoute = function (app) {
+        $scope.openLoadingModal();
+        appIdApi.update({id: app.id}, {route: JSON.stringify(app.route)}, function (response) {
+            $scope.data.app = response.result;
+            stateService.nextState();
+            $scope.closeLoadingModal();
+        }, function (error) {
+            $scope.closeLoadingModal();
+            if (error.status === 502) {
+                $scope.handleDataProviderError();
+            } else {
+                $scope.handleErrorResponse(error);
+            }
+        });
+    };
+
+    $scope.saveAllowances = function (app) {
+        var patches = {
+            allowances: JSON.stringify(app.allowances),
+            mealPerDiems: JSON.stringify(app.mealPerDiems),
+            lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
+            mileagePerDiems: JSON.stringify(app.mileagePerDiems)
+        };
+        appIdApi.update({id: app.id}, patches, function (response) {
+            $scope.data.app = response.result;
+            stateService.nextState();
+        }, $scope.handleErrorResponse)
+    };
+
+    $scope.submitApplication = function (app) {
+        modals.open("submit-progress");
+        appIdApi.update({id: app.id}, {action: "submit"}).$promise
+            .then(function (response) {
+                $scope.data.app = response.result;
+                modals.resolve({});
+            })
+            .then(function () {
+                modals.open("submit-results").then(function () {
+                    locationService.go("/travel", true);
+                });
+            })
+            .catch($scope.handleErrorResponse);
+    };
+
+    $scope.previousStep = function (app) {
+        stateService.previousState();
+    };
+
+    $scope.cancel = function (app) {
+        modals.open("cancel-application").then(function () {
+            modals.resolve({});
+            $scope.openLoadingModal();
+            cancelApplication();
+        });
     };
 
     function cancelApplication() {
@@ -63,20 +130,24 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
         locationService.go("/travel/application/new", true);
     }
 
-    /**
-     * ---- Functions shared by child scopes ---
-     */
+    $scope.openLoadingModal = function () {
+        modals.open('loading');
+    };
 
-
+    $scope.closeLoadingModal = function () {
+        if (modals.isTop('loading')) {
+            modals.resolve();
+        }
+    };
 
     $scope.handleDataProviderError = function () {
-         modals.open("external-api-error")
-                    .then(function () {
-                        reload();
-                    })
-                    .catch(function () {
-                        locationService.go("/logout", true);
-                    });
+        modals.open("external-api-error")
+            .then(function () {
+                reload();
+            })
+            .catch(function () {
+                locationService.go("/logout", true);
+            });
     };
 
     /**
@@ -84,7 +155,7 @@ function travelAppController($scope, $q, $window, appProps, modals, locationServ
      * Docs: https://developers.google.com/maps/documentation/javascript/events#auth-errors
      * and https://developers.google.com/maps/documentation/javascript/error-messages
      */
-    $window.gm_authFailure = function() {
+    $window.gm_authFailure = function () {
         $scope.$apply(function () {
             $scope.handleErrorResponse("Google maps api authentication error.");
         });

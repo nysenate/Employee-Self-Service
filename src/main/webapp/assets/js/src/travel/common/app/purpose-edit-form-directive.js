@@ -1,28 +1,28 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPurposeEditForm', ['appProps', 'AppEditStateService', 'TravelApplicationByIdApi', 'TravelAttachmentDelete', purposeEditLink]);
+essTravel.directive('essPurposeEditForm', ['appProps', 'TravelAttachmentDelete', purposeEditLink]);
 
-function purposeEditLink(appProps, stateService, appByIdApi, attachmentDeleteApi) {
+function purposeEditLink(appProps, attachmentDeleteApi) {
     return {
         restrict: 'E',
         scope: {
-            // An object which contains a field named 'app' containing the application being edited.
-            // This is necessary for two way binding of app data when doing reference reassignment.
-            appContainer: '='
+            app: '<',               // The application being edited.
+            title: '@',             // The title
+            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
+            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.dirtyApp = angular.copy(scope.appContainer.app);
+            scope.dirtyApp = angular.copy(scope.app);
 
             scope.next = function () {
-                appByIdApi.update({id: scope.dirtyApp.id}, {purposeOfTravel: scope.dirtyApp.purposeOfTravel}, function (response) {
-                    // Reassign the app reference to the updated application new object.
-                    // If app was not in a container object this change would not update in the parent.
-                    scope.appContainer.app = response.result;
-                    stateService.nextState();
-                }, scope.handleErrorResponse)
+                scope.positiveCallback({app: scope.dirtyApp});
+            };
+
+            scope.cancel = function () {
+                scope.negativeCallback({app: scope.dirtyApp});
             };
 
             /**

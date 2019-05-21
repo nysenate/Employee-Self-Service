@@ -1,7 +1,5 @@
 <div class="content-container">
-  <p class="travel-content-info travel-text-bold">
-    Please review your application.
-  </p>
+  <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
   <ess-travel-inner-container title="Purpose of Travel">
     <div style="white-space:pre-wrap;">
@@ -206,11 +204,14 @@
 
   <div class="travel-button-container" style="border: none;">
     <input type="button" class="neutral-button" value="Cancel"
+           title="Cancel"
            ng-click="cancel()">
     <input type="button" class="travel-neutral-button" value="Back"
-           ng-click="stateService.previousState()">
+           title="Back"
+           ng-click="back()">
     <input type="button" class="submit-button"
-           value="Save"
+           value="Submit Application"
+           title="Submit application"
            ng-click="next()">
   </div>
 

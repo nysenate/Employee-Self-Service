@@ -3,9 +3,7 @@
   <form novalidate name="allowancesForm" id="allowancesForm"
         ng-submit="allowancesForm.$valid && next()">
 
-    <p class="travel-content-info travel-text-bold">
-      Enter your estimated expenses for the following categories.
-    </p>
+    <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
     <div ng-if="allowancesForm.$submitted && !allowancesForm.$valid">
       <ess-notification level="error" message="">
@@ -129,10 +127,13 @@
 
     <div class="travel-button-container">
       <input type="button" class="neutral-button" value="Cancel"
+             title="Cancel"
              ng-click="cancel()">
       <input type="button" class="travel-neutral-button" value="Back"
-             ng-click="stateService.previousState()">
-      <input type="submit" class="submit-button" value="Next">
+             title="Back"
+             ng-click="back()">
+      <input type="submit" class="submit-button"
+             title="Save expenses and continue" value="Save Expenses">
     </div>
   </form>
 </div>

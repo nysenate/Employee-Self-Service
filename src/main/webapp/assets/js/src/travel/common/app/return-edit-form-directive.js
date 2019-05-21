@@ -1,19 +1,23 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essReturnEditForm', ['$q', 'appProps', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', returnEditForm]);
+essTravel.directive('essReturnEditForm', ['$q', 'appProps', 'modals', returnEditForm]);
 
-function returnEditForm($q, appProps, modals, stateService, appIdApi) {
+function returnEditForm($q, appProps, modals) {
     return {
         restrict: 'E',
         scope: {
-            appContainer: '='
+            app: '<',               // The application being edited.
+            title: '@',             // The title
+            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
+            neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
+            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/return-edit-form-directive',
         link: function (scope, elem, attrs) {
 
-            scope.stateService = stateService;
-            scope.route = angular.copy(scope.appContainer.app.route);
+            scope.dirtyApp = angular.copy(scope.app);
+            scope.route = scope.dirtyApp.route;
 
             if (scope.route.returnLegs.length === 0) {
                 // Init return leg
@@ -21,7 +25,7 @@ function returnEditForm($q, appProps, modals, stateService, appIdApi) {
                 leg.from = angular.copy(scope.route.outboundLegs[scope.route.outboundLegs.length - 1].to);
                 leg.to = angular.copy(scope.route.outboundLegs[0].from);
                 // If only 1 outbound mode of transportation, initialize to that.
-                if (numDistinctModesOfTransportation(scope.appContainer.app) === 1) {
+                if (numDistinctModesOfTransportation(scope.app) === 1) {
                     leg.methodOfTravelDisplayName = angular.copy(scope.route.outboundLegs[0].methodOfTravelDisplayName);
                     leg.methodOfTravelDescription = angular.copy(scope.route.outboundLegs[0].methodOfTravelDescription);
                 }
@@ -78,54 +82,23 @@ function returnEditForm($q, appProps, modals, stateService, appIdApi) {
             scope.next = function () {
                 scope.setFormElementsTouched(scope.return.form);
                 if (scope.return.form.$valid) {
-                    scope.normalizeTravelDates(scope.route.returnLegs);
-                    promptUserIfLongTrip()
+                    scope.normalizeTravelDates(scope.dirtyApp.route.returnLegs);
+                    promptUserIfLongTrip(scope.dirtyApp.route)
                         .then(function () {
-                            scope.checkCounties(scope.route.returnLegs)
+                            scope.checkCounties(scope.dirtyApp.route.returnLegs)
                         })
-                        .then(scope.continue);
-                }
-
-                /**
-                 * Checks if the trip is longer than 7 days which would suggest a date typo by the user.
-                 * If it is, display a modal to ask the user if this is intentional.
-                 * @return {Promise} A promise which is resolved if the trip is less than 7 days long or the user
-                 * approves of their long trip. Rejected if the user wishes to review/change their travel dates.
-                 */
-                function promptUserIfLongTrip() {
-                    var deferred = $q.defer();
-                    var startDate = moment(scope.appContainer.app.startDate, "YYYY-MM-DD", true);
-                    var endDate = moment(scope.route.returnLegs[scope.route.returnLegs.length - 1].travelDate, "MM/DD/YYYY", true);
-                    var duration = moment.duration(endDate - startDate);
-                    if (duration.asDays() > 7) {
-                        modals.open('long-trip-warning')
-                            .then(function () {
-                                deferred.resolve();
-                            })
-                            .catch(function () {
-                                deferred.reject();
-                            })
-                    } else {
-                        deferred.resolve();
-                    }
-                    return deferred.promise;
+                        .then(function () {
+                            scope.positiveCallback({app: scope.dirtyApp});
+                        });
                 }
             };
 
-            scope.continue = function () {
-                scope.openLoadingModal();
-                appIdApi.update({id: scope.appContainer.app.id}, {route: JSON.stringify(scope.route)}, function (response) {
-                    scope.appContainer.app = response.result;
-                    stateService.nextState();
-                    scope.closeLoadingModal();
-                }, function (error) {
-                    scope.closeLoadingModal();
-                    if (error.status === 502) {
-                        scope.handleDataProviderError();
-                    } else {
-                        scope.handleErrorResponse(error);
-                    }
-                });
+            scope.back = function () {
+                scope.neutralCallback({app: scope.dirtyApp});
+            };
+
+            scope.cancel = function () {
+                scope.negativeCallback({app: scope.dirtyApp});
             };
 
             /**
@@ -138,6 +111,31 @@ function returnEditForm($q, appProps, modals, stateService, appIdApi) {
                     }
                 });
             };
+
+            /**
+             * Checks if the trip is longer than 7 days which would suggest a date typo by the user.
+             * If it is, display a modal to ask the user if this is intentional.
+             * @return {Promise} A promise which is resolved if the trip is less than 7 days long or the user
+             * approves of their long trip. Rejected if the user wishes to review/change their travel dates.
+             */
+            function promptUserIfLongTrip(route) {
+                var deferred = $q.defer();
+                var startDate = moment(scope.dirtyApp.startDate, "YYYY-MM-DD", true);
+                var endDate = moment(route.returnLegs[route.returnLegs.length - 1].travelDate, "MM/DD/YYYY", true);
+                var duration = moment.duration(endDate - startDate);
+                if (duration.asDays() > 7) {
+                    modals.open('long-trip-warning')
+                        .then(function () {
+                            deferred.resolve();
+                        })
+                        .catch(function () {
+                            deferred.reject();
+                        })
+                } else {
+                    deferred.resolve();
+                }
+                return deferred.promise;
+            }
         }
     }
 }
