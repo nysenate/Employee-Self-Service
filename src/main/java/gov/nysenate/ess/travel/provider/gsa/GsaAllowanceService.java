@@ -15,12 +15,12 @@ public class GsaAllowanceService {
 
     private static final Logger logger = LoggerFactory.getLogger(GsaAllowanceService.class);
 
-    private GsaCache gsaCache;
+    private GsaBatchResponseDao gsaBatchResponseDao;
     private GsaApi gsaApi;
 
     @Autowired
-    public GsaAllowanceService(GsaCache gsaCache, GsaApi gsaApi) {
-        this.gsaCache = gsaCache;
+    public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi) {
+        this.gsaBatchResponseDao = gsaBatchResponseDao;
         this.gsaApi = gsaApi;
     }
 
@@ -43,11 +43,11 @@ public class GsaAllowanceService {
     }
 
     private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
-        GsaResponse res = gsaCache.queryGsa(date, address.getZip5());
+        GsaResponse res = gsaBatchResponseDao.getGsaData(new GsaResponseId( date.getYear(), address.getZip5() ));
         if (res == null) {
             res = gsaApi.queryGsa(date, address.getZip5());
             if (res != null) {
-                gsaCache.saveToCache(res);
+                gsaBatchResponseDao.handleNewData(res);
             }
         }
         return res;
