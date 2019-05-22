@@ -8,7 +8,8 @@ function reviewEditForm($compile, appProps, modals) {
         scope: {
             app: '<',               // The application being edited.
             title: '@',             // The title
-            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
+            positiveBtnLabel: '@',   // The label to use for the positive button.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
             negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
         },
@@ -21,10 +22,7 @@ function reviewEditForm($compile, appProps, modals) {
             displayMap();
 
             scope.next = function () {
-                modals.open('submit-confirm')
-                    .then(function () {
-                        scope.positiveCallback({app: scope.reviewApp});
-                    })
+                scope.positiveCallback({app: scope.reviewApp});
             };
 
             scope.back = function () {

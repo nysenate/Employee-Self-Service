@@ -210,8 +210,7 @@
            title="Back"
            ng-click="back()">
     <input type="button" class="submit-button"
-           value="Submit Application"
-           title="Submit application"
+           ng-value="::positiveBtnLabel"
            ng-click="next()">
   </div>
 

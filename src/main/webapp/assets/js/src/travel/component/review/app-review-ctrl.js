@@ -37,5 +37,5 @@ function reviewController($scope, modals, locationService, appReviewApi) {
             .then(function () {
                 locationService.go("/travel/review", true);
             });
-    }
+    };
 }

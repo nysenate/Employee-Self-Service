@@ -4,30 +4,56 @@
   </div>
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
-      <span class="disapproved-text">Editing</span> Travel application for: <span class="bold" ng-bind="::vm.data.app.traveler.fullName"></span>
+      <span class="disapproved-text">Editing</span> Travel application for: <span class="bold"
+                                                                                  ng-bind="::vm.app.traveler.fullName"></span>
     </div>
   </div>
 
   <ess-edit-app-breadcrumbs></ess-edit-app-breadcrumbs>
 
   <div ng-if="vm.stateService.isPurposeState()">
-    <ess-purpose-edit-form app-container="vm.data"></ess-purpose-edit-form>
+    <ess-purpose-edit-form app="vm.app"
+                           title="Edit the purpose of travel."
+                           positive-callback="vm.savePurpose(app)"
+                           negative-callback="vm.cancel(app)">
+    </ess-purpose-edit-form>
   </div>
 
   <div ng-if="vm.stateService.isOutboundState()">
-    <ess-outbound-edit-form app-container="vm.data"></ess-outbound-edit-form>
+    <ess-outbound-edit-form app="vm.app"
+                            title="Edit the outbound route"
+                            positive-callback="vm.saveOutbound(app)"
+                            neutral-callback="vm.previousStep(app)"
+                            negative-callback="vm.cancel(app)">
+    </ess-outbound-edit-form>
   </div>
 
   <div ng-if="vm.stateService.isReturnState()">
-    <ess-return-edit-form app-container="vm.data"></ess-return-edit-form>
+    <ess-return-edit-form app="vm.app"
+                          title="Edit the return route"
+                          positive-callback="vm.saveRoute(app)"
+                          neutral-callback="vm.previousStep(app)"
+                          negative-callback="vm.cancel(app)">
+    </ess-return-edit-form>
   </div>
 
   <div ng-if="vm.stateService.isAllowancesState()">
-    <ess-allowances-edit-form app-container="vm.data"></ess-allowances-edit-form>
+    <ess-allowances-edit-form app="vm.app"
+                              title="Edit the expenses"
+                              positive-callback="vm.saveAllowances(app)"
+                              neutral-callback="vm.previousStep(app)"
+                              negative-callback="vm.cancel(app)">
+    </ess-allowances-edit-form>
   </div>
 
   <div ng-if="vm.stateService.isReviewState()">
-    <ess-review-edit-form app-container="vm.data"></ess-review-edit-form>
+    <ess-review-edit-form app="vm.app"
+                          title="Here is the full application with your changes."
+                          positive-btn-label="Done Editing"
+                          positive-callback="vm.doneEditing(app)"
+                          neutral-callback="vm.previousStep(app)"
+                          negative-callback="vm.cancel(app)">
+    </ess-review-edit-form>
   </div>
 
 
@@ -85,7 +111,7 @@
         <div style="padding-bottom: 20px;">
           <p>
             You should now <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>,
+                              ng-href="${ctxPath}/travel/application/print?id={{vm.app.id}}&print=true">print</a>,
             sign and deliver your application to your department head.
           </p>
         </div>

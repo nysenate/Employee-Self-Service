@@ -10,7 +10,7 @@
     <input type="button" class="reject-button" value="Disapprove Application"
            ng-click="disapprove()">
 
-    <a ng-href="${ctxPath}/travel/application/edit?appId={{appReview.travelApplication.id}}">Edit</a>
+    <a ng-click="edit()">Edit</a>
 
     <div style="float: right;">
       <a class="margin-10" target="_blank"

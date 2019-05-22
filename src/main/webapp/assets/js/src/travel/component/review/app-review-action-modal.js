@@ -7,9 +7,9 @@ essTravel.directive('appReviewActionModal', ['appProps', function (appProps) {
         controller: 'AppFormReviewCtrl'
     }
 }])
-    .controller('AppFormReviewCtrl', ['$scope', 'modals', 'ApplicationReviewApi', appFormReviewCtrl]);
+    .controller('AppFormReviewCtrl', ['$scope', 'modals', 'LocationService', 'ApplicationReviewApi', appFormReviewCtrl]);
 
-function appFormReviewCtrl($scope, modals, appReviewApi) {
+function appFormReviewCtrl($scope, modals, locationService, appReviewApi) {
 
     $scope.appReview = modals.params();
 
@@ -26,4 +26,10 @@ function appFormReviewCtrl($scope, modals, appReviewApi) {
     $scope.exit = function () {
         modals.reject();
     };
+
+    // Need to close the modal before loading the edit page.
+    $scope.edit = function () {
+        modals.reject();
+        locationService.go("/travel/application/edit", true, {appId: $scope.appReview.travelApplication.id});
+    }
 }

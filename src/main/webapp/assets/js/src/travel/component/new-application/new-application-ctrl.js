@@ -93,18 +93,21 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.submitApplication = function (app) {
-        modals.open("submit-progress");
-        appIdApi.update({id: app.id}, {action: "submit"}).$promise
-            .then(function (response) {
-                $scope.data.app = response.result;
-                modals.resolve({});
-            })
+        modals.open('submit-confirm')
             .then(function () {
-                modals.open("submit-results").then(function () {
-                    locationService.go("/travel", true);
-                });
+                modals.open("submit-progress");
+                appIdApi.update({id: app.id}, {action: "submit"}).$promise
+                    .then(function (response) {
+                        $scope.data.app = response.result;
+                        modals.resolve({});
+                    })
+                    .then(function () {
+                        modals.open("submit-results").then(function () {
+                            locationService.go("/travel", true);
+                        });
+                    })
+                    .catch($scope.handleErrorResponse);
             })
-            .catch($scope.handleErrorResponse);
     };
 
     $scope.previousStep = function (app) {
