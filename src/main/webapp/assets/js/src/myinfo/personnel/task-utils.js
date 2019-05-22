@@ -8,6 +8,7 @@
 
         AcknowledgmentTask.prototype = new PersonnelTask();
         MoodleTask.prototype = new PersonnelTask();
+        VideoCodeTask.prototype = new PersonnelTask();
 
         return {
             parseTask: parseTask,
@@ -31,13 +32,6 @@
              */
             this.getActionUrl = function () {
                 throw 'No URL for this task'
-            };
-
-            /**
-             * Defines action link click behavior.  Defaults to open in same tab.
-             */
-            this.getActionUrlTarget = function () {
-                return "_self";
             };
 
             /**
@@ -96,13 +90,26 @@
                 return task.taskDetails.url;
             };
 
-            this.getActionUrlTarget = function () {
-                return "_blank";
-            };
-
             this.getIconClass = function () {
                 return 'icon-graduation-cap';
             }
+        }
+
+        function VideoCodeTask(task) {
+            PersonnelTask.apply(this, arguments);
+
+            this.getActionUrl = function () {
+                return appProps.ctxPath + "/myinfo/personnel/todo/video/" + task.taskId.taskNumber;
+            };
+
+            this.getActionVerb = function () {
+                return "Watch";
+            };
+
+            this.getIconClass = function () {
+                return "icon-video";
+            }
+
         }
 
         /**
@@ -118,6 +125,8 @@
                     return new AcknowledgmentTask(task);
                 case 'MOODLE_COURSE':
                     return new MoodleTask(task);
+                case 'VIDEO_CODE_ENTRY':
+                    return new VideoCodeTask(task);
                 default:
                     console.error("Unknown task type '" + taskType + "'!");
                     return new PersonnelTask(task);

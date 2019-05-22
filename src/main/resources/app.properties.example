@@ -17,6 +17,9 @@ data.ackdoc_subdir = ack_docs/
 # Subdirectory where travel request attachments are stored.
 data.travel.attachments.dir = travel_request_attachments/
 
+# Subdirectory where Personnel Employee Compliance videos are stored
+data.pecvid_subdir = pec_videos/
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain url and context path that ess is hosted on (used for generating links)

@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.CODE_ENTRY;
+import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.VIDEO_CODE_ENTRY;
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 import static org.junit.Assert.*;
 
@@ -94,10 +94,10 @@ public class PersonnelAssignedTaskDaoIT extends BaseTest {
 
         // Query by type and completed status
         PATQueryBuilder completedCodeQuery = new PATQueryBuilder()
-                .setTaskType(CODE_ENTRY)
+                .setTaskType(VIDEO_CODE_ENTRY)
                 .setCompleted(true);
         queryResultAssertion(completedCodeQuery, allTasks,
-                task -> task.getTaskType() == CODE_ENTRY && task.isCompleted());
+                task -> task.getTaskType() == VIDEO_CODE_ENTRY && task.isCompleted());
 
         // Query by task id
         PersonnelTaskId taskId = new PersonnelTaskId(taskTypes.get(0), bogusTaskNums.get(0));

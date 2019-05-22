@@ -6,5 +6,5 @@ package gov.nysenate.ess.core.model.pec;
 public enum PersonnelTaskType {
     DOCUMENT_ACKNOWLEDGMENT,
     MOODLE_COURSE,
-    CODE_ENTRY,
+    VIDEO_CODE_ENTRY,
 }
