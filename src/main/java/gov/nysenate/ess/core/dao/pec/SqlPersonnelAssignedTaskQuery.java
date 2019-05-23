@@ -40,6 +40,18 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
             "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_number = :taskNumber"
     ),
 
+    INSERT_COMPLETE_TASK("" +
+            "INSERT INTO ${essSchema}.personnel_assigned_task\n" +
+            "        (emp_id, task_type, task_number, timestamp, update_user_id, completed, active)\n" +
+            "VALUES (:empId, :taskType::ess.personnel_task_type, :taskNumber, now(), :updateUserId, TRUE, TRUE)"
+    ),
+
+    UPDATE_COMPLETE_TASK("" +
+            "UPDATE ${essSchema}.personnel_assigned_task\n" +
+            "SET timestamp = now(), update_user_id = :updateUserId, completed = TRUE, active = TRUE\n" +
+            "WHERE emp_id = :empId AND task_type = :taskType::ess.personnel_task_type AND task_number = :taskNumber"
+    ),
+
     DEACTIVATE_TASK("" +
             "UPDATE ${essSchema}.personnel_assigned_task\n" +
             "SET active = FALSE\n" +

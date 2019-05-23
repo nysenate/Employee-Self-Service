@@ -73,8 +73,8 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
             if (ackDocSubdir == null) {
                 logger.warn("Ack doc subdirectory not set in props.  Ack docs will not be served!");
             } else {
-                String ackDocDir = Paths.get(dataDir, ackDocSubdir).toString();
-                String ackDocUri = Paths.get(resourcePath, ackDocSubdir).toString();
+                String ackDocDir = Paths.get(dataDir, ackDocSubdir).toString() + "/";
+                String ackDocUri = Paths.get(resourcePath, ackDocSubdir).toString() + "/";
                 logger.info("Registering resource path {} for files under {}", ackDocUri, ackDocDir);
                 registry.addResourceHandler(ackDocUri + "**")
                         .addResourceLocations("file:" + ackDocDir);
@@ -82,8 +82,8 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
             if (pecVidSubdir == null) {
                 logger.warn("PEC video subdirectory not set in props.  PEC videos will not be served!");
             } else {
-                String pecVidDir = Paths.get(dataDir, pecVidSubdir).toString();
-                String pecVidUri = Paths.get(resourcePath, pecVidSubdir).toString();
+                String pecVidDir = Paths.get(dataDir, pecVidSubdir).toString() + "/";
+                String pecVidUri = Paths.get(resourcePath, pecVidSubdir).toString() + "/";
                 logger.info("Registering resource path {} for files under {}", pecVidUri, pecVidDir);
                 registry.addResourceHandler(pecVidUri + "**")
                         .addResourceLocations("file:" + pecVidDir);

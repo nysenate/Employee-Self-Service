@@ -7,13 +7,19 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.AckDocView;
-import gov.nysenate.ess.core.client.view.pec.acknowledgment.AcknowledgmentView;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.DetailedAckDocView;
 import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
-import gov.nysenate.ess.core.model.pec.acknowledgment.*;
+import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
+import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
+import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
+import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
+import gov.nysenate.ess.core.model.pec.acknowledgment.AckDocNotFoundEx;
+import gov.nysenate.ess.core.model.pec.acknowledgment.DuplicateAckEx;
+import gov.nysenate.ess.core.model.pec.acknowledgment.EmpAckReport;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.ShiroUtils;
@@ -28,38 +34,38 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/acknowledgment")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/acknowledgment")
 public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
 
-    /**
-     * The directory where ack docs are stored in the file system
-     */
-    private String ackDocDir;
-    /**
-     * The uri path where ack docs are requested
-     */
-    private String ackDocResPath;
+    /** The directory where ack docs are stored in the file system */
+    private final String ackDocDir;
+
+    /** The uri path where ack docs are requested */
+    private final String ackDocResPath;
 
     private final AckDocDao ackDocDao;
-
     private final AcknowledgmentReportService ackReportService;
+    private final PersonnelAssignedTaskDao assignedTaskDao;
 
     @Autowired
     public AcknowledgmentApiCtrl(AckDocDao ackDocDao,
                                  AcknowledgmentReportService ackReportService,
+                                 PersonnelAssignedTaskDao assignedTaskDao,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
     ) {
         this.ackDocDao = ackDocDao;
         this.ackReportService = ackReportService;
+        this.assignedTaskDao = assignedTaskDao;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -71,7 +77,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * Returns a list of all active ack docs
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/documents
+     * (GET)    /api/v1/personnel/task/acknowledgment/documents
      *
      * @return ListViewResponse<AckDocView>
      */
@@ -94,7 +100,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * Returns all ack docs in a single calendar year regardless of active status.
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/documents
+     * (GET)    /api/v1/personnel/task/acknowledgment/documents
      *
      * Request Params
      * @param year int - the year for which all ack docs will be retrieved
@@ -117,7 +123,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * Returns a list of all years that contain an ack doc regardless of its active status.
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/documents/years
+     * (GET)    /api/v1/personnel/task/acknowledgment/documents/years
      *
      *
      * @return String
@@ -135,7 +141,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * Returns a specific Ack doc by its ID
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/documents/{ackDocId}
+     * (GET)    /api/v1/personnel/task/acknowledgment/documents/{ackDocId}
      *
      * Path Variables:
      * @param ackDocId int - the id of the ack doc that will be retrieved
@@ -151,67 +157,44 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Acknowledgment Api
-     * ------------------
-     *
-     * Returns a list of all acknowledgments for a single employee
-     *
-     * Usage:
-     * (GET)    /api/v1/acknowledgment/acks
-     *
-     * @return ListViewResponse<AcknowledgmentView>
-     */
-    @RequestMapping(value = "/acks", method = {GET, HEAD})
-    public ListViewResponse<AcknowledgmentView> getAcknowledgments(@RequestParam int empId) {
-        checkPermission(new CorePermission(empId, CorePermissionObject.PERSONNEL_TASK, GET));
-
-        List<Acknowledgment> acknowledgments = ackDocDao.getAllAcknowledgmentsForEmp(empId);
-
-        List<AcknowledgmentView> ackViews = acknowledgments.stream()
-                .map(AcknowledgmentView::new)
-                .collect(toList());
-
-        return ListViewResponse.of(ackViews, "acknowledgments");
-    }
-
-    /**
      * Acknowledge Api
      * ---------------
      *
-     * Records an acknowledgment from an employee to the database
+     * Records an acknowledgment from an employee
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/acks
+     * (POST)    /api/v1/personnel/task/acknowledgment
      *
      * RequestParams
      * @param empId int - the employee id of the employee completeing an acknowledgement
      * @param ackDocId int - the ack doc id that the employee is acknowledging
      *
-     *
      * @return SimpleResponse
      * */
-    @RequestMapping(value = "/acks", method = POST)
+    @RequestMapping(value = "", method = POST)
     public SimpleResponse acknowledgeDocument(@RequestParam int empId,
                                               @RequestParam int ackDocId) {
         checkPermission(new CorePermission(empId, CorePermissionObject.PERSONNEL_TASK, POST));
 
         int authedEmpId = ShiroUtils.getAuthenticatedEmpId();
-        boolean personnelAcked = authedEmpId != empId;
 
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
         ackDocDao.getAckDoc(ackDocId);
+        // Make sure empId is valid
+        ensureEmpIdExists(empId, "empId");
 
-        //cant ack same doc twice throw error
-        List<Acknowledgment> acknowledgments = ackDocDao.getAllAcknowledgmentsForEmp(empId);
+        PersonnelTaskId taskId = new PersonnelTaskId(DOCUMENT_ACKNOWLEDGMENT, ackDocId);
 
-        for (Acknowledgment acknowledgment : acknowledgments) {
-            if (acknowledgment.getAckDocId() == ackDocId && acknowledgment.getEmpId() == empId) {
+        // Make sure this document hasn't already been ack'd.  If so, throw an error.
+        try {
+            PersonnelAssignedTask task = assignedTaskDao.getTaskForEmp(empId, taskId);
+            if (task.isCompleted()) {
                 throw new DuplicateAckEx(ackDocId);
             }
-        }
+        } catch (PersonnelAssignedTaskNotFoundEx ignored) {}
 
-        // Save the ack doc
-        ackDocDao.insertAcknowledgment(new Acknowledgment(empId, ackDocId, LocalDateTime.now(), personnelAcked));
+        // Mark the acknowledgment task as completed
+        assignedTaskDao.setTaskComplete(empId, taskId, authedEmpId);
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
@@ -224,7 +207,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * This is the 1st report requested by Personnel
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/report/complete/{ackDocId}
+     * (GET)    /api/v1/personnel/task/acknowledgment/report/complete/{ackDocId}
      *
      * PathParams
      * @param ackDocId int - the ack doc id that the report is based off of
@@ -286,7 +269,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      * This is the 2nd report quested by Personnel
      *
      * Usage:
-     * (GET)    /api/v1/acknowledgment/report/acks/emp
+     * (GET)    /api/v1/personnel/task/acknowledgment/report/acks/emp
      *
      * RequestParams
      * @param empId int - the employee id of the employee whose acknowledgments will be retrieved

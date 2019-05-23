@@ -44,6 +44,15 @@ public interface PersonnelAssignedTaskDao {
     void updatePersonnelAssignedTask(PersonnelAssignedTask task);
 
     /**
+     * Mark a task as completed for the given employee.
+     *
+     * @param empId int
+     * @param taskId {@link PersonnelTaskId}
+     * @param updateEmpId int - user performing the update
+     */
+    void setTaskComplete(int empId, PersonnelTaskId taskId, int updateEmpId);
+
+    /**
      * Deactivates the task assignment.
      *
      * @param empId int

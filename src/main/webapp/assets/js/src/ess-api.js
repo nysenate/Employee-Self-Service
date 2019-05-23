@@ -135,24 +135,24 @@ essApi.factory('PersonnelAssignedTaskApi', ['$resource', 'appProps', function ($
     });
 }]);
 
-essApi.factory('PersonnelTaskUpdateApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/personnel/task/update');
-}]);
-
 /** --- Acknowledgment API --- */
 
+essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/acknowledgment');
+}]);
+
 essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/:ackDocId', {
+    return $resource(appProps.apiPath + '/personnel/task/acknowledgment/documents/:ackDocId', {
             ackDocId: '@ackDocId'
         });
 }]);
 
 essApi.factory('AcknowledgmentYearApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/documents/years');
+    return $resource(appProps.apiPath + '/personnel/task/acknowledgment/documents/years');
 }]);
 
 essApi.factory('EmpAckReportApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/acknowledgment/report/acks/emp');
+    return $resource(appProps.apiPath + '/personnel/task/acknowledgment/report/acks/emp');
 }]);
 
 /** --- Transaction API --- */

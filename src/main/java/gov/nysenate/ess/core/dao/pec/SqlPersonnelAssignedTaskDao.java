@@ -65,6 +65,20 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
     }
 
     @Override
+    public void setTaskComplete(int empId, PersonnelTaskId taskId, int updateEmpId) {
+        MapSqlParameterSource params = getEmpIdTaskIdParams(empId, taskId);
+        params.addValue("updateUserId", updateEmpId);
+        int updated = localNamedJdbc.update(UPDATE_COMPLETE_TASK.getSql(schemaMap()), params);
+        if (updated == 0) {
+            localNamedJdbc.update(INSERT_COMPLETE_TASK.getSql(schemaMap()), params);
+        } else if (updated != 1) {
+            throw new IllegalStateException(
+                    "Too many updates (" + updated + ") occurred for assigned task - " +
+                            "empId:" + empId + " taskId:" + taskId );
+        }
+    }
+
+    @Override
     public void deactivatePersonnelAssignedTask(int empId, PersonnelTaskId taskId) {
         MapSqlParameterSource empIdTaskIdParams = getEmpIdTaskIdParams(empId, taskId);
         int updated = localNamedJdbc.update(DEACTIVATE_TASK.getSql(schemaMap()), empIdTaskIdParams);

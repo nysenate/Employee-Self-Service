@@ -2,11 +2,11 @@
 
 angular.module('essMyInfo')
     .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce',
-                                   'appProps', 'modals', 'AckDocApi', 'TaskUtils', 'PersonnelTaskUpdateApi',
+                                   'appProps', 'modals', 'AckDocApi', 'TaskUtils', 'AcknowledgmentApi',
                                         acknowledgmentCtrl]);
 
 function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce,
-                            appProps, modals, documentApi, taskUtils, taskUpdateApi) {
+                            appProps, modals, documentApi, taskUtils, ackApi) {
 
     $scope.todoPageUrl = appProps.ctxPath + '/myinfo/personnel/todo';
 
@@ -151,14 +151,13 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     }
 
     function postAcknowledgment() {
-        var body = {
+        var params = {
             empId: appProps.user.employeeId,
-            taskId: $scope.state.task.taskId,
-            completed: true
+            ackDocId: $scope.state.docId
         };
 
         $scope.state.request.ackPost = true;
-        return taskUpdateApi.save({}, body, init, $scope.handleErrorResponse)
+        return ackApi.save(params, {}, init, $scope.handleErrorResponse)
             .$promise.finally(function () {
                 $scope.state.request.ackPost = false;
             });
