@@ -1,8 +1,8 @@
 package gov.nysenate.ess.time.dao.attendance;
 
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.SortOrder;
-import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.dao.attendance.mapper.RemoteEntryRowMapper;
 import gov.nysenate.ess.time.model.attendance.TimeEntry;
 import gov.nysenate.ess.time.model.attendance.TimeEntryException;
@@ -18,11 +18,11 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static gov.nysenate.ess.time.dao.attendance.SqlTimeEntryQuery.*;
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeEntryQuery.INSERT_TIME_ENTRY;
+import static gov.nysenate.ess.time.dao.attendance.SqlTimeEntryQuery.UPDATE_TIME_ENTRY;
 
 @Repository
 public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
@@ -63,7 +63,11 @@ public class SqlTimeEntryDao extends SqlBaseDao implements TimeEntryDao
         KeyHolder entryIdHolder = new GeneratedKeyHolder();
         String[] updFields = new String[]{"NUXRDAY"};
 
-        if (remoteNamedJdbc.update(UPDATE_TIME_ENTRY.getSql(schemaMap()), params) == 0) {
+        int updated = remoteNamedJdbc.update(UPDATE_TIME_ENTRY.getSql(schemaMap()), params);
+
+        // If the update didn't affect anything and the new entry is active, insert a new record.
+        // Inactive time records should not be inserted due to an odd trigger that sets them as active after save.
+        if (updated == 0 && timeEntry.isActive()) {
             remoteNamedJdbc.update(INSERT_TIME_ENTRY.getSql(schemaMap()), params, entryIdHolder, updFields);
             timeEntry.setEntryId(((BigDecimal) entryIdHolder.getKeys().get("NUXRDAY")).toBigInteger());
             timeEntry.setOriginalDate(LocalDateTime.now());
