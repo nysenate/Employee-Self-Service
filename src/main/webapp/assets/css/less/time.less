@@ -839,7 +839,9 @@ table.approve-attendance-rec-table {
           background: white;
         }
       }
-      cursor: pointer;
+      &:not([disabled]) {
+        cursor: pointer;
+      }
     }
     td {
       padding: .5em;
