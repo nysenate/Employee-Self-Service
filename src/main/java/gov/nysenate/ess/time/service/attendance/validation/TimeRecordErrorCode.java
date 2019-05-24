@@ -17,6 +17,7 @@ public enum TimeRecordErrorCode {
     DATE_OUT_OF_RANGE(8, "The saved record contains an entry date out of range of the electronic T&A record."),
     NULL_DATE(9, "The saved record contains a blank entry date."),
     TIME_ENTRY_DATE_DISCREPANCY(10, "Time entry dates do not match up"),
+    REVIEW_OF_OWN_TIMESHEET(11, "Attempt to perform a review action on employee's own timesheet"),
 
     /** Accrual errors */
     RECORD_EXCEEDS_ALLOWANCE(20, "The saved record contains time entries that exceed the employees yearly allowance"),
