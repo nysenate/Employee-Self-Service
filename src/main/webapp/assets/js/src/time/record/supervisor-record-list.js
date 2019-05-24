@@ -4,8 +4,9 @@ essApp.directive('supervisorRecordList', ['appProps', 'modals', function (appPro
     return {
         scope: {
             records: '=',           // a list of records to display
-            selectedIndices: '=?'   // a map of selected record indices, where the indices are
+            selectedIndices: '=?',  // a map of selected record indices, where the indices are
                                     // stored as object properties with a value of true
+            userEmpId: '=?'  // The users emp id. If provided, their records will not be actionable.
         },
         templateUrl: appProps.ctxPath + '/template/time/record/supervisor-record-list',
         link: link
@@ -42,7 +43,7 @@ essApp.directive('supervisorRecordList', ['appProps', 'modals', function (appPro
                 if (!isSelected) {
                     delete $scope.selectedIndices[index];
                     return false;
-                } else {
+                } else if ($scope.records[index].employeeId !== $scope.userEmpId) {
                     $scope.selectedIndices[index] = true;
                     return true;
                 }
