@@ -4,31 +4,29 @@ essTravel.controller('AppReviewCtrl', ['$scope', 'modals', 'LocationService', 'A
 
 function reviewController($scope, modals, locationService, appReviewApi) {
 
-    this.$onInit = function () {
-        $scope.data = {
-            isLoading: true,
-            apps: [],
-            appReviews: []
-        };
+    var vm = this;
+    vm.isLoading = true;
+    vm.apps = [];
+    vm.appReviews = [];
 
-        initData();
-    };
+    (function init() {
+        getPendingAppReviews();
+    })();
 
-    function initData() {
+    function getPendingAppReviews() {
         appReviewApi.pendingReviews()
             .then(function (appReviews) {
                 appReviews.forEach(function (review) {
-                    $scope.data.appReviews.push(review);
-                    $scope.data.apps.push(review.travelApplication);
+                    vm.appReviews.push(review);
+                    vm.apps.push(review.travelApplication);
                 });
-
-                $scope.data.isLoading = false;
+                vm.isLoading = false;
             });
     }
 
-    $scope.displayReviewFormModal = function (app) {
+    vm.displayReviewFormModal = function (app) {
         var appReview = {};
-        $scope.data.appReviews.forEach(function (a) {
+        vm.appReviews.forEach(function (a) {
             if (a.travelApplication.id === app.id) {
                 appReview = a;
             }
