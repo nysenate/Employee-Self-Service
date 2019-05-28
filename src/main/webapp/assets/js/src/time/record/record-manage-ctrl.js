@@ -22,6 +22,8 @@ function recordManageCtrl($scope, $q, $filter,
         supervisors: [],
         /** Index of currently selected supervisor */
         iSelSup: -1,
+        /** Emp Id of the logged in user */
+        userEmpId: appProps.user.employeeId,
 
         // Page state
         /** Flags set as true if the named request is in progress */
@@ -222,7 +224,12 @@ function recordManageCtrl($scope, $q, $filter,
      * Causes all SUBMITTED records to be selected for review
      */
     $scope.selectAll = function(status) {
-        for(var i = 0; i < $scope.getRecords(status).length; i++) {
+        var records = $scope.getRecords(status);
+        for(var i = 0; i < records.length; i++) {
+            // Don't select the user's own submitted records.
+            if (status === 'SUBMITTED' && records[i].employeeId === $scope.state.userEmpId) {
+                continue;
+            }
             $scope.state.selectedIndices[status][i] = true;
         }
     };
@@ -248,7 +255,8 @@ function recordManageCtrl($scope, $q, $filter,
      * Upon resolution, the modal will return an object containing
      */
     $scope.review = function(status, allowApproval) {
-        var selectedRecords = getSelectedRecords(status);
+        var omitOwnRecords = allowApproval;
+        var selectedRecords = getSelectedRecords(status, omitOwnRecords);
         var params = {
             records: selectedRecords,
             allowApproval: allowApproval
@@ -276,7 +284,7 @@ function recordManageCtrl($scope, $q, $filter,
      * after the user confirms via a prompt
      */
     $scope.approveSelections = function () {
-        var selectedRecords = getSelectedRecords('SUBMITTED');
+        var selectedRecords = getSelectedRecords('SUBMITTED', true);
         if (selectedRecords) {
             selectedRecords.forEach(function (record) {
                 record.action = "submit";
@@ -587,7 +595,7 @@ function recordManageCtrl($scope, $q, $filter,
      * Returns the records that are selected using the checkboxes.
      * @returns {Array}
      */
-    function getSelectedRecords(status) {
+    function getSelectedRecords(status, omitOwnRecords) {
         var selectedRecords = [];
         var selectedSup = $scope.getSelSupEntry();
         var statusRecords = getRecords(selectedSup, status);
@@ -601,7 +609,11 @@ function recordManageCtrl($scope, $q, $filter,
                               'index:', index, 'record_status_list', statusRecords, 'supervisor', selectedSup);
                 continue;
             }
-            selectedRecords.push(statusRecords[index]);
+            var record = statusRecords[index];
+            if (omitOwnRecords && record.employeeId === $scope.state.userEmpId) {
+                continue;
+            }
+            selectedRecords.push(record);
         }
         return selectedRecords;
     }

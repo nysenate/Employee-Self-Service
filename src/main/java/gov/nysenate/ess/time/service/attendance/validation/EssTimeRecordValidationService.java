@@ -6,14 +6,12 @@ import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.service.attendance.TimeRecordNotFoundException;
 import gov.nysenate.ess.time.service.attendance.TimeRecordService;
-import gov.nysenate.ess.time.service.attendance.validation.recordvalidators.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,40 +20,13 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
 
     private static final Logger logger = LoggerFactory.getLogger(EssTimeRecordValidationService.class);
 
-    @Autowired private TimeRecordService timeRecordService;
+    private final TimeRecordService timeRecordService;
+    private final ImmutableList<TimeRecordValidator> timeRecordValidators;
 
-    @Autowired private RecordPermittedModificationTRV recordPermittedModificationTRV;
-    @Autowired private AllowanceTRV allowanceTRV;
-    @Autowired private AccrualTRV accrualTRV;
-    @Autowired private HourIncrementTRV hourIncrementTRV;
-    @Autowired private MiscTRV miscTRV;
-    @Autowired private TotalTRV totalTRV;
-    @Autowired private FieldRangeTRV fieldMaxMinTRV;
-    @Autowired private DateRangeTRV dateRangeTRV;
-    @Autowired private EntryPermittedModificationTRV entryPermittedModificationTRV;
-    @Autowired private PermittedUserScopeTRV permittedUserScopeTRV;
-    @Autowired private ScopePermissionTRV scopePermissionTRV;
-    @Autowired private ScopeActionTRV recordScopeTRV;
-
-    private ImmutableList<TimeRecordValidator> timeRecordValidators;
-
-    @PostConstruct
-    public void init() {
-        timeRecordValidators = ImmutableList.<TimeRecordValidator>builder()
-                .add(recordPermittedModificationTRV)
-                .add(entryPermittedModificationTRV)
-                .add(allowanceTRV)
-                .add(accrualTRV)
-                .add(hourIncrementTRV)
-                .add(miscTRV)
-                .add(totalTRV)
-                .add(fieldMaxMinTRV)
-                .add(dateRangeTRV)
-                .add(recordScopeTRV)
-                .add(scopePermissionTRV)
-                .add(permittedUserScopeTRV)
-                // TODO: ADD SOME more VALIDATORS
-                .build();
+    public EssTimeRecordValidationService(TimeRecordService timeRecordService,
+                                          List<TimeRecordValidator> timeRecordValidators) {
+        this.timeRecordService = timeRecordService;
+        this.timeRecordValidators = ImmutableList.copyOf(timeRecordValidators);
     }
 
     @Override
@@ -76,7 +47,7 @@ public class EssTimeRecordValidationService implements TimeRecordValidationServi
         }
     }
 
-    /** --- Internal Methods --- */
+    /* --- Internal Methods --- */
 
     /**
      * Get the previous state of a time record or an empty optional if no record existed

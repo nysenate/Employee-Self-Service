@@ -18,7 +18,9 @@
     <tbody>
     <tr ng-repeat="record in records" ng-click="(selectedIndices) ? toggleSelected($index) : showDetails(record)"
         ng-init="showName = ($first == true || $parent.records[$index - 1].employeeId !== record.employeeId)"
-        ng-class="{'active': selectedIndices[$index] === true, 'name-row': showName}" title="Select record">
+        ng-class="{'active': selectedIndices[$index] === true, 'name-row': showName}"
+        ng-disabled="record.employeeId === userEmpId"
+        title="{{record.employeeId === userEmpId ? 'You cannot review your own timesheet.' : 'Select record'}}">
       <%--
       Display the name only once for each employee's list of records.
       When clicked, it should toggle all of the records for that employee.
@@ -31,7 +33,7 @@
         </div>
       </td>
       <td ng-if="selectedIndices" style="text-align: center;">
-        <input type="checkbox" ng-checked="selectedIndices[$index] === true"/>
+        <input ng-if="record.employeeId !== userEmpId" type="checkbox" ng-checked="selectedIndices[$index] === true"/>
       </td>
       <td>{{record.beginDate | moment:'l'}} - {{record.endDate | moment:'l'}}</td>
       <td>{{record.totals.workHours}}</td>

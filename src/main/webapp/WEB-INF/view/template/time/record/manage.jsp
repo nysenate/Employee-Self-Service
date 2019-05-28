@@ -68,6 +68,7 @@
         </div>
       </div>
       <div supervisor-record-list
+           user-emp-id="state.userEmpId"
            records="getRecords('SUBMITTED')"
            selected-indices="state.selectedIndices.SUBMITTED"></div>
       <div class="record-manage-controls">
