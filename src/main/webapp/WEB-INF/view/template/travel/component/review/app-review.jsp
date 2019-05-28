@@ -20,7 +20,7 @@
     <div ng-if="vm.apps.length > 0">
       <ess-app-summary-table
           apps="vm.apps"
-          on-row-click="vm.displayReviewFormModal(app)">
+          on-row-click="vm.onAppRowClick(app)">
       </ess-app-summary-table>
     </div>
   </div>

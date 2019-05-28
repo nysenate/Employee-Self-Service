@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class ApplicationReviewView implements ViewObject {
 
-    private int appReviewId;
+    private String appReviewId;
     private SimpleTravelApplicationView travelApplication;
     private List<ActionView> actions;
 
@@ -16,14 +16,14 @@ public class ApplicationReviewView implements ViewObject {
     }
 
     public ApplicationReviewView(ApplicationReview appReview) {
-        appReviewId = appReview.getAppReviewId();
+        appReviewId = String.valueOf(appReview.getAppReviewId());
         travelApplication = new SimpleTravelApplicationView(appReview.application());
         actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
     }
 
-    public int getAppReviewId() {
+    public String getAppReviewId() {
         return appReviewId;
     }
 

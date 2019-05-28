@@ -16,8 +16,6 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
         console.log(appId);
         appIdApi.get({id: appId}, function (response) {
             vm.app = response.result;
-
-            console.log(vm.app);
         }, $scope.handleErrorResponse);
     })();
 
@@ -63,7 +61,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
     };
 
     vm.doneEditing = function (app) {
-        locationService.go("/travel/review", true);
+        locationService.go("/travel/review", true, {appId: app.id});
     };
 
     vm.previousStep = function (app) {

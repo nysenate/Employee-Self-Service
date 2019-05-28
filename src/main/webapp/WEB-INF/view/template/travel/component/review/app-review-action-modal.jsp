@@ -10,7 +10,7 @@
     <input type="button" class="reject-button" value="Disapprove Application"
            ng-click="disapprove()">
 
-    <a ng-click="edit()">Edit</a>
+    <a ng-click="vm.onEdit()">Edit</a>
 
     <div style="float: right;">
       <a class="margin-10" target="_blank"
