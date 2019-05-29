@@ -9,43 +9,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Contains allowances entered or modified by the user.
- *
- * // TODO mileage, meal, lodging not currently used.
- * // TODO They may be used as an adjustment value on top of the per diems in the future.
+ * Contains allowances which are entered by the traveler.
  */
 public class Allowances {
 
-    protected Map<AllowanceType, Allowance> typeToAllowance;
+    Map<AllowanceType, Allowance> typeToAllowance;
 
     public Allowances() {
         // Initialize all allowances to $0
         typeToAllowance = EnumSet.allOf(AllowanceType.class).stream()
                 .collect(Collectors.toMap(Function.identity(), type -> new Allowance(type, Dollars.ZERO)));
-    }
-
-    public Dollars mileage() {
-        return typeToAllowance.get(AllowanceType.MILEAGE).dollars;
-    }
-
-    public void setMileage(Dollars dollars) {
-        typeToAllowance.get(AllowanceType.MILEAGE).dollars = dollars;
-    }
-
-    public Dollars meals() {
-        return typeToAllowance.get(AllowanceType.MEALS).dollars;
-    }
-
-    public void setMeals(Dollars dollars) {
-        typeToAllowance.get(AllowanceType.MEALS).dollars = dollars;
-    }
-
-    public Dollars lodging() {
-        return typeToAllowance.get(AllowanceType.LODGING).dollars;
-    }
-
-    public void setLodging(Dollars dollars) {
-        typeToAllowance.get(AllowanceType.LODGING).dollars = dollars;
     }
 
     public Dollars tolls() {

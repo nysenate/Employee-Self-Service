@@ -1,9 +1,9 @@
 package gov.nysenate.ess.travel.application.allowances;
 
+/**
+ * Allowance Types that the traveler enters a value for.
+ */
 public enum AllowanceType {
-    MILEAGE,
-    MEALS,
-    LODGING,
     TOLLS,
     PARKING,
     TRAIN_AND_PLANE,
