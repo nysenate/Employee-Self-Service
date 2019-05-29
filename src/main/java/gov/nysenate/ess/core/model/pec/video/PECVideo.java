@@ -79,13 +79,21 @@ public class PECVideo implements PersonnelTask {
 
     /* --- Methods --- */
 
-    public boolean codesCorrect(List<String> codeSubmission) {
+    /**
+     * Verify the given codes, throwing an exception if they don't match the codes for this video
+     *
+     * @param codeSubmission List<String>
+     * @throws IncorrectPECVideoCodeEx if the codes are wrong.
+     */
+    public void verifyCodes(List<String> codeSubmission) throws IncorrectPECVideoCodeEx {
         List<String> expectedCodes = codes.stream()
                 .sorted()
                 .map(PECVideoCode::getCode)
                 .collect(toList());
 
-        return expectedCodes.equals(codeSubmission);
+        if (!expectedCodes.equals(codeSubmission)) {
+            throw new IncorrectPECVideoCodeEx();
+        }
     }
 
     /* --- Getters --- */

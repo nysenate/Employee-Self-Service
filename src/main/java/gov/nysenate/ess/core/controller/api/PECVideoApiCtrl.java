@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
@@ -13,12 +12,12 @@ import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.video.IncorrectPECVideoCodeEx;
 import gov.nysenate.ess.core.model.pec.video.PECVideo;
 import gov.nysenate.ess.core.util.ShiroUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -49,10 +48,10 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
      * Request body:
      * @param submission {@link PECVideoCodeSubmission}
      *
-     * @return {@link SimpleResponse} if successful.  {@link ErrorResponse} for incorrect codes.
+     * @return {@link SimpleResponse} if successful
      */
     @RequestMapping(value = "/code", method = POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public BaseResponse submitVideoCodes(@RequestBody PECVideoCodeSubmission submission) {
+    public SimpleResponse submitVideoCodes(@RequestBody PECVideoCodeSubmission submission) {
         checkPermission(new CorePermission(submission.getEmpId(), CorePermissionObject.PERSONNEL_TASK, POST));
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
@@ -61,14 +60,24 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
 
         validateCodeFormat(submission.getCodes(), video, "codes");
 
-        if (video.codesCorrect(submission.getCodes())) {
-            int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
-            PersonnelTaskId taskId = new PersonnelTaskId(PersonnelTaskType.VIDEO_CODE_ENTRY, submission.getVideoId());
-            assignedTaskDao.setTaskComplete(submission.getEmpId(), taskId, authenticatedEmpId);
-            return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
-        } else {
-            return new ErrorResponse(ErrorCode.INVALID_PEC_VIDEO_CODE);
-        }
+        video.verifyCodes(submission.getCodes());
+        int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
+        PersonnelTaskId taskId = new PersonnelTaskId(PersonnelTaskType.VIDEO_CODE_ENTRY, submission.getVideoId());
+        assignedTaskDao.setTaskComplete(submission.getEmpId(), taskId, authenticatedEmpId);
+        return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
+    }
+
+    /**
+     * Handles submission of incorrect codes by returning a special error response.
+     *
+     * @param ex {@link IncorrectPECVideoCodeEx}
+     * @return {@link ErrorResponse}
+     */
+    @ExceptionHandler(IncorrectPECVideoCodeEx.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleIncorrectCode(IncorrectPECVideoCodeEx ex) {
+        return new ErrorResponse(ErrorCode.INVALID_PEC_VIDEO_CODE);
     }
 
     private PECVideo getVideoFromIdParams(int videoId, String paramName) {

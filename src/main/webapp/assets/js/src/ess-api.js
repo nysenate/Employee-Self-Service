@@ -155,6 +155,12 @@ essApi.factory('EmpAckReportApi', ['$resource', 'appProps', function ($resource,
     return $resource(appProps.apiPath + '/personnel/task/acknowledgment/report/acks/emp');
 }]);
 
+/** --- PEC Video Code API --- */
+
+essApi.factory('PECVidCodeApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/video/code');
+}]);
+
 /** --- Transaction API --- */
 
 essApi.factory('EmpTransactionsApi', ['$resource', 'appProps', function($resource, appProps) {
