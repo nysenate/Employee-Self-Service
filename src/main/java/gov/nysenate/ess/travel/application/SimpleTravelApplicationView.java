@@ -7,6 +7,7 @@ import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
+import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String purposeOfTravel;
     private SimpleRouteView route;
     private AllowancesView allowances;
+    private PerDiemOverridesView perDiemOverrides;
     @JsonProperty("isPending")
     private boolean isPending;
     @JsonProperty("isApproved")
@@ -63,6 +65,7 @@ public class SimpleTravelApplicationView implements ViewObject {
         purposeOfTravel = app.getPurposeOfTravel();
         route = new SimpleRouteView(app.getRoute());
         allowances = new AllowancesView(app.getAllowances());
+        perDiemOverrides = new PerDiemOverridesView(app.getPerDiemOverrides());
         isPending = app.isPending();
         isApproved = app.isApproved();
         isDisapproved = app.isDisapproved();
@@ -112,6 +115,10 @@ public class SimpleTravelApplicationView implements ViewObject {
 
     public AllowancesView getAllowances() {
         return allowances;
+    }
+
+    public PerDiemOverridesView getPerDiemOverrides() {
+        return perDiemOverrides;
     }
 
     public boolean isPending() {

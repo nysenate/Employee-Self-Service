@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
+import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -19,6 +20,7 @@ public class TravelApplication {
     private String purposeOfTravel;
     private Route route;
     private Allowances allowances;
+    private PerDiemOverrides perDiemOverrides;
     private TravelApplicationStatus status;
     private List<TravelAttachment> attachments;
     private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
@@ -32,20 +34,27 @@ public class TravelApplication {
         this.purposeOfTravel = "";
         this.route = Route.EMPTY_ROUTE;
         this.allowances = new Allowances();
+        this.perDiemOverrides = new PerDiemOverrides();
         this.status = TravelApplicationStatus.PENDING;
         this.attachments = new ArrayList<>();
     }
 
     public Dollars mileageAllowance() {
-        return getRoute().mileageAllowances().requestedPerDiem();
+        return perDiemOverrides.isMileageOverridden()
+                ? perDiemOverrides.mileageOverride()
+                : getRoute().mileageAllowances().requestedPerDiem();
     }
 
     public Dollars mealAllowance() {
-        return getRoute().mealAllowances().requestedPerDiem();
+        return perDiemOverrides.isMealsOverridden()
+                ? perDiemOverrides.mealsOverride()
+                : getRoute().mealAllowances().requestedPerDiem();
     }
 
     public Dollars lodgingAllowance() {
-        return getRoute().lodgingAllowances().requestedPerDiem();
+        return perDiemOverrides.isLodgingOverridden()
+                ? perDiemOverrides.lodgingOverride()
+                : getRoute().lodgingAllowances().requestedPerDiem();
     }
 
     public Dollars tollsAllowance() {
@@ -174,6 +183,14 @@ public class TravelApplication {
 
     void setAllowances(Allowances allowances) {
         this.allowances = allowances;
+    }
+
+    public PerDiemOverrides getPerDiemOverrides() {
+        return perDiemOverrides;
+    }
+
+    void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
+        this.perDiemOverrides = perDiemOverrides;
     }
 
     public LocalDateTime getSubmittedDateTime() {
