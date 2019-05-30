@@ -9,8 +9,8 @@
            ng-click="approve()">
     <input type="button" class="reject-button" value="Disapprove Application"
            ng-click="disapprove()">
-
-    <a ng-click="vm.onEdit()">Edit</a>
+    <input type="button" class="neutral-button" value="Edit Application"
+           ng-click="vm.onEdit()">
 
     <div style="float: right;">
       <a class="margin-10" target="_blank"

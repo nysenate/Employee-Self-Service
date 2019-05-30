@@ -12,6 +12,7 @@ import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
+import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,10 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     /**
      * Update a single field of a travel application.
+     * Multiple updates can be sent in a single request. The app is saved once after all patches are applied.
+     *
+     * @param patches A map of changes to be made to the application. Key is a string describing what kind of update is contained in the value.
+     *                Value is either the raw data (if a string) or an object serialized into a json String.
      */
     @RequestMapping(value = "/{appId}", method = RequestMethod.PATCH)
     public BaseResponse patchTravelApplication(@PathVariable int appId, @RequestBody Map<String, String> patches) throws IOException {
@@ -71,6 +76,9 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                     break;
                 case "mileagePerDiems":
                     travelApplicationService.updateMileagePerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class));
+                    break;
+                case "perdiemOverrides":
+                    travelApplicationService.updatePerDiemOverrides(app, OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class));
                     break;
             }
         }

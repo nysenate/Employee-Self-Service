@@ -1,6 +1,6 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essEditAppBreadcrumbs', ['appProps', 'NewAppStateService', function (appProps, stateService) {
+essTravel.directive('essEditAppBreadcrumbs', ['appProps', 'AppEditStateService', function (appProps, stateService) {
     return {
         restrict: 'E',
         templateUrl: appProps.ctxPath + '/template/travel/component/edit-application/edit-app-breadcrumbs-directive',

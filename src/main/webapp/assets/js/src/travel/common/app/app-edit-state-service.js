@@ -1,5 +1,5 @@
 var essTravel = angular.module('essTravel');
-essTravel.service('NewAppStateService', [StateService]);
+essTravel.service('AppEditStateService', [StateService]);
 
 /**
  * Stores and mutates the page state when editing an application.
@@ -13,19 +13,8 @@ function StateService() {
         OUTBOUND: 2,
         RETURN: 3,
         ALLOWANCES: 4,
-        REVIEW: 5
-    };
-
-    StateService.prototype.nextState = function () {
-        if (this.currState < this.STATES.REVIEW) {
-            this.currState++;
-        }
-    };
-
-    StateService.prototype.previousState = function () {
-        if (this.currState > this.STATES.PURPOSE) {
-            this.currState--;
-        }
+        OVERRIDES: 5,
+        REVIEW: 6
     };
 
     StateService.prototype.isPurposeState = function () {
@@ -74,6 +63,18 @@ function StateService() {
 
     StateService.prototype.isAllowancesNavigable = function () {
         return this.STATES.ALLOWANCES < this.currState;
+    };
+
+    StateService.prototype.isOverridesState = function () {
+        return this.currState == this.STATES.OVERRIDES;
+    };
+
+    StateService.prototype.setOverridesState = function () {
+        this.currState = this.STATES.OVERRIDES;
+    };
+
+    StateService.prototype.isOverridesNavigable = function () {
+        return this.STATES.OVERRIDES < this.currState;
     };
 
     StateService.prototype.isReviewState = function () {

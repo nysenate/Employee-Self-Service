@@ -1,14 +1,14 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
-                     ['$scope', 'LocationService', 'modals', 'NewAppStateService', 'TravelApplicationByIdApi', editAppCtrl]);
+                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', editAppCtrl]);
 
 function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
 
     var vm = this;
     vm.app = {};
 
-    (function init () {
+    (function init() {
         vm.stateService = stateService;
         vm.stateService.setPurposeState();
 
@@ -22,20 +22,20 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
     vm.savePurpose = function (app) {
         appIdApi.update({id: app.id}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
             vm.app = response.result;
-            stateService.nextState();
+            stateService.setOutboundState();
         }, $scope.handleErrorResponse)
     };
 
     vm.saveOutbound = function (app) {
         vm.app.route.outboundLegs = app.route.outboundLegs;
-        stateService.nextState();
+        stateService.setReturnState();
     };
 
     vm.saveRoute = function (app) {
         vm.openLoadingModal();
         appIdApi.update({id: app.id}, {route: JSON.stringify(app.route)}, function (response) {
             vm.app = response.result;
-            stateService.nextState();
+            stateService.setAllowancesState();
             vm.closeLoadingModal();
         }, function (error) {
             vm.closeLoadingModal();
@@ -56,16 +56,40 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
         };
         appIdApi.update({id: app.id}, patches, function (response) {
             vm.app = response.result;
-            stateService.nextState();
+            stateService.setOverridesState();
         }, $scope.handleErrorResponse)
+    };
+
+    vm.saveOverrides = function (app) {
+        appIdApi.update({id: app.id}, {perdiemOverrides: JSON.stringify(app.perdiemOverrides)}, function (response) {
+            vm.app = response.result;
+            stateService.setReviewState();
+            console.log(vm.app);
+        }, $scope.handleErrorResponse);
     };
 
     vm.doneEditing = function (app) {
         locationService.go("/travel/review", true, {appId: app.id});
     };
 
-    vm.previousStep = function (app) {
-        stateService.previousState();
+    vm.toPurposeState = function (app) {
+        stateService.setPurposeState();
+    };
+
+    vm.toOutboundState = function (app) {
+        stateService.setOutboundState();
+    };
+
+    vm.toReturnState = function (app) {
+        stateService.setReturnState();
+    };
+
+    vm.toAllowancesState = function (app) {
+        stateService.setAllowancesState();
+    };
+
+    vm.toOverridesState = function (app) {
+        stateService.setOverridesState();
     };
 
     vm.openLoadingModal = function () {

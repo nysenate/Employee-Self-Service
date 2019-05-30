@@ -25,7 +25,7 @@
       <ess-outbound-edit-form app="data.app"
                               title="Enter your outbound route starting from the origin and including all destinations."
                               positive-callback="saveOutbound(app)"
-                              neutral-callback="previousStep(app)"
+                              neutral-callback="toPurposeState(app)"
                               negative-callback="cancel(app)">
       </ess-outbound-edit-form>
     </div>
@@ -34,7 +34,7 @@
       <ess-return-edit-form app="data.app"
                             title="Enter your return route from the last destination to the origin."
                             positive-callback="saveRoute(app)"
-                            neutral-callback="previousStep(app)"
+                            neutral-callback="toOutboundState(app)"
                             negative-callback="cancel(app)">
       </ess-return-edit-form>
     </div>
@@ -43,7 +43,7 @@
       <ess-allowances-edit-form app="data.app"
                                 title="Enter your estimated expenses for the following categories."
                                 positive-callback="saveAllowances(app)"
-                                neutral-callback="previousStep(app)"
+                                neutral-callback="toReturnState(app)"
                                 negative-callback="cancel(app)">
       </ess-allowances-edit-form>
     </div>
@@ -53,7 +53,7 @@
                             title="Please review your application."
                             positive-btn-label="Submit Application"
                             positive-callback="submitApplication(app)"
-                            neutral-callback="previousStep(app)"
+                            neutral-callback="toAllowancesState(app)"
                             negative-callback="cancel(app)">
       </ess-review-edit-form>
     </div>

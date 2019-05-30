@@ -2,14 +2,12 @@ package gov.nysenate.ess.travel.application.overrides.perdiem;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 public class PerDiemOverridesView implements ViewObject {
 
-    @JsonProperty("isMileageOverridden")
     boolean isMileageOverridden;
-    @JsonProperty("isMealsOverridden")
     boolean isMealsOverridden;
-    @JsonProperty("isLodgingOverridden")
     boolean isLodgingOverridden;
 
     double mileageOverride;
@@ -29,14 +27,25 @@ public class PerDiemOverridesView implements ViewObject {
         lodgingOverride = Double.valueOf(overrides.lodgingOverride().toString());
     }
 
+    public PerDiemOverrides toPerDiemOverrides() {
+        PerDiemOverrides overrides = new PerDiemOverrides();
+        overrides.setMileageOverride(new Dollars(mileageOverride));
+        overrides.setMealsOverride(new Dollars(mealsOverride));
+        overrides.setLodgingOverride(new Dollars(lodgingOverride));
+        return overrides;
+    }
+
+    @JsonProperty("isMileageOverridden")
     public boolean isMileageOverridden() {
         return isMileageOverridden;
     }
 
+    @JsonProperty("isMealsOverridden")
     public boolean isMealsOverridden() {
         return isMealsOverridden;
     }
 
+    @JsonProperty("isLodgingOverridden")
     public boolean isLodgingOverridden() {
         return isLodgingOverridden;
     }

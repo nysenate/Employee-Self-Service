@@ -24,7 +24,7 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String purposeOfTravel;
     private SimpleRouteView route;
     private AllowancesView allowances;
-    private PerDiemOverridesView perDiemOverrides;
+    private PerDiemOverridesView perdiemOverrides;
     @JsonProperty("isPending")
     private boolean isPending;
     @JsonProperty("isApproved")
@@ -65,7 +65,7 @@ public class SimpleTravelApplicationView implements ViewObject {
         purposeOfTravel = app.getPurposeOfTravel();
         route = new SimpleRouteView(app.getRoute());
         allowances = new AllowancesView(app.getAllowances());
-        perDiemOverrides = new PerDiemOverridesView(app.getPerDiemOverrides());
+        perdiemOverrides = new PerDiemOverridesView(app.getPerDiemOverrides());
         isPending = app.isPending();
         isApproved = app.isApproved();
         isDisapproved = app.isDisapproved();
@@ -117,8 +117,8 @@ public class SimpleTravelApplicationView implements ViewObject {
         return allowances;
     }
 
-    public PerDiemOverridesView getPerDiemOverrides() {
-        return perDiemOverrides;
+    public PerDiemOverridesView getPerdiemOverrides() {
+        return perdiemOverrides;
     }
 
     public boolean isPending() {

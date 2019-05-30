@@ -9,7 +9,7 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('NewApplicationCtrl',
-                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'NewAppStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi', travelAppController]);
+                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi', travelAppController]);
 
 function travelAppController($scope, $window, appProps, modals, locationService, stateService, appApi, appIdApi) {
 
@@ -54,20 +54,20 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.savePurpose = function (app) {
         appIdApi.update({id: $scope.data.app.id}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
             $scope.data.app = response.result;
-            stateService.nextState();
+            stateService.setOutboundState();
         }, $scope.handleErrorResponse)
     };
 
     $scope.saveOutbound = function (app) {
         $scope.data.app.route.outboundLegs = app.route.outboundLegs;
-        stateService.nextState();
+        stateService.setReturnState();
     };
 
     $scope.saveRoute = function (app) {
         $scope.openLoadingModal();
         appIdApi.update({id: app.id}, {route: JSON.stringify(app.route)}, function (response) {
             $scope.data.app = response.result;
-            stateService.nextState();
+            stateService.setAllowancesState();
             $scope.closeLoadingModal();
         }, function (error) {
             $scope.closeLoadingModal();
@@ -88,7 +88,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         };
         appIdApi.update({id: app.id}, patches, function (response) {
             $scope.data.app = response.result;
-            stateService.nextState();
+            stateService.setReviewState();
         }, $scope.handleErrorResponse)
     };
 
@@ -110,16 +110,28 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             })
     };
 
-    $scope.previousStep = function (app) {
-        stateService.previousState();
-    };
-
     $scope.cancel = function (app) {
         modals.open("cancel-application").then(function () {
             modals.resolve({});
             $scope.openLoadingModal();
             cancelApplication();
         });
+    };
+
+    $scope.toPurposeState = function (app) {
+        $scope.stateService.setPurposeState();
+    };
+
+    $scope.toOutboundState = function (app) {
+        $scope.stateService.setOutboundState();
+    };
+
+    $scope.toReturnState = function (app) {
+        $scope.stateService.setReturnState();
+    };
+
+    $scope.toAllowancesState = function (app) {
+        $scope.stateService.setAllowancesState();
     };
 
     function cancelApplication() {

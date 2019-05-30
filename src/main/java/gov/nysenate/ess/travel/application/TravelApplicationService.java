@@ -8,6 +8,7 @@ import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsVie
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
+import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.*;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.review.ApplicationReview;
@@ -40,6 +41,10 @@ public class TravelApplicationService {
 
     public void updateAllowances(TravelApplication app, AllowancesView allowancesView) {
         app.setAllowances(allowancesView.toAllowances());
+    }
+
+    public void updatePerDiemOverrides(TravelApplication app, PerDiemOverridesView overridesView) {
+        app.setPerDiemOverrides(overridesView.toPerDiemOverrides());
     }
 
     /**
