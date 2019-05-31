@@ -32,7 +32,7 @@ public class ApplicationReviewService {
 
         if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
             applicationReview.application().approve();
-            travelApplicationService.saveTravelApplication(applicationReview.application());
+            travelApplicationService.saveTravelApplication(applicationReview.application(), approver);
         }
     }
 
@@ -42,7 +42,7 @@ public class ApplicationReviewService {
         saveApplicationReview(applicationReview);
 
         applicationReview.application().disapprove();
-        travelApplicationService.saveTravelApplication(applicationReview.application());
+        travelApplicationService.saveTravelApplication(applicationReview.application(), disapprover);
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {

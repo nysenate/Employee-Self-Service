@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application;
 
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
@@ -51,11 +52,12 @@ public class TravelApplicationService {
      * Save changes to a Travel Application.
      *
      * @param app
+     * @param saver The employee who is saving the application.
      * @return
      */
-    public TravelApplication saveTravelApplication(TravelApplication app) {
+    public TravelApplication saveTravelApplication(TravelApplication app, Employee saver) {
         app.setModifiedDateTime(LocalDateTime.now());
-        app.setModifiedBy(app.getTraveler());
+        app.setModifiedBy(saver);
         applicationDao.insertTravelApplication(app);
         return app;
     }
@@ -80,7 +82,7 @@ public class TravelApplicationService {
             return appOptional.get();
         } else {
             TravelApplication app = new TravelApplication(0, 0, employeeInfoService.getEmployee(travelerId));
-            saveTravelApplication(app);
+            saveTravelApplication(app, app.getTraveler());
             return app;
         }
     }
@@ -90,11 +92,12 @@ public class TravelApplicationService {
      * Also creates and saves a new ApplicationApproval for this TravelApplication.
      *
      * @param app
+     * @param submitter The employee submitting this application.
      * @return
      */
-    public TravelApplication submitTravelApplication(TravelApplication app) {
+    public TravelApplication submitTravelApplication(TravelApplication app, Employee submitter) {
         app.setSubmittedDateTime(LocalDateTime.now());
-        saveTravelApplication(app);
+        saveTravelApplication(app, submitter);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);

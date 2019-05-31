@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
@@ -55,6 +56,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     public BaseResponse patchTravelApplication(@PathVariable int appId, @RequestBody Map<String, String> patches) throws IOException {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
         checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST));
+        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         // Perform all updates specified in the patch.
         for (Map.Entry<String, String> patch : patches.entrySet()) {
@@ -83,14 +85,14 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
             }
         }
         // Save after all changes are applied.
-        travelApplicationService.saveTravelApplication(app);
+        travelApplicationService.saveTravelApplication(app, user);
 
         // Perform actions like submitting separately.
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "action":
                     if (patch.getValue().equals("submit")) {
-                        travelApplicationService.submitTravelApplication(app);
+                        travelApplicationService.submitTravelApplication(app, user);
                     }
             }
         }
