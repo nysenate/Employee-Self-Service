@@ -77,7 +77,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 case "mileagePerDiems":
                     travelApplicationService.updateMileagePerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class));
                     break;
-                case "perdiemOverrides":
+                case "perDiemOverrides":
                     travelApplicationService.updatePerDiemOverrides(app, OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class));
                     break;
             }

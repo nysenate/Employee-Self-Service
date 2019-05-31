@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.directive('essPerdiemOverridesEditForm', ['appProps', perdiemOverrideEditForm]);
+essTravel.directive('essPerdiemOverridesEditForm', ['appProps', perDiemOverrideEditForm]);
 
-function perdiemOverrideEditForm(appProps) {
+function perDiemOverrideEditForm(appProps) {
     return {
         restrict: 'E',
         scope: {

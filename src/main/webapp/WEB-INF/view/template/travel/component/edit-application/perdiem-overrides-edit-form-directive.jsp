@@ -18,18 +18,18 @@
 
           <div class="perdiem-overrides-edit-form-row">
             <label>Mileage Override $</label>
-            <input ng-model="dirtyApp.perdiemOverrides.mileageOverride"
+            <input ng-model="dirtyApp.perDiemOverrides.mileageOverride"
                    type="number" step="0.01" min="0">
           </div>
 
           <div class="perdiem-overrides-edit-form-row">
             <label>Meals Override $</label>
-            <input ng-model="dirtyApp.perdiemOverrides.mealsOverride" type="number" step="0.01" min="0">
+            <input ng-model="dirtyApp.perDiemOverrides.mealsOverride" type="number" step="0.01" min="0">
           </div>
 
           <div class="perdiem-overrides-edit-form-row">
             <label>Lodging Override $</label>
-            <input ng-model="dirtyApp.perdiemOverrides.lodgingOverride" type="number" step="0.01" min="0">
+            <input ng-model="dirtyApp.perDiemOverrides.lodgingOverride" type="number" step="0.01" min="0">
           </div>
 
         </div>

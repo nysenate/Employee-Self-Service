@@ -33,7 +33,7 @@ public class SqlPerDiemOverridesDao extends SqlBaseDao {
 
     private int insertPerDiemOverride(PerDiemOverride override) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("perdiemType", override.type.name())
+                .addValue("perDiemType", override.type.name())
                 .addValue("dollars", override.dollars.toString());
 
         String sql = SqlPerDiemOverridesQuery.INSERT_PERDIEM_OVERRIDE.getSql(schemaMap());
@@ -74,7 +74,7 @@ public class SqlPerDiemOverridesDao extends SqlBaseDao {
     private enum SqlPerDiemOverridesQuery implements BasicSqlQuery {
         INSERT_PERDIEM_OVERRIDE(
                 "INSERT INTO ${travelSchema}.app_perdiem_override(perdiem_type, dollars)\n" +
-                        "  VALUES(:perdiemType, :dollars)"
+                        "  VALUES(:perDiemType, :dollars)"
         ),
         INSERT_INTO_JOIN_TABLE(
                 "INSERT INTO ${travelSchema}.app_version_perdiem_override" +

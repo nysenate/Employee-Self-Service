@@ -61,7 +61,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
     };
 
     vm.saveOverrides = function (app) {
-        appIdApi.update({id: app.id}, {perdiemOverrides: JSON.stringify(app.perdiemOverrides)}, function (response) {
+        appIdApi.update({id: app.id}, {perDiemOverrides: JSON.stringify(app.perDiemOverrides)}, function (response) {
             vm.app = response.result;
             stateService.setReviewState();
             console.log(vm.app);
