@@ -6,10 +6,14 @@ import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.model.pec.MoodleEmployeeRecord;
 import gov.nysenate.ess.core.service.pec.MoodleRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,28 +39,6 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Personnel Employee Task - Moodle Save Records
-     * ---------------------------------------------
-     *
-     * Api Call used by moodle to send ESS course data
-     *
-     * Usage:
-     * (POST)    /api/v1/personnel/task/moodle/receive
-     *
-     *
-     * @return String
-     * */
-    @RequestMapping(value = "/receive", method = {POST})
-    public SimpleResponse saveMoodleRecords(HttpServletRequest request,
-                                            HttpServletResponse response,
-                                            @RequestBody List<MoodleEmployeeRecord> moodleEmployeeRecords) throws IOException {
-        moodleRecordService.processMoodleEmployeeRecords(moodleEmployeeRecords);
-        return new SimpleResponse(true,
-                "moodle callback successfully processed", "moodle-callback");
-    }
-
-
-    /**
      * Personnel Employee Task - Moodle Import
      * ---------------------------------------
      *
@@ -74,16 +56,15 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
      * @return String
      * */
     @RequestMapping(value = "/generate", method = {GET})
-    public SimpleResponse runMoodleImport(HttpServletRequest request,
+    @ResponseStatus(value = HttpStatus.OK)
+    public void runMoodleImport(HttpServletRequest request,
                                           HttpServletResponse response,
-                                     @RequestParam LocalDateTime from,
-                                     @RequestParam LocalDateTime to,
+                                     @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                     @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
                                      @RequestParam String organization) throws IOException {
 
         //Change specifics of moodle api call once it is available
-        JsonNode json = moodleRecordService.contactMoodleForNewRecords(from, to, organization);
+        JsonNode json = moodleRecordService.contactMoodleForRecords(from, to, organization);
         moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
-        return new SimpleResponse(true,
-                "moodle report generated successfully", "moodle-report-generation");
     }
 }

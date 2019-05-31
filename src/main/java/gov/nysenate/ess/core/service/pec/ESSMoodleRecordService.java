@@ -40,5 +40,5 @@ public interface ESSMoodleRecordService {
      * @return
      * @throws IOException
      */
-    public JsonNode contactMoodleForNewRecords(LocalDateTime from, LocalDateTime to, String organization) throws IOException;
+    public JsonNode contactMoodleForRecords(LocalDateTime from, LocalDateTime to, String organization) throws IOException;
 }

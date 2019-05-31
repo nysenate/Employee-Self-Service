@@ -187,6 +187,7 @@ login.success.url = /time/record/entry
 # LegEthics Training URL
 # A URL that points to the LegEthics training site.
 legethics.url =
+legethics.key =
 
 # --- Scheduling Configuration ------------------------------------------------
 
