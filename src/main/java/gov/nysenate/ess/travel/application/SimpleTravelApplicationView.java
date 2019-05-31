@@ -76,9 +76,9 @@ public class SimpleTravelApplicationView implements ViewObject {
 
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
-        mealPerDiems = new MealPerDiemsView(app.getRoute().mealAllowances());
-        lodgingPerDiems = new LodgingPerDiemsView(app.getRoute().lodgingAllowances());
-        mileagePerDiems = new MileagePerDiemsView(app.getRoute().mileageAllowances());
+        mealPerDiems = new MealPerDiemsView(app.getRoute().mealPerDiems());
+        lodgingPerDiems = new LodgingPerDiemsView(app.getRoute().lodgingPerDiems());
+        mileagePerDiems = new MileagePerDiemsView(app.getRoute().mileagePerDiems());
 
         mileageAllowance = app.mileageAllowance().toString();
         mealAllowance = app.mealAllowance().toString();

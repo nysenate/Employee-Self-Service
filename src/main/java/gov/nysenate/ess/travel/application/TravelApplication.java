@@ -42,19 +42,19 @@ public class TravelApplication {
     public Dollars mileageAllowance() {
         return perDiemOverrides.isMileageOverridden()
                 ? perDiemOverrides.mileageOverride()
-                : getRoute().mileageAllowances().requestedPerDiem();
+                : getRoute().mileagePerDiems().requestedPerDiem();
     }
 
     public Dollars mealAllowance() {
         return perDiemOverrides.isMealsOverridden()
                 ? perDiemOverrides.mealsOverride()
-                : getRoute().mealAllowances().requestedPerDiem();
+                : getRoute().mealPerDiems().requestedPerDiem();
     }
 
     public Dollars lodgingAllowance() {
         return perDiemOverrides.isLodgingOverridden()
                 ? perDiemOverrides.lodgingOverride()
-                : getRoute().lodgingAllowances().requestedPerDiem();
+                : getRoute().lodgingPerDiems().requestedPerDiem();
     }
 
     public Dollars tollsAllowance() {

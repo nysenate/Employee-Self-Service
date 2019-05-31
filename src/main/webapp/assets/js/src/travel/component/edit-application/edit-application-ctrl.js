@@ -6,7 +6,7 @@ essTravel.controller('EditApplicationCtrl',
 function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
 
     var vm = this;
-    vm.app = {};
+    vm.app = undefined;
 
     (function init() {
         vm.stateService = stateService;

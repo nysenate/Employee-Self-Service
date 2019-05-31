@@ -25,21 +25,21 @@ public class Route {
         this.returnLegs = ImmutableList.copyOf(returnLegs);
     }
 
-    public MealPerDiems mealAllowances() {
+    public MealPerDiems mealPerDiems() {
         return new MealPerDiems(destinations().stream()
                 .map(Destination::mealAllowances)
                 .flatMap(m -> m.allMealPerDiems().stream())
                 .collect(Collectors.toList()));
     }
 
-    public LodgingPerDiems lodgingAllowances() {
+    public LodgingPerDiems lodgingPerDiems() {
         return new LodgingPerDiems(destinations().stream()
                 .map(Destination::lodgingAllowances)
                 .flatMap(l -> l.allLodgingPerDiems().stream())
                 .collect(Collectors.toList()));
     }
 
-    public MileagePerDiems mileageAllowances() {
+    public MileagePerDiems mileagePerDiems() {
         return new MileagePerDiems(getAllLegs());
     }
 
