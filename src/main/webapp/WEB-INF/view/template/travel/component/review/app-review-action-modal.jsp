@@ -1,3 +1,5 @@
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@ page import="gov.nysenate.ess.travel.authorization.permission.TravelPermission" %>
 <div class="content-container no-top-margin padding-top-5">
 
   <div>
@@ -9,8 +11,11 @@
            ng-click="approve()">
     <input type="button" class="reject-button" value="Disapprove Application"
            ng-click="disapprove()">
-    <input type="button" class="neutral-button" value="Edit Application"
-           ng-click="vm.onEdit()">
+
+    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_EDIT_APP.getPermissionString() %>">
+      <input type="button" class="neutral-button" value="Edit Application"
+             ng-click="vm.onEdit()">
+    </shiro:hasPermission>
 
     <div style="float: right;">
       <a class="margin-10" target="_blank"

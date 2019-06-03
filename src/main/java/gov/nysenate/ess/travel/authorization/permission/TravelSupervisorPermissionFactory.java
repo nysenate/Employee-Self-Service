@@ -42,7 +42,6 @@ public class TravelSupervisorPermissionFactory implements PermissionFactory {
         return empGroup.getPrimaryEmployees().values().stream()
                 .flatMap(e -> ImmutableList.of(
                         new CorePermission(e.getEmpId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET),
-                        new CorePermission(e.getEmpId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST),
                         new CorePermission(e.getEmpId(), CorePermissionObject.TRAVEL_APPLICATION_APPROVAL, RequestMethod.GET),
                         new CorePermission(e.getEmpId(), CorePermissionObject.TRAVEL_APPLICATION_APPROVAL, RequestMethod.POST)
                 ).stream())

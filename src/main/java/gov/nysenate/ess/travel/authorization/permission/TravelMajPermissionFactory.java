@@ -25,7 +25,6 @@ public class TravelMajPermissionFactory implements PermissionFactory {
             permissions.add(TravelPermission.TRAVEL_UI_REVIEW.getPermission());
             permissions.add(TravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
             permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
-            permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST));
             permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION_APPROVAL, RequestMethod.GET));
             permissions.add(new CorePermission(CorePermissionObject.TRAVEL_APPLICATION_APPROVAL, RequestMethod.POST));
         }
