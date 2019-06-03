@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('ReviewHistoryCtrl', ['$scope', 'modals', 'ApplicationReviewApi', reviewHistory]);
+essTravel.controller('ReviewHistoryCtrl', ['$scope', 'LocationService', 'modals', 'ApplicationReviewApi', reviewHistory]);
 
-function reviewHistory($scope, modals, appReviewApi) {
+function reviewHistory($scope, locationService, modals, appReviewApi) {
 
     this.$onInit = function () {
         $scope.data = {
@@ -29,5 +29,10 @@ function reviewHistory($scope, modals, appReviewApi) {
             }
         });
         modals.open("app-review-view-modal", appReview, true);
+    };
+
+    $scope.onEdit = function (appReview) {
+        modals.reject();
+        locationService.go("/travel/application/edit", true, {appId: appReview.travelApplication.id});
     }
 }

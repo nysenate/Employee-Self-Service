@@ -3,7 +3,6 @@ var essTravel = angular.module('essTravel');
 essTravel.directive('appReviewViewModal', ['appProps', function (appProps) {
     return {
         templateUrl: appProps.ctxPath + '/template/travel/component/review-history/app-review-view-modal',
-        scope: {},
         controller: 'AppReviewViewCtrl'
     }
 }])

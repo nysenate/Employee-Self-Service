@@ -75,7 +75,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
      * to the edit page before completely closing the modal because closing the modal
      * will remove the same search params that the link to the edit page is adding.
      */
-    vm.onEdit = function (appReview) {
+    vm.onEdit = function () {
         var appId = getAppIdParam();
         modals.reject();
         $q.all(vm.modalPromise).then(function () {
