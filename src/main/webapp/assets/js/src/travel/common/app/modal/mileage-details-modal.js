@@ -12,6 +12,7 @@ function mileageDetailsModalCtrl($scope, modals) {
 
     this.$onInit = function () {
         $scope.app = modals.params().app;
+        $scope.isOverridden = $scope.app.perDiemOverrides.isMileageOverridden;
     };
 
     $scope.closeModal = function() {

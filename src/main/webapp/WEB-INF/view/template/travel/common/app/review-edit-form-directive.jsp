@@ -128,7 +128,7 @@
         </div>
         <div class="col-6-12 margin-bottom-5">
           {{reviewApp.mealAllowance | currency}}
-          <span ng-if="reviewApp.mealAllowance > 0 && !reviewApp.perDiemOverrides.isMealsOverridden"
+          <span ng-if="reviewApp.mealAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMealDetails()"
                 title="View detailed meal expense info">
@@ -139,7 +139,7 @@
         </div>
         <div class="col-6-12 margin-bottom-5">
           {{reviewApp.lodgingAllowance | currency}}
-          <span ng-if="reviewApp.lodgingAllowance > 0 && !reviewApp.perDiemOverrides.isLodgingOverridden"
+          <span ng-if="reviewApp.lodgingAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayLodgingDetails()"
                 title="View detailed lodging expense info">
@@ -150,7 +150,7 @@
         </div>
         <div class="col-6-12 margin-bottom-5">
           {{reviewApp.mileageAllowance | currency}}
-          <span ng-if="reviewApp.mileageAllowance > 0 && !reviewApp.perDiemOverrides.isMileageOverridden"
+          <span ng-if="reviewApp.mileageAllowance > 0"
                 class="icon-info pointer"
                 ng-click="displayMileageDetails()"
                 title="View detailed mileage expense info">
