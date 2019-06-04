@@ -6,6 +6,8 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
+import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,13 +27,14 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     /**
      * Get app reviews which need review by the logged in user.
-     *
-     * This is called by the badge service for all users so it doesn't throw an exception for invalid permissions.
-     * Instead if this does not apply to the user it will return an empty list.
+     * <p>
+     * Don't implement strict permission checking for this endpoint because it is
+     * used in the badge service for all users. Instead of checking permissions,
+     * this method will return an empty list if its not applicable to the user.
      */
     @RequestMapping(value = "/pending", method = RequestMethod.GET)
     public BaseResponse getPendingReviews() {
-        TravelRole role = checkSubjectRole();
+        TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviewsForEmpWithRole(employee, role);
         return ListViewResponse.of(pendingReviews.stream()
@@ -52,18 +55,32 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/{appReviewId}/approve", method = RequestMethod.POST)
     public BaseResponse approveApplication(@PathVariable int appReviewId) {
-        TravelRole role = checkSubjectRole();
+        TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
+
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(appReview.application().getTraveler().getEmployeeId())
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+
         appReviewService.approveApplication(appReview, employee, role);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 
     @RequestMapping(value = "/{appReviewId}/disapprove", method = RequestMethod.POST)
     public BaseResponse disapproveApplication(@PathVariable int appReviewId) {
-        TravelRole role = checkSubjectRole();
+        TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
+
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(appReview.application().getTraveler().getEmployeeId())
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+
         appReviewService.disapproveApplication(appReview, employee, role);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
@@ -71,7 +88,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     /**
      * @return The TravelRole assigned to the user.
      */
-    private TravelRole checkSubjectRole() {
+    private TravelRole getSubjectRole() {
         TravelRole role = TravelRole.NONE;
         if (getSubject().hasRole(TravelRole.SUPERVISOR.name())) {
             role = TravelRole.SUPERVISOR;

@@ -1,5 +1,5 @@
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
-<%@ page import="gov.nysenate.ess.travel.authorization.permission.TravelPermission" %>
+<%@ page import="gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission" %>
 <div class="content-container no-top-margin padding-top-5" style="overflow: hidden;">
 
   <div>
@@ -7,7 +7,7 @@
   </div>
 
   <div class="travel-button-container" style="margin-top: 5px !important; float: left; width: 100%;">
-    <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_EDIT_APP.getPermissionString() %>">
+    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermissionString() %>">
       <input type="button" class="reject-button" value="Edit Application"
              ng-click="onEdit(appReview)">
     </shiro:hasPermission>

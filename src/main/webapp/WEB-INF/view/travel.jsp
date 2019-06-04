@@ -1,4 +1,4 @@
-<%@ page import="gov.nysenate.ess.travel.authorization.permission.TravelPermission" %>
+<%@ page import="gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="ess" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="ess-component" tagdir="/WEB-INF/tags/component" %>
@@ -19,7 +19,7 @@
     <ess-component-nav:top-nav activeTopic="travel"/>
     <section class="content-wrapper">
 
-      <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
+      <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
       <div ng-controller="TravelBadgeCtrl">
         </shiro:hasPermission>
 
@@ -28,7 +28,7 @@
           <div ng-view class="view-animate"></div>
         </div>
 
-        <shiro:hasPermission name="<%= TravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
+        <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermissionString() %>">
       </div>
       </shiro:hasPermission>
 

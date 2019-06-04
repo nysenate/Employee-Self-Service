@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.authorization.permission;
 
 import org.apache.shiro.authz.permission.WildcardPermission;
 
-public enum TravelPermission {
+public enum SimpleTravelPermission {
 
     // Allowed to view Manage sub section in navigation
     TRAVEL_UI_MANAGE("travel:ui:manage"),
@@ -21,7 +21,7 @@ public enum TravelPermission {
 
     private String permissionString;
 
-    TravelPermission(String permissionString) {
+    SimpleTravelPermission(String permissionString) {
         this.permissionString = permissionString;
     }
 

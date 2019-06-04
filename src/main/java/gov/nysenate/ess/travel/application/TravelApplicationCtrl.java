@@ -4,8 +4,6 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
-import gov.nysenate.ess.core.model.auth.CorePermission;
-import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
@@ -15,6 +13,8 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
+import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
+import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +33,11 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(app.getTraveler().getEmployeeId())
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.GET)
+                .buildPermission());
         SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
         return new ViewObjectResponse(appView);
     }
@@ -41,7 +45,11 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{appId}", method = RequestMethod.DELETE)
     public void deleteTravelApp(@PathVariable int appId) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST));
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(app.getTraveler().getEmployeeId())
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
         travelApplicationService.deleteTravelApplication(appId);
     }
 
@@ -55,7 +63,12 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{appId}", method = RequestMethod.PATCH)
     public BaseResponse patchTravelApplication(@PathVariable int appId, @RequestBody Map<String, String> patches) throws IOException {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkPermission(new CorePermission(app.getTraveler().getEmployeeId(), CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.POST));
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(app.getTraveler().getEmployeeId())
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         // Perform all updates specified in the patch.
@@ -103,7 +116,11 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "")
     public BaseResponse getUncompletedApplication(@RequestParam int travelerId) {
-        checkPermission(new CorePermission(travelerId, CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(travelerId)
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.GET)
+                .buildPermission());
 
         TravelApplication app = travelApplicationService.uncompleteAppForTraveler(travelerId);
         return new ViewObjectResponse(new SimpleTravelApplicationView(app));
@@ -111,7 +128,12 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/traveler/{travelerId}")
     public BaseResponse getActiveTravelApps(@PathVariable int travelerId) {
-        checkPermission(new CorePermission(travelerId, CorePermissionObject.TRAVEL_APPLICATION, RequestMethod.GET));
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(travelerId)
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.GET)
+                .buildPermission());
+
         List<TravelApplication> apps = travelApplicationService.selectTravelApplications(travelerId);
         List<SimpleTravelApplicationView> appViews = apps.stream()
                 .map(SimpleTravelApplicationView::new)
