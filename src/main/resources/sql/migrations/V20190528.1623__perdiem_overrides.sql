@@ -2,7 +2,7 @@ DELETE FROM travel.app_allowance
 WHERE allowance_type IN ('MEALS', 'LODGING', 'MILEAGE');
 
 CREATE TABLE travel.app_perdiem_override(
-    perdiem_override_id SERIAL PRIMARY KEY,
+    app_perdiem_override_id SERIAL PRIMARY KEY,
     perdiem_type text NOT NULL,
     dollars text NOT NULL
 );
