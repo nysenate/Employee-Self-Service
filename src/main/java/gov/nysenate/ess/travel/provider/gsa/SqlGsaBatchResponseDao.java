@@ -7,6 +7,8 @@ import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -21,16 +23,16 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void handleNewData(GsaResponse gsaResponse) throws JsonProcessingException {
+    public void handleNewData(GsaResponse gsaResponse) throws JsonProcessingException, NullPointerException, DataAccessException {
         try {
             insertGsaData(gsaResponse);
         }
-        catch (Exception e) {
+        catch (DuplicateKeyException e) {
             updateGsaData(gsaResponse);
         }
     }
 
-    public void insertGsaData(GsaResponse gsaResponse) throws JsonProcessingException {
+    private void insertGsaData(GsaResponse gsaResponse) throws JsonProcessingException {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("fiscalYear", gsaResponse.getId().getFiscalYear())
                 .addValue("zipcode", gsaResponse.getId().getZipcode())
@@ -41,7 +43,7 @@ public class SqlGsaBatchResponseDao extends SqlBaseDao implements GsaBatchRespon
         localNamedJdbc.update(SqlGsaBatchResponseQuery.INSERT_GSA_DATA.getSql(), params);
     }
 
-    public void updateGsaData(GsaResponse gsaResponse) throws JsonProcessingException {
+    private void updateGsaData(GsaResponse gsaResponse) throws JsonProcessingException {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("mealTier", gsaResponse.getMealTier() )
                 .addValue("lodgingRates", objectMapper.writeValueAsString(gsaResponse.getLodgingRates() ))

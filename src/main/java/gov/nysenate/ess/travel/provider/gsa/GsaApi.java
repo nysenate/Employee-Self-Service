@@ -24,13 +24,13 @@ public class GsaApi {
     private static final Logger logger = LoggerFactory.getLogger(GsaApi.class);
 
     private HttpUtils httpUtils;
-    private String baseUrl;
+    private String gsaUrl;
     private GsaResponseParser gsaResponseParser;
 
     @Autowired
-    public GsaApi(@Value("${travel.gsa.api.url}") String baseUrl, GsaResponseParser gsaResponseParser,
-                  HttpUtils httpUtils) {
-        this.baseUrl = baseUrl;
+    public GsaApi(@Value("${travel.gsa.host.url}") String baseUrl, @Value("${travel.gsa.api.url}") String apiUrl,
+                  GsaResponseParser gsaResponseParser, HttpUtils httpUtils) {
+        this.gsaUrl = baseUrl + apiUrl + "&filters=";
         this.gsaResponseParser = gsaResponseParser;
         this.httpUtils = httpUtils;
     }
@@ -51,7 +51,7 @@ public class GsaApi {
         // Example query: {"FiscalYear":"2018","Zip":"12208"}
         String query = "{\"FiscalYear\":\"" + String.valueOf(id.getFiscalYear())
                 + "\",\"Zip\":\"" + id.getZipcode() + "\"}";
-        String url = baseUrl + URLEncoder.encode(query, "UTF-8");
+        String url = gsaUrl + URLEncoder.encode(query, "UTF-8");
         String content = httpUtils.urlToString(url);
         if (dateTooFarInFuture(id, content)) {
             id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());

@@ -1,10 +1,12 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,9 +19,10 @@ public class GsaAllowanceService {
 
     private GsaBatchResponseDao gsaBatchResponseDao;
     private GsaApi gsaApi;
+    private DefaultSlackChatService slackChatService;
 
     @Autowired
-    public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi) {
+    public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi, DefaultSlackChatService slackChatService) {
         this.gsaBatchResponseDao = gsaBatchResponseDao;
         this.gsaApi = gsaApi;
     }
@@ -43,7 +46,14 @@ public class GsaAllowanceService {
     }
 
     private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
-        GsaResponse res = gsaBatchResponseDao.getGsaData(new GsaResponseId( date.getYear(), address.getZip5() ));
+        GsaResponse res;
+        try {
+            res = gsaBatchResponseDao.getGsaData(new GsaResponseId( date.getYear(), address.getZip5() ));
+        }
+        catch (DataAccessException e) {
+            res = null;
+            slackChatService.sendMessage("The GSA database did not have the record the use requested. Please update the GSA database");
+        }
         if (res == null) {
             res = gsaApi.queryGsa(date, address.getZip5());
             if (res != null) {
