@@ -30,7 +30,7 @@
     </div>
 
     <div class="travel-button-container">
-      <input type="submit" class="submit-button" value="Disapprove Application"
+      <input type="submit" class="reject-button" value="Disapprove Application"
              title="Disapprove Application">
       <input type="button" class="neutral-button" value="Cancel Disapproval"
              title="Cancel Disapproval" ng-click="cancel()">

@@ -10,8 +10,8 @@
     </p>
   </div>
   <div class="travel-button-container">
-    <input type="button" class="neutral-button" value="Cancel" ng-click="cancel()">
     <input type="submit" class="submit-button" value="Save County">
+    <input type="button" class="neutral-button" value="Cancel" ng-click="cancel()">
   </div>
   </form>
 </div>

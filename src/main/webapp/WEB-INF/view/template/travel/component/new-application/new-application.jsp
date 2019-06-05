@@ -71,9 +71,11 @@
     <modal modal-id="cancel-application">
       <div confirm-modal rejectable="true"
            title="Cancel Travel Application"
-           confirm-message="Are you sure you want to cancel your current application?"
-           resolve-button="Yes"
-           reject-button="No">
+           confirm-message="Are you sure you want to cancel your current application? This will delete any data you have entered."
+           resolve-button="Cancel Application"
+           resolve-class="reject-button"
+           reject-button="Keep Application"
+           reject-class="neutral-button">
       </div>
     </modal>
 
@@ -99,10 +101,11 @@
     <%-- Review Modals --%>
     <modal modal-id="submit-confirm">
       <div confirm-modal rejectable="true"
-           title="Save Travel Application?"
-           confirm-message="Are you sure you want to save this travel application?"
-           resolve-button="Save"
-           reject-button="Cancel">
+           title="Submit Travel Application?"
+           confirm-message="Are you sure you want to submit this travel application?"
+           resolve-button="Submit Application"
+           reject-button="Cancel"
+           reject-class="neutral-button">
       </div>
     </modal>
 
@@ -112,17 +115,10 @@
 
     <modal modal-id="submit-results">
       <div confirm-modal rejectable="true"
-           title="Your travel application has been saved."
-      <%--confirm-message="What would you like to do next?"--%>
+           title="Your travel application has been submitted."
+           confirm-message="What would you like to do next?"
            resolve-button="Go back to ESS"
            reject-button="Log out of ESS">
-        <div style="padding-bottom: 20px;">
-          <p>
-            You should now <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>,
-            sign and deliver your application to your department head.
-          </p>
-        </div>
       </div>
     </modal>
 
