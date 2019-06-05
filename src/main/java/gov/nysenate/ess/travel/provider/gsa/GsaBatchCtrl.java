@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.ADMIN_REST_PATH + "/gsa")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/gsa")
 public class GsaBatchCtrl extends BaseRestApiCtrl {
 
     private GsaBatchResponseService gsaBatchResponseService;
@@ -27,7 +27,7 @@ public class GsaBatchCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/batch")
     public StringView updateGsaInformation() throws IOException {
-        checkPermission(SimpleEssPermission.ADMIN.getPermission());
+//        checkPermission(SimpleEssPermission.ADMIN.getPermission());
         boolean success = gsaBatchResponseService.cycleThroughGsaInfo();
         String responseText = "";
         if (success) {
@@ -41,7 +41,7 @@ public class GsaBatchCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/{zip}")
     public StringView updateGsaInformation(@PathVariable String zip) throws IOException {
-        checkPermission(SimpleEssPermission.ADMIN.getPermission());
+//        checkPermission(SimpleEssPermission.ADMIN.getPermission());
 
         GsaResponse gsaResponse = gsaApi.queryGsa(LocalDate.now(), zip);
         String responseText = "";
