@@ -28,7 +28,7 @@ public class GsaApi {
     private GsaResponseParser gsaResponseParser;
 
     @Autowired
-    public GsaApi(@Value("${travel.gsa.host.url}") String baseUrl, @Value("${travel.gsa.api.url}") String apiUrl,
+    public GsaApi(@Value("${travel.api.url.base}") String baseUrl, @Value("${travel.api.url.path}") String apiUrl,
                   GsaResponseParser gsaResponseParser, HttpUtils httpUtils) {
         this.gsaUrl = baseUrl + apiUrl + "&filters=";
         this.gsaResponseParser = gsaResponseParser;

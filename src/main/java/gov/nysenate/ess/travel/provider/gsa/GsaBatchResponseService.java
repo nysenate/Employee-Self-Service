@@ -25,8 +25,8 @@ public class GsaBatchResponseService {
     private HttpUtils httpUtils;
 
 
-    @Value("${travel.gsa.api.url}") private String apiUrl;
-    @Value("${travel.gsa.host.url}")private String hostUrl;
+    @Value("${travel.api.url.path}") private String apiUrl;
+    @Value("${travel.api.url.base}")private String hostUrl;
     private String limit = "&limit=";
 
 
