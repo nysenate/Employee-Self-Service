@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationDao;
+import gov.nysenate.ess.travel.application.TravelApplicationStatus;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -74,7 +75,8 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     @Override
     public List<ApplicationReview> selectAppReviewsByNextRole(TravelRole nextReviewerRole) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name());
+                .addValue("nextReviewerRole", nextReviewerRole == null ? null : nextReviewerRole.name())
+                .addValue("disapproved", TravelApplicationStatus.DISAPPROVED.name());
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE.getSql(schemaMap());
         return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
     }
@@ -113,9 +115,12 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         " WHERE app_review_id = :appReviewId"
         ),
         SELECT_APPLICATION_REVIEWS_BY_NEXT_ROLE(
-                "SELECT app_review_id, app_id, traveler_role, next_reviewer_role\n" +
+                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role, app_review.next_reviewer_role\n" +
                         " FROM ${travelSchema}.app_review\n" +
-                        " WHERE next_reviewer_role = :nextReviewerRole"
+                        " INNER JOIN ${travelSchema}.app ON app_review.app_id = app.app_id\n" +
+                        " INNER JOIN ${travelSchema}.app_version ON app.app_version_id = app_version.app_version_id" +
+                        " WHERE app_review.next_reviewer_role = :nextReviewerRole" +
+                        " AND app_version.status != :disapproved"
         ),
         SELECT_APPLICATION_REVIEW_BY_ID(
                 "SELECT app_review_id, app_id, traveler_role, next_reviewer_role\n" +
