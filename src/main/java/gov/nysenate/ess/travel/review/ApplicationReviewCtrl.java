@@ -10,10 +10,7 @@ import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +51,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/{appReviewId}/approve", method = RequestMethod.POST)
-    public BaseResponse approveApplication(@PathVariable int appReviewId) {
+    public BaseResponse approveApplication(@PathVariable int appReviewId, @RequestBody(required = false) String notes) {
         TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
@@ -65,12 +62,12 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        appReviewService.approveApplication(appReview, employee, role);
+        appReviewService.approveApplication(appReview, employee, notes, role);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 
     @RequestMapping(value = "/{appReviewId}/disapprove", method = RequestMethod.POST)
-    public BaseResponse disapproveApplication(@PathVariable int appReviewId) {
+    public BaseResponse disapproveApplication(@PathVariable int appReviewId, @RequestBody String notes) {
         TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
@@ -81,7 +78,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        appReviewService.disapproveApplication(appReview, employee, role);
+        appReviewService.disapproveApplication(appReview, employee, notes, role);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 

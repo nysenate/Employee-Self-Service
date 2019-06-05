@@ -24,13 +24,13 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
                 .catch(restErrorService.handleErrorResponse);
         };
 
-        appReviewApi.approve = function (appReviewId) {
-            return approveApi.save({appReviewId: appReviewId}).$promise
+        appReviewApi.approve = function (appReviewId, notes) {
+            return approveApi.save({appReviewId: appReviewId}, notes).$promise
                 .catch(restErrorService.handleErrorResponse);
         };
 
-        appReviewApi.disapprove = function (appReviewId) {
-            return disapproveApi.save({appReviewId: appReviewId}).$promise
+        appReviewApi.disapprove = function (appReviewId, notes) {
+            return disapproveApi.save({appReviewId: appReviewId}, notes).$promise
                 .catch(restErrorService.handleErrorResponse);
         };
 

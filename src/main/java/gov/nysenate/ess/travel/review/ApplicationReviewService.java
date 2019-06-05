@@ -23,10 +23,8 @@ public class ApplicationReviewService {
     @Autowired private SupervisorInfoService supervisorInfoService;
     @Autowired private TravelRoleFactory travelRoleFactory;
 
-    // TODO include notes
-    // TODO Transactional
-    public void approveApplication(ApplicationReview applicationReview, Employee approver, TravelRole approverRole) {
-        Action approvalAction = new Action(0, approver, approverRole, ActionType.APPROVE, "", LocalDateTime.now());
+    public void approveApplication(ApplicationReview applicationReview, Employee approver, String notes, TravelRole approverRole) {
+        Action approvalAction = new Action(0, approver, approverRole, ActionType.APPROVE, notes, LocalDateTime.now());
         applicationReview.addAction(approvalAction);
         saveApplicationReview(applicationReview);
 
@@ -36,8 +34,8 @@ public class ApplicationReviewService {
         }
     }
 
-    public void disapproveApplication(ApplicationReview applicationReview, Employee disapprover, TravelRole approverRole) {
-        Action disapproveAction = new Action(0, disapprover, approverRole, ActionType.DISAPPROVE, "", LocalDateTime.now());
+    public void disapproveApplication(ApplicationReview applicationReview, Employee disapprover, String notes, TravelRole disapproverRole) {
+        Action disapproveAction = new Action(0, disapprover, disapproverRole, ActionType.DISAPPROVE, notes, LocalDateTime.now());
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 

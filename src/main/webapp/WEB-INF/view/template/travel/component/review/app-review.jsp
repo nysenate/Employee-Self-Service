@@ -29,6 +29,14 @@
     <modal modal-id="app-review-action-modal">
       <div app-review-action-modal></div>
     </modal>
+
+    <modal modal-id="app-review-approve-confirm-modal">
+      <div app-review-approve-confirm-modal></div>
+    </modal>
+
+    <modal modal-id="app-review-disapprove-confirm-modal">
+      <div app-review-disapprove-confirm-modal></div>
+    </modal>
   </div>
 
 </div>

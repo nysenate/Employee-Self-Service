@@ -11,6 +11,8 @@
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-action-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-approve-confirm-modal.js?v=${releaseVersion}"></script>
+        <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review/app-review-disapprove-confirm-modal.js?v=${releaseVersion}"></script>
 
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-history/review-history-ctrl.js?v=${releaseVersion}"></script>
         <script type="text/javascript" src="${ctxPath}/assets/js/src/travel/component/review-history/app-review-view-modal.js?v=${releaseVersion}"></script>

@@ -11,9 +11,6 @@ travel.directive('essAppReviewFormBody', ['appProps', function (appProps) {
 
             $scope.hasActions = $scope.appReview.actions.length > 0;
 
-            $scope.actionCellStyle = {
-                flex: '1'
-            }
         }
     }
 }]);

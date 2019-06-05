@@ -13,16 +13,27 @@
         <div ng-if="hasActions">
           <h3 class="text-align-center">Previous Actions</h3>
 
-          <table class="travel-table">
-            <tbody>
-            <tr ng-repeat="action in appReview.actions | orderBy: 'dateTime'">
-              <td ng-bind="::action.dateTime | date: 'shortDate'" ></td>
-              <td ng-bind="::action.user.lastName"></td>
-              <td ess-action-type-cell="action.type"></td>
-            </tr>
-            </tbody>
-          </table>
+          <hr/>
+
+          <div style="display: flex; flex-direction: column; margin: 10px;">
+            <div ng-repeat="action in appReview.actions | orderBy: 'dateTime'">
+
+              <div style="display: flex; flex-direction: row; justify-content: space-between">
+                <div style="" ng-bind="::action.dateTime | date: 'shortDate'"></div>
+                <div style="" ng-bind="::action.user.lastName"></div>
+                <div ng-class="{'approved-text': action.type === 'APPROVE', 'disapproved-text': action.type === 'DISAPPROVE'}"
+                     ng-bind="::action.type"></div>
+              </div>
+              <div ng-show="action.notes" class="dark-gray" style="font-size: .9em; margin-top: 5px; margin-left: 40px;">
+                <span ng-bind="::action.notes"></span>
+              </div>
+
+              <hr/>
+
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
