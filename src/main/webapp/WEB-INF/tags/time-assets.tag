@@ -20,8 +20,6 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-review-modals.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
-                src="${ctxPath}/assets/js/src/time/record/record-history-ctrl.js?v=${releaseVersion}"></script>
-        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-history-directive.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/record/record-validation.js?v=${releaseVersion}"></script>
