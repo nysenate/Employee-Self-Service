@@ -1,4 +1,4 @@
-<div ng-controller="ReviewHistoryCtrl">
+<div ng-controller="ReviewHistoryCtrl as vm">
   <div>
     <div class="travel-hero">
       <h2>Review History</h2>
@@ -7,8 +7,8 @@
       <h4 class="travel-content-info travel-text-bold">Applications you have reviewed.</h4>
     </div>
 
-    <div ng-if="data.isLoading === false">
-      <div ng-if="data.apps.length === 0">
+    <div ng-if="vm.data.isLoading === false">
+      <div ng-if="vm.data.apps.length === 0">
         <div class="content-container">
           <div class="content-info">
             <h2 class="dark-gray">No Review History.</h2>
@@ -16,10 +16,10 @@
         </div>
       </div>
 
-      <div ng-if="data.apps.length > 0">
+      <div ng-if="vm.data.apps.length > 0">
         <ess-app-summary-table
-            apps="data.apps"
-            on-row-click="displayAppReviewViewModal(app)"
+            apps="vm.data.apps"
+            on-row-click="vm.displayAppReviewViewModal(app)"
             show-status>
         </ess-app-summary-table>
       </div>

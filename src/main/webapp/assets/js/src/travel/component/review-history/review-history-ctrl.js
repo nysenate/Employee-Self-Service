@@ -4,8 +4,10 @@ essTravel.controller('ReviewHistoryCtrl', ['$scope', 'LocationService', 'modals'
 
 function reviewHistory($scope, locationService, modals, appReviewApi) {
 
-    this.$onInit = function () {
-        $scope.data = {
+    var vm = this;
+
+    (function () {
+        vm.data = {
             isLoading: true,
             appReviews: [],
             apps: []
@@ -14,16 +16,16 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
         appReviewApi.reviewHistory()
             .then(function (appReviews) {
                 appReviews.forEach(function (review) {
-                    $scope.data.appReviews.push(review);
-                    $scope.data.apps.push(review.travelApplication);
+                    vm.data.appReviews.push(review);
+                    vm.data.apps.push(review.travelApplication);
                 });
-                $scope.data.isLoading = false;
+                vm.data.isLoading = false;
             })
-    };
+    })();
 
-    $scope.displayAppReviewViewModal = function (app) {
+    vm.displayAppReviewViewModal = function (app) {
         var appReview;
-        $scope.data.appReviews.forEach(function (ar) {
+        vm.data.appReviews.forEach(function (ar) {
             if (app.id === ar.travelApplication.id) {
                 appReview = ar;
             }
@@ -31,7 +33,7 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
         modals.open("app-review-view-modal", appReview, true);
     };
 
-    $scope.onEdit = function (appReview) {
+    vm.onEdit = function (appReview) {
         modals.reject();
         locationService.go("/travel/application/edit", true, {appId: appReview.travelApplication.id});
     }
