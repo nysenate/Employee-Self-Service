@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.provider.gsa;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class GsaAllowanceService {
     public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi, DefaultSlackChatService slackChatService) {
         this.gsaBatchResponseDao = gsaBatchResponseDao;
         this.gsaApi = gsaApi;
+        this.slackChatService = slackChatService;
     }
 
     /**
@@ -52,7 +54,10 @@ public class GsaAllowanceService {
         }
         catch (DataAccessException e) {
             res = null;
-            slackChatService.sendMessage("The GSA database did not have the record the use requested. Please update the GSA database");
+            String errorMsg = "Unable to load local GSA data for year: " + date.getYear()
+                    + " and zip: " + address.getZip5() + ". Exception was: \n" + ExceptionUtils.getStackTrace(e);
+            logger.warn(errorMsg);
+            slackChatService.sendMessage(errorMsg);
         }
         if (res == null) {
             res = gsaApi.queryGsa(date, address.getZip5());
