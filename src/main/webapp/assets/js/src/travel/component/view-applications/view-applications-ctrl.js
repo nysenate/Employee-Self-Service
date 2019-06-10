@@ -4,16 +4,18 @@ essTravel.controller('UserAppsCtrl', ['$scope', 'appProps', 'modals', 'TravelApp
 
 function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
 
+    const DATEPICKER_FORMAT = "MM/DD/YYYY";
+    const ISO_FORMAT = "YYYY-MM-DD";
+    
     var vm = this;
-    vm.DATE_FORMAT = "MM/DD/YYYY";
     vm.apps = {
         all: [],
         filtered: []
     };
     vm.appRequest = {};
     vm.date = {
-        from: moment().subtract(1, 'month').format(vm.DATE_FORMAT),
-        to: moment().add(6, 'month').format(vm.DATE_FORMAT)
+        from: moment().subtract(1, 'month').format(DATEPICKER_FORMAT),
+        to: moment().add(6, 'month').format(DATEPICKER_FORMAT)
     };
 
     function init() {
@@ -26,7 +28,6 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
         function onSuccess (resp) {
             parseResponse(resp);
             vm.applyFilters();
-            console.log(vm.apps.all);
         }
 
         function parseResponse(resp) {
@@ -40,8 +41,8 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
     vm.applyFilters = function () {
         vm.apps.filtered = angular.copy(vm.apps.all);
         vm.apps.filtered = vm.apps.filtered.filter(function (app) {
-            return Date.parse(app.startDate) >= Date.parse(vm.date.from) &&
-                Date.parse(app.startDate) <= Date.parse(vm.date.to)
+            return moment(app.startDate, ISO_FORMAT) >= moment(vm.date.from, DATEPICKER_FORMAT) &&
+                moment(app.startDate, ISO_FORMAT) <= moment(vm.date.to, DATEPICKER_FORMAT);
         });
     };
 
