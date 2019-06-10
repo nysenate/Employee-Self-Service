@@ -10,7 +10,8 @@ function outboundEditLink(appProps) {
             title: '@',             // The title
             positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
             neutralCallback: '&',   // Callback function called when moving back. Takes a travel app param named 'app'.
-            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
+            negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/outbound-edit-form-directive',

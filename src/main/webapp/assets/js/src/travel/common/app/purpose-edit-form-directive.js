@@ -8,8 +8,9 @@ function purposeEditLink(appProps, attachmentDeleteApi) {
         scope: {
             app: '<',               // The application being edited.
             title: '@',             // The title
-            positiveCallback: '&',   // Callback function called when continuing. Takes a travel app param named 'app'.
-            negativeCallback: '&'   // Callback function called when canceling. Takes a travel app param named 'app'.
+            positiveCallback: '&',  // Callback function called when continuing. Takes a travel app param named 'app'.
+            negativeCallback: '&',  // Callback function called when canceling. Takes a travel app param named 'app'.
+            negativeLabel: '@'      // Text to label the negative button. Defaults to 'Cancel'
         },
         controller: 'AppEditCtrl',
         templateUrl: appProps.ctxPath + '/template/travel/common/app/purpose-edit-form-directive',

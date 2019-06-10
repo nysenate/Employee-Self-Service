@@ -16,7 +16,8 @@
       <ess-purpose-edit-form app="vm.app"
                              title="Edit the purpose of travel."
                              positive-callback="vm.savePurpose(app)"
-                             negative-callback="vm.cancel(app)">
+                             negative-callback="vm.doneEditing(app)"
+                             negative-label="Done Editing">
       </ess-purpose-edit-form>
     </div>
 
@@ -25,7 +26,8 @@
                               title="Edit the outbound route"
                               positive-callback="vm.saveOutbound(app)"
                               neutral-callback="vm.toPurposeState(app)"
-                              negative-callback="vm.cancel(app)">
+                              negative-callback="vm.doneEditing(app)"
+                              negative-label="Done Editing">
       </ess-outbound-edit-form>
     </div>
 
@@ -34,7 +36,8 @@
                             title="Edit the return route"
                             positive-callback="vm.saveRoute(app)"
                             neutral-callback="vm.toOutboundState(app)"
-                            negative-callback="vm.cancel(app)">
+                            negative-callback="vm.doneEditing(app)"
+                            negative-label="Done Editing">
       </ess-return-edit-form>
     </div>
 
@@ -43,7 +46,8 @@
                                 title="Edit the expenses"
                                 positive-callback="vm.saveAllowances(app)"
                                 neutral-callback="vm.toReturnState(app)"
-                                negative-callback="vm.cancel(app)">
+                                negative-callback="vm.doneEditing(app)"
+                                negative-label="Done Editing">
       </ess-allowances-edit-form>
     </div>
 
@@ -52,7 +56,8 @@
                                        title="Override the calculated expenses."
                                        positive-callback="vm.saveOverrides(app)"
                                        neutral-callback="vm.toAllowancesState(app)"
-                                       negative-callback="vm.cancel(app)">
+                                       negative-callback="vm.doneEditing(app)"
+                                       negative-label="Done Editing">
       </ess-perdiem-overrides-edit-form>
     </div>
 
@@ -61,8 +66,7 @@
                             title="Here is the full application with your changes."
                             positive-btn-label="Done Editing"
                             positive-callback="vm.doneEditing(app)"
-                            neutral-callback="vm.toOverridesState(app)"
-                            negative-callback="vm.cancel(app)">
+                            neutral-callback="vm.toOverridesState(app)">
       </ess-review-edit-form>
     </div>
   </div>

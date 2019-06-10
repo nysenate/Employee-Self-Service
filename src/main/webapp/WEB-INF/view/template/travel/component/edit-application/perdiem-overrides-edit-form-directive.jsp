@@ -37,8 +37,7 @@
     </ess-travel-inner-container>
 
     <div class="travel-button-container">
-      <input type="button" class="neutral-button" value="Cancel"
-             title="Cancel"
+      <input type="button" class="neutral-button" ng-value="::negativeLabel || 'Cancel'"
              ng-click="cancel()">
       <input type="button" class="travel-neutral-button" value="Back"
              title="Back"
