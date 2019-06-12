@@ -23,6 +23,8 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
 
     (function () {
         appReviewApi.reviewHistory()
+            .$promise
+            .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
                 appReviews.forEach(function (review) {
                     vm.data.appReviews.push(review);
@@ -30,7 +32,8 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
                 });
                 vm.applyFilters();
                 vm.data.isLoading = false;
-            });
+            })
+            .catch($scope.handleErrorResponse);
     })();
 
     vm.displayAppReviewViewModal = function (app) {

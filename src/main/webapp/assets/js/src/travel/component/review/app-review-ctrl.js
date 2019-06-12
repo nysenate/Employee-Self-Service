@@ -19,13 +19,17 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
     })();
 
     function initPendingAppReviews() {
-        return appReviewApi.pendingReviews().then(function (appReviews) {
-            appReviews.forEach(function (review) {
-                vm.apps.push(review.travelApplication);
-                vm.appIdToReview.set(review.travelApplication.id, review);
-            });
-            vm.isLoading = false;
-        });
+        return appReviewApi.pendingReviews()
+            .$promise
+            .then(appReviewApi.parseAppReviewResponse)
+            .then(function (appReviews) {
+                appReviews.forEach(function (review) {
+                    vm.apps.push(review.travelApplication);
+                    vm.appIdToReview.set(review.travelApplication.id, review);
+                });
+                vm.isLoading = false;
+            })
+            .catch($scope.handleErrorResponse);
     }
 
     function openReviewModalIfSearchParamsSet() {
@@ -70,7 +74,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
     /**
      * Used by the app-review-action-modal when the user clicks on the edit link.
      *
-     * This logic needs to be outside the modal since the app-review and app-edit pages 
+     * This logic needs to be outside the modal since the app-review and app-edit pages
      * both use appId as a search param. Issues can occur setting it correctly if we go
      * to the edit page before completely closing the modal because closing the modal
      * will remove the same search params that the link to the edit page is adding.
