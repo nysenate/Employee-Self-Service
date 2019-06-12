@@ -12,13 +12,12 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="leg in app.mileagePerDiems.requestedLegs"
-          ng-class="{'line-through': isOverridden}">
+      <tr ng-repeat="leg in app.mileagePerDiems.requestedLegs">
         <td>{{leg.from.formattedAddress}}</td>
         <td>{{leg.to.formattedAddress}}</td>
         <td>{{leg.miles}}</td>
         <td>{{leg.mileageRate}}</td>
-        <td>{{leg.requestedPerDiem | currency}}</td>
+        <td ng-class="{'line-through': isOverridden}">{{leg.requestedPerDiem | currency}}</td>
       </tr>
       <tr ng-class="{'line-through': isOverridden}">
         <td></td>
