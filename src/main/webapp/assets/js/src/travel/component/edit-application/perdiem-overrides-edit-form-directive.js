@@ -19,6 +19,11 @@ function perDiemOverrideEditForm(appProps) {
 
             scope.dirtyApp = angular.copy(scope.app);
 
+            // Convert overrides of 0 to undefined.
+            scope.dirtyApp.perDiemOverrides.mileageOverride = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mileageOverride);
+            scope.dirtyApp.perDiemOverrides.mealsOverride = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mealsOverride);
+            scope.dirtyApp.perDiemOverrides.lodgingOverride = zeroToUndefined(scope.dirtyApp.perDiemOverrides.lodgingOverride);
+
             scope.next = function () {
                 scope.positiveCallback({app: scope.dirtyApp});
             };
@@ -29,6 +34,11 @@ function perDiemOverrideEditForm(appProps) {
 
             scope.cancel = function () {
                 scope.negativeCallback({app: scope.dirtyApp});
+            };
+
+            // Use undefined instead of 0 in the override input boxes so they are empty instead of 0 when not overridden.
+            function zeroToUndefined(value) {
+                return value === 0 ? undefined : value;
             }
         }
     }
