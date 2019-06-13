@@ -15,6 +15,10 @@
       </span>
     </p>
 
+    <p>
+      You may leave a note for the other reviewers below.
+    </p>
+
     <div class="margin-top-20">
       <label>Approval Notes:
         <textarea ng-model="notes" cols="40" rows="3"></textarea>

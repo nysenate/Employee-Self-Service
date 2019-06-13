@@ -10,12 +10,16 @@
         You are about to disapprove a Travel Application for
         <span ng-bind="::appReview.travelApplication.traveler.fullName"></span>
         <span ng-show="isSingleDayTravel">
-      on <span ng-bind="::appReview.travelApplication.startDate | date: 'shortDate'"></span>.
-      </span>
+          on <span ng-bind="::appReview.travelApplication.startDate | date: 'shortDate'"></span>.
+        </span>
         <span ng-show="!isSingleDayTravel">
       from <span ng-bind="::appReview.travelApplication.startDate | date: 'shortDate'"></span>
       to <span ng-bind="::appReview.travelApplication.endDate | date: 'shortDate'"></span>.
       </span>
+      </p>
+
+      <p>
+        Please explain the disapproval to the traveler.
       </p>
 
       <div ng-show="disapprovalConfirmForm.$submitted && !disapprovalConfirmForm.$valid" class="margin-20">
@@ -23,7 +27,7 @@
       </div>
 
       <div class="margin-top-20">
-        <label>Disapproval Notes:
+        <label>Disapproval Reason:
           <textarea ng-model="notes" cols="40" rows="3" required></textarea>
         </label>
       </div>
