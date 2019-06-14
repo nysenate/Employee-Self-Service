@@ -142,6 +142,12 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
         return employeeDao.searchEmployees(term, activeOnly, limitOffset);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
+        return employeeDao.searchEmployees(employeeSearchBuilder, limitOffset);
+    }
+
     /** --- Caching Service Implemented Methods ---
      * @see CachingService*/
 

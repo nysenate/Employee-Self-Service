@@ -62,6 +62,18 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             "        LIKE UPPER('%' || :term || '%')\n" +
             "  AND (:activeOnly = 0 OR per.CDEMPSTATUS = 'A')"
     ),
+    GET_EMPS_BY_SEARCH_QUERY("" +
+            GET_EMP_SQL_COLS.getSql() + ", COUNT(*) OVER () AS total_rows\n" +
+            GET_EMP_SQL_TABLES.getSql() +
+            "WHERE (:empStatus IS NULL OR per.CDEMPSTATUS = :empStatus)\n" +
+            "  AND (:name IS NULL OR \n" +
+            "    UPPER(TRIM(per.FFNALAST) || ' ' || TRIM(per.NAFIRST) || ' ' || TRIM(per.FFNAMIDINIT))\n" +
+            "      LIKE UPPER('%' || :name || '%')\n" +
+            "  )\n" +
+            "  AND (:respCtrHeadCodesEmpty = 1 OR rctrhd.CDRESPCTRHD IN (:respCtrHeadCodes))\n" +
+            "  AND (:contServFrom IS NULL OR DTCONTSERV >= :contServFrom)\n" +
+            "  AND (:contServTo IS NULL OR DTCONTSERV <= :contServTo)"
+    ),
 
     GET_ACTIVE_EMP_IDS(
         "SELECT DISTINCT NUXREFEM\n" +

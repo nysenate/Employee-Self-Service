@@ -1,10 +1,14 @@
 package gov.nysenate.ess.core.dao.personnel;
 
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -108,5 +112,119 @@ public class SqlEmployeeDaoIT extends BaseTest
                 .map(Employee::getEmployeeId)
                 .collect(Collectors.toSet());
         assertEquals(activeEmployeeIds, activeEmpsEmpIds);
+    }
+
+    @Test
+    public void nameSearchTest() {
+        // Pick an employee from active employees
+        Set<Integer> activeEmployeeIds = employeeDao.getActiveEmployeeIds();
+        Optional<Integer> anyOldEmpIdOpt = activeEmployeeIds.stream().findFirst();
+        assertTrue("There should be at least one active employee", anyOldEmpIdOpt.isPresent());
+        final int expectedEmpId = anyOldEmpIdOpt.get();
+
+        // Generate search text using fragments of employee's name
+        Employee employee = employeeDao.getEmployeeById(expectedEmpId);
+        String searchText = employee.getLastName().substring(1) + ", " + employee.getFirstName().substring(0, 1);
+        EmployeeSearchBuilder esb = new EmployeeSearchBuilder()
+                .setName(searchText);
+
+        // Search using the search text, and verify that the employee is in the results.
+        PaginatedList<Employee> results = employeeDao.searchEmployees(esb, LimitOffset.ALL);
+        boolean containsExpectedId = results.getResults().stream()
+                .anyMatch(e -> e.getEmployeeId() == expectedEmpId);
+        assertTrue("Search results must contain expected emp id", containsExpectedId);
+        assertTrue("Search results should be fewer than all active emps",
+                results.getTotal() < activeEmployeeIds.size());
+    }
+
+    @Test
+    public void rctrHdSearchTest() {
+        // Pick an employee from active employees
+        final Set<Integer> activeEmployeeIds = employeeDao.getActiveEmployeeIds();
+        Optional<Integer> anyOldEmpIdOpt = activeEmployeeIds.stream().findFirst();
+        assertTrue("There should be at least one active employee", anyOldEmpIdOpt.isPresent());
+        final int firstEmpId = anyOldEmpIdOpt.get();
+        final String firstRCHCode = employeeDao.getEmployeeById(firstEmpId).getRespCenterHeadCode();
+        assertNotNull(firstRCHCode);
+
+        //Pick another employee with a different resp. ctr. head
+        Optional<Employee> secondEmpOpt = activeEmployeeIds.stream()
+                .filter(empId -> empId != firstEmpId)
+                .map(employeeDao::getEmployeeById)
+                .filter(emp -> !firstRCHCode.equals(emp.getRespCenterHeadCode()))
+                .findFirst();
+        assertTrue("There should be more than one RCH", secondEmpOpt.isPresent());
+        final int secondEmpId = secondEmpOpt.get().getEmployeeId();
+        final String secondRCHCode = secondEmpOpt.get().getRespCenterHeadCode();
+        assertNotNull(secondRCHCode);
+
+        // Perform search with individual codes
+        EmployeeSearchBuilder firstRCHQuery = new EmployeeSearchBuilder()
+                .setRespCtrHeadCodes(Collections.singleton(firstRCHCode));
+        Set<Integer> firstRCHQueryEmpIds = employeeDao.searchEmployees(firstRCHQuery, LimitOffset.ALL)
+                .getResults().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        assertTrue("Emp should be in results for own RCH", firstRCHQueryEmpIds.contains(firstEmpId));
+
+        EmployeeSearchBuilder secondRCHQuery = new EmployeeSearchBuilder()
+                .setRespCtrHeadCodes(Collections.singleton(secondRCHCode));
+        Set<Integer> secondRCHEmpIds = employeeDao.searchEmployees(secondRCHQuery, LimitOffset.ALL)
+                .getResults().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        assertTrue("Emp should be in results for own RCH", secondRCHEmpIds.contains(secondEmpId));
+
+        assertTrue("Query results for 2 different rchs should be distinct",
+                Sets.intersection(firstRCHQueryEmpIds, secondRCHEmpIds).isEmpty());
+
+        // Perform search with both codes
+        EmployeeSearchBuilder combinedRCHQuery = new EmployeeSearchBuilder()
+                .setRespCtrHeadCodes(Sets.newHashSet(firstRCHCode, secondRCHCode));
+        Set<Integer> combinedRCHQueryEmpIds = employeeDao.searchEmployees(combinedRCHQuery, LimitOffset.ALL)
+                .getResults().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        assertEquals("Combined query should return all emps from all RCHs",
+                Sets.union(firstRCHQueryEmpIds, secondRCHEmpIds), combinedRCHQueryEmpIds);
+    }
+
+    @Test
+    public void activeEmpSearchTest() {
+        Set<Integer> activeEmployeeIds = employeeDao.getActiveEmployeeIds();
+        EmployeeSearchBuilder activeSearchBuilder = new EmployeeSearchBuilder()
+                .setActive(true);
+        Set<Integer> activeSearchEmpIds = employeeDao.searchEmployees(activeSearchBuilder, LimitOffset.ALL).getResults().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        assertEquals("Active empid search  should match active emp query",
+                activeEmployeeIds, activeSearchEmpIds);
+
+        Set<Integer> allEmpIds = employeeDao.getAllEmployees().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+
+        EmployeeSearchBuilder inactiveSearchBuilder = new EmployeeSearchBuilder()
+                .setActive(false);
+        Set<Integer> inactiveSearchEmpIds = employeeDao.searchEmployees(inactiveSearchBuilder, LimitOffset.ALL).getResults().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        assertTrue("Inactive and active searches must have no overlap",
+                Sets.intersection(activeSearchEmpIds, inactiveSearchEmpIds).isEmpty());
+        assertEquals("Active and Inactive searches must combine to a set of all emps",
+                allEmpIds, Sets.union(activeEmployeeIds, inactiveSearchEmpIds));
+    }
+
+    @Test
+    public void emptySearchTest() {
+        Set<Integer> allEmpIds = employeeDao.getAllEmployees().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+        Set<Integer> emptySearchEmpIds = employeeDao.searchEmployees(new EmployeeSearchBuilder(), LimitOffset.ALL)
+                .getResults().stream()
+                .map(Employee::getEmployeeId)
+                .collect(Collectors.toSet());
+
+        assertEquals("Empty Search should return all emps", allEmpIds, emptySearchEmpIds);
     }
 }

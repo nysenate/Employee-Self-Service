@@ -8,6 +8,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.OrderBy;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -99,6 +100,21 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         return rowHandler.getList();
     }
 
+    @Override
+    public PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset) {
+        MapSqlParameterSource params = getEmpSearchParams(employeeSearchBuilder);
+        OrderBy orderBy = new OrderBy(
+                "per.FFNALAST", SortOrder.ASC,
+                "per.FFNAFIRST", SortOrder.ASC,
+                "per.FFNAMIDINIT", SortOrder.ASC
+        );
+        PaginatedRowHandler<Employee> rowHandler =
+                new PaginatedRowHandler<>(limitOffset, "total_rows", getEmployeeRowMapper());
+        final String searchDml = SqlEmployeeQuery.GET_EMPS_BY_SEARCH_QUERY.getSql(schemaMap(), orderBy, limitOffset);
+        remoteNamedJdbc.query(searchDml, params, rowHandler);
+        return rowHandler.getList();
+    }
+
     /** {@inheritDoc} */
     @Override
     public Set<Integer> getActiveEmployeeIds(){
@@ -135,6 +151,26 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     public List<Employee> getUpdatedEmployees(LocalDateTime fromDateTime) {
         return remoteNamedJdbc.query(SqlEmployeeQuery.GET_EMP_BY_UPDATE_DATE.getSql(schemaMap()),
                 new MapSqlParameterSource("lastUpdate", toDate(fromDateTime)), getEmployeeRowMapper());
+    }
+
+    private MapSqlParameterSource getEmpSearchParams(EmployeeSearchBuilder searchBuilder) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", Optional.ofNullable(searchBuilder.getName())
+                .map(name -> name.trim()
+                        .replaceAll("[^a-zA-Z ]+", "")
+                        .replaceAll(" +", " "))
+                .orElse(null));
+        params.addValue("empStatus",
+                Optional.ofNullable(searchBuilder.getActive())
+                        .map(SqlBaseDao::getStatusCode)
+                        .map(String::valueOf)
+                        .orElse(null));
+        params.addValue("respCtrHeadCodesEmpty", searchBuilder.getRespCtrHeadCodes().isEmpty());
+        params.addValue("respCtrHeadCodes",
+                searchBuilder.getRespCtrHeadCodes().isEmpty() ? null : searchBuilder.getRespCtrHeadCodes());
+        params.addValue("contServFrom", toDate(searchBuilder.getContinuousServiceFrom()));
+        params.addValue("contServTo", toDate(searchBuilder.getContinuousServiceTo()));
+        return params;
     }
 
     /**

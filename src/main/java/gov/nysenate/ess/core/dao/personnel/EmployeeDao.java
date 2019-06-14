@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.dao.personnel;
 import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
 
@@ -62,6 +63,15 @@ public interface EmployeeDao extends BaseDao
      *@param limitOffset {@link LimitOffset} - result window  @return {@link PaginatedList<Employee>}
      */
     PaginatedList<Employee> searchEmployees(String term, boolean activeOnly, LimitOffset limitOffset);
+
+    /**
+     * Search for employees based on the given query object.
+     *
+     * @param employeeSearchBuilder {@link EmployeeSearchBuilder}
+     * @param limitOffset {@link LimitOffset}
+     * @return {@link PaginatedList}
+     */
+    PaginatedList<Employee> searchEmployees(EmployeeSearchBuilder employeeSearchBuilder, LimitOffset limitOffset);
 
     /**
      * @return The ids for all currently active employees
