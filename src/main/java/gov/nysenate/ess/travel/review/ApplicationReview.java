@@ -70,7 +70,7 @@ public class ApplicationReview {
      * If the application has been disapproved there is no need to continue the review workflow.
      */
     public TravelRole nextReviewerRole() {
-        if (application.isDisapproved()) {
+        if (application.status().isDisapproved()) {
             return TravelRole.NONE;
         }
         else {

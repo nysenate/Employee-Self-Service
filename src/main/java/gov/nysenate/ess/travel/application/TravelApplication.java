@@ -35,7 +35,7 @@ public class TravelApplication {
         this.route = Route.EMPTY_ROUTE;
         this.allowances = new Allowances();
         this.perDiemOverrides = new PerDiemOverrides();
-        this.status = TravelApplicationStatus.PENDING;
+        this.status = new TravelApplicationStatus();
         this.attachments = new ArrayList<>();
     }
 
@@ -121,24 +121,20 @@ public class TravelApplication {
         return getRoute().endDate();
     }
 
-    public boolean isPending() {
-        return status == TravelApplicationStatus.PENDING;
+    public TravelApplicationStatus status() {
+        return status;
     }
 
-    public boolean isApproved() {
-        return status == TravelApplicationStatus.APPROVED;
-    }
-
-    public boolean isDisapproved() {
-        return status == TravelApplicationStatus.DISAPPROVED;
+    void setStatus(TravelApplicationStatus status) {
+        this.status = status;
     }
 
     public void approve() {
-        this.status = TravelApplicationStatus.APPROVED;
+        status.approve();
     }
 
-    public void disapprove() {
-        this.status = TravelApplicationStatus.DISAPPROVED;
+    public void disapprove(String notes) {
+        status.disapprove(notes);
     }
 
     public int getAppId() {
@@ -231,13 +227,5 @@ public class TravelApplication {
 
     void deleteAttachment(String attachmentId) {
         getAttachments().removeIf(a -> a.getId().equals(attachmentId));
-    }
-
-    TravelApplicationStatus getStatus() {
-        return status;
-    }
-
-    void setStatus(TravelApplicationStatus status) {
-        this.status = status;
     }
 }

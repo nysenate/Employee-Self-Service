@@ -28,6 +28,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     @Autowired private RouteDao routeDao;
     @Autowired private SqlAllowancesDao allowancesDao;
     @Autowired private SqlPerDiemOverridesDao perDiemOverridesDao;
+    @Autowired private SqlTravelApplicationStatusDao statusDao;
     @Autowired private EmployeeInfoService employeeInfoService;
 
     @Override
@@ -41,6 +42,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         routeDao.saveRoute(app.getRoute(), app.getVersionId(), previousAppVersionId);
         allowancesDao.saveAllowances(app.getAllowances(), app.getVersionId(), previousAppVersionId);
         perDiemOverridesDao.savePerDiemOverrides(app.getPerDiemOverrides(), app.getVersionId());
+        statusDao.saveTravelApplicationStatus(app.status(), app.getVersionId());
     }
 
     @Override
@@ -94,7 +96,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 .addValue("appId", app.getAppId())
                 .addValue("versionId", app.getVersionId())
                 .addValue("purposeOfTravel", app.getPurposeOfTravel())
-                .addValue("status", app.getStatus().name())
                 .addValue("createdBy", app.getModifiedBy().getEmployeeId())
                 .addValue("submittedDateTime", toDate(app.getSubmittedDateTime()));
         String sql = SqlTravelApplicationQuery.INSERT_APP_VERSION.getSql(schemaMap());
@@ -120,15 +121,18 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
         INSERT_APP_VERSION(
                 "INSERT INTO ${travelSchema}.app_version \n" +
-                        "(app_version_id, app_id, purpose_of_travel, status, created_by, submitted_date_time) \n" +
-                        "VALUES (:versionId, :appId, :purposeOfTravel, :status, :createdBy, :submittedDateTime)"
+                        "(app_version_id, app_id, purpose_of_travel, created_by, submitted_date_time) \n" +
+                        "VALUES (:versionId, :appId, :purposeOfTravel, :createdBy, :submittedDateTime)"
         ),
         TRAVEL_APP_SELECT(
                 "SELECT app.app_id, app.app_version_id, app.traveler_id,\n" +
-                        " app_version.purpose_of_travel, app_version.status, app_version.created_date_time as modified_date_time," +
-                        " app_version.created_by as modified_by, app_version.submitted_date_time \n" +
-                        "FROM ${travelSchema}.app \n" +
-                        "INNER JOIN ${travelSchema}.app_version ON app.app_version_id = app_version.app_version_id"
+                        " version.purpose_of_travel, version.created_date_time as modified_date_time," +
+                        " version.created_by as modified_by, version.submitted_date_time,\n" +
+                        " status.app_version_status_id, status.created_date_time,\n" +
+                        " status.status, status.note\n" +
+                        " FROM ${travelSchema}.app\n" +
+                        " INNER JOIN ${travelSchema}.app_version version ON app.app_version_id = version.app_version_id\n" +
+                        " INNER JOIN ${travelSchema}.app_version_status status ON version.app_version_id = status.app_version_id \n"
         ),
         SELECT_APP_BY_ID(
                 TRAVEL_APP_SELECT.getSql() + " \n" +
@@ -183,10 +187,18 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             app.setRoute(routeDao.selectRoute(versionId));
             app.setAllowances(allowancesDao.selectAllowances(versionId));
             app.setPerDiemOverrides(perDiemOverridesDao.selectPerDiemOverrides(versionId));
-            app.setStatus(TravelApplicationStatus.valueOf(rs.getString("status")));
             app.setSubmittedDateTime(getLocalDateTimeFromRs(rs, "submitted_date_time"));
             app.setModifiedDateTime(getLocalDateTimeFromRs(rs, "modified_date_time"));
             app.setModifiedBy(employeeInfoService.getEmployee(rs.getInt("modified_by")));
+
+            TravelApplicationStatus status = new TravelApplicationStatus(
+                    rs.getInt("app_version_status_id"),
+                    rs.getString("status"),
+                    getLocalDateTimeFromRs(rs, "created_date_time"),
+                    rs.getString("note")
+            );
+
+            app.setStatus(status);
             return app;
         }
     }

@@ -10,7 +10,7 @@ public interface ApplicationReviewDao {
 
     ApplicationReview selectAppReviewsById(int approvalId);
 
-    List<ApplicationReview> selectAppReviewsByNextRole(TravelRole nextReviewerRole);
+    List<ApplicationReview> pendingReviewsByRole(TravelRole nextReviewerRole);
 
     List<ApplicationReview> selectReviewHistoryForEmp(int employeeId);
 }

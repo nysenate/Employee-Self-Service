@@ -39,7 +39,7 @@ public class ApplicationReviewService {
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 
-        applicationReview.application().disapprove();
+        applicationReview.application().disapprove(notes);
         travelApplicationService.saveTravelApplication(applicationReview.application(), disapprover);
     }
 
@@ -62,7 +62,7 @@ public class ApplicationReviewService {
             return new ArrayList<>();
         }
 
-        List<ApplicationReview> pendingReviews = appReviewDao.selectAppReviewsByNextRole(role);
+        List<ApplicationReview> pendingReviews = appReviewDao.pendingReviewsByRole(role);
         if (role == TravelRole.SUPERVISOR) {
             pendingReviews = pendingReviews.stream()
                     .filter(a -> isSupervisor(employee, a))

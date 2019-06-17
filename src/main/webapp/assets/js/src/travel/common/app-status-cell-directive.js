@@ -1,8 +1,8 @@
 var essTravel = angular.module('essTravel');
 
 /**
- * This directive styles a table cell according to the travel application status.
- * Call by <td ess-app-status-cell="applicationObject" ...>
+ * This directive styles a element according to the travel application status.
+ * Example: <td ess-app-status-cell="applicationObject" ...>
  */
 essTravel.directive('essAppStatusCell', ['appProps', function (appProps) {
     return {
@@ -15,17 +15,17 @@ essTravel.directive('essAppStatusCell', ['appProps', function (appProps) {
             var app = $scope.essAppStatusCell;
 
             $scope.statusClass = function () {
-                return app.isPending ? 'pending-cell'
-                                     : app.isApproved ? 'approved-cell'
-                                                      : app.isDisapproved ? 'disapproved-cell'
-                                                                          : '';
+                return app.status.isPending ? 'travel-highlight-text'
+                                            : app.status.isApproved ? 'approved-text'
+                                                                    : app.status.isDisapproved ? 'disapproved-text'
+                                                                                               : '';
             };
 
             $scope.statusDescription = function () {
-                return app.isPending ? 'Pending'
-                                     : app.isApproved ? 'Approved'
-                                                      : app.isDisapproved ? 'Disapproved'
-                                                                          : '';
+                return app.status.isPending ? 'Pending'
+                                            : app.status.isApproved ? 'Approved'
+                                                                    : app.status.isDisapproved ? 'Disapproved'
+                                                                                               : '';
             };
 
             $elem.addClass($scope.statusClass());

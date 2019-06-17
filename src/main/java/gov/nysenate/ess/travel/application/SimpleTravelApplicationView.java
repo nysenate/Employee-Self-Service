@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
@@ -25,15 +24,10 @@ public class SimpleTravelApplicationView implements ViewObject {
     private SimpleRouteView route;
     private AllowancesView allowances;
     private PerDiemOverridesView perDiemOverrides;
-    @JsonProperty("isPending")
-    private boolean isPending;
-    @JsonProperty("isApproved")
-    private boolean isApproved;
-    @JsonProperty("isDisapproved")
-    private boolean isDisapproved;
     private MealPerDiemsView mealPerDiems;
     private LodgingPerDiemsView lodgingPerDiems;
     private MileagePerDiemsView mileagePerDiems;
+    private TravelApplicationStatusView status;
     private String submittedDateTime;
     private String modifiedDateTime;
     private DetailedEmployeeView modifiedBy;
@@ -66,9 +60,7 @@ public class SimpleTravelApplicationView implements ViewObject {
         route = new SimpleRouteView(app.getRoute());
         allowances = new AllowancesView(app.getAllowances());
         perDiemOverrides = new PerDiemOverridesView(app.getPerDiemOverrides());
-        isPending = app.isPending();
-        isApproved = app.isApproved();
-        isDisapproved = app.isDisapproved();
+        status = new TravelApplicationStatusView(app.status());
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         modifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
         modifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
@@ -121,16 +113,8 @@ public class SimpleTravelApplicationView implements ViewObject {
         return perDiemOverrides;
     }
 
-    public boolean isPending() {
-        return isPending;
-    }
-
-    public boolean isApproved() {
-        return isApproved;
-    }
-
-    public boolean isDisapproved() {
-        return isDisapproved;
+    public TravelApplicationStatusView getStatus() {
+        return status;
     }
 
     public MealPerDiemsView getMealPerDiems() {
