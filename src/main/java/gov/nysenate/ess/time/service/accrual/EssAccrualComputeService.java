@@ -9,7 +9,6 @@ import gov.nysenate.ess.core.model.period.PayPeriod;
 import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.PersonnelStatus;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
-import gov.nysenate.ess.core.service.base.SqlDaoBaseService;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
@@ -61,7 +60,7 @@ import static gov.nysenate.ess.time.util.AccrualUtils.roundPersonalHours;
  * 5. Repeat steps 3 and 4 until all the pay periods are filled in.
  */
 @Service
-public class EssAccrualComputeService extends SqlDaoBaseService implements AccrualComputeService
+public class EssAccrualComputeService implements AccrualComputeService
 {
     private static final Logger logger = LoggerFactory.getLogger(EssAccrualComputeService.class);
 
