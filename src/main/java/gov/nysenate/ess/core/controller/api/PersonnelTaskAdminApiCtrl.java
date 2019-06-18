@@ -82,7 +82,6 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * (POST)   /api/v1/admin/personnel/task/csv
      *
      * Path params:
-     * @param empId int - employee id (must be active)
      *
      * @return {@link SimpleResponse}
      */
