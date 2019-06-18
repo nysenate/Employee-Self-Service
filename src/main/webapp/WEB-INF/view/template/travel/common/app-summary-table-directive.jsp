@@ -22,7 +22,7 @@
           <td ng-bind="::app.traveler.lastName"></td>
           <td ng-bind="::destinationSummary(app)"></td>
           <td ng-bind="::app.totalAllowance | currency"></td>
-          <td ess-app-status-cell="app" ng-if="options.showStatus"></td>
+          <td ess-app-status="app" ng-if="options.showStatus"></td>
 
         </tr>
         </tbody>

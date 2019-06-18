@@ -12,7 +12,7 @@
           Status:
         </div>
         <div class="app-form-s-col">
-          <span ess-app-status-cell="app"></span>
+          <span ess-app-status="app"></span>
         </div>
       </div>
 

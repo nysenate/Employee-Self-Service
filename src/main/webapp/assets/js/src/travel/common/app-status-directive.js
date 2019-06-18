@@ -2,17 +2,17 @@ var essTravel = angular.module('essTravel');
 
 /**
  * This directive styles a element according to the travel application status.
- * Example: <td ess-app-status-cell="applicationObject" ...>
+ * Example: <td ess-app-status="applicationObject" ...>
  */
-essTravel.directive('essAppStatusCell', ['appProps', function (appProps) {
+essTravel.directive('essAppStatus', ['appProps', function (appProps) {
     return {
         restrict: 'A',
         scope: {
-            essAppStatusCell: '='
+            essAppStatus: '='
         },
         link: function ($scope, $elem, $attrs) {
 
-            var app = $scope.essAppStatusCell;
+            var app = $scope.essAppStatus;
 
             $scope.statusClass = function () {
                 return app.status.isPending ? 'travel-highlight-text'
