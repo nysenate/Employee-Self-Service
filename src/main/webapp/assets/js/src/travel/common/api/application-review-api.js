@@ -17,6 +17,11 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
 
         var appReviewApi = {};
 
+        function ActionBody(notes, isDiscussionRequested) {
+            this.notes = notes;
+            this.isDiscussionRequested = isDiscussionRequested;
+        }
+
         /**
          * Get all application reviews which need to be reviewed by the logged in user.
          */
@@ -28,12 +33,12 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
             return reviewHistoryApi.get({});
         };
 
-        appReviewApi.approve = function (appReviewId, notes) {
-            return approveApi.save({appReviewId: appReviewId}, notes);
+        appReviewApi.approve = function (appReviewId, notes, isDiscussionRequested) {
+            return approveApi.save({appReviewId: appReviewId}, new ActionBody(notes, isDiscussionRequested));
         };
 
         appReviewApi.disapprove = function (appReviewId, notes) {
-            return disapproveApi.save({appReviewId: appReviewId}, notes);
+            return disapproveApi.save({appReviewId: appReviewId}, new ActionBody(notes, false));
         };
 
         appReviewApi.parseAppReviewResponse = function (response) {

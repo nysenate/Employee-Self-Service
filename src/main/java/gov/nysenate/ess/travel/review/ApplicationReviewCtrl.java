@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
@@ -51,7 +52,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     }
 
     @RequestMapping(value = "/{appReviewId}/approve", method = RequestMethod.POST)
-    public BaseResponse approveApplication(@PathVariable int appReviewId, @RequestBody(required = false) String notes) {
+    public BaseResponse approveApplication(@PathVariable int appReviewId, @RequestBody ActionBodyView body) {
         TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
@@ -62,12 +63,15 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        appReviewService.approveApplication(appReview, employee, notes, role);
+        appReviewService.approveApplication(appReview, employee, body.getNotes(), role, body.isDiscussionRequested());
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 
     @RequestMapping(value = "/{appReviewId}/disapprove", method = RequestMethod.POST)
-    public BaseResponse disapproveApplication(@PathVariable int appReviewId, @RequestBody String notes) {
+    public BaseResponse disapproveApplication(@PathVariable int appReviewId, @RequestBody ActionBodyView body) {
+        if (body.getNotes() == null || body.getNotes().trim().isEmpty()) {
+            throw new InvalidRequestParamEx(body.getNotes(), "notes", "String", "not null & not empty");
+        }
         TravelRole role = getSubjectRole();
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
@@ -78,7 +82,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        appReviewService.disapproveApplication(appReview, employee, notes, role);
+        appReviewService.disapproveApplication(appReview, employee, body.getNotes(), role);
         return new ViewObjectResponse<>(new ApplicationReviewView(appReview));
     }
 

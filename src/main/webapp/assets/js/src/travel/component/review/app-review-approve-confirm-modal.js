@@ -12,10 +12,11 @@ function confirmationCtrl($scope, modals, appReviewApi) {
 
     $scope.appReview = modals.params();
     $scope.notes = "";
+    $scope.isDiscussionRequested = false;
     $scope.isSingleDayTravel = $scope.appReview.travelApplication.startDate === $scope.appReview.travelApplication.endDate;
 
     $scope.approve = function () {
-        appReviewApi.approve($scope.appReview.appReviewId, $scope.notes)
+        appReviewApi.approve($scope.appReview.appReviewId, $scope.notes, $scope.isDiscussionRequested)
             .$promise
             .then(function () {
                 modals.resolve();

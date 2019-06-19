@@ -24,6 +24,11 @@
         <textarea ng-model="notes" cols="40" rows="3"></textarea>
       </label>
     </div>
+
+    <div class="margin-top-20">
+      <input type="checkbox" id="requestDiscussion" ng-model="isDiscussionRequested">
+      <label for="requestDiscussion">Request Discussion</label>
+    </div>
   </div>
 
   <div class="travel-button-container">

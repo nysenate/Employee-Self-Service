@@ -1,45 +1,42 @@
 package gov.nysenate.ess.travel.review;
 
 import gov.nysenate.ess.travel.application.TravelApplication;
-import gov.nysenate.ess.travel.review.strategy.*;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
+import gov.nysenate.ess.travel.review.strategy.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * The entire review process for a single {@link TravelApplication}.
  */
 public class ApplicationReview {
 
+    private final static Comparator<Action> actionComparator = Comparator.comparing(Action::dateTime);
+
     private int appReviewId;
     private TravelApplication application;
     private TravelRole travelerRole;
-    private List<Action> actions;
+    private SortedSet<Action> actions;
     private ReviewerStrategy reviewerStrategy;
 
     public ApplicationReview(int appReviewId, TravelApplication application, TravelRole travelerRole, List<Action> actions) {
         this.appReviewId = appReviewId;
         this.application = application;
         this.travelerRole = travelerRole;
-        this.actions = actions;
+        this.actions = new TreeSet<>(actionComparator);
+        this.actions.addAll(actions);
 
         if (travelerRole == TravelRole.NONE) {
             reviewerStrategy = new RegularReviewerStrategy();
-        }
-        else if (travelerRole == TravelRole.MAJORITY_LEADER) {
+        } else if (travelerRole == TravelRole.MAJORITY_LEADER) {
             reviewerStrategy = new MajReviewerStrategy();
-        }
-        else if (application.getTraveler().isSenator()) {
+        } else if (application.getTraveler().isSenator()) {
             reviewerStrategy = new SenatorReviewerStrategy();
-        }
-        else if (travelerRole == TravelRole.SUPERVISOR) {
+        } else if (travelerRole == TravelRole.SUPERVISOR) {
             reviewerStrategy = new SupervisorReviewerStrategy();
-        }
-        else if (travelerRole == TravelRole.DEPUTY_EXECUTIVE_ASSISTANT) {
+        } else if (travelerRole == TravelRole.DEPUTY_EXECUTIVE_ASSISTANT) {
             reviewerStrategy = new DeaReviewerStrategy();
-        }
-        else if (travelerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
+        } else if (travelerRole == TravelRole.SECRETARY_OF_THE_SENATE) {
             reviewerStrategy = new SosReviewerStrategy();
         }
     }
@@ -72,8 +69,7 @@ public class ApplicationReview {
     public TravelRole nextReviewerRole() {
         if (application.status().isDisapproved()) {
             return TravelRole.NONE;
-        }
-        else {
+        } else {
             return reviewerStrategy.after(previousReviewerRole());
         }
     }
@@ -83,14 +79,15 @@ public class ApplicationReview {
      * has requested discussion.
      */
     public boolean isDiscussionRequested() {
-        return mostRecentAction().isDiscussionRequested();
+        Action a = mostRecentAction();
+        return a == null ? false : a.isDiscussionRequested();
     }
 
     public TravelApplication application() {
         return application;
     }
 
-    public List<Action> actions() {
+    public SortedSet<Action> actions() {
         return actions;
     }
 
@@ -107,14 +104,17 @@ public class ApplicationReview {
     }
 
     private TravelRole previousReviewerRole() {
-        return mostRecentAction().role();
+        Action a = mostRecentAction();
+        return a == null ? null : a.role();
     }
 
     // Returns the most recent action or null if there are no actions.
     private Action mostRecentAction() {
-        if (actions.isEmpty()) {
+        try {
+            return actions.last();
+        }
+        catch (NoSuchElementException ex) {
             return null;
         }
-        return actions.get(actions.size() - 1);
     }
 }
