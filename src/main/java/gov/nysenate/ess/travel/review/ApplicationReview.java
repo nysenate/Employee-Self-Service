@@ -78,6 +78,14 @@ public class ApplicationReview {
         }
     }
 
+    /**
+     * Discussion is requested for this application review if the most recent action
+     * has requested discussion.
+     */
+    public boolean isDiscussionRequested() {
+        return mostRecentAction().isDiscussionRequested();
+    }
+
     public TravelApplication application() {
         return application;
     }
@@ -99,9 +107,14 @@ public class ApplicationReview {
     }
 
     private TravelRole previousReviewerRole() {
+        return mostRecentAction().role();
+    }
+
+    // Returns the most recent action or null if there are no actions.
+    private Action mostRecentAction() {
         if (actions.isEmpty()) {
             return null;
         }
-        return actions.get(actions.size() - 1).role();
+        return actions.get(actions.size() - 1);
     }
 }

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
+import com.google.common.base.Preconditions;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 
@@ -13,14 +14,19 @@ public class Action {
     private final ActionType type;
     private final String notes;
     private final LocalDateTime dateTime;
+    private final boolean isDiscussionRequested;
 
-    public Action(int actionId, Employee user, TravelRole role, ActionType type, String notes, LocalDateTime dateTime) {
+    public Action(int actionId, Employee user, TravelRole role, ActionType type,
+                  String notes, LocalDateTime dateTime, boolean isDiscussionRequested) {
+        // Cannot request discussion when disapproving.
+        Preconditions.checkArgument(!(type == ActionType.DISAPPROVE && isDiscussionRequested));
         this.actionId = actionId;
         this.user = user;
         this.role = role;
         this.type = type;
         this.notes = notes;
         this.dateTime = dateTime;
+        this.isDiscussionRequested = isDiscussionRequested;
     }
 
     /**
@@ -39,7 +45,6 @@ public class Action {
 
     /**
      * The type of action performed.
-     * @return
      */
     public ActionType type() {
         return type;
@@ -65,5 +70,9 @@ public class Action {
 
     void setActionId(int actionId) {
         this.actionId = actionId;
+    }
+
+    boolean isDiscussionRequested() {
+        return isDiscussionRequested;
     }
 }

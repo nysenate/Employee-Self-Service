@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.SimpleTravelApplicationView;
 
@@ -11,6 +12,7 @@ public class ApplicationReviewView implements ViewObject {
     private String appReviewId;
     private SimpleTravelApplicationView travelApplication;
     private List<ActionView> actions;
+    private boolean isDiscussionRequested;
 
     public ApplicationReviewView() {
     }
@@ -21,6 +23,7 @@ public class ApplicationReviewView implements ViewObject {
         actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
+        isDiscussionRequested = appReview.isDiscussionRequested();
     }
 
     public String getAppReviewId() {
@@ -33,6 +36,11 @@ public class ApplicationReviewView implements ViewObject {
 
     public List<ActionView> getActions() {
         return actions;
+    }
+
+    @JsonProperty("isDiscussionRequested")
+    public boolean isDiscussionRequested() {
+        return isDiscussionRequested;
     }
 
     @Override
