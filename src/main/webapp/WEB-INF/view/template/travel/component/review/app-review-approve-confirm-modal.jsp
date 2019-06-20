@@ -1,3 +1,6 @@
+<%@ page import="gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+
 <div class="content-container no-top-margin padding-top-5">
   <h3 class="content-info">
     Approval Confirmation
@@ -25,10 +28,13 @@
       </label>
     </div>
 
+    <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REQUEST_DISCUSSION.getPermissionString() %>">
     <div class="margin-top-20">
       <input type="checkbox" id="requestDiscussion" ng-model="isDiscussionRequested">
       <label for="requestDiscussion">Request Discussion</label>
     </div>
+    </shiro:hasPermission>
+
   </div>
 
   <div class="travel-button-container">

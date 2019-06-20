@@ -17,6 +17,8 @@ public enum SimpleTravelPermission {
     // are not allowed to edit (and the api will block them if they try to edit it). But this should never
     // happen through natural use of the UI.
     TRAVEL_UI_EDIT_APP("travel:ui:edit-app"),
+    // Users with this permission are allowed to request discussion when approving an application.
+    TRAVEL_UI_REQUEST_DISCUSSION("travel:ui:request-discussion")
     ;
 
     private String permissionString;

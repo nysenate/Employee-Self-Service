@@ -9,6 +9,7 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
+import gov.nysenate.ess.travel.application.route.destination.Destination;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -92,12 +93,15 @@ public class SimpleTravelApplicationView implements ViewObject {
         totalAllowance = app.totalAllowance().toString();
 
 
-        Address address = app.getRoute().destinations().get(0).getAddress();
-        String city = address.getCity();
-        String addr1 = address.getAddr1();
-        destinationSummary = city == null || city.isEmpty() ? addr1 : city;
-        if (app.getRoute().destinations().size() > 1) {
-            destinationSummary += " ...";
+        List<Destination> destinations = app.getRoute().destinations();
+        if (!destinations.isEmpty()) {
+            Address address = destinations.get(0).getAddress();
+            String city = address.getCity();
+            String addr1 = address.getAddr1();
+            destinationSummary = city == null || city.isEmpty() ? addr1 : city;
+            if (destinations.size() > 1) {
+                destinationSummary += " ...";
+            }
         }
     }
 

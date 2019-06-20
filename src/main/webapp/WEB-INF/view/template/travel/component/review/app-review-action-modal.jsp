@@ -1,5 +1,6 @@
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <%@ page import="gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission" %>
+
 <div class="content-container no-top-margin padding-top-5">
 
   <div>
