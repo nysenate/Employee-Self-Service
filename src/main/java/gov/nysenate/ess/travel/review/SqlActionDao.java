@@ -33,7 +33,7 @@ public class SqlActionDao extends SqlBaseDao {
      */
     public void saveAppReviewActions(Collection<Action> actions, int appReviewId) {
         Collection<Action> newActions = actions.stream()
-                .filter(a -> a.getActionId() == 0)
+                .filter(a -> a.actionId == 0)
                 .collect(Collectors.toList());
 
         for (Action action : newActions) {
@@ -49,12 +49,12 @@ public class SqlActionDao extends SqlBaseDao {
                 .addValue("type", action.type.name())
                 .addValue("notes", action.notes())
                 .addValue("dateTime", toDate(action.dateTime()))
-                .addValue("isDiscussionRequested", action.isDiscussionRequested());
+                .addValue("isDiscussionRequested", action.isDiscussionRequested);
 
         String sql = SqlActionQuery.INSERT_REVIEW_ACTION.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        action.setActionId((Integer) keyHolder.getKeys().get("app_review_action_id"));
+        action.actionId = (Integer) keyHolder.getKeys().get("app_review_action_id");
     }
 
     /**

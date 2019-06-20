@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 
 public class Action {
 
-    private int actionId;
-    private final Employee user;
-    private final TravelRole role;
+    protected int actionId;
+    protected final Employee user;
+    protected final TravelRole role;
     protected final ActionType type;
-    private final String notes;
-    private final LocalDateTime dateTime;
-    private final boolean isDiscussionRequested;
+    protected final String notes;
+    protected final LocalDateTime dateTime;
+    protected final boolean isDiscussionRequested;
 
     public Action(int actionId, Employee user, TravelRole role, ActionType type,
                   String notes, LocalDateTime dateTime, boolean isDiscussionRequested) {
@@ -69,17 +69,5 @@ public class Action {
      */
     public LocalDateTime dateTime() {
         return dateTime;
-    }
-
-    int getActionId() {
-        return actionId;
-    }
-
-    void setActionId(int actionId) {
-        this.actionId = actionId;
-    }
-
-    boolean isDiscussionRequested() {
-        return isDiscussionRequested;
     }
 }

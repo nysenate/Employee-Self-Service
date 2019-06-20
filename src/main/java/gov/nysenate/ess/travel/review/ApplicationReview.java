@@ -80,7 +80,7 @@ public class ApplicationReview {
      */
     public boolean isDiscussionRequested() {
         Action a = mostRecentAction();
-        return a == null ? false : a.isDiscussionRequested();
+        return a == null ? false : a.isDiscussionRequested;
     }
 
     public TravelApplication application() {
