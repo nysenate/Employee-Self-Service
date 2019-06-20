@@ -24,7 +24,7 @@
     </div>
 
     <div ng-if="vm.data.isLoading === false">
-      <div ng-if="vm.data.apps.filtered.length === 0">
+      <div ng-if="vm.data.reviews.filtered.length === 0">
         <div class="content-container">
           <div class="content-info">
             <h2 class="dark-gray">No Review History.</h2>
@@ -32,12 +32,12 @@
         </div>
       </div>
 
-      <div ng-if="vm.data.apps.filtered.length > 0">
-        <ess-app-summary-table
-            apps="vm.data.apps.filtered"
-            on-row-click="vm.displayAppReviewViewModal(app)"
-            show-status>
-        </ess-app-summary-table>
+      <div ng-if="vm.data.reviews.filtered.length > 0">
+        <ess-app-review-summary-table
+            reviews="vm.data.reviews.filtered"
+            on-row-click="vm.displayReviewViewModal(review)"
+            show-action>
+        </ess-app-review-summary-table>
       </div>
     </div>
 

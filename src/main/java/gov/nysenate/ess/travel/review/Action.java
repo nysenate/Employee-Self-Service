@@ -11,7 +11,7 @@ public class Action {
     private int actionId;
     private final Employee user;
     private final TravelRole role;
-    private final ActionType type;
+    protected final ActionType type;
     private final String notes;
     private final LocalDateTime dateTime;
     private final boolean isDiscussionRequested;
@@ -44,10 +44,17 @@ public class Action {
     }
 
     /**
-     * The type of action performed.
+     * Was this action an approval.
      */
-    public ActionType type() {
-        return type;
+    public boolean isApproval() {
+        return type == ActionType.APPROVE;
+    }
+
+    /**
+     * Was this action a disapproval
+     */
+    public boolean isDisapproval() {
+        return type == ActionType.DISAPPROVE;
     }
 
     /**

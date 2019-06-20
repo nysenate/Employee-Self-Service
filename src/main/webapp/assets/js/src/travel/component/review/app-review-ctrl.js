@@ -10,7 +10,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
     var vm = this;
     vm.modalPromise;
     vm.isLoading = true;
-    vm.apps = [];
+    vm.reviews = [];
     vm.appIdToReview = new Map(); // Map of TravelApplication id to its ApplicationReview
 
     (function init() {
@@ -24,7 +24,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
                 appReviews.forEach(function (review) {
-                    vm.apps.push(review.travelApplication);
+                    vm.reviews.push(review);
                     vm.appIdToReview.set(review.travelApplication.id, review);
                 });
                 vm.isLoading = false;
@@ -35,23 +35,22 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
     function openReviewModalIfSearchParamsSet() {
         var appId = getAppIdParam();
         if (appId) {
-            openReviewModal(appId);
+            openReviewModal(vm.appIdToReview.get(appId));
         }
     }
 
-    vm.onAppRowClick = function (app) {
-        openReviewModal(app.id);
+    vm.onRowClick = function (review) {
+        openReviewModal(review);
     };
 
     /**
-     * Open a Review modal displaying the ApplicationReview for the given appId.
-     * If no ApplicationReview exists for the given appId, clear the search param and don't display a modal.
+     * Open a Review modal displaying a ApplicationReview
+     * If review is undefined or null clear the search param and don't display a modal.
      */
-    function openReviewModal(appId) {
-        locationService.setSearchParam(APP_ID_SEARCH_PARAM, appId);
-        var appReview = vm.appIdToReview.get(appId);
-        if (appReview) {
-            vm.modalPromise = modals.open("app-review-action-modal", appReview, true)
+    function openReviewModal(review) {
+        if (review) {
+            locationService.setSearchParam(APP_ID_SEARCH_PARAM, review.travelApplication.id);
+            vm.modalPromise = modals.open("app-review-action-modal", review, true)
                 .then(reload)
                 .finally(resetAppIdParam);
         } else {

@@ -9,7 +9,7 @@
   </div>
 
   <div ng-if="vm.isLoading === false">
-    <div ng-if="vm.apps.length === 0">
+    <div ng-if="vm.reviews.length === 0">
       <div class="content-container">
         <div class="content-info">
           <h2 class="dark-gray">No Applications to Review.</h2>
@@ -17,11 +17,12 @@
       </div>
     </div>
 
-    <div ng-if="vm.apps.length > 0">
-      <ess-app-summary-table
-          apps="vm.apps"
-          on-row-click="vm.onAppRowClick(app)">
-      </ess-app-summary-table>
+    <div ng-if="vm.reviews.length > 0">
+      <ess-app-review-summary-table
+          reviews="vm.reviews"
+          on-row-click="vm.onRowClick(review)"
+          highlight-discussion>
+      </ess-app-review-summary-table>
     </div>
   </div>
 

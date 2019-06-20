@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.EmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
@@ -9,7 +10,8 @@ public class ActionView implements ViewObject {
 
     private EmployeeView user;
     private String role;
-    private String type;
+    private boolean isApproval;
+    private boolean isDisapproval;
     private String notes;
     private String dateTime;
 
@@ -20,7 +22,8 @@ public class ActionView implements ViewObject {
         this.user = new EmployeeView(action.user());
         this.role = action.role().name();
         this.notes = action.notes();
-        this.type = action.type().name();
+        this.isApproval = action.isApproval();
+        this.isDisapproval = action.isDisapproval();
         this.dateTime = action.dateTime().format(DateTimeFormatter.ISO_DATE_TIME);
     }
 
@@ -32,8 +35,14 @@ public class ActionView implements ViewObject {
         return role;
     }
 
-    public String getType() {
-        return type;
+    @JsonProperty("isApproval")
+    public boolean isApproval() {
+        return isApproval;
+    }
+
+    @JsonProperty("isDisapproval")
+    public boolean isDisapproval() {
+        return isDisapproval;
     }
 
     public String getNotes() {

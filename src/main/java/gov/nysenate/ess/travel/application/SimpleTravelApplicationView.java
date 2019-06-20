@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
@@ -48,6 +49,12 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String tollsAndParkingAllowance;
     private String totalAllowance;
 
+    /**
+     * A summary of the destinations.
+     * The city or addr1 of the first destination. Ellipsis added if multiple destinations.
+     */
+    private String destinationSummary;
+
 
     public SimpleTravelApplicationView() {
     }
@@ -83,6 +90,15 @@ public class SimpleTravelApplicationView implements ViewObject {
         transportationAllowance = app.transportationAllowance().toString();
         tollsAndParkingAllowance = app.tollsAndParkingAllowance().toString();
         totalAllowance = app.totalAllowance().toString();
+
+
+        Address address = app.getRoute().destinations().get(0).getAddress();
+        String city = address.getCity();
+        String addr1 = address.getAddr1();
+        destinationSummary = city == null || city.isEmpty() ? addr1 : city;
+        if (app.getRoute().destinations().size() > 1) {
+            destinationSummary += " ...";
+        }
     }
 
     public String getId() {
@@ -195,6 +211,10 @@ public class SimpleTravelApplicationView implements ViewObject {
 
     public String getTotalAllowance() {
         return totalAllowance;
+    }
+
+    public String getDestinationSummary() {
+        return destinationSummary;
     }
 
     @Override

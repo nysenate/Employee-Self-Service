@@ -10,8 +10,7 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
     var vm = this;
     vm.data = {
         isLoading: true,
-        appReviews: [],
-        apps: {
+        reviews: {
             all: [],
             filtered: []
         }
@@ -27,8 +26,7 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
                 appReviews.forEach(function (review) {
-                    vm.data.appReviews.push(review);
-                    vm.data.apps.all.push(review.travelApplication);
+                    vm.data.reviews.all.push(review);
                 });
                 vm.applyFilters();
                 vm.data.isLoading = false;
@@ -36,26 +34,21 @@ function reviewHistory($scope, locationService, modals, appReviewApi) {
             .catch($scope.handleErrorResponse);
     })();
 
-    vm.displayAppReviewViewModal = function (app) {
-        var appReview;
-        vm.data.appReviews.forEach(function (ar) {
-            if (app.id === ar.travelApplication.id) {
-                appReview = ar;
-            }
-        });
-        modals.open("app-review-view-modal", appReview, true);
+    vm.displayReviewViewModal = function (review) {
+        modals.open("app-review-view-modal", review, true);
     };
 
-    vm.onEdit = function (appReview) {
+    // Called by the app-review-view-modal.
+    vm.onEdit = function (reivew) {
         modals.reject();
-        locationService.go("/travel/application/edit", true, {appId: appReview.travelApplication.id});
+        locationService.go("/travel/application/edit", true, {appId: review.travelApplication.id});
     };
 
     vm.applyFilters = function () {
-        vm.data.apps.filtered = angular.copy(vm.data.apps.all);
-        vm.data.apps.filtered = vm.data.apps.filtered.filter(function (app) {
-            return moment(app.startDate, ISO_FORMAT) >= moment(vm.date.from, DATEPICKER_FORMAT) &&
-                moment(app.startDate, ISO_FORMAT) <= moment(vm.date.to, DATEPICKER_FORMAT);
+        vm.data.reviews.filtered = angular.copy(vm.data.reviews.all);
+        vm.data.reviews.filtered = vm.data.reviews.filtered.filter(function (r) {
+            return moment(r.travelApplication.startDate, ISO_FORMAT) >= moment(vm.date.from, DATEPICKER_FORMAT) &&
+                moment(r.travelApplication.startDate, ISO_FORMAT) <= moment(vm.date.to, DATEPICKER_FORMAT);
         });
     };
 }

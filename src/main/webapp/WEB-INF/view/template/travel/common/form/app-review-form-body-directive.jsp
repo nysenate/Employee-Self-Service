@@ -21,7 +21,7 @@
               <div style="display: flex; flex-direction: row; justify-content: space-between">
                 <div style="" ng-bind="::action.dateTime | date: 'shortDate'"></div>
                 <div style="" ng-bind="::action.user.lastName"></div>
-                <div ess-action-type-cell="action.type"></div>
+                <div ess-review-action-status="action"></div>
               </div>
               <div ng-show="action.notes" class="dark-gray" style="font-size: .9em; margin-top: 5px; margin-left: 40px;">
                 <span ng-bind="::action.notes"></span>

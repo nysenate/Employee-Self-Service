@@ -20,7 +20,7 @@
 
           <td ng-bind="::app.startDate | date:'M/d/yyyy'"></td>
           <td ng-bind="::app.traveler.lastName"></td>
-          <td ng-bind="::destinationSummary(app)"></td>
+          <td ng-bind="::app.destinationSummary"></td>
           <td ng-bind="::app.totalAllowance | currency"></td>
           <td ess-app-status="app" ng-if="options.showStatus"></td>
 

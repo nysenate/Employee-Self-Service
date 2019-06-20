@@ -14,14 +14,6 @@ essTravel.directive('essAppSummaryTable', ['appProps', function (appProps) {
                 // Include a 'show-status' attribute on this directive to display the status column.
                 showStatus: $attrs.hasOwnProperty('showStatus')
             };
-
-            $scope.destinationSummary = function (app) {
-                var destinations = app.route.destinations[0].city || app.route.destinations[0].addr1 || "N/A";
-                if (app.route.destinations.length > 1) {
-                    destinations += " ..."
-                }
-                return destinations;
-            };
         }
     }
 }]);

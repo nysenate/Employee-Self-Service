@@ -46,7 +46,7 @@ public class SqlActionDao extends SqlBaseDao {
                 .addValue("appReviewId", appReviewId)
                 .addValue("employeeId", action.user().getEmployeeId())
                 .addValue("role", action.role().name())
-                .addValue("type", action.type().name())
+                .addValue("type", action.type.name())
                 .addValue("notes", action.notes())
                 .addValue("dateTime", toDate(action.dateTime()))
                 .addValue("isDiscussionRequested", action.isDiscussionRequested());

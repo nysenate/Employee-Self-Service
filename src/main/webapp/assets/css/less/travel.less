@@ -213,6 +213,10 @@ h2.travel-subheader {
         text-align: left;
         padding-left: 50px;
       }
+
+      &.highlight-row {
+        background-color:  #ffbcbc !important;
+      }
     }
   }
 }
@@ -229,6 +233,10 @@ h2.travel-subheader {
     tr:hover {
       background-color: darken(color(#fafafa), 10%);
       cursor: pointer;
+
+      &.highlight-row {
+        background-color: darken(color(#ffbcbc), 10%) !important;
+      }
     }
   }
 }
@@ -450,14 +458,6 @@ h2.travel-subheader {
   input {
     width: 75px;
   }
-}
-
-/**
-  * Other
- */
-
-.discussion-requested {
-  background-color: @redorange;
 }
 
 /**
