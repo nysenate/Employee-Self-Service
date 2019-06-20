@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
+import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.review.strategy.*;
@@ -46,21 +47,9 @@ public class ApplicationReview {
     }
 
     public void addAction(Action action) {
-        //TODO
-        // Verify correct role is doing the action.
-        // Verify this approval can receive mroe actions
+        Preconditions.checkArgument(action.role() == nextReviewerRole());
         actions.add(action);
     }
-
-//    public boolean addApproval(Employee approver, TravelRole approverRole, String notes, LocalDateTime dateTime) {
-//        if (!nextApprover().isPresent()) {
-//            // TODO: Cannot approve anymore!
-//        }
-//        if (approverRole != nextApprover().get()) {
-//            // TODO: Incorrect role is approving!
-//        }
-//        return actions.add(new Action(approver, approverRole, notes, dateTime));
-//    }
 
     /**
      * Returns the role which needs to review the application next.

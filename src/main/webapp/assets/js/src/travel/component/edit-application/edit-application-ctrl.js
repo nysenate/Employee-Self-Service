@@ -69,7 +69,7 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
     };
 
     vm.doneEditing = function (app) {
-        locationService.go("/travel/review", true, {appId: app.id});
+        locationService.go("/travel/review", false, {appId: app.id});
     };
 
     vm.toPurposeState = function (app) {

@@ -88,8 +88,7 @@ public class TravelApplicationService {
     }
 
     /**
-     * Submits and saves a TravelApplication.
-     * Also creates and saves a new ApplicationApproval for this TravelApplication.
+     * Creates and saves a new ApplicationApproval for this TravelApplication.
      *
      * @param app
      * @param submitter The employee submitting this application.
@@ -97,11 +96,9 @@ public class TravelApplicationService {
      */
     public TravelApplication submitTravelApplication(TravelApplication app, Employee submitter) {
         app.setSubmittedDateTime(LocalDateTime.now());
-        saveTravelApplication(app, submitter);
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);
-
         return app;
     }
 

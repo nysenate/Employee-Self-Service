@@ -15,6 +15,8 @@ import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesVie
 import gov.nysenate.ess.travel.application.route.SimpleRouteView;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/application")
 public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
+    private static final Logger logger = LoggerFactory.getLogger(TravelApplicationCtrl.class);
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private EmployeeInfoService employeeInfoService;
 
@@ -95,20 +98,17 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 case "perDiemOverrides":
                     travelApplicationService.updatePerDiemOverrides(app, OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class));
                     break;
-            }
-        }
-        // Save after all changes are applied.
-        travelApplicationService.saveTravelApplication(app, user);
-
-        // Perform actions like submitting separately.
-        for (Map.Entry<String, String> patch : patches.entrySet()) {
-            switch (patch.getKey()) {
                 case "action":
                     if (patch.getValue().equals("submit")) {
                         travelApplicationService.submitTravelApplication(app, user);
                     }
+                default:
+                    logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
             }
         }
+
+        // Save after all changes are applied.
+        travelApplicationService.saveTravelApplication(app, user);
 
         SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
         return new ViewObjectResponse(appView);

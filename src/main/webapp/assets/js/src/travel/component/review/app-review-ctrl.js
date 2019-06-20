@@ -82,7 +82,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
         var appId = getAppIdParam();
         modals.reject();
         $q.all(vm.modalPromise).then(function () {
-            locationService.go("/travel/application/edit", true, {appId: appId});
+            locationService.go("/travel/application/edit", false, {appId: appId});
         });
     }
 }
