@@ -95,11 +95,6 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 case "perDiemOverrides":
                     travelApplicationService.updatePerDiemOverrides(app, OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class));
                     break;
-                case "action":
-                    if (patch.getValue().equals("submit")) {
-                        travelApplicationService.submitTravelApplication(app, user);
-                    }
-                    break;
             }
         }
         // Save after all changes are applied.
