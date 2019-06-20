@@ -175,7 +175,7 @@ public class EssCachedEmployeeInfoService implements EmployeeInfoService, Cachin
     public void warmCache() {
         logger.info("Refreshing employee cache..");
         empCache.removeAll();
-        Set<Employee> activeEmployees = employeeDao.getActiveEmployees();
+        Set<Employee> activeEmployees = employeeDao.getAllEmployees();
         activeEmployees.forEach(this::cacheEmployee);
         logger.info("Finished refreshing employee cache: {} employees cached", activeEmployees.size());
     }

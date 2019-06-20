@@ -21,11 +21,11 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
     SELECT_TASKS_QUERY("" +
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_assigned_task\n" +
-            "WHERE active = TRUE\n" +
+            "WHERE (:active::boolean IS NULL OR active = :active::boolean)\n" +
             "  AND (:empId::int IS NULL OR emp_id = :empId)\n" +
             "  AND (:taskType::ess.personnel_task_type IS NULL OR task_type = :taskType::ess.personnel_task_type)\n" +
-            "  AND (:taskNumber::int IS NULL OR task_number = :taskNumber)\n" +
-            "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)"
+            "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)\n" +
+            "  AND (:taskIdsPresent OR (task_type::text, task_number) IN (:taskIds))"
     ),
 
     INSERT_TASK("" +

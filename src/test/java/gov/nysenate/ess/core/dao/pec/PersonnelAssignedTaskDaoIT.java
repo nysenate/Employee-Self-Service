@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.dao.pec;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.config.DatabaseConfig;
@@ -17,8 +18,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.VIDEO_CODE_ENTRY;
-import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
+import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.*;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -102,8 +102,17 @@ public class PersonnelAssignedTaskDaoIT extends BaseTest {
         // Query by task id
         PersonnelTaskId taskId = new PersonnelTaskId(taskTypes.get(0), bogusTaskNums.get(0));
         PATQueryBuilder taskIdQuery = new PATQueryBuilder()
-                .setTaskId(taskId);
+                .setTaskIds(Collections.singleton(taskId));
         queryResultAssertion(taskIdQuery, allTasks, task -> taskId.equals(task.getTaskId()));
+
+        Set<PersonnelTaskId> taskIds = Sets.newHashSet(
+                new PersonnelTaskId(taskTypes.get(0), bogusTaskNums.get(0)),
+                new PersonnelTaskId(taskTypes.get(0), bogusTaskNums.get(1)),
+                new PersonnelTaskId(taskTypes.get(1), bogusTaskNums.get(1))
+        );
+        PATQueryBuilder multiTaskIdQuery = new PATQueryBuilder()
+                .setTaskIds(taskIds);
+        queryResultAssertion(multiTaskIdQuery, allTasks, task -> taskIds.contains(task.getTaskId()));
 
         // Query incomplete tasks for specific emp
         int firstEmpId = bogusEmpIds.get(0);

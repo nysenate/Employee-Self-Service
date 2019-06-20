@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.dao.pec.SqlPersonnelAssignedTaskQuery.*;
 
@@ -122,9 +123,17 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
     private MapSqlParameterSource getPATQueryParams(PATQueryBuilder queryBuilder) {
         return new MapSqlParameterSource()
                 .addValue("empId", queryBuilder.getEmpId())
+                .addValue("active", queryBuilder.getActive())
                 .addValue("taskType",
                         Optional.ofNullable(queryBuilder.getTaskType()).map(Enum::name).orElse(null))
-                .addValue("taskNumber", queryBuilder.getTaskNumber())
-                .addValue("completed", queryBuilder.getCompleted());
+                .addValue("completed", queryBuilder.getCompleted())
+                .addValue("taskIdsPresent", queryBuilder.getTaskIds() == null)
+                .addValue("taskIds", Optional.ofNullable(queryBuilder.getTaskIds())
+                        .map(taskIds -> taskIds.stream()
+                                .map(tid -> new Object[]{tid.getTaskType().name(), tid.getTaskNumber()})
+                                .collect(Collectors.toList())
+                        )
+                        .orElse(null))
+                ;
     }
 }
