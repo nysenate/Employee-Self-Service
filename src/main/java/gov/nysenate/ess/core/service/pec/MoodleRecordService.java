@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -44,8 +43,9 @@ public class MoodleRecordService implements ESSMoodleRecordService {
     private EmployeeDao employeeDao;
     private PersonnelAssignedTaskDao personnelAssignedTaskDao;
 
-    @Value("${legethics.url:}") String moodleUrl;
-    @Value("${legethics.key:}") String moodleKey;
+    @Value("${legethics.url:}") private String moodleUrl;
+    @Value("${legethics.key:}") private String moodleKey;
+    @Value("${scheduler.moodle.sync.enabled:false}") private boolean moodleSyncEnabled;
 
     @Autowired
     public MoodleRecordService(EmployeeDao employeeDao, PersonnelAssignedTaskDao personnelAssignedTaskDao) {
@@ -107,6 +107,9 @@ public class MoodleRecordService implements ESSMoodleRecordService {
 
     @Scheduled(fixedDelay = 50000, initialDelay = 20000) //Ensure 5 secs from the finish of the previous task before querying again
     public void getUpdatesFromMoodle() throws IOException {
+        if (!moodleSyncEnabled) {
+            return;
+        }
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime pastTime = now.minusMinutes(5);
         JsonNode json = contactMoodleForRecords( pastTime, now, "Senate");

@@ -211,6 +211,9 @@ scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 # Updates travel application values taken from the web
 scheduler.travel.scrape.cron = 0 0 2 * * *
 
+# Determines if scheduled polling of course completion records from moodle is enabled.
+scheduler.moodle.sync.enabled = false
+
 # --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs
