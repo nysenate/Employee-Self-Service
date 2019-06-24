@@ -10,6 +10,8 @@ public enum SimpleTravelPermission {
     TRAVEL_UI_REVIEW("travel:ui:review"),
     // Allowed to browse the application review history page
     TRAVEL_UI_REVIEW_HISTORY("travel:ui:review-history"),
+    // Allowed to browse the assign delegates page
+    TRAVEL_UI_ASSIGN_DELEGATES("travel:ui:assign-delegates"),
     // Allowed to edit at least 1 application. The patch api will check edit permissions at a more granular level.
     // This is necessary because template and JSP permissions are checked on the back end before
     // we know which app is attempting to be edited.

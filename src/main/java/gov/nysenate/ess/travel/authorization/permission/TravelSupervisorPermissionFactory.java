@@ -34,6 +34,7 @@ public class TravelSupervisorPermissionFactory implements PermissionFactory {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
+            permissions.add(SimpleTravelPermission.TRAVEL_UI_ASSIGN_DELEGATES.getPermission());
             permissions.addAll(empGroupPermissions(employee));
         }
         return ImmutableList.copyOf(permissions);

@@ -27,6 +27,7 @@ public class TravelDeaPermissionFactory implements PermissionFactory {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_EDIT_APP.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REQUEST_DISCUSSION.getPermission());
+            permissions.add(SimpleTravelPermission.TRAVEL_UI_ASSIGN_DELEGATES.getPermission());
             permissions.add(new TravelPermissionBuilder()
                     .forAllEmps()
                     .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
