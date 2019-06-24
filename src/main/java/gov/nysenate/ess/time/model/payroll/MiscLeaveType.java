@@ -1,11 +1,9 @@
 package gov.nysenate.ess.time.model.payroll;
 
-import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.util.OutputUtils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +24,9 @@ public enum MiscLeaveType
     SICK_LEAVE_HALF_PAY("S", "Sick Leave With Half Pay", "Sick Leave With Half Pay", false, new BigInteger("191601132010622440761459721125446955144")),
     WITNESS_LEAVE("W", "Witness Leave", "Witness Leave", false, new BigInteger("191601132010618813984000877237922836616")),
     VOL_FIRE_EMERG_MED_ACTIVITY("V", "Vol Fire, Emerg, Med Activ", "Volunteer Fire Fighting and Emergency Medical Leave", false, new BigInteger("191601132010629694316377408900495192200")),
-    EXTENDED_SICK_LEAVE("X", "Extended Sick Leave", "Extended Sick Leave", false, new BigInteger("191601132010617605058181262608748130440"));
+    EXTENDED_SICK_LEAVE("X", "Extended Sick Leave", "Extended Sick Leave", false, new BigInteger("191601132010617605058181262608748130440")),
+    VOTING("T", "Voting", "Voting", false, new BigInteger("186214696577130514392638601662177149240")),
+    ;
 
     String code;
     String shortName;
