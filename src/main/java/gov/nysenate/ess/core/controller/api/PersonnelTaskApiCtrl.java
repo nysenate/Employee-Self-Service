@@ -6,20 +6,28 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.pec.*;
+import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
-import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.pec.*;
+import gov.nysenate.ess.core.service.pec.EmpPATQuery;
+import gov.nysenate.ess.core.service.pec.EmpTaskSearchService;
+import gov.nysenate.ess.core.service.pec.EmployeeTaskSearchResult;
 import gov.nysenate.ess.core.service.pec.PersonnelTaskSource;
+import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.auth.CorePermissionObject.PERSONNEL_TASK;
@@ -33,16 +41,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task")
 public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
+    private static final Pattern taskIdPattern = Pattern.compile("^(?<taskType>[a-zA-Z_]+)-(?<taskNumber>[0-9]+)$");
+
     private final PersonnelTaskSource taskSource;
     private final PersonnelAssignedTaskDao taskDao;
+    private final EmpTaskSearchService empTaskSearchService;
 
     private final Map<Class, PersonnelTaskViewFactory> viewFactoryMap;
 
     public PersonnelTaskApiCtrl(PersonnelTaskSource taskSource,
                                 PersonnelAssignedTaskDao taskDao,
-                                List<PersonnelTaskViewFactory> taskViewFactories) {
+                                EmpTaskSearchService empTaskSearchService, List<PersonnelTaskViewFactory> taskViewFactories) {
         this.taskSource = taskSource;
         this.taskDao = taskDao;
+        this.empTaskSearchService = empTaskSearchService;
         this.viewFactoryMap = Maps.uniqueIndex(taskViewFactories, PersonnelTaskViewFactory::getTaskClass);
     }
 
@@ -60,7 +72,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link ListViewResponse<PersonnelAssignedTaskView>} list of tasks assigned to given emp.
      */
-    @RequestMapping(value = "/emp/{empId}", method = {GET, HEAD})
+    @RequestMapping(value = "/emp/{empId:\\d+}", method = {GET, HEAD})
     public ListViewResponse<PersonnelAssignedTaskView> getTasksForEmployee(
             @PathVariable int empId,
             @RequestParam(defaultValue = "false") boolean detail) {
@@ -114,6 +126,35 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(detailedTaskView, "task");
     }
 
+    /**
+     * Employee Task Search
+     * --------------------
+     *
+     * Search for employees and tasks.
+     *
+     * Usage:
+     * (GET)    /api/v1/personnel/task/emp/search
+     *
+     * Request params:
+     * @see #extractEmpPATQuery(WebRequest) for facet parameters
+     * limit - int - default 10 - limit the number of results
+     * offset - int - default 1 - start the result list from this result.
+     *
+     * @return {@link ViewObjectResponse<PersonnelAssignedTaskView>}
+     */
+    @RequestMapping(value = "/emp/search", method = {GET, HEAD})
+    public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
+        LimitOffset limitOffset = getLimitOffset(request, 10);
+
+        EmpPATQuery empPatQuery = extractEmpPATQuery(request);
+
+        PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPatQuery, limitOffset);
+        List<EmpPATSearchResultView> resultViews = results.getResults().stream()
+                .map(EmpPATSearchResultView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(resultViews, results.getTotal(), limitOffset);
+    }
+
     @ExceptionHandler(PersonnelAssignedTaskNotFoundEx.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     @ResponseBody
@@ -139,6 +180,84 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         }
         PersonnelTaskView taskView = viewFactoryMap.get(taskClass).getView(personnelTask);
         return new DetailPersonnelAssignedTaskView(assignedTask, taskView);
+    }
+
+    /**
+     * Build an {@link EmpPATQuery} from request parameters.
+     *
+     * @see #extractEmpSearchParams(WebRequest)
+     * @see #extractEmpPATQuery(WebRequest)
+     */
+    private EmpPATQuery extractEmpPATQuery(WebRequest request) {
+        return new EmpPATQuery(
+                extractEmpSearchParams(request),
+                extractPATSearchParams(request)
+        );
+    }
+
+    /**
+     * Build an {@link EmployeeSearchBuilder} from request parameters
+     */
+    private EmployeeSearchBuilder extractEmpSearchParams(WebRequest request) {
+        EmployeeSearchBuilder searchBuilder = new EmployeeSearchBuilder();
+
+        searchBuilder.setName(request.getParameter("name"));
+        searchBuilder.setActive(getBooleanParam(request, "empActive", null));
+
+        LocalDate contSrvFrom = Optional.ofNullable(request.getParameter("contSrvFrom"))
+                .map(ds -> parseISODate(ds, "contSrvFrom"))
+                .orElse(null);
+        LocalDate contSrvTo = Optional.ofNullable(request.getParameter("contSrvTo"))
+                .map(ds -> parseISODate(ds, "contSrvTo"))
+                .orElse(null);
+        searchBuilder.setContinuousServiceFrom(contSrvFrom)
+                .setContinuousServiceTo(contSrvTo);
+
+        List<String> respCtrHeadCodes = Optional.ofNullable(request.getParameterValues("respCtrHead"))
+                .map(Arrays::asList)
+                .orElse(Collections.emptyList());
+        searchBuilder.setRespCtrHeadCodes(respCtrHeadCodes);
+
+        return searchBuilder;
+    }
+
+    /**
+     * Build an {@link PATQueryBuilder} from request parameters
+     */
+    private PATQueryBuilder extractPATSearchParams(WebRequest request) {
+        PATQueryBuilder patQueryBuilder = new PATQueryBuilder();
+
+        patQueryBuilder.setEmpId(getIntegerParam(request, "empId", null));
+        patQueryBuilder.setActive(getBooleanParam(request, "taskActive", null));
+        patQueryBuilder.setTaskType(
+                Optional.ofNullable(request.getParameter("taskType"))
+                        .map(ts -> getEnumParameter("taskType", ts, PersonnelTaskType.class))
+                        .orElse(null)
+        );
+        patQueryBuilder.setCompleted(getBooleanParam(request, "completed", null));
+        patQueryBuilder.setTaskIds(
+                Optional.ofNullable(request.getParameterValues("taskId"))
+                        .map(tids -> Arrays.stream(tids)
+                                .map(this::parseTaskId)
+                                .collect(Collectors.toList())
+                        )
+                        .orElse(null)
+        );
+
+        return patQueryBuilder;
+    }
+
+    /**
+     * Parse a {@link PersonnelTaskId} from a parameter string.
+     */
+    private PersonnelTaskId parseTaskId(String idStr) {
+        Matcher matcher = taskIdPattern.matcher(idStr);
+        if (!matcher.matches()) {
+            throw new InvalidRequestParamEx(idStr, "taskId", "personnel-task-id", taskIdPattern.pattern());
+        }
+        PersonnelTaskType taskType = getEnumParameter("taskId", matcher.group("taskType"), PersonnelTaskType.class);
+        int taskNumber = parseIntegerParam("taskId", matcher.group("taskNumber"));
+        return new PersonnelTaskId(taskType, taskNumber);
     }
 
 }

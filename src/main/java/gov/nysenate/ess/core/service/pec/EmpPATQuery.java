@@ -10,27 +10,29 @@ import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
  */
 public class EmpPATQuery {
 
-    private EmployeeSearchBuilder employeeSearchBuilder;
-    private PATQueryBuilder patQueryBuilder;
+    private EmployeeSearchBuilder empQuery;
+    private PATQueryBuilder patQuery;
 
-    public EmpPATQuery(EmployeeSearchBuilder employeeSearchBuilder, PATQueryBuilder patQueryBuilder) {
-        this.employeeSearchBuilder = employeeSearchBuilder;
-        this.patQueryBuilder = patQueryBuilder;
+    protected EmpPATQuery() {}
+
+    public EmpPATQuery(EmployeeSearchBuilder empQuery, PATQueryBuilder patQuery) {
+        this.empQuery = empQuery;
+        this.patQuery = patQuery;
     }
 
-    public EmployeeSearchBuilder getEmployeeSearchBuilder() {
-        return employeeSearchBuilder;
+    public EmployeeSearchBuilder getEmpQuery() {
+        return empQuery;
     }
 
-    public void setEmployeeSearchBuilder(EmployeeSearchBuilder employeeSearchBuilder) {
-        this.employeeSearchBuilder = employeeSearchBuilder;
+    public void setEmpQuery(EmployeeSearchBuilder empQuery) {
+        this.empQuery = empQuery;
     }
 
-    public PATQueryBuilder getPatQueryBuilder() {
-        return patQueryBuilder;
+    public PATQueryBuilder getPatQuery() {
+        return patQuery;
     }
 
-    public void setPatQueryBuilder(PATQueryBuilder patQueryBuilder) {
-        this.patQueryBuilder = patQueryBuilder;
+    public void setPatQuery(PATQueryBuilder patQuery) {
+        this.patQuery = patQuery;
     }
 }

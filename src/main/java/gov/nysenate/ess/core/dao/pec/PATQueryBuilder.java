@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -56,7 +57,9 @@ public class PATQueryBuilder {
     }
 
     public PATQueryBuilder setTaskIds(Collection<PersonnelTaskId> taskIds) {
-        this.taskIds = ImmutableSet.copyOf(taskIds);
+        this.taskIds = Optional.ofNullable(taskIds)
+                .map(ImmutableSet::copyOf)
+                .orElse(null);
         return this;
     }
 

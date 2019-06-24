@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.personnel;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,8 +32,8 @@ public class EmployeeSearchBuilder {
         return this;
     }
 
-    public EmployeeSearchBuilder setRespCtrHeadCodes(Set<String> respCtrHeadCodes) {
-        this.respCtrHeadCodes = respCtrHeadCodes;
+    public EmployeeSearchBuilder setRespCtrHeadCodes(Collection<String> respCtrHeadCodes) {
+        this.respCtrHeadCodes = new HashSet<>(respCtrHeadCodes);
         return this;
     }
 

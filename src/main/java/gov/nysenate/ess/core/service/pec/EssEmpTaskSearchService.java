@@ -25,6 +25,8 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
 
     private static final Logger logger = LoggerFactory.getLogger(EssEmpTaskSearchService.class);
 
+    private static final LocalDate placeholderContSrvDate = LocalDate.of(1995, 1, 1);
+
     private final EmployeeInfoService employeeInfoService;
     private final PersonnelAssignedTaskDao patDao;
 
@@ -37,11 +39,11 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
     public PaginatedList<EmployeeTaskSearchResult> searchForEmpTasks(EmpPATQuery query, LimitOffset limitOffset) {
 
         logger.info("Searching tasks");
-        List<PersonnelAssignedTask> tasks = patDao.getTasks(query.getPatQueryBuilder());
+        List<PersonnelAssignedTask> tasks = patDao.getTasks(query.getPatQuery());
         ImmutableListMultimap<Integer, PersonnelAssignedTask> empTaskMap =
                 Multimaps.index(tasks, PersonnelAssignedTask::getEmpId);
 
-        EmployeeSearchBuilder esb = query.getEmployeeSearchBuilder();
+        EmployeeSearchBuilder esb = query.getEmpQuery();
 
         logger.info("Getting emps");
         List<EmployeeTaskSearchResult> resultList = empTaskMap.asMap().entrySet().stream()
@@ -74,7 +76,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         }
         if (searchBuilder.getName() != null) {
             String resultSearchString = normalizeSearchString(
-                    employee.getLastName() + " " + employee.getFirstName());
+                    employee.getLastName() + " " + employee.getFirstName() + " " + employee.getInitial());
             String querySearchString = normalizeSearchString(searchBuilder.getName());
             if (!resultSearchString.contains(querySearchString)) {
                 return false;
@@ -86,12 +88,16 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
             LocalDate toDate = Optional.ofNullable(searchBuilder.getContinuousServiceTo())
                     .orElse(DateUtils.THE_FUTURE);
             Range<LocalDate> dateRange = Range.closed(fromDate, toDate);
-            if (!dateRange.contains(employee.getSenateContServiceDate())) {
+            LocalDate senateContServiceDate = Optional.ofNullable(employee.getSenateContServiceDate())
+                    .orElse(placeholderContSrvDate);
+            if (!dateRange.contains(senateContServiceDate)) {
                 return false;
             }
         }
         return true;
     }
+
+
 
     private String normalizeSearchString(String searchString) {
         return searchString.replaceAll("[^a-zA-Z ]", "")
