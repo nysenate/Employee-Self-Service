@@ -12,12 +12,12 @@
 
   <div class="content-container">
     <div class="content-info travel-text-bold">
-      Active Delegates
+      Current Delegates
     </div>
 
     <div class="padding-10 text-align-center">
       <div ng-show="vm.activeDelegates.length < 1">
-        <h2 class="dark-gray">No Active Delegates.</h2>
+        <h2 class="dark-gray">No Current Delegates.</h2>
       </div>
 
       <div ng-show="vm.activeDelegates.length > 0">
@@ -34,11 +34,11 @@
           <tr ng-repeat="d in vm.activeDelegates">
             <td ng-click="vm.deleteDelegate($index)" class="icon-cross" style="font-size: 18px; cursor: pointer;"></td>
             <td style="width: 250px;">
-              <span ng-show="d.fullName == undefined">
-                <select ng-model="d.fullName" ng-options="name for name in vm.possibleDelegates"></select>
+              <span ng-show="d.delegate == undefined">
+                <select ng-model="d.delegate" ng-options="emp.fullName for emp in vm.possibleDelegates"></select>
               </span>
-              <span ng-show="d.fullName != undefined">
-                {{::d.fullName}}
+              <span ng-show="d.delegate != undefined">
+                {{::d.delegate.fullName}}
               </span>
             </td>
             <td>
@@ -88,7 +88,7 @@
           </thead>
           <tbody>
           <tr ng-repeat="d in vm.pastDelegates | orderBy: endDate" class="travel-text">
-            <td ng-bind="::d.fullName"></td>
+            <td ng-bind="::d.delegate.fullName"></td>
             <td ng-bind="::d.startDate"></td>
             <td ng-bind="::d.endDate"></td>
           </tr>

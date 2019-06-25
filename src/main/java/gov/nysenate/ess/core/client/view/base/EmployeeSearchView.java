@@ -13,6 +13,9 @@ public class EmployeeSearchView implements ViewObject {
     protected boolean senator;
     protected boolean active;
 
+    public EmployeeSearchView() {
+    }
+
     public EmployeeSearchView(Employee employee) {
         this.empId = employee.getEmployeeId();
         this.firstName = employee.getFirstName();

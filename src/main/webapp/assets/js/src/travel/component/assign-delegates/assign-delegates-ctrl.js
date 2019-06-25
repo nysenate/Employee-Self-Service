@@ -1,9 +1,9 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('AssignDelegatesCtrl',
-                     ['$scope', assignDelegates]);
+                     ['$scope', 'appProps', 'DelegateApi', 'ActiveEmployeeApi', assignDelegates]);
 
-function assignDelegates($scope) {
+function assignDelegates($scope, appProps, delegateApi, empApi) {
 
     const DATEPICKER_FORMAT = "MM/DD/YYYY";
 
@@ -11,17 +11,24 @@ function assignDelegates($scope) {
     vm.possibleDelegates = [];
 
     (function () {
-        vm.activeDelegates = queryActiveDelegates();
-        vm.possibleDelegates = queryPossibleDelegates();
+        queryActiveDelegates();
+        queryPossibleDelegates();
         vm.pastDelegates = queryPastDelegates();
     })();
 
     function queryActiveDelegates() {
-        return [];
+        delegateApi.findDelegatesByPrincipalId(appProps.user.employeeId).$promise
+            .then(function (response) {
+                vm.activeDelegates = response.result;
+        })
     }
 
     function queryPossibleDelegates() {
-        return ["Sam S", "Anthony C", "Kevin C"]
+        empApi.get({activeOnly: true}).$promise
+            .then(function (response) {
+                vm.possibleDelegates = response.employees;
+                console.log(vm.possibleDelegates);
+            });
     }
 
     function queryPastDelegates() {
@@ -60,11 +67,15 @@ function assignDelegates($scope) {
     };
 
     vm.saveDelegates = function () {
-        // TODO Implement when backend is done.
+        delegateApi.saveDelegates(vm.activeDelegates).$promise
+            .then(function (response) {
+                // Update activeDelegates from the response so id's are updated.
+                vm.activeDelegates = response.result;
+            });
     };
 
     function Delegate () {
-        this.fullName = undefined;
+        this.delegate = undefined;
         this.useStartDate = false;
         this.startDate = undefined;
         this.endDate = undefined;
