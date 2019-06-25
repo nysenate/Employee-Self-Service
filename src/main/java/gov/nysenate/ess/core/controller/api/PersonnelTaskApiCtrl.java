@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
+import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.*;
 import gov.nysenate.ess.core.service.pec.*;
@@ -143,6 +144,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "/emp/search", method = {GET, HEAD})
     public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
+
+        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
+
         LimitOffset limitOffset = getLimitOffset(request, 10);
 
         EmpPATQuery empPatQuery = extractEmpPATQuery(request);
