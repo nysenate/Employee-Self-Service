@@ -199,22 +199,22 @@ public class BaseRestApiCtrl
      */
     protected <T extends Enum<T>> T getEnumParameter(String paramName, String paramValue, Class<T> enumType)
             throws InvalidRequestParamEx {
-        T result = getEnumParameter(paramValue, enumType, null);
-        if (result == null) {
-            throw getEnumParamEx(enumType, Enum::toString, paramName, paramValue);
-        }
-        return result;
-    }
-    /**
-     * Attempts to map the given request parameter to an enum by finding an enum instance whose name matches the parameter
-     * returns a default value if no such enum was found
-     */
-    protected <T extends Enum<T>> T getEnumParameter(String paramValue, Class<T> enumType, T defaultValue) {
         try {
             return T.valueOf(enumType, StringUtils.upperCase(paramValue));
         } catch (IllegalArgumentException | NullPointerException ex) {
+            throw getEnumParamEx(enumType, Enum::toString, paramName, paramValue);
+        }
+    }
+    /**
+     * Attempts to map the given request parameter to an enum by finding an enum instance whose name matches the parameter
+     * returns a default value if null.
+     */
+    protected <T extends Enum<T>> T getEnumParameter(String paramName, String paramValue,
+                                                     Class<T> enumType, T defaultValue) {
+        if (paramValue == null) {
             return defaultValue;
         }
+        return getEnumParameter(paramName, paramValue, enumType);
     }
 
     /**

@@ -11,11 +11,13 @@ import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +28,9 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
     private static final Logger logger = LoggerFactory.getLogger(EssEmpTaskSearchService.class);
 
     private static final LocalDate placeholderContSrvDate = LocalDate.of(1995, 1, 1);
+
+    private static final Comparator<EmployeeTaskSearchResult> defaultComparator =
+            EmpTaskOrderBy.NAME.getComparator();
 
     private final EmployeeInfoService employeeInfoService;
     private final PersonnelAssignedTaskDao patDao;
@@ -53,12 +58,15 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
                 ))
                 .collect(Collectors.toList());
 
-        logger.info("Filtering emps");
+        Comparator<EmployeeTaskSearchResult> comparator = getComparator(query.getSortDirectives());
+
+        logger.info("Filtering/sorting emps");
         resultList = resultList.stream()
                 .filter(etsr -> empMatchesQuery(etsr, esb))
+                .sorted(comparator)
                 .collect(Collectors.toList());
 
-        logger.info("Limiting List");
+        logger.info("limiting results");
         List<EmployeeTaskSearchResult> limitedResultList = LimitOffset.limitList(resultList, limitOffset);
 
         return new PaginatedList<>(resultList.size(), limitOffset, limitedResultList);
@@ -97,13 +105,38 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
         return true;
     }
 
-
-
     private String normalizeSearchString(String searchString) {
         return searchString.replaceAll("[^a-zA-Z ]", "")
                 .trim()
                 .replaceAll(" +", " ")
                 .toLowerCase();
+    }
+
+    /**
+     * Generate a result comparator by chaining the comparators of the given sort directives.
+     *
+     * Return a default comparator if no sort directives are passed in.
+     *
+     * @param sortDirectives {@link List<EmpTaskSort>}
+     * @return {@link Comparator<EmployeeTaskSearchResult>}
+     */
+    private Comparator<EmployeeTaskSearchResult> getComparator(List<EmpTaskSort> sortDirectives) {
+        if (sortDirectives == null || sortDirectives.isEmpty()) {
+            return defaultComparator;
+        }
+        Comparator<EmployeeTaskSearchResult> overallComparator = null;
+        for (EmpTaskSort sort : sortDirectives) {
+            Comparator<EmployeeTaskSearchResult> comparator = sort.getOrderBy().getComparator();
+            if (sort.getSortOrder() == SortOrder.DESC) {
+                comparator = comparator.reversed();
+            }
+            if (overallComparator == null) {
+                overallComparator = comparator;
+            } else {
+                overallComparator = overallComparator.thenComparing(comparator);
+            }
+        }
+        return overallComparator;
     }
 
 }

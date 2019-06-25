@@ -8,8 +8,6 @@ import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
 import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
@@ -23,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static gov.nysenate.ess.core.util.SortOrder.ASC;
+import static gov.nysenate.ess.core.util.SortOrder.DESC;
 
 @Category(SillyTest.class)
 public class EssEmpTaskSearchServiceTest extends BaseTest {
@@ -40,13 +41,14 @@ public class EssEmpTaskSearchServiceTest extends BaseTest {
     @Test
     public void speedTest() {
         EmployeeSearchBuilder esb = new EmployeeSearchBuilder();
-        PATQueryBuilder pqb = new PATQueryBuilder()
-                .setTaskIds(Arrays.asList(
-                        new PersonnelTaskId(PersonnelTaskType.MOODLE_COURSE, 1),
-                        new PersonnelTaskId(PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT,4),
-                        new PersonnelTaskId(PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT,1)
-                ));
-        EmpPATQuery query = new EmpPATQuery(esb, pqb);
+        PATQueryBuilder pqb = new PATQueryBuilder();
+        EmpTaskOrderBy orderBy = EmpTaskOrderBy.NAME;
+        List<EmpTaskSort> sortDirectives = Arrays.asList(
+                new EmpTaskSort(EmpTaskOrderBy.COMPLETED, DESC),
+//                new EmpTaskSort(EmpTaskOrderBy.OFFICE, DESC),
+                new EmpTaskSort(EmpTaskOrderBy.NAME, ASC)
+        );
+        EmpPATQuery query = new EmpPATQuery(esb, pqb, sortDirectives);
         Stopwatch sw = Stopwatch.createStarted();
         PaginatedList<EmployeeTaskSearchResult> result = taskSearchService.searchForEmpTasks(query, LimitOffset.ALL);
         List<EmployeeTaskSearchResult> results = result.getResults();

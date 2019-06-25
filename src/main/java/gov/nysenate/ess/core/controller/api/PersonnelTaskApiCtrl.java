@@ -12,13 +12,11 @@ import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.*;
-import gov.nysenate.ess.core.service.pec.EmpPATQuery;
-import gov.nysenate.ess.core.service.pec.EmpTaskSearchService;
-import gov.nysenate.ess.core.service.pec.EmployeeTaskSearchResult;
-import gov.nysenate.ess.core.service.pec.PersonnelTaskSource;
+import gov.nysenate.ess.core.service.pec.*;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -42,6 +40,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
     private static final Pattern taskIdPattern = Pattern.compile("^(?<taskType>[a-zA-Z_]+)-(?<taskNumber>[0-9]+)$");
+    private static final Pattern sortPattern = Pattern.compile("^(?<orderBy>[a-zA-Z_]+):(?<sortOrder>[a-zA-Z]+)$");
 
     private final PersonnelTaskSource taskSource;
     private final PersonnelAssignedTaskDao taskDao;
@@ -191,7 +190,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     private EmpPATQuery extractEmpPATQuery(WebRequest request) {
         return new EmpPATQuery(
                 extractEmpSearchParams(request),
-                extractPATSearchParams(request)
+                extractPATSearchParams(request),
+                extractSortDirectives(request)
         );
     }
 
@@ -258,6 +258,33 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         PersonnelTaskType taskType = getEnumParameter("taskId", matcher.group("taskType"), PersonnelTaskType.class);
         int taskNumber = parseIntegerParam("taskId", matcher.group("taskNumber"));
         return new PersonnelTaskId(taskType, taskNumber);
+    }
+
+    /**
+     * Extract sort directives from request params.
+     */
+    private List<EmpTaskSort> extractSortDirectives(WebRequest request) {
+        String[] sorts = request.getParameterValues("sort");
+        if (sorts == null) {
+            return null;
+        }
+        return Arrays.stream(sorts)
+                .map(this::parseEmpTaskSort)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Parse a sort directive from a sort string
+     */
+    private EmpTaskSort parseEmpTaskSort(String sortStr) {
+        Matcher matcher = sortPattern.matcher(sortStr);
+        if (!matcher.matches()) {
+            throw new InvalidRequestParamEx(sortStr, "sort", "sort",
+                    sortPattern.pattern());
+        }
+        EmpTaskOrderBy orderBy = getEnumParameter("sort", matcher.group("orderBy"), EmpTaskOrderBy.class);
+        SortOrder sortOrder = getEnumParameter("sort", matcher.group("sortOrder"), SortOrder.class);
+        return new EmpTaskSort(orderBy, sortOrder);
     }
 
 }
