@@ -58,6 +58,23 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         this.viewFactoryMap = Maps.uniqueIndex(taskViewFactories, PersonnelTaskViewFactory::getTaskClass);
     }
 
+    /** Get Tasks API
+     * --------------
+     *
+     * Get a list of all personnel tasks.
+     *
+     * @return {@link ListViewResponse<PersonnelTaskView>}
+     */
+    @RequestMapping(value = "", method = {GET, HEAD})
+    public ListViewResponse<PersonnelTaskView> getTasks() {
+        return ListViewResponse.of(
+                taskSource.getActivePersonnelTasks().stream()
+                        .map(this::getPersonnelTaskView)
+                        .collect(Collectors.toList()),
+                "tasks"
+        );
+    }
+
     /**
      * Get Tasks for Emp API
      * ---------------------
@@ -174,15 +191,21 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Generate a detailed task view from the given task.
      * This involves loading task details and packinging it with the task.
      */
-    @SuppressWarnings("unchecked")
     private DetailPersonnelAssignedTaskView getDetailedTaskView(PersonnelAssignedTask assignedTask) {
         PersonnelTask personnelTask = taskSource.getPersonnelTask(assignedTask.getTaskId());
+        PersonnelTaskView taskView = getPersonnelTaskView(personnelTask);
+        return new DetailPersonnelAssignedTaskView(assignedTask, taskView);
+    }
+
+
+    /** Generate a task view for the given task */
+    @SuppressWarnings("unchecked")
+    private PersonnelTaskView getPersonnelTaskView(PersonnelTask personnelTask) {
         Class<? extends PersonnelTask> taskClass = personnelTask.getClass();
         if (!viewFactoryMap.containsKey(taskClass)) {
             throw new IllegalArgumentException("No view factory exists for PersonnelTasks of class: " + taskClass.getName());
         }
-        PersonnelTaskView taskView = viewFactoryMap.get(taskClass).getView(personnelTask);
-        return new DetailPersonnelAssignedTaskView(assignedTask, taskView);
+        return viewFactoryMap.get(taskClass).getView(personnelTask);
     }
 
     /**
