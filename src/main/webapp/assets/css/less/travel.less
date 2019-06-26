@@ -117,6 +117,22 @@ h2.travel-subheader {
   }
 }
 
+.travel-notification {
+  background: lighten(@green, 10%);
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 5px;
+  position: absolute;
+  // Fade in and out
+  &.ng-hide {
+    opacity: 0;
+  }
+  &.ng-hide-add {
+    transition: all linear 0.75s
+  }
+}
+
 /**
   * Validation
  */

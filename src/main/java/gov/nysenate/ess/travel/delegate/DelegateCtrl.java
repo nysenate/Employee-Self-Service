@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 public class DelegateCtrl extends BaseRestApiCtrl {
 
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private SqlDelegateDao delegateDao;
+    @Autowired private DelegateDao delegateDao;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse searchDelegate(@RequestParam int principalId) {
         // TODO Check permissions
-        List<Delegate> delegates = delegateDao.selectDelegates(principalId, LocalDate.now());
+        List<Delegate> delegates = delegateDao.activeDelegates(principalId, LocalDate.now());
         return delegateListResponse(delegates);
     }
 
@@ -45,7 +45,7 @@ public class DelegateCtrl extends BaseRestApiCtrl {
             delegates.add(new Delegate(id, principal, delegate, startDate, endDate));
         }
 
-        delegateDao.saveDelegate(delegates);
+        delegateDao.saveDelegates(delegates);
 
         return delegateListResponse(delegates);
     }
@@ -53,6 +53,4 @@ public class DelegateCtrl extends BaseRestApiCtrl {
     private ListViewResponse<DelegateView> delegateListResponse(List<Delegate> delegates) {
         return ListViewResponse.of(delegates.stream().map(DelegateView::new).collect(Collectors.toList()));
     }
-
-    // TODO Method to delete a delegate
 }

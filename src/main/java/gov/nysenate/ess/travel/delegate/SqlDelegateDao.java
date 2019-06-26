@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.delegate;
 
+import com.google.common.base.Preconditions;
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class SqlDelegateDao extends SqlBaseDao {
+public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
 
     private EmployeeInfoService employeeInfoService;
 
@@ -27,7 +29,17 @@ public class SqlDelegateDao extends SqlBaseDao {
         this.employeeInfoService = employeeInfoService;
     }
 
-    public List<Delegate> selectDelegates(int principalId, LocalDate date) {
+    /**
+     * Select delegates assigned by the given principalId which are active on date.
+     * In this case, active includes delegates which have been entered but have not started yet (i.e. startDate > date)
+     * Delegates are inactive if their end date has passed (i.e. endDate < date)
+     *
+     * @param principalId The employeeId of the principal employee.
+     * @param date        Returns delegates which have not expired as of this date.
+     * @return
+     */
+    @Override
+    public List<Delegate> activeDelegates(int principalId, LocalDate date) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("principalId", principalId)
                 .addValue("date", toDate(date.plusDays(1))); // Add one day so we can do > instead of > or = in sql query.
@@ -36,15 +48,33 @@ public class SqlDelegateDao extends SqlBaseDao {
         return localNamedJdbc.query(sql, params, mapper);
     }
 
-    public void saveDelegate(List<Delegate> delegates) {
+    /**
+     * Saves a collection of delegates for a single Principal employee.
+     * All delegates should have the same principal Employee.
+     */
+    @Override
+    @Transactional(value = "localTxManager")
+    public void saveDelegates(List<Delegate> delegates) {
+        if (delegates == null || delegates.isEmpty()) {
+            return;
+        }
+        int principalId = delegates.get(0).principal.getEmployeeId();
+        Preconditions.checkArgument(delegates.stream().allMatch(d -> d.principal.getEmployeeId() == principalId));
+
+        deletePrincipalDelegates(principalId);
         for (Delegate d : delegates) {
-            if (!insertDelegate(d)) {
-                updateDelegate(d);
-            }
+            insertDelegate(d);
         }
     }
 
-    private boolean insertDelegate(Delegate delegate) {
+    private void deletePrincipalDelegates(int principalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("principalId", principalId);
+        String sql = SqlDelegateQuery.DELETE_DELEGATES_FOR_PRINCIPAL.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
+    }
+
+    private void insertDelegate(Delegate delegate) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("principalEmpId", delegate.principal.getEmployeeId())
                 .addValue("delegateEmpId", delegate.delegate.getEmployeeId())
@@ -52,22 +82,9 @@ public class SqlDelegateDao extends SqlBaseDao {
                 .addValue("endDate", toDate(delegate.endDate));
         String sql = SqlDelegateQuery.INSERT_DELEGATE.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        boolean success = localNamedJdbc.update(sql, params, keyHolder) == 1;
-        if (success) {
-            delegate.id = (Integer) keyHolder.getKeys().get("delegate_id");
-            return true;
-        } else {
-            return false;
-        }
+        localNamedJdbc.update(sql, params, keyHolder);
+        delegate.id = (Integer) keyHolder.getKeys().get("delegate_id");
     }
-
-    private void updateDelegate(Delegate delegate) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("delegateId", delegate.id);
-        String sql = SqlDelegateQuery.UPDATE_DELEGATE.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
-    }
-
 
     private enum SqlDelegateQuery implements BasicSqlQuery {
         SELECT_DELEGATES(
@@ -80,9 +97,8 @@ public class SqlDelegateDao extends SqlBaseDao {
                 "INSERT INTO ${travelSchema}.delegate(principal_emp_id, delegate_emp_id, start_date, end_date)\n" +
                         " VALUES(:principalEmpId, :delegateEmpId, :startDate, :endDate)"
         ),
-        UPDATE_DELEGATE(
-                "UPDATE ${travelSchema}.delegate SET start_date = :startDate, end_date = :endDate\n" +
-                        " WHERE delegate_id = :delegateId"
+        DELETE_DELEGATES_FOR_PRINCIPAL(
+                "DELETE FROM ${travelSchema}.delegate WHERE principal_emp_id = :principalId"
         );
 
         private String sql;

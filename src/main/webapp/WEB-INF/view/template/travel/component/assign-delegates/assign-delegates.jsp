@@ -63,40 +63,11 @@
                ng-click="vm.addNewDelegate()">
         <input type="button" class="submit-button" value="Save Delegates"
                ng-click="vm.saveDelegates()">
+        <span class="travel-notification margin-left-10" style="position:absolute;"
+              ng-show="vm.displaySavedMessage">
+          Delegates saved
+        </span>
       </div>
     </div>
   </div>
-
-  <div class="content-container">
-    <div class="travel-content-info travel-text-bold">
-      Delegate History
-    </div>
-
-    <div class="padding-10 text-align-center">
-      <div ng-show="vm.pastDelegates.length < 1">
-        <h2 class="dark-gray">No Delegate History.</h2>
-      </div>
-
-      <div ng-show="vm.pastDelegates.length > 0">
-        <table class="travel-table">
-          <thead>
-          <tr>
-            <th>Employee Name</th>
-            <th>Activated Date</th>
-            <th>Deactivated Date</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr ng-repeat="d in vm.pastDelegates | orderBy: endDate" class="travel-text">
-            <td ng-bind="::d.delegate.fullName"></td>
-            <td ng-bind="::d.startDate"></td>
-            <td ng-bind="::d.endDate"></td>
-          </tr>
-          </tbody>
-        </table>
-
-      </div>
-    </div>
-  </div>
-
 </div>

@@ -1,19 +1,21 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('AssignDelegatesCtrl',
-                     ['$scope', 'appProps', 'DelegateApi', 'ActiveEmployeeApi', assignDelegates]);
+                     ['$scope', '$timeout', 'appProps', 'DelegateApi', 'ActiveEmployeeApi', assignDelegates]);
 
-function assignDelegates($scope, appProps, delegateApi, empApi) {
+function assignDelegates($scope, $timeout, appProps, delegateApi, empApi) {
 
     const DATEPICKER_FORMAT = "MM/DD/YYYY";
 
     var vm = this;
-    vm.possibleDelegates = [];
+    vm.displaySavedMessage = false;
 
     (function () {
+        vm.activeDelegates = [];
+        vm.possibleDelegates = [];
+
         queryActiveDelegates();
         queryPossibleDelegates();
-        vm.pastDelegates = queryPastDelegates();
     })();
 
     function queryActiveDelegates() {
@@ -27,19 +29,26 @@ function assignDelegates($scope, appProps, delegateApi, empApi) {
         empApi.get({activeOnly: true}).$promise
             .then(function (response) {
                 vm.possibleDelegates = response.employees;
-                console.log(vm.possibleDelegates);
             });
     }
 
-    function queryPastDelegates() {
-        return [
-            {
-                fullName: "Kevin C",
-                startDate: "2019/01/01",
-                endDate: "2019/04/01"
-            }
-        ];
-    }
+    vm.addNewDelegate = function () {
+        vm.activeDelegates.push(new Delegate());
+    };
+
+    vm.deleteDelegate = function (index) {
+        vm.activeDelegates.splice(index, 1);
+    };
+
+    vm.saveDelegates = function () {
+        delegateApi.saveDelegates(vm.activeDelegates).$promise
+            .then(function (response) {
+                vm.displaySavedMessage = true;
+                $timeout(function() {
+                    vm.displaySavedMessage = false;
+                }, 1500);
+            });
+    };
 
     vm.useStartDate = function (delegate) {
         if (delegate.useStartDate === true) {
@@ -57,27 +66,12 @@ function assignDelegates($scope, appProps, delegateApi, empApi) {
         }
     };
 
-    vm.addNewDelegate = function () {
-        vm.activeDelegates.push(new Delegate());
-        console.log(vm.activeDelegates);
-    };
-
-    vm.deleteDelegate = function (index) {
-        vm.activeDelegates.splice(index, 1);
-    };
-
-    vm.saveDelegates = function () {
-        delegateApi.saveDelegates(vm.activeDelegates).$promise
-            .then(function (response) {
-                // Update activeDelegates from the response so id's are updated.
-                vm.activeDelegates = response.result;
-            });
-    };
-
     function Delegate () {
+        this.id = 0;
         this.delegate = undefined;
         this.useStartDate = false;
         this.startDate = undefined;
+        this.useEndDate = false;
         this.endDate = undefined;
     }
 }

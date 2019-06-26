@@ -2,10 +2,11 @@ angular.module('essTravel').factory('DelegateApi', [
     '$resource', 'appProps', 'RestErrorService',
     function ($resource, appProps, restErrorService) {
 
-        var saveDelegatesApi = $resource(appProps.apiPath + '/travel/delegate',
+        var delegatePath = '/travel/delegate';
+        var saveDelegatesApi = $resource(appProps.apiPath + delegatePath,
                                          {},
                                          {save: {method: 'POST', cancellable: true}});
-        var searchDelegatesApi = $resource(appProps.apiPath + '/travel/delegate');
+        var searchDelegatesApi = $resource(appProps.apiPath + delegatePath);
 
         var delegateApi = {};
 
