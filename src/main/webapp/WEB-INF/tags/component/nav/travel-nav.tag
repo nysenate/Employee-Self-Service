@@ -28,7 +28,7 @@
         <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermissionString() %>">
           <li class="sub-topic orange"><a href="${ctxPath}/travel/review/history">Review History</a></li>
         </shiro:hasPermission>
-        <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermissionString() %>">
+        <shiro:hasPermission name="<%= SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermissionString() %>">
           <li class="sub-topic orange"><a href="${ctxPath}/travel/delegates">Assign Delegates</a></li>
         </shiro:hasPermission>
       </ul>

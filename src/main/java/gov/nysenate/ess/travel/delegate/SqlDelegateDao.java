@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
@@ -42,7 +44,7 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
     public List<Delegate> activeDelegates(int principalId, LocalDate date) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("principalId", principalId)
-                .addValue("date", toDate(date.plusDays(1))); // Add one day so we can do > instead of > or = in sql query.
+                .addValue("date", toDate(date));
         String sql = SqlDelegateQuery.SELECT_DELEGATES.getSql(schemaMap());
         RowMapper mapper = new DelegateRowMapper(employeeInfoService);
         return localNamedJdbc.query(sql, params, mapper);
@@ -54,16 +56,36 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
      */
     @Override
     @Transactional(value = "localTxManager")
-    public void saveDelegates(List<Delegate> delegates) {
-        if (delegates == null || delegates.isEmpty()) {
+    public void saveDelegates(List<Delegate> delegates, int principalId) {
+        if (delegates == null) {
             return;
         }
-        int principalId = delegates.get(0).principal.getEmployeeId();
         Preconditions.checkArgument(delegates.stream().allMatch(d -> d.principal.getEmployeeId() == principalId));
 
         deletePrincipalDelegates(principalId);
         for (Delegate d : delegates) {
             insertDelegate(d);
+        }
+    }
+
+    /**
+     * Finds a delegate by delegate emp id.
+     * A user should only ever be assigned as a delegate for a single reviewer at a time so this
+     * only returns one Delegate object.
+     * @param delegateEmpId
+     * @param date
+     * @return
+     */
+    @Override
+    public Optional<Delegate> delegateAssignedToEmp(int delegateEmpId, LocalDate date) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("delegateEmpId", delegateEmpId)
+                .addValue("date", toDate(date));
+        String sql = SqlDelegateQuery.SELECT_DELEGATE_ASSIGNMENT.getSql(schemaMap());
+        try {
+            return Optional.of(localNamedJdbc.queryForObject(sql, params, new DelegateRowMapper(employeeInfoService)));
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return Optional.empty();
         }
     }
 
@@ -91,7 +113,7 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
                 "SELECT delegate_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
                         " FROM ${travelSchema}.delegate\n" +
                         " WHERE principal_emp_id = :principalId\n" +
-                        " AND end_date > :date"
+                        " AND end_date > :date OR end_date = :date"
         ),
         INSERT_DELEGATE(
                 "INSERT INTO ${travelSchema}.delegate(principal_emp_id, delegate_emp_id, start_date, end_date)\n" +
@@ -99,6 +121,13 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
         ),
         DELETE_DELEGATES_FOR_PRINCIPAL(
                 "DELETE FROM ${travelSchema}.delegate WHERE principal_emp_id = :principalId"
+        ),
+        SELECT_DELEGATE_ASSIGNMENT(
+                "SELECT delegate_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
+                        " FROM ${travelSchema}.delegate\n" +
+                        " WHERE delegate_emp_id = :delegateEmpId\n" +
+                        " AND (start_date < :date OR start_date = :date)\n" +
+                        " AND (end_date > :date OR end_date = :date)"
         );
 
         private String sql;

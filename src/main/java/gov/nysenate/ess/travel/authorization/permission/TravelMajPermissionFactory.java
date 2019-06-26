@@ -22,7 +22,10 @@ public class TravelMajPermissionFactory implements PermissionFactory {
             permissions.add(SimpleTravelPermission.TRAVEL_UI_MANAGE.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW.getPermission());
             permissions.add(SimpleTravelPermission.TRAVEL_UI_REVIEW_HISTORY.getPermission());
-            permissions.add(SimpleTravelPermission.TRAVEL_UI_ASSIGN_DELEGATES.getPermission());
+            if (!roles.contains(TravelRole.DELEGATE)) {
+                // Delegates do not get permission to modify delegates.
+                permissions.add(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
+            }
             permissions.add(new TravelPermissionBuilder()
                     .forAllEmps()
                     .forObject(TravelPermissionObject.TRAVEL_APPLICATION)

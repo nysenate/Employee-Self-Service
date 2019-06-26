@@ -35,7 +35,7 @@
             <td ng-click="vm.deleteDelegate($index)" class="icon-cross" style="font-size: 18px; cursor: pointer;"></td>
             <td style="width: 250px;">
               <span ng-show="d.delegate == undefined">
-                <select ng-model="d.delegate" ng-options="emp.fullName for emp in vm.possibleDelegates"></select>
+                <select ng-model="d.delegate" ng-options="emp.fullName for emp in vm.possibleDelegates | orderBy: 'fullName'"></select>
               </span>
               <span ng-show="d.delegate != undefined">
                 {{::d.delegate.fullName}}

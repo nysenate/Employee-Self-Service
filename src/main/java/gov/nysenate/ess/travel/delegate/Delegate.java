@@ -24,6 +24,10 @@ public class Delegate {
         this(0, principal, delegate, startDate, endDate);
     }
 
+    public Employee principal() {
+        return principal;
+    }
+
     public boolean isActive() {
         return Range.closed(startDate, endDate).contains(LocalDate.now());
     }

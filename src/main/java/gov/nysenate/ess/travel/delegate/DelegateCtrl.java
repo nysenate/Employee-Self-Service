@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.DateUtils;
+import gov.nysenate.ess.travel.authorization.permission.SimpleTravelPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,14 +24,16 @@ public class DelegateCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse searchDelegate(@RequestParam int principalId) {
-        // TODO Check permissions
+        checkPermission(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
+
         List<Delegate> delegates = delegateDao.activeDelegates(principalId, LocalDate.now());
         return delegateListResponse(delegates);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public BaseResponse saveDelegates(@RequestBody List<DelegateView> delegateViews) {
-        // TODO Check permissions
+        checkPermission(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
+
         List<Delegate> delegates = new ArrayList<>();
         Employee principal = employeeInfoService.getEmployee(getSubjectEmployeeId());
         for (DelegateView view : delegateViews) {
@@ -44,9 +47,7 @@ public class DelegateCtrl extends BaseRestApiCtrl {
             LocalDate endDate = view.useEndDate ? view.endDate() : DateUtils.THE_FUTURE;
             delegates.add(new Delegate(id, principal, delegate, startDate, endDate));
         }
-
-        delegateDao.saveDelegates(delegates);
-
+        delegateDao.saveDelegates(delegates, principal.getEmployeeId());
         return delegateListResponse(delegates);
     }
 
