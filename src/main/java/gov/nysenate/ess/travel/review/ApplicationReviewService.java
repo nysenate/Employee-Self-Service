@@ -54,7 +54,7 @@ public class ApplicationReviewService {
     }
 
     public ApplicationReview getApplicationReview(int appReviewId) {
-        return appReviewDao.selectAppReviewsById(appReviewId);
+        return appReviewDao.selectAppReviewById(appReviewId);
     }
 
     public void saveApplicationReview(ApplicationReview appReview) {
@@ -76,8 +76,8 @@ public class ApplicationReviewService {
         return pendingReviews;
     }
 
-    public List<ApplicationReview> appReviewHistoryForEmp(int employeeId) {
-        return appReviewDao.selectReviewHistoryForEmp(employeeId);
+    public List<ApplicationReview> appReviewHistoryForEmp(TravelRole role) {
+        return appReviewDao.reviewHistoryForRole(role);
     }
 
     private boolean isSupervisor(Employee employee, ApplicationReview applicationReview) {

@@ -41,11 +41,12 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * @return A list of ApplicationReviews where the logged in user performed a review action.
+     * @return A list of ApplicationReviews where the users role has performed an action.
      */
     @RequestMapping(value = "/history")
     public BaseResponse reviewHistory() {
-        List<ApplicationReview> reviewHistory = appReviewService.appReviewHistoryForEmp(getSubjectEmployeeId());
+        TravelRole role = getSubjectRole();
+        List<ApplicationReview> reviewHistory = appReviewService.appReviewHistoryForEmp(role);
         return ListViewResponse.of(reviewHistory.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));

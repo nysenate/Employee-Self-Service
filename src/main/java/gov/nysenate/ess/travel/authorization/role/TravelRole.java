@@ -5,6 +5,7 @@ public enum TravelRole {
     // This is used to disallow them from modifying delegates themselves.
     DELEGATE,
     NONE,
+
     SUPERVISOR,
     DEPUTY_EXECUTIVE_ASSISTANT,
     SECRETARY_OF_THE_SENATE,

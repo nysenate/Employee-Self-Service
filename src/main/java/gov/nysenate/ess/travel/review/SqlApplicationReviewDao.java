@@ -61,7 +61,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
      * Get an ApplicationReview by its id.
      */
     @Override
-    public ApplicationReview selectAppReviewsById(int appReviewId) {
+    public ApplicationReview selectAppReviewById(int appReviewId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appReviewId", appReviewId);
         String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEW_BY_ID.getSql(schemaMap());
@@ -84,14 +84,11 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
      * Get a list of ApplicationReviews where the given employeeId has performed an action on it.
      */
     @Override
-    public List<ApplicationReview> selectReviewHistoryForEmp(int employeeId) {
-        List<ApplicationReview> reviews = new ArrayList<>();
-        List<Integer> appReviewIds = actionDao.selectAppReviewIdsByEmployee(employeeId);
-        // TODO improve performance
-        for (Integer id : appReviewIds) {
-            reviews.add(selectAppReviewsById(id));
-        }
-        return reviews;
+    public List<ApplicationReview> reviewHistoryForRole(TravelRole role) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("role", role.name());
+        String sql = SqlApplicationReviewQuery.SELECT_APPLICATION_REVIEWS_WITH_ROLE_ACTION.getSql(schemaMap());
+        return localNamedJdbc.query(sql, params, new ApplicationReviewRowMapper(travelApplicationDao, employeeInfoService, actionDao));
     }
 
     private MapSqlParameterSource appReviewParams(ApplicationReview appApproval) {
@@ -120,6 +117,15 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
                         " AND :disapproval NOT IN" +
                         "    (SELECT type FROM ${travelSchema}.app_review_action\n" +
                         "     WHERE app_review_action.app_review_id = app_review.app_review_id)"
+        ),
+        SELECT_APPLICATION_REVIEWS_WITH_ROLE_ACTION(
+                "SELECT app_review.app_review_id, app_review.app_id, app_review.traveler_role, app_review.next_reviewer_role\n" +
+                        " FROM ${travelSchema}.app_review\n" +
+                        " WHERE EXISTS \n" +
+                        "  (SELECT DISTINCT(action.app_review_id) \n" +
+                        "  FROM ${travelSchema}.app_review_action action \n" +
+                        "  WHERE action.role = :role \n" +
+                        "  AND action.app_review_id = app_review.app_review_id)"
         ),
         SELECT_APPLICATION_REVIEW_BY_ID(
                 "SELECT app_review_id, app_id, traveler_role, next_reviewer_role\n" +

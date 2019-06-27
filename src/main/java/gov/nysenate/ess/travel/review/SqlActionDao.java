@@ -69,12 +69,6 @@ public class SqlActionDao extends SqlBaseDao {
         return localNamedJdbc.query(sql, params, new ActionRowMapper(employeeInfoService));
     }
 
-    public List<Integer> selectAppReviewIdsByEmployee(int employeeId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("employeeId", employeeId);
-        String sql = SqlActionQuery.SELECT_APP_REVIEW_IDS_BY_EMP.getSql(schemaMap());
-        return localNamedJdbc.queryForList(sql, params, Integer.class);
-    }
-
     private enum SqlActionQuery implements BasicSqlQuery {
         INSERT_REVIEW_ACTION(
                 "INSERT INTO ${travelSchema}.app_review_action\n" +
@@ -86,11 +80,6 @@ public class SqlActionDao extends SqlBaseDao {
                         " FROM ${travelSchema}.app_review_action\n" +
                         " WHERE app_review_id = :appReviewId"
         ),
-        SELECT_APP_REVIEW_IDS_BY_EMP(
-                "SELECT DISTINCT app_review_id" +
-                        " FROM ${travelSchema}.app_review_action" +
-                        " WHERE employee_id = :employeeId"
-        )
         ;
 
         private String sql;
