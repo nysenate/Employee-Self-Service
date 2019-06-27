@@ -1,10 +1,10 @@
 (function () {
 
     angular.module('essMyInfo')
-        .service('TaskUtils', ['PersonnelTasksForEmpApi', 'PersonnelAssignedTaskApi', 'appProps', 'RestErrorService',
+        .service('TaskUtils', ['PersonnelTaskApi', 'PersonnelTasksForEmpApi', 'PersonnelAssignedTaskApi', 'appProps', 'RestErrorService',
                                taskUtils]);
 
-    function taskUtils(tasksForEmpApi, patApi, appProps, restErrorService) {
+    function taskUtils(taskApi, tasksForEmpApi, patApi, appProps, restErrorService) {
 
         AcknowledgmentTask.prototype = new PersonnelTask();
         MoodleTask.prototype = new PersonnelTask();
@@ -13,7 +13,8 @@
         return {
             parseTask: parseTask,
             getEmpTasks: getEmpTasks,
-            getPersonnelAssignedTask: getPersonnelAssignedTask
+            getPersonnelAssignedTask: getPersonnelAssignedTask,
+            getAllTasks: getAllTasks
         };
 
         /**
@@ -185,6 +186,18 @@
                     restErrorService.handleErrorResponse(resp)
                 }
                 throw resp;
+            }
+        }
+
+        /**
+         * Get a list of all personnel tasks.
+         */
+        function getAllTasks() {
+            return taskApi.get().$promise
+                .then(processTasks);
+
+            function processTasks(resp) {
+                return resp.tasks.map(parseTask);
             }
         }
     }

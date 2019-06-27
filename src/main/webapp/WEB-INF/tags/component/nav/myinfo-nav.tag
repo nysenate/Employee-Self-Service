@@ -15,18 +15,12 @@
       <badge title="Personnel Tasks Needing Attention"
              badge-id="incompleteTasks" hide-empty="true" color="green"></badge>
     </li>
+    <shiro:hasPermission name="<%= SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermissionString() %>">
+      <li class="sub-topic green">
+        <a href="${ctxPath}/myinfo/personnel/todo/report">To-Do Reporting</a>
+      </li>
+    </shiro:hasPermission>
   </ul>
-  <shiro:hasPermission name="<%= SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermissionString() %>">
-    <h3 class="main-topic">Acknowledgments</h3>
-    <ul>
-      <li class="sub-topic green">
-        <a href="${ctxPath}/myinfo/personnel/ack-doc-report">Full Report</a>
-      </li>
-      <li class="sub-topic green">
-        <a href="${ctxPath}/myinfo/personnel/emp-ack-doc-report">Employee Report</a>
-      </li>
-    </ul>
-  </shiro:hasPermission>
   <h3 class="main-topic">Payroll</h3>
   <ul class="sub-topic-list">
     <li class="sub-topic green"><a href="${ctxPath}/myinfo/payroll/checkhistory">Paycheck History</a></li>

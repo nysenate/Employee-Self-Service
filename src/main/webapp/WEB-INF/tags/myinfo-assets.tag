@@ -13,6 +13,8 @@
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/todo-ctrl.js"></script>
         <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/myinfo/personnel/todo-report-ctrl.js"></script>
+        <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/legethics-ctrl.js"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/myinfo/personnel/pec-vid-ctrl.js"></script>
