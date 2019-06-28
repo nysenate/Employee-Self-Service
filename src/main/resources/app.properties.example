@@ -154,7 +154,7 @@ cache.cron.location = 0 0 0 * * *
 cache.cron.mileage.rate = 0 0 0 * * *
 
 # GSA Data Cron
-gsa.cron.data = * * * 1 * *
+gsa.cron.data = 0 0 0 1 * *
 
 # Delay (ms) during which the transactions cache is refreshed from the DB.
 cache.poll.delay.transactions = 60000

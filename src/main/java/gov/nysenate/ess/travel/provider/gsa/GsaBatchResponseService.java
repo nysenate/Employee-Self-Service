@@ -39,7 +39,7 @@ public class GsaBatchResponseService {
         this.httpUtils = httpUtils;
     }
 
-    @Scheduled(cron = "${gsa.cron.data:* * * 1 * *}")
+    @Scheduled(cron = "${gsa.cron.data:0 0 0 1 * *}")
     public void scheduledCycleThroughGsaInfo() throws IOException {
         cycleThroughGsaInfo();
     }
