@@ -37,7 +37,6 @@ public abstract class BaseEssPageCtrl
             List<Integer> employeeActiveYears =
                 empInfoService.getEmployeeActiveYearsService(person.getEmployeeId());
             modelMap.put("empActiveYears", OutputUtils.toJson(employeeActiveYears));
-            modelMap.put("travelRole", travelRoleFactory.travelRoleForEmp(person.getEmployeeId()).map());
         }
     }
 
