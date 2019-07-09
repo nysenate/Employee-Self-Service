@@ -49,7 +49,7 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
                 .map(PersonnelAssignedTask::getTaskId)
                 .collect(Collectors.toSet());
 
-        Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds();
+        Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds(true);
 
         assertEquals("Test employee is assigned all active tasks", allTaskIds, tasksPresent);
     }
@@ -62,7 +62,7 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
 
         final PersonnelTaskId bogusTask = new PersonnelTaskId(PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT, 999);
         final PersonnelAssignedTask bogusTaskAssigment = PersonnelAssignedTask.newTask(bogusEmpId, bogusTask);
-        final Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds();
+        final Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds(true);
 
         // Assign all tasks
         taskAssigner.assignTasks(bogusEmpId);
@@ -88,7 +88,7 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
 
     @Test
     public void assignAllEmpsTest() {
-        Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds();
+        Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds(true);
         if (allTaskIds.isEmpty()) {
             // If there are no tasks to assign this test won't work properly.
             logger.warn("Skipping \"assignAllEmpsTest\" due to lack of active tasks.");

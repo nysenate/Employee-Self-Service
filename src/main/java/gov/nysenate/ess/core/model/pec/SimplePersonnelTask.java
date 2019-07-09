@@ -9,10 +9,12 @@ public class SimplePersonnelTask implements PersonnelTask {
 
     private final PersonnelTaskId taskId;
     private final String title;
+    private final boolean active;
 
-    public SimplePersonnelTask(PersonnelTaskId taskId, String title) {
+    public SimplePersonnelTask(PersonnelTaskId taskId, String title, boolean active) {
         this.taskId = taskId;
         this.title = title;
+        this.active = active;
     }
 
     @Override
@@ -37,5 +39,10 @@ public class SimplePersonnelTask implements PersonnelTask {
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 }

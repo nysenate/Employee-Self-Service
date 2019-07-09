@@ -5,9 +5,10 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlAckDocQuery implements BasicSqlQuery {
 
-    GET_ALL_ACTIVE_ACK_DOCS_SQL(
-        "SELECT * FROM ${essSchema}.ack_doc \n" +
-                "WHERE active = true and effective_date_time < now()"
+    GET_ALL_ACK_DOCS_SQL("" +
+            "SELECT * FROM ${essSchema}.ack_doc \n" +
+            "WHERE (:activeOnly = false OR active = true)\n" +
+            "  AND effective_date_time < now()"
     ),
 
     GET_ACK_DOC_BY_ID_SQL(

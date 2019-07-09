@@ -26,8 +26,9 @@ public interface AckDocDao {
      * Gets a set of all active AckDocs
      *
      * @return {@link List<AckDoc>}
+     * @param activeOnly boolean if true, only currently active docs are returned.
      */
-    List<AckDoc> getActiveAckDocs();
+    List<AckDoc> getAckDocs(boolean activeOnly);
 
     /**
      * Gets an Acknowledgment from an employee id and an ackDocId

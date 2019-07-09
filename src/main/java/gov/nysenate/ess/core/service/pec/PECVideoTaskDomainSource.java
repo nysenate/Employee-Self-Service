@@ -26,8 +26,8 @@ public class PECVideoTaskDomainSource implements PersonnelTaskDomainSource<PECVi
     }
 
     @Override
-    public Set<PersonnelTaskId> getActiveTaskIds() {
-        return pecVideoDao.getActiveVideos().stream()
+    public Set<PersonnelTaskId> getTaskIds(boolean activeOnly) {
+        return pecVideoDao.getVideos(activeOnly).stream()
                 .map(PersonnelTask::getTaskId)
                 .collect(Collectors.toSet());
     }

@@ -26,8 +26,8 @@ public class AcknowledgmentTaskDomainSource implements PersonnelTaskDomainSource
     }
 
     @Override
-    public Set<PersonnelTaskId> getActiveTaskIds() {
-        return ackDocDao.getActiveAckDocs().stream()
+    public Set<PersonnelTaskId> getTaskIds(boolean activeOnly) {
+        return ackDocDao.getAckDocs(activeOnly).stream()
                 .map(AckDoc::getTaskId)
                 .collect(Collectors.toSet());
     }
@@ -47,7 +47,7 @@ public class AcknowledgmentTaskDomainSource implements PersonnelTaskDomainSource
     }
 
     @Override
-    public List<AckDoc> getActiveTasks() {
-        return ackDocDao.getActiveAckDocs();
+    public List<AckDoc> getTasks(boolean activeOnly) {
+        return ackDocDao.getAckDocs(activeOnly);
     }
 }

@@ -23,9 +23,9 @@ public class EssPersonnelTaskSource implements PersonnelTaskSource {
     }
 
     @Override
-    public Set<PersonnelTaskId> getAllPersonnelTaskIds() {
+    public Set<PersonnelTaskId> getAllPersonnelTaskIds(boolean activeOnly) {
         return taskSourceMap.values().stream()
-                .map(PersonnelTaskDomainSource::getActiveTaskIds)
+                .map(source -> source.getTaskIds(activeOnly))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
     }
@@ -40,9 +40,9 @@ public class EssPersonnelTaskSource implements PersonnelTaskSource {
     }
 
     @Override
-    public List<PersonnelTask> getActivePersonnelTasks() {
+    public List<PersonnelTask> getPersonnelTasks(boolean activeOnly) {
         return taskSourceMap.values().stream()
-                .map(PersonnelTaskDomainSource::getActiveTasks)
+                .map(source -> source.getTasks(activeOnly))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

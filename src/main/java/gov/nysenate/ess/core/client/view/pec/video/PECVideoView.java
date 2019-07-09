@@ -15,6 +15,7 @@ public class PECVideoView implements PersonnelTaskView {
     private final int videoId;
     private final String title;
     private final String path;
+    private final boolean active;
 
     private final List<PECVideoCodeView> codes;
 
@@ -22,6 +23,7 @@ public class PECVideoView implements PersonnelTaskView {
         this.videoId = video.getVideoId();
         this.title = video.getTitle();
         this.path = Paths.get(pecVidResPath, video.getFilename()).toString();
+        this.active = video.isActive();
         this.codes = video.getCodes().stream()
                 .map(PECVideoCodeView::new)
                 .collect(Collectors.toList());
@@ -35,6 +37,11 @@ public class PECVideoView implements PersonnelTaskView {
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     public int getVideoId() {

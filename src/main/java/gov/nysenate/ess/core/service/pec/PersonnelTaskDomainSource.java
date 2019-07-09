@@ -27,8 +27,9 @@ public interface PersonnelTaskDomainSource<TaskType extends PersonnelTask> {
      * Returns a set of {@link PersonnelTaskId} assigned within the scope of this {@link PersonnelTaskDomainSource}.
      *
      * @return {@link Set<PersonnelTaskId>}
+     * @param activeOnly
      */
-    Set<PersonnelTaskId> getActiveTaskIds();
+    Set<PersonnelTaskId> getTaskIds(boolean activeOnly);
 
     /**
      * Get task details given a task number.
@@ -45,9 +46,10 @@ public interface PersonnelTaskDomainSource<TaskType extends PersonnelTask> {
      * Get a list of all active {@link PersonnelTask} for this source.
      *
      * @return {@link List<PersonnelTask>}
+     * @param activeOnly
      */
-    default List<TaskType> getActiveTasks() {
-        return getActiveTaskIds().stream()
+    default List<TaskType> getTasks(boolean activeOnly) {
+        return getTaskIds(activeOnly).stream()
                 .map(taskId -> getPersonnelTask(taskId.getTaskNumber()))
                 .collect(Collectors.toList());
     }

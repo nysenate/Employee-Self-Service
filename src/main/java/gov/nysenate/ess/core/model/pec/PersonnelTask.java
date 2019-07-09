@@ -12,6 +12,9 @@ public interface PersonnelTask extends Comparable<PersonnelTask> {
     /** Get a unique identifier for the task */
     PersonnelTaskId getTaskId();
 
+    /** Whether or not this task is currently active */
+    boolean isActive();
+
     /** Get the task type */
     default PersonnelTaskType getTaskType() {
         return getTaskId().getTaskType();

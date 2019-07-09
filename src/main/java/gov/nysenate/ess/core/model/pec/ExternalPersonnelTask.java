@@ -13,8 +13,8 @@ public class ExternalPersonnelTask extends SimplePersonnelTask {
 
     private final URL url;
 
-    public ExternalPersonnelTask(PersonnelTaskId taskId, String title, URL url) {
-        super(taskId, title);
+    public ExternalPersonnelTask(PersonnelTaskId taskId, String title, boolean active, URL url) {
+        super(taskId, title, active);
         this.url = url;
     }
 

@@ -21,6 +21,7 @@ public class PECVideo implements PersonnelTask {
     private final int videoId;
     private final String title;
     private final String filename;
+    private final boolean active;
 
     private final ImmutableList<PECVideoCode> codes;
 
@@ -28,6 +29,7 @@ public class PECVideo implements PersonnelTask {
         this.videoId = builder.videoId;
         this.title = builder.title;
         this.filename = builder.filename;
+        this.active = builder.active;
         this.codes = Optional.ofNullable(builder.codes)
                 .orElse(Collections.emptyList())
                 .stream()
@@ -44,6 +46,7 @@ public class PECVideo implements PersonnelTask {
         private String title;
         private String filename;
         private List<PECVideoCode> codes = new ArrayList<>();
+        private boolean active = true;
 
         private Builder() {}
 
@@ -73,6 +76,11 @@ public class PECVideo implements PersonnelTask {
 
         public Builder addCode(PECVideoCode code) {
             this.codes.add(code);
+            return this;
+        }
+
+        public Builder setActive(boolean active) {
+            this.active = active;
             return this;
         }
     }
@@ -106,6 +114,11 @@ public class PECVideo implements PersonnelTask {
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     public int getVideoId() {

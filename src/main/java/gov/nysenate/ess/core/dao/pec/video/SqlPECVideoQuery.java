@@ -5,17 +5,21 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlPECVideoQuery implements BasicSqlQuery {
 
-    GET_ACTIVE_PEC_VIDEOS("" +
+    GET_PEC_VIDEOS_BASE("" +
             "SELECT *\n" +
             "FROM ${essSchema}.pec_video v\n" +
             "JOIN ${essSchema}.pec_video_code c\n" +
-            "  ON v.id = c.pec_video_id\n" +
-            "WHERE v.active = TRUE"
+            "  ON v.id = c.pec_video_id"
     ),
 
-    GET_PEC_VIDEO_BY_ID(
-            GET_ACTIVE_PEC_VIDEOS.sql + "\n" +
-                    "  AND v.id = :videoId"
+    GET_PEC_VIDEOS("" +
+            GET_PEC_VIDEOS_BASE.sql + "\n" +
+            "WHERE (:activeOnly = FALSE OR v.active = TRUE)"
+    ),
+
+    GET_PEC_VIDEO_BY_ID("" +
+            GET_PEC_VIDEOS_BASE.sql + "\n" +
+            "WHERE v.id = :videoId"
     ),
 
     ;

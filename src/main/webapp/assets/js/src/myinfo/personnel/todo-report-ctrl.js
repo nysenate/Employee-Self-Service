@@ -40,6 +40,7 @@
         $scope.contSrvDateOpts = Object.keys($scope.contSrvDateValues);
 
         var defaultState = {
+            taskList: null,
             taskMap: null,
             selTasks: null,
             selContSrvDateOpt: $scope.contSrvDateOpts[0],
@@ -52,6 +53,7 @@
         init();
 
         $scope.$watch('state.selTasks', updateSelTaskParams, true);
+        $scope.$watch('state.params.taskActive', updateSelTaskParams);
         $scope.$watchGroup(['state.selContSrvDateOpt', 'state.customContSrvDate'], updateContSrvDateParam);
         $scope.$watch('state.params', performSearch, true);
         $scope.$watch('state.pagination.currPage', performSearch);
@@ -72,13 +74,16 @@
 
         /** Set tasks to state */
         function setTasks(tasks) {
-            var taskMap = $scope.state.taskMap = {},
+            var taskList = $scope.state.taskList = [],
+                taskMap = $scope.state.taskMap = {},
                 selTasks = $scope.state.selTasks = {};
             tasks.forEach(function (task) {
                 var idStr = task.taskIdStr = getTaskIdStr(task.taskId);
+                taskList.push(task);
                 taskMap[idStr] = task;
                 selTasks[idStr] = false;
             });
+            console.log(taskList);
         }
 
         /**
@@ -99,7 +104,11 @@
             }
             $scope.state.params.taskId = Object.keys($scope.state.selTasks)
                 .filter(function (taskIdStr){
-                    return $scope.state.selTasks[taskIdStr];
+                    var task = $scope.state.taskMap[taskIdStr];
+                    // Include the task if it is selected.
+                    // Also ensure it is active if the active task filter is on.
+                    return $scope.state.selTasks[taskIdStr] &&
+                        (!$scope.state.params.taskActive || task.active);
                 });
         }
 

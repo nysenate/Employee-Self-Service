@@ -44,6 +44,11 @@ public class AckDoc implements PersonnelTask {
         return title;
     }
 
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
     /* --- Getters / Setters --- */
 
     public void setTitle(String title) {
@@ -56,10 +61,6 @@ public class AckDoc implements PersonnelTask {
 
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-
-    public boolean getActive() {
-        return active;
     }
 
     public void setActive(boolean active) {

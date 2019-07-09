@@ -39,15 +39,17 @@ public class SqlAckDocDao extends SqlBaseDao implements AckDocDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("title",ackDoc.getTitle());
         params.addValue("filename",ackDoc.getFilename());
-        params.addValue("active",ackDoc.getActive());
+        params.addValue("active",ackDoc.isActive());
         params.addValue("effectiveDateTime",ackDoc.getEffectiveDateTime());
         localNamedJdbc.update(INSERT_ACK_DOC_SQL.getSql(schemaMap()),params);
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @param activeOnly*/
     @Override
-    public List<AckDoc> getActiveAckDocs() {
-        return localNamedJdbc.query(GET_ALL_ACTIVE_ACK_DOCS_SQL.getSql(schemaMap()), getAckDocRowMapper());
+    public List<AckDoc> getAckDocs(boolean activeOnly) {
+        MapSqlParameterSource params = new MapSqlParameterSource("activeOnly", activeOnly);
+        return localNamedJdbc.query(GET_ALL_ACK_DOCS_SQL.getSql(schemaMap()), params, getAckDocRowMapper());
     }
 
     /** {@inheritDoc} */

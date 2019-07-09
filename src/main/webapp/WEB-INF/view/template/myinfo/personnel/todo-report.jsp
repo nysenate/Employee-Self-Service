@@ -16,9 +16,17 @@
       </label>
       <hr>
       <div>
-        <label ng-repeat="(taskIdStr, task) in state.taskMap">
+        <label ng-repeat="task in state.taskList | filter:{'active':true}">
           <input type="checkbox"
-                 ng-model="state.selTasks[taskIdStr]">
+                 ng-model="state.selTasks[task.taskIdStr]">
+          {{task.title}}
+        </label>
+      </div>
+      <div ng-hide="state.params.taskActive">
+        <hr>
+        <label ng-repeat="task in state.taskList | filter:{'active':false}">
+          <input type="checkbox"
+                 ng-model="state.selTasks[task.taskIdStr]">
           {{task.title}}
         </label>
       </div>

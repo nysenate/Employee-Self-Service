@@ -24,7 +24,7 @@ public class AckDocView implements PersonnelTaskView {
     public AckDocView(AckDoc ackDoc, String ackDocResPath) {
         this.title = ackDoc.getTitle();
         this.path = ackDocResPath + ackDoc.getFilename();
-        this.active = ackDoc.getActive();
+        this.active = ackDoc.isActive();
         this.id = ackDoc.getId();
         this.effectiveDateTime = ackDoc.getEffectiveDateTime();
     }
@@ -41,14 +41,15 @@ public class AckDocView implements PersonnelTaskView {
         return title;
     }
 
+    @Override
     @XmlElement
-    public String getPath() {
-        return path;
+    public boolean isActive() {
+        return active;
     }
 
     @XmlElement
-    public boolean getActive() {
-        return active;
+    public String getPath() {
+        return path;
     }
 
     @XmlElement

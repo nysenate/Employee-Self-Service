@@ -38,7 +38,7 @@ public class MoodleTaskDomainSource implements PersonnelTaskDomainSource<Externa
     }
 
     @Override
-    public Set<PersonnelTaskId> getActiveTaskIds() {
+    public Set<PersonnelTaskId> getTaskIds(boolean activeOnly) {
         // Just return the leg ethics course, we don't have any other moodle tasks atm.
         Set<PersonnelTaskId> taskSet = new HashSet<>();
         taskSet.add(legEthicsTaskId);
@@ -52,6 +52,9 @@ public class MoodleTaskDomainSource implements PersonnelTaskDomainSource<Externa
 
     @Override
     public ExternalPersonnelTask getPersonnelTask(int taskNumber) throws PersonnelTaskNotFoundEx {
-       return new ExternalPersonnelTask(legEthicsTaskId, legEthicsTitle, legEthicsCourseUrl);
+        if (taskNumber != legEthicsTaskId.getTaskNumber()) {
+            throw new PersonnelTaskNotFoundEx(new PersonnelTaskId(getTaskType(), taskNumber));
+        }
+        return new ExternalPersonnelTask(legEthicsTaskId, legEthicsTitle, true, legEthicsCourseUrl);
     }
 }

@@ -8,6 +8,7 @@ public interface PersonnelTaskView extends ViewObject {
 
     PersonnelTaskIdView getTaskId();
     String getTitle();
+    boolean isActive();
 
     @Override
     default String getViewType() {

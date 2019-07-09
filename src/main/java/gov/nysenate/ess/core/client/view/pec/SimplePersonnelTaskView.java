@@ -6,10 +6,12 @@ public class SimplePersonnelTaskView implements PersonnelTaskView {
 
     private final PersonnelTaskIdView taskId;
     private final String title;
+    private final boolean active;
 
     public SimplePersonnelTaskView(SimplePersonnelTask task) {
         this.taskId = new PersonnelTaskIdView(task.getTaskId());
         this.title = task.getTitle();
+        this.active = task.isActive();
     }
 
     @Override
@@ -20,5 +22,10 @@ public class SimplePersonnelTaskView implements PersonnelTaskView {
     @Override
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 }

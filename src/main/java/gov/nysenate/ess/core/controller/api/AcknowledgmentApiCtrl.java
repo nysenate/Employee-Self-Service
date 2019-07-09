@@ -84,7 +84,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/documents", method = {GET, HEAD})
     public ListViewResponse<AckDocView> getActiveAckDocs() {
 
-        List<AckDoc> ackDocs = ackDocDao.getActiveAckDocs();
+        List<AckDoc> ackDocs = ackDocDao.getAckDocs(true);
 
         List<AckDocView> ackDocViews = ackDocs.stream()
                 .map(ackDoc -> new AckDocView(ackDoc, ackDocResPath))

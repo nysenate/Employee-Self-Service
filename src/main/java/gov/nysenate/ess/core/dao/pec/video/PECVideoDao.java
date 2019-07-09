@@ -12,8 +12,9 @@ public interface PECVideoDao {
     /**
      * Get a list of all currently active videos.
      * @return {@link List<PECVideo>}
+     * @param activeOnly
      */
-    List<PECVideo> getActiveVideos();
+    List<PECVideo> getVideos(boolean activeOnly);
 
     /**
      * Get a video for a video number

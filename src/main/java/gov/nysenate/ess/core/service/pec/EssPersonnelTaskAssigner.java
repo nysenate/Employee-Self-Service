@@ -55,7 +55,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     /* --- Internal Methods --- */
 
     private Set<PersonnelTaskId> getAllActiveTaskIds() {
-        return taskSource.getAllPersonnelTaskIds();
+        return taskSource.getAllPersonnelTaskIds(true);
     }
 
     /**

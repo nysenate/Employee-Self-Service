@@ -21,9 +21,10 @@ import static gov.nysenate.ess.core.dao.pec.video.SqlPECVideoQuery.*;
 public class SqlPECVideoDao extends SqlBaseDao implements PECVideoDao {
 
     @Override
-    public List<PECVideo> getActiveVideos() {
+    public List<PECVideo> getVideos(boolean activeOnly) {
         PECVideoRowHandler rowHandler = new PECVideoRowHandler();
-        localNamedJdbc.query(GET_ACTIVE_PEC_VIDEOS.getSql(schemaMap()), rowHandler);
+        MapSqlParameterSource params = new MapSqlParameterSource("activeOnly", activeOnly);
+        localNamedJdbc.query(GET_PEC_VIDEOS.getSql(schemaMap()), params, rowHandler);
         return rowHandler.getVideos();
     }
 
@@ -47,7 +48,8 @@ public class SqlPECVideoDao extends SqlBaseDao implements PECVideoDao {
             PECVideo.builder()
                     .setVideoId(rs.getInt("pec_video_id"))
                     .setFilename(rs.getString("filename"))
-                    .setTitle(rs.getString("title"));
+                    .setTitle(rs.getString("title"))
+                    .setActive(rs.getBoolean("active"));
 
     private static final RowMapper<PECVideoCode> vidCodeRowMapper = (rs, rowNum) ->
             new PECVideoCode(

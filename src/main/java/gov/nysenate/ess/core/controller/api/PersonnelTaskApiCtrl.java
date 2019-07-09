@@ -63,12 +63,15 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      *
      * Get a list of all personnel tasks.
      *
+     * Request params:
+     * @param activeOnly boolean - default false - if true, only active tasks are returned, otherwise all tasks.
+     *
      * @return {@link ListViewResponse<PersonnelTaskView>}
      */
     @RequestMapping(value = "", method = {GET, HEAD})
-    public ListViewResponse<PersonnelTaskView> getTasks() {
+    public ListViewResponse<PersonnelTaskView> getTasks(@RequestParam(defaultValue = "false") boolean activeOnly) {
         return ListViewResponse.of(
-                taskSource.getActivePersonnelTasks().stream()
+                taskSource.getPersonnelTasks(activeOnly).stream()
                         .map(this::getPersonnelTaskView)
                         .collect(Collectors.toList()),
                 "tasks"
