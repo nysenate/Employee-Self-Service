@@ -47,7 +47,11 @@
             customContSrvDate: moment().format('Y-MM-DD'),
             params: angular.copy(defaultParams),
             pagination: angular.copy(defaultPagination),
-            results: null
+            results: null,
+            request: {
+                tasks: false,
+                search: false
+            }
         };
 
         init();
@@ -67,9 +71,14 @@
          * Load tasks
          */
         function loadTasks() {
+            $scope.state.request.tasks = true;
             taskUtils.getAllTasks()
                 .then(setTasks)
-                .catch($scope.handleErrorResponse);
+                .catch($scope.handleErrorResponse)
+                .finally(function () {
+                    $scope.state.request.tasks = false;
+                })
+            ;
         }
 
         /** Set tasks to state */
@@ -124,10 +133,14 @@
             var pagination = $scope.state.pagination;
             var params = angular.copy($scope.state.params);
             Object.assign(params, {limit: pagination.getLimit(), offset: pagination.getOffset()});
-
+            $scope.state.request.search = true;
             searchApi.get(params).$promise
                 .then(setSearchResults)
-                .catch($scope.handleErrorResponse);
+                .catch($scope.handleErrorResponse)
+                .finally(function () {
+                    $scope.state.request.search = false;
+                })
+            ;
         }
 
         function setSearchResults(resp) {
