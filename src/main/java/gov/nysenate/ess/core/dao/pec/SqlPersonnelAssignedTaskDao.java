@@ -127,6 +127,8 @@ public class SqlPersonnelAssignedTaskDao extends SqlBaseDao implements Personnel
                 .addValue("taskType",
                         Optional.ofNullable(queryBuilder.getTaskType()).map(Enum::name).orElse(null))
                 .addValue("completed", queryBuilder.getCompleted())
+                .addValue("completedFrom", toDate(queryBuilder.getCompletedFrom()))
+                .addValue("completedTo", toDate(queryBuilder.getCompletedTo()))
                 .addValue("taskIdsPresent", queryBuilder.getTaskIds() == null)
                 .addValue("taskIds", Optional.ofNullable(queryBuilder.getTaskIds())
                         .map(taskIds -> taskIds.stream()

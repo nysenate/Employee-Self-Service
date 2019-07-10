@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.dao.pec;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
@@ -19,6 +20,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.*;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -67,7 +69,8 @@ public class PersonnelAssignedTaskDaoIT extends BaseTest {
             for (int taskNum : bogusTaskNums) {
                 PersonnelTaskId taskId = new PersonnelTaskId(taskType, taskNum);
                 for (int empId : bogusEmpIds) {
-                    taskListBuilder.add(new PersonnelAssignedTask(empId, taskId, null, null, completedValue));
+                    LocalDateTime timestamp = completedValue ? LocalDateTime.now() : null;
+                    taskListBuilder.add(new PersonnelAssignedTask(empId, taskId, timestamp, null, completedValue));
                     completedValue = !completedValue;
                 }
             }
@@ -91,6 +94,26 @@ public class PersonnelAssignedTaskDaoIT extends BaseTest {
         // Query by completed status
         PATQueryBuilder completedQuery = new PATQueryBuilder().setCompleted(true);
         queryResultAssertion(completedQuery, allTasks, PersonnelAssignedTask::isCompleted);
+
+        // Query by completion date
+        PATQueryBuilder partialCompDateQuery = new PATQueryBuilder()
+                .setCompletedFrom(LocalDateTime.now())
+                .setCompletedTo(LocalDateTime.now().plusMinutes(1));
+        queryResultAssertion(partialCompDateQuery, allTasks, task -> true);
+
+        List<LocalDateTime> firstTimestamps = allTasks.stream()
+                .map(PersonnelAssignedTask::getTimestamp)
+                .filter(Objects::nonNull)
+                .limit(10).collect(toList());
+        LocalDateTime compFrom = firstTimestamps.get(0);
+        LocalDateTime compTo = firstTimestamps.get(firstTimestamps.size() - 1);
+        Range<LocalDateTime> compRange = Range.closed(compFrom, compTo);
+        PATQueryBuilder compDateQuery = new PATQueryBuilder()
+                .setCompleted(true)
+                .setCompletedFrom(compFrom)
+                .setCompletedTo(compTo);
+        queryResultAssertion(compDateQuery, allTasks,
+                task -> task.isCompleted() && task.getTimestamp() != null && compRange.contains(task.getTimestamp()));
 
         // Query by type and completed status
         PATQueryBuilder completedCodeQuery = new PATQueryBuilder()

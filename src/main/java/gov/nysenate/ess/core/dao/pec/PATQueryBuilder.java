@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -22,6 +23,8 @@ public class PATQueryBuilder {
     private Set<PersonnelTaskId> taskIds = null;
     private PersonnelTaskType taskType;
     private Boolean completed;
+    private LocalDateTime completedFrom;
+    private LocalDateTime completedTo;
 
     @Override
     public String toString() {
@@ -30,6 +33,8 @@ public class PATQueryBuilder {
                 .add("active=" + active)
                 .add("taskType=" + taskType)
                 .add("completed=" + completed)
+                .add("completedFrom=" + completedFrom)
+                .add("completedTo=" + completedTo)
                 .add("taskIds=" + taskIds)
                 .toString();
     }
@@ -63,6 +68,16 @@ public class PATQueryBuilder {
         return this;
     }
 
+    public PATQueryBuilder setCompletedFrom(LocalDateTime completedFrom) {
+        this.completedFrom = completedFrom;
+        return this;
+    }
+
+    public PATQueryBuilder setCompletedTo(LocalDateTime completedTo) {
+        this.completedTo = completedTo;
+        return this;
+    }
+
     /* --- Getters --- */
 
     public Integer getEmpId() {
@@ -83,5 +98,13 @@ public class PATQueryBuilder {
 
     public Boolean getActive() {
         return active;
+    }
+
+    public LocalDateTime getCompletedFrom() {
+        return completedFrom;
+    }
+
+    public LocalDateTime getCompletedTo() {
+        return completedTo;
     }
 }

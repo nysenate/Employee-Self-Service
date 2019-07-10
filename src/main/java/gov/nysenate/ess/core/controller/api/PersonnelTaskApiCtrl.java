@@ -265,6 +265,12 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                         .orElse(null)
         );
         patQueryBuilder.setCompleted(getBooleanParam(request, "completed", null));
+        patQueryBuilder.setCompletedFrom(Optional.ofNullable(request.getParameter("completedFrom"))
+                .map(val -> parseISODateTime(val, "completedFrom"))
+                .orElse(null));
+        patQueryBuilder.setCompletedTo(Optional.ofNullable(request.getParameter("completedTo"))
+                .map(val -> parseISODateTime(val, "completedTo"))
+                .orElse(null));
         patQueryBuilder.setTaskIds(
                 Optional.ofNullable(request.getParameterValues("taskId"))
                         .map(tids -> Arrays.stream(tids)

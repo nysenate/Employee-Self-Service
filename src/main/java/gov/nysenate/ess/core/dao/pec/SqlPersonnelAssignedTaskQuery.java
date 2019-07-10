@@ -25,6 +25,13 @@ public enum SqlPersonnelAssignedTaskQuery implements BasicSqlQuery {
             "  AND (:empId::int IS NULL OR emp_id = :empId)\n" +
             "  AND (:taskType::ess.personnel_task_type IS NULL OR task_type = :taskType::ess.personnel_task_type)\n" +
             "  AND (:completed::boolean IS NULL OR completed = :completed::boolean)\n" +
+            "  AND (:completed::boolean IS NULL OR :completed::boolean = FALSE OR\n" +
+            "        (:completedFrom::TIMESTAMP WITHOUT TIME ZONE IS NULL OR\n" +
+            "          timestamp >= :completedFrom::TIMESTAMP WITHOUT TIME ZONE)\n" +
+            "        AND\n" +
+            "        (:completedTo::TIMESTAMP WITHOUT TIME ZONE IS NULL OR\n" +
+            "          timestamp <= :completedTo::TIMESTAMP WITHOUT TIME ZONE)\n" +
+            "  )\n" +
             "  AND (:taskIdsPresent OR (task_type::text, task_number) IN (:taskIds))"
     ),
 
