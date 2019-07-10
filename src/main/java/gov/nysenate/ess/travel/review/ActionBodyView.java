@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.review;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 
 /**
@@ -9,6 +10,7 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 public class ActionBodyView implements ViewObject {
 
     private String notes;
+    @JsonProperty("isDiscussionRequested")
     private boolean isDiscussionRequested;
 
     public ActionBodyView() {
