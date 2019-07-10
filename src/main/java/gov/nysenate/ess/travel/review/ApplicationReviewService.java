@@ -6,6 +6,7 @@ import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.TravelApplicationService;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import gov.nysenate.ess.travel.authorization.role.TravelRoleFactory;
+import gov.nysenate.ess.travel.authorization.role.TravelRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +49,8 @@ public class ApplicationReviewService {
     }
 
     public ApplicationReview createApplicationReview(TravelApplication app) {
-        TravelRole travelerRole = travelRoleFactory.travelRoleForEmp(app.getTraveler()).orElse(TravelRole.NONE);
-        ApplicationReview appReview = new ApplicationReview(app, travelerRole);
+        TravelRoles roles = travelRoleFactory.travelRolesForEmp(app.getTraveler());
+        ApplicationReview appReview = new ApplicationReview(app, roles.apexRole());
         return appReview;
     }
 

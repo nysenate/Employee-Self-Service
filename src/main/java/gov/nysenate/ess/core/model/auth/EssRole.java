@@ -14,5 +14,7 @@ public enum EssRole {
     SUPPLY_REPORTER,
     /* Time */
     TIME_MANAGER,
+    /* Travel */
+    MAJORITY_LEADER,
     ;
 }

@@ -42,7 +42,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.GET)
                 .buildPermission());
         SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
-        return new ViewObjectResponse(appView);
+        return new ViewObjectResponse<>(appView);
     }
 
     @RequestMapping(value = "/{appId}", method = RequestMethod.DELETE)
