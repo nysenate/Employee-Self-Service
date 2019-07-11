@@ -1,9 +1,9 @@
 var essTravel = angular.module("essTravel");
 
-essTravel.controller("AppReviewCtrl", ["$scope", "$q", "modals", "LocationService", "ApplicationReviewApi", reviewController
+essTravel.controller("AppReviewCtrl", ["$scope", "$q", "modals", "LocationService", "ApplicationReviewApi", "TravelRoleService", reviewController
 ]);
 
-function reviewController($scope, $q, modals, locationService, appReviewApi) {
+function reviewController($scope, $q, modals, locationService, appReviewApi, roleService) {
 
     const APP_ID_SEARCH_PARAM = "appId";
 
@@ -12,14 +12,20 @@ function reviewController($scope, $q, modals, locationService, appReviewApi) {
     vm.isLoading = true;
     vm.reviews = [];
     vm.appIdToReview = new Map(); // Map of TravelApplication id to its ApplicationReview
+    vm.userRoles = [];
 
     (function init() {
-        initPendingAppReviews()
-            .then(openReviewModalIfSearchParamsSet);
+        roleService.roles()
+            .then(function (response) {
+                vm.userRoles = response.roles;
+                initPendingAppReviews()
+                    .then(openReviewModalIfSearchParamsSet);
+            });
     })();
 
     function initPendingAppReviews() {
-        return appReviewApi.pendingReviews()
+        // TODO Use user selected role
+        return appReviewApi.pendingReviews(vm.userRoles[vm.userRoles.length - 1].name)
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {

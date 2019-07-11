@@ -21,6 +21,13 @@ public class TravelRoles {
     }
 
     /**
+     * Are any roles contained in this TravelRoles instance.
+     */
+    public boolean hasRole() {
+        return !roles().isEmpty();
+    }
+
+    /**
      * All TravelRole's assigned to an employee
      * @return
      */

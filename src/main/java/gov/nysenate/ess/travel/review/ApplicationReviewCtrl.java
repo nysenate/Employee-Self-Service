@@ -13,6 +13,7 @@ import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,10 +32,17 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
      * this method will return an empty list if its not applicable to the user.
      */
     @RequestMapping(value = "/pending", method = RequestMethod.GET)
-    public BaseResponse getPendingReviews() {
-        TravelRole role = getSubjectRole();
+    public BaseResponse getPendingReviews(@RequestParam(required = false) List<String> roles) {
+        List<TravelRole> roleList = roles == null || roles.isEmpty()
+                ? new ArrayList<>()
+                : roles.stream().map(TravelRole::of).collect(Collectors.toList());
         Employee employee = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        List<ApplicationReview> pendingReviews = appReviewService.pendingAppReviewsForEmpWithRole(employee, role);
+
+        List<ApplicationReview> pendingReviews = new ArrayList<>();
+        for (TravelRole r : roleList) {
+            pendingReviews.addAll(appReviewService.pendingAppReviewsForEmpWithRole(employee, r));
+        }
+
         return ListViewResponse.of(pendingReviews.stream()
                 .map(ApplicationReviewView::new)
                 .collect(Collectors.toList()));
