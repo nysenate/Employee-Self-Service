@@ -25,6 +25,11 @@ public class PATQueryBuilder {
     private Boolean completed;
     private LocalDateTime completedFrom;
     private LocalDateTime completedTo;
+    /**
+     * Filters based on the completion status of all tasks for an employee
+     * As opposed to the status of individual task results in {@link #completed}
+     */
+    private PATQueryCompletionStatus totalCompletionStatus;
 
     @Override
     public String toString() {
@@ -36,6 +41,7 @@ public class PATQueryBuilder {
                 .add("completedFrom=" + completedFrom)
                 .add("completedTo=" + completedTo)
                 .add("taskIds=" + taskIds)
+                .add("totalCompletionStatus=" + totalCompletionStatus)
                 .toString();
     }
 
@@ -78,6 +84,11 @@ public class PATQueryBuilder {
         return this;
     }
 
+    public PATQueryBuilder setTotalCompletionStatus(PATQueryCompletionStatus totalCompletionStatus) {
+        this.totalCompletionStatus = totalCompletionStatus;
+        return this;
+    }
+
     /* --- Getters --- */
 
     public Integer getEmpId() {
@@ -106,5 +117,9 @@ public class PATQueryBuilder {
 
     public LocalDateTime getCompletedTo() {
         return completedTo;
+    }
+
+    public PATQueryCompletionStatus getTotalCompletionStatus() {
+        return totalCompletionStatus;
     }
 }

@@ -14,7 +14,9 @@
             empActive: null,
             taskId: null,
             contServFrom: null,
-            taskActive: true
+            taskActive: true,
+            completed: null,
+            totalCompletion: null
         };
 
         $scope.contSrvDateValues = {

@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.pec.*;
 import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
+import gov.nysenate.ess.core.dao.pec.PATQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
@@ -277,6 +278,11 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                                 .map(this::parseTaskId)
                                 .collect(Collectors.toList())
                         )
+                        .orElse(null)
+        );
+        patQueryBuilder.setTotalCompletionStatus(
+                Optional.ofNullable(request.getParameter("totalCompletion"))
+                        .map(val -> getEnumParameter("totalCompletion", val, PATQueryCompletionStatus.class))
                         .orElse(null)
         );
 

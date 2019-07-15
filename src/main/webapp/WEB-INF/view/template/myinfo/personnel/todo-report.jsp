@@ -34,13 +34,25 @@
         </div>
       </div>
 
+      <label>
+        Training Completion Status<br>
+        <select ng-model="state.params.totalCompletion">
+          <option ng-value="null">Any</option>
+          <option value="ALL_INCOMPLETE">All Incomplete</option>
+          <option value="SOME_INCOMPLETE">Some Incomplete</option>
+          <option value="SOME_COMPLETE">Some Complete</option>
+          <option value="ALL_COMPLETE">All Complete</option>
+        </select>
+      </label
+
+
       <h3>Employee</h3>
       <label>
         Continuous Service Start Date<br>
         <select ng-model="state.selContSrvDateOpt"
                 ng-options="contSrvDateValues[opt].label for opt in contSrvDateOpts"></select>
       </label>
-      <label ng-show="state.selContSrvDateOpt == 'custom'">
+      <label ng-show="state.selContSrvDateOpt === 'custom'">
         Custom Continuous Service Date<br>
         <input datepicker ng-model="state.customContSrvDate">
       </label>

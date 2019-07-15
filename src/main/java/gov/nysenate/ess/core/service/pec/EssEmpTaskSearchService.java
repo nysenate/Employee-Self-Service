@@ -3,6 +3,8 @@ package gov.nysenate.ess.core.service.pec;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
+import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
+import gov.nysenate.ess.core.dao.pec.PATQueryCompletionStatus;
 import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
 import gov.nysenate.ess.core.model.personnel.Employee;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,14 +46,12 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
     @Override
     public PaginatedList<EmployeeTaskSearchResult> searchForEmpTasks(EmpPATQuery query, LimitOffset limitOffset) {
 
-        logger.info("Searching tasks");
         List<PersonnelAssignedTask> tasks = patDao.getTasks(query.getPatQuery());
         ImmutableListMultimap<Integer, PersonnelAssignedTask> empTaskMap =
                 Multimaps.index(tasks, PersonnelAssignedTask::getEmpId);
 
         EmployeeSearchBuilder esb = query.getEmpQuery();
 
-        logger.info("Getting emps");
         List<EmployeeTaskSearchResult> resultList = empTaskMap.asMap().entrySet().stream()
                 .map(e -> new EmployeeTaskSearchResult(
                         employeeInfoService.getEmployee(e.getKey()),
@@ -60,49 +61,83 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
 
         Comparator<EmployeeTaskSearchResult> comparator = getComparator(query.getSortDirectives());
 
-        logger.info("Filtering/sorting emps");
         resultList = resultList.stream()
-                .filter(etsr -> empMatchesQuery(etsr, esb))
+                .filter(etsr -> resultMatchesQuery(etsr, query))
                 .sorted(comparator)
                 .collect(Collectors.toList());
 
-        logger.info("limiting results");
         List<EmployeeTaskSearchResult> limitedResultList = LimitOffset.limitList(resultList, limitOffset);
 
         return new PaginatedList<>(resultList.size(), limitOffset, limitedResultList);
     }
 
-    private boolean empMatchesQuery(EmployeeTaskSearchResult result, EmployeeSearchBuilder searchBuilder) {
+    /**
+     * Determine if a result matches the query.
+     * <p>
+     * This only covers parameters not filtered in {@link PersonnelAssignedTaskDao#getTasks(PATQueryBuilder)}.
+     */
+    private boolean resultMatchesQuery(EmployeeTaskSearchResult result, EmpPATQuery query) {
         Employee employee = result.getEmployee();
-        if (searchBuilder.getActive() != null &&
-                !searchBuilder.getActive().equals(employee.isActive())) {
-            return false;
+        EmployeeSearchBuilder employeeQuery = query.getEmpQuery();
+        PATQueryBuilder patQuery = query.getPatQuery();
+
+        return resultEmpMatchesActive(employee, employeeQuery) &&
+                resultEmpMatchesRCHC(employee, employeeQuery) &&
+                resultEmpMatchesName(employee, employeeQuery) &&
+                resultEmpMatchesContSrv(employee, employeeQuery) &&
+                resultCompletionStatusMatches(result, patQuery);
+    }
+
+    private boolean resultEmpMatchesActive(Employee employee, EmployeeSearchBuilder employeeQuery) {
+        return employeeQuery.getActive() == null ||
+                employeeQuery.getActive().equals(employee.isActive());
+    }
+
+    private boolean resultEmpMatchesRCHC(Employee employee, EmployeeSearchBuilder employeeQuery) {
+        return employeeQuery.getRespCtrHeadCodes() == null ||
+                employeeQuery.getRespCtrHeadCodes().isEmpty() ||
+                employeeQuery.getRespCtrHeadCodes().contains(employee.getRespCenterHeadCode());
+    }
+
+    private boolean resultEmpMatchesName(Employee employee, EmployeeSearchBuilder employeeQuery) {
+        if (employeeQuery.getName() == null) {
+            return true;
         }
-        if (searchBuilder.getRespCtrHeadCodes() != null && !searchBuilder.getRespCtrHeadCodes().isEmpty() &&
-                !searchBuilder.getRespCtrHeadCodes().contains(employee.getRespCenterHeadCode())) {
-            return false;
+        String resultSearchString = normalizeSearchString(
+                employee.getLastName() + " " + employee.getFirstName() + " " + employee.getInitial());
+        String querySearchString = normalizeSearchString(employeeQuery.getName());
+        return resultSearchString.contains(querySearchString);
+    }
+
+    private boolean resultEmpMatchesContSrv(Employee employee, EmployeeSearchBuilder employeeQuery) {
+        if (employeeQuery.getContinuousServiceFrom() == null && employeeQuery.getContinuousServiceTo() == null) {
+            return true;
         }
-        if (searchBuilder.getName() != null) {
-            String resultSearchString = normalizeSearchString(
-                    employee.getLastName() + " " + employee.getFirstName() + " " + employee.getInitial());
-            String querySearchString = normalizeSearchString(searchBuilder.getName());
-            if (!resultSearchString.contains(querySearchString)) {
-                return false;
-            }
+        LocalDate fromDate = Optional.ofNullable(employeeQuery.getContinuousServiceFrom())
+                .orElse(DateUtils.LONG_AGO);
+        LocalDate toDate = Optional.ofNullable(employeeQuery.getContinuousServiceTo())
+                .orElse(DateUtils.THE_FUTURE);
+        Range<LocalDate> dateRange = Range.closed(fromDate, toDate);
+        LocalDate senateContServiceDate = Optional.ofNullable(employee.getSenateContServiceDate())
+                .orElse(placeholderContSrvDate);
+        return dateRange.contains(senateContServiceDate);
+    }
+
+    private boolean resultCompletionStatusMatches(EmployeeTaskSearchResult result, PATQueryBuilder patQuery) {
+        PATQueryCompletionStatus completionStatus = patQuery.getTotalCompletionStatus();
+        if (completionStatus == null) {
+            return true;
         }
-        if (searchBuilder.getContinuousServiceFrom() != null || searchBuilder.getContinuousServiceTo() != null) {
-            LocalDate fromDate = Optional.ofNullable(searchBuilder.getContinuousServiceFrom())
-                    .orElse(DateUtils.LONG_AGO);
-            LocalDate toDate = Optional.ofNullable(searchBuilder.getContinuousServiceTo())
-                    .orElse(DateUtils.THE_FUTURE);
-            Range<LocalDate> dateRange = Range.closed(fromDate, toDate);
-            LocalDate senateContServiceDate = Optional.ofNullable(employee.getSenateContServiceDate())
-                    .orElse(placeholderContSrvDate);
-            if (!dateRange.contains(senateContServiceDate)) {
-                return false;
-            }
+
+        Predicate<PersonnelAssignedTask> matchCondition = task -> task.isCompleted() == completionStatus.isCompleted();
+
+        List<PersonnelAssignedTask> tasks = result.getTasks();
+
+        if (completionStatus.isAll()) {
+            return tasks.stream().allMatch(matchCondition);
+        } else {
+            return tasks.stream().anyMatch(matchCondition);
         }
-        return true;
     }
 
     private String normalizeSearchString(String searchString) {
@@ -114,7 +149,7 @@ public class EssEmpTaskSearchService implements EmpTaskSearchService {
 
     /**
      * Generate a result comparator by chaining the comparators of the given sort directives.
-     *
+     * <p>
      * Return a default comparator if no sort directives are passed in.
      *
      * @param sortDirectives {@link List<EmpTaskSort>}
