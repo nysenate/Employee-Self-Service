@@ -81,7 +81,7 @@ public class SqlApplicationReviewDao extends SqlBaseDao implements ApplicationRe
     }
 
     /**
-     * Get a list of ApplicationReviews where the given employeeId has performed an action on it.
+     * Get a list of ApplicationReviews where the given role has performed an action on it.
      */
     @Override
     public List<ApplicationReview> reviewHistoryForRole(TravelRole role) {

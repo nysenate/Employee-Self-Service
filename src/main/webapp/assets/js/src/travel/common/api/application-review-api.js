@@ -34,12 +34,12 @@ angular.module('essTravel').factory('ApplicationReviewApi', [
             return reviewHistoryApi.get({});
         };
 
-        appReviewApi.approve = function (appReviewId, notes, isDiscussionRequested) {
-            return approveApi.save({appReviewId: appReviewId}, new ActionBody(notes, isDiscussionRequested));
+        appReviewApi.approve = function (appReviewId, role, notes, isDiscussionRequested) {
+            return approveApi.save({appReviewId: appReviewId, role: role}, new ActionBody(notes, isDiscussionRequested));
         };
 
-        appReviewApi.disapprove = function (appReviewId, notes) {
-            return disapproveApi.save({appReviewId: appReviewId}, new ActionBody(notes, false));
+        appReviewApi.disapprove = function (appReviewId, role, notes) {
+            return disapproveApi.save({appReviewId: appReviewId, role: role}, new ActionBody(notes, false));
         };
 
         appReviewApi.parseAppReviewResponse = function (response) {

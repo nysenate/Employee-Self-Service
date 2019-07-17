@@ -77,7 +77,9 @@ public class ApplicationReviewService {
         return pendingReviews;
     }
 
-    public List<ApplicationReview> appReviewHistoryForEmp(TravelRole role) {
+    public List<ApplicationReview> appReviewHistoryForRole(TravelRole role) {
+        // TODO if SUPERVISOR need to filter out employees who are not theirs
+        // TODO wait on implementing this until Dept Heads are added.
         return appReviewDao.reviewHistoryForRole(role);
     }
 

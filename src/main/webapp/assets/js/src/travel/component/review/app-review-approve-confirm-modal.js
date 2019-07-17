@@ -10,13 +10,14 @@ essTravel.directive('appReviewApproveConfirmModal', ['appProps', function (appPr
 
 function confirmationCtrl($scope, modals, appReviewApi) {
 
-    $scope.appReview = modals.params();
+    $scope.appReview = modals.params().review;
+    $scope.role = modals.params().role;
     $scope.notes = "";
     $scope.isDiscussionRequested = false;
     $scope.isSingleDayTravel = $scope.appReview.travelApplication.startDate === $scope.appReview.travelApplication.endDate;
 
     $scope.approve = function () {
-        appReviewApi.approve($scope.appReview.appReviewId, $scope.notes, $scope.isDiscussionRequested)
+        appReviewApi.approve($scope.appReview.appReviewId, $scope.role.name, $scope.notes, $scope.isDiscussionRequested)
             .$promise
             .then(function () {
                 modals.resolve();

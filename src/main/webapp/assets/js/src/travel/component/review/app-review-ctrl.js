@@ -13,11 +13,13 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     vm.reviews = [];
     vm.appIdToReview = new Map(); // Map of TravelApplication id to its ApplicationReview
     vm.userRoles = [];
+    vm.activeRole = {};
 
     (function init() {
         roleService.roles()
             .then(function (response) {
                 vm.userRoles = response.roles;
+                vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
                 initPendingAppReviews()
                     .then(openReviewModalIfSearchParamsSet);
             });
@@ -25,7 +27,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
 
     function initPendingAppReviews() {
         // TODO Use user selected role
-        return appReviewApi.pendingReviews(vm.userRoles[vm.userRoles.length - 1].name)
+        return appReviewApi.pendingReviews(vm.activeRole.name)
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
@@ -56,7 +58,7 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     function openReviewModal(review) {
         if (review) {
             locationService.setSearchParam(APP_ID_SEARCH_PARAM, review.travelApplication.id);
-            vm.modalPromise = modals.open("app-review-action-modal", review, true)
+            vm.modalPromise = modals.open("app-review-action-modal", {review: review, role: vm.activeRole}, true)
                 .then(reload)
                 .finally(resetAppIdParam);
         } else {
