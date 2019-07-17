@@ -49,6 +49,7 @@
             customContSrvDate: moment().format('Y-MM-DD'),
             params: angular.copy(defaultParams),
             pagination: angular.copy(defaultPagination),
+            lastPageRequested: -1,
             results: null,
             request: {
                 tasks: false,
@@ -61,8 +62,8 @@
         $scope.$watch('state.selTasks', updateSelTaskParams, true);
         $scope.$watch('state.params.taskActive', updateSelTaskParams);
         $scope.$watchGroup(['state.selContSrvDateOpt', 'state.customContSrvDate'], updateContSrvDateParam);
-        $scope.$watch('state.params', performSearch, true);
-        $scope.$watch('state.pagination.currPage', performSearch);
+        $scope.$watch('state.params', onParamChange, true);
+        $scope.$watch('state.pagination.currPage', onPageChange);
 
         function init() {
             $scope.state = angular.copy(defaultState);
@@ -94,7 +95,6 @@
                 taskMap[idStr] = task;
                 selTasks[idStr] = false;
             });
-            console.log(taskList);
         }
 
         /**
@@ -128,11 +128,20 @@
             $scope.state.params.contSrvFrom = selection.getValue();
         }
 
+        /**
+         * Perform a new search query, resetting pagination.
+         */
+        function onParamChange() {
+            resetPagination();
+            performSearch();
+        }
+
         function performSearch() {
             if (!$scope.state.selTasks) {
                 return;
             }
             var pagination = $scope.state.pagination;
+            $scope.state.lastPageRequested = $scope.state.pagination.currPage;
             var params = angular.copy($scope.state.params);
             Object.assign(params, {limit: pagination.getLimit(), offset: pagination.getOffset()});
             $scope.state.request.search = true;
@@ -158,6 +167,30 @@
 
         function getDateStr(date) {
             return moment(date).format('Y-MM-DD');
+        }
+
+        /* --- Pagination --- */
+
+        function onPageChange() {
+            // Perform a search only if the page change wasn't already included in the last request.
+            // This happens when the pagination is reset for a new query
+            if ($scope.state.lastPageRequested !== $scope.state.pagination.currPage) {
+                performSearch();
+            }
+        }
+
+        /**
+         * Attempt to reset the pagination to page 1.
+         * Return true if the page was not already 1.
+         * @return {boolean}
+         */
+        function resetPagination() {
+            var pagination = $scope.state.pagination;
+            if (pagination.currPage === 1) {
+                return false;
+            }
+            pagination.currPage = 1;
+            return true;
         }
 
     }

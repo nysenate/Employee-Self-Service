@@ -77,6 +77,12 @@
 
         <a href="#">Download results as CSV</a>
 
+        <div>
+          <dir-pagination-controls class="text-align-center"
+                                   pagination-id="todo-report-pagination"
+                                   boundary-links="true" max-size="10"></dir-pagination-controls>
+        </div>
+
         <table>
           <thead>
           <tr>
@@ -86,7 +92,10 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="result in state.results">
+          <tr dir-paginate="result in state.results | itemsPerPage: state.pagination.itemsPerPage"
+              current-page="state.pagination.currPage"
+              pagination-id="todo-report-pagination"
+              total-items="state.pagination.totalItems">
             <td>{{result.completedCount}}/{{result.tasks.length}}</td>
             <td>
               {{result.employee.lastName}},
@@ -97,6 +106,12 @@
           </tr>
           </tbody>
         </table>
+
+        <div>
+          <dir-pagination-controls class="text-align-center"
+                                   pagination-id="todo-report-pagination"
+                                   boundary-links="true" max-size="10"></dir-pagination-controls>
+        </div>
       </div>
     </div>
 
