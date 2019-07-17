@@ -10,7 +10,10 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
     var vm = this;
     vm.modalPromise;
     vm.isLoading = true;
-    vm.reviews = [];
+    vm.reviews = {
+        all: [],
+        filtered: [] // Only reviews which need to be reviewed by the selected role.
+    };
     vm.appIdToReview = new Map(); // Map of TravelApplication id to its ApplicationReview
     vm.userRoles = [];
     vm.activeRole = {};
@@ -20,24 +23,42 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
             .then(function (response) {
                 vm.userRoles = response.roles;
                 vm.activeRole = vm.userRoles[vm.userRoles.length - 1];
-                initPendingAppReviews()
+                queryPendingAppReviews()
+                    .then(filterReviews)
                     .then(openReviewModalIfSearchParamsSet);
             });
     })();
 
-    function initPendingAppReviews() {
-        // TODO Use user selected role
-        return appReviewApi.pendingReviews(vm.activeRole.name)
+    /**
+     * Get ApplicationReviews pending review by all of the users roles.
+     * Displayed ApplicationReviews will be filtered on the front end to show only those for the selected role.
+     * This is done so linking to this page with a preset appId will always work.
+     * @return {*}
+     */
+    function queryPendingAppReviews() {
+        var roleNames = vm.userRoles.map(function (role) {
+            return role.name;
+        });
+        return appReviewApi.pendingReviews(roleNames)
             .$promise
             .then(appReviewApi.parseAppReviewResponse)
             .then(function (appReviews) {
                 appReviews.forEach(function (review) {
-                    vm.reviews.push(review);
+                    vm.reviews.all.push(review);
                     vm.appIdToReview.set(review.travelApplication.id, review);
                 });
                 vm.isLoading = false;
             })
             .catch($scope.handleErrorResponse);
+    }
+
+    function filterReviews() {
+        vm.reviews.filtered = [];
+        vm.reviews.all.forEach(function (r) {
+            if (r.nextReviewerRole === vm.activeRole.name) {
+                vm.reviews.filtered.push(r);
+            }
+        });
     }
 
     function openReviewModalIfSearchParamsSet() {
@@ -65,6 +86,10 @@ function reviewController($scope, $q, modals, locationService, appReviewApi, rol
             resetAppIdParam();
         }
     }
+
+    vm.onActiveRoleChange = function () {
+        filterReviews();
+    };
 
     function reload() {
         locationService.go("/travel/review", true);

@@ -11,6 +11,7 @@ public class ApplicationReviewView implements ViewObject {
 
     private String appReviewId;
     private SimpleTravelApplicationView travelApplication;
+    private String nextReviewerRole;
     private List<ActionView> actions;
     private boolean isDiscussionRequested;
 
@@ -20,6 +21,7 @@ public class ApplicationReviewView implements ViewObject {
     public ApplicationReviewView(ApplicationReview appReview) {
         appReviewId = String.valueOf(appReview.getAppReviewId());
         travelApplication = new SimpleTravelApplicationView(appReview.application());
+        nextReviewerRole = appReview.nextReviewerRole().name();
         actions = appReview.actions().stream()
                 .map(ActionView::new)
                 .collect(Collectors.toList());
@@ -32,6 +34,10 @@ public class ApplicationReviewView implements ViewObject {
 
     public SimpleTravelApplicationView getTravelApplication() {
         return travelApplication;
+    }
+
+    public String getNextReviewerRole() {
+        return nextReviewerRole;
     }
 
     public List<ActionView> getActions() {
