@@ -6,6 +6,9 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.annotation.TestDependsOnDatabase;
 import gov.nysenate.ess.core.dao.personnel.rch.SqlResponsibilityHeadDao;
 import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +67,15 @@ public class SqlResponsibilityHeadDaoIT extends BaseTest {
     public void givenManyInvalidRchCodes_returnEmptyList() {
         List<ResponsibilityHead> rchs = rchDao.rchsForCodes(Lists.newArrayList("ZZZZZZZZ", "XXXXXXXXXX"));
         assertTrue(rchs.isEmpty());
+    }
+
+    @Test
+    public void rchCodeSearchTest() {
+        String term = "STS";
+        PaginatedList<ResponsibilityHead> results = rchDao.rchSearch(term, LimitOffset.ALL, SortOrder.NONE);
+        assertTrue(results.getResults().size() > 0);
+        results.getResults().forEach(rch -> assertTrue(
+                rch.getCode().toUpperCase().contains(term.toUpperCase()) ||
+                        rch.getName().toUpperCase().contains(term.toUpperCase())));
     }
 }
