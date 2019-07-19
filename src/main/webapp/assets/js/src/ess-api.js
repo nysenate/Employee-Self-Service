@@ -113,6 +113,12 @@ essApi.factory('EmployeeSearchApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/employees/search');
 }]);
 
+/** --- Responsibility Center API --- */
+
+essApi.factory('RCHSearchApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/respctr/head/search');
+}]);
+
 /** --- Alert Info API --- */
 
 essApi.factory('AlertInfoApi', ['$resource', 'appProps', function ($resource, appProps) {

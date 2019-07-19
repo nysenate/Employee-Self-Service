@@ -9,6 +9,8 @@
         var defaultPagination = angular.copy(pagination);
         defaultPagination.itemsPerPage = itemsPerPage;
 
+        console.log('heyo');
+
         var defaultParams = {
             name: "",
             empActive: null,
@@ -47,6 +49,9 @@
             selTasks: null,
             selContSrvDateOpt: $scope.contSrvDateOpts[0],
             customContSrvDate: moment().format('Y-MM-DD'),
+            selectedRCHS: {
+                selection: []
+            },
             params: angular.copy(defaultParams),
             pagination: angular.copy(defaultPagination),
             lastPageRequested: -1,

@@ -303,7 +303,6 @@
 .todo-report {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
 
   label {
     display: block;
@@ -316,6 +315,24 @@
 
 .todo-search-result-container {
   padding: 2em;
+}
+
+/** --- RCH Picker --- */
+
+.resp-ctr-head-picker {
+
+  .ui-select-container {
+    width: 23em;
+
+    li.ui-select-match-item {
+      float: none;
+      padding-left: 10px;
+
+      .select2-search-choice-close {
+        left: unset;
+      }
+    }
+  }
 }
 
 /** --- Paycheck History Page --- */

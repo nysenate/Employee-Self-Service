@@ -6,7 +6,7 @@
   <div class="content-container todo-report">
 
     <div class="todo-search-facets">
-      <h3>Trainings</h3>
+      <h3>Training Filters</h3>
       <div loader-indicator class="loader" ng-show="state.request.tasks"></div>
       <div ng-hide="state.request.tasks" class="training-facet">
         <label>
@@ -43,10 +43,10 @@
           <option value="SOME_COMPLETE">Some Complete</option>
           <option value="ALL_COMPLETE">All Complete</option>
         </select>
-      </label
+      </label>
 
+      <h3>Employee Filters</h3>
 
-      <h3>Employee</h3>
       <label>
         Continuous Service Start Date<br>
         <select ng-model="state.selContSrvDateOpt"
@@ -56,6 +56,12 @@
         Custom Continuous Service Date<br>
         <input datepicker ng-model="state.customContSrvDate">
       </label>
+
+      <label>
+        Offices
+        <rch-picker resp-ctr-heads="state.selectedRCHS"></rch-picker>
+      </label>
+
     </div>
 
     <div class="todo-search-result-container">
