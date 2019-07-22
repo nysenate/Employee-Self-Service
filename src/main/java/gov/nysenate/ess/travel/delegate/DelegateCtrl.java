@@ -16,27 +16,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/delegate")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/delegation")
 public class DelegateCtrl extends BaseRestApiCtrl {
 
     @Autowired private EmployeeInfoService employeeInfoService;
-    @Autowired private DelegateDao delegateDao;
+    @Autowired private DelegationDao delegateDao;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public BaseResponse searchDelegate(@RequestParam int principalId) {
+    public BaseResponse delegationsForPrincipal(@RequestParam int principalId) {
         checkPermission(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
 
-        List<Delegate> delegates = delegateDao.activeDelegates(principalId, LocalDate.now());
-        return delegateListResponse(delegates);
+        List<Delegation> delegations = delegateDao.findByPrincipalEmpId(principalId);
+        return delegateListResponse(delegations);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public BaseResponse saveDelegates(@RequestBody List<DelegateView> delegateViews) {
+    public BaseResponse saveDelegates(@RequestBody List<DelegationView> delegationViews) {
         checkPermission(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission());
 
-        List<Delegate> delegates = new ArrayList<>();
+        List<Delegation> delegations = new ArrayList<>();
         Employee principal = employeeInfoService.getEmployee(getSubjectEmployeeId());
-        for (DelegateView view : delegateViews) {
+        for (DelegationView view : delegationViews) {
             // If no delegate employee was assigned ignore it.
             if (view.delegate == null) {
                 continue;
@@ -45,13 +45,13 @@ public class DelegateCtrl extends BaseRestApiCtrl {
             Employee delegate = employeeInfoService.getEmployee(view.delegate.getEmpId());
             LocalDate startDate = view.useStartDate ? view.startDate() : LocalDate.now();
             LocalDate endDate = view.useEndDate ? view.endDate() : DateUtils.THE_FUTURE;
-            delegates.add(new Delegate(id, principal, delegate, startDate, endDate));
+            delegations.add(new Delegation(id, principal, delegate, startDate, endDate));
         }
-        delegateDao.saveDelegates(delegates, principal.getEmployeeId());
-        return delegateListResponse(delegates);
+        delegateDao.save(delegations, principal.getEmployeeId());
+        return delegateListResponse(delegations);
     }
 
-    private ListViewResponse<DelegateView> delegateListResponse(List<Delegate> delegates) {
-        return ListViewResponse.of(delegates.stream().map(DelegateView::new).collect(Collectors.toList()));
+    private ListViewResponse<DelegationView> delegateListResponse(List<Delegation> delegations) {
+        return ListViewResponse.of(delegations.stream().map(DelegationView::new).collect(Collectors.toList()));
     }
 }

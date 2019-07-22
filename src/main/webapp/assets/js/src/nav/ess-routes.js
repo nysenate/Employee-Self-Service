@@ -209,8 +209,8 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/travel/component/review-history/review-history'
     });
 
-    $routeProvider.when(ctxPath + '/travel/delegates', {
-        templateUrl: ctxPath + '/template/travel/component/assign-delegates/assign-delegates'
+    $routeProvider.when(ctxPath + '/travel/delegation', {
+        templateUrl: ctxPath + '/template/travel/component/delegation/delegation'
     });
 
     /** Help */

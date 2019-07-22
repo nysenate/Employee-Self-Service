@@ -22,54 +22,50 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
+public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
 
     private EmployeeInfoService employeeInfoService;
 
     @Autowired
-    public SqlDelegateDao(EmployeeInfoService employeeInfoService) {
+    public SqlDelegationDao(EmployeeInfoService employeeInfoService) {
         this.employeeInfoService = employeeInfoService;
     }
 
     /**
-     * Select delegates assigned by the given principalId which are active on date.
-     * In this case, active includes delegates which have been entered but have not started yet (i.e. startDate > date)
-     * Delegates are inactive if their end date has passed (i.e. endDate < date)
+     * Finds all delegations assigned by the given principalId
      *
      * @param principalId The employeeId of the principal employee.
-     * @param date        Returns delegates which have not expired as of this date.
      * @return
      */
     @Override
-    public List<Delegate> activeDelegates(int principalId, LocalDate date) {
+    public List<Delegation> findByPrincipalEmpId(int principalId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("principalId", principalId)
-                .addValue("date", toDate(date));
+                .addValue("principalId", principalId);
         String sql = SqlDelegateQuery.SELECT_DELEGATES.getSql(schemaMap());
-        RowMapper mapper = new DelegateRowMapper(employeeInfoService);
+        RowMapper<Delegation> mapper = new DelegateRowMapper(employeeInfoService);
         return localNamedJdbc.query(sql, params, mapper);
     }
 
     /**
-     * Saves a collection of delegates for a single Principal employee.
+     * Saves a collection of delegations for a single Principal employee.
      * All delegates should have the same principal Employee.
      */
     @Override
     @Transactional(value = "localTxManager")
-    public void saveDelegates(List<Delegate> delegates, int principalId) {
-        if (delegates == null) {
+    public void save(List<Delegation> delegations, int principalId) {
+        if (delegations == null) {
             return;
         }
-        Preconditions.checkArgument(delegates.stream().allMatch(d -> d.principal.getEmployeeId() == principalId));
+        Preconditions.checkArgument(delegations.stream().allMatch(d -> d.principal.getEmployeeId() == principalId));
 
-        deletePrincipalDelegates(principalId);
-        for (Delegate d : delegates) {
-            insertDelegate(d);
+        deletePrincipalDelegations(principalId);
+        for (Delegation d : delegations) {
+            insertDelegation(d);
         }
     }
 
     /**
-     * Finds a delegate by delegate emp id.
+     * Finds a delegation by delegate emp id that is active on {@code date}.
      * A user should only ever be assigned as a delegate for a single reviewer at a time so this
      * only returns one Delegate object.
      * @param delegateEmpId
@@ -77,11 +73,11 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
      * @return
      */
     @Override
-    public Optional<Delegate> delegateAssignedToEmp(int delegateEmpId, LocalDate date) {
+    public Optional<Delegation> findByDelegateEmpId(int delegateEmpId, LocalDate date) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("delegateEmpId", delegateEmpId)
                 .addValue("date", toDate(date));
-        String sql = SqlDelegateQuery.SELECT_DELEGATE_ASSIGNMENT.getSql(schemaMap());
+        String sql = SqlDelegateQuery.SELECT_BY_DELEGATE_EMP_ID.getSql(schemaMap());
         try {
             return Optional.of(localNamedJdbc.queryForObject(sql, params, new DelegateRowMapper(employeeInfoService)));
         } catch (IncorrectResultSizeDataAccessException ex) {
@@ -89,42 +85,41 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
         }
     }
 
-    private void deletePrincipalDelegates(int principalId) {
+    private void deletePrincipalDelegations(int principalId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("principalId", principalId);
-        String sql = SqlDelegateQuery.DELETE_DELEGATES_FOR_PRINCIPAL.getSql(schemaMap());
+        String sql = SqlDelegateQuery.DELETE_DELEGATIONS_FOR_PRINCIPAL.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
-    private void insertDelegate(Delegate delegate) {
+    private void insertDelegation(Delegation delegation) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("principalEmpId", delegate.principal.getEmployeeId())
-                .addValue("delegateEmpId", delegate.delegate.getEmployeeId())
-                .addValue("startDate", toDate(delegate.startDate))
-                .addValue("endDate", toDate(delegate.endDate));
-        String sql = SqlDelegateQuery.INSERT_DELEGATE.getSql(schemaMap());
+                .addValue("principalEmpId", delegation.principal.getEmployeeId())
+                .addValue("delegateEmpId", delegation.delegate.getEmployeeId())
+                .addValue("startDate", toDate(delegation.startDate))
+                .addValue("endDate", toDate(delegation.endDate));
+        String sql = SqlDelegateQuery.INSERT_DELEGATION.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
-        delegate.id = (Integer) keyHolder.getKeys().get("delegate_id");
+        delegation.id = (Integer) keyHolder.getKeys().get("delegation_id");
     }
 
     private enum SqlDelegateQuery implements BasicSqlQuery {
         SELECT_DELEGATES(
-                "SELECT delegate_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
-                        " FROM ${travelSchema}.delegate\n" +
-                        " WHERE principal_emp_id = :principalId\n" +
-                        " AND end_date > :date OR end_date = :date"
+                "SELECT delegation_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
+                        " FROM ${travelSchema}.delegation\n" +
+                        " WHERE principal_emp_id = :principalId"
         ),
-        INSERT_DELEGATE(
-                "INSERT INTO ${travelSchema}.delegate(principal_emp_id, delegate_emp_id, start_date, end_date)\n" +
+        INSERT_DELEGATION(
+                "INSERT INTO ${travelSchema}.delegation(principal_emp_id, delegate_emp_id, start_date, end_date)\n" +
                         " VALUES(:principalEmpId, :delegateEmpId, :startDate, :endDate)"
         ),
-        DELETE_DELEGATES_FOR_PRINCIPAL(
-                "DELETE FROM ${travelSchema}.delegate WHERE principal_emp_id = :principalId"
+        DELETE_DELEGATIONS_FOR_PRINCIPAL(
+                "DELETE FROM ${travelSchema}.delegation WHERE principal_emp_id = :principalId"
         ),
-        SELECT_DELEGATE_ASSIGNMENT(
-                "SELECT delegate_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
-                        " FROM ${travelSchema}.delegate\n" +
+        SELECT_BY_DELEGATE_EMP_ID(
+                "SELECT delegation_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
+                        " FROM ${travelSchema}.delegation\n" +
                         " WHERE delegate_emp_id = :delegateEmpId\n" +
                         " AND (start_date < :date OR start_date = :date)\n" +
                         " AND (end_date > :date OR end_date = :date)"
@@ -147,7 +142,7 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
         }
     }
 
-    private class DelegateRowMapper extends BaseRowMapper<Delegate> {
+    private class DelegateRowMapper extends BaseRowMapper<Delegation> {
 
         private EmployeeInfoService employeeInfoService;
 
@@ -156,9 +151,9 @@ public class SqlDelegateDao extends SqlBaseDao implements DelegateDao {
         }
 
         @Override
-        public Delegate mapRow(ResultSet rs, int i) throws SQLException {
-            return new Delegate(
-                    rs.getInt("delegate_id"),
+        public Delegation mapRow(ResultSet rs, int i) throws SQLException {
+            return new Delegation(
+                    rs.getInt("delegation_id"),
                     employeeInfoService.getEmployee(rs.getInt("principal_emp_id")),
                     employeeInfoService.getEmployee(rs.getInt("delegate_emp_id")),
                     getLocalDateFromRs(rs, "start_date"),

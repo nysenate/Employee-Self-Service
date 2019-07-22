@@ -7,29 +7,42 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class DelegateView implements ViewObject {
+public class DelegationView implements ViewObject {
 
     private static final DateTimeFormatter DATEPICKER_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     int id;
     EmployeeSearchView principal;
     EmployeeSearchView delegate;
+    @JsonProperty("useStartDate")
     boolean useStartDate;
     String startDate;
+    @JsonProperty("useEndDate")
     boolean useEndDate;
     String endDate;
 
-    public DelegateView() {
+    @JsonProperty("isActive")
+    boolean isActive;
+    @JsonProperty("isScheduled")
+    boolean isScheduled;
+    @JsonProperty("isExpired")
+    boolean isExpired;
+
+    public DelegationView() {
     }
 
-    public DelegateView(Delegate delegate) {
-        this.id = delegate.id;
-        this.principal = new EmployeeSearchView(delegate.principal);
-        this.delegate = new EmployeeSearchView(delegate.delegate);
+    public DelegationView(Delegation delegation) {
+        this.id = delegation.id;
+        this.principal = new EmployeeSearchView(delegation.principal);
+        this.delegate = new EmployeeSearchView(delegation.delegate);
         this.useStartDate = true;
-        this.startDate = delegate.startDate.format(DATEPICKER_FORMAT);
+        this.startDate = delegation.startDate.format(DATEPICKER_FORMAT);
         this.useEndDate = true;
-        this.endDate = delegate.endDate.format(DATEPICKER_FORMAT);
+        this.endDate = delegation.endDate.format(DATEPICKER_FORMAT);
+
+        this.isActive = delegation.isActive();
+        this.isScheduled = delegation.isScheduled();
+        this.isExpired = delegation.isExpired();
     }
 
     public LocalDate startDate() {
@@ -52,7 +65,6 @@ public class DelegateView implements ViewObject {
         return delegate;
     }
 
-    @JsonProperty("useStartDate")
     public boolean isUseStartDate() {
         return useStartDate;
     }
@@ -61,7 +73,6 @@ public class DelegateView implements ViewObject {
         return startDate;
     }
 
-    @JsonProperty("useEndDate")
     public boolean isUseEndDate() {
         return useEndDate;
     }
@@ -70,8 +81,20 @@ public class DelegateView implements ViewObject {
         return endDate;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public boolean isScheduled() {
+        return isScheduled;
+    }
+
+    public boolean isExpired() {
+        return isExpired;
+    }
+
     @Override
     public String getViewType() {
-        return "delegate";
+        return "delegation";
     }
 }

@@ -51,7 +51,7 @@ public class TravelTemplateCtrl extends BaseTemplateCtrl {
         return NOT_AUTHORIZED_PAGE;
     }
 
-    @RequestMapping(value = "/component/assign-delegates/assign-delegates")
+    @RequestMapping(value = "/component/delegation/delegation")
     public String assignDelegates(HttpServletRequest request) {
          if (SecurityUtils.getSubject().isPermitted(SimpleTravelPermission.TRAVEL_ASSIGN_DELEGATES.getPermission())) {
             return request.getRequestURI();

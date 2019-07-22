@@ -3,10 +3,9 @@ package gov.nysenate.ess.travel.authorization.role;
 import gov.nysenate.ess.core.dao.security.authorization.RoleDao;
 import gov.nysenate.ess.core.model.auth.EssRole;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.security.authorization.role.EssRoleFactory;
 import gov.nysenate.ess.core.service.security.authorization.role.RoleFactory;
 import gov.nysenate.ess.time.service.personnel.SupervisorInfoService;
-import gov.nysenate.ess.travel.delegate.DelegateDao;
+import gov.nysenate.ess.travel.delegate.DelegationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,15 +14,17 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Assigns all travel roles except MAJORITY_LEADER to an employee.
- * MAJORITY_LEADER is defined in ess.user_roles and therefore is granted by the {@link EssRoleFactory}
+ * Assigns all travel roles to an employee.
+ *
+ * The TravelRole.MAJORITY_LEADER is assigned if the employee is assigned the EssRole.MAJORITY_LEADER
+ * role from the ess.user_roles table.
  */
 @Service
 public class TravelRoleFactory implements RoleFactory {
 
     @Autowired private RoleDao essRoleDao;
     @Autowired private SupervisorInfoService supervisorInfoService;
-    @Autowired private DelegateDao delegateDao;
+    @Autowired private DelegationDao delegateDao;
 
     @Override
     public Stream<Enum> getRoles(Employee employee) {
