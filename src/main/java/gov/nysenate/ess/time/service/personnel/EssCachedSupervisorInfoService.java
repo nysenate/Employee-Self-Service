@@ -424,6 +424,40 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
         }
     }
 
+    private Iterator<PrimarySupEmpGroup> getCachedEmpGroupItr() {
+        List<?> keys = supEmployeeGroupCache.getKeys();
+        return new Iterator<PrimarySupEmpGroup>() {
+            private Queue<?> queue = new ArrayDeque<>(keys);
+
+            private PrimarySupEmpGroup next = getNextEmpGroup();
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public PrimarySupEmpGroup next() {
+                if (next == null) {
+                    throw new IllegalStateException("Next value does not exist");
+                }
+                PrimarySupEmpGroup rtrn = next;
+                next = getNextEmpGroup();
+                return rtrn;
+            }
+
+            private PrimarySupEmpGroup getNextEmpGroup() {
+                while (!queue.isEmpty()) {
+                    Object result = supEmployeeGroupCache.get(queue.remove()).getObjectValue();
+                    if (result instanceof PrimarySupEmpGroup) {
+                        return (PrimarySupEmpGroup) result;
+                    }
+                }
+                return null;
+            }
+        };
+    }
+
     /**
      * Get all employee and supervisor overrides for the given employee
      * @param supId int
@@ -439,22 +473,79 @@ public class EssCachedSupervisorInfoService implements SupervisorInfoService, Ca
      * @param transUpdateEvent TransactionHistoryUpdateEvent
      */
     @Subscribe
-    private void handleSupervisorTransactions(TransactionHistoryUpdateEvent transUpdateEvent) {
-        long updatedSups = transUpdateEvent.getTransRecs().stream()
+    public void handleSupervisorTransactions(TransactionHistoryUpdateEvent transUpdateEvent) {
+        // Get a map of affected employees with the date range possibly impacted by the update.
+        Map<Integer, RangeSet<LocalDate>> affectedEmpDates = new HashMap<>();
+        transUpdateEvent.getTransRecs().stream()
                 .filter(rec -> supervisorTransCodes.contains(rec.getTransCode()))
-                .flatMap(rec -> {
-                    // Add any sups that were active immediately before or after the transaction effect date
-                    TransactionHistory transHistory = empTransService.getTransHistory(rec.getEmployeeId());
-                    Range<LocalDate> relevantDates = Range.closedOpen(
-                            rec.getEffectDate().minusDays(1), rec.getEffectDate().plusDays(1));
-                    return transHistory.getEffectiveSupervisorIds(relevantDates).values().stream();
-                })
-                .distinct()
-                .peek(this::getAndCachePrimarySupEmpGroup)
-                .count();
-        if (updatedSups > 0) {
-            logger.info("Updated {} supervisor employee groups in response to new transactions", updatedSups);
+                .forEach(rec -> {
+                    RangeSet<LocalDate> affectedRanges =
+                            affectedEmpDates.getOrDefault(rec.getEmployeeId(), TreeRangeSet.create());
+                    // Include day before and after record just in case
+                    affectedRanges.add(Range.closed(
+                            rec.getEffectDate().minusDays(1),
+                            rec.getEffectDate().plusDays(1)
+                    ));
+                    affectedEmpDates.put(rec.getEmployeeId(), affectedRanges);
+                });
+
+        Set<Integer> affectedSupervisorIds = new HashSet<>();
+        // Get affected cache entries.
+        affectedSupervisorIds.addAll(getAffectedSupIdsInCache(affectedEmpDates));
+        // Get supervisors that need a cache update according to transaction history
+        affectedSupervisorIds.addAll(getAffectedSupIdsFromTrans(affectedEmpDates));
+
+        if (affectedSupervisorIds.size() > 0) {
+            affectedSupervisorIds.forEach(this::getAndCachePrimarySupEmpGroup);
+            logger.info("Updated {} supervisor employee groups in response to new transactions",
+                    affectedSupervisorIds.size());
         }
+    }
+
+    /**
+     * Get sup ids from cache entries that contain the given employee ids at the given dates.
+     *
+     * This will detect instances when a supervisor is no longer in an employee's transaction history,
+     * but the employee is still in the supervisors cached emp group,
+     * which is not doable using transaction history alone.
+     * @see #getAffectedSupIdsFromTrans(Map), to get affected supervisors not necessarily covered by this method.
+     */
+    private Set<Integer> getAffectedSupIdsInCache(Map<Integer, RangeSet<LocalDate>> affectedEmpDates) {
+        Set<Integer> affectedSupIds = new HashSet<>();
+        if (!affectedEmpDates.isEmpty()) {
+            for (Iterator<PrimarySupEmpGroup> it = getCachedEmpGroupItr(); it.hasNext(); ) {
+                PrimarySupEmpGroup seg = it.next();
+                // Check if the supervisor had any of the affected emps during the relevant dates.
+                for (Map.Entry<Integer, RangeSet<LocalDate>> empDates : affectedEmpDates.entrySet()) {
+                    for (Range<LocalDate> dates : empDates.getValue().asRanges()) {
+                        if (seg.hasEmployeeDuringRange(empDates.getKey(), dates)) {
+                            affectedSupIds.add(seg.getSupervisorId());
+                        }
+                    }
+                }
+            }
+        }
+        return affectedSupIds;
+    }
+
+    /**
+     * Get sup ids of supervisors for the given emps at given dates according to current transaction history.
+     *
+     * This will pick up new supervisors added to an employee's transaction history,
+     * something not doable using the cache.
+     * @see #getAffectedSupIdsInCache(Map), to get affected supervisors not necessarily covered by this method.
+     */
+    private Set<Integer> getAffectedSupIdsFromTrans(Map<Integer, RangeSet<LocalDate>> affectedEmpDates) {
+        Set<Integer> affectedSupIds = new HashSet<>();
+        for (Map.Entry<Integer, RangeSet<LocalDate>> entry : affectedEmpDates.entrySet()) {
+            int empId = entry.getKey();
+            RangeSet<LocalDate> dates = entry.getValue();
+            TransactionHistory transHistory = empTransService.getTransHistory(empId);
+            for (Range<LocalDate> dateRange : dates.asRanges()) {
+                affectedSupIds.addAll(transHistory.getEffectiveSupervisorIds(dateRange).values());
+            }
+        }
+        return affectedSupIds;
     }
 
     /**
