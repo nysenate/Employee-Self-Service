@@ -26,6 +26,14 @@ public class Delegation {
     }
 
     /**
+     * Get the principal employee for this delegation.
+     * @return
+     */
+    public Employee principal() {
+        return this.principal;
+    }
+
+    /**
      * @return true if the current date is between this delegation's startDate and endDate.
      */
     public boolean isActive() {

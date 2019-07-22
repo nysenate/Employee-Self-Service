@@ -11,7 +11,6 @@ import java.util.List;
  */
 public class TravelRoles {
 
-    // TODO Keep reference to the employee these roles are for?
     private ImmutableList<TravelRole> roles;
     private ImmutableList<TravelRole> delegatedRoles;
 
@@ -21,20 +20,13 @@ public class TravelRoles {
     }
 
     /**
-     * Are any roles contained in this TravelRoles instance.
-     */
-    public boolean hasRole() {
-        return !roles().isEmpty();
-    }
-
-    /**
      * All TravelRole's assigned to an employee
      * @return
      */
-    public ImmutableList<TravelRole> roles() {
+    public ImmutableList<TravelRole> all() {
         return new ImmutableList.Builder<TravelRole>()
-                .addAll(primaryRoles())
-                .addAll(delegateRoles())
+                .addAll(primary())
+                .addAll(delegate())
                 .build();
     }
 
@@ -42,7 +34,7 @@ public class TravelRoles {
      * Roles explicitly assigned to this employee. i.e not delegated roles.
      * @return
      */
-    public ImmutableList<TravelRole> primaryRoles() {
+    public ImmutableList<TravelRole> primary() {
         return roles;
     }
 
@@ -50,24 +42,24 @@ public class TravelRoles {
      * The highest role this employee has.
      * Returns TravelRole.NONE if the employee does not have any travel roles.
      */
-    public TravelRole apexRole() {
+    public TravelRole apex() {
         TravelRole apex = TravelRole.NONE;
-        if (roles().contains(TravelRole.SUPERVISOR)) {
+        if (all().contains(TravelRole.SUPERVISOR)) {
             apex = TravelRole.SUPERVISOR;
         }
-        if (roles().contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
+        if (all().contains(TravelRole.DEPUTY_EXECUTIVE_ASSISTANT)) {
             apex = TravelRole.DEPUTY_EXECUTIVE_ASSISTANT;
         }
-        if (roles().contains(TravelRole.SECRETARY_OF_THE_SENATE)) {
+        if (all().contains(TravelRole.SECRETARY_OF_THE_SENATE)) {
             apex = TravelRole.SECRETARY_OF_THE_SENATE;
         }
-        if (roles().contains(TravelRole.MAJORITY_LEADER)) {
+        if (all().contains(TravelRole.MAJORITY_LEADER)) {
             apex = TravelRole.MAJORITY_LEADER;
         }
         return apex;
     }
 
-    public ImmutableList<TravelRole> delegateRoles() {
+    public ImmutableList<TravelRole> delegate() {
         return delegatedRoles;
     }
 }

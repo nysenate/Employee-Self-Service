@@ -64,7 +64,7 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
         TravelRoles roles = travelRoleFactory.travelRolesForEmp(emp);
 
         Set<ApplicationReview> reviews = new HashSet<>();
-        for (TravelRole role : roles.roles()) {
+        for (TravelRole role : roles.all()) {
             reviews.addAll(appReviewService.appReviewHistoryForRole(role));
         }
         return ListViewResponse.of(reviews.stream()

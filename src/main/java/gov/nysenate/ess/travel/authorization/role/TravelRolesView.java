@@ -13,7 +13,7 @@ public class TravelRolesView implements ViewObject {
     }
 
     public TravelRolesView(TravelRoles roles) {
-        this.roles = roles.roles().stream()
+        this.roles = roles.all().stream()
                 .map(TravelRoleView::new)
                 .collect(Collectors.toList());
     }

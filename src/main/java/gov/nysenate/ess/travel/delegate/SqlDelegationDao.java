@@ -7,7 +7,6 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
@@ -65,24 +62,17 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
     }
 
     /**
-     * Finds a delegation by delegate emp id that is active on {@code date}.
-     * A user should only ever be assigned as a delegate for a single reviewer at a time so this
-     * only returns one Delegate object.
+     * Finds delegations that have been granted to an employee.
      * @param delegateEmpId
-     * @param date
-     * @return
+     * @return A list of delegates which have been granted to this employee. This returns all delegates every assigned
+     * to this employee so you may want to check its active before using.
      */
     @Override
-    public Optional<Delegation> findByDelegateEmpId(int delegateEmpId, LocalDate date) {
+    public List<Delegation> findByDelegateEmpId(int delegateEmpId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("delegateEmpId", delegateEmpId)
-                .addValue("date", toDate(date));
+                .addValue("delegateEmpId", delegateEmpId);
         String sql = SqlDelegateQuery.SELECT_BY_DELEGATE_EMP_ID.getSql(schemaMap());
-        try {
-            return Optional.of(localNamedJdbc.queryForObject(sql, params, new DelegateRowMapper(employeeInfoService)));
-        } catch (IncorrectResultSizeDataAccessException ex) {
-            return Optional.empty();
-        }
+        return localNamedJdbc.query(sql, params, new DelegateRowMapper(employeeInfoService));
     }
 
     private void deletePrincipalDelegations(int principalId) {
@@ -120,9 +110,7 @@ public class SqlDelegationDao extends SqlBaseDao implements DelegationDao {
         SELECT_BY_DELEGATE_EMP_ID(
                 "SELECT delegation_id, principal_emp_id, delegate_emp_id, start_date, end_date\n" +
                         " FROM ${travelSchema}.delegation\n" +
-                        " WHERE delegate_emp_id = :delegateEmpId\n" +
-                        " AND (start_date < :date OR start_date = :date)\n" +
-                        " AND (end_date > :date OR end_date = :date)"
+                        " WHERE delegate_emp_id = :delegateEmpId"
         );
 
         private String sql;
