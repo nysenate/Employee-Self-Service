@@ -1,6 +1,6 @@
 <div class="resp-ctr-head-picker">
 
-  <a href ng-click="clearSelected()">Clear Selected Offices</a>
+  <a href ng-click="clearSelected()">Clear Selected Offices</a><br>
 
   <ui-select multiple ng-model="respCtrHeads.selection" close-on-select="false" reset-search-input="false">
     <ui-select-match placeholder="Select an office">

@@ -9,8 +9,6 @@
         var defaultPagination = angular.copy(pagination);
         defaultPagination.itemsPerPage = itemsPerPage;
 
-        console.log('heyo');
-
         var defaultParams = {
             name: "",
             empActive: null,
@@ -18,7 +16,8 @@
             contServFrom: null,
             taskActive: true,
             completed: null,
-            totalCompletion: null
+            totalCompletion: null,
+            respCtrHead: null,
         };
 
         $scope.contSrvDateValues = {
@@ -66,6 +65,7 @@
 
         $scope.$watch('state.selTasks', updateSelTaskParams, true);
         $scope.$watch('state.params.taskActive', updateSelTaskParams);
+        $scope.$watch('state.selectedRCHS', onSelRCHSChange, true);
         $scope.$watchGroup(['state.selContSrvDateOpt', 'state.customContSrvDate'], updateContSrvDateParam);
         $scope.$watch('state.params', onParamChange, true);
         $scope.$watch('state.pagination.currPage', onPageChange);
@@ -172,6 +172,13 @@
 
         function getDateStr(date) {
             return moment(date).format('Y-MM-DD');
+        }
+
+        function onSelRCHSChange() {
+            var codes = $scope.state.params.respCtrHead = [];
+            $scope.state.selectedRCHS.selection.forEach(function(rchs) {
+                codes.push(rchs.code);
+            });
         }
 
         /* --- Pagination --- */
