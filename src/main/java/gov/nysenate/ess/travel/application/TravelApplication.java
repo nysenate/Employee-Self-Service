@@ -8,52 +8,63 @@ import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class TravelApplication {
 
-    private int appId;
-    private int versionId;
-    private Employee traveler;
-    private String purposeOfTravel;
-    private Route route;
-    private Allowances allowances;
-    private PerDiemOverrides perDiemOverrides;
-    private TravelApplicationStatus status;
-    private List<TravelAttachment> attachments;
-    private LocalDateTime submittedDateTime; // DateTime application was submitted for approval.
-    private LocalDateTime modifiedDateTime; // DateTime this app was last updated.
-    private Employee modifiedBy; // The last employee to modify.
+    private final static Comparator<Amendment> amendmentComparator = Comparator.comparingInt(Amendment::id);
 
-    public TravelApplication(int appId, int versionId, Employee traveler) {
+    protected int appId;
+    protected Employee traveler;
+    protected SortedSet<Amendment> amendments;
+
+    public TravelApplication(int id, Employee traveler, Amendment amd) {
+        this.appId = id;
+        this.traveler = traveler;
+        this.amendments = new TreeSet<>(amendmentComparator);
+        this.amendments.add(amd);
+    }
+
+    public TravelApplication(int appId, int amendmentId, Employee traveler) {
         this.appId = Objects.requireNonNull(appId, "Travel Application requires a non null id.");
-        this.versionId = Objects.requireNonNull(versionId, "Travel Application requires a non null versionId.");
         this.traveler = Objects.requireNonNull(traveler, "Travel Application requires a non null traveler.");
-        this.purposeOfTravel = "";
-        this.route = Route.EMPTY_ROUTE;
-        this.allowances = new Allowances();
-        this.perDiemOverrides = new PerDiemOverrides();
-        this.status = new TravelApplicationStatus();
-        this.attachments = new ArrayList<>();
+        Objects.requireNonNull(amendmentId, "Travel Application requires a non null versionId.");
+        this.amendments = new TreeSet<>(amendmentComparator);
+
+        // TODO Some of this is likely wrong
+        Amendment a = new Amendment(amendmentId, "", Route.EMPTY_ROUTE, new Allowances(), new PerDiemOverrides(),
+                new TravelApplicationStatus(), new ArrayList<>(), LocalDateTime.now(), traveler);
+        this.amendments.add(a);
+    }
+
+    // The active amendment is the most recent approved amendment
+    // or, if none are approved, the most recent amendment.
+    public Amendment activeAmendment() {
+        Optional<Amendment> approvedAmd = amendments.stream()
+                .filter(a -> a.status.isApproved())
+                .reduce((first, second) -> second);
+        return approvedAmd.orElse(amendments.last());
+    }
+
+    public void addAmendment(Amendment a) {
+        amendments.add(a);
     }
 
     public Dollars mileageAllowance() {
-        return perDiemOverrides.isMileageOverridden()
-                ? perDiemOverrides.mileageOverride()
+        return activeAmendment().perDiemOverrides.isMileageOverridden()
+                ? activeAmendment().perDiemOverrides.mileageOverride()
                 : getRoute().mileagePerDiems().requestedPerDiem();
     }
 
     public Dollars mealAllowance() {
-        return perDiemOverrides.isMealsOverridden()
-                ? perDiemOverrides.mealsOverride()
+        return activeAmendment().perDiemOverrides.isMealsOverridden()
+                ? activeAmendment().perDiemOverrides.mealsOverride()
                 : getRoute().mealPerDiems().requestedPerDiem();
     }
 
     public Dollars lodgingAllowance() {
-        return perDiemOverrides.isLodgingOverridden()
-                ? perDiemOverrides.lodgingOverride()
+        return activeAmendment().perDiemOverrides.isLodgingOverridden()
+                ? activeAmendment().perDiemOverrides.lodgingOverride()
                 : getRoute().lodgingPerDiems().requestedPerDiem();
     }
 
@@ -74,7 +85,7 @@ public class TravelApplication {
     }
 
     public Dollars registrationAllowance() {
-        return allowances.registration();
+        return getAllowances().registration();
     }
 
     /**
@@ -122,19 +133,19 @@ public class TravelApplication {
     }
 
     public TravelApplicationStatus status() {
-        return status;
+        return activeAmendment().status;
     }
 
     void setStatus(TravelApplicationStatus status) {
-        this.status = status;
+        activeAmendment().status = status;
     }
 
     public void approve() {
-        status.approve();
+        activeAmendment().status.approve();
     }
 
     public void disapprove(String notes) {
-        status.disapprove(notes);
+        activeAmendment().status.disapprove(notes);
     }
 
     public int getAppId() {
@@ -146,11 +157,11 @@ public class TravelApplication {
     }
 
     public int getVersionId() {
-        return versionId;
+        return activeAmendment().id;
     }
 
     void setVersionId(int versionId) {
-        this.versionId = versionId;
+        activeAmendment().id = versionId;
     }
 
     public Employee getTraveler() {
@@ -158,67 +169,71 @@ public class TravelApplication {
     }
 
     public String getPurposeOfTravel() {
-        return purposeOfTravel;
+        return activeAmendment().purposeOfTravel;
     }
 
     void setPurposeOfTravel(String purposeOfTravel) {
-        this.purposeOfTravel = purposeOfTravel;
+        activeAmendment().purposeOfTravel = purposeOfTravel;
     }
 
     public Route getRoute() {
-        return route;
+        return activeAmendment().route;
     }
 
     void setRoute(Route route) {
-        this.route = route;
+        activeAmendment().route = route;
     }
 
     public Allowances getAllowances() {
-        return this.allowances;
+        return activeAmendment().allowances;
     }
 
     void setAllowances(Allowances allowances) {
-        this.allowances = allowances;
+        activeAmendment().allowances = allowances;
     }
 
     public PerDiemOverrides getPerDiemOverrides() {
-        return perDiemOverrides;
+        return activeAmendment().perDiemOverrides;
     }
 
     void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
-        this.perDiemOverrides = perDiemOverrides;
+        activeAmendment().perDiemOverrides = perDiemOverrides;
     }
 
     public LocalDateTime getSubmittedDateTime() {
-        return submittedDateTime;
+        return amendments.first().createdDateTime;
     }
 
     void setSubmittedDateTime(LocalDateTime submittedDateTime) {
-        this.submittedDateTime = submittedDateTime;
+        // TODO Remove/fix this
+        amendments.first().createdDateTime = submittedDateTime;
     }
 
     public LocalDateTime getModifiedDateTime() {
-        return modifiedDateTime;
+        return amendments.last().createdDateTime;
     }
 
     void setModifiedDateTime(LocalDateTime modifiedDateTime) {
-        this.modifiedDateTime = modifiedDateTime;
+        // TODO Fix
+        amendments.last().createdDateTime = modifiedDateTime;
     }
 
     public Employee getModifiedBy() {
-        return modifiedBy;
+        return amendments.last().createdBy;
     }
 
     void setModifiedBy(Employee modifiedBy) {
-        this.modifiedBy = modifiedBy;
+        // TODO Fix
+        amendments.last().createdBy = modifiedBy;
     }
 
     public List<TravelAttachment> getAttachments() {
-        return attachments;
+        return activeAmendment().attachments;
     }
 
     void setAttachments(List<TravelAttachment> attachments) {
-        this.attachments = attachments;
+        // TODO Fix
+        activeAmendment().attachments = attachments;
     }
 
     void addAttachments(List<TravelAttachment> attachments) {
