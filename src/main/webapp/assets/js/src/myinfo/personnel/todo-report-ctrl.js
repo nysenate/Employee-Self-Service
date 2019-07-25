@@ -55,6 +55,7 @@
             pagination: angular.copy(defaultPagination),
             lastPageRequested: -1,
             results: null,
+            iSelResult: null,
             request: {
                 tasks: false,
                 search: false
@@ -69,6 +70,11 @@
         $scope.$watchGroup(['state.selContSrvDateOpt', 'state.customContSrvDate'], updateContSrvDateParam);
         $scope.$watch('state.params', onParamChange, true);
         $scope.$watch('state.pagination.currPage', onPageChange);
+
+        /* --- Display Functions --- */
+
+        $scope.selectResult = selectResult;
+        $scope.getTaskTitle = getTaskTitle;
 
         function init() {
             $scope.state = angular.copy(defaultState);
@@ -111,6 +117,15 @@
             return taskId.taskType + "-" + taskId.taskNumber;
         }
 
+        function getTaskTitle(taskId) {
+            var taskIdStr = getTaskIdStr(taskId);
+            var taskMap = $scope.state.taskMap;
+            if (taskIdStr in taskMap) {
+                return taskMap[taskIdStr].title;
+            }
+            return '!? Unknown task "' + taskIdStr + '"';
+        }
+
         /**
          * Update the search request params based on selected tasks.
          */
@@ -145,6 +160,7 @@
             if (!$scope.state.selTasks) {
                 return;
             }
+            unsetSearchResults();
             var pagination = $scope.state.pagination;
             $scope.state.lastPageRequested = $scope.state.pagination.currPage;
             var params = angular.copy($scope.state.params);
@@ -160,9 +176,15 @@
         }
 
         function setSearchResults(resp) {
+            $scope.state.iSelResult = null;
             $scope.state.results = resp.result.map(initializeResult);
             var pagination = $scope.state.pagination;
             pagination.setTotalItems(resp.total);
+        }
+
+        function unsetSearchResults() {
+            $scope.state.iSelResult = null;
+            $scope.state.results = [];
         }
 
         function initializeResult(result) {
@@ -179,6 +201,16 @@
             $scope.state.selectedRCHS.selection.forEach(function(rchs) {
                 codes.push(rchs.code);
             });
+        }
+
+        function selectResult(index) {
+            // If the given index is currently selected, unselect it.
+            // Otherwise, set the selected index to the given index.
+            if ($scope.state.iSelResult === index) {
+                $scope.state.iSelResult = null;
+            } else {
+                $scope.state.iSelResult = index;
+            }
         }
 
         /* --- Pagination --- */

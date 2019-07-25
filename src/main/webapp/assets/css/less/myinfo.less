@@ -301,8 +301,7 @@
 /** --- To-do reporting --- */
 
 .todo-report {
-  display: flex;
-  flex-direction: row;
+  overflow: auto;
 
   label {
     display: block;
@@ -310,11 +309,67 @@
 }
 
 .todo-search-facets {
+  float: left;
+  width: 40%;
   padding: 2em;
 }
 
 .todo-search-result-container {
+  float: right;
+  width: 60%;
   padding: 2em;
+}
+
+.todo-search-result-table {
+  width: 100%;
+}
+
+.dir-pagination-controls-only-hack {
+  display: none;
+}
+
+.todo-report-result {
+  height: 2em;
+  border: 1px solid transparent;
+  border-bottom: none;
+
+  &:hover {
+    background: #fafafa;
+    cursor: pointer;
+  }
+
+  &.todo-report-result-selected {
+    border-color: #aaa;
+  }
+
+  .completion-icon {
+    vertical-align: center;
+  }
+
+  .icon-cross {
+    color: orangered;
+  }
+
+  .icon-minus {
+    color: #ffa30f;
+  }
+
+  .icon-check {
+    color: green;
+  }
+}
+
+.todo-report-result-details {
+  border: 1px solid #aaa;
+
+  ul {
+    margin: 5px 0;
+
+    .todo-result-completed-date {
+      margin-left: 20px;
+      color: rgba(34,34,34,0.5);
+    }
+  }
 }
 
 /** --- RCH Picker --- */
