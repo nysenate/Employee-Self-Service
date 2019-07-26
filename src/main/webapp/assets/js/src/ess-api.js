@@ -222,9 +222,6 @@ essApi.factory('SupplyRequisitionOrderHistoryApi', ['$resource', 'appProps', fun
     return $resource(appProps.apiPath + '/supply/requisitions/orderHistory.json')
 }]);
 
-essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function($resource, appProps) {
-    return $resource(appProps.apiPath + "/supply/reconciliation")
-}]);
 
 /** --- Supply Employees API --- */
 
@@ -234,6 +231,12 @@ essApi.factory('SupplyEmployeesApi', ['$resource', 'appProps', function ($resour
 
 essApi.factory('SupplyIssuersApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/supply/employees/issuers.json')
+}]);
+
+/** --- Supply Reconciliation API --- */
+
+essApi.factory('SupplyReconciliationApi', ['$resource', 'appProps', function($resource, appProps) {
+    return $resource(appProps.apiPath + "/supply/reconciliation")
 }]);
 
 /** --- Supply Statistics API --- */

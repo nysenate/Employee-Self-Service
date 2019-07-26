@@ -1,7 +1,6 @@
 package gov.nysenate.ess.supply.unit;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
-import gov.nysenate.ess.core.model.unit.LocationId;
 import gov.nysenate.ess.supply.reconcilation.ReconciliationException;
 import gov.nysenate.ess.supply.reconcilation.model.Inventory;
 import gov.nysenate.ess.supply.reconcilation.model.ReconciliationError;
@@ -20,7 +19,6 @@ import static org.junit.Assert.assertTrue;
 @Category(UnitTest.class)
 public class ReconcilerTest {
 
-    private static LocationId locationId;
     private static Inventory EMPTY_INV;
     private static Inventory INV_ONE;
     private static Inventory INV_TWO;
@@ -29,13 +27,12 @@ public class ReconcilerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        locationId = new LocationId("LC100", 'P');
-        EMPTY_INV = new Inventory(locationId, new HashMap<>());
+        EMPTY_INV = new Inventory(new HashMap<>());
         Map<Integer, Integer> itemQuantities = new HashMap<>();
         itemQuantities.put(1, 1);
-        INV_ONE = new Inventory(locationId, itemQuantities);
+        INV_ONE = new Inventory(itemQuantities);
         itemQuantities.put(1, 2);
-        INV_TWO = new Inventory(locationId, itemQuantities);
+        INV_TWO = new Inventory(itemQuantities);
 
     }
 
@@ -43,13 +40,6 @@ public class ReconcilerTest {
     public void emptyInventories_reconcileSuccessfully() {
         ReconciliationResults results = reconciler.reconcile(EMPTY_INV, EMPTY_INV);
         assertTrue(results.success());
-    }
-
-    @Test (expected = ReconciliationException.class)
-    public void locationsDifferent_throwException() {
-        LocationId locId = new LocationId("AAA", 'W');
-        Inventory inv = new Inventory(locId, new HashMap<>());
-        reconciler.reconcile(EMPTY_INV, inv);
     }
 
     @Test (expected = ReconciliationException.class)
