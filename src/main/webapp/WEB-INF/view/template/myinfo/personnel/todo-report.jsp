@@ -16,6 +16,7 @@
                  ng-model="state.params.taskActive">
           Include inactive trainings
         </label>
+        <a href ng-click="clearSelectedTasks()">Clear selected trainings</a>
         <hr>
         <div>
           <label ng-repeat="task in state.taskList | filter:{'active':true}">

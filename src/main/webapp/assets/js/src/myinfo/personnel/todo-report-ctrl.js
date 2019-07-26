@@ -75,6 +75,7 @@
 
         $scope.selectResult = selectResult;
         $scope.getTaskTitle = getTaskTitle;
+        $scope.clearSelectedTasks = clearSelectedTasks;
 
         function init() {
             $scope.state = angular.copy(defaultState);
@@ -141,6 +142,19 @@
                     return $scope.state.selTasks[taskIdStr] &&
                         (!$scope.state.params.taskActive || task.active);
                 });
+        }
+
+        /**
+         * Clear all task selections
+         */
+        function clearSelectedTasks() {
+            var selTasks = $scope.state.selTasks;
+            for (var taskIdStr in selTasks) {
+                if (!selTasks.hasOwnProperty(taskIdStr)) {
+                    continue;
+                }
+                selTasks[taskIdStr] = false;
+            }
         }
 
         function updateContSrvDateParam() {
