@@ -28,12 +28,13 @@ public class ReconcilerTest {
     @BeforeClass
     public static void beforeClass() {
         EMPTY_INV = new Inventory(new HashMap<>());
-        Map<Integer, Integer> itemQuantities = new HashMap<>();
-        itemQuantities.put(1, 1);
-        INV_ONE = new Inventory(itemQuantities);
-        itemQuantities.put(1, 2);
-        INV_TWO = new Inventory(itemQuantities);
+        Map<Integer, Integer> invOneQuantities = new HashMap<>();
+        invOneQuantities.put(1, 1);
+        INV_ONE = new Inventory(invOneQuantities);
 
+        Map<Integer, Integer> invTwoQuantities = new HashMap<>();
+        invTwoQuantities.put(1, 2);
+        INV_TWO = new Inventory(invTwoQuantities);
     }
 
     @Test
