@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <label>
+      <label class="todo-search-facet">
         Training Completion Status<br>
         <select ng-model="state.params.totalCompletion">
           <option ng-value="null">Any</option>
@@ -47,17 +47,20 @@
 
       <h3>Employee Filters</h3>
 
-      <label>
+      <label class="todo-search-facet">
+        <input type="checkbox" ng-model="state.params.empActive" ng-false-value="true" ng-true-value="null">
+        Include Inactive Employees
+      </label>
+
+      <label class="todo-search-facet">
         Continuous Service Start Date<br>
         <select ng-model="state.selContSrvDateOpt"
                 ng-options="contSrvDateValues[opt].label for opt in contSrvDateOpts"></select>
-      </label>
-      <label ng-show="state.selContSrvDateOpt === 'custom'">
-        Custom Continuous Service Date<br>
-        <input datepicker ng-model="state.customContSrvDate">
+        <input datepicker ng-model="state.customContSrvDate"
+               ng-if="state.selContSrvDateOpt === 'custom'">
       </label>
 
-      <label>
+      <label class="todo-search-facet">
         Offices
         <rch-picker resp-ctr-heads="state.selectedRCHS"></rch-picker>
       </label>
@@ -65,25 +68,24 @@
     </div>
 
     <div class="todo-search-result-container">
-      <label>
+      <label class="todo-search-bar">
         Filter by employee name<br>
         <input type="text"
                ng-model="state.params.name"
                ng-model-options="{debounce: 300}"
         >
       </label>
-      <label>
-        <input type="checkbox" ng-model="state.params.empActive" ng-false-value="null">
-        Show only active employees
-      </label>
 
       <div ng-show="state.request.search" loader-indicator class="loader"></div>
 
       <div ng-hide="state.request.search" class="todo-search-results">
 
-        <a href="#">Download results as CSV</a>
+        <p class="todo-search-match-info">
+          <span class="bold-text">{{state.pagination.totalItems}} Matching Employees</span>
+          <a href="#">Download results as CSV</a>
+        </p>
 
-        <div>
+        <div class="todo-report-pagination-controls">
           <dir-pagination-controls class="text-align-center"
                                    pagination-id="todo-report-pagination"
                                    boundary-links="true" max-size="10"></dir-pagination-controls>
@@ -125,7 +127,7 @@
             </td>
             <td>
               {{result.employee.lastName}},
-              {{result.employee.firstName}},
+              {{result.employee.firstName}}{{result.employee.initial ? ',' : ''}}
               {{result.employee.initial}}
             </td>
             <td>{{result.employee.respCtr.respCenterHead.name}}</td>
@@ -162,7 +164,7 @@
           </tbody>
         </table>
 
-        <div>
+        <div class="todo-report-pagination-controls">
           <dir-pagination-controls class="text-align-center"
                                    pagination-id="todo-report-pagination"
                                    boundary-links="true" max-size="10"></dir-pagination-controls>

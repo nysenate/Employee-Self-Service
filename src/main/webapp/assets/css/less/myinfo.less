@@ -314,10 +314,33 @@
   padding: 2em;
 }
 
+.todo-search-facet {
+  margin-top: 1em;
+}
+
 .todo-search-result-container {
   float: right;
   width: 60%;
   padding: 2em;
+}
+
+.todo-search-bar input {
+  width: 20em;
+}
+
+.todo-search-match-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo-search-results {
+  margin-top: 10px;
+}
+
+.todo-report-pagination-controls {
+  margin: 10px 0;
 }
 
 .todo-search-result-table {
@@ -343,7 +366,7 @@
   }
 
   .completion-icon {
-    vertical-align: center;
+    vertical-align: middle;
   }
 
   .icon-cross {
@@ -387,6 +410,10 @@
         left: unset;
       }
     }
+  }
+
+  .ui-select-dropdown.select2-drop-active {
+    position: relative;
   }
 }
 

@@ -11,7 +11,7 @@
 
         var defaultParams = {
             name: "",
-            empActive: null,
+            empActive: true,
             taskId: null,
             contServFrom: null,
             taskActive: true,
