@@ -23,20 +23,20 @@
             $scope.rchResults = [];
             $scope.loading = false;
 
-            $scope.searchRCH = searchRCH;
+            // $scope.searchRCH = searchRCH;
             $scope.clearSelected = clearSelected;
 
-            searchRCH();
+            getRCH();
 
             function clearSelected() {
                 console.log('clearing selected rchs', $scope.respCtrHeads);
                 $scope.respCtrHeads.selection.length = 0
             }
 
-            function searchRCH(searchTerm) {
+            function getRCH() {
                 var params = {
-                    term: searchTerm,
-                    limit: 20
+                    term: "",
+                    limit: 0
                 };
                 $scope.loading = true;
                 rchSearchApi.get(params).$promise
