@@ -1,18 +1,15 @@
 package gov.nysenate.ess.supply.reconcilation.model;
 
 import com.google.common.collect.ImmutableSet;
-import gov.nysenate.ess.core.model.unit.LocationId;
 
 import java.util.Objects;
 import java.util.Set;
 
 public class ReconciliationResults {
 
-    private final LocationId locationId;
     private final ImmutableSet<ReconciliationError> errors;
 
-    public ReconciliationResults(LocationId locationId, Set<ReconciliationError> errors) {
-        this.locationId = locationId;
+    public ReconciliationResults(Set<ReconciliationError> errors) {
         this.errors = ImmutableSet.copyOf(errors);
     }
 
@@ -24,10 +21,6 @@ public class ReconciliationResults {
         return getErrors();
     }
 
-    public LocationId getLocationId() {
-        return locationId;
-    }
-
     private ImmutableSet<ReconciliationError> getErrors() {
         return errors;
     }
@@ -35,8 +28,7 @@ public class ReconciliationResults {
     @Override
     public String toString() {
         return "ReconciliationResults{" +
-                "locationId=" + locationId +
-                ", errors=" + errors +
+                "errors=" + errors +
                 '}';
     }
 
@@ -45,12 +37,11 @@ public class ReconciliationResults {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ReconciliationResults that = (ReconciliationResults) o;
-        return Objects.equals(locationId, that.locationId) &&
-                Objects.equals(errors, that.errors);
+        return Objects.equals(errors, that.errors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(locationId, errors);
+        return Objects.hash(errors);
     }
 }

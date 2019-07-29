@@ -1,26 +1,30 @@
 package gov.nysenate.ess.supply.reconcilation.model;
 
-import com.google.common.collect.ImmutableMap;
-import gov.nysenate.ess.core.model.unit.LocationId;
-
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Inventory {
 
-    private final LocationId locationId;
-    private final ImmutableMap<Integer, Integer> itemQuantities; // ItemId to quantity
+    private final Map<Integer, Integer> itemQuantities; // ItemId to quantity
 
-    public Inventory(LocationId locationId, Map<Integer, Integer> itemQuantities) {
-        this.locationId = locationId;
-        this.itemQuantities = ImmutableMap.copyOf(itemQuantities);
+    /**
+     * Creates an empty inventory with the given itemIds.
+     * @param itemIds
+     */
+    public Inventory(Collection<Integer> itemIds) {
+        itemQuantities = new HashMap<>();
+        for (int i : itemIds) {
+            itemQuantities.put(i, null);
+        }
+    }
+
+    public Inventory(Map<Integer, Integer> itemQuantities) {
+        this.itemQuantities = itemQuantities;
     }
 
     public boolean containsItem(int itemId) {
         return getItemQuantities().get(itemId) != null;
-    }
-
-    public LocationId getLocationId() {
-        return locationId;
     }
 
     public Map<Integer, Integer> getItemQuantities() {

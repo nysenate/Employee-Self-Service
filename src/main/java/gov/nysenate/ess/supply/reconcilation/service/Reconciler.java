@@ -14,39 +14,33 @@ import java.util.Set;
 public class Reconciler {
 
     /**
-     * Performs a reconciliation of two inventories. Verifies that the quantities for each item in the
-     * {@code expected} inventory are the same as in the quantities in the {@code actual} inventory.
+     * Performs a reconciliation of two inventories. Verifies that the quantities for each item in
+     * {@code inventory} are the same as in the quantities in the {@code expected}.
      *
      * This does NOT verify that both inventories are exactly equal, only that the quantities in
-     * {@code expected} are in {@code actual}. Actual may have additional items which are not in {@code expected}.
-     * @param expected An Inventory with item quantities entered by the user.
-     * @param actual An Inventory with item quantities retrieved from sfms.
+     * {@code inventory} are in {@code expected}. Expected may have additional items which are not in {@code inventory}.
+     *
+     * @param inventory An Inventory with item quantities entered by the user.
+     * @param expected An Inventory with item quantities retrieved from sfms.
      * @return {@link ReconciliationResults}
-     * @throws ReconciliationException if the inventory locations differ or if an item in {@code expected} does not exist in {@code actual}.
      */
-    public ReconciliationResults reconcile(Inventory expected, Inventory actual) {
-        if (!expected.getLocationId().equals(actual.getLocationId())) {
-            throw new ReconciliationException("Inventory locations do not match, cannot perform reconciliation. \n" +
-                    "Expected location " + expected.getLocationId().toString() + ". Actual location " + actual.getLocationId().toString());
-        }
-
+    public ReconciliationResults reconcile(Inventory inventory, Inventory expected) {
         Set<ReconciliationError> errors = new HashSet<>();
-        for (Map.Entry<Integer, Integer> entry : expected.getItemQuantities().entrySet()) {
-            int expectedQuantity = entry.getValue();
-            int actualQuantity = getActualQuantity(entry.getKey(), actual);
-            if (expectedQuantity != actualQuantity) {
-                errors.add(new ReconciliationError(entry.getKey(), expectedQuantity, actualQuantity));
+        for (Map.Entry<Integer, Integer> entry : inventory.getItemQuantities().entrySet()) {
+            int quantity = entry.getValue();
+            int expectedQuantity = getExpectedQuantity(entry.getKey(), expected);
+            if (quantity != expectedQuantity) {
+                errors.add(new ReconciliationError(entry.getKey(), quantity, expectedQuantity));
             }
         }
-
-        return new ReconciliationResults(expected.getLocationId(), errors);
+        return new ReconciliationResults(errors);
     }
 
-    private int getActualQuantity(int itemId, Inventory actualInventory) {
-        Integer actualQuantity = actualInventory.getItemQuantities().get(itemId);
-        if (actualQuantity == null) {
-            throw new ReconciliationException("Actual inventory missing expected item with id: " + itemId);
+    private int getExpectedQuantity(int itemId, Inventory expectedInventory) {
+        Integer expectedQuantity = expectedInventory.getItemQuantities().get(itemId);
+        if (expectedQuantity == null) {
+            throw new ReconciliationException("Expected(SFMS) inventory missing item with id: " + itemId);
         }
-        return actualQuantity;
+        return expectedQuantity;
     }
 }
