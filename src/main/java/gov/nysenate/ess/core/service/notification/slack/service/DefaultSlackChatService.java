@@ -32,7 +32,7 @@ public class DefaultSlackChatService implements SlackChatService {
             slackApi = new SlackApi(webhookUrl);
         } catch (IllegalArgumentException ex) {
             slackApi = null;
-            logger.error("Invalid Slack webhook URL!  " +
+            logger.warn("Invalid Slack webhook URL!  " +
                     "Slack messages will NOT be sent:\n" + ex.getMessage());
         }
     }
@@ -59,7 +59,8 @@ public class DefaultSlackChatService implements SlackChatService {
     @Override
     public void sendMessage(SlackMessage message) {
         if (slackApi == null) {
-            throw new IllegalStateException("slackApi is null!");
+            logger.warn("Slack API Url is incorrectly configured. Unable to send message to slack.");
+            return;
         }
         try {
             slackApi.call(message);

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.supply.item.view;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.supply.item.model.*;
 
@@ -19,6 +20,8 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
     protected boolean isExpendable;
     protected boolean isRestricted;
     protected int reconciliationPage;
+    @JsonProperty("requiresSynchronization")
+    protected boolean requiresSynchronization;
 
     public SupplyItemView() {
     }
@@ -38,6 +41,7 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
         this.isExpendable = item.isExpendable();
         this.isRestricted = item.isRestricted();
         this.reconciliationPage = item.getReconciliationPage();
+        this.requiresSynchronization = item.requiresSynchronization();
     }
 
     public SupplyItem toSupplyItem() {
@@ -107,6 +111,10 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
 
     public int getReconciliationPage() {
         return reconciliationPage;
+    }
+
+    public boolean isRequiresSynchronization() {
+        return requiresSynchronization;
     }
 
     @Override
