@@ -104,9 +104,18 @@
         <table class="todo-search-result-table">
           <thead>
           <tr>
-            <th>Completed/<br>Assigned</th>
-            <th>Name</th>
-            <th>Office</th>
+            <th class="{{getSortClass('completed')}}"
+                ng-click="toggleOrder('completed')">
+              Completed/<br>Assigned
+            </th>
+            <th class="{{getSortClass('name')}}"
+                ng-click="toggleOrder('name')">
+              Name
+            </th>
+            <th class="{{getSortClass('office')}}"
+                ng-click="toggleOrder('office')">
+              Office
+            </th>
           </tr>
           </thead>
           <tbody>

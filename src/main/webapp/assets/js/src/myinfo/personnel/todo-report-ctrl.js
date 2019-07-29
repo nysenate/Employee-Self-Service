@@ -18,6 +18,7 @@
             completed: null,
             totalCompletion: null,
             respCtrHead: null,
+            sort: []
         };
 
         $scope.contSrvDateValues = {
@@ -42,6 +43,12 @@
         };
         $scope.contSrvDateOpts = Object.keys($scope.contSrvDateValues);
 
+        var orderByMap = {
+            name: ['NAME', 'OFFICE'],
+            office: ['OFFICE', 'NAME'],
+            completed: ['COMPLETED', 'NAME']
+        };
+
         var defaultState = {
             taskList: null,
             taskMap: null,
@@ -51,6 +58,8 @@
             selectedRCHS: {
                 selection: []
             },
+            orderBy: null,
+            sortOrder: null,
             params: angular.copy(defaultParams),
             pagination: angular.copy(defaultPagination),
             lastPageRequested: -1,
@@ -68,6 +77,7 @@
         $scope.$watch('state.params.taskActive', updateSelTaskParams);
         $scope.$watch('state.selectedRCHS', onSelRCHSChange, true);
         $scope.$watchGroup(['state.selContSrvDateOpt', 'state.customContSrvDate'], updateContSrvDateParam);
+        $scope.$watchGroup(['state.orderBy', 'state.sortOrder'], onSortChange);
         $scope.$watch('state.params', onParamChange, true);
         $scope.$watch('state.pagination.currPage', onPageChange);
 
@@ -76,6 +86,8 @@
         $scope.selectResult = selectResult;
         $scope.getTaskTitle = getTaskTitle;
         $scope.clearSelectedTasks = clearSelectedTasks;
+        $scope.getSortClass = getSortClass;
+        $scope.toggleOrder = toggleOrder;
 
         function init() {
             $scope.state = angular.copy(defaultState);
@@ -115,6 +127,7 @@
          * @return {string}
          */
         function getTaskIdStr(taskId) {
+            return taskId.taskType + "-" + taskId.taskNumber;
             return taskId.taskType + "-" + taskId.taskNumber;
         }
 
@@ -249,6 +262,47 @@
             }
             pagination.currPage = 1;
             return true;
+        }
+
+        /* --- Sort --- */
+
+        function onSortChange() {
+            var sort = $scope.state.params.sort = [];
+            var orderBys = orderByMap[$scope.state.orderBy];
+            var sortOrder = $scope.state.sortOrder;
+            for (var i in orderBys) {
+                if (!orderBys.hasOwnProperty(i)) {
+                    continue;
+                }
+                var orderBy = orderBys[i];
+                sort.push(orderBy + ':' + (sortOrder || 'ASC'))
+            }
+        }
+
+        function getSortClass(orderBy) {
+            if ($scope.state.orderBy === orderBy) {
+                if ($scope.state.sortOrder === 'ASC') {
+                    return 'todo-report-sort-asc'
+                }
+                if ($scope.state.sortOrder === 'DESC') {
+                    return 'todo-report-sort-desc'
+                }
+            }
+            return '';
+        }
+
+        function toggleOrder(orderBy) {
+            if ($scope.state.orderBy === orderBy) {
+                if ($scope.state.sortOrder === 'ASC') {
+                    $scope.state.sortOrder = 'DESC';
+                } else {
+                    $scope.state.orderBy = null;
+                    $scope.state.sortOrder = null;
+                }
+            } else {
+                $scope.state.orderBy = orderBy;
+                $scope.state.sortOrder = 'ASC';
+            }
         }
 
     }
