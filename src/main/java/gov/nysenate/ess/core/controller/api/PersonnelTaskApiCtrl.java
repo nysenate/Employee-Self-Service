@@ -188,12 +188,24 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(resultViews, results.getTotal(), limitOffset);
     }
 
-
+    /**
+     * Employee Task Search Report
+     * ---------------------------
+     *
+     * Returns a CSV report based on the passed in request params
+     *
+     * Usage:
+     * (GET)    /api/v1/personnel/task/emp/search/report
+     *
+     * Request params:
+     * @see #extractEmpPATQuery(WebRequest) for facet parameters
+     *
+     */
     @RequestMapping(value = "/emp/search/report", method = {GET, HEAD})
     public void generateSearchReportCSV(WebRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
 
-        List<PersonnelTask> personnelTasks = taskSource.getPersonnelTasks(false);
+        HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = getPersonnelTaskIdMap();
 
         String csvFileName =  "PEC_Report" + LocalDateTime.now().withNano(0)+".csv";
         // creates mock data
@@ -204,7 +216,6 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         response.setHeader(headerKey, headerValue);
         response.setContentType("text/csv");
         response.setStatus(200);
-
         //Get Search Results
         EmpPATQuery empPatQuery = extractEmpPATQuery(request);
         PaginatedList<EmployeeTaskSearchResult> results =
@@ -212,45 +223,17 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         List<EmpPATSearchResultView> resultViews = results.getResults().stream()
                 .map(EmpPATSearchResultView::new)
                 .collect(Collectors.toList());
-
         //Handle CSV Generation
         //change csv headers when you see the actual response
         CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Task Title" ,"Task Type", "Task Number",
-                        "Task Completion Time", "Update EmpId"));
+                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Task Title" ,"Task Type",
+                        "Task Number", "Task Completion Time", "Update EmpId"));
         for (EmpPATSearchResultView searchResultView: resultViews) {
-
             DetailedEmployeeView currentEmployee =  searchResultView.getEmployee();
-            String respCenter = "";
-            try {
-                respCenter = currentEmployee.getRespCtr().getRespCenterHead().getShortName();
-            }
-            catch (Exception e) {
-                //No need to do anything. This means that the employee does not have a responsibility center
-            }
-
+            String respCenter = getRespCenter(currentEmployee);
             for (PersonnelAssignedTaskView task : searchResultView.getTasks()) {
-
-                String taskTitle = "";
-
-                for (PersonnelTask personnelTask : personnelTasks) {
-                    if (task.getTaskId().toPersonnelTaskId().equals(personnelTask.getTaskId())) {
-                        taskTitle = personnelTask.getTitle();
-                    }
-                }
-
-                csvPrinter.printRecord(
-                        currentEmployee.getEmployeeId(),
-                        currentEmployee.getFullName(),
-                        currentEmployee.getEmail(),
-                        respCenter,
-                        currentEmployee.getContServiceDate(),
-                        taskTitle,
-                        task.getTaskId().getTaskType().toString(),
-                        task.getTaskId().getTaskNumber(),
-                        task.getTimestamp(),
-                        task.getUpdateUserId()
-                );
+                String taskTitle = personnelTaskMap.get(task.getTaskId().toPersonnelTaskId()).getTitle();
+                printCSVRecord(csvPrinter, currentEmployee, respCenter, taskTitle, task);
             }
         }
         csvPrinter.close();
@@ -264,6 +247,42 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                 ErrorCode.PERSONNEL_ASSIGNED_TASK_NOT_FOUND,
                 new PersonnelAssignedTaskIdView(ex.getEmpId(), ex.getTaskId())
         );
+    }
+
+    private HashMap<PersonnelTaskId, PersonnelTask> getPersonnelTaskIdMap() {
+        List<PersonnelTask> personnelTasks = taskSource.getPersonnelTasks(false);
+        HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = new HashMap<>();
+        for (PersonnelTask personnelTask : personnelTasks) {
+            personnelTaskMap.put(personnelTask.getTaskId(), personnelTask);
+        }
+        return personnelTaskMap;
+    }
+
+    private void printCSVRecord(CSVPrinter csvPrinter, DetailedEmployeeView currentEmployee, String respCenter,
+                                String taskTitle, PersonnelAssignedTaskView task) throws IOException {
+        csvPrinter.printRecord(
+                currentEmployee.getEmployeeId(),
+                currentEmployee.getFullName(),
+                currentEmployee.getEmail(),
+                respCenter,
+                currentEmployee.getContServiceDate(),
+                taskTitle,
+                task.getTaskId().getTaskType().toString(),
+                task.getTaskId().getTaskNumber(),
+                task.getTimestamp(),
+                task.getUpdateUserId()
+        );
+    }
+
+    private String getRespCenter(DetailedEmployeeView currentEmployee) {
+        String respCenter = "";
+        try {
+            respCenter = currentEmployee.getRespCtr().getRespCenterHead().getShortName();
+        }
+        catch (Exception e) {
+            //No need to do anything. This means that the employee does not have a responsibility center
+        }
+        return respCenter;
     }
 
     /* --- Internal Methods --- */
