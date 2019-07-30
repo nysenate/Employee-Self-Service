@@ -193,6 +193,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     public void generateSearchReportCSV(WebRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
 
+        List<PersonnelTask> personnelTasks = taskSource.getPersonnelTasks(false);
+
         String csvFileName =  "PEC_Report" + LocalDateTime.now().withNano(0)+".csv";
         // creates mock data
         String headerKey = "Content-Disposition";
@@ -214,7 +216,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         //Handle CSV Generation
         //change csv headers when you see the actual response
         CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Task", "Task Number",
+                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Task Title" ,"Task Type", "Task Number",
                         "Task Completion Time", "Update EmpId"));
         for (EmpPATSearchResultView searchResultView: resultViews) {
 
@@ -228,12 +230,22 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
             }
 
             for (PersonnelAssignedTaskView task : searchResultView.getTasks()) {
+
+                String taskTitle = "";
+
+                for (PersonnelTask personnelTask : personnelTasks) {
+                    if (task.getTaskId().toPersonnelTaskId().equals(personnelTask.getTaskId())) {
+                        taskTitle = personnelTask.getTitle();
+                    }
+                }
+
                 csvPrinter.printRecord(
                         currentEmployee.getEmployeeId(),
                         currentEmployee.getFullName(),
                         currentEmployee.getEmail(),
                         respCenter,
                         currentEmployee.getContServiceDate(),
+                        taskTitle,
                         task.getTaskId().getTaskType().toString(),
                         task.getTaskId().getTaskNumber(),
                         task.getTimestamp(),
