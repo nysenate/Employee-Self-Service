@@ -1,4 +1,4 @@
-<section ng-controller="TodoReportCtrl">
+<section ng-controller="TodoReportCtrl" id="todoReportCtrl">
   <div class="my-info-hero">
     <h2>Personnel To-Do Reporting</h2>
   </div>
@@ -16,7 +16,6 @@
                  ng-model="state.params.taskActive">
           Include inactive trainings
         </label>
-        <a href ng-click="clearSelectedTasks()">Clear selected trainings</a>
         <hr>
         <div>
           <label ng-repeat="task in state.taskList | filter:{'active':true}">
@@ -35,7 +34,7 @@
         </div>
       </div>
 
-      <label class="todo-search-facet">
+      <label>
         Training Completion Status<br>
         <select ng-model="state.params.totalCompletion">
           <option ng-value="null">Any</option>
@@ -48,20 +47,17 @@
 
       <h3>Employee Filters</h3>
 
-      <label class="todo-search-facet">
-        <input type="checkbox" ng-model="state.params.empActive" ng-false-value="true" ng-true-value="null">
-        Include Inactive Employees
-      </label>
-
-      <label class="todo-search-facet">
+      <label>
         Continuous Service Start Date<br>
         <select ng-model="state.selContSrvDateOpt"
                 ng-options="contSrvDateValues[opt].label for opt in contSrvDateOpts"></select>
-        <input datepicker ng-model="state.customContSrvDate"
-               ng-if="state.selContSrvDateOpt === 'custom'">
+      </label>
+      <label ng-show="state.selContSrvDateOpt === 'custom'">
+        Custom Continuous Service Date<br>
+        <input datepicker ng-model="state.customContSrvDate">
       </label>
 
-      <label class="todo-search-facet">
+      <label>
         Offices
         <rch-picker resp-ctr-heads="state.selectedRCHS"></rch-picker>
       </label>
@@ -69,24 +65,26 @@
     </div>
 
     <div class="todo-search-result-container">
-      <label class="todo-search-bar">
+      <label>
         Filter by employee name<br>
         <input type="text"
                ng-model="state.params.name"
                ng-model-options="{debounce: 300}"
         >
       </label>
+      <label>
+        <input type="checkbox" ng-model="state.params.empActive" ng-false-value="null">
+        Show only active employees
+      </label>
 
       <div ng-show="state.request.search" loader-indicator class="loader"></div>
 
       <div ng-hide="state.request.search" class="todo-search-results">
 
-        <p class="todo-search-match-info">
-          <span class="bold-text">{{state.pagination.totalItems}} Matching Employees</span>
-          <a href="#">Download results as CSV</a>
-        </p>
+        <a ng-href="{{ctxPath}}/api/v1/personnel/task/emp/search/report{{$scope.queryString}}" target="_blank">
+          Download results as CSV</a>
 
-        <div class="todo-report-pagination-controls">
+        <div>
           <dir-pagination-controls class="text-align-center"
                                    pagination-id="todo-report-pagination"
                                    boundary-links="true" max-size="10"></dir-pagination-controls>
@@ -104,18 +102,9 @@
         <table class="todo-search-result-table">
           <thead>
           <tr>
-            <th class="{{getSortClass('completed')}}"
-                ng-click="toggleOrder('completed')">
-              Completed/<br>Assigned
-            </th>
-            <th class="{{getSortClass('name')}}"
-                ng-click="toggleOrder('name')">
-              Name
-            </th>
-            <th class="{{getSortClass('office')}}"
-                ng-click="toggleOrder('office')">
-              Office
-            </th>
+            <th>Completed/<br>Assigned</th>
+            <th>Name</th>
+            <th>Office</th>
           </tr>
           </thead>
           <tbody>
@@ -137,7 +126,7 @@
             </td>
             <td>
               {{result.employee.lastName}},
-              {{result.employee.firstName}}{{result.employee.initial ? ',' : ''}}
+              {{result.employee.firstName}},
               {{result.employee.initial}}
             </td>
             <td>{{result.employee.respCtr.respCenterHead.name}}</td>
@@ -174,7 +163,7 @@
           </tbody>
         </table>
 
-        <div class="todo-report-pagination-controls">
+        <div>
           <dir-pagination-controls class="text-align-center"
                                    pagination-id="todo-report-pagination"
                                    boundary-links="true" max-size="10"></dir-pagination-controls>

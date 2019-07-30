@@ -4,6 +4,8 @@
                     ['$scope', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', todoCtrl]);
 
     function todoCtrl($scope, taskUtils, searchApi, pagination) {
+        $scope.queryString = '';
+
         var itemsPerPage = 10;
 
         var defaultPagination = angular.copy(pagination);
@@ -148,7 +150,7 @@
                 return;
             }
             $scope.state.params.taskId = Object.keys($scope.state.selTasks)
-                .filter(function (taskIdStr){
+                .filter(function (taskIdStr) {
                     var task = $scope.state.taskMap[taskIdStr];
                     // Include the task if it is selected.
                     // Also ensure it is active if the active task filter is on.
@@ -200,6 +202,14 @@
                     $scope.state.request.search = false;
                 })
             ;
+            $scope.queryString = generateReportQueryString();
+        }
+
+         function generateReportQueryString() {
+            var params = angular.copy($scope.state.params);
+            delete params.limit;
+            delete params.offset;
+            return '?' + $.param(params);
         }
 
         function setSearchResults(resp) {
@@ -215,7 +225,9 @@
         }
 
         function initializeResult(result) {
-            result.completedCount = result.tasks.filter(function (task) {return task.completed;}).length;
+            result.completedCount = result.tasks.filter(function (task) {
+                return task.completed;
+            }).length;
             return result;
         }
 
@@ -225,7 +237,7 @@
 
         function onSelRCHSChange() {
             var codes = $scope.state.params.respCtrHead = [];
-            $scope.state.selectedRCHS.selection.forEach(function(rchs) {
+            $scope.state.selectedRCHS.selection.forEach(function (rchs) {
                 codes.push(rchs.code);
             });
         }

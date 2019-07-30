@@ -1,10 +1,12 @@
 package gov.nysenate.ess.core.controller.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
+import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.pec.*;
 import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.PATQueryCompletionStatus;
@@ -14,16 +16,23 @@ import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.*;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.*;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -177,6 +186,62 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                 .map(EmpPATSearchResultView::new)
                 .collect(Collectors.toList());
         return ListViewResponse.of(resultViews, results.getTotal(), limitOffset);
+    }
+
+
+    @RequestMapping(value = "/emp/search/report", method = {GET, HEAD})
+    public void generateSearchReportCSV(WebRequest request, HttpServletResponse response) throws IOException {
+        checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
+
+        String csvFileName =  "PEC_Report" + LocalDateTime.now().withNano(0)+".csv";
+        // creates mock data
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"",
+                csvFileName);
+        //Set Response
+        response.setHeader(headerKey, headerValue);
+        response.setContentType("text/csv");
+        response.setStatus(200);
+
+        //Get Search Results
+        EmpPATQuery empPatQuery = extractEmpPATQuery(request);
+        PaginatedList<EmployeeTaskSearchResult> results =
+                empTaskSearchService.searchForEmpTasks(empPatQuery, LimitOffset.ALL);
+        List<EmpPATSearchResultView> resultViews = results.getResults().stream()
+                .map(EmpPATSearchResultView::new)
+                .collect(Collectors.toList());
+
+        //Handle CSV Generation
+        //change csv headers when you see the actual response
+        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Task", "Task Number",
+                        "Task Completion Time", "Update EmpId"));
+        for (EmpPATSearchResultView searchResultView: resultViews) {
+
+            DetailedEmployeeView currentEmployee =  searchResultView.getEmployee();
+            String respCenter = "";
+            try {
+                respCenter = currentEmployee.getRespCtr().getRespCenterHead().getShortName();
+            }
+            catch (Exception e) {
+                //No need to do anything. This means that the employee does not have a responsibility center
+            }
+
+            for (PersonnelAssignedTaskView task : searchResultView.getTasks()) {
+                csvPrinter.printRecord(
+                        currentEmployee.getEmployeeId(),
+                        currentEmployee.getFullName(),
+                        currentEmployee.getEmail(),
+                        respCenter,
+                        currentEmployee.getContServiceDate(),
+                        task.getTaskId().getTaskType().toString(),
+                        task.getTaskId().getTaskNumber(),
+                        task.getTimestamp(),
+                        task.getUpdateUserId()
+                );
+            }
+        }
+        csvPrinter.close();
     }
 
     @ExceptionHandler(PersonnelAssignedTaskNotFoundEx.class)
