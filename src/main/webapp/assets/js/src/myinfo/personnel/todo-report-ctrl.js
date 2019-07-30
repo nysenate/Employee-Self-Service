@@ -1,10 +1,9 @@
 (function () {
     angular.module('essMyInfo')
         .controller('TodoReportCtrl',
-                    ['$scope', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', todoCtrl]);
+                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', todoCtrl]);
 
-    function todoCtrl($scope, taskUtils, searchApi, pagination) {
-        $scope.queryString = '';
+    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination) {
 
         var itemsPerPage = 10;
 
@@ -63,6 +62,7 @@
             orderBy: null,
             sortOrder: null,
             params: angular.copy(defaultParams),
+            paramQueryString: '',
             pagination: angular.copy(defaultPagination),
             lastPageRequested: -1,
             results: null,
@@ -202,14 +202,14 @@
                     $scope.state.request.search = false;
                 })
             ;
-            $scope.queryString = generateReportQueryString();
+            $scope.state.paramQueryString = generateReportQueryString();
         }
 
          function generateReportQueryString() {
             var params = angular.copy($scope.state.params);
             delete params.limit;
             delete params.offset;
-            return '?' + $.param(params);
+            return $httpParamSerializer(params);
         }
 
         function setSearchResults(resp) {
