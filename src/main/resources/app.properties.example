@@ -214,6 +214,12 @@ scheduler.travel.scrape.cron = 0 0 2 * * *
 # Determines if scheduled polling of course completion records from moodle is enabled.
 scheduler.moodle.sync.enabled = false
 
+# Determines if scheduled personnel task assignment is enabled.
+scheduler.personnel_task.assignment.enabled = true
+
+# The schedule for personnel task assigment. (Default every day at 1AM)
+scheduler.personnel_task.assignment.cron = 0 0 1 * * *
+
 # --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs
