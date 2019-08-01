@@ -2,6 +2,7 @@ package gov.nysenate.ess.supply.reconcilation.service;
 
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.supply.item.LineItem;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
@@ -63,6 +64,7 @@ public class ReconciliationService {
         RequisitionQuery query = new RequisitionQuery()
                 .setStatuses(EnumSet.of(RequisitionStatus.APPROVED))
                 .setReconciled("false")
+                .setFromDateTime(DateUtils.LONG_AGO.atTime(0, 0))
                 .setLimitOffset(LimitOffset.ALL);
         return requisitionService.searchRequisitions(query).getResults();
     }
