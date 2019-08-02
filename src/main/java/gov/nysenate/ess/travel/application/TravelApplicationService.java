@@ -58,7 +58,7 @@ public class TravelApplicationService {
     public TravelApplication saveTravelApplication(TravelApplication app, Employee saver) {
         app.setModifiedDateTime(LocalDateTime.now());
         app.setModifiedBy(saver);
-        applicationDao.insertTravelApplication(app);
+        applicationDao.saveTravelApplication(app);
         return app;
     }
 
@@ -81,7 +81,7 @@ public class TravelApplicationService {
         if (appOptional.isPresent()) {
             return appOptional.get();
         } else {
-            TravelApplication app = new TravelApplication(0, 0, employeeInfoService.getEmployee(travelerId));
+            TravelApplication app = new TravelApplication(employeeInfoService.getEmployee(travelerId));
             saveTravelApplication(app, app.getTraveler());
             return app;
         }

@@ -6,7 +6,6 @@ import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
 import gov.nysenate.ess.travel.application.route.Route;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +13,9 @@ import java.util.List;
  */
 public class Amendment {
 
-    protected int id; // TODO convert to an AmendmentVersion Enum.
+    protected int id; // TODO init/add to constructors. Should be 0 if not stored in the db.
+    protected int appId; // TODO initialize in constructors
+    protected Version version;
     protected String purposeOfTravel;
     protected Route route;
     protected Allowances allowances;
@@ -24,15 +25,12 @@ public class Amendment {
     protected LocalDateTime createdDateTime; // TODO For the first amendment this should be the submitted date.
     protected Employee createdBy;
 
-    public Amendment(int id) {
-        this(id, "", Route.EMPTY_ROUTE, new Allowances(), new PerDiemOverrides(), new TravelApplicationStatus(),
-                new ArrayList<>(), LocalDateTime.now(), new Employee());
-    }
-
-    public Amendment(int id, String purposeOfTravel, Route route, Allowances allowances,
+    public Amendment(int id, int appId, Version version, String purposeOfTravel, Route route, Allowances allowances,
                      PerDiemOverrides perDiemOverrides, TravelApplicationStatus status,
                      List<TravelAttachment> attachments, LocalDateTime createdDateTime, Employee createdBy) {
         this.id = id;
+        this.appId = appId;
+        this.version = version;
         this.purposeOfTravel = purposeOfTravel;
         this.route = route;
         this.allowances = allowances;
@@ -43,8 +41,8 @@ public class Amendment {
         this.createdBy = createdBy;
     }
 
-    public int id() {
-        return id;
+    public Version version() {
+        return version;
     }
 
     public void approve() {

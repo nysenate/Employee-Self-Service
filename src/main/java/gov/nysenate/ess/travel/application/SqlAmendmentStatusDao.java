@@ -7,11 +7,15 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class SqlTravelApplicationStatusDao extends SqlBaseDao {
+public class SqlAmendmentStatusDao extends SqlBaseDao {
 
-    public void saveTravelApplicationStatus(TravelApplicationStatus status, int appVersionId) {
+    /**
+     * @param status The status to be saved.
+     * @param amendmentId The id of the amendment this status belongs to.
+     */
+    public void saveAmendmentStatus(TravelApplicationStatus status, int amendmentId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appVersionId", appVersionId)
+                .addValue("amendmentId", amendmentId)
                 .addValue("createdDateTime", toDate(status.dateTime()))
                 .addValue("status", status.status.name())
                 .addValue("note", status.note());
@@ -21,8 +25,8 @@ public class SqlTravelApplicationStatusDao extends SqlBaseDao {
 
     private enum SqlTravelApplicationStatusQuery implements BasicSqlQuery {
         INSERT_STATUS(
-                "INSERT INTO ${travelSchema}.app_version_status(app_version_id, created_date_time, status, note)\n" +
-                        " VALUES(:appVersionId, :createdDateTime, :status, :note)"
+                "INSERT INTO ${travelSchema}.amendment_status(amendment_id, created_date_time, status, note)\n" +
+                        " VALUES(:amendmentId, :createdDateTime, :status, :note)"
         );
 
         private String sql;

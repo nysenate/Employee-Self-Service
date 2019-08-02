@@ -17,42 +17,42 @@ import java.util.List;
 @Repository
 public class SqlAllowancesDao extends SqlBaseDao {
 
-    public void saveAllowances(Allowances allowances, int appVersionId, int previousAppVersionId) {
-        Allowances previousAllowances = selectAllowances(previousAppVersionId);
-        if (previousAllowances.equals(allowances) && previousAppVersionId != 0) {
-            // If Allowances did not change, just update the join table.
-            for (Allowance allowance : allowances.typeToAllowance.values()) {
-                joinAllowanceWithAppVersion(allowance, appVersionId);
-            }
-        } else {
-            for (Allowance allowance : allowances.typeToAllowance.values()) {
-                insertAllowance(allowance);
-                joinAllowanceWithAppVersion(allowance, appVersionId);
-            }
+    public void saveAllowances(Allowances allowances, int amendmentId) {
+        for (Allowance allowance : allowances.typeToAllowance.values()) {
+            insertAllowance(allowance);
+            insertIntoJoinTable(allowance, amendmentId);
         }
     }
 
+    // Insert an allowance and set its id to the auto generated id.
     private void insertAllowance(Allowance allowance) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("allowanceType", allowance.type.name())
-                .addValue("allowance", allowance.dollars.toString());
+                .addValue("type", allowance.type.name())
+                .addValue("value", allowance.dollars.toString());
         String sql = SqlAllowancesQuery.INSERT_ALLOWANCE.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
         allowance.allowanceId = (Integer) keyHolder.getKeys().get("allowance_id");
     }
 
-    private void joinAllowanceWithAppVersion(Allowance allowance, int appVersionId) {
+    private void insertIntoJoinTable(Allowance allowance, int amendmentId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appVersionId", appVersionId)
+                .addValue("amendmentId", amendmentId)
                 .addValue("allowanceId", allowance.allowanceId);
         String sql = SqlAllowancesQuery.INSERT_JOIN_TABLE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
 
-    public Allowances selectAllowances(int appVersionId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("appVersionId", appVersionId);
-        String sql = SqlAllowancesQuery.SELECT_ALLOWANCES_FOR_VERSION.getSql(schemaMap());
+    /**
+     * Get Allowances by an amendment Id.
+     *
+     * @param amendmentId
+     * @return Allowances for the provided {@code amendmentId}. Allowances will be empty
+     * if {@code amendmentId} does not exist.
+     */
+    public Allowances selectAllowances(int amendmentId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("amendmentId", amendmentId);
+        String sql = SqlAllowancesQuery.SELECT_ALLOWANCES_FOR_AMENDMENT.getSql(schemaMap());
         List<Integer> allowanceIds = localNamedJdbc.queryForList(sql, params, Integer.class);
 
         if (allowanceIds.isEmpty()) {
@@ -69,21 +69,21 @@ public class SqlAllowancesDao extends SqlBaseDao {
 
     private enum SqlAllowancesQuery implements BasicSqlQuery {
         INSERT_ALLOWANCE(
-                "INSERT INTO ${travelSchema}.app_allowance(allowance_type, allowance)\n" +
-                        " VALUES(:allowanceType, :allowance)"
+                "INSERT INTO ${travelSchema}.allowance(type, value)\n" +
+                        " VALUES(:type, :value)"
         ),
         INSERT_JOIN_TABLE(
-                "INSERT INTO ${travelSchema}.app_version_allowance(app_version_id, allowance_id)\n" +
-                        " VALUES(:appVersionId, :allowanceId)"
+                "INSERT INTO ${travelSchema}.amendment_allowances(amendment_id, allowance_id)\n" +
+                        " VALUES(:amendmentId, :allowanceId)"
         ),
-        SELECT_ALLOWANCES_FOR_VERSION(
+        SELECT_ALLOWANCES_FOR_AMENDMENT(
                 "SELECT allowance_id\n" +
-                        " FROM ${travelSchema}.app_version_allowance\n" +
-                        " WHERE app_version_id = :appVersionId"
+                        " FROM ${travelSchema}.amendment_allowances\n" +
+                        " WHERE amendment_id = :amendmentId"
         ),
         SELECT_ALLOWANCE(
-                "SELECT allowance_id, allowance_type, allowance\n" +
-                        " FROM ${travelSchema}.app_allowance\n" +
+                "SELECT allowance_id, type, value\n" +
+                        " FROM ${travelSchema}.allowance\n" +
                         " WHERE allowance_id IN (:allowanceIds)"
         );
 
@@ -115,8 +115,8 @@ public class SqlAllowancesDao extends SqlBaseDao {
         @Override
         public void processRow(ResultSet rs) throws SQLException {
             int allowanceId = rs.getInt("allowance_id");
-            AllowanceType type = AllowanceType.valueOf(rs.getString("allowance_type"));
-            Dollars allowance = new Dollars(rs.getString("allowance"));
+            AllowanceType type = AllowanceType.valueOf(rs.getString("type"));
+            Dollars allowance = new Dollars(rs.getString("value"));
             allowances.typeToAllowance.put(type, new Allowance(allowanceId, type, allowance));
         }
 

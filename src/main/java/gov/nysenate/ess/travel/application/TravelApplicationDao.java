@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface TravelApplicationDao {
 
-    void insertTravelApplication(TravelApplication app);
+    void saveTravelApplication(TravelApplication app);
 
     void deleteTravelApplication(int appId);
 

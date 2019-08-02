@@ -12,42 +12,46 @@ import java.util.*;
 
 public class TravelApplication {
 
-    private final static Comparator<Amendment> amendmentComparator = Comparator.comparingInt(Amendment::id);
+    /** Sort amendments by the declaration order of {@link Version} */
+    private final static Comparator<Amendment> amendmentComparator = Comparator.comparing(Amendment::version);
 
     protected int appId;
     protected Employee traveler;
     protected SortedSet<Amendment> amendments;
 
-    public TravelApplication(int id, Employee traveler, Amendment amd) {
-        this.appId = id;
-        this.traveler = traveler;
-        this.amendments = new TreeSet<>(amendmentComparator);
-        this.amendments.add(amd);
+    public TravelApplication(Employee traveler) {
+        this(0, traveler);
     }
 
-    public TravelApplication(int appId, int amendmentId, Employee traveler) {
-        this.appId = Objects.requireNonNull(appId, "Travel Application requires a non null id.");
+    public TravelApplication(int id, Employee traveler) {
+        this.appId = id;
         this.traveler = Objects.requireNonNull(traveler, "Travel Application requires a non null traveler.");
-        Objects.requireNonNull(amendmentId, "Travel Application requires a non null versionId.");
         this.amendments = new TreeSet<>(amendmentComparator);
-
-        // TODO Some of this is likely wrong
-        Amendment a = new Amendment(amendmentId, "", Route.EMPTY_ROUTE, new Allowances(), new PerDiemOverrides(),
-                new TravelApplicationStatus(), new ArrayList<>(), LocalDateTime.now(), traveler);
-        this.amendments.add(a);
     }
 
     // The active amendment is the most recent approved amendment
     // or, if none are approved, the most recent amendment.
     public Amendment activeAmendment() {
-        Optional<Amendment> approvedAmd = amendments.stream()
-                .filter(a -> a.status.isApproved())
-                .reduce((first, second) -> second);
-        return approvedAmd.orElse(amendments.last());
+//        Optional<Amendment> approvedAmd = amendments.stream()
+//                .filter(a -> a.status.isApproved())
+//                .reduce((first, second) -> second);
+//        return approvedAmd.orElse(amendments.last());
+        return amendments.last(); // FIXME for first implementation, just return most recent amendment.
     }
 
-    public void addAmendment(Amendment a) {
+    /**
+     * Amends this travel application with a new amendment.
+     *
+     * Sets the Version of the given amendment to the next version
+     * and adds to the list of amendments.
+     * @param a
+     * @return
+     */
+    public Amendment amend(Amendment a) {
+        // todo ensure amendment appId is correct??
+        a.version = amendments.last().version.next();
         amendments.add(a);
+        return a;
     }
 
     public Dollars mileageAllowance() {
@@ -140,10 +144,12 @@ public class TravelApplication {
         activeAmendment().status = status;
     }
 
+    // TODO move to amendment
     public void approve() {
         activeAmendment().status.approve();
     }
 
+    // TODO move to amendment
     public void disapprove(String notes) {
         activeAmendment().status.disapprove(notes);
     }
@@ -152,16 +158,8 @@ public class TravelApplication {
         return appId;
     }
 
-    void setAppId(int appId) {
-        this.appId = appId;
-    }
-
     public int getVersionId() {
-        return activeAmendment().id;
-    }
-
-    void setVersionId(int versionId) {
-        activeAmendment().id = versionId;
+        return activeAmendment().version.ordinal();
     }
 
     public Employee getTraveler() {
