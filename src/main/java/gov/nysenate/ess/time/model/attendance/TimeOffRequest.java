@@ -11,7 +11,7 @@ public class TimeOffRequest implements Comparable<TimeOffRequest> {
     public static final Comparator<TimeOffRequest> defaultComparator =
             Comparator.comparing(TimeOffRequest::getTimestamp);
 
-    protected int requestId;
+    protected int requestId = -1;
     protected int employeeId;
     protected int supervisorId;
     protected TimeOffStatus status;

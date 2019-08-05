@@ -69,6 +69,12 @@ public enum SqlTimeOffRequestQuery implements BasicSqlQuery {
             "DELETE FROM time.time_off_request_day\n" +
                     "WHERE request_id = :requestId\n"
     ),
+    SELECT_TIME_OFF_REQUEST_IDS_NEEDING_APPROVAL_BY_SUP(
+            "SELECT request_id\n" +
+                    "FROM time.time_off_request r\n" +
+                    "WHERE r.supervisor_id = :supervisorId " +
+                    "and r.status = 'SUBMITTED'\n"
+    )
     ;
 
     private String sql;

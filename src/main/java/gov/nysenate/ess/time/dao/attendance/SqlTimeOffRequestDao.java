@@ -103,6 +103,19 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * {@inheritDoc}
      */
     @Override
+    public List<TimeOffRequest> getRequestsNeedingApproval(int supervisorId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("supervisorId", supervisorId);
+        List<Integer> requestIds;
+        requestIds = localNamedJdbc.query(SqlTimeOffRequestQuery.SELECT_TIME_OFF_REQUEST_IDS_NEEDING_APPROVAL_BY_SUP
+                .getSql(schemaMap()), params, (rs, rowNum) -> rs.getInt("request_id"));
+        return getMultipleRequests(requestIds);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addCommentToRequest(TimeOffRequestComment comment) {
         MapSqlParameterSource params = getAddCommentParams(comment);
         localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_COMMENT_TO_TIME_OFF_REQUEST.getSql(schemaMap()), params);
@@ -164,7 +177,6 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
                 addDayToRequest(day);
             }
         }
-
         return requestId;
     }
 
@@ -172,7 +184,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * {@inheritDoc}
      */
     @Override
-    public void updateRequest(TimeOffRequest request) {
+    public boolean updateRequest(TimeOffRequest request) {
         //remove old comments and days
         removeAllComments(request.getRequestId());
         removeAllDays(request.getRequestId());
@@ -180,7 +192,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         //update the other info for the request
         MapSqlParameterSource params = getAddRequestParams(request);
         params.addValue("requestId", request.getRequestId());
-        localNamedJdbc.update(SqlTimeOffRequestQuery.UPDATE_REQUEST.getSql(schemaMap()), params);
+        int changed = localNamedJdbc.update(SqlTimeOffRequestQuery.UPDATE_REQUEST.getSql(schemaMap()), params);
         //add in the new comments and days
         if(request.getComments() != null) {
             for (TimeOffRequestComment comment : request.getComments()) {
@@ -192,6 +204,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
                 addDayToRequest(day);
             }
         }
+        return (changed == 1);
     }
 
 

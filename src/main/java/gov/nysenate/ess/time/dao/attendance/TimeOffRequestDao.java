@@ -41,6 +41,14 @@ public interface TimeOffRequestDao extends BaseDao {
     List<TimeOffRequest> getAllRequestsBySupEmpYear(int employeeId, int supervisorId, int year);
 
     /**
+     * Retrieve all requests needing approval from a
+     * specified supervisor
+     * @param supervisorId int
+     * @return List<TimeOffRequest>
+     */
+    List<TimeOffRequest> getRequestsNeedingApproval(int supervisorId);
+
+    /**
      * Add a comment to the comment thread of a request
      * @param comment TimeOffRequestComment
      */
@@ -63,8 +71,9 @@ public interface TimeOffRequestDao extends BaseDao {
      * Update the status of a request given the
      * request ID
      * @param request TimeOffRequest
+     * @return boolean - true if the request was updated, false otherwise
      */
-    void updateRequest(TimeOffRequest request);
+    boolean updateRequest(TimeOffRequest request);
 
     /**
      * Delete all comments for a request

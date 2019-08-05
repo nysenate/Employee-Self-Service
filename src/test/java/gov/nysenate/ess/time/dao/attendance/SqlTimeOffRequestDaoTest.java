@@ -383,5 +383,36 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         //verify the requestIds
         assertTrue("The requestId for request two is incorrect.", requestIdOne < requestIdTwo);
     }
+
+    @Test
+    public void getRequestsNeedingApprovalTest() {
+        //create three requests with same supervisor, two with status submitted
+        Date date = new Date();         //Timestamp is 01/01/2019
+        TimeOffRequest request = new TimeOffRequest(-1, 1, 456,
+                TimeOffStatus.SUBMITTED, new Timestamp(1546318800000L), date, date, null, null);
+        int requestIdOne = sqlTimeOffRequestDao.addNewRequest(request);
+
+        Date dateTwo = new Date();      //Timestamp is 01/01/2020
+        TimeOffRequest requestTwo = new TimeOffRequest(-1, 2, 456,
+                TimeOffStatus.SUBMITTED, new Timestamp(1577854800000L), date, date, null, null);
+        int requestIdTwo = sqlTimeOffRequestDao.addNewRequest(requestTwo);
+
+        Date dateThree = new Date();      //Timestamp is 01/01/2020
+        TimeOffRequest requestThree = new TimeOffRequest(-1, 3, 456,
+                TimeOffStatus.SAVED, new Timestamp(1577854800000L), date, date, null, null);
+        int requestIdThree = sqlTimeOffRequestDao.addNewRequest(requestThree);
+
+        //get the requests needing approval for supervisor 456
+        List<TimeOffRequest> requests = sqlTimeOffRequestDao.getRequestsNeedingApproval(456);
+        List<Integer> ids = new ArrayList<>();
+        for(TimeOffRequest r: requests) {
+            ids.add(r.getEmployeeId());
+        }
+
+        //verify the requests returned are correct
+        assertEquals("The wrong number of requests were returned.", 2, requests.size());
+        assertTrue("Employee 1's request was not returned.", ids.contains(1));
+        assertTrue("Employee 2's request was not returned.", ids.contains(2));
+    }
 }
 
