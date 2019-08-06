@@ -18,9 +18,9 @@ public class TimeOffRequestRowMapper extends BaseRowMapper<TimeOffRequest> {
         tor.setEmployeeId(rs.getInt("employee_id"));
         tor.setSupervisorId(rs.getInt("supervisor_id"));
         tor.setStatus(TimeOffStatus.valueOf(rs.getString("status")));
-        tor.setTimestamp(rs.getTimestamp("update_timestamp"));
-        tor.setStartDate(rs.getDate("start_date"));
-        tor.setEndDate(rs.getDate("end_date"));
+        tor.setTimestamp(rs.getTimestamp("update_timestamp").toLocalDateTime());
+        tor.setStartDate(rs.getDate("start_date").toLocalDate());
+        tor.setEndDate(rs.getDate("end_date").toLocalDate());
         tor.setComments(null);
         tor.setDays(null);
         return tor;

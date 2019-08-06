@@ -2,31 +2,26 @@ package gov.nysenate.ess.time.model.attendance;
 
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 
-public class TimeOffRequestDay implements Comparable<TimeOffRequestDay> {
+public class TimeOffRequestDay extends AttendanceHours implements Comparable<TimeOffRequestDay> {
 
     public static final Comparator<TimeOffRequestDay> defaultComparator =
             Comparator.comparing(TimeOffRequestDay::getDate);
 
     protected int requestId;
-    protected Date date;
-    protected int workHours;
-    protected int holidayHours;
-    protected int vacationHours;
-    protected int personalHours;
-    protected int sickEmpHours;
-    protected int sickFamHours;
-    protected int miscHours;
+    protected LocalDate date;
     protected MiscLeaveType miscType;
 
     public TimeOffRequestDay() {}
 
-    public TimeOffRequestDay(int requestId, Date date, int workHours, int holidayHours,
-                             int vacationHours, int personalHours, int sickEmpHours,
-                             int sickFamHours, int miscHours, MiscLeaveType miscType) {
+    public TimeOffRequestDay(int requestId, LocalDate date, BigDecimal workHours, BigDecimal holidayHours,
+                             BigDecimal vacationHours, BigDecimal personalHours, BigDecimal sickEmpHours,
+                             BigDecimal sickFamHours, BigDecimal miscHours, MiscLeaveType miscType) {
         this.requestId = requestId;
         this.date = date;
         this.workHours = workHours;
@@ -42,24 +37,17 @@ public class TimeOffRequestDay implements Comparable<TimeOffRequestDay> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TimeOffRequestDay that = (TimeOffRequestDay) o;
-        return requestId == that.requestId &&
-                workHours == that.workHours &&
-                holidayHours == that.holidayHours &&
-                vacationHours == that.vacationHours &&
-                personalHours == that.personalHours &&
-                sickEmpHours == that.sickEmpHours &&
-                sickFamHours == that.sickFamHours &&
-                miscHours == that.miscHours &&
-                date.equals(that.date) &&
-                miscType == that.miscType;
+        if (!(o instanceof TimeOffRequestDay)) return false;
+        if (!super.equals(o)) return false;
+        TimeOffRequestDay day = (TimeOffRequestDay) o;
+        return getRequestId() == day.getRequestId() &&
+                getDate().equals(day.getDate()) &&
+                getMiscType() == day.getMiscType();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(requestId, date, workHours, holidayHours, vacationHours,
-                personalHours, sickEmpHours, sickFamHours, miscHours, miscType);
+        return Objects.hash(super.hashCode(), getRequestId(), getDate(), getMiscType());
     }
 
     /*Basic Getters and Setters*/
@@ -67,36 +55,8 @@ public class TimeOffRequestDay implements Comparable<TimeOffRequestDay> {
         return requestId;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
-    }
-
-    public int getWorkHours() {
-        return workHours;
-    }
-
-    public int getHolidayHours() {
-        return holidayHours;
-    }
-
-    public int getVacationHours() {
-        return vacationHours;
-    }
-
-    public int getPersonalHours() {
-        return personalHours;
-    }
-
-    public int getSickEmpHours() {
-        return sickEmpHours;
-    }
-
-    public int getSickFamHours() {
-        return sickFamHours;
-    }
-
-    public int getMiscHours() {
-        return miscHours;
     }
 
     public MiscLeaveType getMiscType() {
@@ -107,37 +67,7 @@ public class TimeOffRequestDay implements Comparable<TimeOffRequestDay> {
         this.requestId = requestId;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public void setWorkHours(int workHours) {
-        this.workHours = workHours;
-    }
-
-    public void setHolidayHours(int holidayHours) {
-        this.holidayHours = holidayHours;
-    }
-
-    public void setVacationHours(int vacationHours) {
-        this.vacationHours = vacationHours;
-    }
-
-    public void setPersonalHours(int personalHours) {
-        this.personalHours = personalHours;
-    }
-
-    public void setSickEmpHours(int sickEmpHours) {
-        this.sickEmpHours = sickEmpHours;
-    }
-
-    public void setSickFamHours(int sickFamHours) {
-        this.sickFamHours = sickFamHours;
-    }
-
-    public void setMiscHours(int miscHours) {
-        this.miscHours = miscHours;
-    }
+    public void setDate(LocalDate date) { this.date = date; }
 
     public void setMiscType(MiscLeaveType miscType) {
         this.miscType = miscType;

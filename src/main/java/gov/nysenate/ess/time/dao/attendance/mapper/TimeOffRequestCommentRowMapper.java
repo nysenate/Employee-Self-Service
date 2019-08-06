@@ -16,7 +16,7 @@ public class TimeOffRequestCommentRowMapper extends BaseRowMapper<TimeOffRequest
         comment.setAuthorId(rs.getInt("author_id"));
         comment.setRequestId(rs.getInt("request_id"));
         comment.setText(rs.getString("comment"));
-        comment.setTimestamp(rs.getTimestamp("time_stamp"));
+        comment.setTimestamp(rs.getTimestamp("time_stamp").toLocalDateTime());
         return comment;
     }
 }

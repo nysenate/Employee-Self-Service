@@ -17,14 +17,14 @@ public class TimeOffRequestDayRowMapper extends BaseRowMapper<TimeOffRequestDay>
     public TimeOffRequestDay mapRow(ResultSet rs, int rowNum) throws SQLException {
         TimeOffRequestDay day = new TimeOffRequestDay();
         day.setRequestId(rs.getInt("request_id"));
-        day.setDate(rs.getDate("request_date"));
-        day.setWorkHours(rs.getInt("work_hours"));
-        day.setHolidayHours(rs.getInt("holiday_hours"));
-        day.setVacationHours(rs.getInt("vacation_hours"));
-        day.setPersonalHours(rs.getInt("personal_hours"));
-        day.setSickEmpHours(rs.getInt("sick_emp_hours"));
-        day.setSickFamHours(rs.getInt("sick_fam_hours"));
-        day.setMiscHours(rs.getInt("misc_hours"));
+        day.setDate(rs.getDate("request_date").toLocalDate());
+        day.setWorkHours(rs.getBigDecimal("work_hours"));
+        day.setHolidayHours(rs.getBigDecimal("holiday_hours"));
+        day.setVacationHours(rs.getBigDecimal("vacation_hours"));
+        day.setPersonalHours(rs.getBigDecimal("personal_hours"));
+        day.setSickEmpHours(rs.getBigDecimal("sick_emp_hours"));
+        day.setSickFamHours(rs.getBigDecimal("sick_fam_hours"));
+        day.setMiscHours(rs.getBigDecimal("misc_hours"));
         //Allow for misc_type to be a null value
         day.setMiscType(Optional.ofNullable(rs.getString("misc_type"))
                 .map(MiscLeaveType::valueOf)

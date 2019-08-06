@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.model.attendance;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
@@ -12,7 +13,7 @@ public class TimeOffRequestComment implements Comparable<TimeOffRequestComment> 
 
     protected int requestId;
     protected int authorId;
-    protected Timestamp timestamp;
+    protected LocalDateTime timestamp;
     protected String text;
 
     public TimeOffRequestComment() {}
@@ -21,11 +22,10 @@ public class TimeOffRequestComment implements Comparable<TimeOffRequestComment> 
         this.requestId = requestId;
         this.authorId = authorId;
         this.text = text;
-        Date today = new Date();
-        this.timestamp = new Timestamp(today.getTime());
+        this.timestamp = LocalDateTime.now();
     }
 
-    public TimeOffRequestComment(int requestId, int authorId, Timestamp timestamp, String text) {
+    public TimeOffRequestComment(int requestId, int authorId, LocalDateTime timestamp, String text) {
         this.requestId = requestId;
         this.authorId = authorId;
         this.timestamp = timestamp;
@@ -57,7 +57,7 @@ public class TimeOffRequestComment implements Comparable<TimeOffRequestComment> 
         return authorId;
     }
 
-    public Timestamp getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
@@ -73,7 +73,7 @@ public class TimeOffRequestComment implements Comparable<TimeOffRequestComment> 
         this.authorId = authorId;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

@@ -1,8 +1,8 @@
 package gov.nysenate.ess.time.model.attendance;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.Date;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,9 +15,9 @@ public class TimeOffRequest implements Comparable<TimeOffRequest> {
     protected int employeeId;
     protected int supervisorId;
     protected TimeOffStatus status;
-    protected Timestamp updateTimestamp;
-    protected Date startDate;
-    protected Date endDate;
+    protected LocalDateTime updateTimestamp;
+    protected LocalDate startDate;
+    protected LocalDate endDate;
     protected List<TimeOffRequestComment> comments;
     protected List<TimeOffRequestDay> days;
 
@@ -28,7 +28,7 @@ public class TimeOffRequest implements Comparable<TimeOffRequest> {
      * - No requestId or timestamp required in params
      */
     public TimeOffRequest(int employeeId, int supervisorId, TimeOffStatus status,
-                          Date startDate, Date endDate, List<TimeOffRequestComment> comments,
+                          LocalDate startDate, LocalDate endDate, List<TimeOffRequestComment> comments,
                           List<TimeOffRequestDay> days) {
         this.employeeId = employeeId;
         this.supervisorId = supervisorId;
@@ -37,8 +37,7 @@ public class TimeOffRequest implements Comparable<TimeOffRequest> {
         this.endDate = endDate;
         this.comments = comments;
         this.days = days;
-        Date today = new Date();
-        this.updateTimestamp = new Timestamp(today.getTime());
+        this.updateTimestamp = null;
     }
 
     /**
@@ -46,7 +45,7 @@ public class TimeOffRequest implements Comparable<TimeOffRequest> {
      * - Used for mapping TimeOffRequests after SQL queries
      */
     public TimeOffRequest(int requestId, int employeeId, int supervisorId, TimeOffStatus status,
-                          Timestamp updateTimestamp, Date startDate, Date endDate,
+                          LocalDateTime updateTimestamp, LocalDate startDate, LocalDate endDate,
                           List<TimeOffRequestComment> comments, List<TimeOffRequestDay> days) {
         this.requestId = requestId;
         this.employeeId = employeeId;
@@ -119,27 +118,27 @@ public class TimeOffRequest implements Comparable<TimeOffRequest> {
         this.status = status;
     }
 
-    public Timestamp getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return updateTimestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.updateTimestamp = timestamp;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

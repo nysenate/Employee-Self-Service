@@ -1,6 +1,5 @@
 package gov.nysenate.ess.time.dao.attendance;
 
-import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.dao.attendance.mapper.TimeOffRequestCommentRowMapper;
 import gov.nysenate.ess.time.dao.attendance.mapper.TimeOffRequestDayRowMapper;
@@ -14,8 +13,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -240,7 +240,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("text", comment.getText());
         params.addValue("authorId", comment.getAuthorId());
-        params.addValue("timestamp", comment.getTimestamp());
+        params.addValue("timestamp", toDate(comment.getTimestamp()));
         params.addValue("requestId", comment.getRequestId());
         return params;
     }
@@ -255,14 +255,14 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
     private static MapSqlParameterSource getAddDayParams(TimeOffRequestDay day) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("requestId", day.getRequestId());
-        params.addValue("date", day.getDate());
-        params.addValue("workHours", day.getWorkHours());
-        params.addValue("holidayHours", day.getHolidayHours());
-        params.addValue("vacationHours", day.getVacationHours());
-        params.addValue("personalHours", day.getPersonalHours());
-        params.addValue("sickEmpHours", day.getSickEmpHours());
-        params.addValue("sickFamHours", day.getSickFamHours());
-        params.addValue("miscHours", day.getMiscHours());
+        params.addValue("date", toDate(day.getDate()));
+        params.addValue("workHours", day.getWorkHours().orElse(BigDecimal.ZERO));
+        params.addValue("holidayHours", day.getHolidayHours().orElse(BigDecimal.ZERO));
+        params.addValue("vacationHours", day.getVacationHours().orElse(BigDecimal.ZERO));
+        params.addValue("personalHours", day.getPersonalHours().orElse(BigDecimal.ZERO));
+        params.addValue("sickEmpHours", day.getSickEmpHours().orElse(BigDecimal.ZERO));
+        params.addValue("sickFamHours", day.getSickFamHours().orElse(BigDecimal.ZERO));
+        params.addValue("miscHours", day.getMiscHours().orElse(BigDecimal.ZERO));
                                                     //Allow misc_type to be null
         params.addValue("miscType", Optional.ofNullable(day.getMiscType())
                                                         .map(Enum::name)
@@ -282,9 +282,9 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         params.addValue("employeeId", request.getEmployeeId());
         params.addValue("supervisorId", request.getSupervisorId());
         params.addValue("status", request.getStatus().getName());
-        params.addValue("updateTimestamp", request.getTimestamp());
-        params.addValue("startDate", request.getStartDate());
-        params.addValue("endDate", request.getEndDate());
+        params.addValue("updateTimestamp", toDate(request.getTimestamp()));
+        params.addValue("startDate",  toDate(request.getStartDate()));
+        params.addValue("endDate",  toDate(request.getEndDate()));
         return params;
     }
 }

@@ -1,11 +1,9 @@
 package gov.nysenate.ess.time.client.view.attendance;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequest;
 import gov.nysenate.ess.time.model.attendance.TimeOffStatus;
 
-import javax.annotation.Nullable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -40,10 +38,10 @@ public class TimeOffRequestView implements ViewObject {
         this.status = request.getStatus().getName();
         this.employeeId = request.getEmployeeId();
         this.supervisorId = request.getSupervisorId();
-        this.startDate = LocalDate.parse(request.getStartDate().toString());
-        this.endDate = LocalDate.parse(request.getEndDate().toString());
+        this.startDate = request.getStartDate();
+        this.endDate = request.getEndDate();
         this.requestId = request.getRequestId();
-        this.timestamp = request.getTimestamp() != null? LocalDateTime.parse(request.getTimestamp().toString()): null;
+        this.timestamp = request.getTimestamp();
     }
 
 
@@ -53,13 +51,9 @@ public class TimeOffRequestView implements ViewObject {
         request.setEmployeeId(employeeId);
         request.setSupervisorId(supervisorId);
         request.setStatus(TimeOffStatus.valueOf(status));
-        request.setTimestamp(timestamp != null ? Timestamp.valueOf(timestamp): null);
-        request.setStartDate(Date.from(startDate.atStartOfDay()
-                                                .atZone(ZoneId.systemDefault())
-                                                .toInstant()));
-        request.setEndDate(Date.from(endDate.atStartOfDay()
-                                            .atZone(ZoneId.systemDefault())
-                                            .toInstant()));
+        request.setTimestamp(timestamp);
+        request.setStartDate(startDate);
+        request.setEndDate(endDate);
         request.setDays(days.stream()
                         .map(TimeOffRequestDayView::toTimeOffRequestDay)
                         .collect(Collectors.toList()));

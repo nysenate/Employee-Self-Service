@@ -15,9 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -33,9 +34,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
     @Test
     public void addRequestTest() {
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         //attempt adding the request to the database
         int numBefore = sqlTimeOffRequestDao.getAllRequestsByEmpId(123).size();
         sqlTimeOffRequestDao.addNewRequest(request);
@@ -45,9 +46,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
     @Test
     public void addCommentTest() {
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         sqlTimeOffRequestDao.addNewRequest(request);
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(123);
         TimeOffRequest retrievedRequest = requests.get(0);
@@ -64,20 +65,20 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
     @Test
     public void addDayTest() {
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         sqlTimeOffRequestDao.addNewRequest(request);
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(123);
         TimeOffRequest retrievedRequest = requests.get(0);
 
         int requestId = retrievedRequest.getRequestId();
-        Date dateOne = new Date(1564632000000L);
-        Date dateTwo = new Date(1564718400000L);
-        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, 0, 0,
-                7, 0,0,0,0, null);
-        TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, 0,0,
-                7,0,0,0,0,null);
+        LocalDate dateOne = LocalDate.now();
+        LocalDate dateTwo = LocalDate.now().plusDays(1);
+        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+        TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
 
         int daysBefore = sqlTimeOffRequestDao.getRequestById(requestId).getDays().size();
         sqlTimeOffRequestDao.addDayToRequest(dayOne);
@@ -100,9 +101,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
     @Test
     public void getRequestsBySupIdTest() {
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
 
         int numBefore = sqlTimeOffRequestDao.getAllRequestsBySupId(456).size();
         sqlTimeOffRequestDao.addNewRequest(request);
@@ -118,12 +119,12 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
     @Test
     public void getRequestBySupEmpYearTest() {
-        Date dateOne = new Date(1564632000000L);
-        Date dateTwo = new Date(1564718400000L);
+        LocalDate dateOne = LocalDate.now();
+        LocalDate dateTwo = LocalDate.now().plusDays(1);
         TimeOffRequest requestOne = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(dateOne.getTime()), dateOne, dateOne, null, null);
+                TimeOffStatus.APPROVED, dateOne.atStartOfDay(), dateOne, dateOne, null, null);
         TimeOffRequest requestTwo = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(dateTwo.getTime()), dateTwo, dateTwo, null, null);
+                TimeOffStatus.APPROVED, dateTwo.atStartOfDay(), dateTwo, dateTwo, null, null);
         int numBefore = sqlTimeOffRequestDao.getAllRequestsBySupEmpYear(456, 123, 2019).size();
         sqlTimeOffRequestDao.addNewRequest(requestOne);
         sqlTimeOffRequestDao.addNewRequest(requestTwo);
@@ -134,9 +135,9 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void requestCommentRowMapperTest() {
         //create a request and a comment for that request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         sqlTimeOffRequestDao.addNewRequest(request);
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(123);
         TimeOffRequest retrievedRequest = requests.get(0);
@@ -152,7 +153,6 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         //verify information in comment
         assertEquals("The text of the comment was not mapped back properly.", text, retrievedComment.getText());
         assertEquals("The authorId of the comment was not mapped back properly.", 123, retrievedComment.getAuthorId());
-        assertTrue("The timestamp of the comment was not mapped back properly.", !retrievedComment.getTimestamp().equals(null));
         assertEquals("The requestId of the comment was not mapped back properly.", requestId, retrievedComment.getRequestId());
 
     }
@@ -160,16 +160,17 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void requestDayRowMapperTest() {
         //create a request and a day for that request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         sqlTimeOffRequestDao.addNewRequest(request);
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(123);
         TimeOffRequest retrievedRequest = requests.get(0);
         int requestId = retrievedRequest.getRequestId();
-        Date dateOne = new Date(1564632000000L);
-        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, 1, 2,
-                3, 4,5,6,7, MiscLeaveType.JURY_LEAVE);
+        LocalDate dateOne = LocalDate.now();
+        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.valueOf(1), BigDecimal.valueOf(2),
+                BigDecimal.valueOf(3), BigDecimal.valueOf(4),BigDecimal.valueOf(5),BigDecimal.valueOf(6),BigDecimal.valueOf(7),
+                MiscLeaveType.JURY_LEAVE);
 
         //add and then retrieve the day
         sqlTimeOffRequestDao.addDayToRequest(dayOne);
@@ -179,31 +180,38 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         //verify the information in the retrieved day
         assertEquals("The requestId of the day was not mapped back properly.", requestId, retrievedDay.getRequestId());
         assertEquals("The date of the day was not mapped back properly.", dateOne, retrievedDay.getDate());
-        assertEquals("The workHours of the day was not mapped back properly.", 1, retrievedDay.getWorkHours());
-        assertEquals("The holidayHours of the day was not mapped back properly.",2, retrievedDay.getHolidayHours());
-        assertEquals("The vacationHours of the day was not mapped back properly.",3, retrievedDay.getVacationHours());
-        assertEquals("The personalHours of the day was not mapped back properly.",4, retrievedDay.getPersonalHours());
-        assertEquals("The sickEmpHours of the day was not mapped back properly.",5, retrievedDay.getSickEmpHours());
-        assertEquals("The sickFamHours of the day was not mapped back properly.",6,retrievedDay.getSickFamHours());
-        assertEquals("The miscHours of the day was not mapped back properly.",7,retrievedDay.getMiscHours());
+        assertEquals("The workHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(1), retrievedDay.getWorkHours().orElse(BigDecimal.ZERO));
+        assertEquals("The holidayHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(2), retrievedDay.getHolidayHours().orElse(BigDecimal.ZERO));
+        assertEquals("The vacationHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(3), retrievedDay.getVacationHours().orElse(BigDecimal.ZERO));
+        assertEquals("The personalHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(4), retrievedDay.getPersonalHours().orElse(BigDecimal.ZERO));
+        assertEquals("The sickEmpHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(5), retrievedDay.getSickEmpHours().orElse(BigDecimal.ZERO));
+        assertEquals("The sickFamHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(6),retrievedDay.getSickFamHours().orElse(BigDecimal.ZERO));
+        assertEquals("The miscHours of the day was not mapped back properly.",
+                BigDecimal.valueOf(7),retrievedDay.getMiscHours().orElse(BigDecimal.ZERO));
         assertEquals("The miscType of the day was not mapped back properly.",MiscLeaveType.JURY_LEAVE,retrievedDay.getMiscType());
     }
 
     @Test
     public void requestRowMapperTest() {
         //Create a request, and then two days and two comments to the request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         int requestId = sqlTimeOffRequestDao.addNewRequest(request);
         request.setRequestId(requestId);
 
-        Date dateOne = new Date(1564632000000L);
-        Date dateTwo = new Date(1564718400000L);
-        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, 0, 0,
-                7, 0,0,0,0, null);
-        TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, 0,0,
-                7,0,0,0,0,null);
+        LocalDate dateOne = LocalDate.now();
+        LocalDate dateTwo = LocalDate.now().plusDays(1);
+        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+        TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
 
         sqlTimeOffRequestDao.addDayToRequest(dayOne);
         sqlTimeOffRequestDao.addDayToRequest(dayTwo);
@@ -228,16 +236,16 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void removeAllCommentsTest() {
         //create a request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         int requestId = sqlTimeOffRequestDao.addNewRequest(request);
         request.setRequestId(requestId);
 
         //create comments
-        Timestamp t1 = new Timestamp(1564372800000L);
-        Timestamp t2 = new Timestamp(1564459200000L);
-        Timestamp t3 = new Timestamp(1564545600000L);
+        LocalDateTime t1 = LocalDate.now().atStartOfDay();
+        LocalDateTime t2 = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime t3 = LocalDate.now().plusDays(2).atStartOfDay();
         TimeOffRequestComment commentOne = new TimeOffRequestComment(requestId, 123, t1,"one");
         TimeOffRequestComment commentTwo = new TimeOffRequestComment(requestId, 123, t2,"two");
         TimeOffRequestComment commentThree = new TimeOffRequestComment(requestId, 123, t3,"three");
@@ -257,19 +265,19 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void removeAllDaysTest() {
         //create a request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.APPROVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.APPROVED, date.atStartOfDay(), date, date, null, null);
         int requestId = sqlTimeOffRequestDao.addNewRequest(request);
         request.setRequestId(requestId);
 
         //create days
-        Date dateOne = new Date(1564632000000L);
-        Date dateTwo = new Date(1564718400000L);
-        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, 0, 0,
-                7, 0,0,0,0, null);
-        TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, 0,0,
-                7,0,0,0,0, MiscLeaveType.JURY_LEAVE);
+        LocalDate dateOne = LocalDate.now();
+        LocalDate dateTwo = LocalDate.now().plusDays(1);
+        TimeOffRequestDay dayOne = new TimeOffRequestDay(requestId, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+        TimeOffRequestDay dayTwo = new TimeOffRequestDay(requestId, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
         sqlTimeOffRequestDao.addDayToRequest(dayOne);
         sqlTimeOffRequestDao.addDayToRequest(dayTwo);
 
@@ -284,20 +292,20 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void  updateRequestTest() {
         //create a request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.SAVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.SAVED, date.atStartOfDay(), date, date, null, null);
         int requestId = sqlTimeOffRequestDao.addNewRequest(request);
         request.setRequestId(requestId);
 
         //make changes to the request
-        Date newDate = new Date(946702800000L);
+        LocalDate newDate = LocalDate.now().plusDays(5);
         request.setEndDate(newDate);
         request.setStartDate(newDate);
         request.setStatus(TimeOffStatus.APPROVED);
-        Timestamp t1 = new Timestamp(1564372800000L);
-        Timestamp t2 = new Timestamp(1564459200000L);
-        Timestamp t3 = new Timestamp(1564545600000L);
+        LocalDateTime t1 = LocalDate.now().atStartOfDay();
+        LocalDateTime t2 = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime t3 = LocalDate.now().plusDays(2).atStartOfDay();
         TimeOffRequestComment commentOne = new TimeOffRequestComment(requestId, 123, t1,"one");
         TimeOffRequestComment commentTwo = new TimeOffRequestComment(requestId, 123, t2,"two");
         TimeOffRequestComment commentThree = new TimeOffRequestComment(requestId, 123, t3,"three");
@@ -306,7 +314,7 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         comments.add(commentTwo);
         comments.add(commentThree);
         request.setComments(comments);
-        Timestamp newTimestamp = new Timestamp(1564977600000L);
+        LocalDateTime newTimestamp = LocalDateTime.now();
         request.setTimestamp(newTimestamp);
 
         //update the request
@@ -318,7 +326,7 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
         assertEquals("End date wasn't updated properly.", newDate, retrievedRequest.getEndDate());
         assertEquals("Status wasn't updated properly.", TimeOffStatus.APPROVED, retrievedRequest.getStatus());
         assertEquals("Timestamp date wasn't updated properly.", newTimestamp, retrievedRequest.getTimestamp());
-        assertEquals("Comments date wasn't updated properly.", comments, retrievedRequest.getComments());
+        assertEquals("Comments were not updated properly.", comments, retrievedRequest.getComments());
         assertEquals("Supervisor ID should not have changed.", 456, retrievedRequest.getSupervisorId());
         assertEquals("Employee ID should not have changed.", 123, retrievedRequest.getEmployeeId());
     }
@@ -326,14 +334,14 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void addRequestWhenListsNotNullTest() {
         //create a request
-        Date date = new Date();
+        LocalDate date = LocalDate.now();
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.SAVED, new Timestamp(date.getTime()), date, date, null, null);
+                TimeOffStatus.SAVED, date.atStartOfDay(), date, date, null, null);
 
         //create a list of comments and set request comments to the list
-        Timestamp t1 = new Timestamp(1564372800000L);
-        Timestamp t2 = new Timestamp(1564459200000L);
-        Timestamp t3 = new Timestamp(1564545600000L);
+        LocalDateTime t1 = LocalDate.now().atStartOfDay();
+        LocalDateTime t2 = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime t3 = LocalDate.now().plusDays(2).atStartOfDay();
         TimeOffRequestComment commentOne = new TimeOffRequestComment(-1, 123, t1,"one");
         TimeOffRequestComment commentTwo = new TimeOffRequestComment(-1, 123, t2,"two");
         TimeOffRequestComment commentThree = new TimeOffRequestComment(-1, 123, t3,"three");
@@ -345,12 +353,12 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
         //create a list of days and set request days to the list
         //create days
-        Date dateOne = new Date(1564632000000L);
-        Date dateTwo = new Date(1564718400000L);
-        TimeOffRequestDay dayOne = new TimeOffRequestDay(-1, dateOne, 0, 0,
-                7, 0,0,0,0, null);
-        TimeOffRequestDay dayTwo = new TimeOffRequestDay(-1, dateTwo, 0,0,
-                7,0,0,0,0, MiscLeaveType.JURY_LEAVE);
+        LocalDate dateOne = LocalDate.now();
+        LocalDate dateTwo = LocalDate.now().plusDays(1);
+        TimeOffRequestDay dayOne = new TimeOffRequestDay(-1, dateOne, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, null);
+        TimeOffRequestDay dayTwo = new TimeOffRequestDay(-1, dateTwo, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.valueOf(7), BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO,BigDecimal.ZERO, MiscLeaveType.JURY_LEAVE);
         List<TimeOffRequestDay> days = new ArrayList<>();
         days.add(dayOne);
         days.add(dayTwo);
@@ -369,15 +377,17 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
     @Test
     public void addRequestReturnsCorrectRequestIdTest() {
         //create a request
-        Date date = new Date();         //Timestamp is 01/01/2019
+        LocalDate date = LocalDate.now();
+        LocalDateTime timeOne = LocalDateTime.of(2019,01,01,0,0,0);
         TimeOffRequest request = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.SAVED, new Timestamp(1546318800000L), date, date, null, null);
+                TimeOffStatus.SAVED, timeOne, date, date, null, null);
         int requestIdOne = sqlTimeOffRequestDao.addNewRequest(request);
 
         //create a request
-        Date dateTwo = new Date();      //Timestamp is 01/01/2020
+        LocalDate dateTwo = LocalDate.now();
+        LocalDateTime timeTwo = LocalDateTime.of(2019,01,01,0,0,0);
         TimeOffRequest requestTwo = new TimeOffRequest(-1, 123, 456,
-                TimeOffStatus.SAVED, new Timestamp(1577854800000L), date, date, null, null);
+                TimeOffStatus.SAVED, timeTwo, date, date, null, null);
         int requestIdTwo = sqlTimeOffRequestDao.addNewRequest(requestTwo);
 
         //verify the requestIds
@@ -386,33 +396,36 @@ public class SqlTimeOffRequestDaoTest extends BaseTest {
 
     @Test
     public void getRequestsNeedingApprovalTest() {
+        int numBefore = sqlTimeOffRequestDao.getRequestsNeedingApproval(456).size();
         //create three requests with same supervisor, two with status submitted
-        Date date = new Date();         //Timestamp is 01/01/2019
+        LocalDate date = LocalDate.now();
+        LocalDateTime timeOne = LocalDateTime.of(2019,01,01,0,0,0);
         TimeOffRequest request = new TimeOffRequest(-1, 1, 456,
-                TimeOffStatus.SUBMITTED, new Timestamp(1546318800000L), date, date, null, null);
+                TimeOffStatus.SUBMITTED, timeOne, date, date, null, null);
         int requestIdOne = sqlTimeOffRequestDao.addNewRequest(request);
 
-        Date dateTwo = new Date();      //Timestamp is 01/01/2020
+        LocalDateTime timeTwo = LocalDateTime.of(2020,01,01,0,0,0);
         TimeOffRequest requestTwo = new TimeOffRequest(-1, 2, 456,
-                TimeOffStatus.SUBMITTED, new Timestamp(1577854800000L), date, date, null, null);
+                TimeOffStatus.SUBMITTED, timeTwo, date, date, null, null);
         int requestIdTwo = sqlTimeOffRequestDao.addNewRequest(requestTwo);
 
-        Date dateThree = new Date();      //Timestamp is 01/01/2020
+        LocalDateTime timeThree = LocalDateTime.of(2020,01,01,0,0,0);
         TimeOffRequest requestThree = new TimeOffRequest(-1, 3, 456,
-                TimeOffStatus.SAVED, new Timestamp(1577854800000L), date, date, null, null);
+                TimeOffStatus.SAVED, timeThree, date, date, null, null);
         int requestIdThree = sqlTimeOffRequestDao.addNewRequest(requestThree);
 
         //get the requests needing approval for supervisor 456
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getRequestsNeedingApproval(456);
-        List<Integer> ids = new ArrayList<>();
+        List<Integer> EmpIds = new ArrayList<>();
         for(TimeOffRequest r: requests) {
-            ids.add(r.getEmployeeId());
+            EmpIds.add(r.getEmployeeId());
         }
+        int numAfter = requests.size();
 
         //verify the requests returned are correct
-        assertEquals("The wrong number of requests were returned.", 2, requests.size());
-        assertTrue("Employee 1's request was not returned.", ids.contains(1));
-        assertTrue("Employee 2's request was not returned.", ids.contains(2));
+        assertEquals("The wrong number of requests were returned.", 2, numAfter-numBefore);
+        assertTrue("Employee 1's request was not returned.", EmpIds.contains(1));
+        assertTrue("Employee 2's request was not returned.", EmpIds.contains(2));
     }
 }
 
