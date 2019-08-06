@@ -218,7 +218,10 @@ slack.notification.line.limit = 5
 # --- Error Report EmailConfiguration -----------------------------------------------------
 report.email =
 
-# --- Supply Email Configuration -----------------------------------------------------
+# --- Supply Configuration -----------------------------------------------------
 
 # A comma separated list of emails that will receive a notification when new requisitions are submitted.
 supply.requisition.notification.list =
+
+# Comma separated list of commodity codes which do not need to be reconciled.
+supply.reconciliation.ignore.list = E69, E710, E912, E1013, E1015, E1215

@@ -30,21 +30,6 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
             this.resultErrorMap = new Map();
         }
     };
-    $scope.inventory = {
-        locationCode: 'LC100S',
-        locationType: 'P',
-        itemQuantities: {},
-        isComplete: function () {
-            for (var itemId in this.itemQuantities) {
-                if (this.itemQuantities.hasOwnProperty(itemId)) {
-                    if (this.itemQuantities[itemId] === null || this.itemQuantities[itemId] === '') {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-    };
 
     /** Print*/
     $scope.print = function () {
@@ -59,8 +44,7 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
         // Clicking an expanded item should collapse it.
         if ($scope.selectedItem == item) {
             $scope.selectedItem = null;
-        }
-        else {
+        } else {
             $scope.selectedItem = item;
         }
     };
@@ -108,7 +92,7 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
 
         function saveResults(response) {
             $scope.reconciliationStatus.result = response.result;
-            angular.forEach($scope.reconciliationStatus.result.errors, function(error) {
+            angular.forEach($scope.reconciliationStatus.result.errors, function (error) {
                 $scope.reconciliationStatus.resultErrorMap.set(error.itemId, error);
             })
         }
@@ -118,8 +102,7 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
             if ($scope.reconciliationStatus.result.success) {
                 modals.open('reconciliation-success')
                     .then(reload);
-            }
-            else {
+            } else {
                 modals.open('reconciliation-error');
             }
         }
@@ -130,47 +113,34 @@ function supplyReconciliationController($scope, requisitionApi, reconcileApi, lo
     }
 
     $scope.init = function () {
-        var params = {
-            status: "APPROVED",
-            reconciled: 'false',
-            from: moment.unix(1).format(),
-            offset: 0,
-            limit: 'ALL'
-        };
-        $scope.reconcilableSearch.response = requisitionApi.get(params, function (response) {
-            $scope.reconcilableSearch.matches = response.result;
+        initReconciliationData()
+    };
+
+    function initReconciliationData() {
+        $scope.reconcilableSearch.response = reconcileApi.get({}, function (response) {
+            dto = response.result;
+            $scope.reconcilableSearch.matches = dto.requisitions;
+            $scope.reconcilableSearch.items = dto.items;
+            $scope.reconcilableSearch.items = supplyUtils.alphabetizeItemsByCommodityCode($scope.reconcilableSearch.items);
             $scope.reconcilableSearch.error = false;
-            initReconcilableItems();
-            initInventory();
-        }, function (response) {
+
+            $scope.reconcilableItemMap = dto.itemIdToRequisitions;
+            $scope.inventory = dto.inventory;
+            $scope.inventory.isComplete = function () {
+                for (var itemId in this.itemQuantities) {
+                    if (this.itemQuantities.hasOwnProperty(itemId)) {
+                        if (this.itemQuantities[itemId] === null || this.itemQuantities[itemId] === '') {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }, function (error) {
             $scope.reconcilableSearch.matches = [];
             $scope.reconcilableSearch.items = [];
             $scope.reconcilableSearch.error = true;
             $scope.handleErrorResponse(response);
-        });
-    };
-
-    function initReconcilableItems() {
-        angular.forEach($scope.reconcilableSearch.matches, function (shipment) {
-            angular.forEach(shipment.lineItems, function (lineItem) {
-                if ($scope.reconcilableItemMap.hasOwnProperty(lineItem.item.id)) {
-                    $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                }
-                else {
-                    if (lineItem.item.inventoryTracked === true) { // Item only needs to be reconciled if it is tracked in inventory.
-                        $scope.reconcilableItemMap[lineItem.item.id] = [];
-                        $scope.reconcilableItemMap[lineItem.item.id].push(shipment);
-                        $scope.reconcilableSearch.items.push(lineItem.item);
-                    }
-                }
-            })
-        });
-        $scope.reconcilableSearch.items = supplyUtils.alphabetizeItemsByCommodityCode($scope.reconcilableSearch.items);
-    }
-
-    function initInventory() {
-        angular.forEach($scope.reconcilableSearch.items, function (item) {
-            $scope.inventory.itemQuantities[item.id] = null;
         });
     }
 
