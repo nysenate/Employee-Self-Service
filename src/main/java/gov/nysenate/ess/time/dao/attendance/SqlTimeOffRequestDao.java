@@ -196,11 +196,13 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         //add in the new comments and days
         if(request.getComments() != null) {
             for (TimeOffRequestComment comment : request.getComments()) {
+                comment.setRequestId(request.getRequestId());
                 addCommentToRequest(comment);
             }
         }
         if(request.getDays() != null) {
             for (TimeOffRequestDay day : request.getDays()) {
+                day.setRequestId(request.getRequestId());
                 addDayToRequest(day);
             }
         }

@@ -4,14 +4,13 @@ import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.service.personnel.EssCachedEmployeeInfoService;
 import gov.nysenate.ess.time.dao.attendance.SqlTimeOffRequestDao;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequest;
+import gov.nysenate.ess.time.model.attendance.TimeOffRequestComment;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -58,9 +57,16 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
         //update an existing request, or add a new request
         boolean updated = false;
 
-        /*
-            Check if the request exists
-         */
+        //update the timestamp of the request and of any comments with the request
+        Timestamp now = getCurrentTimestamp();
+        request.setTimestamp(now);
+        if(request.getComments() != null) {
+            for (TimeOffRequestComment comment : request.getComments()) {
+                comment.setTimestamp(now);
+            }
+        }
+
+        // Check if the request exists
         if(request.getRequestId() !=  -1) {
            updated = sqlTimeOffRequestDao.updateRequest(request);
         } else {
@@ -77,7 +83,7 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
      * @param request TimeOffRequest
      * @return boolean true if the request is active, false otherwise
      */
-    public boolean isActive(TimeOffRequest request) {
+    private boolean isActive(TimeOffRequest request) {
         RangeSet<LocalDate> activeRange = getActiveRange(request.getEmployeeId());
 
         //check that the end date hasn't happened yet
@@ -112,5 +118,15 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
      */
     private LocalDate convertDateToLocalDate(Date date) {
         return LocalDate.parse(date.toString());
+    }
+
+    /**
+     * Helper function to get the current timestamp
+     * @return Timestamp
+     */
+    public Timestamp getCurrentTimestamp() {
+        Date now = new Date();
+        long currentTime = now.getTime();
+        return new Timestamp(currentTime);
     }
 }
