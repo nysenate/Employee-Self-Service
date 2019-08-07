@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.dao.attendance.mapper;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequest;
 import gov.nysenate.ess.time.model.attendance.TimeOffStatus;
 
@@ -18,9 +19,9 @@ public class TimeOffRequestRowMapper extends BaseRowMapper<TimeOffRequest> {
         tor.setEmployeeId(rs.getInt("employee_id"));
         tor.setSupervisorId(rs.getInt("supervisor_id"));
         tor.setStatus(TimeOffStatus.valueOf(rs.getString("status")));
-        tor.setTimestamp(rs.getTimestamp("update_timestamp").toLocalDateTime());
-        tor.setStartDate(rs.getDate("start_date").toLocalDate());
-        tor.setEndDate(rs.getDate("end_date").toLocalDate());
+        tor.setTimestamp(SqlBaseDao.getLocalDateTime(rs,"update_timestamp"));
+        tor.setStartDate(SqlBaseDao.getLocalDate(rs,"start_date"));
+        tor.setEndDate(SqlBaseDao.getLocalDate(rs,"end_date"));
         tor.setComments(null);
         tor.setDays(null);
         return tor;

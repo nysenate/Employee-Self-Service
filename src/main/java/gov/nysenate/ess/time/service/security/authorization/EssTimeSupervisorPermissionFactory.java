@@ -95,13 +95,15 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         int empId = supInfo.getEmpId();
         Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
         return Arrays.asList(
-                new EssTimePermission(empId, ATTENDANCE_RECORDS,        GET,    effectiveRange),
-                new EssTimePermission(empId, ACCRUAL,                   GET,    effectiveRange),
-                new EssTimePermission(empId, ACCRUAL_ACTIVE_YEARS,      GET,    Range.all()),
-                new EssTimePermission(empId, ALLOWANCE,                 GET,    getEffectiveYearRange(effectiveRange)),
-                new EssTimePermission(empId, ALLOWANCE_ACTIVE_YEARS,    GET,    Range.all()),
-                new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,  GET,    Range.all()),
-                new EssTimePermission(empId, TIME_RECORDS,              GET,    effectiveRange)
+                new EssTimePermission(empId, ATTENDANCE_RECORDS,            GET,    effectiveRange),
+                new EssTimePermission(empId, ACCRUAL,                       GET,    effectiveRange),
+                new EssTimePermission(empId, ACCRUAL_ACTIVE_YEARS,          GET,    Range.all()),
+                new EssTimePermission(empId, ALLOWANCE,                     GET,    getEffectiveYearRange(effectiveRange)),
+                new EssTimePermission(empId, ALLOWANCE_ACTIVE_YEARS,        GET,    Range.all()),
+                new EssTimePermission(empId, TIME_RECORD_ACTIVE_YEARS,      GET,    Range.all()),
+                new EssTimePermission(empId, TIME_RECORDS,                  GET,    effectiveRange),
+                new EssTimePermission(empId, TIME_OFF_REQUEST_ACTIVE_YEARS, GET,    Range.all()),
+                new EssTimePermission(empId, TIME_OFF_REQUESTS,             GET,    effectiveRange)
         );
     }
 
@@ -114,8 +116,10 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         int empId = supInfo.getEmpId();
         Range<LocalDate> effectiveRange = supInfo.getEffectiveDateRange();
         return Arrays.asList(
-                new EssTimePermission(empId, TIME_RECORDS,              POST,   effectiveRange),
-                new EssTimePermission(empId, TIME_RECORD_NOTIFICATION,  POST,   effectiveRange)
+                new EssTimePermission(empId, TIME_RECORDS,                  POST,   effectiveRange),
+                new EssTimePermission(empId, TIME_RECORD_NOTIFICATION,      POST,   effectiveRange),
+                new EssTimePermission(empId, TIME_OFF_REQUEST_REVIEW,       POST,   effectiveRange)
+
         );
     }
 
@@ -130,7 +134,8 @@ public class EssTimeSupervisorPermissionFactory implements PermissionFactory {
         return Arrays.asList(
                 new EssTimePermission(empId, SUPERVISOR_EMPLOYEES, GET, effectiveRange),
                 new EssTimePermission(empId, SUPERVISOR_OVERRIDES, GET, effectiveRange),
-                new EssTimePermission(empId, SUPERVISOR_TIME_RECORDS, GET, effectiveRange)
+                new EssTimePermission(empId, SUPERVISOR_TIME_RECORDS, GET, effectiveRange),
+                new EssTimePermission(empId, SUPERVISOR_TIME_OFF_REQUESTS, GET, effectiveRange)
         );
     }
 

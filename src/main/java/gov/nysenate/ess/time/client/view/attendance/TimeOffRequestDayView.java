@@ -4,7 +4,6 @@ import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestDay;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class TimeOffRequestDayView extends AttendanceHoursView implements ViewObject {
@@ -16,16 +15,12 @@ public class TimeOffRequestDayView extends AttendanceHoursView implements ViewOb
     public TimeOffRequestDayView() {}
 
     public TimeOffRequestDayView(TimeOffRequestDay day) {
-        this.requestId = day.getRequestId();
-        this.date = LocalDate.parse(day.getDate().toString());
-        this.workHours = day.getWorkHours().orElse(BigDecimal.ZERO);
-        this.holidayHours = day.getHolidayHours().orElse(BigDecimal.ZERO);
-        this.vacationHours = day.getVacationHours().orElse(BigDecimal.ZERO);
-        this.personalHours = day.getPersonalHours().orElse(BigDecimal.ZERO);
-        this.sickEmpHours = day.getSickEmpHours().orElse(BigDecimal.ZERO);
-        this.sickFamHours = day.getSickFamHours().orElse(BigDecimal.ZERO);
-        this.miscHours = day.getMiscHours().orElse(BigDecimal.ZERO);
-        this.miscType = day.getMiscType() != null ? day.getMiscType().toString() : null;
+        super(day);
+        if(day != null) {
+            this.requestId = day.getRequestId();
+            this.date = LocalDate.parse(day.getDate().toString());
+            this.miscType = day.getMiscType() != null ? day.getMiscType().toString() : null;
+        }
     }
 
 

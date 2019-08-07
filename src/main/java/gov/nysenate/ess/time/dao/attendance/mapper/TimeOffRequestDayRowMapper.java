@@ -2,6 +2,7 @@ package gov.nysenate.ess.time.dao.attendance.mapper;
 
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestDay;
 import gov.nysenate.ess.time.model.payroll.MiscLeaveType;
 
@@ -17,7 +18,7 @@ public class TimeOffRequestDayRowMapper extends BaseRowMapper<TimeOffRequestDay>
     public TimeOffRequestDay mapRow(ResultSet rs, int rowNum) throws SQLException {
         TimeOffRequestDay day = new TimeOffRequestDay();
         day.setRequestId(rs.getInt("request_id"));
-        day.setDate(rs.getDate("request_date").toLocalDate());
+        day.setDate(SqlBaseDao.getLocalDate(rs,"request_date"));
         day.setWorkHours(rs.getBigDecimal("work_hours"));
         day.setHolidayHours(rs.getBigDecimal("holiday_hours"));
         day.setVacationHours(rs.getBigDecimal("vacation_hours"));

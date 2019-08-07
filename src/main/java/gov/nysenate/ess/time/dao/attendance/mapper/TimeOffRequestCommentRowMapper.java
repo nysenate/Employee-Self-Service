@@ -1,6 +1,7 @@
 package gov.nysenate.ess.time.dao.attendance.mapper;
 
 import gov.nysenate.ess.core.dao.base.BaseRowMapper;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestComment;
 
 import java.sql.ResultSet;
@@ -16,7 +17,7 @@ public class TimeOffRequestCommentRowMapper extends BaseRowMapper<TimeOffRequest
         comment.setAuthorId(rs.getInt("author_id"));
         comment.setRequestId(rs.getInt("request_id"));
         comment.setText(rs.getString("comment"));
-        comment.setTimestamp(rs.getTimestamp("time_stamp").toLocalDateTime());
+        comment.setTimestamp(SqlBaseDao.getLocalDateTime(rs,"time_stamp"));
         return comment;
     }
 }
