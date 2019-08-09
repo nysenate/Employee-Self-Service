@@ -87,9 +87,9 @@ function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
 
         function findAddressesWithoutCounty(legs) {
             var addresses = legs.map(function (leg) {
-                return leg.from;
+                return leg.from.address;
             }).concat(legs.map(function (leg) {
-                return leg.to;
+                return leg.to.address;
             }));
             return countyService.addressesMissingCounty(addresses);
         }

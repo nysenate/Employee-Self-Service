@@ -70,7 +70,7 @@ public class TravelApplication {
     }
 
     public Dollars alternateTransportationAllowance() {
-        return getAllowances().trainAndPlane();
+        return getAllowances().alternateTransportation();
     }
 
     public Dollars registrationAllowance() {

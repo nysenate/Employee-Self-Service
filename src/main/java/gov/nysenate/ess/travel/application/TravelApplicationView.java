@@ -8,22 +8,23 @@ import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsVie
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
-import gov.nysenate.ess.travel.application.route.SimpleRouteView;
+import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 
-public class SimpleTravelApplicationView implements ViewObject {
+public class TravelApplicationView implements ViewObject {
 
-    private String id;
-    private String versionId;
+    private int id;
+    private int versionId;
     private DetailedEmployeeView traveler;
     private String purposeOfTravel;
-    private SimpleRouteView route;
+    private RouteView route;
     private AllowancesView allowances;
     private PerDiemOverridesView perDiemOverrides;
     private MealPerDiemsView mealPerDiems;
@@ -57,15 +58,15 @@ public class SimpleTravelApplicationView implements ViewObject {
     private String destinationSummary;
 
 
-    public SimpleTravelApplicationView() {
+    public TravelApplicationView() {
     }
 
-    public SimpleTravelApplicationView(TravelApplication app) {
-        id = String.valueOf(app.getAppId());
-        versionId = String.valueOf(app.getVersionId());
+    public TravelApplicationView(TravelApplication app) {
+        id = app.getAppId();
+        versionId = app.getVersionId();
         traveler = new DetailedEmployeeView(app.getTraveler());
         purposeOfTravel = app.getPurposeOfTravel();
-        route = new SimpleRouteView(app.getRoute());
+        route = new RouteView(app.getRoute());
         allowances = new AllowancesView(app.getAllowances());
         perDiemOverrides = new PerDiemOverridesView(app.getPerDiemOverrides());
         status = new TravelApplicationStatusView(app.status());
@@ -105,11 +106,25 @@ public class SimpleTravelApplicationView implements ViewObject {
         }
     }
 
-    public String getId() {
+    public TravelApplication toTravelApplication() {
+        TravelApplication a = new TravelApplication(id, versionId, traveler.toEmployee());
+        a.setPurposeOfTravel(purposeOfTravel);
+        a.setRoute(route.toRoute());
+        a.setAllowances(allowances.toAllowances());
+        a.setPerDiemOverrides(perDiemOverrides.toPerDiemOverrides());
+        a.setStatus(status.toTravelApplicationStatus());
+//        a.setAttachments(); // TODO WIP
+        a.setSubmittedDateTime(LocalDateTime.parse(submittedDateTime, ISO_DATE_TIME));
+        a.setModifiedDateTime(LocalDateTime.parse(modifiedDateTime, ISO_DATE_TIME));
+        a.setModifiedBy(modifiedBy.toEmployee());
+        return a;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public String getVersionId() {
+    public int getVersionId() {
         return versionId;
     }
 
@@ -121,7 +136,7 @@ public class SimpleTravelApplicationView implements ViewObject {
         return purposeOfTravel;
     }
 
-    public SimpleRouteView getRoute() {
+    public RouteView getRoute() {
         return route;
     }
 

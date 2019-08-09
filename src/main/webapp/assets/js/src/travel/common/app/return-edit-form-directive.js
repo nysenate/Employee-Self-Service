@@ -60,11 +60,11 @@ function returnEditForm($q, appProps, modals) {
             };
 
             scope.setFromAddress = function (leg, address) {
-                leg.from = address;
+                leg.from.address = address;
             };
 
             scope.setToAddress = function (leg, address) {
-                leg.to = address;
+                leg.to.address = address;
             };
 
             scope.isLastSegment = function (index) {

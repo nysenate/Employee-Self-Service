@@ -4,48 +4,56 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Streams;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SimpleRouteView implements ViewObject {
+public class RouteView implements ViewObject {
 
-    private List<SimpleLegView> outboundLegs;
-    private List<SimpleLegView> returnLegs;
-    private List<AddressView> destinations;
+    private List<LegView> outboundLegs;
+    private List<LegView> returnLegs;
+    private List<DestinationView> destinations;
     private AddressView origin;
 
-    public SimpleRouteView() {
+    public RouteView() {
     }
 
-    public SimpleRouteView(Route route) {
+    public RouteView(Route route) {
         outboundLegs = route.getOutboundLegs().stream()
-                .map(SimpleLegView::new)
+                .map(LegView::new)
                 .collect(Collectors.toList());
         returnLegs = route.getReturnLegs().stream()
-                .map(SimpleLegView::new)
+                .map(LegView::new)
                 .collect(Collectors.toList());
         origin = route.origin() == null ? null : new AddressView(route.origin());
         destinations = route.destinations().stream()
-                .map(d -> new AddressView(d.getAddress()))
+                .map(DestinationView::new)
                 .collect(Collectors.toList());
     }
 
+    public Route toRoute() {
+        return new Route(
+                outboundLegs.stream().map(LegView::toLeg).collect(Collectors.toList()),
+                returnLegs.stream().map(LegView::toLeg).collect(Collectors.toList())
+        );
+    }
+
     @JsonIgnore
-    public List<SimpleLegView> getAllLegs() {
+    public List<LegView> getAllLegs() {
         return Streams.concat(getOutboundLegs().stream(), getReturnLegs().stream())
                 .collect(Collectors.toList());
     }
 
-    public List<SimpleLegView> getOutboundLegs() {
+    public List<LegView> getOutboundLegs() {
         return outboundLegs;
     }
 
-    public List<SimpleLegView> getReturnLegs() {
+    public List<LegView> getReturnLegs() {
         return returnLegs;
     }
 
-    public List<AddressView> getDestinations() {
+    public List<DestinationView> getDestinations() {
         return destinations;
     }
 
@@ -55,6 +63,6 @@ public class SimpleRouteView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "simple-route";
+        return "route";
     }
 }

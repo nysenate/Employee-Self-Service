@@ -18,6 +18,7 @@ function allowancesEditForm(appProps) {
         link: function (scope, elem, attrs) {
 
             scope.dirtyApp = angular.copy(scope.app);
+            console.log(scope.dirtyApp);
 
             scope.next = function () {
                 scope.positiveCallback({app: scope.dirtyApp});

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,6 +31,17 @@ public class MealPerDiemView implements ViewObject {
         this.isReimbursementRequested = mpd.isReimbursementRequested();
         this.requestedPerDiem = mpd.requestedPerDiem().toString();
         this.maximumPerDiem = mpd.maximumPerDiem().toString();
+    }
+
+    public MealPerDiem toMealPerDiem() {
+        return new MealPerDiem(
+                address.toAddress(),
+                new PerDiem(
+                        LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
+                        new Dollars(rate),
+                        isReimbursementRequested
+                )
+        );
     }
 
     @JsonIgnore

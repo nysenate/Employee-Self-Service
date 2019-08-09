@@ -26,6 +26,12 @@ public class MealPerDiemsView implements ViewObject {
         this.maximumPerDiem = ma.maximumPerDiem().toString();
     }
 
+    public MealPerDiems toMealPerDiems() {
+        return new MealPerDiems(allMealPerDiems.stream()
+                .map(MealPerDiemView::toMealPerDiem)
+                .collect(Collectors.toList()));
+    }
+
     public List<MealPerDiemView> getAllMealPerDiems() {
         return allMealPerDiems;
     }

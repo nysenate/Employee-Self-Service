@@ -12,7 +12,7 @@ import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsVie
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
-import gov.nysenate.ess.travel.application.route.SimpleRouteView;
+import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
                 .forAction(RequestMethod.GET)
                 .buildPermission());
-        SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
+        TravelApplicationView appView = new TravelApplicationView(app);
         return new ViewObjectResponse<>(appView);
     }
 
@@ -81,7 +81,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                     travelApplicationService.updatePurposeOfTravel(app, patch.getValue());
                     break;
                 case "route":
-                    travelApplicationService.updateRoute(app, OutputUtils.jsonToObject(patch.getValue(), SimpleRouteView.class));
+                    travelApplicationService.updateRoute(app, OutputUtils.jsonToObject(patch.getValue(), RouteView.class));
                     break;
                 case "allowances":
                     travelApplicationService.updateAllowances(app, OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class));
@@ -110,7 +110,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         // Save after all changes are applied.
         travelApplicationService.saveTravelApplication(app, user);
 
-        SimpleTravelApplicationView appView = new SimpleTravelApplicationView(app);
+        TravelApplicationView appView = new TravelApplicationView(app);
         return new ViewObjectResponse(appView);
     }
 
@@ -123,7 +123,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .buildPermission());
 
         TravelApplication app = travelApplicationService.uncompleteAppForTraveler(travelerId);
-        return new ViewObjectResponse(new SimpleTravelApplicationView(app));
+        return new ViewObjectResponse(new TravelApplicationView(app));
     }
 
     @RequestMapping(value = "/traveler/{travelerId}")
@@ -135,8 +135,8 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .buildPermission());
 
         List<TravelApplication> apps = travelApplicationService.selectTravelApplications(travelerId);
-        List<SimpleTravelApplicationView> appViews = apps.stream()
-                .map(SimpleTravelApplicationView::new)
+        List<TravelApplicationView> appViews = apps.stream()
+                .map(TravelApplicationView::new)
                 .collect(Collectors.toList());
         return ListViewResponse.of(appViews);
     }

@@ -52,7 +52,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertMealPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, PerDiem> mealPerDiems : destination.getMealPerDiems().entrySet()) {
+        for (Map.Entry<LocalDate, PerDiem> mealPerDiems : destination.dateToMealPerDiems.entrySet()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
                     .addValue("date", toDate(mealPerDiems.getKey()))
@@ -69,7 +69,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertLodgingPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, PerDiem> lodgingPerDiem : destination.getLodgingPerDiems().entrySet()) {
+        for (Map.Entry<LocalDate, PerDiem> lodgingPerDiem : destination.dateToLodgingPerDiems.entrySet()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
                     .addValue("date", toDate(lodgingPerDiem.getKey()))

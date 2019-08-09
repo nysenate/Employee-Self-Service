@@ -28,26 +28,25 @@ public class RouteService {
      * This populates destination arrival date, departure date, meal per diems, and lodging per diems.
      * Along with the miles and mileage rate for each leg.
      *
-     * @param simpleRoute
      * @return
      */
-    public Route createRoute(SimpleRouteView simpleRoute) {
+    public Route createRoute(Route route) {
         List<Leg> outboundLegs = new ArrayList<>();
-        for (int i = 0; i < simpleRoute.getOutboundLegs().size(); i++) {
-            Leg leg = createLeg(simpleRoute, i, true);
+        for (int i = 0; i < route.getOutboundLegs().size(); i++) {
+            Leg leg = createLeg(route, i, true);
             outboundLegs.add(leg);
         }
 
         List<Leg> returnLegs = new ArrayList<>();
-        for (int i = simpleRoute.getOutboundLegs().size(); i < simpleRoute.getAllLegs().size(); i++) {
-            Leg leg = createLeg(simpleRoute, i, false);
+        for (int i = route.getOutboundLegs().size(); i < route.getAllLegs().size(); i++) {
+            Leg leg = createLeg(route, i, false);
             returnLegs.add(leg);
         }
 
-        Route route = new Route(outboundLegs, returnLegs);
-        setDestinationPerDiems(route);
+        Route fullRoute = new Route(outboundLegs, returnLegs);
+        setDestinationPerDiems(fullRoute);
 
-        return route;
+        return fullRoute;
     }
 
     // Set per diems on each destination. If a day has multiple per diems only use the highest one.
@@ -57,10 +56,10 @@ public class RouteService {
                 .collect(Collectors.toSet());
     }
 
-    private Leg createLeg(SimpleRouteView simpleRoute, int legIndex, boolean isOutbound) {
-        SimpleLegView previousLeg = getLegOrNull(simpleRoute, legIndex - 1);
-        SimpleLegView currentLeg = getLegOrNull(simpleRoute, legIndex);
-        SimpleLegView nextLeg = getLegOrNull(simpleRoute, legIndex + 1);
+    private Leg createLeg(Route simpleRoute, int legIndex, boolean isOutbound) {
+        Leg previousLeg = getLegOrNull(simpleRoute, legIndex - 1);
+        Leg currentLeg = getLegOrNull(simpleRoute, legIndex);
+        Leg nextLeg = getLegOrNull(simpleRoute, legIndex + 1);
 
         Destination from = createFromDestination(previousLeg, currentLeg);
         Destination to = createToDestination(nextLeg, currentLeg);
@@ -68,10 +67,12 @@ public class RouteService {
         double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
         BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
         PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate, true);
-        return new Leg(0, from, to, currentLeg.modeOfTransportation(), miles, perDiem, isOutbound);
+        return new Leg(0, from, to,
+                new ModeOfTransportation(currentLeg.methodOfTravel(), currentLeg.methodOfTravelDescription()),
+                miles, perDiem, isOutbound);
     }
 
-    private SimpleLegView getLegOrNull(SimpleRouteView simpleRoute, int legIndex) {
+    private Leg getLegOrNull(Route simpleRoute, int legIndex) {
         try {
             return simpleRoute.getAllLegs().get(legIndex);
         } catch (Exception ex) {
@@ -79,16 +80,16 @@ public class RouteService {
         }
     }
 
-    private Destination createFromDestination(SimpleLegView previousLeg, SimpleLegView currentLeg) {
-        Address address = currentLeg.getFrom().toAddress();
+    private Destination createFromDestination(Leg previousLeg, Leg currentLeg) {
+        Address address = currentLeg.fromAddress();
         LocalDate arrival = previousLeg == null ? currentLeg.travelDate() : previousLeg.travelDate();
         LocalDate departure = currentLeg.travelDate();
 
         return new Destination(address, arrival, departure);
     }
 
-    private Destination createToDestination(SimpleLegView nextLeg, SimpleLegView currentLeg) {
-        Address address = currentLeg.getTo().toAddress();
+    private Destination createToDestination(Leg nextLeg, Leg currentLeg) {
+        Address address = currentLeg.toAddress();
         LocalDate arrival = currentLeg.travelDate();
         LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
 

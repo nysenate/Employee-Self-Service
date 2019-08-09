@@ -35,8 +35,8 @@ public class TravelApplicationService {
         app.setPurposeOfTravel(purposeOfTravel);
     }
 
-    public void updateRoute(TravelApplication app, SimpleRouteView simpleRouteView) {
-        Route fullRoute = routeService.createRoute(simpleRouteView);
+    public void updateRoute(TravelApplication app, RouteView routeView) {
+        Route fullRoute = routeService.createRoute(routeView.toRoute());
         app.setRoute(fullRoute);
     }
 
@@ -148,7 +148,7 @@ public class TravelApplicationService {
                 if (leg.fromAddress().equals(legView.fromAddress())
                         && leg.toAddress().equals(legView.toAddress())
                         && leg.travelDate().equals(legView.date())) {
-                    leg.setPerDiem(new PerDiem(legView.date(), legView.rate(), legView.isReimbursementRequested()));
+                    leg.setPerDiem(new PerDiem(legView.date(), legView.mileageRate(), legView.isReimbursementRequested()));
                 }
             }
         }

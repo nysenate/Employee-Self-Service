@@ -83,7 +83,7 @@
           <span ng-if="!$first">&nbsp;</span>
         </div>
         <div class="app-form-l-col">
-          {{(dest.formattedAddressWithCounty) || NOT_AVAILABLE}}
+          {{(dest.address.formattedAddressWithCounty) || NOT_AVAILABLE}}
         </div>
       </div>
 

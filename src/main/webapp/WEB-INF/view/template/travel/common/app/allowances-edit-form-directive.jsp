@@ -116,8 +116,8 @@
           </thead>
           <tbody>
           <tr ng-repeat="leg in dirtyApp.mileagePerDiems.qualifyingLegs">
-            <td>{{leg.from.formattedAddress}}</td>
-            <td>{{leg.to.formattedAddress}}</td>
+            <td>{{leg.from.address.formattedAddress}}</td>
+            <td>{{leg.to.address.formattedAddress}}</td>
             <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested"></td>
           </tr>
           </tbody>
