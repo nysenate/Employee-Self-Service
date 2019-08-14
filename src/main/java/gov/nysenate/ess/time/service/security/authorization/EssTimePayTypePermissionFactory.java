@@ -8,8 +8,7 @@ import gov.nysenate.ess.core.service.security.authorization.permission.Permissio
 import org.apache.shiro.authz.Permission;
 import org.springframework.stereotype.Service;
 
-import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.ACCRUAL_PROJECTIONS;
-import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.ALLOWANCE_PAGE;
+import static gov.nysenate.ess.time.model.auth.SimpleTimePermission.*;
 
 /**
  * Grant permissions to employees based on their current {@link PayType pay type}
@@ -26,6 +25,7 @@ public class EssTimePayTypePermissionFactory implements PermissionFactory {
             switch (payType) {
                 case SA:
                 case RA:
+                    permListBldr.add(TIME_OFF_REQUEST_PAGES.getPermission());
                     permListBldr.add(ACCRUAL_PROJECTIONS.getPermission());
                     break;
                 case TE:

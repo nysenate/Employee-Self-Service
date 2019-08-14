@@ -25,6 +25,13 @@
         <shiro:hasPermission name="<%= SimpleTimePermission.ACCRUAL_PROJECTIONS.getPermissionString() %>">
             <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/projections">Accrual Projections</a></li>
         </shiro:hasPermission>
+        <shiro:hasPermission name="<%= SimpleTimePermission.TIME_OFF_REQUEST_PAGES.getPermissionString() %>">
+            <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request">Time Off Requests</a></li>
+        </shiro:hasPermission>
+      <shiro:hasPermission name="<%= SimpleTimePermission.TIME_OFF_REQUEST_PAGES.getPermissionString() %>">
+        <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/time-off-request-history">Time Off Request History</a></li>
+      </shiro:hasPermission>
+
     </ul>
   </shiro:hasPermission>
   <shiro:hasPermission name="<%= SimpleTimePermission.MANAGEMENT_PAGES.getPermissionString() %>">
@@ -42,6 +49,8 @@
       <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emphistory">Employee Accrual History</a></li>
       <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emp-projections">Employee Accrual Projections</a></li>
       <li class="sub-topic teal"><a href="${ctxPath}/time/record/grant">Grant Supervisor Access</a></li>
+      <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emp-time-off-requests">Employee Time Off Requests</a></li>
+      <li class="sub-topic teal"><a href="${ctxPath}/time/accrual/emp-time-off-request-history">Employee Time Off Request History</a></li>
     </ul>
   </shiro:hasPermission>
   <shiro:hasPermission name="<%= SimpleTimePermission.PERSONNEL_PAGES.getPermissionString() %>">

@@ -85,6 +85,10 @@ essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource
     return $resource(appProps.apiPath + '/accruals/history');
 }]);
 
+essApi.factory('SupervisorTimeOffRequestApi', ['$resource', 'appProps', function($resource, appProps){
+    return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId');
+}]);
+
 /** --- Expected Hours API --- */
 
 essApi.factory('ExpectedHoursApi', ['$resource', 'appProps', function($resource, appProps) {

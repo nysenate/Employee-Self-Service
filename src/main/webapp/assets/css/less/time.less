@@ -467,13 +467,67 @@ table.attendance-entry-sub-table {
 
 /* --- Request Time Off Page --- */
 
+time-off-request-list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  .timeoff-request-table {
+    width: 96%;
+    margin: 0 0 20px;
+    thead {
+      .timeoff-table-date-range {
+        width: 20%;
+        text-align: center !important;
+      }
+      .timeoff-table-status {
+        width: 15%;
+        text-align: center;
+      }
+      .timeoff-table-total-hours {
+        width: 15%;
+        text-align: center;
+      }
+      .timeoff-table-hour-types {
+        width: 50%;
+      }
+      tr {
+        border-bottom: 1px solid black;
+      }
+    }
+    tbody {
+      tr {
+        line-height: 30px;
+      }
+    }
+  }
+  .no-requests {
+    padding: 10px 0 30px;
+  }
+}
+
 .timeoff-request-accrual-container {
-  width: 600px;
+  width: auto;
   text-align: center;
-  margin: auto;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #ddd;
+  margin: 20px auto 15px;
   padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  .box-shadow(none) !important;
+
+  .content-container {
+    .box-shadow(none) !important;
+    width: 100%;
+    margin: 0 0 20px;
+    .time-off-history-menu {
+      margin: 20px;
+    }
+  }
 
   .accrual-section-title {
     color: #333;
@@ -526,6 +580,41 @@ table.attendance-entry-sub-table {
     height: 67px;
   }
 }
+
+.chip-container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-start;
+  .md-chip {
+    padding: 0 12px;
+    margin: 2px 2px 0;
+    border-radius: 32px;
+    font-size: 13px;
+    line-height: 25px;
+    vertical-align: center;
+    width: max-content;
+    height: 25px;
+    background-color: @misc-color; /*Change this based on what the chips says*/
+    color: white;
+  }
+  .personal {
+    background-color: @personal-color;
+  }
+
+  .vacation {
+    background-color: @vacation-color;
+  }
+
+  .sick {
+    background-color: @sick-color;
+  }
+}
+
+
+
+
+
 
 /** --- View Pay Period Calendar Page --- */
 
