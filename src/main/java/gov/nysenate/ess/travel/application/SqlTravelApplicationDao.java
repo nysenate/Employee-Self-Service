@@ -45,13 +45,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         statusDao.saveTravelApplicationStatus(app.status(), app.getVersionId());
     }
 
-    @Override
-    public void deleteTravelApplication(int appId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
-        String sql = SqlTravelApplicationQuery.DELETE_APP.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
-    }
-
     private int fetchNextVersionId() {
         String sql = SqlTravelApplicationQuery.FETCH_NEXT_VERSION_ID.getSql(schemaMap());
         return localNamedJdbc.query(sql, (rs, i) -> rs.getInt("nextval")).get(0);
@@ -114,11 +107,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 "INSERT INTO ${travelSchema}.app(app_version_id, traveler_id) \n" +
                         "VALUES (:versionId, :travelerId)"
         ),
-        DELETE_APP(
-                "DELETE FROM ${travelSchema}.app" +
-                        " WHERE app_id = :appId"
-        ),
-
         INSERT_APP_VERSION(
                 "INSERT INTO ${travelSchema}.app_version \n" +
                         "(app_version_id, app_id, purpose_of_travel, created_by, submitted_date_time) \n" +

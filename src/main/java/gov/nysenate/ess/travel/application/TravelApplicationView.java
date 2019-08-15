@@ -238,6 +238,6 @@ public class TravelApplicationView implements ViewObject {
 
     @Override
     public String getViewType() {
-        return "simple-travel-application";
+        return "travel-application";
     }
 }

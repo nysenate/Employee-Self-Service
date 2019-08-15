@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,31 +59,6 @@ public class TravelApplicationService {
         app.setModifiedBy(saver);
         applicationDao.insertTravelApplication(app);
         return app;
-    }
-
-    public void deleteTravelApplication(int appId) {
-        applicationDao.deleteTravelApplication(appId);
-    }
-
-    /**
-     * Gets the TravelApplication currently being filled out by the given traveler.
-     * If none, create a new empty application.
-     *
-     * @param travelerId
-     * @return
-     */
-    public TravelApplication uncompleteAppForTraveler(int travelerId) {
-        List<TravelApplication> apps = applicationDao.selectTravelApplications(travelerId);
-        Optional<TravelApplication> appOptional = apps.stream()
-                .filter(app -> app.getSubmittedDateTime() == null)
-                .findFirst();
-        if (appOptional.isPresent()) {
-            return appOptional.get();
-        } else {
-            TravelApplication app = new TravelApplication(0, 0, employeeInfoService.getEmployee(travelerId));
-            saveTravelApplication(app, app.getTraveler());
-            return app;
-        }
     }
 
     /**

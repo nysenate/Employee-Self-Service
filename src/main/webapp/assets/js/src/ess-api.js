@@ -255,6 +255,10 @@ essApi.factory('TravelApplicationApi', ['$resource', 'appProps', function ($reso
     return $resource(appProps.apiPath + '/travel/application.json')
 }]);
 
+essApi.factory('UnsubmittedAppApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/travel/unsubmitted', {}, {'update': {method: 'PATCH'}})
+}]);
+
 essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/travel/application/:id.json', {id: '@id'}, {'update': {method: 'PATCH'}})
 }]);

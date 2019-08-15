@@ -27,6 +27,10 @@ public class TravelApplication {
     private LocalDateTime modifiedDateTime; // DateTime this app was last updated.
     private Employee modifiedBy; // The last employee to modify.
 
+    public TravelApplication(Employee traveler) {
+        this(0, 0, traveler);
+    }
+
     public TravelApplication(int appId, int versionId, Employee traveler) {
         this.appId = Objects.requireNonNull(appId, "Travel Application requires a non null id.");
         this.versionId = Objects.requireNonNull(versionId, "Travel Application requires a non null versionId.");

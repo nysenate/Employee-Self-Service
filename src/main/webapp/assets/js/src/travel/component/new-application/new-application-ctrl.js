@@ -9,9 +9,9 @@ var essTravel = angular.module('essTravel');
  * that are defined in this Parent controller.
  */
 essTravel.controller('NewApplicationCtrl',
-                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'TravelApplicationApi', 'TravelApplicationByIdApi', travelAppController]);
+                     ['$scope', '$window', 'appProps', 'modals', 'LocationService', 'AppEditStateService', 'UnsubmittedAppApi', 'TravelApplicationByIdApi', travelAppController]);
 
-function travelAppController($scope, $window, appProps, modals, locationService, stateService, appApi, appIdApi) {
+function travelAppController($scope, $window, appProps, modals, locationService, stateService, unsubmittedAppApi, appIdApi) {
 
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
@@ -34,7 +34,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
          * @param travelerId
          */
         function initApplication(travelerId) {
-            appApi.get({travelerId: travelerId}, {}, function (response) {
+            unsubmittedAppApi.get({userId: appProps.user.employeeId, travelerId: travelerId}, {}, function (response) {
                 $scope.data.app = response.result;
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
@@ -52,7 +52,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.savePurpose = function (app) {
-        appIdApi.update({id: $scope.data.app.id}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
+        console.log(app);
+        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
             $scope.data.app = response.result;
             stateService.setOutboundState();
         }, $scope.handleErrorResponse)
@@ -65,7 +66,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
 
     $scope.saveRoute = function (app) {
         $scope.openLoadingModal();
-        appIdApi.update({id: app.id}, {route: JSON.stringify(app.route)}, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {route: JSON.stringify(app.route)}, function (response) {
             $scope.data.app = response.result;
             stateService.setAllowancesState();
             $scope.closeLoadingModal();
@@ -86,7 +87,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
             mileagePerDiems: JSON.stringify(app.mileagePerDiems)
         };
-        appIdApi.update({id: app.id}, patches, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, patches, function (response) {
             $scope.data.app = response.result;
             stateService.setReviewState();
         }, $scope.handleErrorResponse)
