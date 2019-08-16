@@ -97,7 +97,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         modals.open('submit-confirm')
             .then(function () {
                 modals.open("submit-progress");
-                appIdApi.update({id: app.id}, {action: "submit"}).$promise
+                unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {action: "submit"}).$promise
                     .then(function (response) {
                         $scope.data.app = response.result;
                         modals.resolve({});

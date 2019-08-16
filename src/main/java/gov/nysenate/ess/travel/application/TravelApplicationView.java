@@ -114,9 +114,15 @@ public class TravelApplicationView implements ViewObject {
         a.setPerDiemOverrides(perDiemOverrides.toPerDiemOverrides());
         a.setStatus(status.toTravelApplicationStatus());
 //        a.setAttachments(); // TODO WIP
-        a.setSubmittedDateTime(LocalDateTime.parse(submittedDateTime, ISO_DATE_TIME));
-        a.setModifiedDateTime(LocalDateTime.parse(modifiedDateTime, ISO_DATE_TIME));
-        a.setModifiedBy(modifiedBy.toEmployee());
+        if (submittedDateTime != null) {
+            a.setSubmittedDateTime(LocalDateTime.parse(submittedDateTime, ISO_DATE_TIME));
+        }
+        if (modifiedDateTime != null) {
+            a.setModifiedDateTime(LocalDateTime.parse(modifiedDateTime, ISO_DATE_TIME));
+        }
+        if (modifiedBy != null) {
+            a.setModifiedBy(modifiedBy.toEmployee());
+        }
         return a;
     }
 

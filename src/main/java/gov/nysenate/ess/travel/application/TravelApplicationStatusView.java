@@ -10,8 +10,11 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class TravelApplicationStatusView implements ViewObject {
 
     private int id;
+    @JsonProperty("isPending")
     private boolean isPending;
+    @JsonProperty("isApproved")
     private boolean isApproved;
+    @JsonProperty("isDisapproved")
     private boolean isDisapproved;
     private String note;
     private String dateTime;
@@ -41,17 +44,14 @@ public class TravelApplicationStatusView implements ViewObject {
         return new TravelApplicationStatus(id, status, LocalDateTime.parse(dateTime, ISO_DATE_TIME), note);
     }
 
-    @JsonProperty("isPending")
     public boolean isPending() {
         return isPending;
     }
 
-    @JsonProperty("isApproved")
     public boolean isApproved() {
         return isApproved;
     }
 
-    @JsonProperty("isDisapproved")
     public boolean isDisapproved() {
         return isDisapproved;
     }
