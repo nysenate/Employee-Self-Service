@@ -39,7 +39,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
-                            cancelApplication() // TODO replace this functionality
+                            cancelApplication($scope.data.app) // TODO replace this functionality
                         });
                 }
                 console.log($scope.data.app.id);
@@ -115,7 +115,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         modals.open("cancel-application").then(function () {
             modals.resolve({});
             $scope.openLoadingModal();
-            cancelApplication();
+            cancelApplication(app);
         });
     };
 
@@ -135,8 +135,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         $scope.stateService.setAllowancesState();
     };
 
-    function cancelApplication() {
-        appIdApi.remove({id: $scope.data.app.id})
+    function cancelApplication(app) {
+        unsubmittedAppApi.remove({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId})
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)

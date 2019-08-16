@@ -1,9 +1,7 @@
 package gov.nysenate.ess.travel.application.route;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
@@ -66,31 +64,6 @@ public class LegView implements ViewObject {
                 mileageRate == null ? new BigDecimal(0) : new BigDecimal(mileageRate),
                 isReimbursementRequested
         );
-    }
-
-    @JsonIgnore
-    public LocalDate date() {
-        return LocalDate.parse(travelDate, DATEPICKER_FORMAT);
-    }
-
-    @JsonIgnore
-    public Address fromAddress() {
-        return from.toDestination().getAddress();
-    }
-
-    @JsonIgnore
-    public Address toAddress() {
-        return to.toDestination().getAddress();
-    }
-
-    @JsonIgnore
-    public BigDecimal mileageRate() {
-        return new BigDecimal(mileageRate);
-    }
-
-    @JsonIgnore
-    public ModeOfTransportation modeOfTransportation() {
-        return new ModeOfTransportation(methodOfTravelDisplayName, methodOfTravelDescription);
     }
 
     public int getId() {

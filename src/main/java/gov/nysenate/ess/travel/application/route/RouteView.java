@@ -1,7 +1,5 @@
 package gov.nysenate.ess.travel.application.route;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Streams;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
@@ -37,12 +35,6 @@ public class RouteView implements ViewObject {
                 outboundLegs.stream().map(LegView::toLeg).collect(Collectors.toList()),
                 returnLegs.stream().map(LegView::toLeg).collect(Collectors.toList())
         );
-    }
-
-    @JsonIgnore
-    public List<LegView> getAllLegs() {
-        return Streams.concat(getOutboundLegs().stream(), getReturnLegs().stream())
-                .collect(Collectors.toList());
     }
 
     public List<LegView> getOutboundLegs() {

@@ -15,6 +15,8 @@ import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsVie
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
+import gov.nysenate.ess.travel.application.route.Route;
+import gov.nysenate.ess.travel.application.route.RouteService;
 import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
@@ -35,10 +37,10 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private EmployeeInfoService employeeInfoService;
     @Autowired private UnsubmittedAppDao unsubmittedAppDao;
     @Autowired private TravelApplicationService travelApplicationService;
+    @Autowired private RouteService routeService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getUnsubmittedApps(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
-        // TODO verify userId param = getSubjectUserId()
         checkPermission(new TravelPermissionBuilder()
                 .forEmpId(travelerId)
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
@@ -56,6 +58,24 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(appView);
     }
 
+    @RequestMapping(value = "", method = RequestMethod.DELETE)
+    public void deleteUnsubmittedApp(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(travelerId)
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+        unsubmittedAppDao.delete(userId, travelerId);
+    }
+
+    private TravelApplicationView findApp(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
+        return unsubmittedAppDao.find(userId, travelerId)
+                .orElseThrow(() -> new InvalidRequestParamEx(userId + " & " + travelerId,
+                        "userId & travelerId",
+                        "int & int",
+                        "No Unsubmitted travel app found with provided userId and travelerId"));
+    }
+
     @RequestMapping(value = "", method = RequestMethod.PATCH)
     public BaseResponse patchUnsubmittedApp(@RequestParam int userId,
                                             @RequestParam int travelerId,
@@ -66,12 +86,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        TravelApplicationView view = unsubmittedAppDao.find(userId, travelerId)
-                .orElseThrow(() -> new InvalidRequestParamEx(userId + " & " + travelerId,
-                        "userId & travelerId",
-                        "int & int",
-                        "No Unsubmitted travel app found with provided userId and travelerId"));
-
+        TravelApplicationView view = findApp(userId, travelerId);
         TravelApplication app = view.toTravelApplication();
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
@@ -79,25 +94,32 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "purposeOfTravel":
-                    travelApplicationService.updatePurposeOfTravel(app, patch.getValue());
+                    app.setPurposeOfTravel(patch.getValue());
                     break;
                 case "route":
-                    travelApplicationService.updateRoute(app, OutputUtils.jsonToObject(patch.getValue(), RouteView.class));
+                    RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
+                    Route fullRoute = routeService.createRoute(routeView.toRoute());
+                    app.setRoute(fullRoute);
                     break;
                 case "allowances":
-                    travelApplicationService.updateAllowances(app, OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class));
+                    AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
+                    app.setAllowances(allowancesView.toAllowances());
                     break;
                 case "mealPerDiems":
-                    travelApplicationService.updateMealPerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class));
+                    MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
+                    travelApplicationService.updateMealPerDiems(app, mealPerDiemsView.toMealPerDiems());
                     break;
                 case "lodgingPerDiems":
-                    travelApplicationService.updateLodgingPerDiems(app, OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class));
+                    LodgingPerDiemsView lodgingPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class);
+                    travelApplicationService.updateLodgingPerDiems(app, lodgingPerDiemsView.toLodgingPerDiems());
                     break;
                 case "mileagePerDiems":
-                    travelApplicationService.updateMileagePerDiems(app, OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class));
+                    MileagePerDiemsView mileagePerDiemView = OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class);
+                    travelApplicationService.updateMileagePerDiems(app, mileagePerDiemView.toMileagePerDiems());
                     break;
                 case "perDiemOverrides":
-                    travelApplicationService.updatePerDiemOverrides(app, OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class));
+                    PerDiemOverridesView overridesView = OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class);
+                    app.setPerDiemOverrides(overridesView.toPerDiemOverrides());
                     break;
                 case "action":
                     if (patch.getValue().equals("submit")) {

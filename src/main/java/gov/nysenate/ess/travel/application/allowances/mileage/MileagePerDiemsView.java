@@ -31,6 +31,10 @@ public class MileagePerDiemsView implements ViewObject {
                 .collect(Collectors.toList());
     }
 
+    public MileagePerDiems toMileagePerDiems() {
+        return new MileagePerDiems(allLegs.stream().map(LegView::toLeg).collect(Collectors.toList()));
+    }
+
     public String getRequestedPerDiem() {
         return requestedPerDiem;
     }

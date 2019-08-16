@@ -9,10 +9,7 @@ import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,5 +46,18 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .map(TravelApplicationView::new)
                 .collect(Collectors.toList());
         return ListViewResponse.of(appViews);
+    }
+
+    @RequestMapping(value = "/{appId}", method = RequestMethod.PUT)
+    public BaseResponse saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
+        TravelApplication app = travelApplicationService.getTravelApplication(appId);
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(app.getTraveler().getEmployeeId())
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+
+        // TODO
+        return null;
     }
 }

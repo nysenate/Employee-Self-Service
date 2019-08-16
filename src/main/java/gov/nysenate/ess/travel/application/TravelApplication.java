@@ -165,7 +165,7 @@ public class TravelApplication {
         return purposeOfTravel;
     }
 
-    void setPurposeOfTravel(String purposeOfTravel) {
+    public void setPurposeOfTravel(String purposeOfTravel) {
         this.purposeOfTravel = purposeOfTravel;
     }
 
@@ -173,7 +173,7 @@ public class TravelApplication {
         return route;
     }
 
-    void setRoute(Route route) {
+    public void setRoute(Route route) {
         this.route = route;
     }
 
@@ -181,7 +181,7 @@ public class TravelApplication {
         return this.allowances;
     }
 
-    void setAllowances(Allowances allowances) {
+    public void setAllowances(Allowances allowances) {
         this.allowances = allowances;
     }
 
@@ -189,7 +189,7 @@ public class TravelApplication {
         return perDiemOverrides;
     }
 
-    void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
+    public void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
         this.perDiemOverrides = perDiemOverrides;
     }
 

@@ -13,7 +13,6 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
         vm.stateService.setPurposeState();
 
         var appId = locationService.getSearchParam("appId");
-        console.log(appId);
         appIdApi.get({id: appId}, function (response) {
             vm.app = response.result;
         }, $scope.handleErrorResponse);
