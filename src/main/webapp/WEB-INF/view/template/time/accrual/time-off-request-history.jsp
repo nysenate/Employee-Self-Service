@@ -8,8 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
   /**
-   * This template provides the functionality necessary for employees to create new time off
-   * requests and view their active time off requests
+   * This template provides the functionality necessary for employees to view
+   * their time off request history.
    */
 %>
 

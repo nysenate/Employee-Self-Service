@@ -29,5 +29,11 @@
             function () {
                 $scope.errmsg = "Invalid employee ID";
             });
+
+
+        //Adding a new request - open the new request page
+        $scope.newRequest = function() {
+            window.open(window.location.href + "/new", "_self");
+        }
     }
 })();

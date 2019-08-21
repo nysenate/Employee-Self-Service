@@ -113,8 +113,7 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      * Update Request API
      * ------------------
      *
-     * Update a request, identified by a given
-     * request id:
+     * Update a request, given the request data
      * (POST) /api/v1/timeoffrequests/updaterequest
      *
      * Post Data: json TimeOffRequestView

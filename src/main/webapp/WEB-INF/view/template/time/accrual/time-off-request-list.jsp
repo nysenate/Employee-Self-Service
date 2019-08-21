@@ -1,3 +1,5 @@
+<!-- This directive lists time off requests in a tabular format. -->
+
 <table class="timeoff-request-table" ng-show="data.length > 0"> <!--Only show if they have records-->
   <thead>
   <tr>

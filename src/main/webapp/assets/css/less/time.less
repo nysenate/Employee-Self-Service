@@ -611,8 +611,137 @@ time-off-request-list {
   }
 }
 
+time-off-request-view {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .time-off-request-accruals {
+    color: black;
+    font-size: 12px;
+    padding-right: 20%;
+    margin: 0;
+  }
+  .timeoff-request-table {
+    width: 96%;
+    margin: 0 0 10px 0;
+    thead {
+      .timeoff-table-checkbox {
+        width: 5%;
+      }
+      .timeoff-table-date{
+        width: 15%;
+        text-align: center !important;
+      }
+      .timeoff-table-hours {
+        width: 8%;
+      }
+      .timeoff-table-misc {
+        width: 16%;
+      }
+      tr {
+        border-bottom: 1px solid #aaa;
+      }
+    }
+    tbody {
+      border: 1px solid #aaa;
+      tr {
+        line-height: 30px;
+        td {
+          padding: 0;
+          margin: 0;
+          border: 1px solid #aaa;
+          input {
+            width: 100%;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            height: 33px;
+            background-color: transparent;
+            border: none;
+          }
+        }
+      }
+    }
+  }
+  h3 {
+    border-top: 1px solid #222;
+    margin: 10px 0 0;
+    width: 98%;
+    text-align: left;
+    text-indent: 8%;
+  }
+  .comment-list {
+    color: black;
+    align-self: center;
+    margin: 0;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    .comment {
+      color: black;
+      line-height: 20px;
+      margin: 3px 0 0 0;
+      font-size: 16px;
+    }
+    .new-comment-container {
+      margin: 5px 0 0;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      p, textarea {
+        color: black;
+        margin: 4px 3px 0 0;
+      }
+      textarea {
+        height: 100px;
+        width: 100%;
+        min-width: 40%;
+        min-height: 100px;
+        max-height: 150px;
+      }
+    }
+  }
+}
+.time-off-request-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 98%;
+  button {
+    margin: 10px 3%;
+    padding: 5px 15px;
+  }
+}
+.time-off-request-back-button {
+  align-self: flex-start;
+}
+.time-off-request-save-button{
+  background: #2e7db2;
+  color: #fefefe;
+}
+.time-off-request-submit-button {
+  background: #3f7506;
+  color: #fefefe;
+}
 
-
+#time-off-request-checkbox {
+  width: auto;
+}
+.misc-drop-down {
+  height: 95%;
+  select {
+    margin: 2px;
+    width: 100%;
+    height: 100%;
+  }
+}
+/**  --- End of time off request page --- */
 
 
 

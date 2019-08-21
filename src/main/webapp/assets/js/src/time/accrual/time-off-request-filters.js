@@ -1,4 +1,3 @@
-//saved submitted approved disapproved invalidated
 var essTime = angular.module('essTime');
 
 /** --- Filters --- */

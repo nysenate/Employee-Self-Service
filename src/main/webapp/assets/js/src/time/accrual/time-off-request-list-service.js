@@ -20,10 +20,11 @@ function timeOffRequestListUtils() {
      * @returns {Array} - Array of objects representing requests
      */
     function formatData(data) {
-        //send an array with objects that each represent a separate request
+        //return an array with objects that each represent a separate request
         var requestObjs = [];
         data.forEach(function (request) {
             var obj = {};
+            obj.empId = request.employeeId;
             obj.startDate = request.startDate.split("-").join("/");
             obj.endDate = request.endDate.split("-").join("/");
             //get the total hours

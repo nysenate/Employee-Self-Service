@@ -111,6 +111,14 @@ essApp.config(function ($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/time/accrual/time-off-request'
     });
 
+    $routeProvider.when( ctxPath + '/time/accrual/time-off-request/new', {
+        templateUrl: ctxPath + '/template/time/accrual/new-time-off-request'
+    });
+
+    $routeProvider.when( ctxPath + '/time/accrual/time-off-request/:requestId', {
+        templateUrl: ctxPath + '/template/time/accrual/single-time-off-request'
+    });
+
     $routeProvider.when(ctxPath + '/time/accrual/time-off-request-history', {
         templateUrl: ctxPath + '/template/time/accrual/time-off-request-history'
     });

@@ -10,19 +10,17 @@
     }]);
 
     essTime.controller('RequestApprovalCtrl', ['$scope', 'appProps', 'ActiveEmployeeRequestsApi', 'TimeOffRequestListService',
-                        'supEmpGroupService', requestApprovalCtrl]);
+                        requestApprovalCtrl]);
 
-    function requestApprovalCtrl($scope, appProps, ActiveEmployeeRequestsApi, TimeOffRequestListService, supEmpGroupService) {
-        $scope.loadingEmployees = true;
-        supEmpGroupService.init().finally(function () {
-            $scope.loadingEmployees = false;
-        });
+    function requestApprovalCtrl($scope, appProps, ActiveEmployeeRequestsApi, TimeOffRequestListService ) {
+
 
         $scope.supId = appProps.user.employeeId;
-        $scope.activeRequests = null; //active requests
+        $scope.activeRequests = null;   //active requests
         $scope.approvalRequests = null; //requests that need approval
         $scope.loadingRequests = true;
-        //make the call to the back end to get all active requests for a supervisor
+
+        //make the call to the back end to get all active requests for a supervisor's employees
         ActiveEmployeeRequestsApi.query({supId: $scope.supId}).$promise.then(
             //successful query
             function(data) {
@@ -30,12 +28,10 @@
                 $scope.activeRequests = TimeOffRequestListService.formatData($scope.activeRequests);
                 $scope.approvalRequests = TimeOffRequestListService.getRequestsNeedingApproval(data);
                 $scope.approvalRequests = TimeOffRequestListService.formatData($scope.approvalRequests);
-                console.log("ACTIVE: \n", $scope.activeRequests);
-                console.log("APPROVE: \n", $scope.approvalRequests);
             },
             //failed query
             function() {
-                $scope.errmsg = "Invalid supervisor ID";
+                $scope.errmsg = "An error occurred. Possibly because of an invalid supervisor ID";
             }).finally(function() {
                 $scope.loadingRequests = false;
         });

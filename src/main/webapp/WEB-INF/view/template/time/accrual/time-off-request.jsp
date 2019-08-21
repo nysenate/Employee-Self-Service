@@ -8,8 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
   /**
-   * This template provides the functionality necessary for employees to create new time off
-   * requests and view their active time off requests
+   * This template provides the functionality necessary for employees to
+   * view their active time off requests
    */
 %>
 
@@ -24,8 +24,9 @@
 
     <time-off-request-list data="requests"></time-off-request-list>
 
+
     <!--Add button to submit a new request-->
-    <button class="add-button">
+    <button class="add-button" ng-click="newRequest()">
       &nbsp;New Time Off Request&nbsp;
     </button>
   </div>

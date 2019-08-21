@@ -5,6 +5,7 @@
         $locationProvider.html5Mode(true);
     }]);
 
+    //CHANGE THIS ONCE REQUEST HISTORY API CALL IS AVAILABLE
     essTime.factory('ActiveRequestsApi', ['$resource', function ($resource) {
         return $resource("/api/v1/accruals/request/employee/:empId");
     }]);
@@ -25,6 +26,7 @@
         $scope.errmsg = "";
 
         //make the call to the backend to get the active requests for the user
+        //CURRENTLY GETTING ACTIVE REQUESTS, NOT REQUEST HISTORY
         ActiveRequestsApi.query({empId: $scope.empId}).$promise.then(
             //successful query
             function (data) {

@@ -5,6 +5,14 @@
   Time: 4:07 PM
   To change this template use File | Settings | File Templates.
 --%>
+
+<%
+  /**
+   * This template provides the functionality necessary for supervisors to view
+   * their employees' time off request history.
+   */
+%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <div div="employee-time-off-request-history">
   <div class="time-attendance-hero">

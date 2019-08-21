@@ -6,7 +6,6 @@
 
     function timeOffRequestHistoryDirective(appProps, ActiveYearsTimeRecordsApi, SupervisorTimeOffRequestApi,
                                             TimeOffRequestListService) {
-
         return {
             scope: {
                 /**
@@ -29,7 +28,6 @@
                         records: false
                     },
                     todayMoment: moment(),
-
                     selectedEmp: {},
                     recordYears: [],
                     selectedRecYear: -1
@@ -37,7 +35,9 @@
 
                 //getting the active years for time off requests
                 /* NOTE: The active years for time off requests are the same
-                * as those for attendance records */
+                * as those for attendance records. Currently, this code is
+                * duplicated. It would be ideal if a way to reduce the
+                * redundancy was found. */
                 $scope.$watchCollection('empSupInfo', setEmpId);
                 $scope.$watchCollection('empSupInfo', getTimeRecordYears);
                 $scope.$watch('state.selectedRecYear', getRequests);
@@ -95,6 +95,8 @@
                  */
                 function getRequests() {
                     if($scope.state.selectedRecYear > 0) {
+                        /*make the call to the backend to get requests for a given employee,
+                          supervisor, and year.      */
                         SupervisorTimeOffRequestApi.query({
                                                             supId: $scope.state.supId,
                                                             empId: $scope.state.selectedEmp.empId,
