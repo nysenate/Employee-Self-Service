@@ -2,6 +2,9 @@ package gov.nysenate.ess.travel.application.route;
 
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.destination.DestinationView;
 
 import java.util.List;
@@ -12,6 +15,9 @@ public class RouteView implements ViewObject {
     private List<LegView> outboundLegs;
     private List<LegView> returnLegs;
     private List<DestinationView> destinations;
+    private MealPerDiemsView mealPerDiems;
+    private LodgingPerDiemsView lodgingPerDiems;
+    private MileagePerDiemsView mileagePerDiems;
     private AddressView origin;
 
     public RouteView() {
@@ -28,6 +34,9 @@ public class RouteView implements ViewObject {
         destinations = route.destinations().stream()
                 .map(DestinationView::new)
                 .collect(Collectors.toList());
+        mealPerDiems = new MealPerDiemsView(route.mealPerDiems());
+        lodgingPerDiems = new LodgingPerDiemsView(route.lodgingPerDiems());
+        mileagePerDiems = new MileagePerDiemsView(route.mileagePerDiems());
     }
 
     public Route toRoute() {
@@ -51,6 +60,18 @@ public class RouteView implements ViewObject {
 
     public AddressView getOrigin() {
         return origin;
+    }
+
+    public MealPerDiemsView getMealPerDiems() {
+        return mealPerDiems;
+    }
+
+    public LodgingPerDiemsView getLodgingPerDiems() {
+        return lodgingPerDiems;
+    }
+
+    public MileagePerDiemsView getMileagePerDiems() {
+        return mileagePerDiems;
     }
 
     @Override

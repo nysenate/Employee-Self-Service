@@ -12,9 +12,9 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="leg in app.mileagePerDiems.requestedLegs">
-        <td>{{leg.from.formattedAddress}}</td>
-        <td>{{leg.to.formattedAddress}}</td>
+      <tr ng-repeat="leg in app.route.mileagePerDiems.requestedLegs">
+        <td>{{leg.from.address.formattedAddress}}</td>
+        <td>{{leg.to.address.formattedAddress}}</td>
         <td>{{leg.miles}}</td>
         <td>{{leg.mileageRate}}</td>
         <td ng-class="{'line-through': isOverridden}">{{leg.requestedPerDiem | currency}}</td>
@@ -24,7 +24,7 @@
         <td class="bold">Total:</td>
         <td></td>
         <td></td>
-        <td class="bold">{{app.mileagePerDiems.requestedPerDiem | currency}}</td>
+        <td class="bold">{{app.route.mileagePerDiems.requestedPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
         <td></td>

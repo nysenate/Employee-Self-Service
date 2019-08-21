@@ -16,8 +16,8 @@
       <ess-purpose-edit-form app="vm.app"
                              title="Edit the purpose of travel."
                              positive-callback="vm.savePurpose(app)"
-                             negative-callback="vm.doneEditing(app)"
-                             negative-label="Done Editing">
+                             negative-callback="vm.cancelEdit(app)"
+                             negative-label="Cancel">
       </ess-purpose-edit-form>
     </div>
 
@@ -26,8 +26,8 @@
                               title="Edit the outbound route"
                               positive-callback="vm.saveOutbound(app)"
                               neutral-callback="vm.toPurposeState(app)"
-                              negative-callback="vm.doneEditing(app)"
-                              negative-label="Done Editing">
+                              negative-callback="vm.cancelEdit(app)"
+                              negative-label="Cancel">
       </ess-outbound-edit-form>
     </div>
 
@@ -36,8 +36,8 @@
                             title="Edit the return route"
                             positive-callback="vm.saveRoute(app)"
                             neutral-callback="vm.toOutboundState(app)"
-                            negative-callback="vm.doneEditing(app)"
-                            negative-label="Done Editing">
+                            negative-callback="vm.cancelEdit(app)"
+                            negative-label="Cancel">
       </ess-return-edit-form>
     </div>
 
@@ -46,8 +46,8 @@
                                 title="Edit the expenses"
                                 positive-callback="vm.saveAllowances(app)"
                                 neutral-callback="vm.toReturnState(app)"
-                                negative-callback="vm.doneEditing(app)"
-                                negative-label="Done Editing">
+                                negative-callback="vm.cancelEdit(app)"
+                                negative-label="Cancel">
       </ess-allowances-edit-form>
     </div>
 
@@ -56,17 +56,19 @@
                                        title="Override the calculated expenses."
                                        positive-callback="vm.saveOverrides(app)"
                                        neutral-callback="vm.toAllowancesState(app)"
-                                       negative-callback="vm.doneEditing(app)"
-                                       negative-label="Done Editing">
+                                       negative-callback="vm.cancelEdit(app)"
+                                       negative-label="Cancel">
       </ess-perdiem-overrides-edit-form>
     </div>
 
     <div ng-if="vm.stateService.isReviewState()">
       <ess-review-edit-form app="vm.app"
                             title="Here is the full application with your changes."
-                            positive-btn-label="Done Editing"
-                            positive-callback="vm.doneEditing(app)"
-                            neutral-callback="vm.toOverridesState(app)">
+                            positive-btn-label="Save Edits"
+                            positive-callback="vm.saveEdits(app)"
+                            neutral-callback="vm.toOverridesState(app)"
+                            negative-callback="vm.cancelEdit(app)"
+                            negative-label="Cancel">
       </ess-review-edit-form>
     </div>
   </div>
@@ -75,12 +77,12 @@
   <div modal-container>
 
     <%--Cancel Modal--%>
-    <modal modal-id="cancel-application">
+    <modal modal-id="cancel-edits">
       <div confirm-modal rejectable="true"
-           title="Cancel Travel Application"
-           confirm-message="Are you sure you want to cancel your current application?"
-           resolve-button="Yes"
-           reject-button="No">
+           title="Cancel Travel Application Edit"
+           confirm-message="Are you sure you want to cancel the editing of this travel application? Any changes you have made will be lost."
+           resolve-button="Cancel Edit"
+           reject-button="Continue Edit">
       </div>
     </modal>
 

@@ -4,6 +4,8 @@ import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(TravelApplicationCtrl.class);
     @Autowired private TravelApplicationService travelApplicationService;
+    @Autowired private EmployeeInfoService employeeInfoService;
 
     @RequestMapping(value = "/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
@@ -48,8 +51,9 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
         return ListViewResponse.of(appViews);
     }
 
-    @RequestMapping(value = "/{appId}", method = RequestMethod.PUT)
-    public BaseResponse saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
+    @RequestMapping(value = "/{appId}", method = RequestMethod.POST)
+    public void saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
+        // Check the user has permission to update apps for this traveler.
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
         checkPermission(new TravelPermissionBuilder()
                 .forEmpId(app.getTraveler().getEmployeeId())
@@ -57,7 +61,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
-        // TODO
-        return null;
+        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
+        travelApplicationService.saveTravelApplication(appView.toTravelApplication(), user);
     }
 }

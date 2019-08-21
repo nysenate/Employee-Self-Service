@@ -4,9 +4,6 @@ import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
-import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
-import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
@@ -27,9 +24,6 @@ public class TravelApplicationView implements ViewObject {
     private RouteView route;
     private AllowancesView allowances;
     private PerDiemOverridesView perDiemOverrides;
-    private MealPerDiemsView mealPerDiems;
-    private LodgingPerDiemsView lodgingPerDiems;
-    private MileagePerDiemsView mileagePerDiems;
     private TravelApplicationStatusView status;
     private String submittedDateTime;
     private String modifiedDateTime;
@@ -77,9 +71,6 @@ public class TravelApplicationView implements ViewObject {
 
         startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
         endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
-        mealPerDiems = new MealPerDiemsView(app.getRoute().mealPerDiems());
-        lodgingPerDiems = new LodgingPerDiemsView(app.getRoute().lodgingPerDiems());
-        mileagePerDiems = new MileagePerDiemsView(app.getRoute().mileagePerDiems());
 
         mileageAllowance = app.mileageAllowance().toString();
         mealAllowance = app.mealAllowance().toString();
@@ -156,18 +147,6 @@ public class TravelApplicationView implements ViewObject {
 
     public TravelApplicationStatusView getStatus() {
         return status;
-    }
-
-    public MealPerDiemsView getMealPerDiems() {
-        return mealPerDiems;
-    }
-
-    public LodgingPerDiemsView getLodgingPerDiems() {
-        return lodgingPerDiems;
-    }
-
-    public MileagePerDiemsView getMileagePerDiems() {
-        return mileagePerDiems;
     }
 
     public String getSubmittedDateTime() {
