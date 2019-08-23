@@ -1,9 +1,10 @@
 var essTravel = angular.module('essTravel');
 
 essTravel.controller('EditApplicationCtrl',
-                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi', editAppCtrl]);
+                     ['$scope', 'LocationService', 'modals', 'AppEditStateService', 'TravelApplicationByIdApi',
+                      'TravelRouteCalcApi', editAppCtrl]);
 
-function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
+function editAppCtrl($scope, locationService, modals, stateService, appIdApi, routeCalcApi) {
 
     var vm = this;
     vm.app = undefined;
@@ -13,63 +14,64 @@ function editAppCtrl($scope, locationService, modals, stateService, appIdApi) {
         vm.stateService.setPurposeState();
 
         var appId = locationService.getSearchParam("appId");
-        console.log(appId);
         appIdApi.get({id: appId}, function (response) {
             vm.app = response.result;
         }, $scope.handleErrorResponse);
     })();
 
     vm.savePurpose = function (app) {
-        appIdApi.update({id: app.id}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
-            vm.app = response.result;
-            stateService.setOutboundState();
-        }, $scope.handleErrorResponse)
+        vm.app = app;
+        stateService.setOutboundState();
     };
 
     vm.saveOutbound = function (app) {
-        vm.app.route.outboundLegs = app.route.outboundLegs;
+        vm.app = app;
         stateService.setReturnState();
     };
 
     vm.saveRoute = function (app) {
         vm.openLoadingModal();
-        appIdApi.update({id: app.id}, {route: JSON.stringify(app.route)}, function (response) {
-            vm.app = response.result;
+        routeCalcApi.save({}, app.route, function (response) {
+            console.log(response);
+            vm.app.route = response.result;
             stateService.setAllowancesState();
             vm.closeLoadingModal();
         }, function (error) {
             vm.closeLoadingModal();
-            if (error.status === 502) {
-                vm.handleDataProviderError();
-            } else {
-                $scope.handleErrorResponse(error);
-            }
+            $scope.handleErrorResponse(error);
         });
     };
 
     vm.saveAllowances = function (app) {
-        var patches = {
-            allowances: JSON.stringify(app.allowances),
-            mealPerDiems: JSON.stringify(app.mealPerDiems),
-            lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
-            mileagePerDiems: JSON.stringify(app.mileagePerDiems)
-        };
-        appIdApi.update({id: app.id}, patches, function (response) {
-            vm.app = response.result;
-            stateService.setOverridesState();
-        }, $scope.handleErrorResponse)
+        vm.app = app;
+        stateService.setOverridesState();
+        // var patches = {
+        //     allowances: JSON.stringify(app.allowances),
+        //     mealPerDiems: JSON.stringify(app.mealPerDiems),
+        //     lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
+        //     mileagePerDiems: JSON.stringify(app.mileagePerDiems)
+        // };
+        // appIdApi.update({id: app.id}, patches, function (response) {
+        //     vm.app = response.result;
+        //     stateService.setOverridesState();
+        // }, $scope.handleErrorResponse)
     };
 
     vm.saveOverrides = function (app) {
-        appIdApi.update({id: app.id}, {perDiemOverrides: JSON.stringify(app.perDiemOverrides)}, function (response) {
-            vm.app = response.result;
-            stateService.setReviewState();
-            console.log(vm.app);
+        vm.app = app;
+        stateService.setReviewState();
+    };
+
+    vm.saveEdits = function (app) {
+        appIdApi.save({appId: app.id}, app, function (response) {
+            locationService.go("/travel/review", false, {appId: app.id});
         }, $scope.handleErrorResponse);
     };
 
-    vm.doneEditing = function (app) {
-        locationService.go("/travel/review", false, {appId: app.id});
+    vm.cancelEdit = function (app) {
+        modals.open('cancel-edits').then(function () {
+            locationService.go("/travel/review", false, {appId: app.id});
+        })
     };
 
     vm.toPurposeState = function (app) {

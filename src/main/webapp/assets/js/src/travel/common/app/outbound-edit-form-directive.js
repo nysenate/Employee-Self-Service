@@ -22,9 +22,11 @@ function outboundEditLink(appProps) {
             if (scope.dirtyApp.route.outboundLegs.length === 0) {
                 var leg = new Leg();
                 // Init from address to employees work address.
-                leg.from = scope.app.traveler.empWorkLocation.address;
+                leg.from.address = scope.app.traveler.empWorkLocation.address;
                 scope.dirtyApp.route.outboundLegs.push(leg);
             }
+
+            console.log(scope.dirtyApp.route);
 
             scope.addSegment = function () {
                 // Initialize new leg
@@ -37,11 +39,11 @@ function outboundEditLink(appProps) {
             };
 
             scope.setFromAddress = function (leg, address) {
-                leg.from = address;
+                leg.from.address = address;
             };
 
             scope.setToAddress = function (leg, address) {
-                leg.to = address;
+                leg.to.address = address;
             };
 
             scope.isLastSegment = function (index) {

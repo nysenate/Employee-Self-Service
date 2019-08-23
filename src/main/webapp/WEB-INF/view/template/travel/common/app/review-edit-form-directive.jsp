@@ -28,7 +28,7 @@
           <div class="itinerary-address">
             <label>From</label><br/>
             <input ess-address-autocomplete
-                   ng-model="leg.from.formattedAddress"
+                   ng-model="leg.from.address.formattedAddress"
                    callback="leg.setFrom(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text" size="40">
@@ -42,7 +42,7 @@
           <div class="itinerary-address">
             <label>To</label><br/>
             <input ess-address-autocomplete
-                   ng-model="leg.to.formattedAddress"
+                   ng-model="leg.to.address.formattedAddress"
                    callback="leg.setTo(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text"
@@ -80,7 +80,7 @@
           <div class="itinerary-address">
             <label>From</label><br/>
             <input ess-address-autocomplete
-                   ng-model="leg.from.formattedAddress"
+                   ng-model="leg.from.address.formattedAddress"
                    callback="leg.setFrom(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text" size="40">
@@ -94,7 +94,7 @@
           <div class="itinerary-address">
             <label>To</label><br/>
             <input ess-address-autocomplete
-                   ng-model="leg.to.formattedAddress"
+                   ng-model="leg.to.address.formattedAddress"
                    callback="leg.setTo(address)"
                    placeholder="200 State St, Albany NY 12210"
                    type="text"

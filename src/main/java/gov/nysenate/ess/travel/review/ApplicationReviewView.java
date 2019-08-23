@@ -2,7 +2,7 @@ package gov.nysenate.ess.travel.review;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.application.SimpleTravelApplicationView;
+import gov.nysenate.ess.travel.application.TravelApplicationView;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class ApplicationReviewView implements ViewObject {
 
     private String appReviewId;
-    private SimpleTravelApplicationView travelApplication;
+    private TravelApplicationView travelApplication;
     private String nextReviewerRole;
     private List<ActionView> actions;
     private boolean isDiscussionRequested;
@@ -20,7 +20,7 @@ public class ApplicationReviewView implements ViewObject {
 
     public ApplicationReviewView(ApplicationReview appReview) {
         appReviewId = String.valueOf(appReview.getAppReviewId());
-        travelApplication = new SimpleTravelApplicationView(appReview.application());
+        travelApplication = new TravelApplicationView(appReview.application());
         nextReviewerRole = appReview.nextReviewerRole().name();
         actions = appReview.actions().stream()
                 .map(ActionView::new)
@@ -32,7 +32,7 @@ public class ApplicationReviewView implements ViewObject {
         return appReviewId;
     }
 
-    public SimpleTravelApplicationView getTravelApplication() {
+    public TravelApplicationView getTravelApplication() {
         return travelApplication;
     }
 

@@ -65,7 +65,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="perDiem in dirtyApp.mealPerDiems.allMealPerDiems">
+        <tr ng-repeat="perDiem in dirtyApp.route.mealPerDiems.allMealPerDiems">
           <td>{{perDiem.address.formattedAddress}}</td>
           <td>{{perDiem.date | date: 'shortDate'}}</td>
           <td><label>Request Meals: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
@@ -90,7 +90,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="perDiem in dirtyApp.lodgingPerDiems.allLodgingPerDiems">
+          <tr ng-repeat="perDiem in dirtyApp.route.lodgingPerDiems.allLodgingPerDiems">
             <td>{{perDiem.address.formattedAddress}}</td>
             <td>{{previousDay(perDiem.date) | date: 'shortDate'}} - {{perDiem.date | date: 'shortDate'}}</td>
             <td><label>Request Lodging: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
@@ -115,9 +115,9 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="leg in dirtyApp.mileagePerDiems.qualifyingLegs">
-            <td>{{leg.from.formattedAddress}}</td>
-            <td>{{leg.to.formattedAddress}}</td>
+          <tr ng-repeat="leg in dirtyApp.route.mileagePerDiems.qualifyingLegs">
+            <td>{{leg.from.address.formattedAddress}}</td>
+            <td>{{leg.to.address.formattedAddress}}</td>
             <td><label>Request Mileage: </label><input type="checkbox" ng-model="leg.isReimbursementRequested"></td>
           </tr>
           </tbody>

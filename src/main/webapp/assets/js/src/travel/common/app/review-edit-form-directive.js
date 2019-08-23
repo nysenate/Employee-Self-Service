@@ -72,7 +72,7 @@ function reviewEditForm($compile, appProps, modals) {
                 // TODO Use destinations in views
                 var waypoints = [];
                 scope.reviewApp.route.outboundLegs.forEach(function (leg) {
-                    waypoints.push({location: leg.to.formattedAddress});
+                    waypoints.push({location: leg.to.address.formattedAddress});
                 });
 
                 // Last destination should be destination param, not waypoint.

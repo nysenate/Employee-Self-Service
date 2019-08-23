@@ -85,7 +85,7 @@ public class TravelApplication {
     }
 
     public Dollars alternateTransportationAllowance() {
-        return getAllowances().trainAndPlane();
+        return getAllowances().alternateTransportation();
     }
 
     public Dollars registrationAllowance() {
@@ -170,32 +170,32 @@ public class TravelApplication {
         return activeAmendment().purposeOfTravel;
     }
 
-    void setPurposeOfTravel(String purposeOfTravel) {
-        activeAmendment().purposeOfTravel = purposeOfTravel;
+    public void setPurposeOfTravel(String purposeOfTravel) {
+        this.activeAmendment().purposeOfTravel = purposeOfTravel;
     }
 
     public Route getRoute() {
         return activeAmendment().route;
     }
 
-    void setRoute(Route route) {
-        activeAmendment().route = route;
+    public void setRoute(Route route) {
+        this.activeAmendment().route = route;
     }
 
     public Allowances getAllowances() {
         return activeAmendment().allowances;
     }
 
-    void setAllowances(Allowances allowances) {
-        activeAmendment().allowances = allowances;
+    public void setAllowances(Allowances allowances) {
+        this.activeAmendment().allowances = allowances;
     }
 
     public PerDiemOverrides getPerDiemOverrides() {
         return activeAmendment().perDiemOverrides;
     }
 
-    void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
-        activeAmendment().perDiemOverrides = perDiemOverrides;
+    public void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
+        this.activeAmendment().perDiemOverrides = perDiemOverrides;
     }
 
     public LocalDateTime getSubmittedDateTime() {

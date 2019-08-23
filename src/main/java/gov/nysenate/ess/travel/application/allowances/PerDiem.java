@@ -12,6 +12,7 @@ public final class PerDiem {
     private final BigDecimal rate;
     private boolean reimbursementRequested;
 
+    // TODO I think Dollars in this constructor can loose accuracy in the rate. Consider removing.
     public PerDiem(LocalDate date, Dollars rate, boolean reimbursementRequested) {
         this(date, new BigDecimal(rate.toString()), reimbursementRequested);
     }

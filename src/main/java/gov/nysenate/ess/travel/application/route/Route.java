@@ -27,14 +27,14 @@ public class Route {
 
     public MealPerDiems mealPerDiems() {
         return new MealPerDiems(destinations().stream()
-                .map(Destination::mealAllowances)
+                .map(Destination::mealPerDiems)
                 .flatMap(m -> m.allMealPerDiems().stream())
                 .collect(Collectors.toList()));
     }
 
     public LodgingPerDiems lodgingPerDiems() {
         return new LodgingPerDiems(destinations().stream()
-                .map(Destination::lodgingAllowances)
+                .map(Destination::lodgingPerDiems)
                 .flatMap(l -> l.allLodgingPerDiems().stream())
                 .collect(Collectors.toList()));
     }

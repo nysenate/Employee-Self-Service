@@ -26,6 +26,12 @@ public class LodgingPerDiemsView implements ViewObject {
         this.maximumPerDiem = la.maximumPerDiem().toString();
     }
 
+    public LodgingPerDiems toLodgingPerDiems() {
+        return new LodgingPerDiems(allLodgingPerDiems.stream()
+                .map(LodgingPerDiemView::toLodgingPerDiem)
+                .collect(Collectors.toList()));
+    }
+
     public List<LodgingPerDiemView> getAllLodgingPerDiems() {
         return allLodgingPerDiems;
     }

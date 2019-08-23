@@ -38,19 +38,24 @@ public class ModeOfTransportation {
      * @param methodOfTravel
      * @param description
      */
+    // TODO make this private? should always be using other constructor with more logic unless initializing statics.
     public ModeOfTransportation(MethodOfTravel methodOfTravel, String description) {
         this.methodOfTravel = methodOfTravel;
         this.description = description;
     }
 
-    public ModeOfTransportation(String methodOfTravel, String description) {
-        this.methodOfTravel = MethodOfTravel.of(methodOfTravel);
+    /**
+     * @param methodOfTravelString String representing the MethodOfTravel Enum or display name.
+     * @param description
+     */
+    public ModeOfTransportation(String methodOfTravelString, String description) {
+        this.methodOfTravel = MethodOfTravel.of(methodOfTravelString);
         // Only use description if OTHER, otherwise default to the MethodOfTravel's display name.
-        if (MethodOfTravel.of(methodOfTravel) == MethodOfTravel.OTHER) {
+        if (MethodOfTravel.of(methodOfTravelString) == MethodOfTravel.OTHER) {
             this.description = description;
         }
         else {
-            this.description = MethodOfTravel.of(methodOfTravel).getDisplayName();
+            this.description = MethodOfTravel.of(methodOfTravelString).getDisplayName();
         }
     }
 

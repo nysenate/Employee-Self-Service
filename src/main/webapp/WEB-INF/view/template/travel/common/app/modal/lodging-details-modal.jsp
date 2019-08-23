@@ -10,7 +10,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="perDiem in app.lodgingPerDiems.requestedLodgingPerDiems">
+      <tr ng-repeat="perDiem in app.route.lodgingPerDiems.requestedLodgingPerDiems">
         <td>{{perDiem.date | date: 'shortDate'}}</td>
         <td>{{perDiem.address.formattedAddress}}</td>
         <td ng-class="{'line-through': isOverridden}">{{perDiem.rate | currency}}</td>
@@ -18,7 +18,7 @@
       <tr ng-class="{'line-through': isOverridden}">
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.lodgingPerDiems.requestedPerDiem | currency}}</td>
+        <td class="bold">{{app.route.lodgingPerDiems.requestedPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
         <td></td>

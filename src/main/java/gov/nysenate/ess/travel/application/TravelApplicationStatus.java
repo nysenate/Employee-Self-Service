@@ -16,11 +16,15 @@ public class TravelApplicationStatus {
         dateTime = LocalDateTime.now();
     }
 
-    public TravelApplicationStatus(int statusId, String status, LocalDateTime dateTime, String note) {
+    public TravelApplicationStatus(int statusId, ApplicationStatus status, LocalDateTime dateTime, String note) {
         this.statusId = statusId;
-        this.status = ApplicationStatus.valueOf(status);
+        this.status = status;
         this.dateTime = dateTime;
         this.note = note;
+    }
+
+    public TravelApplicationStatus(int statusId, String status, LocalDateTime dateTime, String note) {
+        this(statusId, ApplicationStatus.valueOf(status), dateTime, note);
     }
 
     public boolean isPending() {

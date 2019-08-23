@@ -31,6 +31,7 @@ function addressCountyService($q, $timeout, modals, geocoder) {
      *  with county info updated.
      */
     this.updateWithGeocodeCounty = function (addresses) {
+        console.log("Querying county with geocoder");
         var promises = [];
         addresses.forEach(function (el, index, array) {
             var promise = geocoder.countyForAddress(el.formattedAddress)

@@ -65,13 +65,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     @Override
-    public void deleteTravelApplication(int appId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
-        String sql = SqlTravelApplicationQuery.DELETE_APP.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
-    }
-
-    @Override
     public TravelApplication selectTravelApplication(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_ID.getSql(schemaMap());
@@ -127,15 +120,15 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 "INSERT INTO ${travelSchema}.app(traveler_id) \n" +
                         "VALUES (:travelerId)"
         ),
-        DELETE_APP(
-                "DELETE FROM ${travelSchema}.app" +
-                        " WHERE app_id = :appId"
-        ),
-
         INSERT_AMENDMENT(
                 "INSERT INTO ${travelSchema}.amendment \n" +
                         "(app_id, version, purpose_of_travel, created_by) \n" +
                         "VALUES (:appId, :version, :purposeOfTravel, :createdBy)"
+        ),
+        INSERT_APP_VERSION(
+                "INSERT INTO ${travelSchema}.app_version \n" +
+                        "(app_version_id, app_id, purpose_of_travel, created_by, submitted_date_time) \n" +
+                        "VALUES (:versionId, :appId, :purposeOfTravel, :createdBy, :submittedDateTime)"
         ),
         TRAVEL_APP_SELECT(
                 "SELECT app.app_id, app.traveler_id,\n" +

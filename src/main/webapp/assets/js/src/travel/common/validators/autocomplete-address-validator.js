@@ -11,7 +11,7 @@ essTravel.directive('autocompleteAddressValidator', function () {
         link: function ($scope, elm, attrs, ctrl) {
             elm.on('keydown', function (e) {
                 // Reset address when manually edited.
-                var address = $scope.leg[attrs.ngModel.split('.')[1]]; // Gets either the from or to address
+                var address = $scope.leg[attrs.ngModel.split('.')[1]].address; // Gets either the from or to address
                 address.addr1 = '';
                 address.addr2 = '';
                 address.city = '';
@@ -25,7 +25,7 @@ essTravel.directive('autocompleteAddressValidator', function () {
             ctrl.$validators.addressValidator = function (modelValue, viewValue) {
 
                 // Parse the ng-model attribute to determine if we should validate the 'to' or 'from' address.
-                var address = $scope.leg[attrs.ngModel.split('.')[1]];
+                var address = $scope.leg[attrs.ngModel.split('.')[1]].address;
 
                 if (!modelValue) {
                     return false;
