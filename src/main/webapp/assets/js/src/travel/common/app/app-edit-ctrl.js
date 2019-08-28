@@ -98,10 +98,10 @@ function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
     /**
      * Focuses the Other box if method of travel is Other.
      */
-    $scope.motChange = function (leg, index) {
+    $scope.motChange = function (leg, index, focusInputName) {
         $timeout(function () { // Execute on next digest cycle, giving input box a chance to render.
             if (leg.methodOfTravelDisplayName === 'Other') {
-                document.getElementById('outboundMotOtherInput_' + index).focus();
+                document.getElementById(focusInputName + index).focus();
             }
         });
 

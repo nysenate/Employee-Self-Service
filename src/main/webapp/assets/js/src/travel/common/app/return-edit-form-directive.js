@@ -103,17 +103,6 @@ function returnEditForm($q, appProps, modals) {
             };
 
             /**
-             * Focuses the Other box when mode of transportation is Other.
-             */
-            scope.motChange = function (leg, index) {
-                $timeout(function () { // Execute on next digest cycle, giving the input a chance to render.
-                    if (leg.methodOfTravelDisplayName === 'Other') {
-                        document.getElementById('returnMotOtherInput_' + index).focus();
-                    }
-                });
-            };
-
-            /**
              * Checks if the trip is longer than 7 days which would suggest a date typo by the user.
              * If it is, display a modal to ask the user if this is intentional.
              * @return {Promise} A promise which is resolved if the trip is less than 7 days long or the user
