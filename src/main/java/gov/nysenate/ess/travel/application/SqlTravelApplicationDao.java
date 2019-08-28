@@ -180,6 +180,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                                         EmployeeInfoService employeeInfoService) {
             this.employeeInfoService = employeeInfoService;
             this.amendmentRowMapper = amendmentRowMapper;
+            this.amendments = new ArrayList<>();
         }
 
         @Override
