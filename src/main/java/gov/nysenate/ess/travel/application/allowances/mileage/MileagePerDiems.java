@@ -1,23 +1,18 @@
 package gov.nysenate.ess.travel.application.allowances.mileage;
 
-import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.Collection;
-import java.util.Comparator;
 
 public class MileagePerDiems {
 
     private static final double MILE_THRESHOLD = 35.0;
-    private static final Comparator<Leg> dateComparator = Comparator.comparing(Leg::travelDate);
-    private final ImmutableSortedSet<Leg> mileagePerDiems;
+    private final ImmutableList<Leg> mileagePerDiems;
 
     public MileagePerDiems(Collection<Leg> legs) {
-        this.mileagePerDiems = ImmutableSortedSet
-                .orderedBy(dateComparator)
-                .addAll(legs)
-                .build();
+        this.mileagePerDiems = ImmutableList.copyOf(legs);
     }
 
     /**
@@ -53,33 +48,33 @@ public class MileagePerDiems {
         }
     }
 
-    public ImmutableSortedSet<Leg> allLegs() {
+    public ImmutableList<Leg> allLegs() {
         return mileagePerDiems;
     }
 
     /**
      * Legs that are allowed to be reimbursed for travel.
      */
-    public ImmutableSortedSet<Leg> qualifyingLegs() {
+    public ImmutableList<Leg> qualifyingLegs() {
         return mileagePerDiems.stream()
                 .filter(Leg::qualifiesForMileageReimbursement)
-                .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
+                .collect(ImmutableList.toImmutableList());
     }
 
     /**
      * Legs that are allowed to be reimbursed for travel and the travel
      * has requested reimbursement.
      */
-    public ImmutableSortedSet<Leg> requestedLegs() {
+    public ImmutableList<Leg> requestedLegs() {
         return qualifyingLegs().stream()
                 .filter(Leg::isReimbursementRequested)
-                .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
+                .collect(ImmutableList.toImmutableList());
     }
 
-    private ImmutableSortedSet<Leg> outboundLegs() {
+    private ImmutableList<Leg> outboundLegs() {
         return allLegs().stream()
                 .filter(Leg::isOutbound)
-                .collect(ImmutableSortedSet.toImmutableSortedSet(dateComparator));
+                .collect(ImmutableList.toImmutableList());
     }
 
     private boolean tripQualifiesForReimbursement() {
