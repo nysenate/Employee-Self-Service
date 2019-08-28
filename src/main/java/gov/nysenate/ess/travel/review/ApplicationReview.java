@@ -56,7 +56,7 @@ public class ApplicationReview {
      * If the application has been disapproved there is no need to continue the review workflow.
      */
     public TravelRole nextReviewerRole() {
-        if (application.status().isDisapproved()) {
+        if (application.activeAmendment().status().isDisapproved()) {
             return TravelRole.NONE;
         } else {
             return reviewerStrategy.after(previousReviewerRole());

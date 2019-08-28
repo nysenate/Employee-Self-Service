@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application;
 
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.unit.Address;
@@ -8,7 +9,6 @@ import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesVie
 import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +18,6 @@ import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
 public class TravelApplicationView implements ViewObject {
 
     private int id;
-    private int versionId;
     private DetailedEmployeeView traveler;
     private String purposeOfTravel;
     private RouteView route;
@@ -57,35 +56,34 @@ public class TravelApplicationView implements ViewObject {
 
     public TravelApplicationView(TravelApplication app) {
         id = app.getAppId();
-        versionId = app.getVersionId();
         traveler = new DetailedEmployeeView(app.getTraveler());
-        purposeOfTravel = app.getPurposeOfTravel();
-        route = new RouteView(app.getRoute());
-        allowances = new AllowancesView(app.getAllowances());
-        perDiemOverrides = new PerDiemOverridesView(app.getPerDiemOverrides());
-        status = new TravelApplicationStatusView(app.status());
+        purposeOfTravel = app.activeAmendment().purposeOfTravel();
+        route = new RouteView(app.activeAmendment().route());
+        allowances = new AllowancesView(app.activeAmendment().allowances());
+        perDiemOverrides = new PerDiemOverridesView(app.activeAmendment().perDiemOverrides());
+        status = new TravelApplicationStatusView(app.activeAmendment().status());
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         modifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
         modifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
-        attachments = app.getAttachments().stream().map(TravelAttachmentView::new).collect(Collectors.toList());
+        attachments = app.activeAmendment().attachments().stream().map(TravelAttachmentView::new).collect(Collectors.toList());
 
-        startDate = app.startDate() == null ? "" : app.startDate().format(ISO_DATE);
-        endDate = app.endDate() == null ? "" : app.endDate().format(ISO_DATE);
+        startDate = app.activeAmendment().startDate() == null ? "" : app.activeAmendment().startDate().format(ISO_DATE);
+        endDate = app.activeAmendment().endDate() == null ? "" : app.activeAmendment().endDate().format(ISO_DATE);
 
-        mileageAllowance = app.mileageAllowance().toString();
-        mealAllowance = app.mealAllowance().toString();
-        lodgingAllowance = app.lodgingAllowance().toString();
-        tollsAllowance = app.tollsAllowance().toString();
-        parkingAllowance = app.parkingAllowance().toString();
-        trainAndPlaneAllowance = app.trainAndPlaneAllowance().toString();
-        alternateTransportationAllowance = app.alternateTransportationAllowance().toString();
-        registrationAllowance = app.registrationAllowance().toString();
-        transportationAllowance = app.transportationAllowance().toString();
-        tollsAndParkingAllowance = app.tollsAndParkingAllowance().toString();
-        totalAllowance = app.totalAllowance().toString();
+        mileageAllowance = app.activeAmendment().mileageAllowance().toString();
+        mealAllowance = app.activeAmendment().mealAllowance().toString();
+        lodgingAllowance = app.activeAmendment().lodgingAllowance().toString();
+        tollsAllowance = app.activeAmendment().tollsAllowance().toString();
+        parkingAllowance = app.activeAmendment().parkingAllowance().toString();
+        trainAndPlaneAllowance = app.activeAmendment().trainAndPlaneAllowance().toString();
+        alternateTransportationAllowance = app.activeAmendment().alternateTransportationAllowance().toString();
+        registrationAllowance = app.activeAmendment().registrationAllowance().toString();
+        transportationAllowance = app.activeAmendment().transportationAllowance().toString();
+        tollsAndParkingAllowance = app.activeAmendment().tollsAndParkingAllowance().toString();
+        totalAllowance = app.activeAmendment().totalAllowance().toString();
 
 
-        List<Destination> destinations = app.getRoute().destinations();
+        List<Destination> destinations = app.activeAmendment().route().destinations();
         if (!destinations.isEmpty()) {
             Address address = destinations.get(0).getAddress();
             String city = address.getCity();
@@ -98,31 +96,22 @@ public class TravelApplicationView implements ViewObject {
     }
 
     public TravelApplication toTravelApplication() {
-        TravelApplication a = new TravelApplication(id, versionId, traveler.toEmployee());
-        a.setPurposeOfTravel(purposeOfTravel);
-        a.setRoute(route.toRoute());
-        a.setAllowances(allowances.toAllowances());
-        a.setPerDiemOverrides(perDiemOverrides.toPerDiemOverrides());
-        a.setStatus(status.toTravelApplicationStatus());
-//        a.setAttachments(); // TODO WIP
-        if (submittedDateTime != null) {
-            a.setSubmittedDateTime(LocalDateTime.parse(submittedDateTime, ISO_DATE_TIME));
-        }
-        if (modifiedDateTime != null) {
-            a.setModifiedDateTime(LocalDateTime.parse(modifiedDateTime, ISO_DATE_TIME));
-        }
-        if (modifiedBy != null) {
-            a.setModifiedBy(modifiedBy.toEmployee());
-        }
+        Amendment amd = new Amendment.Builder()
+                .withAmendmentId(0)
+                .withVersion(Version.A)
+                .withPurposeOfTravel(purposeOfTravel)
+                .withRoute(route.toRoute())
+                .withAllowances(allowances.toAllowances())
+                .withPerDiemOverrides(perDiemOverrides.toPerDiemOverrides())
+                .withStatus(status.toTravelApplicationStatus())
+                // TODO modified by and time
+                .build();
+        TravelApplication a = new TravelApplication(id, traveler.toEmployee(), Lists.newArrayList(amd));
         return a;
     }
 
     public int getId() {
         return id;
-    }
-
-    public int getVersionId() {
-        return versionId;
     }
 
     public DetailedEmployeeView getTraveler() {

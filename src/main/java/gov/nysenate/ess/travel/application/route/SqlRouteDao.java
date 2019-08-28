@@ -26,44 +26,24 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     @Override
     @Transactional(value = "localTxManager")
-    public void saveRoute(Route route, int appVersionId, int previousAppVersionId) {
-        Route previousRoute = selectRoute(previousAppVersionId);
-        if (previousRoute.equals(route)) {
-            // If Route did not change, just update the join table with the new versionId.
-            for (Leg leg : previousRoute.getAllLegs()) {
-                // Use the previous route because it has the correct Leg.id's
-                joinLegWithAppVersion(leg, appVersionId);
-            }
-        } else {
-            // FIXME leg.to and nextLeg.from should reference same db row.
-            List<Destination> destinations = route.getAllLegs().stream()
-                    .flatMap(leg -> Stream.of(leg.from(), leg.to()))
-                    .collect(Collectors.toList());
-            destinationDao.insertDestinations(destinations);
+    public void saveRoute(Route route, int amendmentId) {
+        // FIXME leg.to and nextLeg.from should reference same db row.
+        List<Destination> destinations = route.getAllLegs().stream()
+                .flatMap(leg -> Stream.of(leg.from(), leg.to()))
+                .collect(Collectors.toList());
+        destinationDao.insertDestinations(destinations);
 
-            int sequenceNo = 0;
-            for (Leg leg : route.getOutboundLegs()) {
-                insertLeg(leg, true, sequenceNo);
-                joinLegWithAppVersion(leg, appVersionId);
-                sequenceNo++;
-            }
-            for (Leg leg : route.getReturnLegs()) {
-                insertLeg(leg, false, sequenceNo);
-                joinLegWithAppVersion(leg, appVersionId);
-                sequenceNo++;
-            }
+        int sequenceNo = 0;
+        for (Leg leg : route.getOutboundLegs()) {
+            insertLeg(leg, true, sequenceNo);
+            insertIntoJoinTable(leg, amendmentId);
+            sequenceNo++;
         }
-    }
-
-    /**
-     * Insert into the table which joins app_version and app_leg
-     */
-    private void joinLegWithAppVersion(Leg leg, int appVersionId) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appVersionId", appVersionId)
-                .addValue("legId", leg.getId());
-        String sql = SqlRouteQuery.INSERT_JOIN_TABLE.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
+        for (Leg leg : route.getReturnLegs()) {
+            insertLeg(leg, false, sequenceNo);
+            insertIntoJoinTable(leg, amendmentId);
+            sequenceNo++;
+        }
     }
 
     private void insertLeg(Leg leg, boolean isOutbound, int sequenceNo) {
@@ -72,6 +52,14 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, keyHolder);
         leg.setId((Integer) keyHolder.getKeys().get("leg_id"));
+    }
+
+    private void insertIntoJoinTable(Leg leg, int amendmentId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("amendmentId", amendmentId)
+                .addValue("legId", leg.getId());
+        String sql = SqlRouteQuery.INSERT_JOIN_TABLE.getSql(schemaMap());
+        localNamedJdbc.update(sql, params);
     }
 
     private MapSqlParameterSource legParams(Leg leg, boolean isOutbound, int sequenceNo) {
@@ -89,8 +77,8 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
     }
 
     @Override
-    public Route selectRoute(int appVersionId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("appVersionId", appVersionId);
+    public Route selectRoute(int amendmentId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("amendmentId", amendmentId);
         String sql = SqlRouteQuery.SELECT_LEGS_FOR_VERSION.getSql(schemaMap());
         List<Integer> appVersionLegIds = localNamedJdbc.queryForList(sql, params, Integer.class);
 
@@ -107,24 +95,24 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
 
     private enum SqlRouteQuery implements BasicSqlQuery {
         INSERT_ROUTE(
-                "INSERT INTO ${travelSchema}.app_leg(from_destination_id, to_destination_id, travel_date," +
+                "INSERT INTO ${travelSchema}.leg(from_destination_id, to_destination_id, travel_date," +
                         " method_of_travel, method_of_travel_description, miles, mileage_rate, is_outbound, sequence_no, is_reimbursement_requested) \n" +
                         " VALUES(:fromDestinationId, :toDestinationId, :travelDate," +
                         " :methodOfTravel, :methodOfTravelDescription, :miles, :mileageRate, :isOutbound, :sequenceNo, :isReimbursementRequested)"
         ),
         INSERT_JOIN_TABLE(
-                "INSERT INTO ${travelSchema}.app_version_leg(app_version_id, leg_id)\n" +
-                        " VALUES(:appVersionId, :legId)"
+                "INSERT INTO ${travelSchema}.amendment_legs(amendment_id, leg_id)\n" +
+                        " VALUES(:amendmentId, :legId)"
         ),
         SELECT_LEGS_FOR_VERSION(
                 "SELECT leg_id\n" +
-                        " FROM ${travelSchema}.app_version_leg\n" +
-                        " WHERE app_version_id = :appVersionId"
+                        " FROM ${travelSchema}.amendment_legs\n" +
+                        " WHERE amendment_id = :amendmentId"
         ),
         SELECT_ROUTE(
                 "SELECT leg_id, from_destination_id, to_destination_id, travel_date, method_of_travel," +
                         " method_of_travel_description, miles, mileage_rate, is_outbound, is_reimbursement_requested\n" +
-                        " FROM ${travelSchema}.app_leg\n" +
+                        " FROM ${travelSchema}.leg\n" +
                         " WHERE leg_id IN (:legIds)\n" +
                         " ORDER BY sequence_no ASC"
         );

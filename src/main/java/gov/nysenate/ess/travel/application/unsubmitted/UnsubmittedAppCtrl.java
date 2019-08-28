@@ -68,7 +68,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         unsubmittedAppDao.delete(userId, travelerId);
     }
 
-    private TravelApplicationView findApp(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
+    private TravelApplicationView findApp(int userId, int travelerId) throws IOException {
         return unsubmittedAppDao.find(userId, travelerId)
                 .orElseThrow(() -> new InvalidRequestParamEx(userId + " & " + travelerId,
                         "userId & travelerId",
@@ -91,19 +91,20 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         // Perform all updates specified in the patch.
+        // FIXME changes should be on a new amendment, not active...
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "purposeOfTravel":
-                    app.setPurposeOfTravel(patch.getValue());
+                    app.activeAmendment().setPurposeOfTravel(patch.getValue());
                     break;
                 case "route":
                     RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
                     Route fullRoute = routeService.createRoute(routeView.toRoute());
-                    app.setRoute(fullRoute);
+                    app.activeAmendment().setRoute(fullRoute);
                     break;
                 case "allowances":
                     AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
-                    app.setAllowances(allowancesView.toAllowances());
+                    app.activeAmendment().setAllowances(allowancesView.toAllowances());
                     break;
                 case "mealPerDiems":
                     MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
@@ -119,12 +120,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     break;
                 case "perDiemOverrides":
                     PerDiemOverridesView overridesView = OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class);
-                    app.setPerDiemOverrides(overridesView.toPerDiemOverrides());
+                    app.activeAmendment().setPerDiemOverrides(overridesView.toPerDiemOverrides());
                     break;
-                case "action":
-                    if (patch.getValue().equals("submit")) {
-                        travelApplicationService.submitTravelApplication(app, user);
-                    }
                 default:
                     logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
             }
@@ -135,5 +132,24 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         unsubmittedAppDao.save(user.getEmployeeId(), appView);
 
         return new ViewObjectResponse<>(appView);
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public BaseResponse submitApp(@RequestParam int userId,
+                                  @RequestParam int travelerId) throws IOException {
+        checkPermission(new TravelPermissionBuilder()
+                .forEmpId(travelerId)
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forAction(RequestMethod.POST)
+                .buildPermission());
+
+        TravelApplicationView view = findApp(userId, travelerId);
+        TravelApplication app = view.toTravelApplication();
+        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
+
+        app = travelApplicationService.submitTravelApplication(app, user);
+        unsubmittedAppDao.delete(userId, travelerId);
+
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 }

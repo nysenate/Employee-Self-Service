@@ -77,7 +77,7 @@ public class OsrmMapService implements MapService {
     private List<String> addressesToCoordinates(List<Address> addresses) {
         RestTemplate restTemplate = new RestTemplate();
         ArrayList<String> coordinates = new ArrayList<>();
-        for (Address address: addresses) {
+        for (Address address : addresses) {
             String url = this.sageBaseUrl + "/geo/geocode?";
             url += "addr1=" + address.getAddr1();
             url += "&city=" + address.getCity();

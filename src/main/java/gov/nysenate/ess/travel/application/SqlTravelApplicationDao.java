@@ -1,10 +1,14 @@
 package gov.nysenate.ess.travel.application;
 
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.allowances.SqlAllowancesDao;
+import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
 import gov.nysenate.ess.travel.application.overrides.perdiem.SqlPerDiemOverridesDao;
+import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Repository
 public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplicationDao {
@@ -28,84 +32,99 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     @Autowired private RouteDao routeDao;
     @Autowired private SqlAllowancesDao allowancesDao;
     @Autowired private SqlPerDiemOverridesDao perDiemOverridesDao;
-    @Autowired private SqlTravelApplicationStatusDao statusDao;
+    @Autowired private SqlAmendmentStatusDao statusDao;
     @Autowired private EmployeeInfoService employeeInfoService;
 
+    /**
+     * Persists a {@link TravelApplication} to the database.
+     * <p>
+     * SQL Updates should not be made to the TravelApplication or any of its data.
+     * Changes to an application are done by creating and inserting a new amendment only.
+     * <p>
+     * This method will check the id's of an application and its amendments to see if
+     * they exist in the database. Applications and amendments existing in the database
+     * will be ignored.
+     * If:
+     * id == 0:   Will be inserted into the database.
+     * id != 0:   Will be ignored.
+     *
+     * @param app
+     */
     @Override
     @Transactional(value = "localTxManager")
-    public synchronized void insertTravelApplication(TravelApplication app) {
-        int previousAppVersionId = app.getVersionId();
-        app.setVersionId(fetchNextVersionId());
+    public synchronized void saveTravelApplication(TravelApplication app) {
         insertApplication(app);
-        insertApplicationVersion(app);
-
-        routeDao.saveRoute(app.getRoute(), app.getVersionId(), previousAppVersionId);
-        allowancesDao.saveAllowances(app.getAllowances(), app.getVersionId(), previousAppVersionId);
-        perDiemOverridesDao.savePerDiemOverrides(app.getPerDiemOverrides(), app.getVersionId());
-        statusDao.saveTravelApplicationStatus(app.status(), app.getVersionId());
-    }
-
-    private int fetchNextVersionId() {
-        String sql = SqlTravelApplicationQuery.FETCH_NEXT_VERSION_ID.getSql(schemaMap());
-        return localNamedJdbc.query(sql, (rs, i) -> rs.getInt("nextval")).get(0);
+        for (Amendment amd : app.amendments) {
+            if (amd.amendmentId() == 0) {
+                insertAmendment(amd, app.appId);
+                routeDao.saveRoute(app.activeAmendment().route(), amd.amendmentId());
+                allowancesDao.saveAllowances(app.activeAmendment().allowances(), amd.amendmentId());
+                perDiemOverridesDao.savePerDiemOverrides(app.activeAmendment().perDiemOverrides(), amd.amendmentId());
+                statusDao.saveAmendmentStatus(app.activeAmendment().status(), amd.amendmentId());
+            }
+        }
     }
 
     @Override
     public TravelApplication selectTravelApplication(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_ID.getSql(schemaMap());
-        return localNamedJdbc.queryForObject(sql, params,
-                new TravelApplicationRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService));
+        AmendmentRowMapper amdRowMapper = new AmendmentRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
+        TravelApplicationHandler handler = new TravelApplicationHandler(amdRowMapper, employeeInfoService);
+        localNamedJdbc.query(sql, params, handler);
+        return handler.results();
     }
 
     @Override
     public List<TravelApplication> selectTravelApplications(int travelerId) {
         MapSqlParameterSource params = new MapSqlParameterSource("travelerId", travelerId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
-        TravelApplicationListHandler handler = new TravelApplicationListHandler(
-                routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
+        AmendmentRowMapper amdHandler = new AmendmentRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
+        TravelApplicationListHandler handler = new TravelApplicationListHandler(amdHandler, employeeInfoService);
         localNamedJdbc.query(sql, params, handler);
         return handler.getApplications();
     }
 
     private void insertApplication(TravelApplication app) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appId", app.getAppId())
-                .addValue("versionId", app.getVersionId())
-                .addValue("travelerId", app.getTraveler().getEmployeeId());
-
-        String updateSql = SqlTravelApplicationQuery.UPDATE_APP.getSql(schemaMap());
-        boolean wasUpdated = localNamedJdbc.update(updateSql, params) == 1;
-        if (!wasUpdated) {
-            String insertSql = SqlTravelApplicationQuery.INSERT_APP.getSql(schemaMap());
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            localNamedJdbc.update(insertSql, params, keyHolder);
-            app.setAppId((Integer) keyHolder.getKeys().get("app_id"));
+        // If the app id is set, its already in the database.
+        // Apps should never be modified so we can return.
+        if (app.appId != 0) {
+            return;
         }
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("travelerId", app.getTraveler().getEmployeeId());
+        String insertSql = SqlTravelApplicationQuery.INSERT_APP.getSql(schemaMap());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        localNamedJdbc.update(insertSql, params, keyHolder);
+        app.appId = (Integer) keyHolder.getKeys().get("app_id");
     }
 
-    private void insertApplicationVersion(TravelApplication app) {
+    private void insertAmendment(Amendment amd, int appId) {
+        // If amendment id is set, its already in the database.
+        // Amendments should never be modified so we can return.
+        if (amd.amendmentId() != 0) {
+            return;
+        }
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appId", app.getAppId())
-                .addValue("versionId", app.getVersionId())
-                .addValue("purposeOfTravel", app.getPurposeOfTravel())
-                .addValue("createdBy", app.getModifiedBy().getEmployeeId())
-                .addValue("submittedDateTime", toDate(app.getSubmittedDateTime()));
-        String sql = SqlTravelApplicationQuery.INSERT_APP_VERSION.getSql(schemaMap());
-        localNamedJdbc.update(sql, params);
+                .addValue("appId", appId)
+                .addValue("purposeOfTravel", amd.purposeOfTravel())
+                .addValue("createdBy", amd.createdBy().getEmployeeId())
+                .addValue("version", amd.version().name());
+        String sql = SqlTravelApplicationQuery.INSERT_AMENDMENT.getSql(schemaMap());
+        KeyHolder kh = new GeneratedKeyHolder();
+        localNamedJdbc.update(sql, params, kh);
+        amd.setAmendmentId((Integer) kh.getKeys().get("amendment_id"));
     }
 
     private enum SqlTravelApplicationQuery implements BasicSqlQuery {
-        FETCH_NEXT_VERSION_ID(
-                "SELECT nextval('${travelSchema}.app_version_app_version_id_seq'::regclass)"
-        ),
-        UPDATE_APP(
-                "UPDATE ${travelSchema}.app SET app_version_id = :versionId \n" +
-                        " WHERE app_id = :appId"
-        ),
         INSERT_APP(
-                "INSERT INTO ${travelSchema}.app(app_version_id, traveler_id) \n" +
-                        "VALUES (:versionId, :travelerId)"
+                "INSERT INTO ${travelSchema}.app(traveler_id) \n" +
+                        "VALUES (:travelerId)"
+        ),
+        INSERT_AMENDMENT(
+                "INSERT INTO ${travelSchema}.amendment \n" +
+                        "(app_id, version, purpose_of_travel, created_by) \n" +
+                        "VALUES (:appId, :version, :purposeOfTravel, :createdBy)"
         ),
         INSERT_APP_VERSION(
                 "INSERT INTO ${travelSchema}.app_version \n" +
@@ -113,14 +132,14 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                         "VALUES (:versionId, :appId, :purposeOfTravel, :createdBy, :submittedDateTime)"
         ),
         TRAVEL_APP_SELECT(
-                "SELECT app.app_id, app.app_version_id, app.traveler_id,\n" +
-                        " version.purpose_of_travel, version.created_date_time as modified_date_time," +
-                        " version.created_by as modified_by, version.submitted_date_time,\n" +
-                        " status.app_version_status_id, status.created_date_time,\n" +
+                "SELECT app.app_id, app.traveler_id,\n" +
+                        " amendment.amendment_id, amendment.app_id, amendment.version,\n" +
+                        " amendment.purpose_of_travel, amendment.created_date_time," +
+                        " amendment.created_by, status.amendment_status_id, status.created_date_time,\n" +
                         " status.status, status.note\n" +
                         " FROM ${travelSchema}.app\n" +
-                        " INNER JOIN ${travelSchema}.app_version version ON app.app_version_id = version.app_version_id\n" +
-                        " INNER JOIN ${travelSchema}.app_version_status status ON version.app_version_id = status.app_version_id \n"
+                        " INNER JOIN ${travelSchema}.amendment amendment ON amendment.app_id = app.app_id \n" +
+                        " LEFT JOIN ${travelSchema}.amendment_status status ON amendment.amendment_id = status.amendment_id \n"
         ),
         SELECT_APP_BY_ID(
                 TRAVEL_APP_SELECT.getSql() + " \n" +
@@ -148,17 +167,73 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         }
     }
 
-    private class TravelApplicationRowMapper extends BaseRowMapper<TravelApplication> {
+    private class TravelApplicationHandler extends BaseHandler {
 
+        private int appId;
+        private Employee traveler;
+        private List<Amendment> amendments;
+
+        private EmployeeInfoService employeeInfoService;
+        private AmendmentRowMapper amendmentRowMapper;
+
+        public TravelApplicationHandler(AmendmentRowMapper amendmentRowMapper,
+                                        EmployeeInfoService employeeInfoService) {
+            this.employeeInfoService = employeeInfoService;
+            this.amendmentRowMapper = amendmentRowMapper;
+        }
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            if (appId == 0) {
+                appId = rs.getInt("app_id");
+            }
+            if (traveler == null) {
+                traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
+            }
+            amendments.add(amendmentRowMapper.mapRow(rs, rs.getRow()));
+        }
+
+        public TravelApplication results() {
+            return new TravelApplication(appId, traveler, amendments);
+        }
+    }
+
+    private class TravelApplicationListHandler extends BaseHandler {
+
+        private AmendmentRowMapper amdRowMapper;
+        private Map<Integer, TravelApplication> idToApp;
+
+        TravelApplicationListHandler(AmendmentRowMapper amdRowMapper, EmployeeInfoService employeeInfoService) {
+            this.amdRowMapper = amdRowMapper;
+            idToApp = new HashMap<>();
+        }
+
+        @Override
+        public void processRow(ResultSet rs) throws SQLException {
+            int appId = rs.getInt("app_id");
+            if (idToApp.containsKey(appId)) {
+                idToApp.get(appId).addAmendment(amdRowMapper.mapRow(rs, rs.getRow()));
+            } else {
+                Employee traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
+                Amendment amd = amdRowMapper.mapRow(rs, rs.getRow());
+                TravelApplication app = new TravelApplication(appId, traveler, Lists.newArrayList(amd));
+                idToApp.put(appId, app);
+            }
+        }
+
+        List<TravelApplication> getApplications() {
+            return new ArrayList<>(idToApp.values());
+        }
+    }
+
+    private class AmendmentRowMapper extends BaseRowMapper<Amendment> {
         private RouteDao routeDao;
         private SqlAllowancesDao allowancesDao;
         private SqlPerDiemOverridesDao perDiemOverridesDao;
         private EmployeeInfoService employeeInfoService;
 
-        public TravelApplicationRowMapper(RouteDao routeDao,
-                                          SqlAllowancesDao allowancesDao,
-                                          SqlPerDiemOverridesDao perDiemOverridesDao,
-                                          EmployeeInfoService employeeInfoService) {
+        public AmendmentRowMapper(RouteDao routeDao, SqlAllowancesDao allowancesDao,
+                                  SqlPerDiemOverridesDao perDiemOverridesDao, EmployeeInfoService employeeInfoService) {
             this.routeDao = routeDao;
             this.allowancesDao = allowancesDao;
             this.perDiemOverridesDao = perDiemOverridesDao;
@@ -166,51 +241,35 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         }
 
         @Override
-        public TravelApplication mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public Amendment mapRow(ResultSet rs, int i) throws SQLException {
+            int amdId = rs.getInt("amendment_id");
             int appId = rs.getInt("app_id");
-            int versionId = rs.getInt("app_version_id");
-            Employee traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
-            TravelApplication app = new TravelApplication(appId, versionId, traveler);
-            app.setPurposeOfTravel(rs.getString("purpose_of_travel"));
-            app.setRoute(routeDao.selectRoute(versionId));
-            app.setAllowances(allowancesDao.selectAllowances(versionId));
-            app.setPerDiemOverrides(perDiemOverridesDao.selectPerDiemOverrides(versionId));
-            app.setSubmittedDateTime(getLocalDateTimeFromRs(rs, "submitted_date_time"));
-            app.setModifiedDateTime(getLocalDateTimeFromRs(rs, "modified_date_time"));
-            app.setModifiedBy(employeeInfoService.getEmployee(rs.getInt("modified_by")));
-
+            Version version = Version.valueOf(rs.getString("version"));
+            String pot = rs.getString("purpose_of_travel");
+            LocalDateTime createdDateTime = getLocalDateTimeFromRs(rs, "created_date_time");
+            Employee createdBy = employeeInfoService.getEmployee(rs.getInt("created_by"));
+            Route route = routeDao.selectRoute(amdId);
+            Allowances allowances = allowancesDao.selectAllowances(amdId);
+            PerDiemOverrides pdOverrides = perDiemOverridesDao.selectPerDiemOverrides(amdId);
             TravelApplicationStatus status = new TravelApplicationStatus(
-                    rs.getInt("app_version_status_id"),
+                    rs.getInt("amendment_status_id"),
                     rs.getString("status"),
                     getLocalDateTimeFromRs(rs, "created_date_time"),
                     rs.getString("note")
             );
 
-            app.setStatus(status);
-            return app;
-        }
-    }
-
-    private class TravelApplicationListHandler extends BaseHandler {
-
-        private TravelApplicationRowMapper mapper;
-        private List<TravelApplication> applications;
-
-        TravelApplicationListHandler(RouteDao routeDao,
-                                     SqlAllowancesDao allowancesDao,
-                                     SqlPerDiemOverridesDao perDiemOverridesDao,
-                                     EmployeeInfoService employeeInfoService) {
-            mapper = new TravelApplicationRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
-            this.applications = new ArrayList<>();
-        }
-
-        @Override
-        public void processRow(ResultSet rs) throws SQLException {
-            applications.add(mapper.mapRow(rs, rs.getRow()));
-        }
-
-        List<TravelApplication> getApplications() {
-            return this.applications;
+            Amendment amd = new Amendment.Builder()
+                    .withAmendmentId(amdId)
+                    .withVersion(version)
+                    .withPurposeOfTravel(pot)
+                    .withRoute(route)
+                    .withAllowances(allowances)
+                    .withPerDiemOverrides(pdOverrides)
+                    .withStatus(status)
+                    .withCreatedDateTime(createdDateTime)
+                    .withCreatedBy(createdBy)
+                    .build();
+            return amd;
         }
     }
 }
