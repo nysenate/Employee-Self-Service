@@ -51,7 +51,7 @@
     <div ng-if="stateService.isReviewState()">
       <ess-review-edit-form app="data.app"
                             title="Please review your application."
-                            positive-btn-label="Save Application"
+                            positive-btn-label="Complete Application"
                             positive-callback="submitApplication(app)"
                             neutral-callback="toAllowancesState(app)"
                             negative-callback="cancel(app)">
@@ -115,10 +115,17 @@
 
     <modal modal-id="submit-results">
       <div confirm-modal rejectable="true"
-           title="Your travel application has been submitted."
-           confirm-message="What would you like to do next?"
+           title="Your travel application is ready to be printed."
+<%--           confirm-message="What would you like to do next?"--%>
            resolve-button="Go back to ESS"
            reject-button="Log out of ESS">
+        <div style="padding-bottom: 20px;">
+          <p>
+            You must <a class="bold" target="_blank"
+                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>
+            and sign your travel application and deliver it to your department head.
+          </p>
+        </div>
       </div>
     </modal>
 
