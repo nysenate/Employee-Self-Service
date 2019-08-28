@@ -211,6 +211,7 @@
            title="Back"
            ng-click="back()">
     <input type="button" class="submit-button"
+           ng-attr-title="{{::positiveBtnLabel}}"
            ng-value="::positiveBtnLabel"
            ng-click="next()">
   </div>

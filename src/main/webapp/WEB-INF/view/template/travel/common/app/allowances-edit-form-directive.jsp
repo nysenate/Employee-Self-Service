@@ -132,7 +132,7 @@
              title="Back"
              ng-click="back()">
       <input type="submit" class="submit-button"
-             title="Save expenses and continue" value="Save Expenses">
+             title="Continue to next step" value="Next">
     </div>
   </form>
 </div>

@@ -95,7 +95,7 @@
                title="Back"
                ng-click="back()">
         <input type="submit" class="submit-button" value="Next"
-               title="Continue"
+               title="Continue to next step"
                ng-click="next()">
       </div>
     </div>

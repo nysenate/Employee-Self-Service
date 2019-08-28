@@ -94,8 +94,8 @@
         <input type="button" class="travel-neutral-button" value="Back"
                title="Back"
                ng-click="back()">
-        <input type="submit" class="submit-button" value="Save Route"
-               title="Save route and continue"
+        <input type="submit" class="submit-button" value="Next"
+               title="Continue to next step"
                ng-click="next()">
       </div>
     </div>

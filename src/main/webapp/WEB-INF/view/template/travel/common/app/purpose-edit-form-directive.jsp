@@ -38,7 +38,7 @@
       <input type="button" class="neutral-button" ng-value="::negativeLabel || 'Cancel'"
              ng-click="cancel()">
       <input type="submit" class="submit-button"
-             title="Save purpose and continue" value="Save Purpose">
+             title="Continue to next step" value="Next">
     </div>
 
   </form>
