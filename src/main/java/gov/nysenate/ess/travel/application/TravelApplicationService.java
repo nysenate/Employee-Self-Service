@@ -9,7 +9,6 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.application.unsubmitted.UnsubmittedAppDao;
 import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ public class TravelApplicationService {
 
     @Autowired private TravelApplicationDao applicationDao;
     @Autowired private ApplicationReviewService appReviewService;
-    @Autowired private UnsubmittedAppDao unsubmittedAppDao;
 
     /**
      * Save changes to a Travel Application.
@@ -34,8 +32,9 @@ public class TravelApplicationService {
      * @return
      */
     public TravelApplication saveTravelApplication(TravelApplication app, Employee saver) {
-        app.setModifiedDateTime(LocalDateTime.now());
-        app.setModifiedBy(saver);
+        // FIXME these should update only the amendment being saved.
+        app.activeAmendment().setCreatedDateTime(LocalDateTime.now());
+        app.activeAmendment().setCreatedBy(saver);
         applicationDao.saveTravelApplication(app);
         return app;
     }
@@ -48,9 +47,7 @@ public class TravelApplicationService {
      * @return
      */
     public TravelApplication submitTravelApplication(TravelApplication app, Employee submitter) {
-        app.setSubmittedDateTime(LocalDateTime.now());
         saveTravelApplication(app, submitter);
-        unsubmittedAppDao.delete(submitter.getEmployeeId(), app.getTraveler().getEmployeeId());
 
         ApplicationReview appReview = appReviewService.createApplicationReview(app);
         appReviewService.saveApplicationReview(appReview);
@@ -79,7 +76,7 @@ public class TravelApplicationService {
 
     public void updateMealPerDiems(TravelApplication app, MealPerDiems mealPerDiems) {
         for (MealPerDiem perDiem : mealPerDiems.allMealPerDiems()) {
-            for (Destination dest : app.getRoute().destinations()) {
+            for (Destination dest : app.activeAmendment().route().destinations()) {
                 if (dest.getAddress().equals(perDiem.address())) {
                     dest.addMealPerDiem(new PerDiem(perDiem.date(), perDiem.rate(), perDiem.isReimbursementRequested()));
                 }
@@ -89,7 +86,7 @@ public class TravelApplicationService {
 
     public void updateLodgingPerDiems(TravelApplication app, LodgingPerDiems lodgingPerDiems) {
         for (LodgingPerDiem perDiem : lodgingPerDiems.allLodgingPerDiems()) {
-            for (Destination dest : app.getRoute().destinations()) {
+            for (Destination dest : app.activeAmendment().route().destinations()) {
                 if (dest.getAddress().equals(perDiem.address())) {
                     dest.addLodgingPerDiem(new PerDiem(perDiem.date(), perDiem.rate(), perDiem.isReimbursementRequested()));
                 }
@@ -99,7 +96,7 @@ public class TravelApplicationService {
 
     public void updateMileagePerDiems(TravelApplication app, MileagePerDiems mileagePerDiem) {
         for (Leg qualifyingLeg : mileagePerDiem.qualifyingLegs()) {
-            for (Leg appLeg : app.getRoute().getAllLegs()) {
+            for (Leg appLeg : app.activeAmendment().route().getAllLegs()) {
                 if (appLeg.fromAddress().equals(qualifyingLeg.fromAddress())
                         && appLeg.toAddress().equals(qualifyingLeg.toAddress())
                         && appLeg.travelDate().equals(qualifyingLeg.travelDate())) {

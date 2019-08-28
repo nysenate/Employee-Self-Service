@@ -32,7 +32,7 @@ public class ApplicationReviewService {
         saveApplicationReview(applicationReview);
 
         if (applicationReview.nextReviewerRole() == TravelRole.NONE) {
-            applicationReview.application().approve();
+            applicationReview.application().activeAmendment().approve();
             travelApplicationService.saveTravelApplication(applicationReview.application(), approver);
         }
     }
@@ -44,7 +44,7 @@ public class ApplicationReviewService {
         applicationReview.addAction(disapproveAction);
         saveApplicationReview(applicationReview);
 
-        applicationReview.application().disapprove(notes);
+        applicationReview.application().activeAmendment().disapprove(notes);
         travelApplicationService.saveTravelApplication(applicationReview.application(), disapprover);
     }
 

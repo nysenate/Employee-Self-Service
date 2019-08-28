@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application;
 
+import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
@@ -54,12 +55,12 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     public synchronized void saveTravelApplication(TravelApplication app) {
         insertApplication(app);
         for (Amendment amd : app.amendments) {
-            if (amd.id == 0) {
-                insertAmendment(amd);
-                routeDao.saveRoute(app.getRoute(), app.getVersionId());
-                allowancesDao.saveAllowances(app.getAllowances(), app.getVersionId());
-                perDiemOverridesDao.savePerDiemOverrides(app.getPerDiemOverrides(), app.getVersionId());
-                statusDao.saveAmendmentStatus(app.status(), app.getVersionId());
+            if (amd.amendmentId() == 0) {
+                insertAmendment(amd, app.appId);
+                routeDao.saveRoute(app.activeAmendment().route(), amd.amendmentId());
+                allowancesDao.saveAllowances(app.activeAmendment().allowances(), amd.amendmentId());
+                perDiemOverridesDao.savePerDiemOverrides(app.activeAmendment().perDiemOverrides(), amd.amendmentId());
+                statusDao.saveAmendmentStatus(app.activeAmendment().status(), amd.amendmentId());
             }
         }
     }
@@ -98,21 +99,21 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         app.appId = (Integer) keyHolder.getKeys().get("app_id");
     }
 
-    private void insertAmendment(Amendment amd) {
+    private void insertAmendment(Amendment amd, int appId) {
         // If amendment id is set, its already in the database.
         // Amendments should never be modified so we can return.
-        if (amd.id != 0) {
+        if (amd.amendmentId() != 0) {
             return;
         }
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("appId", amd.appId)
-                .addValue("purposeOfTravel", amd.purposeOfTravel)
-                .addValue("createdBy", amd.createdBy.getEmployeeId())
-                .addValue("version", amd.version.name());
+                .addValue("appId", appId)
+                .addValue("purposeOfTravel", amd.purposeOfTravel())
+                .addValue("createdBy", amd.createdBy().getEmployeeId())
+                .addValue("version", amd.version().name());
         String sql = SqlTravelApplicationQuery.INSERT_AMENDMENT.getSql(schemaMap());
         KeyHolder kh = new GeneratedKeyHolder();
         localNamedJdbc.update(sql, params, kh);
-        amd.id = (Integer) kh.getKeys().get("amendment_id");
+        amd.setAmendmentId((Integer) kh.getKeys().get("amendment_id"));
     }
 
     private enum SqlTravelApplicationQuery implements BasicSqlQuery {
@@ -168,7 +169,10 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private class TravelApplicationHandler extends BaseHandler {
 
-        private TravelApplication app;
+        private int appId;
+        private Employee traveler;
+        private List<Amendment> amendments;
+
         private EmployeeInfoService employeeInfoService;
         private AmendmentRowMapper amendmentRowMapper;
 
@@ -180,16 +184,17 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
         @Override
         public void processRow(ResultSet rs) throws SQLException {
-            if (app == null) {
-                int id = rs.getInt("app_id");
-                Employee traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
-                app = new TravelApplication(id, traveler);
+            if (appId == 0) {
+                appId = rs.getInt("app_id");
             }
-            app.amend(amendmentRowMapper.mapRow(rs, rs.getRow()));
+            if (traveler == null) {
+                traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
+            }
+            amendments.add(amendmentRowMapper.mapRow(rs, rs.getRow()));
         }
 
         public TravelApplication results() {
-            return app;
+            return new TravelApplication(appId, traveler, amendments);
         }
     }
 
@@ -207,11 +212,11 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         public void processRow(ResultSet rs) throws SQLException {
             int appId = rs.getInt("app_id");
             if (idToApp.containsKey(appId)) {
-                idToApp.get(appId).amend(amdRowMapper.mapRow(rs, rs.getRow()));
+                idToApp.get(appId).addAmendment(amdRowMapper.mapRow(rs, rs.getRow()));
             } else {
                 Employee traveler = employeeInfoService.getEmployee(rs.getInt("traveler_id"));
-                TravelApplication app = new TravelApplication(appId, traveler);
-                app.amend(amdRowMapper.mapRow(rs, rs.getRow()));
+                Amendment amd = amdRowMapper.mapRow(rs, rs.getRow());
+                TravelApplication app = new TravelApplication(appId, traveler, Lists.newArrayList(amd));
                 idToApp.put(appId, app);
             }
         }
@@ -253,8 +258,17 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                     rs.getString("note")
             );
 
-            Amendment amd = new Amendment(amdId, appId, version, pot, route, allowances, pdOverrides,
-                    status, new ArrayList(), createdDateTime, createdBy);
+            Amendment amd = new Amendment.Builder()
+                    .withAmendmentId(amdId)
+                    .withVersion(version)
+                    .withPurposeOfTravel(pot)
+                    .withRoute(route)
+                    .withAllowances(allowances)
+                    .withPerDiemOverrides(pdOverrides)
+                    .withStatus(status)
+                    .withCreatedDateTime(createdDateTime)
+                    .withCreatedBy(createdBy)
+                    .build();
             return amd;
         }
     }
