@@ -99,8 +99,12 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     break;
                 case "route":
                     RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
-                    Route fullRoute = routeService.createRoute(routeView.toRoute());
-                    app.activeAmendment().setRoute(fullRoute);
+                    Route routeUpdate = routeView.toRoute();
+                    // Only update the route if it has changed.
+                    if (!routeUpdate.equals(app.activeAmendment().route())) {
+                        Route fullRoute = routeService.createRoute(routeView.toRoute());
+                        app.activeAmendment().setRoute(fullRoute);
+                    }
                     break;
                 case "allowances":
                     AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
