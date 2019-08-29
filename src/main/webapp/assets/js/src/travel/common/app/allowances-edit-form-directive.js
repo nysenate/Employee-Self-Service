@@ -32,10 +32,6 @@ function allowancesEditForm(appProps) {
                 return scope.dirtyApp.route.lodgingPerDiems.allLodgingPerDiems.length > 0;
             };
 
-            scope.tripHasMileage = function () {
-                return scope.dirtyApp.route.mileagePerDiems.qualifyingLegs.length > 0;
-            };
-
             scope.back = function () {
                 scope.neutralCallback({app: scope.dirtyApp});
             };

@@ -71,16 +71,16 @@ public class MileagePerDiems {
                 .collect(ImmutableList.toImmutableList());
     }
 
-    private ImmutableList<Leg> outboundLegs() {
-        return allLegs().stream()
-                .filter(Leg::isOutbound)
-                .collect(ImmutableList.toImmutableList());
-    }
-
-    private boolean tripQualifiesForReimbursement() {
+    public boolean tripQualifiesForReimbursement() {
         double outboundMiles = qualifyingLegs().stream()
                 .mapToDouble(Leg::miles)
                 .sum();
         return outboundMiles > MILE_THRESHOLD;
+    }
+
+    private ImmutableList<Leg> outboundLegs() {
+        return allLegs().stream()
+                .filter(Leg::isOutbound)
+                .collect(ImmutableList.toImmutableList());
     }
 }

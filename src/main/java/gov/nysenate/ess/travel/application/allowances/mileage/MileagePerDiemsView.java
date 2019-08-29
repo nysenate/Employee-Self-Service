@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.application.allowances.mileage;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.route.LegView;
 
@@ -13,6 +14,8 @@ public class MileagePerDiemsView implements ViewObject {
     private List<LegView> allLegs;
     private List<LegView> qualifyingLegs;
     private List<LegView> requestedLegs;
+    @JsonProperty("doesTripQualifyForReimbursement")
+    private boolean doesTripQualifyForReimbursement;
 
     public MileagePerDiemsView() {
     }
@@ -29,6 +32,7 @@ public class MileagePerDiemsView implements ViewObject {
         this.requestedLegs = ma.requestedLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
+        this.doesTripQualifyForReimbursement = ma.tripQualifiesForReimbursement();
     }
 
     public MileagePerDiems toMileagePerDiems() {
@@ -53,6 +57,10 @@ public class MileagePerDiemsView implements ViewObject {
 
     public List<LegView> getRequestedLegs() {
         return requestedLegs;
+    }
+
+    public boolean isDoesTripQualifyForReimbursement() {
+        return doesTripQualifyForReimbursement;
     }
 
     @Override

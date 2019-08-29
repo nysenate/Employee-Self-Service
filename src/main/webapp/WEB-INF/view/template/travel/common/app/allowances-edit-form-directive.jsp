@@ -100,7 +100,7 @@
       </div>
     </ess-travel-inner-container>
 
-    <ess-travel-inner-container title="Mileage Adjustment (Optional)" ng-show="tripHasMileage()">
+    <ess-travel-inner-container title="Mileage Adjustment (Optional)" ng-show="dirtyApp.route.mileagePerDiems.doesTripQualifyForReimbursement">
       <p class="travel-text margin-bottom-20">
         You qualify for the following mileage reimbursements. Uncheck anything you would <span class="bold">not</span>
         like to be reimbursed for.
