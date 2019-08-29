@@ -45,7 +45,7 @@
           Office:
         </div>
         <div class="app-form-m-col">
-          {{((app.traveler.respCtr.respCenterHead.name) || NA) || NOT_AVAILABLE}}
+          {{(app.traveler.respCtr.respCenterHead.name) || NOT_AVAILABLE}}
         </div>
 
         <div class="app-form-label">
