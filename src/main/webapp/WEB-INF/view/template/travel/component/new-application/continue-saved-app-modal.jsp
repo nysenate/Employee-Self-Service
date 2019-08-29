@@ -11,7 +11,7 @@
   <div class="travel-button-container">
     <input type="button" class="submit-button"
            value="Continue Application" ng-click="resolveModal()">
-    <input type="button" class="travel-neutral-button"
+    <input type="button" class="reject-button"
            value="Start Over" ng-click="rejectModal()">
   </div>
 </div>

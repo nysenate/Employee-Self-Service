@@ -89,7 +89,7 @@
 
     <div class="text-align-center">
       <div class="travel-button-container">
-        <input type="button" class="neutral-button" ng-value="::negativeLabel || 'Cancel'"
+        <input type="button" class="reject-button" ng-value="::negativeLabel || 'Cancel'"
                ng-click="cancel()">
         <input type="button" class="travel-neutral-button" value="Back"
                title="Back"

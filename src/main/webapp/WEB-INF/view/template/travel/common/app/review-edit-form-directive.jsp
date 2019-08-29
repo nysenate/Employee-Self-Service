@@ -203,7 +203,7 @@
   </ess-travel-inner-container>
 
   <div class="travel-button-container" style="border: none;">
-    <input type="button" class="neutral-button"
+    <input type="button" class="reject-button"
            ng-show="showNegative"
            ng-value="::negativeLabel || 'Cancel'"
            ng-click="cancel()">
