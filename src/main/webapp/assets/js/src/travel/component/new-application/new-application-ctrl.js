@@ -83,9 +83,9 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.saveAllowances = function (app) {
         var patches = {
             allowances: JSON.stringify(app.allowances),
-            mealPerDiems: JSON.stringify(app.mealPerDiems),
-            lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
-            mileagePerDiems: JSON.stringify(app.mileagePerDiems)
+            mealPerDiems: JSON.stringify(app.route.mealPerDiems),
+            lodgingPerDiems: JSON.stringify(app.route.lodgingPerDiems),
+            mileagePerDiems: JSON.stringify(app.route.mileagePerDiems)
         };
         unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, patches, function (response) {
             $scope.data.app = response.result;

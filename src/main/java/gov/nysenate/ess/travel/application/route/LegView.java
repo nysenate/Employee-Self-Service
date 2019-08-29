@@ -27,6 +27,7 @@ public class LegView implements ViewObject {
     private boolean isOutbound;
     private String requestedPerDiem;
     private String maximumPerDiem;
+    private boolean qualifiesForReimbursement;
 
     public LegView() {
     }
@@ -44,6 +45,7 @@ public class LegView implements ViewObject {
         this.isOutbound = leg.isOutbound();
         this.requestedPerDiem = leg.requestedPerDiem().toString();
         this.maximumPerDiem = leg.maximumPerDiem().toString();
+        this.qualifiesForReimbursement = leg.qualifiesForMileageReimbursement();
     }
 
     public Leg toLeg() {
@@ -112,6 +114,10 @@ public class LegView implements ViewObject {
 
     public String getMaximumPerDiem() {
         return maximumPerDiem;
+    }
+
+    public boolean getQualifiesForReimbursement() {
+        return qualifiesForReimbursement;
     }
 
     @Override
