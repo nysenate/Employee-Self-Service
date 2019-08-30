@@ -12,7 +12,7 @@ essSupply.directive('cartCheckoutModal', ['appProps', function (appProps) {
     }
 }]).controller('CartCheckoutModalCtrl', ['$scope', 'modals', 'LocationService', function ($scope, modals, locationService) {
 
-    $scope.requisitionId = modals.params().result.requisitionId;
+    $scope.requisition = modals.params().result;
 
     $scope.returnToSupply = function () {
         modals.resolve();
