@@ -49,7 +49,6 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
         });
 
         modals.unshift(modal);
-        $rootScope.$emit("modals.open", modalId);
         return modal.deferred.promise;
     }
 
@@ -92,7 +91,6 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
         }
 
         modal.deferred.reject(reason);
-        $rootScope.$emit("modals.close");
     }
 
     /**
@@ -128,7 +126,6 @@ essApp.service('modals', ['$rootScope', '$q', function($rootScope, $q) {
         }
 
         modal.deferred.resolve(response);
-        $rootScope.$emit("modals.close");
     }
 
 }]);
