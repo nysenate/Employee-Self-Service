@@ -9,7 +9,6 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.review.ApplicationReview;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,8 +48,9 @@ public class TravelApplicationService {
     public TravelApplication submitTravelApplication(TravelApplication app, Employee submitter) {
         saveTravelApplication(app, submitter);
 
-        ApplicationReview appReview = appReviewService.createApplicationReview(app);
-        appReviewService.saveApplicationReview(appReview);
+        // Don't create application reviews for v1.0 release
+//        ApplicationReview appReview = appReviewService.createApplicationReview(app);
+//        appReviewService.saveApplicationReview(appReview);
         return app;
     }
 
