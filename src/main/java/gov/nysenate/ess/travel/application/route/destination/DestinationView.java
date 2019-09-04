@@ -28,8 +28,8 @@ public class DestinationView implements ViewObject {
     public DestinationView(Destination d) {
         this.id = d.id;
         this.address = new AddressView(d.address);
-        this.arrivalDate = d.arrivalDate().format(ISO_DATE);
-        this.departureDate = d.departureDate().format(ISO_DATE);
+        this.arrivalDate = d.arrivalDate() == null ? null : d.arrivalDate().format(ISO_DATE);
+        this.departureDate = d.departureDate() == null ? null : d.departureDate().format(ISO_DATE);
         this.mealPerDiems = new MealPerDiemsView(d.mealPerDiems());
         this.lodgingPerDiems = new LodgingPerDiemsView(d.lodgingPerDiems());
     }

@@ -60,8 +60,10 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.saveOutbound = function (app) {
-        $scope.data.app.route.outboundLegs = app.route.outboundLegs;
-        stateService.setReturnState();
+        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {outbound: JSON.stringify(app.route)}, function (response) {
+            $scope.data.app = response.result;
+            stateService.setReturnState();
+        }, $scope.handleErrorResponse);
     };
 
     $scope.saveRoute = function (app) {

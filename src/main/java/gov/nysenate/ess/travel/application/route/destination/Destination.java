@@ -94,10 +94,16 @@ public class Destination {
     }
 
     LocalDate arrivalDate() {
+        if (dateRange == null) {
+            return null;
+        }
         return dateRange.lowerEndpoint();
     }
 
     LocalDate departureDate() {
+        if (dateRange == null) {
+            return null;
+        }
         return dateRange.upperEndpoint();
     }
 
