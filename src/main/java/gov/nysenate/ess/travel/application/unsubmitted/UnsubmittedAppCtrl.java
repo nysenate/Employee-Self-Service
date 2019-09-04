@@ -39,6 +39,19 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private RouteService routeService;
 
+    /**
+     * Get an unsubmitted app API
+     * --------------------------
+     * Get the current unsubmitted app for a user and traveler.
+     *
+     * Usage:   (GET) /api/v1/travel/unsubmitted
+     *
+     * Request Params:
+     * @param userId Integer - required - the employee id of the logged in user.
+     * @param travelerId Integer - required - the employee id of the traveler.
+     * @return {@link TravelApplicationView}
+     * @throws IOException
+     */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getUnsubmittedApps(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
         checkPermission(new TravelPermissionBuilder()
@@ -58,6 +71,19 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(appView);
     }
 
+    /**
+     * Delete an unsubmitted app API
+     * -----------------------------
+     * Deletes the currently saved unsubmitted app for a given user and traveler.
+     * This effectively resets the application for starting over.
+     *
+     * Usage:   (DELETE) /api/v1/travel/unsubmitted
+     *
+     * Request Params
+     * @param userId Integer - required - the employee id of the logged in user.
+     * @param travelerId Integer - required - the employee id of the traveler.
+     * @throws IOException
+     */
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void deleteUnsubmittedApp(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
         checkPermission(new TravelPermissionBuilder()
@@ -68,14 +94,22 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         unsubmittedAppDao.delete(userId, travelerId);
     }
 
-    private TravelApplicationView findApp(int userId, int travelerId) throws IOException {
-        return unsubmittedAppDao.find(userId, travelerId)
-                .orElseThrow(() -> new InvalidRequestParamEx(userId + " & " + travelerId,
-                        "userId & travelerId",
-                        "int & int",
-                        "No Unsubmitted travel app found with provided userId and travelerId"));
-    }
-
+    /**
+     * Patch an unsubmitted app API
+     * ----------------------------
+     * Updates one or more fields of an unsubmitted app.
+     *
+     * Usage:   (PATCH) /api/v1/travel/unsubmitted
+     *
+     * Request Params:
+     * @param userId Integer - required - the employee id of the logged in user.
+     * @param travelerId Integer - required - the employee id of the traveler.
+     *
+     * Body:
+     * @param patches Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
+     * @return {@link TravelApplicationView} updated with patches.
+     * @throws IOException
+     */
     @RequestMapping(value = "", method = RequestMethod.PATCH)
     public BaseResponse patchUnsubmittedApp(@RequestParam int userId,
                                             @RequestParam int travelerId,
@@ -91,7 +125,6 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         // Perform all updates specified in the patch.
-        // FIXME changes should be on a new amendment, not active...
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "purposeOfTravel":
@@ -138,6 +171,17 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         return new ViewObjectResponse<>(appView);
     }
 
+    /**
+     * Submit unsubmitted app API
+     * --------------------------
+     * Submit an unsubmitted app.
+     *
+     * Request Params:
+     * @param userId Integer - required - the employee id of the logged in user.
+     * @param travelerId Integer - required - the employee id of the traveler.
+     * @return {@link TravelApplicationView}
+     * @throws IOException
+     */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public BaseResponse submitApp(@RequestParam int userId,
                                   @RequestParam int travelerId) throws IOException {
@@ -155,5 +199,13 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         unsubmittedAppDao.delete(userId, travelerId);
 
         return new ViewObjectResponse<>(new TravelApplicationView(app));
+    }
+
+    private TravelApplicationView findApp(int userId, int travelerId) throws IOException {
+        return unsubmittedAppDao.find(userId, travelerId)
+                .orElseThrow(() -> new InvalidRequestParamEx(userId + " & " + travelerId,
+                        "userId & travelerId",
+                        "int & int",
+                        "No Unsubmitted travel app found with provided userId and travelerId"));
     }
 }
