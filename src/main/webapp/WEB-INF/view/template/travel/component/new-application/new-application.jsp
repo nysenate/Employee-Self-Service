@@ -122,8 +122,8 @@
         <div style="padding-bottom: 20px;">
           <p>
             You must <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>
-            and sign your travel application and deliver it to your department head.
+                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>,
+            sign, and deliver this travel application to your department head.
           </p>
         </div>
       </div>
