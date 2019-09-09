@@ -20,35 +20,56 @@
         };
 
         function link($scope, $element, $attrs) {
+            var limit = 20;
+
             $scope.rchResults = [];
             $scope.loading = false;
+            $scope.offset = 1;
+            $scope.total = 0;
 
             // $scope.searchRCH = searchRCH;
             $scope.clearSelected = clearSelected;
 
-            getRCH();
+            $scope.searchRCH = searchRCH;
+
+            searchRCH("");
 
             function clearSelected() {
                 console.log('clearing selected rchs', $scope.respCtrHeads);
                 $scope.respCtrHeads.selection.length = 0
             }
 
-            function getRCH() {
+            function searchRCH(term, nextPage) {
+                if (nextPage) {
+                    var nextOffset = $scope.offset + limit;
+                    // Cancel page load if the last result is already loaded
+                    // Also if the next page is already loading
+                    if ($scope.loading || nextOffset > $scope.total) {
+                        return;
+                    }
+                    $scope.offset = nextOffset;
+                } else {
+                    $scope.rchResults = [];
+                    $scope.offset = 1;
+                }
                 var params = {
-                    term: "",
-                    limit: 0
+                    term: term,
+                    limit: limit,
+                    offset: $scope.offset
                 };
                 $scope.loading = true;
                 rchSearchApi.get(params).$promise
-                    .then(setResults)
+                    .then(appendResults)
                     .catch(restErrorService.handleErrorResponse)
                     .finally(function () {
                         $scope.loading = false;
                     })
             }
 
-            function setResults(searchResponse) {
-                $scope.rchResults = searchResponse.result;
+            function appendResults(searchResponse) {
+                console.log('loaded rch', searchResponse.offsetStart, searchResponse.offsetEnd);
+                $scope.total = searchResponse.total;
+                $scope.rchResults = $scope.rchResults.concat(searchResponse.result);
             }
         }
     }
