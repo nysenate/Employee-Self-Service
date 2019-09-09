@@ -316,6 +316,10 @@
 
 .todo-search-facet {
   margin-top: 1em;
+
+  select {
+    display: block;
+  }
 }
 
 .todo-search-result-container {
@@ -401,6 +405,28 @@
       color: rgba(34,34,34,0.5);
     }
   }
+
+  // TODO figure out animations for detail expander.  These aren't working
+  //
+  //&.ng-enter, &.ng-leave {
+  //  transition: 0.25s linear all;
+  //  overflow: hidden;
+  //}
+  //
+  //&.ng-enter {
+  //  max-height: 0;
+  //  opacity: 0;
+  //}
+  //
+  //&ng-enter.ng-enter-active, &.ng-leave {
+  //  max-height: 100px;
+  //  opacity: 1;
+  //}
+  //
+  //&.ng-leave.ng-leave-active {
+  //  max-height: 0;
+  //  opacity: 1;
+  //}
 }
 
 /** --- RCH Picker --- */

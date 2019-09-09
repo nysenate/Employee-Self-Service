@@ -55,7 +55,7 @@
             taskMap: null,
             selTasks: null,
             selContSrvDateOpt: $scope.contSrvDateOpts[0],
-            customContSrvDate: moment().format('Y-MM-DD'),
+            customContSrvDate: moment().subtract(2, 'weeks').format('MM/DD/Y'),
             selectedRCHS: {
                 selection: []
             },
@@ -190,10 +190,14 @@
                 return;
             }
             unsetSearchResults();
+
             var pagination = $scope.state.pagination;
             $scope.state.lastPageRequested = $scope.state.pagination.currPage;
+
             var params = angular.copy($scope.state.params);
-            Object.assign(params, {limit: pagination.getLimit(), offset: pagination.getOffset()});
+            params.limit = pagination.getLimit();
+            params.offset = pagination.getOffset();
+
             $scope.state.request.search = true;
             searchApi.get(params).$promise
                 .then(setSearchResults)
@@ -205,11 +209,8 @@
             $scope.state.paramQueryString = generateReportQueryString();
         }
 
-         function generateReportQueryString() {
-            var params = angular.copy($scope.state.params);
-            delete params.limit;
-            delete params.offset;
-            return $httpParamSerializer(params);
+        function generateReportQueryString() {
+            return $httpParamSerializer($scope.state.params);
         }
 
         function setSearchResults(resp) {

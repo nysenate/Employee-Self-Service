@@ -36,7 +36,7 @@
       </div>
 
       <label class="todo-search-facet">
-        Training Completion Status<br>
+        Training Completion Status
         <select ng-model="state.params.totalCompletion">
           <option ng-value="null">Any</option>
           <option value="ALL_INCOMPLETE">All Incomplete</option>
@@ -54,10 +54,12 @@
       </label>
 
       <label class="todo-search-facet">
-        Continuous Service Start Date<br>
+        Continuous Service Start Date
         <select ng-model="state.selContSrvDateOpt"
                 ng-options="contSrvDateValues[opt].label for opt in contSrvDateOpts"></select>
-        <input datepicker ng-model="state.customContSrvDate"
+        <input datepicker
+               default-date="{{state.customContSrvDate}}"
+               ng-model="state.customContSrvDate"
                ng-if="state.selContSrvDateOpt === 'custom'">
       </label>
 
