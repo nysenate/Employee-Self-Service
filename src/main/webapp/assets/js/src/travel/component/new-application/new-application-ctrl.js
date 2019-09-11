@@ -103,9 +103,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     $scope.submitApplication = function (app) {
-        // No need to confirm submit for initial launch as apps are not being sent to anyone.
-        // modals.open('submit-confirm')
-        //     .then(function () {
+        modals.open('submit-confirm')
+            .then(function () {
                 modals.open("submit-progress");
                 unsubmittedAppApi.save({userId: appProps.user.employeeId}, {}).$promise
                     .then(function (response) {
@@ -120,7 +119,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                         });
                     })
                     .catch($scope.handleErrorResponse);
-            // })
+            })
     };
 
     $scope.cancel = function (app) {
