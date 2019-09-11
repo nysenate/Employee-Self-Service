@@ -64,7 +64,7 @@
     <div ng-if="stateService.isReviewState()">
       <ess-review-edit-form app="data.app"
                             title="Please review your application."
-                            positive-btn-label="Save Application"
+                            positive-btn-label="Submit Application"
                             positive-callback="submitApplication(app)"
                             neutral-callback="toAllowancesState(app)"
                             negative-callback="cancel(app)">
