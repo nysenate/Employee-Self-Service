@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.dao.base.*;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.travel.EventType;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.allowances.SqlAllowancesDao;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
@@ -22,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplicationDao {
@@ -107,7 +111,9 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         }
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("appId", appId)
-                .addValue("purposeOfTravel", amd.purposeOfTravel())
+                .addValue("eventType", amd.purposeOfTravel().eventType().name())
+                .addValue("eventName", amd.purposeOfTravel().eventName())
+                .addValue("additionalPurpose", amd.purposeOfTravel().additionalPurpose())
                 .addValue("createdBy", amd.createdBy().getEmployeeId())
                 .addValue("version", amd.version().name());
         String sql = SqlTravelApplicationQuery.INSERT_AMENDMENT.getSql(schemaMap());
@@ -123,8 +129,8 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         ),
         INSERT_AMENDMENT(
                 "INSERT INTO ${travelSchema}.amendment \n" +
-                        "(app_id, version, purpose_of_travel, created_by) \n" +
-                        "VALUES (:appId, :version, :purposeOfTravel, :createdBy)"
+                        "(app_id, version, event_type, event_name, additional_purpose, created_by) \n" +
+                        "VALUES (:appId, :version, :eventType, :eventName, :additionalPurpose, :createdBy)"
         ),
         INSERT_APP_VERSION(
                 "INSERT INTO ${travelSchema}.app_version \n" +
@@ -134,9 +140,9 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         TRAVEL_APP_SELECT(
                 "SELECT app.app_id, app.traveler_id,\n" +
                         " amendment.amendment_id, amendment.app_id, amendment.version,\n" +
-                        " amendment.purpose_of_travel, amendment.created_date_time," +
-                        " amendment.created_by, status.amendment_status_id, status.created_date_time,\n" +
-                        " status.status, status.note\n" +
+                        " amendment.event_type, amendment.event_name, amendment.additional_purpose,\n" +
+                        " amendment.created_date_time, amendment.created_by, status.amendment_status_id,\n" +
+                        " status.created_date_time, status.status, status.note\n" +
                         " FROM ${travelSchema}.app\n" +
                         " INNER JOIN ${travelSchema}.amendment amendment ON amendment.app_id = app.app_id \n" +
                         " LEFT JOIN ${travelSchema}.amendment_status status ON amendment.amendment_id = status.amendment_id \n"
@@ -246,7 +252,11 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             int amdId = rs.getInt("amendment_id");
             int appId = rs.getInt("app_id");
             Version version = Version.valueOf(rs.getString("version"));
-            String pot = rs.getString("purpose_of_travel");
+            PurposeOfTravel pot = new PurposeOfTravel(
+                    EventType.valueOf(rs.getString("event_type")),
+                    rs.getString("event_name"),
+                    rs.getString("additional_purpose")
+            );
             LocalDateTime createdDateTime = getLocalDateTimeFromRs(rs, "created_date_time");
             Employee createdBy = employeeInfoService.getEmployee(rs.getInt("created_by"));
             Route route = routeDao.selectRoute(amdId);

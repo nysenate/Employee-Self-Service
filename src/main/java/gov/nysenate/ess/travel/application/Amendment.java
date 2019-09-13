@@ -18,7 +18,7 @@ public class Amendment {
 
     private int amendmentId; // 0 if this amendment has not been saved to the database.
     private Version version;
-    private String purposeOfTravel;
+    private PurposeOfTravel purposeOfTravel;
     private Route route;
     private Allowances allowances;
     private PerDiemOverrides perDiemOverrides;
@@ -138,11 +138,11 @@ public class Amendment {
         return version;
     }
 
-    public String purposeOfTravel() {
+    public PurposeOfTravel purposeOfTravel() {
         return purposeOfTravel;
     }
 
-    public void setPurposeOfTravel(String purposeOfTravel) {
+    public void setPurposeOfTravel(PurposeOfTravel purposeOfTravel) {
         this.purposeOfTravel =  purposeOfTravel;
     }
 
@@ -205,7 +205,7 @@ public class Amendment {
     public static class Builder {
         private int amendmentId = 0;
         private Version version = Version.A;
-        private String purposeOfTravel = "";
+        private PurposeOfTravel purposeOfTravel = null;
         private Route route = Route.EMPTY_ROUTE;
         private Allowances allowances = new Allowances();
         private PerDiemOverrides perDiemOverrides = new PerDiemOverrides();
@@ -226,7 +226,7 @@ public class Amendment {
             return this;
         }
 
-        public Builder withPurposeOfTravel(String purposeOfTravel) {
+        public Builder withPurposeOfTravel(PurposeOfTravel purposeOfTravel) {
             this.purposeOfTravel = purposeOfTravel;
             return this;
         }

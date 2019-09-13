@@ -128,7 +128,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "purposeOfTravel":
-                    app.activeAmendment().setPurposeOfTravel(patch.getValue());
+                    // TODO implement
+//                    app.activeAmendment().setPurposeOfTravel(patch.getValue());
                     break;
                 case "outbound":
                     RouteView outboundRouteView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);

@@ -19,7 +19,7 @@ public class TravelApplicationView implements ViewObject {
 
     private int id;
     private DetailedEmployeeView traveler;
-    private String purposeOfTravel;
+    private PurposeOfTravelView purposeOfTravel;
     private RouteView route;
     private AllowancesView allowances;
     private PerDiemOverridesView perDiemOverrides;
@@ -57,7 +57,7 @@ public class TravelApplicationView implements ViewObject {
     public TravelApplicationView(TravelApplication app) {
         id = app.getAppId();
         traveler = new DetailedEmployeeView(app.getTraveler());
-        purposeOfTravel = app.activeAmendment().purposeOfTravel();
+        purposeOfTravel = new PurposeOfTravelView(app.activeAmendment().purposeOfTravel());
         route = new RouteView(app.activeAmendment().route());
         allowances = new AllowancesView(app.activeAmendment().allowances());
         perDiemOverrides = new PerDiemOverridesView(app.activeAmendment().perDiemOverrides());
@@ -99,7 +99,7 @@ public class TravelApplicationView implements ViewObject {
         Amendment amd = new Amendment.Builder()
                 .withAmendmentId(0)
                 .withVersion(Version.A)
-                .withPurposeOfTravel(purposeOfTravel)
+                .withPurposeOfTravel(purposeOfTravel.toPurposeOfTravel())
                 .withRoute(route.toRoute())
                 .withAllowances(allowances.toAllowances())
                 .withPerDiemOverrides(perDiemOverrides.toPerDiemOverrides())
@@ -118,7 +118,7 @@ public class TravelApplicationView implements ViewObject {
         return traveler;
     }
 
-    public String getPurposeOfTravel() {
+    public PurposeOfTravelView getPurposeOfTravel() {
         return purposeOfTravel;
     }
 
