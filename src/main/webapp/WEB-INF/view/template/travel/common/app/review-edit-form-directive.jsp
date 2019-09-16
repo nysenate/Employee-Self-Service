@@ -2,8 +2,28 @@
   <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
   <ess-travel-inner-container title="Purpose of Travel">
-    <div style="white-space:pre-wrap;">
-      {{reviewApp.purposeOfTravel}}
+    <%--    <div style="white-space:pre-wrap;">--%>
+    <%--      {{reviewApp.purposeOfTravel}}--%>
+    <%--    </div>--%>
+    <div>
+      <div class="purpose-row">
+        <label>Your purpose of travel:</label>
+        <span ng-bind="::reviewApp.purposeOfTravel.eventType.displayName" style="width: 150px;"></span>
+      </div>
+      <div ng-if="reviewApp.purposeOfTravel.eventType.requiresName" class="purpose-row">
+        <label>Name of the {{reviewApp.purposeOfTravel.eventType.displayName}}:</label>
+        <span ng-bind="::reviewApp.purposeOfTravel.eventName" style="width: 350px;"></span>
+      </div>
+      <div ng-if="reviewApp.purposeOfTravel.additionalPurpose !== ''" class="purpose-row">
+        <div ng-if="reviewApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+          <label style="vertical-align: top;">Description:</label>
+          <span ng-bind="::reviewApp.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
+        </div>
+        <div ng-if="!reviewApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+          <label style="vertical-align: top;">Additional information:</label>
+          <span ng-bind="::reviewApp.purposeOfTravel.additionalPurpose" style="width: 400px; display: inline-block;"></span>
+        </div>
+      </div>
     </div>
   </ess-travel-inner-container>
 

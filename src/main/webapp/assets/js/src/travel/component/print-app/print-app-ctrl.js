@@ -22,6 +22,7 @@ function appPrintCtrl($scope, locationService, travelAppApi, $timeout, $window) 
 
         function extractApplication(response) {
             $scope.app = response.result;
+            console.log($scope.app);
         }
 
         function printIfRequested() {

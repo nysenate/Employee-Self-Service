@@ -7,6 +7,8 @@ public class EventTypeView implements ViewObject {
 
     private String name;
     private String displayName;
+    private boolean requiresName;
+    private boolean requiresAdditionalPurpose;
 
     public EventTypeView() {
     }
@@ -14,6 +16,8 @@ public class EventTypeView implements ViewObject {
     public EventTypeView(EventType eventType){
         this.name = eventType.name();
         this.displayName = eventType.displayName();
+        this.requiresName = eventType.requiresName();
+        this.requiresAdditionalPurpose = eventType.requiresAdditionalPurpose();
     }
 
     public EventType toEventType() {
@@ -26,6 +30,14 @@ public class EventTypeView implements ViewObject {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public boolean isRequiresName() {
+        return requiresName;
+    }
+
+    public boolean isRequiresAdditionalPurpose() {
+        return requiresAdditionalPurpose;
     }
 
     @Override

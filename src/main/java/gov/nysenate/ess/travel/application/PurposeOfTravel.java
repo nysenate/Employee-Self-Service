@@ -1,19 +1,28 @@
 package gov.nysenate.ess.travel.application;
 
+import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.EventType;
 
 import java.util.Objects;
 
-public class PurposeOfTravel {
+public final class PurposeOfTravel {
 
-    private EventType eventType;
-    private String eventName;
-    private String additionalPurpose;
+    private final EventType eventType;
+    private final String eventName;
+    private final String additionalPurpose;
 
     public PurposeOfTravel(EventType eventType, String eventName, String additionalPurpose) {
-        this.eventType = eventType;
-        this.eventName = eventName;
-        this.additionalPurpose = additionalPurpose;
+        this.eventType = Preconditions.checkNotNull(eventType);
+        // Store no value as an empty string.
+        this.eventName = eventName == null ? "" : eventName;
+        this.additionalPurpose = additionalPurpose == null ? "" : additionalPurpose;
+
+        if (this.eventType.requiresName() && this.eventName.equals("")) {
+            throw new IllegalArgumentException("Event Type of " + this.eventType.displayName() + " requires an event name.");
+        }
+        if (this.eventType.requiresAdditionalPurpose() && this.additionalPurpose.equals("")) {
+            throw new IllegalArgumentException("Event Type of " + this.eventType.displayName() + " requires an additional purpose description.");
+        }
     }
 
     public EventType eventType() {

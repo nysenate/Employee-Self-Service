@@ -1,18 +1,50 @@
 <div class="content-container">
   <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
-  <form name="purposeForm" id="purposeForm"
-  <%--Only call the callback function if form is valid--%>
-        ng-submit="purposeForm.$valid && next()" novalidate>
+  <form name="purpose.form" id="purposeForm" novalidate>
 
-    <div ng-show="purposeForm.$submitted && !purposeForm.$valid" class="margin-10">
-      <ess-notification level="error" message="Purpose of Travel is required."></ess-notification>
+    <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin-10">
+      <ess-notification level="error" title="Purpose of Travel has errors">
+        <ul>
+          <li ng-if="purpose.form.$error.eventTypeRequired">A purpose of travel is required</li>
+          <li ng-if="purpose.form.$error.eventNameRequired">Name of the {{dirtyApp.purposeOfTravel.eventType.displayName}} is required.</li>
+          <li ng-if="purpose.form.$error.additionalPurposeRequired">A description of your purpose of travel is required.</li>
+        </ul>
+      </ess-notification>
     </div>
 
     <ess-travel-inner-container title="Purpose of Travel">
-      <div class="text-align-center">
-        <textarea ng-model="dirtyApp.purposeOfTravel" cols="80" rows="6"
-                  placeholder="Why will you be traveling?" required></textarea>
+      <div class="">
+        <div class="purpose-row">
+          <label for="eventTypeSelect">Select your purpose of travel:</label>
+          <select id="eventTypeSelect"
+                  event-type-validator
+                  ng-options="eventType as eventType.displayName for eventType in dirtyApp.purposeOfTravel.validEventTypes track by eventType.name"
+                  ng-model="dirtyApp.purposeOfTravel.eventType"/>
+        </div>
+        <div ng-if="dirtyApp.purposeOfTravel.eventType.requiresName" class="purpose-row">
+          <label for="eventNameInput">Name of the {{dirtyApp.purposeOfTravel.eventType.displayName}}:</label>
+          <input id="eventNameInput" type="text"
+                 event-name-validator
+                 ng-model="dirtyApp.purposeOfTravel.eventName"/>
+        </div>
+        <div ng-if="dirtyApp.purposeOfTravel.eventType !== null" class="purpose-row">
+          <div ng-if="dirtyApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+            <label for="purposeAdditionalTextRequired">
+              Enter your purpose of travel:
+            </label>
+            <textarea id="purposeAdditionalTextRequired" ng-model="dirtyApp.purposeOfTravel.additionalPurpose"
+                      additional-purpose-validator
+                      cols="120" rows="3"></textarea>
+          </div>
+          <div ng-if="!dirtyApp.purposeOfTravel.eventType.requiresAdditionalPurpose">
+            <label for="purposeAdditionalTextOptional">
+              Provide additional information (Optional):
+            </label>
+            <textarea id="purposeAdditionalTextOptional" ng-model="dirtyApp.purposeOfTravel.additionalPurpose"
+                      cols="120" rows="3"></textarea>
+          </div>
+        </div>
       </div>
     </ess-travel-inner-container>
 
@@ -38,7 +70,8 @@
       <input type="button" class="reject-button" ng-value="::negativeLabel || 'Cancel'"
              ng-click="cancel()">
       <input type="submit" class="submit-button"
-             title="Continue to next step" value="Next">
+             title="Continue to next step" value="Next"
+             ng-click="next()">
     </div>
 
   </form>

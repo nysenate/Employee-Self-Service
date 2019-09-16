@@ -7,9 +7,7 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.travel.application.TravelApplication;
-import gov.nysenate.ess.travel.application.TravelApplicationService;
-import gov.nysenate.ess.travel.application.TravelApplicationView;
+import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
@@ -128,8 +126,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
                 case "purposeOfTravel":
-                    // TODO implement
-//                    app.activeAmendment().setPurposeOfTravel(patch.getValue());
+                    PurposeOfTravelView potView = OutputUtils.jsonToObject(patch.getValue(), PurposeOfTravelView.class);
+                    app.activeAmendment().setPurposeOfTravel(potView.toPurposeOfTravel());
                     break;
                 case "outbound":
                     RouteView outboundRouteView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);

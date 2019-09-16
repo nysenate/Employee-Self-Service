@@ -46,14 +46,14 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             }, $scope.handleErrorResponse);
 
             function hasUncompleteApplication() {
-                return $scope.data.app.purposeOfTravel !== "";
+                return $scope.data.app.purposeOfTravel.eventType !== null;
             }
         }
     };
 
     $scope.savePurpose = function (app) {
         console.log(app);
-        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {purposeOfTravel: app.purposeOfTravel}, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {purposeOfTravel: JSON.stringify(app.purposeOfTravel)}, function (response) {
             $scope.data.app = response.result;
             stateService.setOutboundState();
         }, $scope.handleErrorResponse)

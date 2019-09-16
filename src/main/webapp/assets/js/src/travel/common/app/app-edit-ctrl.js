@@ -26,13 +26,13 @@ function appEditCtrl($scope, $timeout, $q, modals, countyService, motApi) {
         }
     };
 
-    // Set all form elements as touched so they can be styled appropriately if they have errors.
-    $scope.setFormElementsTouched = function (form) {
-        for (var prop in form) {
-            if (form[prop] && typeof(form[prop].$setTouched) === 'function') {
-                form[prop].$setTouched();
-            }
-        }
+    // Set all invalid form elements as touched so they can be styled appropriately if they have errors.
+    $scope.setInvalidFormElementsTouched = function (form) {
+        angular.forEach(form.$error, function (validator) {
+            angular.forEach(validator, function(errorField){
+                errorField.$setTouched();
+            })
+        });
     };
 
     /**

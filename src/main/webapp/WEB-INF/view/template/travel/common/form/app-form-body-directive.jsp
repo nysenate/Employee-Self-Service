@@ -102,7 +102,9 @@
           Purpose:
         </div>
         <div class="app-form-l-col">
-          {{(app.purposeOfTravel) || NOT_AVAILABLE}}
+          {{app.purposeOfTravel.eventType.displayName || NOT_AVAILABLE}}
+          <span ng-if="app.purposeOfTravel.eventType.requiresName">: {{app.purposeOfTravel.eventName}}</span><br>
+          {{app.purposeOfTravel.additionalPurpose}}
         </div>
       </div>
 

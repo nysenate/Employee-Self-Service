@@ -19,7 +19,10 @@ function purposeEditLink(appProps, attachmentDeleteApi) {
             scope.dirtyApp = angular.copy(scope.app);
 
             scope.next = function () {
-                scope.positiveCallback({app: scope.dirtyApp});
+                scope.setInvalidFormElementsTouched(scope.purpose.form);
+                if (scope.purpose.form.$valid) {
+                    scope.positiveCallback({app: scope.dirtyApp});
+                }
             };
 
             scope.cancel = function () {

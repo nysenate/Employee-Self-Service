@@ -55,7 +55,7 @@ function outboundEditLink(appProps) {
             };
 
             scope.next = function () {
-                scope.setFormElementsTouched(scope.outbound.form);
+                scope.setInvalidFormElementsTouched(scope.outbound.form);
                 if (scope.outbound.form.$valid) {
                     scope.normalizeTravelDates(scope.dirtyApp.route.outboundLegs);
                     scope.checkCounties(scope.dirtyApp.route.outboundLegs)

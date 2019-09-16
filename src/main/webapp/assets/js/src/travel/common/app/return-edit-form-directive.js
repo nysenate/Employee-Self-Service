@@ -81,7 +81,7 @@ function returnEditForm($q, appProps, modals) {
             };
 
             scope.next = function () {
-                scope.setFormElementsTouched(scope.return.form);
+                scope.setInvalidFormElementsTouched(scope.return.form);
                 if (scope.return.form.$valid) {
                     scope.normalizeTravelDates(scope.dirtyApp.route.returnLegs);
                     promptUserIfLongTrip(scope.dirtyApp.route)
