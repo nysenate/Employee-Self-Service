@@ -41,11 +41,12 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * Get an unsubmitted app API
      * --------------------------
      * Get the current unsubmitted app for a user and traveler.
-     *
+     * <p>
      * Usage:   (GET) /api/v1/travel/unsubmitted
-     *
+     * <p>
      * Request Params:
-     * @param userId Integer - required - the employee id of the logged in user.
+     *
+     * @param userId     Integer - required - the employee id of the logged in user.
      * @param travelerId Integer - required - the employee id of the traveler.
      * @return {@link TravelApplicationView}
      * @throws IOException
@@ -74,11 +75,12 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * -----------------------------
      * Deletes the currently saved unsubmitted app for a given user and traveler.
      * This effectively resets the application for starting over.
-     *
+     * <p>
      * Usage:   (DELETE) /api/v1/travel/unsubmitted
-     *
+     * <p>
      * Request Params
-     * @param userId Integer - required - the employee id of the logged in user.
+     *
+     * @param userId     Integer - required - the employee id of the logged in user.
      * @param travelerId Integer - required - the employee id of the traveler.
      * @throws IOException
      */
@@ -96,15 +98,16 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * Patch an unsubmitted app API
      * ----------------------------
      * Updates one or more fields of an unsubmitted app.
-     *
+     * <p>
      * Usage:   (PATCH) /api/v1/travel/unsubmitted
-     *
+     * <p>
      * Request Params:
-     * @param userId Integer - required - the employee id of the logged in user.
-     * @param travelerId Integer - required - the employee id of the traveler.
      *
-     * Body:
-     * @param patches Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
+     * @param userId     Integer - required - the employee id of the logged in user.
+     * @param travelerId Integer - required - the employee id of the traveler.
+     *                   <p>
+     *                   Body:
+     * @param patches    Map of patch keys to patch values. Patch key represents a field to be updated with the patch value.
      * @return {@link TravelApplicationView} updated with patches.
      * @throws IOException
      */
@@ -135,14 +138,11 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     if (!outboundRoute.equals(app.activeAmendment().route())) {
                         app.activeAmendment().setRoute(outboundRoute);
                     }
+                    break;
                 case "route":
                     RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
-                    Route routeUpdate = routeView.toRoute();
-                    // Only update the route if it has changed.
-                    if (!routeUpdate.equals(app.activeAmendment().route())) {
-                        Route fullRoute = routeService.createRoute(routeView.toRoute());
-                        app.activeAmendment().setRoute(fullRoute);
-                    }
+                    Route fullRoute = routeService.createRoute(routeView.toRoute());
+                    app.activeAmendment().setRoute(fullRoute);
                     break;
                 case "allowances":
                     AllowancesView allowancesView = OutputUtils.jsonToObject(patch.getValue(), AllowancesView.class);
@@ -180,9 +180,10 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      * Submit unsubmitted app API
      * --------------------------
      * Submit an unsubmitted app.
-     *
+     * <p>
      * Request Params:
-     * @param userId Integer - required - the employee id of the logged in user.
+     *
+     * @param userId     Integer - required - the employee id of the logged in user.
      * @param travelerId Integer - required - the employee id of the traveler.
      * @return {@link TravelApplicationView}
      * @throws IOException
