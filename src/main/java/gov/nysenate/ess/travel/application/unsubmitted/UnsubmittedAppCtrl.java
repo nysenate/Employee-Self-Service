@@ -7,7 +7,10 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.travel.application.*;
+import gov.nysenate.ess.travel.application.PurposeOfTravelView;
+import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.application.TravelApplicationService;
+import gov.nysenate.ess.travel.application.TravelApplicationView;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
@@ -16,8 +19,6 @@ import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesVie
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteService;
 import gov.nysenate.ess.travel.application.route.RouteView;
-import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
-import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
@@ -53,18 +55,15 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public BaseResponse getUnsubmittedApps(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(travelerId)
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.GET)
-                .buildPermission());
-
         TravelApplicationView appView;
         Optional<TravelApplicationView> viewOpt = unsubmittedAppDao.find(userId, travelerId);
         if (viewOpt.isPresent()) {
             appView = viewOpt.get();
+            checkApplicationPermission(viewOpt.get().toTravelApplication(), RequestMethod.GET);
         } else {
-            appView = new TravelApplicationView(new TravelApplication(employeeInfoService.getEmployee(travelerId)));
+            appView = new TravelApplicationView(new TravelApplication(
+                    employeeInfoService.getEmployee(travelerId), employeeInfoService.getEmployee(getSubjectEmployeeId())));
+            checkApplicationPermission(appView.toTravelApplication(), RequestMethod.GET);
             unsubmittedAppDao.save(userId, appView);
         }
         return new ViewObjectResponse<>(appView);
@@ -86,11 +85,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.DELETE)
     public void deleteUnsubmittedApp(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(travelerId)
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.POST)
-                .buildPermission());
+        TravelApplicationView applicationView = findApp(userId, travelerId);
+        checkApplicationPermission(applicationView.toTravelApplication(), RequestMethod.POST);
         unsubmittedAppDao.delete(userId, travelerId);
     }
 
@@ -115,14 +111,9 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     public BaseResponse patchUnsubmittedApp(@RequestParam int userId,
                                             @RequestParam int travelerId,
                                             @RequestBody Map<String, String> patches) throws IOException {
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(travelerId)
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.POST)
-                .buildPermission());
-
         TravelApplicationView view = findApp(userId, travelerId);
         TravelApplication app = view.toTravelApplication();
+        checkApplicationPermission(app, RequestMethod.POST);
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         // Perform all updates specified in the patch.
@@ -191,14 +182,9 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public BaseResponse submitApp(@RequestParam int userId,
                                   @RequestParam int travelerId) throws IOException {
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(travelerId)
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.POST)
-                .buildPermission());
-
         TravelApplicationView view = findApp(userId, travelerId);
         TravelApplication app = view.toTravelApplication();
+        checkApplicationPermission(app, RequestMethod.POST);
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
 
         app = travelApplicationService.submitTravelApplication(app, user);
@@ -209,9 +195,13 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
 
     private TravelApplicationView findApp(int userId, int travelerId) throws IOException {
         return unsubmittedAppDao.find(userId, travelerId)
-                .orElseThrow(() -> new InvalidRequestParamEx(userId + " & " + travelerId,
-                        "userId & travelerId",
-                        "int & int",
-                        "No Unsubmitted travel app found with provided userId and travelerId"));
+                .orElseThrow(invalidUserIdOrTravelerId(userId, travelerId));
+    }
+
+    private Supplier<InvalidRequestParamEx> invalidUserIdOrTravelerId(int userId, int travelerId) {
+        return () -> new InvalidRequestParamEx(userId + " & " + travelerId,
+                "userId & travelerId",
+                "int & int",
+                "No Unsubmitted travel app found with provided userId and travelerId");
     }
 }

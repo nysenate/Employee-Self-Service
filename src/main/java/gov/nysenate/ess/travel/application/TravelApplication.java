@@ -16,8 +16,8 @@ public class TravelApplication {
     protected Employee traveler;
     protected SortedSet<Amendment> amendments;
 
-    public TravelApplication(Employee traveler) {
-        this(0, traveler, Lists.newArrayList(new Amendment.Builder().withVersion(Version.A).build()));
+    public TravelApplication(Employee traveler, Employee creator) {
+        this(0, traveler, Lists.newArrayList(new Amendment.Builder().withVersion(Version.A).withCreatedBy(creator).build()));
     }
 
     public TravelApplication(int id, Employee traveler, Collection<Amendment> amendments) {
@@ -52,6 +52,10 @@ public class TravelApplication {
 
     public LocalDateTime getSubmittedDateTime() {
         return amendments.first().createdDateTime();
+    }
+
+    public Employee getSubmittedBy() {
+        return amendments.first().createdBy();
     }
 
     public LocalDateTime getModifiedDateTime() {

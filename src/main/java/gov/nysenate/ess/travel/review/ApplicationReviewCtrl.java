@@ -87,8 +87,8 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
 
         checkPermission(new TravelPermissionBuilder()
-                .forEmpId(appReview.application().getTraveler().getEmployeeId())
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forEmpId(appReview.application().getTraveler().getEmployeeId())
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 
@@ -115,8 +115,8 @@ public class ApplicationReviewCtrl extends BaseRestApiCtrl {
         ApplicationReview appReview = appReviewService.getApplicationReview(appReviewId);
 
         checkPermission(new TravelPermissionBuilder()
-                .forEmpId(appReview.application().getTraveler().getEmployeeId())
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
+                .forEmpId(appReview.application().getTraveler().getEmployeeId())
                 .forAction(RequestMethod.POST)
                 .buildPermission());
 

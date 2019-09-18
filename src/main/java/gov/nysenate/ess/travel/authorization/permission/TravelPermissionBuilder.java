@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
  * <p>
  * Uses shiro multiple parts to combine multiple permissions into a single WildcardPermission.
  * <p>
- * Format: travel:{empId}:{object}:{rest method}
- * Example: travel:221,412,2811,3211:travel_application:get,post
+ * Format: travel:{object}:{empId}:{rest method}
+ * Example: travel:travel_application:221,412,2811,3211:get,post
  */
 public class TravelPermissionBuilder {
 
@@ -79,8 +79,8 @@ public class TravelPermissionBuilder {
 
         String permissionString =
                 "travel"
-                        + ":" + (isForAllEmps ? "*" : generatePart(empIdStrings))
                         + ":" + generatePart(objectStrings)
+                        + ":" + (isForAllEmps ? "*" : generatePart(empIdStrings))
                         + ":" + generatePart(actionStrings);
 
         return new WildcardPermission(permissionString);

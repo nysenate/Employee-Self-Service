@@ -3,10 +3,12 @@ package gov.nysenate.ess.core.controller.api;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
-import gov.nysenate.ess.core.model.auth.DateTimeRangePermission;
 import gov.nysenate.ess.core.model.auth.SenatePerson;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.travel.application.TravelApplication;
+import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
+import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shiro.SecurityUtils;
@@ -16,10 +18,10 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,6 +64,20 @@ public class BaseRestApiCtrl
     protected void checkPermission(Permission permission)
             throws AuthorizationException {
         getSubject().checkPermission(permission);
+    }
+
+    /**
+     * Checks the currently authenticated subject has permissions to perform the given action on a travel application.
+     * @param app
+     * @param method
+     */
+    protected void checkApplicationPermission(TravelApplication app, RequestMethod method) {
+        TravelPermissionBuilder builder = new TravelPermissionBuilder()
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forEmpId(app.getTraveler().getEmployeeId())
+                .forEmpId(app.getSubmittedBy().getEmployeeId())
+                .forAction(method);
+        checkPermission(builder.buildPermission());
     }
 
     /**

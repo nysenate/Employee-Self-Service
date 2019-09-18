@@ -6,8 +6,6 @@ import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
-import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +25,13 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(app.getTraveler().getEmployeeId())
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.GET)
-                .buildPermission());
-        TravelApplicationView appView = new TravelApplicationView(app);
-        return new ViewObjectResponse<>(appView);
+        checkApplicationPermission(app, RequestMethod.GET);
+        return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
     @RequestMapping(value = "/traveler/{travelerId}")
     public BaseResponse getActiveTravelApps(@PathVariable int travelerId) {
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(travelerId)
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.GET)
-                .buildPermission());
-
+        // TODO Remove travelerId param and use the subjects employee Id. This prevents users see other users apps.
         List<TravelApplication> apps = travelApplicationService.selectTravelApplications(travelerId);
         List<TravelApplicationView> appViews = apps.stream()
                 .map(TravelApplicationView::new)
@@ -53,13 +41,8 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     @RequestMapping(value = "/{appId}", method = RequestMethod.POST)
     public void saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
-        // Check the user has permission to update apps for this traveler.
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkPermission(new TravelPermissionBuilder()
-                .forEmpId(app.getTraveler().getEmployeeId())
-                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forAction(RequestMethod.POST)
-                .buildPermission());
+        checkApplicationPermission(app, RequestMethod.POST);
 
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         travelApplicationService.saveTravelApplication(appView.toTravelApplication(), user);

@@ -64,7 +64,7 @@ public class TravelApplicationView implements ViewObject {
         status = new TravelApplicationStatusView(app.activeAmendment().status());
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         modifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
-        modifiedBy = app.getModifiedBy() == null ? null : new DetailedEmployeeView(app.getModifiedBy());
+        modifiedBy = app.getSubmittedBy() == null ? null : new DetailedEmployeeView(app.getSubmittedBy());
         attachments = app.activeAmendment().attachments().stream().map(TravelAttachmentView::new).collect(Collectors.toList());
 
         startDate = app.activeAmendment().startDate() == null ? "" : app.activeAmendment().startDate().format(ISO_DATE);
@@ -104,7 +104,8 @@ public class TravelApplicationView implements ViewObject {
                 .withAllowances(allowances.toAllowances())
                 .withPerDiemOverrides(perDiemOverrides.toPerDiemOverrides())
                 .withStatus(status.toTravelApplicationStatus())
-                // TODO modified by and time
+                .withCreatedBy(modifiedBy.toEmployee())
+                // TODO modified time
                 .build();
         TravelApplication a = new TravelApplication(id, traveler.toEmployee(), Lists.newArrayList(amd));
         return a;

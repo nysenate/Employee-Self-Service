@@ -13,7 +13,6 @@ import static junit.framework.TestCase.assertEquals;
 @UnitTest
 public class TravelPermissionBuilderTest {
 
-
     @Test(expected = IllegalArgumentException.class)
     public void givenIsForAllEmpsFalse_thenEmpIdsCannotBeEmpty() {
         new TravelPermissionBuilder()
@@ -45,7 +44,7 @@ public class TravelPermissionBuilderTest {
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
                 .forAction(RequestMethod.GET)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1:TRAVEL_APPLICATION:GET");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION:1:GET");
         assertEquals(expected, actual);
     }
 
@@ -59,7 +58,7 @@ public class TravelPermissionBuilderTest {
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
                 .forAction(RequestMethod.GET)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1,2,3,4:TRAVEL_APPLICATION:GET");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION:1,2,3,4:GET");
         assertEquals(expected, actual);
     }
 
@@ -70,7 +69,7 @@ public class TravelPermissionBuilderTest {
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
                 .forAction(RequestMethod.GET)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1,2,3,4:TRAVEL_APPLICATION:GET");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION:1,2,3,4:GET");
         assertEquals(expected, actual);
     }
 
@@ -82,7 +81,7 @@ public class TravelPermissionBuilderTest {
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION_REVIEW)
                 .forAction(RequestMethod.GET)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1:TRAVEL_APPLICATION,TRAVEL_APPLICATION_REVIEW:GET");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION,TRAVEL_APPLICATION_REVIEW:1:GET");
         assertEquals(expected, actual);
     }
 
@@ -94,7 +93,7 @@ public class TravelPermissionBuilderTest {
                 .forAction(RequestMethod.GET)
                 .forAction(RequestMethod.POST)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1:TRAVEL_APPLICATION:GET,POST");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION:1:GET,POST");
         assertEquals(expected, actual);
     }
 
@@ -109,7 +108,7 @@ public class TravelPermissionBuilderTest {
                 .forAction(RequestMethod.GET)
                 .forAction(RequestMethod.POST)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1,2,3:TRAVEL_APPLICATION,TRAVEL_APPLICATION_REVIEW:GET,POST");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION,TRAVEL_APPLICATION_REVIEW:1,2,3:GET,POST");
         assertEquals(expected, actual);
     }
 
@@ -120,7 +119,7 @@ public class TravelPermissionBuilderTest {
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
                 .forAction(RequestMethod.GET)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:*:TRAVEL_APPLICATION:GET");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION:*:GET");
         assertEquals(expected, actual);
     }
 
@@ -136,7 +135,7 @@ public class TravelPermissionBuilderTest {
                 .forAction(RequestMethod.GET)
                 .forAction(RequestMethod.GET)
                 .buildPermission();
-        WildcardPermission expected = new WildcardPermission("travel:1,2:TRAVEL_APPLICATION:GET");
+        WildcardPermission expected = new WildcardPermission("travel:TRAVEL_APPLICATION:1,2:GET");
         assertEquals(expected, actual);
     }
 }
