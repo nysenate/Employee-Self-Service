@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(UnitTest.class)
 public class GsaResponseParserTest {
@@ -74,5 +73,6 @@ public class GsaResponseParserTest {
     @Test
     public void canDetectEmptyResponse() throws IOException {
         assertTrue(parser.isResponseEmpty(GsaApiResponseFixture.fy2999_zip11111_response()));
+        assertFalse(parser.isResponseEmpty(GsaApiResponseFixture.fy2018_zip10008_response()));
     }
 }

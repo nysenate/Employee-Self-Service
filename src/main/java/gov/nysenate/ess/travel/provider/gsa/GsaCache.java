@@ -4,7 +4,6 @@ import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
-import gov.nysenate.ess.core.util.DateUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.slf4j.Logger;
@@ -45,7 +44,7 @@ public class GsaCache implements CachingService<GsaResponseId> {
      * @return
      */
     public GsaResponse queryGsa(LocalDate date, String zip) {
-        GsaResponseId id = new GsaResponseId(DateUtils.getFederalFiscalYear(date), zip);
+        GsaResponseId id = new GsaResponseId(date, zip);
         return queryCache(id);
     }
 

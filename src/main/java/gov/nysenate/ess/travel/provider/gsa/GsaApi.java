@@ -9,14 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.time.LocalDate;
 
 
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
  *
- * GSA API Docs: https://www.gsa.gov/technology/government-it-initiatives/digital-strategy/per-diem-apis/api-for-per-diem-rates
+ * GSA API Docs: https://open.gsa.gov/api/perdiem/
  */
 @Service
 public class GsaApi {
@@ -24,13 +23,14 @@ public class GsaApi {
     private static final Logger logger = LoggerFactory.getLogger(GsaApi.class);
 
     private HttpUtils httpUtils;
-    private String gsaUrl;
+    private String urlTemplate;
     private GsaResponseParser gsaResponseParser;
 
     @Autowired
-    public GsaApi(@Value("${travel.gsa.api.url_base}") String baseUrl, @Value("${travel.gsa.api.url_path}") String apiUrl,
+    public GsaApi(@Value("${travel.gsa.api.url_base}") String baseUrl, @Value("${travel.gsa.api.key}") String apiKey,
                   GsaResponseParser gsaResponseParser, HttpUtils httpUtils) {
-        this.gsaUrl = baseUrl + apiUrl + "&filters=";
+        this.urlTemplate = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        this.urlTemplate += "zip/%s/year/%s?api_key=" + apiKey;
         this.gsaResponseParser = gsaResponseParser;
         this.httpUtils = httpUtils;
     }
@@ -43,15 +43,13 @@ public class GsaApi {
      * @throws IOException
      */
     public GsaResponse queryGsa(LocalDate date, String zip) throws IOException {
-        GsaResponseId id = new GsaResponseId(DateUtils.getFederalFiscalYear(date), zip);
+        GsaResponseId id = new GsaResponseId(date, zip);
         return queryApi(id);
     }
 
     private GsaResponse queryApi(GsaResponseId id) throws IOException {
-        // Example query: {"FiscalYear":"2018","Zip":"12208"}
-        String query = "{\"FiscalYear\":\"" + String.valueOf(id.getFiscalYear())
-                + "\",\"Zip\":\"" + id.getZipcode() + "\"}";
-        String url = gsaUrl + URLEncoder.encode(query, "UTF-8");
+        // Format the URL with the zip code and fiscal year of the request.
+        String url = String.format(urlTemplate, id.getZipcode(), String.valueOf(id.getFiscalYear()));
         String content = httpUtils.urlToString(url);
         if (dateTooFarInFuture(id, content)) {
             id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());

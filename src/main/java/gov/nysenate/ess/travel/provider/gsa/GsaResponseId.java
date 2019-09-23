@@ -1,11 +1,21 @@
 package gov.nysenate.ess.travel.provider.gsa;
 
+import gov.nysenate.ess.core.util.DateUtils;
+
+import java.time.LocalDate;
 import java.util.Objects;
 
+/**
+ * Uniquely identifies a response from the GSA Zip and Year API endpoint
+ */
 public class GsaResponseId {
 
     private final int fiscalYear;
     private final String zipcode;
+
+    public GsaResponseId(LocalDate date, String zipcode) {
+        this(DateUtils.getFederalFiscalYear(date), zipcode);
+    }
 
     public GsaResponseId(int fiscalYear, String zipcode) {
         this.fiscalYear = fiscalYear;

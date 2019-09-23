@@ -3,11 +3,9 @@ package gov.nysenate.ess.travel.provider.gsa;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
 import gov.nysenate.ess.travel.utils.Dollars;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,6 +29,7 @@ public class GsaAllowanceService {
 
     /**
      * Returns the MealTier for the given date and address.
+     *
      * @throws IOException
      */
     public Dollars fetchMealRate(LocalDate date, Address address) throws IOException {
@@ -40,6 +39,7 @@ public class GsaAllowanceService {
 
     /**
      * Returns the lodging rate for the given date and address.
+     *
      * @throws IOException
      */
     public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
@@ -48,23 +48,24 @@ public class GsaAllowanceService {
     }
 
     private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
-        GsaResponse res;
-        try {
-            res = gsaBatchResponseDao.getGsaData(new GsaResponseId( date.getYear(), address.getZip5() ));
-        }
-        catch (DataAccessException e) {
-            res = null;
-            String errorMsg = "Unable to load local GSA data for year: " + date.getYear()
-                    + " and zip: " + address.getZip5() + ". Exception was: \n" + ExceptionUtils.getStackTrace(e);
-            logger.warn(errorMsg);
-            slackChatService.sendMessage(errorMsg);
-        }
-        if (res == null) {
-            res = gsaApi.queryGsa(date, address.getZip5());
-            if (res != null) {
-                gsaBatchResponseDao.handleNewData(res);
-            }
-        }
+        GsaResponse res = gsaApi.queryGsa(date, address.getZip5());
+        // TODO Batch/bulk data will have to be refactored due to new GSA API. For now query the API every time.
+//        try {
+//            res = gsaBatchResponseDao.getGsaData(gsaResponseId);
+//        }
+//        catch (DataAccessException e) {
+//            res = null;
+//            String errorMsg = "Unable to load local GSA data for fiscal year: " + gsaResponseId.getFiscalYear()
+//                    + " and zip: " + address.getZip5() + ". Exception was: \n" + ExceptionUtils.getStackTrace(e);
+//            logger.warn(errorMsg);
+//            slackChatService.sendMessage(errorMsg);
+//        }
+//        if (res == null) {
+//            res = gsaApi.queryGsa(date, address.getZip5())
+//            if (res != null) {
+//                gsaBatchResponseDao.handleNewData(res);
+//            }
+//        }
         return res;
     }
 }

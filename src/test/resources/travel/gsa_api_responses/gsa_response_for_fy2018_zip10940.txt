@@ -1,197 +1,181 @@
 {
-  "help": "https:\/\/inventory.data.gov\/api\/3\/action\/help_show?name=datastore_search",
-  "success": true,
-  "result": {
-    "resource_id": "8ea44bc4-22ba-4386-b84c-1494ab28964b",
-    "fields": [
-      {
-        "type": "int4",
-        "id": "_id"
-      },
-      {
-        "type": "numeric",
-        "id": "DestinationID"
-      },
-      {
-        "type": "text",
-        "id": "City"
-      },
-      {
-        "type": "text",
-        "id": "County"
-      },
-      {
-        "type": "numeric",
-        "id": "FiscalYear"
-      },
-      {
-        "type": "numeric",
-        "id": "Oct"
-      },
-      {
-        "type": "numeric",
-        "id": "Nov"
-      },
-      {
-        "type": "numeric",
-        "id": "Dec"
-      },
-      {
-        "type": "numeric",
-        "id": "Jan"
-      },
-      {
-        "type": "numeric",
-        "id": "Feb"
-      },
-      {
-        "type": "numeric",
-        "id": "Mar"
-      },
-      {
-        "type": "numeric",
-        "id": "Apr"
-      },
-      {
-        "type": "numeric",
-        "id": "May"
-      },
-      {
-        "type": "numeric",
-        "id": "Jun"
-      },
-      {
-        "type": "numeric",
-        "id": "Jul"
-      },
-      {
-        "type": "numeric",
-        "id": "Aug"
-      },
-      {
-        "type": "numeric",
-        "id": "Sep"
-      },
-      {
-        "type": "numeric",
-        "id": "Meals"
-      },
-      {
-        "type": "text",
-        "id": "State"
-      },
-      {
-        "type": "numeric",
-        "id": "Zip"
-      },
-      {
-        "type": "text",
-        "id": "LocationDefined"
-      }
-    ],
-    "records": [
-      {
-        "City": "Standard Rate",
-        "Dec": "93",
-        "Feb": "93",
-        "Zip": "10940",
-        "Aug": "93",
-        "Sep": "93",
-        "Apr": "93",
-        "Jun": "93",
-        "State": "NY",
-        "Jul": "93",
-        "Meals": "51",
-        "County": "",
-        "May": "93",
-        "DestinationID": "0",
-        "Mar": "93",
-        "Jan": "93",
-        "LocationDefined": "",
-        "Nov": "93",
-        "_id": 74197,
-        "Oct": "93",
-        "FiscalYear": "2018"
-      },
-      {
-        "City": "West Point",
-        "Dec": "108",
-        "Feb": "108",
-        "Zip": "10940",
-        "Aug": "108",
-        "Sep": "108",
-        "Apr": "108",
-        "Jun": "108",
-        "State": "NY",
-        "Jul": "108",
-        "Meals": "59",
-        "County": "Orange County, NY",
-        "May": "108",
-        "DestinationID": "278",
-        "Mar": "108",
-        "Jan": "108",
-        "LocationDefined": "Orange",
-        "Nov": "108",
-        "_id": 74198,
-        "Oct": "108",
-        "FiscalYear": "2018"
-      },
-      {
-        "City": "Standard Rate",
-        "Dec": "93",
-        "Feb": "93",
-        "Zip": "10940",
-        "Aug": "93",
-        "Sep": "93",
-        "Apr": "93",
-        "Jun": "93",
-        "State": "NY",
-        "Jul": "93",
-        "Meals": "51",
-        "County": "",
-        "May": "93",
-        "DestinationID": "0",
-        "Mar": "93",
-        "Jan": "93",
-        "LocationDefined": "",
-        "Nov": "93",
-        "_id": 89827,
-        "Oct": "93",
-        "FiscalYear": "2018"
-      },
-      {
-        "City": "West Point",
-        "Dec": "108",
-        "Feb": "108",
-        "Zip": "10940",
-        "Aug": "108",
-        "Sep": "108",
-        "Apr": "108",
-        "Jun": "108",
-        "State": "NY",
-        "Jul": "108",
-        "Meals": "59",
-        "County": "Orange County, NY",
-        "May": "108",
-        "DestinationID": "278",
-        "Mar": "108",
-        "Jan": "108",
-        "LocationDefined": "Orange",
-        "Nov": "108",
-        "_id": 89830,
-        "Oct": "108",
-        "FiscalYear": "2018"
-      }
-    ],
-    "_links": {
-      "start": "\/api\/action\/datastore_search?limit=300000&filters=%7B%22FiscalYear%22%3A%222018%22%2C%22Zip%22%3A%2210940%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b",
-      "next": "\/api\/action\/datastore_search?offset=300000&limit=300000&filters=%7B%22FiscalYear%22%3A%222018%22%2C%22Zip%22%3A%2210940%22%7D&resource_id=8ea44bc4-22ba-4386-b84c-1494ab28964b"
-    },
-    "filters": {
-      "Zip": "10940",
-      "FiscalYear": "2018"
-    },
-    "limit": 300000,
-    "total": 4
-  }
+  "request": null,
+  "errors": null,
+  "rates": [
+    {
+      "oconusInfo": null,
+      "rate": [
+        {
+          "months": {
+            "month": [
+              {
+                "value": 93,
+                "number": 1,
+                "short": "Jan",
+                "long": "January"
+              },
+              {
+                "value": 93,
+                "number": 2,
+                "short": "Feb",
+                "long": "February"
+              },
+              {
+                "value": 93,
+                "number": 3,
+                "short": "Mar",
+                "long": "March"
+              },
+              {
+                "value": 93,
+                "number": 4,
+                "short": "Apr",
+                "long": "April"
+              },
+              {
+                "value": 93,
+                "number": 5,
+                "short": "May",
+                "long": "May"
+              },
+              {
+                "value": 93,
+                "number": 6,
+                "short": "Jun",
+                "long": "June"
+              },
+              {
+                "value": 93,
+                "number": 7,
+                "short": "Jul",
+                "long": "July"
+              },
+              {
+                "value": 93,
+                "number": 8,
+                "short": "Aug",
+                "long": "August"
+              },
+              {
+                "value": 93,
+                "number": 9,
+                "short": "Sep",
+                "long": "September"
+              },
+              {
+                "value": 93,
+                "number": 10,
+                "short": "Oct",
+                "long": "October"
+              },
+              {
+                "value": 93,
+                "number": 11,
+                "short": "Nov",
+                "long": "November"
+              },
+              {
+                "value": 93,
+                "number": 12,
+                "short": "Dec",
+                "long": "December"
+              }
+            ]
+          },
+          "meals": 51,
+          "zip": "10940",
+          "county": "STANDARD RATE",
+          "city": "Standard Rate",
+          "standardRate": "false"
+        },
+        {
+          "months": {
+            "month": [
+              {
+                "value": 108,
+                "number": 1,
+                "short": "Jan",
+                "long": "January"
+              },
+              {
+                "value": 108,
+                "number": 2,
+                "short": "Feb",
+                "long": "February"
+              },
+              {
+                "value": 108,
+                "number": 3,
+                "short": "Mar",
+                "long": "March"
+              },
+              {
+                "value": 108,
+                "number": 4,
+                "short": "Apr",
+                "long": "April"
+              },
+              {
+                "value": 108,
+                "number": 5,
+                "short": "May",
+                "long": "May"
+              },
+              {
+                "value": 108,
+                "number": 6,
+                "short": "Jun",
+                "long": "June"
+              },
+              {
+                "value": 108,
+                "number": 7,
+                "short": "Jul",
+                "long": "July"
+              },
+              {
+                "value": 108,
+                "number": 8,
+                "short": "Aug",
+                "long": "August"
+              },
+              {
+                "value": 108,
+                "number": 9,
+                "short": "Sep",
+                "long": "September"
+              },
+              {
+                "value": 108,
+                "number": 10,
+                "short": "Oct",
+                "long": "October"
+              },
+              {
+                "value": 108,
+                "number": 11,
+                "short": "Nov",
+                "long": "November"
+              },
+              {
+                "value": 108,
+                "number": 12,
+                "short": "Dec",
+                "long": "December"
+              }
+            ]
+          },
+          "meals": 59,
+          "zip": "10940",
+          "county": "Orange",
+          "city": "West Point",
+          "standardRate": "false"
+        }
+      ],
+      "state": "NY",
+      "year": 2018,
+      "isOconus": "false"
+    }
+  ],
+  "version": null
 }

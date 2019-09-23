@@ -67,7 +67,7 @@ public class DateUtils
      * @param localDate LocalDate
      * @return int - fiscal year of given date
      */
-    public static int getFiscalYear(LocalDate localDate) {
+    public static int getSenateFiscalYear(LocalDate localDate) {
         return localDate.plus(SENATE_FISCAL_YEAR_OFFSET).getYear();
     }
 

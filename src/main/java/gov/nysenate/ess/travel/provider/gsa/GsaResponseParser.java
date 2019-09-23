@@ -29,7 +29,7 @@ public class GsaResponseParser {
      */
     public boolean isResponseEmpty(String json) throws IOException {
         JsonNode root = mapper.readTree(json);
-        JsonNode records = root.path("result").path("records");
+        JsonNode records = root.path("rates");
         return records.size() == 0;
     }
 
@@ -42,47 +42,42 @@ public class GsaResponseParser {
      */
     public GsaResponse parseGsaResponse(String json) throws IOException {
         JsonNode root = mapper.readTree(json);
-        JsonNode records = root.path("result").path("records");
-        JsonNode record = findRecord(records);
+        JsonNode record = root.path("rates").get(0); // only ever 1 record. (Called "rates" in the response)
+        JsonNode rates = record.path("rate"); // List of matching locations/rates. A single zip can have multiple rates.
+        JsonNode highestRate = findRecord(rates);
 
-        int fiscalYear = record.get("FiscalYear").asInt();
-        String zip = record.get("Zip").asText();
-        Map<Month, BigDecimal> lodgingRates = parseLodgingRates(record);
-        String mealTier = record.get("Meals").asText();
+        int fiscalYear = record.get("year").asInt();
+        String zip = highestRate.get("zip").asText();
+        Map<Month, BigDecimal> lodgingRates = parseLodgingRates(highestRate);
+        String mealTier = highestRate.get("meals").asText();
 
         return new GsaResponse(new GsaResponseId(fiscalYear, zip), lodgingRates, mealTier);
     }
 
-    // Finds the correct record to use. Use the County provided record if one is given.
-    private JsonNode findRecord(JsonNode records) {
+    // Finds the correct record to use.
+    // Senate policy is to use the County provided record if one is given.
+    private JsonNode findRecord(JsonNode rates) {
         JsonNode record = null;
-        for (JsonNode r : records) {
+        for (JsonNode r : rates) {
             // Use the county record if given one.
-            if (!r.get("County").asText().equals("")) {
+            if (!r.get("county").asText().equals("")) {
                 record = r;
             }
         }
         // If no county record, use the first one.
         if (record == null) {
-            record = records.get(0);
+            record = rates.get(0);
         }
         return record;
     }
 
     public Map<Month, BigDecimal> parseLodgingRates(JsonNode record) {
         Map<Month, BigDecimal> lodgingRates = new HashMap<>();
-        lodgingRates.put(Month.JANUARY, new BigDecimal(record.get("Jan").asText()));
-        lodgingRates.put(Month.FEBRUARY, new BigDecimal(record.get("Feb").asText()));
-        lodgingRates.put(Month.MARCH, new BigDecimal(record.get("Mar").asText()));
-        lodgingRates.put(Month.APRIL, new BigDecimal(record.get("Apr").asText()));
-        lodgingRates.put(Month.MAY, new BigDecimal(record.get("May").asText()));
-        lodgingRates.put(Month.JUNE, new BigDecimal(record.get("Jun").asText()));
-        lodgingRates.put(Month.JULY, new BigDecimal(record.get("Jul").asText()));
-        lodgingRates.put(Month.AUGUST, new BigDecimal(record.get("Aug").asText()));
-        lodgingRates.put(Month.SEPTEMBER, new BigDecimal(record.get("Sep").asText()));
-        lodgingRates.put(Month.OCTOBER, new BigDecimal(record.get("Oct").asText()));
-        lodgingRates.put(Month.NOVEMBER, new BigDecimal(record.get("Nov").asText()));
-        lodgingRates.put(Month.DECEMBER, new BigDecimal(record.get("Dec").asText()));
+
+        JsonNode lodgingRatesNode = record.path("months").path("month");
+        for (JsonNode month : lodgingRatesNode) {
+            lodgingRates.put(Month.of(month.get("number").asInt()), new BigDecimal(month.get("value").asText()));
+        }
         return lodgingRates;
     }
 }
