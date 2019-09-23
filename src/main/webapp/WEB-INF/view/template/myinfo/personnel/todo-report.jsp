@@ -36,12 +36,12 @@
       </div>
 
       <label class="todo-search-facet">
-        Training Completion Status
+        Completion Status for Selected Training(s)
         <select ng-model="state.params.totalCompletion">
           <option ng-value="null">Any</option>
           <option value="ALL_INCOMPLETE">All Incomplete</option>
           <option value="SOME_INCOMPLETE">Some Incomplete</option>
-          <option value="SOME_COMPLETE">Some Complete</option>
+<%--          <option value="SOME_COMPLETE">Some Complete</option>--%>
           <option value="ALL_COMPLETE">All Complete</option>
         </select>
       </label>
@@ -72,7 +72,7 @@
 
     <div class="todo-search-result-container">
       <label class="todo-search-bar">
-        Filter by employee name<br>
+        Search by employee name<br>
         <input type="text"
                ng-model="state.params.name"
                ng-model-options="{debounce: 300}"
@@ -151,24 +151,28 @@
               ng-if="state.iSelResult === $index"
               class="todo-report-result-details">
             <td colspan="3">
-              <span class="bold-text">Email:</span>{{result.employee.email}}<br>
-              <span class="bold-text">Cont. Service From:</span>{{result.employee.contServiceDate | moment:'ll'}}<br>
+              <span class="todo-report-result-details-label">Email:</span>
+              {{result.employee.email}}<br>
+              <span class="todo-report-result-details-label">Cont. Service From:</span>
+              {{result.employee.contServiceDate | moment:'ll'}}<br>
               <div ng-show="result.completedCount < result.tasks.length">
-                <span class="bold-text">
+                <span class="todo-report-result-details-label">
                   Incomplete Trainings:<br>
                 </span>
                 <ul>
-                  <li ng-repeat="task in result.tasks | filter:{'completed': false}">
+                  <li ng-repeat="task in result.tasks | filter:{'completed': false}"
+                      class="todo-report-result-details-training">
                     {{getTaskTitle(task.taskId)}}
                   </li>
                 </ul>
               </div>
               <div ng-show="result.completedCount > 0">
-                <span class="bold-text">
+                <span class="todo-report-result-details-label">
                   Completed Trainings:<br>
                 </span>
                 <ul>
-                  <li ng-repeat="task in result.tasks | filter:{'completed': true}">
+                  <li ng-repeat="task in result.tasks | filter:{'completed': true}"
+                      class="todo-report-result-details-training">
                     {{getTaskTitle(task.taskId)}}<br>
                     <span class="todo-result-completed-date">completed {{task.timestamp | moment:'ll'}}</span>
                   </li>

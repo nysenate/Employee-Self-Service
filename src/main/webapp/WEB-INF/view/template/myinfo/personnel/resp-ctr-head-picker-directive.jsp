@@ -4,8 +4,8 @@
 
   <ui-select multiple
              ng-model="respCtrHeads.selection"
-<%--             ui-select-reach-infinity="searchRCH($select.search, true)"--%>
-             close-on-select="false">
+             close-on-select="false"
+             reset-search-input="false">
     <ui-select-match placeholder="Select an office">
       {{$item.name}}
     </ui-select-match>
