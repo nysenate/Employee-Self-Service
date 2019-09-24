@@ -1,8 +1,12 @@
 package gov.nysenate.ess.core.service.pec;
 
 import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
+import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityCenter;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 public enum EmpTaskOrderBy {
 
@@ -15,7 +19,12 @@ public enum EmpTaskOrderBy {
 
     OFFICE(
             Comparator.comparing(
-                    r -> r.getEmployee().getRespCenter().getHead().getName()
+                    r -> Optional.ofNullable(r.getEmployee())
+                            .map(Employee::getRespCenter)
+                            .map(ResponsibilityCenter::getHead)
+                            .map(ResponsibilityHead::getName)
+                            .orElse(null),
+                    Comparator.nullsFirst(String::compareToIgnoreCase)
             )
     ),
 
