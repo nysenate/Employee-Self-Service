@@ -118,7 +118,6 @@ public class EssTimeOffRequestServiceTest extends BaseTest {
                 request.getDays(), retrievedRequest.getDays());
     }
 
-
     @Test
     public void updateRequestTest() {
         LocalDate date = LocalDate.now();
@@ -145,40 +144,6 @@ public class EssTimeOffRequestServiceTest extends BaseTest {
         assertTrue("Request was not added.", requestId != -1);
 
         assertEquals("Request was not added to the database.", 1,requestsAfter-requestsBefore);
-    }
-
-    @Test
-    public void getActiveRequestsForEmpTest() {
-        //set the end date to tomorrow
-        LocalDate today = LocalDate.now();
-        LocalDate yesterday = today.minusDays(1);
-        Range<LocalDate> range = Range.closed(today, today);
-
-        //get an active employee
-        int empId = essCachedEmployeeInfoService.getActiveEmpIds().iterator().next();
-
-        //create two requests, one active, one not active
-        int requestsBefore = essTimeOffRequestService.getActiveRequestsForEmp(empId, range).size();
-        TimeOffRequest requestActive = new TimeOffRequest(empId, 456,
-                TimeOffStatus.SAVED, today, today, new ArrayList<>(), new ArrayList<>());
-        TimeOffRequest requestInactive = new TimeOffRequest(empId, 456,
-                TimeOffStatus.SAVED, yesterday, yesterday, new ArrayList<>(), new ArrayList<>());
-
-        int requestId = sqlTimeOffRequestDao.updateRequest(requestActive);
-        int requestIdInactive = sqlTimeOffRequestDao.updateRequest(requestInactive);
-        requestActive.setRequestId(requestId);
-        requestInactive.setRequestId(requestIdInactive);
-        //update requests so they have timestamps
-        // (Currently they don't because we added them with the DAO)
-        essTimeOffRequestService.updateRequest(requestActive);
-        essTimeOffRequestService.updateRequest(requestInactive);
-
-        //get the active requests for employee
-        List<TimeOffRequest> requests = essTimeOffRequestService.getActiveRequestsForEmp(empId, range);
-        int requestsAfter = requests.size();
-
-        //verify only one request was gotten
-        assertEquals("One more request should have been returned.", 1, requestsAfter - requestsBefore);
     }
 
     @Test
@@ -248,11 +213,11 @@ public class EssTimeOffRequestServiceTest extends BaseTest {
 
         //create an active request for each employee
         TimeOffRequest requestOne = new TimeOffRequest(empIdOne, supId,
-                TimeOffStatus.SAVED, today, today, new ArrayList<>(), new ArrayList<>());
+                TimeOffStatus.APPROVED, today, today, new ArrayList<>(), new ArrayList<>());
         TimeOffRequest requestTwo = new TimeOffRequest(empIdTwo, supId,
-                TimeOffStatus.SAVED, today, today, new ArrayList<>(), new ArrayList<>());
+                TimeOffStatus.APPROVED, today.plusDays(5), today.plusDays(5), new ArrayList<>(), new ArrayList<>());
         TimeOffRequest requestThree = new TimeOffRequest(empIdThree, supId,
-                TimeOffStatus.SAVED, today, today, new ArrayList<>(), new ArrayList<>());
+                TimeOffStatus.APPROVED, today.plusDays(365), today.plusDays(365), new ArrayList<>(), new ArrayList<>());
         //create an inactive request
         TimeOffRequest requestInactive = new TimeOffRequest(empIdOne, supId,
                 TimeOffStatus.APPROVED, yesterday, yesterday, new ArrayList<>(), new ArrayList<>());

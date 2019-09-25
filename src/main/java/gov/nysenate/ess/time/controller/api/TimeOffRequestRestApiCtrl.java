@@ -10,9 +10,11 @@ import gov.nysenate.ess.time.client.view.attendance.TimeOffRequestView;
 import gov.nysenate.ess.time.model.attendance.*;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.attendance.EssTimeOffRequestService;
+import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,19 +59,24 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      * Get an Employee's Time Off Requests API
      * ---------------------------------------
      *
-     * Get all active time off requests for a given
+     * Get all time off requests for a given
      * employee:
      * (GET) /api/v1/timeoffrequests/getemployeerequests
      *
+     * @param startRange LocalDate
+     * @param endRange LocalDate
      * @param empId int
      * @return List<TimeOffRequests>
      */
     @RequestMapping(value="/employee/{empId:\\d+}", method = RequestMethod.GET)
-    public List<TimeOffRequestView> getEmployeeRequestsJson(@PathVariable int empId) {
-        //using empty daterange for the time being CHANGE THIS
-        Range<LocalDate> dateRange = null;
+    public List<TimeOffRequestView> getEmployeeRequestsJson(@PathVariable int empId,
+                                                            @RequestParam("startRange")
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startRange,
+                                                            @RequestParam("endRange")
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endRange) {
+        Range<LocalDate> dateRange = Range.closed(startRange, endRange);
         checkPermission(new EssTimePermission(empId, TIME_OFF_REQUESTS, GET, LocalDate.now()));
-        List<TimeOffRequest> requests = timeOffRequestService.getActiveRequestsForEmp(empId, dateRange);
+        List<TimeOffRequest> requests = timeOffRequestService.getAllRequestForEmpDateRange(empId, dateRange);
         return getListRequestViews(requests);
     }
 
@@ -86,8 +93,26 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value="/supervisor/{supId:\\d+}/active", method = RequestMethod.GET)
     public List<TimeOffRequestView> getSupervisorRequestsJson(@PathVariable int supId) {
-        checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_RECORDS, GET, LocalDate.now()));
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_OFF_REQUESTS, GET, LocalDate.now()));
         List<TimeOffRequest> requests = timeOffRequestService.getActiveRequestsForSup(supId);
+        return getListRequestViews(requests);
+    }
+
+    /**
+     * Get Requests that Need Approval API
+     * -----------------------------------
+     *
+     * Get all requests that need to be approved by
+     * a given supervisor:
+     * (GET) /api/v1/timeoffrequests/needapproval
+     *
+     * @param supId int
+     * @return List<TimeOffRequest>
+     */
+    @RequestMapping(value="/supervisor/{supId:\\d+}/approval", method = RequestMethod.GET)
+    public List<TimeOffRequestView> getApprovalRequestsJson(@PathVariable int supId) {
+        checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_OFF_REQUESTS, GET, LocalDate.now()));
+        List<TimeOffRequest> requests = timeOffRequestService.getRequestsNeedingApproval(supId);
         return getListRequestViews(requests);
     }
 

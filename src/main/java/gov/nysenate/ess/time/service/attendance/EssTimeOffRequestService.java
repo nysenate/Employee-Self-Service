@@ -7,6 +7,7 @@ import gov.nysenate.ess.time.dao.attendance.SqlTimeOffRequestDao;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequest;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestComment;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestNotFoundException;
+import gov.nysenate.ess.time.model.attendance.TimeOffStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,28 +43,10 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
      * {{@inheritDoc}}
      */
     @Override
-    public List<TimeOffRequest> getActiveRequestsForEmp(int empId, Range<LocalDate> dateRange) {
-        List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(empId, dateRange);
-        requests.removeIf(request -> !isActive(request));
-        return requests;
-    }
-
-    /**
-     * {{@inheritDoc}}
-     */
-    @Override
     public List<TimeOffRequest> getRequestsNeedingApproval(int supId) {
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getRequestsNeedingApproval(supId);
-        requests.removeIf(request -> !isActive(request));
+        requests.removeIf(request -> (request.getStatus()!=TimeOffStatus.SUBMITTED));
         return requests;
-    }
-
-    /**
-     * {{@inheritDoc}}
-     */
-    @Override
-    public List<TimeOffRequest> getAllRequestsForSup(int supId) {
-        return sqlTimeOffRequestDao.getAllRequestsBySupId(supId);
     }
 
     /**
@@ -114,7 +97,10 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
         LocalDate startDate = request.getStartDate();
         boolean duringActiveTime = activeRange.contains(endDate) && activeRange.contains(startDate);
 
-        return dateIsInFuture && duringActiveTime;
+        //check that the request has been approved
+        boolean approved = (request.getStatus() == TimeOffStatus.APPROVED);
+
+        return dateIsInFuture && duringActiveTime && approved;
     }
 
     /**

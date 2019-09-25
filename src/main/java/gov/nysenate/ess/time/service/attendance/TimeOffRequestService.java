@@ -28,30 +28,12 @@ public interface TimeOffRequestService {
     List<TimeOffRequest> getAllRequestForEmpDateRange(int empId, Range<LocalDate> dateRange);
 
     /**
-     * Get all the active time off requests for a single employee
-     * during a given date range.
-     *
-     * @param empId int - employee id
-     * @param dateRange Range<LocalDate>
-     * @return List<TimeOffRequest> - empty list if none exist
-     */
-    List<TimeOffRequest> getActiveRequestsForEmp(int empId, Range<LocalDate> dateRange);
-
-    /**
      * Get all time off requests needing approval for a single supervisor
      *
      * @param supId int - supervisor id
      * @return List<TimeOffRequest> - empty list if none exist
      */
     List<TimeOffRequest> getRequestsNeedingApproval(int supId);
-
-    /**
-     * Get all time off requests for a supervisor
-     *
-     * @param supId int - supervisor id
-     * @return List<TimeOffRequest>
-     */
-    List<TimeOffRequest> getAllRequestsForSup(int supId);
 
     /**
      * Get all active requests for a supervisor's employees
