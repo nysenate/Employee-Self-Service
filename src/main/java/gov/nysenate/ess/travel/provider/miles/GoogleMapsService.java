@@ -10,6 +10,7 @@ import com.google.maps.model.Unit;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.utils.UnitUtils;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,14 @@ import java.io.IOException;
 @Service
 public class GoogleMapsService implements MapService {
 
-    @Value("${google.maps.api.key}") private String apiKey;
+    private String apiKey;
+    private final GeoApiContext context;
+
+    @Autowired
+    public GoogleMapsService(@Value("${google.maps.api.key}") String apiKey) {
+        this.apiKey = apiKey;
+        context = new GeoApiContext.Builder().apiKey(apiKey).build();
+    }
 
     /**
      * Calculates the driving distance in miles from one address to another.
@@ -27,7 +35,6 @@ public class GoogleMapsService implements MapService {
      */
     @Override
     public double drivingDistance(Address from, Address to) throws InterruptedException, ApiException, IOException {
-        GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
         String[] origins = new String[] {from.toString()};
         String[] destinations = new String[] {to.toString()};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
