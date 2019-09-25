@@ -7,7 +7,7 @@ import com.google.maps.model.DistanceMatrix;
 import com.google.maps.model.TrafficModel;
 import com.google.maps.model.TravelMode;
 import com.google.maps.model.Unit;
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.utils.UnitUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +34,9 @@ public class GoogleMapsService implements MapService {
      * @param to The ending address.
      */
     @Override
-    public double drivingDistance(Address from, Address to) throws InterruptedException, ApiException, IOException {
-        String[] origins = new String[] {from.toString()};
-        String[] destinations = new String[] {to.toString()};
+    public double drivingDistance(GoogleAddress from, GoogleAddress to) throws InterruptedException, ApiException, IOException {
+        String[] origins = new String[] {formatPlaceId(from.getPlaceId())};
+        String[] destinations = new String[] {formatPlaceId(to.getPlaceId())};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
                 .mode(TravelMode.DRIVING)
                 .departureTime(DateTime.now())
@@ -48,5 +48,10 @@ public class GoogleMapsService implements MapService {
             meters = request.rows[0].elements[0].distance.inMeters;
         }
         return UnitUtils.metersToMiles(meters).doubleValue();
+    }
+
+    // Must prefix placeId with "place_id:" to use in distance matrix.
+    private String formatPlaceId(String placeId) {
+        return "place_id:" + placeId;
     }
 }
