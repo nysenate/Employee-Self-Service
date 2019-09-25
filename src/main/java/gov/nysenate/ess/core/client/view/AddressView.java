@@ -17,7 +17,6 @@ public class AddressView implements ViewObject
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
-    protected String formattedAddress = "";
     protected String formattedAddressWithCounty = "";
 
     public AddressView() {}
@@ -31,7 +30,6 @@ public class AddressView implements ViewObject
         this.country = address.getCountry();
         this.zip5 = address.getZip5();
         this.zip4 = address.getZip4();
-        formattedAddress = address.toString();
         formattedAddressWithCounty = address.getFromattedAddressWithCounty();
     }
 
@@ -86,11 +84,6 @@ public class AddressView implements ViewObject
     @XmlElement
     public String getCountry() {
         return country;
-    }
-
-    @XmlElement
-    public String getFormattedAddress() {
-        return formattedAddress;
     }
 
     @XmlElement
