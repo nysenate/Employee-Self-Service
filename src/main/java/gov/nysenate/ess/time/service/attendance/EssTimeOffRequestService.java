@@ -1,5 +1,6 @@
 package gov.nysenate.ess.time.service.attendance;
 
+import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import gov.nysenate.ess.core.service.personnel.EssCachedEmployeeInfoService;
 import gov.nysenate.ess.time.dao.attendance.SqlTimeOffRequestDao;
@@ -9,6 +10,7 @@ import gov.nysenate.ess.time.model.attendance.TimeOffRequestNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,18 +21,36 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
     @Autowired protected SqlTimeOffRequestDao sqlTimeOffRequestDao;
     @Autowired protected EssCachedEmployeeInfoService essCachedEmployeeInfoService;
 
+    /**
+     * {{@inheritDoc}}
+     */
     @Override
     public TimeOffRequest getTimeOffRequest(int requestId) throws TimeOffRequestNotFoundException {
         return sqlTimeOffRequestDao.getRequestById(requestId);
     }
 
+    /**
+     * {{@inheritDoc}}
+     */
     @Override
-    public List<TimeOffRequest> getActiveRequestsForEmp(int empId) {
-        List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(empId);
+    public List<TimeOffRequest> getAllRequestForEmpDateRange(int empId, Range<LocalDate> dateRange) {
+        return sqlTimeOffRequestDao.getAllRequestsByEmpId(empId, dateRange);
+
+    }
+
+    /**
+     * {{@inheritDoc}}
+     */
+    @Override
+    public List<TimeOffRequest> getActiveRequestsForEmp(int empId, Range<LocalDate> dateRange) {
+        List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsByEmpId(empId, dateRange);
         requests.removeIf(request -> !isActive(request));
         return requests;
     }
 
+    /**
+     * {{@inheritDoc}}
+     */
     @Override
     public List<TimeOffRequest> getRequestsNeedingApproval(int supId) {
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getRequestsNeedingApproval(supId);
@@ -38,11 +58,17 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
         return requests;
     }
 
+    /**
+     * {{@inheritDoc}}
+     */
     @Override
-    public List<TimeOffRequest> getRequests(int empId, int supId, int year) {
-        return sqlTimeOffRequestDao.getAllRequestsBySupEmpYear(supId, empId, year);
+    public List<TimeOffRequest> getAllRequestsForSup(int supId) {
+        return sqlTimeOffRequestDao.getAllRequestsBySupId(supId);
     }
 
+    /**
+     * {{@inheritDoc}}
+     */
     @Override
     public List<TimeOffRequest> getActiveRequestsForSup(int supId) {
         List<TimeOffRequest> requests = sqlTimeOffRequestDao.getAllRequestsBySupId(supId);
@@ -50,11 +76,11 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
         return requests;
     }
 
+    /**
+     * {{@inheritDoc}}
+     */
     @Override
-    public boolean updateRequest(TimeOffRequest request) {
-        //update an existing request, or add a new request
-        boolean updated = false;
-
+    public int updateRequest(TimeOffRequest request) {
         //update the timestamp of the request and of any comments with the request
         LocalDateTime now = LocalDateTime.now();
         request.setTimestamp(now);
@@ -66,14 +92,7 @@ public class EssTimeOffRequestService implements TimeOffRequestService {
             }
         }
 
-        // Check if the request exists
-        if(request.getRequestId() !=  -1) {
-           updated = sqlTimeOffRequestDao.updateRequest(request);
-        } else {
-            int requestId = sqlTimeOffRequestDao.addNewRequest(request);
-            if(requestId > 0) {updated = true;}
-        }
-        return updated;
+        return sqlTimeOffRequestDao.updateRequest(request);
     }
 
     /* **** PRIVATE HELPER FUNCTIONS **** */

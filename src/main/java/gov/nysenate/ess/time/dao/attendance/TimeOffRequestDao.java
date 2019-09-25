@@ -1,8 +1,10 @@
 package gov.nysenate.ess.time.dao.attendance;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.BaseDao;
 import gov.nysenate.ess.time.model.attendance.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TimeOffRequestDao extends BaseDao {
@@ -16,11 +18,11 @@ public interface TimeOffRequestDao extends BaseDao {
 
     /**
      * Retrieve all time off requests for an employee (Given
-     * by employee ID)
+     * by employeeID) during a date range (Given by dateRange)
      * @param employeeId int
      * @return List<TimeOffRequest>
      */
-    List<TimeOffRequest> getAllRequestsByEmpId(int employeeId);
+    List<TimeOffRequest> getAllRequestsByEmpId(int employeeId, Range<LocalDate> dateRange);
 
     /**
      * Retrieve all time off requests for a supervisor (Given
@@ -31,16 +33,6 @@ public interface TimeOffRequestDao extends BaseDao {
     List<TimeOffRequest> getAllRequestsBySupId(int supervisorId);
 
     /**
-     * Retrieve all requests from a specified employee to a
-     * specified supervisor during a given year
-     * @param employeeId int
-     * @param supervisorId int
-     * @param year int
-     * @return List<TimeOffRequest>
-     */
-    List<TimeOffRequest> getAllRequestsBySupEmpYear(int employeeId, int supervisorId, int year);
-
-    /**
      * Retrieve all requests needing approval from a
      * specified supervisor
      * @param supervisorId int
@@ -49,41 +41,20 @@ public interface TimeOffRequestDao extends BaseDao {
     List<TimeOffRequest> getRequestsNeedingApproval(int supervisorId);
 
     /**
-     * Add a comment to the comment thread of a request
-     * @param comment TimeOffRequestComment
+     * Retrieve all active requests for a supervisor (Given
+     * by supervisorId)
+     * @param supervisorId int
+     * @return List<TimeOffRequest>
      */
-    void addCommentToRequest(TimeOffRequestComment comment);
-
-    /**
-     * Add a day with time off to a request
-     * @param day TimeOffRequestDay
-     */
-    void addDayToRequest(TimeOffRequestDay day);
-
-    /**
-     * Create a new time off request
-     * @param request TimeOffRequest
-     * @return int (the requestId of the newly added request)
-     */
-    int addNewRequest(TimeOffRequest request);
+    List<TimeOffRequest> getActiveTimeOffRequests(int supervisorId);
 
     /**
      * Update the status of a request given the
      * request ID
      * @param request TimeOffRequest
-     * @return boolean - true if the request was updated, false otherwise
+     * @return int - The requestId if the request was added or updated,
+     *               and -1 otherwise.
      */
-    boolean updateRequest(TimeOffRequest request);
+    int updateRequest(TimeOffRequest request);
 
-    /**
-     * Delete all comments for a request
-     * @param requestId int
-     */
-    void removeAllComments(int requestId);
-
-    /**
-     * Delete all days for a request
-     * @param requestId int
-     */
-    void removeAllDays(int requestId);
 }

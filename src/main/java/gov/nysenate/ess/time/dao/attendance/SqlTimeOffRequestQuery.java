@@ -5,10 +5,6 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 
 public enum SqlTimeOffRequestQuery implements BasicSqlQuery {
 
-    ADD_TIME_OFF_REQUEST(
-            "INSERT INTO time.time_off_request (employee_id, supervisor_id, status, update_timestamp, start_date, end_date) " +
-            "VALUES( :employeeId, :supervisorId, :status::\"time\".time_off_status_type, :updateTimestamp, :startDate, :endDate)"
-    ),
     SELECT_TIME_OFF_REQUEST(
             "SELECT *\n" +
             "FROM time.time_off_request r\n"
@@ -26,22 +22,24 @@ public enum SqlTimeOffRequestQuery implements BasicSqlQuery {
     SELECT_TIME_OFF_REQUEST_BY_REQUEST_ID(
         SELECT_TIME_OFF_REQUEST.getSql() + "WHERE r.request_id = :requestId"
     ),
-    SELECT_TIME_OFF_REQUEST_IDS_BY_EMPLOYEE_ID(
+    SELECT_TIME_OFF_REQUEST_IDS_BY_EMPLOYEE_ID_DATE_RANGE(
             "SELECT request_id\n" +
             "FROM time.time_off_request r\n" +
-            "WHERE r.employee_id = :employeeId"
+            "WHERE r.employee_id = :employeeId " +
+                    "and (r.start_date <= CAST(:endRange AS DATE) " +
+                    "and r.end_date >= CAST(:startRange AS DATE)) "
     ),
     SELECT_TIME_OFF_REQUEST_IDS_BY_SUPERVISOR_ID(
             "SELECT request_id\n" +
             "FROM time.time_off_request r\n" +
             "WHERE r.supervisor_id = :supervisorId"
     ),
-    SELECT_TIME_OFF_REQUESTS_IDS_BY_EMP_SUP_YEAR(
-            "SELECT request_id\n" +
-            "FROM time.time_off_request r\n" +
-            "WHERE r.supervisor_id = :supervisorId " +
-            "and r.employee_id = :employeeId and (EXTRACT(YEAR FROM r.start_date) = " +
-                    ":year or EXTRACT(YEAR FROM r.end_date) = :year)\n"
+    ADD_TIME_OFF_REQUEST(
+            "INSERT INTO time.time_off_request" +
+                    "(employee_id, supervisor_id, status, update_timestamp, " +
+                    "start_date, end_date)\n" +
+                    "VALUES(:employeeId, :supervisorId,  CAST(:status AS \"time\".time_off_status_type), :updateTimestamp, " +
+                    ":startDate, :endDate) "
     ),
     ADD_COMMENT_TO_TIME_OFF_REQUEST(
             "INSERT INTO time.time_off_request_comment" +
@@ -74,7 +72,14 @@ public enum SqlTimeOffRequestQuery implements BasicSqlQuery {
                     "FROM time.time_off_request r\n" +
                     "WHERE r.supervisor_id = :supervisorId " +
                     "and r.status = 'SUBMITTED'\n"
+    ),
+    SELECT_ACTIVE_TIME_OFF_REQUEST_IDS(
+            "SELECT request_id\n" +
+                    "FROM time.time_off_request r\n" +
+                    "WHERE r.supervisor_id = :supervisorId " +
+                    "and r.status = 'APPROVED'\n"
     )
+
     ;
 
     private String sql;

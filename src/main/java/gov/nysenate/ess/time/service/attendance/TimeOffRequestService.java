@@ -1,8 +1,11 @@
 package gov.nysenate.ess.time.service.attendance;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequest;
 import gov.nysenate.ess.time.model.attendance.TimeOffRequestNotFoundException;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TimeOffRequestService {
@@ -17,12 +20,22 @@ public interface TimeOffRequestService {
     TimeOffRequest getTimeOffRequest(int requestId) throws TimeOffRequestNotFoundException;
 
     /**
-     * Get all the active time off requests for a single employee
+     * Get all requests for an employee for a given date range.
      *
      * @param empId int - employee id
+     * @return dateRange Range<LocalDate>
+     */
+    List<TimeOffRequest> getAllRequestForEmpDateRange(int empId, Range<LocalDate> dateRange);
+
+    /**
+     * Get all the active time off requests for a single employee
+     * during a given date range.
+     *
+     * @param empId int - employee id
+     * @param dateRange Range<LocalDate>
      * @return List<TimeOffRequest> - empty list if none exist
      */
-    List<TimeOffRequest> getActiveRequestsForEmp(int empId);
+    List<TimeOffRequest> getActiveRequestsForEmp(int empId, Range<LocalDate> dateRange);
 
     /**
      * Get all time off requests needing approval for a single supervisor
@@ -33,15 +46,12 @@ public interface TimeOffRequestService {
     List<TimeOffRequest> getRequestsNeedingApproval(int supId);
 
     /**
-     * Get all the time off requests for a given employee, supervisor, and year
-     * (Provides a history of requests; the requests need not be active)
+     * Get all time off requests for a supervisor
      *
-     * @param empId int - employee id
      * @param supId int - supervisor id
-     * @param year  int - year
-     * @return List<TimeOffRequest> - empty list if none exist
+     * @return List<TimeOffRequest>
      */
-    List<TimeOffRequest> getRequests(int empId, int supId, int year);
+    List<TimeOffRequest> getAllRequestsForSup(int supId);
 
     /**
      * Get all active requests for a supervisor's employees
@@ -55,8 +65,9 @@ public interface TimeOffRequestService {
     /**
      * Update the data from user input for a given request
      *
-     * @param request TimeOffRequest - the request that needs to be saved
-     * @return boolean - true if request was saved/updated, false otherwise
+     * @param request TimeOffRequest - the request that needs to be saved or added
+     * @return int - The requestId if the request was saved/updated or added,
+     *               and -1 otherwise.
      */
-    boolean updateRequest(TimeOffRequest request);
+    int updateRequest(TimeOffRequest request);
 }

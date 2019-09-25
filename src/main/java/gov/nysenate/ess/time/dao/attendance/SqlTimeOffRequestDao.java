@@ -1,5 +1,6 @@
 package gov.nysenate.ess.time.dao.attendance;
 
+import com.google.common.collect.Range;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.time.dao.attendance.mapper.TimeOffRequestCommentRowMapper;
 import gov.nysenate.ess.time.dao.attendance.mapper.TimeOffRequestDayRowMapper;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Repository;
 
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -59,14 +62,18 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * {@inheritDoc}
      */
     @Override
-    public List<TimeOffRequest> getAllRequestsByEmpId(int employeeId) {
+    public List<TimeOffRequest> getAllRequestsByEmpId(int employeeId, Range<LocalDate> dateRange) {
         //get the request ids of all requests with the employeeID
         List<Integer> requestIds;
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("employeeId", employeeId);
-        requestIds = localNamedJdbc.query(SqlTimeOffRequestQuery.SELECT_TIME_OFF_REQUEST_IDS_BY_EMPLOYEE_ID.getSql(schemaMap()),
+        params.addValue("startRange", Date.valueOf(dateRange.lowerEndpoint()));
+        params.addValue("endRange", Date.valueOf(dateRange.upperEndpoint()));
+        requestIds = localNamedJdbc.query(SqlTimeOffRequestQuery.SELECT_TIME_OFF_REQUEST_IDS_BY_EMPLOYEE_ID_DATE_RANGE.getSql(schemaMap()),
                 params, (rs, rowNum) -> rs.getInt("request_id"));
         return getMultipleRequests(requestIds);
+        //filter the requests by comparing their date range to the given data range.
+        //If there is any overlap, keep the request in the list to be returned
     }
 
     /**
@@ -79,22 +86,6 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("supervisorId", supervisorId);
         requestIds = localNamedJdbc.query(SqlTimeOffRequestQuery.SELECT_TIME_OFF_REQUEST_IDS_BY_SUPERVISOR_ID.getSql(schemaMap()),
-                params, (rs, rowNum) -> rs.getInt("request_id"));
-        return getMultipleRequests(requestIds);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TimeOffRequest> getAllRequestsBySupEmpYear(int supervisorId, int employeeId, int year) {
-        //get the request ids of all requests with the employeeID
-        List<Integer> requestIds;
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("supervisorId", supervisorId);
-        params.addValue("employeeId", employeeId);
-        params.addValue("year", year);
-        requestIds = localNamedJdbc.query(SqlTimeOffRequestQuery.SELECT_TIME_OFF_REQUESTS_IDS_BY_EMP_SUP_YEAR.getSql(schemaMap()),
                 params, (rs, rowNum) -> rs.getInt("request_id"));
         return getMultipleRequests(requestIds);
     }
@@ -116,50 +107,76 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * {@inheritDoc}
      */
     @Override
-    public void addCommentToRequest(TimeOffRequestComment comment) {
-        MapSqlParameterSource params = getAddCommentParams(comment);
-        localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_COMMENT_TO_TIME_OFF_REQUEST.getSql(schemaMap()), params);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeAllComments(int requestId) {
+    public List<TimeOffRequest> getActiveTimeOffRequests(int supervisorId) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("requestId", requestId);
-        localNamedJdbc.update(SqlTimeOffRequestQuery.REMOVE_ALL_COMMENTS_FOR_REQUEST.getSql(schemaMap()), params);
+        params.addValue("supervisorId", supervisorId);
+        List<Integer> requestIds;
+        requestIds = localNamedJdbc.query(SqlTimeOffRequestQuery.SELECT_ACTIVE_TIME_OFF_REQUEST_IDS.getSql(schemaMap()),
+                params, (rs, rowNum) -> rs.getInt("request_id"));
+        return getMultipleRequests(requestIds);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addDayToRequest(TimeOffRequestDay day) {
-        MapSqlParameterSource params = getAddDayParams(day);
-        localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_DAY_TO_TIME_OFF_REQUEST.getSql(schemaMap()), params);
+    public int updateRequest(TimeOffRequest request) {
+        int requestId = request.getRequestId();
+
+        //If the request is new, add it to the database,
+        //Otherwise, update the request.
+        if(requestId == -1) {
+            requestId = addNewRequest(request);
+        } else {
+            //remove old comments and days
+            removeAllComments(request.getRequestId());
+            removeAllDays(request.getRequestId());
+
+            //update the other info for the request
+            MapSqlParameterSource params = getAddRequestParams(request);
+            params.addValue("requestId", request.getRequestId());
+            int changed = localNamedJdbc.update(SqlTimeOffRequestQuery.UPDATE_REQUEST.getSql(schemaMap()), params);
+            if(changed == 0) {
+                requestId = -1;
+            }
+            //add in the new comments and days
+            if(request.getComments() != null) {
+                for (TimeOffRequestComment comment : request.getComments()) {
+                    comment.setRequestId(request.getRequestId());
+                    addCommentToRequest(comment);
+                }
+            }
+            if(request.getDays() != null) {
+                for (TimeOffRequestDay day : request.getDays()) {
+                    day.setRequestId(request.getRequestId());
+                    addDayToRequest(day);
+                }
+            }
+        }
+
+        return requestId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeAllDays(int requestId) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("requestId", requestId);
-        localNamedJdbc.update(SqlTimeOffRequestQuery.REMOVE_ALL_DAYS_FOR_REQUEST.getSql(schemaMap()), params);
-    }
+
+
+
+    /* ***** PRIVATE HELPER FUNCTIONS ***** */
 
     /**
-     * {@inheritDoc}
+     * Helper function to add a request to the database.
+     * This function is called by the updateRequest() function
+     * when the request does not yet exist in the database.
+     *
+     * @param request TimeOffRequest
+     * @return int - The requestId of the newly added request
      */
-    @Override
-    public int addNewRequest(TimeOffRequest request) {
+    private int addNewRequest(TimeOffRequest request) {
         MapSqlParameterSource params = getAddRequestParams(request);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         final String column = "request_id";
         String[] keyCols = {column};
-        localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_TIME_OFF_REQUEST.getSql(schemaMap()), params, keyHolder, keyCols);
+        localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_TIME_OFF_REQUEST.getSql(schemaMap()),
+                params, keyHolder, keyCols);
         int requestId = (Integer) keyHolder.getKeys().get(column);
 
         //add each day in the request
@@ -181,36 +198,47 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
     }
 
     /**
-     * {@inheritDoc}
+     * Helper function to add a comment to the comment thread of a request
+     *
+     * @param comment TimeOffRequestComment
      */
-    @Override
-    public boolean updateRequest(TimeOffRequest request) {
-        //remove old comments and days
-        removeAllComments(request.getRequestId());
-        removeAllDays(request.getRequestId());
 
-        //update the other info for the request
-        MapSqlParameterSource params = getAddRequestParams(request);
-        params.addValue("requestId", request.getRequestId());
-        int changed = localNamedJdbc.update(SqlTimeOffRequestQuery.UPDATE_REQUEST.getSql(schemaMap()), params);
-        //add in the new comments and days
-        if(request.getComments() != null) {
-            for (TimeOffRequestComment comment : request.getComments()) {
-                comment.setRequestId(request.getRequestId());
-                addCommentToRequest(comment);
-            }
-        }
-        if(request.getDays() != null) {
-            for (TimeOffRequestDay day : request.getDays()) {
-                day.setRequestId(request.getRequestId());
-                addDayToRequest(day);
-            }
-        }
-        return (changed == 1);
+    private void addCommentToRequest(TimeOffRequestComment comment) {
+        MapSqlParameterSource params = getAddCommentParams(comment);
+        localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_COMMENT_TO_TIME_OFF_REQUEST.getSql(schemaMap()), params);
     }
 
+    /**
+     * Helper function to delete all comments for a request
+     *
+     * @param requestId int
+     */
+    private void removeAllComments(int requestId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("requestId", requestId);
+        localNamedJdbc.update(SqlTimeOffRequestQuery.REMOVE_ALL_COMMENTS_FOR_REQUEST.getSql(schemaMap()), params);
+    }
 
-    /* ***** PRIVATE HELPER FUNCTIONS ***** */
+    /**
+     * Helper function to add a day with time off to a request
+     *
+     * @param day TimeOffRequestDay
+     */
+    private void addDayToRequest(TimeOffRequestDay day) {
+        MapSqlParameterSource params = getAddDayParams(day);
+        localNamedJdbc.update(SqlTimeOffRequestQuery.ADD_DAY_TO_TIME_OFF_REQUEST.getSql(schemaMap()), params);
+    }
+
+    /**
+     * Helping function to delete all days for a request
+     *
+     * @param requestId int
+     */
+    private void removeAllDays(int requestId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("requestId", requestId);
+        localNamedJdbc.update(SqlTimeOffRequestQuery.REMOVE_ALL_DAYS_FOR_REQUEST.getSql(schemaMap()), params);
+    }
 
     /**
      * Helper function that gets requests for multiple request ids

@@ -66,8 +66,10 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value="/employee/{empId:\\d+}", method = RequestMethod.GET)
     public List<TimeOffRequestView> getEmployeeRequestsJson(@PathVariable int empId) {
+        //using empty daterange for the time being CHANGE THIS
+        Range<LocalDate> dateRange = null;
         checkPermission(new EssTimePermission(empId, TIME_OFF_REQUESTS, GET, LocalDate.now()));
-        List<TimeOffRequest> requests = timeOffRequestService.getActiveRequestsForEmp(empId);
+        List<TimeOffRequest> requests = timeOffRequestService.getActiveRequestsForEmp(empId, dateRange);
         return getListRequestViews(requests);
     }
 
@@ -90,26 +92,6 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Get Requests By Year API
-     * ------------------------
-     *
-     * Get all requests for a specified employee,
-     * supervisor, and year:
-     * (GET) /api/v1/timeoffrequests/getrequestsbyyear
-     *
-     * @param supId int
-     * @param empId int
-     * @param year int
-     * @return List<TimeOffRequest>
-     */
-    @RequestMapping(value = "/supervisor/{supId:\\d+}", method = RequestMethod.GET)
-    public List<TimeOffRequestView> getRequestsByYear(@PathVariable int supId, @RequestParam int empId, @RequestParam int year) {
-        checkPermission(new EssTimePermission(supId, SUPERVISOR_TIME_RECORDS, GET, LocalDate.now()));
-        List<TimeOffRequest> requests = timeOffRequestService.getRequests(empId, supId, year);
-        return getListRequestViews(requests);
-    }
-
-    /**
      * Update Request API
      * ------------------
      *
@@ -117,10 +99,9 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      * (POST) /api/v1/timeoffrequests/updaterequest
      *
      * Post Data: json TimeOffRequestView
-     * @returns boolean - True if updated/saved properly, false otherwise
      */
     @RequestMapping(value = "", method = POST)
-    public boolean updateRequest(@RequestBody TimeOffRequestView request) {
+    public int updateRequest(@RequestBody TimeOffRequestView request) {
         checkPermission(new EssTimePermission(request.getEmployeeId(), TIME_OFF_REQUESTS, POST, LocalDate.now()));
         TimeOffRequest timeOffRequest = request.toTimeOffRequest();
         return timeOffRequestService.updateRequest(timeOffRequest);
