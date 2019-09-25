@@ -1,6 +1,7 @@
 package gov.nysenate.ess.travel.application.route;
 
 import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.ServiceProviderFactory;
@@ -81,7 +82,7 @@ public class RouteService {
     }
 
     private Destination createFromDestination(Leg previousLeg, Leg currentLeg) {
-        Address address = currentLeg.fromAddress();
+        GoogleAddress address = currentLeg.fromAddress();
         LocalDate arrival = previousLeg == null ? currentLeg.travelDate() : previousLeg.travelDate();
         LocalDate departure = currentLeg.travelDate();
 
@@ -89,7 +90,7 @@ public class RouteService {
     }
 
     private Destination createToDestination(Leg nextLeg, Leg currentLeg) {
-        Address address = currentLeg.toAddress();
+        GoogleAddress address = currentLeg.toAddress();
         LocalDate arrival = currentLeg.travelDate();
         LocalDate departure = nextLeg == null ? currentLeg.travelDate() : nextLeg.travelDate();
 

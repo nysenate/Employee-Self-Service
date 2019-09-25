@@ -16,6 +16,15 @@ public class GoogleAddressView extends AddressView implements ViewObject {
     public GoogleAddressView() {
     }
 
+    public GoogleAddressView(GoogleAddress addr) {
+        super(addr);
+        this.placeId = addr.getPlaceId();
+        this.name = addr.getName();
+        this.formattedAddress = addr.getName();
+        this.lat = addr.getLatLng().lat;
+        this.lng = addr.getLatLng().lng;
+    }
+
     public GoogleAddress toGoogleAddress() {
         Address address = super.toAddress();
         GoogleAddress googleAddress = new GoogleAddress(placeId, name, formattedAddress, new LatLng(lat, lng));

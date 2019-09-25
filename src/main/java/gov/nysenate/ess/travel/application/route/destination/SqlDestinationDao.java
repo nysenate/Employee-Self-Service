@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.dao.base.BaseHandler;
 import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
 import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -144,7 +144,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         private int id;
         private LocalDate arrivalDate;
         private LocalDate departureDate;
-        private Address address;
+        private GoogleAddress address;
         private TreeMap<LocalDate, PerDiem> mealPerDiems;
         private TreeMap<LocalDate, PerDiem> lodgingPerDiems;
 
@@ -165,7 +165,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                 departureDate = getLocalDateFromRs(rs, "departure_date");
             }
             if (address == null) {
-                address = new Address();
+                address = new GoogleAddress();
                 address.setAddr1(rs.getString("street_1"));
                 address.setAddr2(rs.getString("street_2"));
                 address.setCity(rs.getString("city"));

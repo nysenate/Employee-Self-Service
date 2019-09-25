@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.application.route.destination;
 
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.address.GoogleAddressView;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
@@ -16,7 +17,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE;
 public class DestinationView implements ViewObject {
 
     private int id;
-    private AddressView address;
+    private GoogleAddressView address;
     private String arrivalDate;
     private String departureDate;
     private MealPerDiemsView mealPerDiems;
@@ -27,7 +28,7 @@ public class DestinationView implements ViewObject {
 
     public DestinationView(Destination d) {
         this.id = d.id;
-        this.address = new AddressView(d.address);
+        this.address = new GoogleAddressView(d.getAddress());
         this.arrivalDate = d.arrivalDate() == null ? null : d.arrivalDate().format(ISO_DATE);
         this.departureDate = d.departureDate() == null ? null : d.departureDate().format(ISO_DATE);
         this.mealPerDiems = new MealPerDiemsView(d.mealPerDiems());
@@ -37,7 +38,7 @@ public class DestinationView implements ViewObject {
     public Destination toDestination() {
         return new Destination(
                 id,
-                address.toAddress(),
+                address.toGoogleAddress(),
                 arrivalDate == null ? null : LocalDate.parse(arrivalDate, ISO_DATE),
                 departureDate == null ? null : LocalDate.parse(departureDate, ISO_DATE),
                 mealPerDiems == null ? null : mealPerDiems.toMealPerDiems().allMealPerDiems().stream()

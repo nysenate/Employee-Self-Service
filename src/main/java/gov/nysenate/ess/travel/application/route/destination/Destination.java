@@ -1,7 +1,7 @@
 package gov.nysenate.ess.travel.application.route.destination;
 
 import com.google.common.collect.Range;
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 public class Destination {
 
     protected int id;
-    protected final Address address;
+    protected final GoogleAddress address;
     protected final Range<LocalDate> dateRange;
     // TODO ImmutableSortedMap?
     protected final TreeMap<LocalDate, PerDiem> dateToMealPerDiems;
     protected final TreeMap<LocalDate, PerDiem> dateToLodgingPerDiems;
 
-    public Destination(Address address, LocalDate arrival, LocalDate departure) {
+    public Destination(GoogleAddress address, LocalDate arrival, LocalDate departure) {
         this(0, address, arrival, departure, new TreeMap<>(), new TreeMap<>());
     }
 
-    public Destination(int id, Address address, LocalDate arrival, LocalDate departure,
+    public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
                        Map<LocalDate, PerDiem> dateToMealPerDiems,
                        Map<LocalDate, PerDiem> dateToLodgingPerDiems) {
         // TODO validate PerDiem addresses match destination address?
@@ -48,7 +48,7 @@ public class Destination {
                 .collect(Collectors.toList()));
     }
 
-    public Address getAddress() {
+    public GoogleAddress getAddress() {
         return address;
     }
 

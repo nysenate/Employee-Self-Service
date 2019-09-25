@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.application.route;
 
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -56,11 +56,11 @@ public class Leg {
         return id;
     }
 
-    public Address fromAddress() {
+    public GoogleAddress fromAddress() {
         return from.getAddress();
     }
 
-    public Address toAddress() {
+    public GoogleAddress toAddress() {
         return to.getAddress();
     }
 

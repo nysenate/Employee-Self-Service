@@ -12,6 +12,10 @@ public class GoogleAddress extends Address {
     private String formattedAddress;
     private LatLng latLng;
 
+    // TODO Temporary until database is updated to use GoogleAddress.
+    public GoogleAddress() {
+    }
+
     public GoogleAddress(String placeId, String name, String formattedAddress, LatLng latLng) {
         this.placeId = placeId;
         this.name = name;
