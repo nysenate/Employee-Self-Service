@@ -205,8 +205,6 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     public void generateSearchReportCSV(WebRequest request, HttpServletResponse response) throws IOException {
         checkPermission(SimpleEssPermission.COMPLIANCE_REPORT_GENERATION.getPermission());
 
-        HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = getPersonnelTaskIdMap();
-
         String csvFileName =  "PEC_Report" + LocalDateTime.now().withNano(0)+".csv";
         // creates mock data
         String headerKey = "Content-Disposition";
@@ -223,18 +221,15 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         List<EmpPATSearchResultView> resultViews = results.getResults().stream()
                 .map(EmpPATSearchResultView::new)
                 .collect(Collectors.toList());
-        //Handle CSV Generation
-        //change csv headers when you see the actual response
-        CSVPrinter csvPrinter = new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
-                .withHeader("EmpId", "Name", "Email", "Resp Center", "Continuous Service", "Task Title" ,"Task Type",
-                        "Task Number", "Task Completion Time", "Update EmpId"));
+
+        //Get max amount of tasks
+        //get proper csv printer
+        //handle csv printing
+        int maxNumOfTasks = getMaxNumOfTasks(resultViews);
+        CSVPrinter csvPrinter = createProperCSVPrinter(maxNumOfTasks, response);
         for (EmpPATSearchResultView searchResultView: resultViews) {
             DetailedEmployeeView currentEmployee =  searchResultView.getEmployee();
-            String respCenter = getRespCenter(currentEmployee);
-            for (PersonnelAssignedTaskView task : searchResultView.getTasks()) {
-                String taskTitle = personnelTaskMap.get(task.getTaskId().toPersonnelTaskId()).getTitle();
-                printCSVRecord(csvPrinter, currentEmployee, respCenter, taskTitle, task);
-            }
+            handleCSVPrinting(csvPrinter,currentEmployee,getRespCenter(currentEmployee), searchResultView.getTasks(), maxNumOfTasks);
         }
         csvPrinter.close();
     }
@@ -249,6 +244,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         );
     }
 
+    /*
+    Get a map of all personnel tasks and their ids
+     */
     private HashMap<PersonnelTaskId, PersonnelTask> getPersonnelTaskIdMap() {
         List<PersonnelTask> personnelTasks = taskSource.getPersonnelTasks(false);
         HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = new HashMap<>();
@@ -258,22 +256,88 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         return personnelTaskMap;
     }
 
-    private void printCSVRecord(CSVPrinter csvPrinter, DetailedEmployeeView currentEmployee, String respCenter,
-                                String taskTitle, PersonnelAssignedTaskView task) throws IOException {
-        csvPrinter.printRecord(
-                currentEmployee.getEmployeeId(),
-                currentEmployee.getFullName(),
-                currentEmployee.getEmail(),
-                respCenter,
-                currentEmployee.getContServiceDate(),
-                taskTitle,
-                task.getTaskId().getTaskType().toString(),
-                task.getTaskId().getTaskNumber(),
-                task.getTimestamp(),
-                task.getUpdateUserId()
-        );
+    /*
+    return the maximum number of tasks so we can provide the right amount of headers for the CSV report
+     */
+    private int getMaxNumOfTasks(List<EmpPATSearchResultView> resultViews) {
+        int max = 1;
+        for (EmpPATSearchResultView searchResultView: resultViews) {
+            int recordCount = searchResultView.getTasks().size();
+            if (recordCount > max) {
+                max = recordCount;
+            }
+        }
+        return max;
     }
 
+    /*
+    Returns a complete CSV printer with the header set
+     */
+    private CSVPrinter createProperCSVPrinter(int maxNumOfTasks, HttpServletResponse response) throws IOException {
+        String testOriginalTaskString = "EmpId, Name, Email, Work Phone, Resp Center, Continuous Service, ";
+
+        for (int i = 1; i < maxNumOfTasks+1; i++) {
+            testOriginalTaskString = testOriginalTaskString + createTaskStrings(i);
+        }
+
+         return new CSVPrinter(response.getWriter(), CSVFormat.DEFAULT
+                    .withHeader(testOriginalTaskString.split(",")));
+    }
+
+    /*
+    Creates additional sections of the csv header relating to the tasks.
+    The number is required because each value in the header must be unique
+     */
+    private String createTaskStrings(int taskNumber) {
+        return "Task " + taskNumber + " Title," + "Task " + taskNumber + " Type," + "Task " + taskNumber + " Completion Time," + "Task " + taskNumber + " Update EmpId,";
+    }
+
+    /*
+    Creates the record that will be printed in the downloadable CSV
+     */
+    private void handleCSVPrinting(CSVPrinter csvPrinter, DetailedEmployeeView currentEmployee, String respCenter,
+                                   List<PersonnelAssignedTaskView> tasks, int maxNumOfTasks) throws IOException {
+        HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = getPersonnelTaskIdMap();
+
+        ArrayList<Object> recordToPrint = new ArrayList<>();
+        recordToPrint.add(currentEmployee.getEmployeeId());
+        recordToPrint.add(currentEmployee.getFullName());
+        recordToPrint.add(currentEmployee.getEmail());
+        recordToPrint.add(currentEmployee.getWorkPhone());
+        recordToPrint.add(getRespCenter(currentEmployee));
+        recordToPrint.add(currentEmployee.getContServiceDate());
+
+        for (PersonnelAssignedTaskView task : tasks) {
+            String taskTitle = personnelTaskMap.get(task.getTaskId().toPersonnelTaskId()).getTitle();
+
+            recordToPrint.add(taskTitle);
+            recordToPrint.add(task.getTaskId().getTaskType().toString());
+            recordToPrint.add(task.getTimestamp());
+            recordToPrint.add(task.getUpdateUserId());
+        }
+
+        int emptyTasksToFill = maxNumOfTasks - tasks.size();
+        if (emptyTasksToFill >= 1) {
+            for (int i = 0; i < emptyTasksToFill; i++) {
+                addEmptyTask(recordToPrint);
+            }
+        }
+
+        csvPrinter.printRecord(recordToPrint);
+    }
+
+    /*
+    Ensures that a record that doesnt have data for all tasks will show up empty in the csv
+     */
+    private void addEmptyTask(ArrayList<Object> recordToPrint) {
+        for (int i = 0; i < 5; i++) {
+            recordToPrint.add("");
+        }
+    }
+
+    /*
+    Returns the responsibility center of a given employee
+     */
     private String getRespCenter(DetailedEmployeeView currentEmployee) {
         String respCenter = "";
         try {

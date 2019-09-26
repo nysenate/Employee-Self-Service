@@ -44,6 +44,7 @@ public class MoodleRecordService implements ESSMoodleRecordService {
     private PersonnelAssignedTaskDao personnelAssignedTaskDao;
 
     @Value("${legethics.url:}") private String moodleUrl;
+    @Value("${legethics.api.path:}") private String moodleApiPath;
     @Value("${legethics.key:}") private String moodleKey;
     @Value("${scheduler.moodle.sync.enabled:false}") private boolean moodleSyncEnabled;
 
@@ -68,11 +69,14 @@ public class MoodleRecordService implements ESSMoodleRecordService {
 
         for (MoodleEmployeeRecord moodleEmployeeRecord : moodleEmployeeRecords) {
             Employee employee;
+            String filteredEmail = filterMoodleEmail( moodleEmployeeRecord.getEmail() );
+
             try {
-                employee = employeeDao.getEmployeeByEmail(moodleEmployeeRecord.getEmail());
+                logger.debug("Attempting to find a match with: " + filteredEmail);
+                employee = employeeDao.getEmployeeByEmail(filteredEmail);
             }
             catch (EmployeeException e) {
-                logger.warn("No Employee exists with email: " + moodleEmployeeRecord.getEmail());
+                logger.warn("No Employee exists with email: " + filteredEmail);
                 continue;
             }
 
@@ -87,11 +91,19 @@ public class MoodleRecordService implements ESSMoodleRecordService {
         }
     }
 
+    private String filterMoodleEmail(String email) {
+        String[] emailParts = email.toLowerCase().split("@");
+        String firstHalf = emailParts[0];
+        String secondHalf = emailParts[1];
+        firstHalf = firstHalf.replaceAll(".nysenate","").replaceAll(".senate","");
+        return firstHalf + "@" + secondHalf;
+    }
+
     public JsonNode contactMoodleForRecords(LocalDateTime from, LocalDateTime to, String organization) throws IOException {
         ZoneId zoneId = ZoneId.systemDefault();
         final String USER_AGENT = "Mozilla/5.0";
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(moodleUrl);
+        HttpPost post = new HttpPost(moodleUrl + moodleApiPath);
         post.setHeader("User-Agent", USER_AGENT);
         List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
         urlParameters.add(new BasicNameValuePair("from_date", Long.toString(from.atZone(zoneId).toEpochSecond())));
