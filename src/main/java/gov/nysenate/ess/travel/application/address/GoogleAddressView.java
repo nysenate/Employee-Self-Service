@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application.address;
 
-import com.google.maps.model.LatLng;
 import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.unit.Address;
@@ -10,8 +9,6 @@ public class GoogleAddressView extends AddressView implements ViewObject {
     private String placeId;
     private String name;
     private String formattedAddress;
-    private double lat;
-    private double lng;
 
     public GoogleAddressView() {
     }
@@ -21,13 +18,11 @@ public class GoogleAddressView extends AddressView implements ViewObject {
         this.placeId = addr.getPlaceId();
         this.name = addr.getName();
         this.formattedAddress = addr.getName();
-        this.lat = addr.getLatLng().lat;
-        this.lng = addr.getLatLng().lng;
     }
 
     public GoogleAddress toGoogleAddress() {
         Address address = super.toAddress();
-        GoogleAddress googleAddress = new GoogleAddress(placeId, name, formattedAddress, new LatLng(lat, lng));
+        GoogleAddress googleAddress = new GoogleAddress(placeId, name, formattedAddress);
         googleAddress.setAddr1(address.getAddr1());
         googleAddress.setAddr2(address.getAddr2());
         googleAddress.setCity(address.getCity());
@@ -49,14 +44,6 @@ public class GoogleAddressView extends AddressView implements ViewObject {
 
     public String getFormattedAddress() {
         return formattedAddress;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLng() {
-        return lng;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application.address;
 
-import com.google.maps.model.LatLng;
 import gov.nysenate.ess.core.model.unit.Address;
 
 import java.util.Objects;
@@ -10,17 +9,15 @@ public class GoogleAddress extends Address {
     private String placeId;
     private String name;
     private String formattedAddress;
-    private LatLng latLng;
 
     // TODO Temporary until database is updated to use GoogleAddress.
     public GoogleAddress() {
     }
 
-    public GoogleAddress(String placeId, String name, String formattedAddress, LatLng latLng) {
+    public GoogleAddress(String placeId, String name, String formattedAddress) {
         this.placeId = placeId;
         this.name = name;
         this.formattedAddress = formattedAddress;
-        this.latLng = latLng;
     }
 
     public String getPlaceId() {
@@ -35,10 +32,6 @@ public class GoogleAddress extends Address {
         return formattedAddress;
     }
 
-    public LatLng getLatLng() {
-        return latLng;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,12 +40,11 @@ public class GoogleAddress extends Address {
         GoogleAddress that = (GoogleAddress) o;
         return Objects.equals(placeId, that.placeId) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(formattedAddress, that.formattedAddress) &&
-                Objects.equals(latLng, that.latLng);
+                Objects.equals(formattedAddress, that.formattedAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), placeId, name, formattedAddress, latLng);
+        return Objects.hash(super.hashCode(), placeId, name, formattedAddress);
     }
 }
