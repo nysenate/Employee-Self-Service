@@ -3,7 +3,7 @@ package gov.nysenate.ess.travel.application;
 import com.google.common.collect.Lists;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.RouteView;
@@ -85,10 +85,11 @@ public class TravelApplicationView implements ViewObject {
 
         List<Destination> destinations = app.activeAmendment().route().destinations();
         if (!destinations.isEmpty()) {
-            Address address = destinations.get(0).getAddress();
+            GoogleAddress address = destinations.get(0).getAddress();
+            String name = address.getName();
             String city = address.getCity();
             String addr1 = address.getAddr1();
-            destinationSummary = city == null || city.isEmpty() ? addr1 : city;
+            destinationSummary = name.isEmpty() ? addr1.isEmpty() ? city : addr1 : name;
             if (destinations.size() > 1) {
                 destinationSummary += " ...";
             }
