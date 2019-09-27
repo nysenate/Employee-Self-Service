@@ -13,8 +13,8 @@
       </thead>
       <tbody>
       <tr ng-repeat="leg in app.route.mileagePerDiems.requestedLegs">
-        <td>{{leg.from.address.formattedAddress}}</td>
-        <td>{{leg.to.address.formattedAddress}}</td>
+        <td>{{leg.from.address.formattedAddressWithCounty}}</td>
+        <td>{{leg.to.address.formattedAddressWithCounty}}</td>
         <td>{{leg.miles}}</td>
         <td>{{leg.mileageRate}}</td>
         <td ng-class="{'line-through': isOverridden}">{{leg.requestedPerDiem | currency}}</td>

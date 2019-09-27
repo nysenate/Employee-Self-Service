@@ -31,7 +31,7 @@
           <label>From</label><br/>
           <input ess-address-autocomplete
                  name="fromAddress_{{$index}}"
-                 ng-model="leg.from.address.formattedAddress"
+                 ng-model="leg.from.address.formattedAddressWithCounty"
                  leg="leg"
                  callback="setFromAddress(leg, address)"
                  autocomplete-address-validator
@@ -48,7 +48,7 @@
           <label>To</label><br/>
           <input ess-address-autocomplete
                  name="toAddress_{{$index}}"
-                 ng-model="leg.to.address.formattedAddress"
+                 ng-model="leg.to.address.formattedAddressWithCounty"
                  leg="leg"
                  callback="setToAddress(leg, address)"
                  placeholder="To Address"

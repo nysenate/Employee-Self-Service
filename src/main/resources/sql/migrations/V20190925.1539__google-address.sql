@@ -12,8 +12,8 @@ CREATE TABLE travel.google_address(
     county text NOT NULL DEFAULT '',
     country text NOT NULL DEFAULT '',
     place_id text NOT NULL DEFAULT '',
-    name text,
-    formatted_address text
+    name text NOT NULL DEFAULT '',
+    formatted_address text NOT NULL DEFAULT ''
 );
 
 ALTER TABLE travel.google_address ADD CONSTRAINT google_address_unique UNIQUE(street_1, street_2, city, state, zip_5, zip_4, county, country, place_id);

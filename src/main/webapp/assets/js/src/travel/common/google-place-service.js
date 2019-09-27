@@ -9,15 +9,19 @@ function googlePlaceService() {
      * @param place
      */
     this.parseAddressFromPlace = function (place) {
+        console.log(place);
         var address = {};
 
-        address.formattedAddress = place.formatted_address;
         address.addr1 = parseAddress1(place);
         address.city = parseCity(place);
         address.county = parseCounty(place);
         address.state = parseState(place);
         address.zip5 = parseZip5(place);
         address.country = parseCountry(place);
+        address.placeId = place.place_id;
+        address.name = place.name;
+        address.formattedAddress = place.formatted_address;
+        address.formattedAddressWithCounty = parseFormattedAddressWithCounty(address);
 
         function parseAddress1(place) {
             return getTypeName(place, 'street_number') + ' ' + getTypeName(place, 'route');
@@ -45,6 +49,11 @@ function googlePlaceService() {
             return getTypeName(place, 'country');
         }
 
+        function parseFormattedAddressWithCounty(address) {
+            var formatted = address.name || address.addr1;
+            formatted += ", " + address.city + ", " + address.county + ", " + address.state + " " + address.zip5;
+            return formatted;
+        }
         /**
          * Returns the value associated with the given place and component type.
          * @param place A place object from google autocomplete api.

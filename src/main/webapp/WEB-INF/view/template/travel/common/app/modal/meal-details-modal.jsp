@@ -12,7 +12,7 @@
       <tbody>
       <tr ng-repeat="perDiem in app.route.mealPerDiems.requestedMealPerDiems">
         <td>{{perDiem.date | date: 'shortDate'}}</td>
-        <td>{{perDiem.address.formattedAddress}}</td>
+        <td>{{perDiem.address.formattedAddressWithCounty}}</td>
         <td ng-class="{'line-through': isOverridden}">{{perDiem.rate | currency}}</td>
       </tr>
       <tr ng-class="{'line-through': isOverridden}">

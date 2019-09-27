@@ -35,8 +35,8 @@ public class GoogleMapsService implements MapService {
      */
     @Override
     public double drivingDistance(GoogleAddress from, GoogleAddress to) throws InterruptedException, ApiException, IOException {
-        String[] origins = new String[] {formatPlaceId(from.getPlaceId())};
-        String[] destinations = new String[] {formatPlaceId(to.getPlaceId())};
+        String[] origins = new String[] {getGoolgeAddressParam(from)};
+        String[] destinations = new String[] {getGoolgeAddressParam(to)};
         DistanceMatrix request = DistanceMatrixApi.getDistanceMatrix(context, origins, destinations)
                 .mode(TravelMode.DRIVING)
                 .departureTime(DateTime.now())
@@ -50,8 +50,19 @@ public class GoogleMapsService implements MapService {
         return UnitUtils.metersToMiles(meters).doubleValue();
     }
 
-    // Must prefix placeId with "place_id:" to use in distance matrix.
-    private String formatPlaceId(String placeId) {
-        return "place_id:" + placeId;
+    /**
+     * Get the address param to be passed into google distance matrix.
+     *
+     * Use the place_id if it exists, otherwise use the address string.
+     * @param address
+     * @return
+     */
+    private String getGoolgeAddressParam(GoogleAddress address) {
+        if (address.getPlaceId().isEmpty()) {
+            return address.toString();
+        }
+        else {
+            return "place_id:" + address.getPlaceId();
+        }
     }
 }

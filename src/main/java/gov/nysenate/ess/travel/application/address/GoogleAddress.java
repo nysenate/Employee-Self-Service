@@ -6,18 +6,44 @@ import java.util.Objects;
 
 public class GoogleAddress extends Address {
 
+    private int id;
     private String placeId;
     private String name;
     private String formattedAddress;
 
-    // TODO Temporary until database is updated to use GoogleAddress.
-    public GoogleAddress() {
+    public GoogleAddress(int id, String placeId, String name, String formattedAddress) {
+        this.id = id;
+        // If we dont have a placeId, use empty string instead of null so that db unique constraint works.
+        this.placeId = placeId == null ? "" : placeId;
+        this.name = name == null ? "" : name.trim();
+        this.formattedAddress = formattedAddress == null ? "" : formattedAddress.trim();
     }
 
-    public GoogleAddress(String placeId, String name, String formattedAddress) {
-        this.placeId = placeId;
-        this.name = name;
-        this.formattedAddress = formattedAddress;
+    /**
+     * A formatted version of this address. Usually just the address but for some types of addresses, like establishments,
+     * it will use the name of the establishment instead of street1.
+     *
+     * Overrides a method in {@link Address} to provide a more accurate description for GooglgeAddress's.
+     *
+     * @return
+     */
+    @Override
+    public String getFromattedAddressWithCounty() {
+        String desc = getName().isEmpty() ? getAddr1() : getName();
+        desc += getCity().isEmpty() ? "" : ", " + getCity();
+        desc += getCounty().isEmpty() ? "" : ", " + getCounty();
+        desc += getState().isEmpty() ? "" : ", " + getState();
+        desc += getZip5().isEmpty() ? "" : " " + getZip5();
+        desc.trim();
+        return desc;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getPlaceId() {
@@ -38,13 +64,14 @@ public class GoogleAddress extends Address {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         GoogleAddress that = (GoogleAddress) o;
-        return Objects.equals(placeId, that.placeId) &&
+        return id == that.id &&
+                Objects.equals(placeId, that.placeId) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(formattedAddress, that.formattedAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), placeId, name, formattedAddress);
+        return Objects.hash(super.hashCode(), id, placeId, name, formattedAddress);
     }
 }

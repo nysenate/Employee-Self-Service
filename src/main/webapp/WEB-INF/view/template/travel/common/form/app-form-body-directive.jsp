@@ -61,7 +61,7 @@
           Office Address:
         </div>
         <div class="app-form-l-col">
-          {{(app.traveler.workAddress.formattedAddress) || NOT_AVAILABLE}}
+          {{(app.traveler.workAddress.formattedAddressWithCounty) || NOT_AVAILABLE}}
         </div>
       </div>
 

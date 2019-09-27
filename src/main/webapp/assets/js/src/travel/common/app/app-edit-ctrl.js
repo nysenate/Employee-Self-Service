@@ -127,4 +127,7 @@ function Address () {
     this.zip4 = "";
     this.zip5 = "";
     this.country = "";
+    this.placeId = "";
+    this.name = "";
+    this.formattedAddress = "";
 }

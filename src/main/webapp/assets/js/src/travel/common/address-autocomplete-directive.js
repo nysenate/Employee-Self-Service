@@ -35,7 +35,6 @@ essTravel.directive('essAddressAutocomplete', ['appProps', '$q', 'GooglePlaceSer
             var element = $elem[0];
             var autocomplete = new google.maps.places.Autocomplete(
                 element, {
-                    types: ['address'],
                     bounds: nyLatLngBounds
                 });
 

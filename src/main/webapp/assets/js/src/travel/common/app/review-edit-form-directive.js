@@ -65,14 +65,12 @@ function reviewEditForm($compile, appProps, modals) {
                 directionsDisplay.setMap(map);
 
                 // Create map api parameters.
-                // All intermediate destinations should be waypoints, final destination should be destination.
+                // All intermediate destinations should be waypoints, final destination should an address string.
+                var origin = scope.reviewApp.route.origin.formattedAddressWithCounty;
 
-                var origin = scope.reviewApp.route.origin.formattedAddress;
-
-                // TODO Use destinations in views
                 var waypoints = [];
                 scope.reviewApp.route.outboundLegs.forEach(function (leg) {
-                    waypoints.push({location: leg.to.address.formattedAddress});
+                    waypoints.push({location: leg.to.address.formattedAddressWithCounty});
                 });
 
                 // Last destination should be destination param, not waypoint.
