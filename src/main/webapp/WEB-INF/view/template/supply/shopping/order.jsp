@@ -17,6 +17,8 @@
       <form name="selectDestinationForm" novalidate>
         <h4 style="display: inline-block;">Please select a destination: </h4>
         <span class="margin-10" style="text-align: left;">
+
+
           <ui-select ng-model="destinations.selected" style="min-width: 175px;">
             <ui-select-match>
               <span ng-bind="$select.selected.code"></span>
@@ -29,6 +31,8 @@
               </small>
             </ui-select-choices>
           </ui-select>
+
+
         </span>
 
         <input type="button" value="Confirm" class="submit-button"

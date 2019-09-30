@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
@@ -57,16 +59,22 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     public BaseResponse getUnsubmittedApps(@RequestParam int userId, @RequestParam int travelerId) throws IOException {
         TravelApplicationView appView;
         Optional<TravelApplicationView> viewOpt = unsubmittedAppDao.find(userId, travelerId);
+        Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         if (viewOpt.isPresent()) {
             appView = viewOpt.get();
             checkApplicationPermission(viewOpt.get().toTravelApplication(), RequestMethod.GET);
         } else {
             appView = new TravelApplicationView(new TravelApplication(
-                    employeeInfoService.getEmployee(travelerId), employeeInfoService.getEmployee(getSubjectEmployeeId())));
+                    employeeInfoService.getEmployee(travelerId), user));
             checkApplicationPermission(appView.toTravelApplication(), RequestMethod.GET);
             unsubmittedAppDao.save(userId, appView);
         }
-        return new ViewObjectResponse<>(appView);
+
+        Set<Employee> allEmps = employeeInfoService.getAllEmployees(true);
+        Set<Employee> rchEmployees = allEmps.stream()
+                .filter(e -> Optional.ofNullable(e.getRespCenterHeadCode()).orElse("").equals(user.getRespCenterHeadCode()))
+                .collect(Collectors.toSet());
+        return new ViewObjectResponse<>(new NewApplicationDto(appView, rchEmployees));
     }
 
     /**

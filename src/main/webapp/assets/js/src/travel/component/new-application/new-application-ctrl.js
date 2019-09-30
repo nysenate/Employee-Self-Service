@@ -16,7 +16,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.stateService = stateService;
     // Common data shared between all child controllers.
     $scope.data = {
-        app: undefined
+        app: undefined,
+        allowedTravelers: []
     };
 
     this.$onInit = function () {
@@ -35,7 +36,9 @@ function travelAppController($scope, $window, appProps, modals, locationService,
          */
         function initApplication(travelerId) {
             unsubmittedAppApi.get({userId: appProps.user.employeeId, travelerId: travelerId}, {}, function (response) {
-                $scope.data.app = response.result;
+                $scope.data.app = response.result.app;
+                $scope.data.allowedTravelers = response.result.allowedTravelers;
+                console.log($scope.data);
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
