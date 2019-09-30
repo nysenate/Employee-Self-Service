@@ -15,36 +15,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/application")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel")
 public class TravelApplicationCtrl extends BaseRestApiCtrl {
 
     private static final Logger logger = LoggerFactory.getLogger(TravelApplicationCtrl.class);
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private EmployeeInfoService employeeInfoService;
 
-    @RequestMapping(value = "/{appId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/application/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
         checkTravelAppPermission(app, RequestMethod.GET);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
-    @RequestMapping(value = "/traveler/{travelerId}")
-    public BaseResponse getActiveTravelApps(@PathVariable int travelerId) {
-        // TODO Remove travelerId param and use the subjects employee Id. This prevents users see other users apps.
-        List<TravelApplication> apps = travelApplicationService.selectTravelApplications(travelerId);
-        List<TravelApplicationView> appViews = apps.stream()
-                .map(TravelApplicationView::new)
-                .collect(Collectors.toList());
-        return ListViewResponse.of(appViews);
-    }
-
-    @RequestMapping(value = "/{appId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/application/{appId}", method = RequestMethod.POST)
     public void saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
         checkTravelAppPermission(app, RequestMethod.POST);
 
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         travelApplicationService.saveTravelApplication(appView.toTravelApplication(), user);
+    }
+
+    @RequestMapping(value = "/applications")
+    public BaseResponse getActiveTravelApps() {
+        List<TravelApplication> apps = travelApplicationService.selectTravelApplications(getSubjectEmployeeId());
+        List<TravelApplicationView> appViews = apps.stream()
+                .map(TravelApplicationView::new)
+                .collect(Collectors.toList());
+        return ListViewResponse.of(appViews);
     }
 }

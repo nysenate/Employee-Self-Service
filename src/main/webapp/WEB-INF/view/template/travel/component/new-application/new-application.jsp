@@ -4,15 +4,20 @@
   </div>
   <div class="content-container content-controls">
     <div class="padding-10 text-align-center">
-      Travel application for:
+      Travel application on behalf of:
+      <span ng-if="!stateService.isReviewState()">
       <ui-select ng-model="data.app.traveler" style="min-width: 200px;">
         <ui-select-match>
           <span ng-bind="$select.selected.fullName"></span>
         </ui-select-match>
-        <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search">
+        <ui-select-choices repeat="emp in data.allowedTravelers | filter: $select.search track by emp.employeeId">
           <div ng-bind-html="emp.fullName"></div>
         </ui-select-choices>
       </ui-select>
+      </span>
+      <span ng-if="stateService.isReviewState()">
+        {{data.app.traveler.fullName}}
+      </span>
     </div>
   </div>
 

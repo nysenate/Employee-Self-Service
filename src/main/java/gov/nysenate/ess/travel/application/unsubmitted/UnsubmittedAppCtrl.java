@@ -122,6 +122,12 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         // Perform all updates specified in the patch.
         for (Map.Entry<String, String> patch : patches.entrySet()) {
             switch (patch.getKey()) {
+                case "traveler":
+                    int travelerEmpId = Integer.valueOf(patch.getValue());
+                    if (travelerEmpId != app.getTraveler().getEmployeeId()) {
+                        app.setTraveler(employeeInfoService.getEmployee(travelerEmpId));
+                    }
+                    break;
                 case "purposeOfTravel":
                     PurposeOfTravelView potView = OutputUtils.jsonToObject(patch.getValue(), PurposeOfTravelView.class);
                     app.activeAmendment().setPurposeOfTravel(potView.toPurposeOfTravel());

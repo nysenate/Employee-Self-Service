@@ -264,7 +264,7 @@ essApi.factory('TravelApplicationByIdApi', ['$resource', 'appProps', function ($
 }]);
 
 essApi.factory('TravelApplicationsForTravelerApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/travel/application/traveler/:travelerId.json', {travelerId: '@travelerId'})
+    return $resource(appProps.apiPath + '/travel/applications')
 }]);
 
 essApi.factory('TravelRouteCalcApi', ['$resource', 'appProps', function($resource, appProps) {

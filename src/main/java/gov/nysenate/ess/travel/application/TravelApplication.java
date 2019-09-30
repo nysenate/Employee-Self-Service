@@ -50,6 +50,10 @@ public class TravelApplication {
         return traveler;
     }
 
+    public void setTraveler(Employee traveler) {
+        this.traveler = traveler;
+    }
+
     public LocalDateTime getSubmittedDateTime() {
         return amendments.first().createdDateTime();
     }

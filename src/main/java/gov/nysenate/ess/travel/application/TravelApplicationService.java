@@ -64,12 +64,12 @@ public class TravelApplicationService {
     }
 
     /**
-     * Get a list of an employees travel applications.
+     * Get a list of an employees travel applications this user has submitted or is the traveler.
      *
      * @return
      */
-    public List<TravelApplication> selectTravelApplications(int travelerId) {
-        return applicationDao.selectTravelApplications(travelerId).stream()
+    public List<TravelApplication> selectTravelApplications(int userId) {
+        return applicationDao.selectTravelApplications(userId).stream()
                 .filter(app -> app.getSubmittedDateTime() != null)
                 .collect(Collectors.toList());
     }

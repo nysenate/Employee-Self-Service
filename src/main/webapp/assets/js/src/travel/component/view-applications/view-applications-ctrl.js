@@ -23,7 +23,7 @@ function viewApplicationsCtrl($scope, appProps, modals, travelerAppApi) {
     }
 
     function fetchApplications(empId) {
-        vm.appRequest = travelerAppApi.get({travelerId: empId}, onSuccess, $scope.handleErrorResponse);
+        vm.appRequest = travelerAppApi.get(onSuccess, $scope.handleErrorResponse);
 
         function onSuccess (resp) {
             parseResponse(resp);

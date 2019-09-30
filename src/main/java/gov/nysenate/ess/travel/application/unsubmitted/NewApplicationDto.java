@@ -6,6 +6,7 @@ import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.TravelApplicationView;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ public class NewApplicationDto implements ViewObject {
     public NewApplicationDto(TravelApplicationView view, Collection<Employee> employees) {
         this.app = view;
         this.allowedTravelers = employees.stream().map(EmployeeView::new).collect(Collectors.toList());
+        this.allowedTravelers.sort(Comparator.comparing(EmployeeView::getLastName));
     }
 
     public TravelApplicationView getApp() {

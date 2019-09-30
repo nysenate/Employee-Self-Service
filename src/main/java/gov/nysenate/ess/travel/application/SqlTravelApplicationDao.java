@@ -80,8 +80,8 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     }
 
     @Override
-    public List<TravelApplication> selectTravelApplications(int travelerId) {
-        MapSqlParameterSource params = new MapSqlParameterSource("travelerId", travelerId);
+    public List<TravelApplication> selectTravelApplications(int userId) {
+        MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
         AmendmentRowMapper amdHandler = new AmendmentRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
         TravelApplicationListHandler handler = new TravelApplicationListHandler(amdHandler, employeeInfoService);
@@ -96,7 +96,8 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             return;
         }
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("travelerId", app.getTraveler().getEmployeeId());
+                .addValue("travelerId", app.getTraveler().getEmployeeId())
+                .addValue("submittedById", app.getSubmittedBy().getEmployeeId());
         String insertSql = SqlTravelApplicationQuery.INSERT_APP.getSql(schemaMap());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         localNamedJdbc.update(insertSql, params, keyHolder);
@@ -124,8 +125,8 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     private enum SqlTravelApplicationQuery implements BasicSqlQuery {
         INSERT_APP(
-                "INSERT INTO ${travelSchema}.app(traveler_id) \n" +
-                        "VALUES (:travelerId)"
+                "INSERT INTO ${travelSchema}.app(traveler_id, submitted_by_id) \n" +
+                        "VALUES (:travelerId, :submittedById)"
         ),
         INSERT_AMENDMENT(
                 "INSERT INTO ${travelSchema}.amendment \n" +
@@ -153,7 +154,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
         ),
         SELECT_APP_BY_TRAVELER(
                 TRAVEL_APP_SELECT.getSql() + "\n" +
-                        "WHERE app.traveler_id = :travelerId"
+                        "WHERE (app.traveler_id = :userId OR app.submitted_by_id = :userId)"
         );
 
         private String sql;

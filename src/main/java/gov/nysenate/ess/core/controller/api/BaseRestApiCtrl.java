@@ -72,12 +72,22 @@ public class BaseRestApiCtrl
      * @param method
      */
     protected void checkTravelAppPermission(TravelApplication app, RequestMethod method) {
-        TravelPermissionBuilder builder = new TravelPermissionBuilder()
+        TravelPermissionBuilder submitterPerm = new TravelPermissionBuilder()
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
-                .forEmpId(app.getTraveler().getEmployeeId())
                 .forEmpId(app.getSubmittedBy().getEmployeeId())
                 .forAction(method);
-        checkPermission(builder.buildPermission());
+
+        TravelPermissionBuilder travelerPerm = new TravelPermissionBuilder()
+                .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
+                .forEmpId(app.getTraveler().getEmployeeId())
+                .forAction(method);
+
+        if (getSubject().isPermitted(submitterPerm.buildPermission()) || getSubject().isPermitted(travelerPerm.buildPermission())) {
+            return;
+        }
+        else {
+            throw new AuthorizationException("Unauthorized access. The user does not have the necessary permissions.");
+        }
     }
 
     /**

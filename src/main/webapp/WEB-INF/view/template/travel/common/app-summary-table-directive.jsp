@@ -6,7 +6,7 @@
         <thead>
         <tr>
           <th>Travel Date</th>
-          <th>Employee</th>
+          <th>Traveler</th>
           <th>Destination</th>
           <th>Allotted Funds</th>
           <th ng-if="options.showStatus">Status</th>

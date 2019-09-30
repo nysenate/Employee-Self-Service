@@ -23,7 +23,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     this.$onInit = function () {
         $scope.stateService = stateService;
         $scope.stateService.setPurposeState();
-        initApplication(appProps.user.employeeId);
+        initApplication();
 
         /**
          * Checks to see if the logged in employee has an uncompleted travel application in progress.
@@ -32,20 +32,17 @@ function travelAppController($scope, $window, appProps, modals, locationService,
          *
          * If continuing a previous application, display modal asking user if they
          * would like to continue working on it or start over.
-         * @param travelerId
          */
-        function initApplication(travelerId) {
-            unsubmittedAppApi.get({userId: appProps.user.employeeId, travelerId: travelerId}, {}, function (response) {
+        function initApplication() {
+            unsubmittedAppApi.get({userId: appProps.user.employeeId}, {}, function (response) {
                 $scope.data.app = response.result.app;
                 $scope.data.allowedTravelers = response.result.allowedTravelers;
-                console.log($scope.data);
                 if (hasUncompleteApplication()) {
                     modals.open('ess-continue-saved-app-modal')
                         .catch(function () { // Restart application on modal rejection.
                             cancelApplication($scope.data.app) // TODO replace this functionality
                         });
                 }
-                console.log($scope.data.app.id);
             }, $scope.handleErrorResponse);
 
             function hasUncompleteApplication() {
@@ -56,14 +53,18 @@ function travelAppController($scope, $window, appProps, modals, locationService,
 
     $scope.savePurpose = function (app) {
         console.log(app);
-        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {purposeOfTravel: JSON.stringify(app.purposeOfTravel)}, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId},
+                                 {purposeOfTravel: JSON.stringify(app.purposeOfTravel), traveler: $scope.data.app.traveler.employeeId},
+                                 function (response) {
             $scope.data.app = response.result;
             stateService.setOutboundState();
         }, $scope.handleErrorResponse)
     };
 
     $scope.saveOutbound = function (app) {
-        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {outbound: JSON.stringify(app.route)}, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId},
+                                 {outbound: JSON.stringify(app.route), traveler: $scope.data.app.traveler.employeeId},
+                                 function (response) {
             $scope.data.app = response.result;
             stateService.setReturnState();
         }, $scope.handleErrorResponse);
@@ -71,7 +72,9 @@ function travelAppController($scope, $window, appProps, modals, locationService,
 
     $scope.saveRoute = function (app) {
         $scope.openLoadingModal();
-        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {route: JSON.stringify(app.route)}, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId},
+                                 {route: JSON.stringify(app.route), traveler: $scope.data.app.traveler.employeeId},
+                                 function (response) {
             $scope.data.app = response.result;
             stateService.setAllowancesState();
             $scope.closeLoadingModal();
@@ -90,9 +93,10 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             allowances: JSON.stringify(app.allowances),
             mealPerDiems: JSON.stringify(app.route.mealPerDiems),
             lodgingPerDiems: JSON.stringify(app.route.lodgingPerDiems),
-            mileagePerDiems: JSON.stringify(app.route.mileagePerDiems)
+            mileagePerDiems: JSON.stringify(app.route.mileagePerDiems),
+            traveler: $scope.data.app.traveler.employeeId
         };
-        unsubmittedAppApi.update({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, patches, function (response) {
+        unsubmittedAppApi.update({userId: appProps.user.employeeId}, patches, function (response) {
             $scope.data.app = response.result;
             stateService.setReviewState();
         }, $scope.handleErrorResponse)
@@ -103,7 +107,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
         // modals.open('submit-confirm')
         //     .then(function () {
                 modals.open("submit-progress");
-                unsubmittedAppApi.save({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId}, {}).$promise
+                unsubmittedAppApi.save({userId: appProps.user.employeeId}, {}).$promise
                     .then(function (response) {
                         $scope.data.app = response.result;
                         modals.resolve({});
@@ -142,7 +146,7 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     };
 
     function cancelApplication(app) {
-        unsubmittedAppApi.remove({userId: appProps.user.employeeId, travelerId: app.traveler.employeeId})
+        unsubmittedAppApi.remove({userId: appProps.user.employeeId})
             .$promise
             .then(reload)
             .catch($scope.handleErrorResponse)
