@@ -18,33 +18,22 @@ import java.util.Optional;
 /**
  * UnsubmittedAppDao saves the state of an application as a user progresses through the New Travel Application wizard.
  *
- * <p>
- * Users can have at most one unsubmitted app for each traveler they are allowed to submit applications for.
- * </p>
- *
- * <p>
  * {@code userId} is the employee id of the logged in user.
- * {@code travelerId} is the employee id of the traveling employee on the travel application.
- * </p>
  */
 @Repository
 public class UnsubmittedAppDao extends SqlBaseDao {
 
     /**
-     * Find an unsubmitted travel application by userId and travelerId.
-     * <p>
-     * userId and travelerId will be the same when an employee is working on an application for themselves.
+     * Find an unsubmitted travel application for userId.
      *
      * @param userId     The employee id of the logged in user.
-     * @param travelerId The employee Id of the traveler
      * @return An optional containing a {@link TravelApplicationView} if a record was found.
      * Or an empty optional if no record was found.
      * @throws IOException
      */
-    public Optional<TravelApplicationView> find(int userId, int travelerId) throws IOException {
+    public Optional<TravelApplicationView> find(int userId) throws IOException {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", userId)
-                .addValue("travelerId", travelerId);
+                .addValue("userId", userId);
         String sql = SqlUnsubmittedAppQuery.FIND.getSql(schemaMap());
         try {
             String appJson = localNamedJdbc.queryForObject(sql, params, new UnsubmittedAppRowMapper());
@@ -63,7 +52,6 @@ public class UnsubmittedAppDao extends SqlBaseDao {
     public void save(int userId, TravelApplicationView view) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
-                .addValue("travelerId", view.getTraveler().getEmployeeId())
                 .addValue("appJson", serializeAppView(view));
         boolean isUpdated = update(params);
         if (!isUpdated) {
@@ -83,14 +71,12 @@ public class UnsubmittedAppDao extends SqlBaseDao {
     }
 
     /**
-     * Delete the uncompleted app record for the given userId and travelerId.
+     * Delete the uncompleted app record for the given userId.
      * @param userId
-     * @param travelerId
      */
-    public void delete(int userId, int travelerId) {
+    public void delete(int userId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", userId)
-                .addValue("travelerId", travelerId);
+                .addValue("userId", userId);
         String sql = SqlUnsubmittedAppQuery.DELETE.getSql(schemaMap());
         localNamedJdbc.update(sql, params);
     }
@@ -105,22 +91,22 @@ public class UnsubmittedAppDao extends SqlBaseDao {
 
     private enum SqlUnsubmittedAppQuery implements BasicSqlQuery {
         FIND(
-                "SELECT user_id, traveler_id, app_json\n" +
+                "SELECT user_id, app_json\n" +
                         "FROM ${travelSchema}.unsubmitted_app\n" +
-                        "WHERE user_id = :userId and traveler_id = :travelerId"
+                        "WHERE user_id = :userId;"
         ),
         UPDATE(
                 "UPDATE ${travelSchema}.unsubmitted_app\n" +
                         "SET app_json = :appJson\n" +
-                        "WHERE user_id = :userId AND traveler_id = :travelerId"
+                        "WHERE user_id = :userId"
         ),
         INSERT(
-                "INSERT INTO ${travelSchema}.unsubmitted_app(user_id, traveler_id, app_json)\n" +
-                        "VALUES(:userId, :travelerId, :appJson)"
+                "INSERT INTO ${travelSchema}.unsubmitted_app(user_id, app_json)\n" +
+                        "VALUES(:userId, :appJson)"
         ),
         DELETE(
                 "DELETE FROM ${travelSchema}.unsubmitted_app\n" +
-                        "WHERE user_id = :userId and traveler_id = :travelerId"
+                        "WHERE user_id = :userId;"
         ),
         ;
 

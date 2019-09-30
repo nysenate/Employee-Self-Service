@@ -25,7 +25,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{appId}", method = RequestMethod.GET)
     public BaseResponse getTravelAppById(@PathVariable int appId) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkApplicationPermission(app, RequestMethod.GET);
+        checkTravelAppPermission(app, RequestMethod.GET);
         return new ViewObjectResponse<>(new TravelApplicationView(app));
     }
 
@@ -42,7 +42,7 @@ public class TravelApplicationCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/{appId}", method = RequestMethod.POST)
     public void saveTravelApp(@PathVariable int appId, @RequestBody TravelApplicationView appView) {
         TravelApplication app = travelApplicationService.getTravelApplication(appId);
-        checkApplicationPermission(app, RequestMethod.POST);
+        checkTravelAppPermission(app, RequestMethod.POST);
 
         Employee user = employeeInfoService.getEmployee(getSubjectEmployeeId());
         travelApplicationService.saveTravelApplication(appView.toTravelApplication(), user);

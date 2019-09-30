@@ -71,7 +71,7 @@ public class BaseRestApiCtrl
      * @param app
      * @param method
      */
-    protected void checkApplicationPermission(TravelApplication app, RequestMethod method) {
+    protected void checkTravelAppPermission(TravelApplication app, RequestMethod method) {
         TravelPermissionBuilder builder = new TravelPermissionBuilder()
                 .forObject(TravelPermissionObject.TRAVEL_APPLICATION)
                 .forEmpId(app.getTraveler().getEmployeeId())
