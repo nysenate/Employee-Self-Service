@@ -44,7 +44,8 @@ module.exports = function(grunt) {
         /** Minify all css into one file */
         cssmin: {
             options: {
-                sourceMap: true
+                sourceMap: true,
+                rebase: true
             },
             combine: {
                 src: ['<%= cssSource %>/*.css', '<%= cssVendor %>/*.css'],
