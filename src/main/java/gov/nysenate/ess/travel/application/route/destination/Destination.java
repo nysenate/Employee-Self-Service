@@ -3,23 +3,17 @@ package gov.nysenate.ess.travel.application.route.destination;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
-import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
-import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Destination {
 
     protected int id;
     protected final GoogleAddress address;
     protected final Range<LocalDate> dateRange;
-    // TODO ImmutableSortedMap?
-    protected final TreeMap<LocalDate, PerDiem> dateToMealPerDiems;
-    protected final TreeMap<LocalDate, PerDiem> dateToLodgingPerDiems;
+    protected Set<PerDiem> mealPerDiems;
+    protected Set<PerDiem> lodgingPerDiems;
 
     public Destination(GoogleAddress address, LocalDate arrival, LocalDate departure) {
         this(0, address, arrival, departure, new TreeMap<>(), new TreeMap<>());
@@ -28,24 +22,28 @@ public class Destination {
     public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
                        Map<LocalDate, PerDiem> dateToMealPerDiems,
                        Map<LocalDate, PerDiem> dateToLodgingPerDiems) {
-        // TODO validate PerDiem addresses match destination address?
         this.id = id;
         this.address = address;
         this.dateRange = arrival != null && departure != null ? Range.closed(arrival, departure) : null;
-        this.dateToMealPerDiems = dateToMealPerDiems == null ? new TreeMap<>() : new TreeMap<>(dateToMealPerDiems);
-        this.dateToLodgingPerDiems = dateToLodgingPerDiems == null ? new TreeMap<>() : new TreeMap<>(dateToLodgingPerDiems);
+        this.mealPerDiems = new HashSet<>(dateToMealPerDiems.values());
+        this.lodgingPerDiems = new HashSet<>(dateToLodgingPerDiems.values());
     }
 
-    public MealPerDiems mealPerDiems() {
-        return new MealPerDiems(dateToMealPerDiems.entrySet().stream()
-                .map(entry -> new MealPerDiem(getAddress(), entry.getValue()))
-                .collect(Collectors.toList()));
+    public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
+                       Collection<PerDiem> mealPerDiems, Collection<PerDiem> lodgingPerDiems) {
+        this.id = id;
+        this.address = address;
+        this.dateRange = arrival != null && departure != null ? Range.closed(arrival, departure) : null;
+        this.mealPerDiems = mealPerDiems == null ? new HashSet<>() : new HashSet<>(mealPerDiems);
+        this.lodgingPerDiems = lodgingPerDiems == null ? new HashSet<>() : new HashSet<>(lodgingPerDiems);
     }
 
-    public LodgingPerDiems lodgingPerDiems() {
-        return new LodgingPerDiems(dateToLodgingPerDiems.entrySet().stream()
-                .map(entry -> new LodgingPerDiem(getAddress(), entry.getValue()))
-                .collect(Collectors.toList()));
+    public Set<PerDiem> mealPerDiems() {
+        return mealPerDiems;
+    }
+
+    public Set<PerDiem> lodgingPerDiems() {
+        return lodgingPerDiems;
     }
 
     public GoogleAddress getAddress() {
@@ -59,6 +57,20 @@ public class Destination {
     // TODO instead of this add a method Route.destinationsOn(date)
     public boolean wasVisitedOn(LocalDate date) {
         return dateRange.contains(date);
+    }
+
+    /**
+     * Days at this destination.
+     * @return
+     */
+    public Set<LocalDate> days() {
+        Set<LocalDate> days = new HashSet<>();
+        LocalDate date = arrivalDate();
+        while (date.isBefore(departureDate().plusDays(1))) {
+            days.add(date);
+            date = date.plusDays(1);
+        }
+        return days;
     }
 
     /**
@@ -78,11 +90,11 @@ public class Destination {
     }
 
     public void addMealPerDiem(PerDiem perDiem) {
-        dateToMealPerDiems.put(perDiem.getDate(), perDiem);
+        mealPerDiems.add(perDiem);
     }
 
     public void addLodgingPerDiem(PerDiem perDiem) {
-        dateToLodgingPerDiems.put(perDiem.getDate(), perDiem);
+        lodgingPerDiems.add(perDiem);
     }
 
     public int getId() {
@@ -113,8 +125,8 @@ public class Destination {
                 "id=" + id +
                 ", address=" + address +
                 ", dateRange=" + dateRange +
-                ", mealPerDiems=" + dateToMealPerDiems +
-                ", lodgingPerDiems=" + dateToLodgingPerDiems +
+                ", mealPerDiems=" + mealPerDiems +
+                ", lodgingPerDiems=" + lodgingPerDiems +
                 '}';
     }
 
@@ -126,12 +138,12 @@ public class Destination {
         return id == that.id &&
                 Objects.equals(address, that.address) &&
                 Objects.equals(dateRange, that.dateRange) &&
-                Objects.equals(dateToMealPerDiems, that.dateToMealPerDiems) &&
-                Objects.equals(dateToLodgingPerDiems, that.dateToLodgingPerDiems);
+                Objects.equals(mealPerDiems, that.mealPerDiems) &&
+                Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, dateRange, dateToMealPerDiems, dateToLodgingPerDiems);
+        return Objects.hash(id, address, dateRange, mealPerDiems, lodgingPerDiems);
     }
 }

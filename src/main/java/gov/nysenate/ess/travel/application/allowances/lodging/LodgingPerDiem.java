@@ -11,10 +11,21 @@ public final class LodgingPerDiem {
 
     private final Address address;
     private final PerDiem perDiem;
+    private boolean isReimbursementRequested;
+    private Dollars overrideRate;
 
     public LodgingPerDiem(Address address, PerDiem perDiem) {
         this.address = address;
         this.perDiem = perDiem;
+        this.isReimbursementRequested = true;
+        this.overrideRate = Dollars.ZERO;
+    }
+
+    public LodgingPerDiem(Address address, PerDiem perDiem, boolean isReimbursementRequested, Dollars overrideRate) {
+        this.address = address;
+        this.perDiem = perDiem;
+        this.isReimbursementRequested = isReimbursementRequested;
+        this.overrideRate = overrideRate;
     }
 
     public Dollars maximumPerDiem() {
@@ -38,7 +49,7 @@ public final class LodgingPerDiem {
     }
 
     public boolean isReimbursementRequested() {
-        return perDiem.isReimbursementRequested();
+        return isReimbursementRequested;
     }
 
     @Override
@@ -46,6 +57,8 @@ public final class LodgingPerDiem {
         return "LodgingPerDiem{" +
                 "address=" + address +
                 ", perDiem=" + perDiem +
+                ", isReimbursementRequested=" + isReimbursementRequested +
+                ", overrideRate=" + overrideRate +
                 '}';
     }
 
@@ -54,12 +67,14 @@ public final class LodgingPerDiem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LodgingPerDiem that = (LodgingPerDiem) o;
-        return Objects.equals(address, that.address) &&
-                Objects.equals(perDiem, that.perDiem);
+        return isReimbursementRequested == that.isReimbursementRequested &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(perDiem, that.perDiem) &&
+                Objects.equals(overrideRate, that.overrideRate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, perDiem);
+        return Objects.hash(address, perDiem, isReimbursementRequested, overrideRate);
     }
 }

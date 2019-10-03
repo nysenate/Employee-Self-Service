@@ -14,8 +14,8 @@ import java.time.format.DateTimeFormatter;
 public class MealPerDiemView implements ViewObject {
 
     private String date;
-    private AddressView address;
     private String rate;
+    private AddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
     private String requestedPerDiem;
@@ -36,11 +36,9 @@ public class MealPerDiemView implements ViewObject {
     public MealPerDiem toMealPerDiem() {
         return new MealPerDiem(
                 address.toAddress(),
-                new PerDiem(
-                        LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
-                        new Dollars(rate),
-                        isReimbursementRequested
-                )
+                new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new Dollars(rate)),
+                isReimbursementRequested,
+                new Dollars(rate)
         );
     }
 

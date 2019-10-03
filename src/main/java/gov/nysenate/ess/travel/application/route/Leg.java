@@ -47,9 +47,10 @@ public class Leg {
      * @return
      */
     public Dollars requestedPerDiem() {
-        return isReimbursementRequested()
-                ? maximumPerDiem()
-                : Dollars.ZERO;
+//        return isReimbursementRequested()
+//                ? maximumPerDiem()
+//                : Dollars.ZERO;
+        return maximumPerDiem();
     }
 
     public int getId() {
@@ -97,7 +98,8 @@ public class Leg {
     }
 
     public boolean isReimbursementRequested() {
-        return perDiem.isReimbursementRequested();
+        // TODO Fix this
+        return true;
     }
 
     public boolean isOutbound() {

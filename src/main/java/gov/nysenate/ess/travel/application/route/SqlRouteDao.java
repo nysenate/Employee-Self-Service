@@ -174,8 +174,7 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
         @Override
         public Leg mapRow(ResultSet rs, int rowNum) throws SQLException {
             PerDiem perDiem = new PerDiem(getLocalDate(rs, "travel_date"),
-                    new BigDecimal(rs.getString("mileage_rate")),
-                    rs.getBoolean("is_reimbursement_requested"));
+                    new BigDecimal(rs.getString("mileage_rate")));
             return new Leg(
                     rs.getInt("leg_id"),
                     destinationDao.selectDestination(rs.getInt("from_destination_id")),

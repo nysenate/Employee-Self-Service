@@ -56,12 +56,12 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertMealPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, PerDiem> mealPerDiems : destination.dateToMealPerDiems.entrySet()) {
+        for (PerDiem mealPerDiem : destination.mealPerDiems) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
-                    .addValue("date", toDate(mealPerDiems.getKey()))
-                    .addValue("value", mealPerDiems.getValue().getRate().toString())
-                    .addValue("isReimbursementRequested", mealPerDiems.getValue().isReimbursementRequested());
+                    .addValue("date", toDate(mealPerDiem.getDate()))
+                    .addValue("value", mealPerDiem.getRate().toString())
+                    .addValue("isReimbursementRequested", true); // FIXME
             paramList.add(params);
         }
 
@@ -73,12 +73,12 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertLodgingPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, PerDiem> lodgingPerDiem : destination.dateToLodgingPerDiems.entrySet()) {
+        for (PerDiem lodgingPerDiem : destination.lodgingPerDiems){
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
-                    .addValue("date", toDate(lodgingPerDiem.getKey()))
-                    .addValue("value", lodgingPerDiem.getValue().getRate().toString())
-                    .addValue("isReimbursementRequested", lodgingPerDiem.getValue().isReimbursementRequested());
+                    .addValue("date", toDate(lodgingPerDiem.getDate()))
+                    .addValue("value", lodgingPerDiem.getRate().toString())
+                    .addValue("isReimbursementRequested", true); // FIXME
             paramList.add(params);
         }
 
@@ -179,7 +179,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                 String mealDollarsString = rs.getString("meal_value");
                 BigDecimal mealDollars = mealDollarsString == null ? new BigDecimal("0") : new BigDecimal(mealDollarsString);
                 boolean isMealRequested = rs.getBoolean("meal_requested");
-                mealPerDiems.put(mealDate, new PerDiem(mealDate, mealDollars, isMealRequested));
+                mealPerDiems.put(mealDate, new PerDiem(mealDate, mealDollars));
             }
 
             LocalDate lodgingDate = getLocalDate(rs, "lodging_date");
@@ -187,7 +187,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                 String lodgingDollarsString = rs.getString("lodging_value");
                 BigDecimal lodgingDollars = lodgingDollarsString == null ? new BigDecimal("0") : new BigDecimal(lodgingDollarsString);
                 boolean isLodgingRequested = rs.getBoolean("lodging_requested");
-                lodgingPerDiems.put(lodgingDate, new PerDiem(lodgingDate, lodgingDollars, isLodgingRequested));
+                lodgingPerDiems.put(lodgingDate, new PerDiem(lodgingDate, lodgingDollars));
             }
         }
 

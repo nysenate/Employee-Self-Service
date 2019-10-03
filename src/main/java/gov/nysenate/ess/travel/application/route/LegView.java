@@ -63,8 +63,7 @@ public class LegView implements ViewObject {
     private PerDiem createPerDiem() {
         return new PerDiem(
                 LocalDate.parse(travelDate, DATEPICKER_FORMAT),
-                mileageRate == null ? new BigDecimal(0) : new BigDecimal(mileageRate),
-                isReimbursementRequested
+                mileageRate == null ? new BigDecimal(0) : new BigDecimal(mileageRate)
         );
     }
 

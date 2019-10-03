@@ -1,14 +1,8 @@
 package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
-import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
-import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiems;
 import gov.nysenate.ess.travel.application.route.Leg;
-import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.review.ApplicationReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,33 +68,13 @@ public class TravelApplicationService {
                 .collect(Collectors.toList());
     }
 
-    public void updateMealPerDiems(TravelApplication app, MealPerDiems mealPerDiems) {
-        for (MealPerDiem perDiem : mealPerDiems.allMealPerDiems()) {
-            for (Destination dest : app.activeAmendment().route().destinations()) {
-                if (dest.getAddress().equals(perDiem.address())) {
-                    dest.addMealPerDiem(new PerDiem(perDiem.date(), perDiem.rate(), perDiem.isReimbursementRequested()));
-                }
-            }
-        }
-    }
-
-    public void updateLodgingPerDiems(TravelApplication app, LodgingPerDiems lodgingPerDiems) {
-        for (LodgingPerDiem perDiem : lodgingPerDiems.allLodgingPerDiems()) {
-            for (Destination dest : app.activeAmendment().route().destinations()) {
-                if (dest.getAddress().equals(perDiem.address())) {
-                    dest.addLodgingPerDiem(new PerDiem(perDiem.date(), perDiem.rate(), perDiem.isReimbursementRequested()));
-                }
-            }
-        }
-    }
-
     public void updateMileagePerDiems(TravelApplication app, MileagePerDiems mileagePerDiem) {
         for (Leg qualifyingLeg : mileagePerDiem.qualifyingLegs()) {
             for (Leg appLeg : app.activeAmendment().route().getAllLegs()) {
                 if (appLeg.fromAddress().equals(qualifyingLeg.fromAddress())
                         && appLeg.toAddress().equals(qualifyingLeg.toAddress())
                         && appLeg.travelDate().equals(qualifyingLeg.travelDate())) {
-                    appLeg.setPerDiem(new PerDiem(qualifyingLeg.travelDate(), qualifyingLeg.mileageRate(), qualifyingLeg.isReimbursementRequested()));
+//                    appLeg.setPerDiem(new PerDiem(qualifyingLeg.travelDate(), qualifyingLeg.mileageRate(), qualifyingLeg.isReimbursementRequested()));
                 }
             }
         }

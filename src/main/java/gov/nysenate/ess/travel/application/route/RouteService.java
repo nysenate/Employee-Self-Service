@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application.route;
 
-import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
@@ -12,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,7 +68,7 @@ public class RouteService {
 
         double miles = mileageService.drivingDistance(from.getAddress(), to.getAddress());
         BigDecimal mileageRate = mileageService.getIrsRate(currentLeg.travelDate());
-        PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate, true);
+        PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate);
         return new Leg(0, from, to,
                 new ModeOfTransportation(currentLeg.methodOfTravel(), currentLeg.methodOfTravelDescription()),
                 miles, perDiem, isOutbound);
@@ -98,35 +99,52 @@ public class RouteService {
     }
 
     private void setDestinationPerDiems(Route route) {
-        LocalDate start = route.startDate();
-        LocalDate end = route.endDate().plusDays(1);
-
-        // Meal Rates
-        for (LocalDate date = start; date.isBefore(end); date = date.plusDays(1)) {
-            Set<Destination> dests = destinationsVisitedOn(route, date);
-            Map<Destination, Dollars> destToMealExpense = new HashMap<>();
-            for (Destination dest : dests) {
-                destToMealExpense.put(dest, serviceProviderFactory.fetchMealRate(date, dest.getAddress()));
+        for (Destination d : route.destinations()) {
+            // Meal Rates
+            for (LocalDate date : d.days()) {
+                Dollars mealRate = serviceProviderFactory.fetchMealRate(date, d.getAddress());
+                PerDiem mealPerDiem = new PerDiem(date, mealRate);
+                d.addMealPerDiem(mealPerDiem);
             }
-            Destination highestDest = null;
-            Dollars highestMealRate = null;
-            for (Map.Entry<Destination, Dollars> entry : destToMealExpense.entrySet()) {
-                if (highestMealRate == null || entry.getValue().compareTo(highestMealRate) > 0) {
-                    highestMealRate = entry.getValue();
-                    highestDest = entry.getKey();
-                }
-            }
-            PerDiem pd = new PerDiem(date, highestMealRate, true);
-            highestDest.addMealPerDiem(pd);
-        }
 
-        // Lodging Rates
-        for (Destination dest : route.destinations()) {
-            for (LocalDate night : dest.nights()) {
-                Dollars lodgingPerDiem = serviceProviderFactory.fetchLodgingRate(night, dest.getAddress());
-                PerDiem pd = new PerDiem(night, lodgingPerDiem, true);
-                dest.addLodgingPerDiem(pd);
+            // Lodging Rates
+            for (LocalDate night : d.nights()) {
+                Dollars lodgingRate = serviceProviderFactory.fetchLodgingRate(night, d.getAddress());
+                PerDiem lodgingPerDiem = new PerDiem(night, lodgingRate);
+                d.addLodgingPerDiem(lodgingPerDiem);
             }
         }
     }
+
+//        LocalDate start = route.startDate();
+//        LocalDate end = route.endDate().plusDays(1);
+//
+//        // Meal Rates
+//        for (LocalDate date = start; date.isBefore(end); date = date.plusDays(1)) {
+//            Set<Destination> dests = destinationsVisitedOn(route, date);
+//            Map<Destination, Dollars> destToMealExpense = new HashMap<>();
+//            for (Destination dest : dests) {
+//                destToMealExpense.put(dest, serviceProviderFactory.fetchMealRate(date, dest.getAddress()));
+//            }
+//            Destination highestDest = null;
+//            Dollars highestMealRate = null;
+//            for (Map.Entry<Destination, Dollars> entry : destToMealExpense.entrySet()) {
+//                if (highestMealRate == null || entry.getValue().compareTo(highestMealRate) > 0) {
+//                    highestMealRate = entry.getValue();
+//                    highestDest = entry.getKey();
+//                }
+//            }
+//            PerDiem pd = new PerDiem(date, highestMealRate, true);
+//            highestDest.addMealPerDiem(pd);
+//        }
+//
+//        // Lodging Rates
+//        for (Destination dest : route.destinations()) {
+//            for (LocalDate night : dest.nights()) {
+//                Dollars lodgingPerDiem = serviceProviderFactory.fetchLodgingRate(night, dest.getAddress());
+//                PerDiem pd = new PerDiem(night, lodgingPerDiem, true);
+//                dest.addLodgingPerDiem(pd);
+//            }
+//        }
+//    }
 }

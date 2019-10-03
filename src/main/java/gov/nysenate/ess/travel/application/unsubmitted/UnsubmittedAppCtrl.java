@@ -150,11 +150,11 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     break;
                 case "mealPerDiems":
                     MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
-                    travelApplicationService.updateMealPerDiems(app, mealPerDiemsView.toMealPerDiems());
+                    app.activeAmendment().setMealPerDiems(mealPerDiemsView.toMealPerDiems());
                     break;
                 case "lodgingPerDiems":
                     LodgingPerDiemsView lodgingPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class);
-                    travelApplicationService.updateLodgingPerDiems(app, lodgingPerDiemsView.toLodgingPerDiems());
+                    app.activeAmendment().setLodingPerDiems(lodgingPerDiemsView.toLodgingPerDiems());
                     break;
                 case "mileagePerDiems":
                     MileagePerDiemsView mileagePerDiemView = OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class);

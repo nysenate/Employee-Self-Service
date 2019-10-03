@@ -10,17 +10,15 @@ public final class PerDiem {
 
     private final LocalDate date;
     private final BigDecimal rate;
-    private boolean reimbursementRequested;
 
     // TODO I think Dollars in this constructor can loose accuracy in the rate. Consider removing.
-    public PerDiem(LocalDate date, Dollars rate, boolean reimbursementRequested) {
-        this(date, new BigDecimal(rate.toString()), reimbursementRequested);
+    public PerDiem(LocalDate date, Dollars rate) {
+        this(date, new BigDecimal(rate.toString()));
     }
 
-    public PerDiem(LocalDate date, BigDecimal rate, boolean reimbursementRequested) {
+    public PerDiem(LocalDate date, BigDecimal rate) {
         this.date = date;
         this.rate = rate;
-        this.reimbursementRequested = reimbursementRequested;
     }
 
     public LocalDate getDate() {
@@ -31,16 +29,11 @@ public final class PerDiem {
         return rate;
     }
 
-    public boolean isReimbursementRequested() {
-        return reimbursementRequested;
-    }
-
     @Override
     public String toString() {
         return "PerDiem{" +
                 "date=" + date +
                 ", rate=" + rate +
-                ", reimbursementRequested=" + reimbursementRequested +
                 '}';
     }
 
@@ -49,13 +42,12 @@ public final class PerDiem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PerDiem perDiem = (PerDiem) o;
-        return reimbursementRequested == perDiem.reimbursementRequested &&
-                Objects.equals(date, perDiem.date) &&
+        return Objects.equals(date, perDiem.date) &&
                 Objects.equals(rate, perDiem.rate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(date, rate, reimbursementRequested);
+        return Objects.hash(date, rate);
     }
 }

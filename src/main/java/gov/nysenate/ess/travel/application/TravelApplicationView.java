@@ -5,6 +5,8 @@ import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.RouteView;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
@@ -23,6 +25,8 @@ public class TravelApplicationView implements ViewObject {
     private RouteView route;
     private AllowancesView allowances;
     private PerDiemOverridesView perDiemOverrides;
+    private MealPerDiemsView mealPerDiems;
+    private LodgingPerDiemsView lodgingPerDiems;
     private TravelApplicationStatusView status;
     private String submittedDateTime;
     private String modifiedDateTime;
@@ -61,6 +65,8 @@ public class TravelApplicationView implements ViewObject {
         route = new RouteView(app.activeAmendment().route());
         allowances = new AllowancesView(app.activeAmendment().allowances());
         perDiemOverrides = new PerDiemOverridesView(app.activeAmendment().perDiemOverrides());
+        mealPerDiems = new MealPerDiemsView(app.activeAmendment().mealPerDiems());
+        lodgingPerDiems = new LodgingPerDiemsView(app.activeAmendment().lodgingPerDiems());
         status = new TravelApplicationStatusView(app.activeAmendment().status());
         submittedDateTime = app.getSubmittedDateTime() == null ? null : app.getSubmittedDateTime().format(ISO_DATE_TIME);
         modifiedDateTime = app.getModifiedDateTime() == null ? null : app.getModifiedDateTime().format(ISO_DATE_TIME);
@@ -104,6 +110,8 @@ public class TravelApplicationView implements ViewObject {
                 .withRoute(route.toRoute())
                 .withAllowances(allowances.toAllowances())
                 .withPerDiemOverrides(perDiemOverrides.toPerDiemOverrides())
+                .withMealPerDiems(mealPerDiems.toMealPerDiems())
+                .withLodgingPerDiems(lodgingPerDiems.toLodgingPerDiems())
                 .withStatus(status.toTravelApplicationStatus())
                 .withCreatedBy(modifiedBy.toEmployee())
                 // TODO modified time
@@ -134,6 +142,14 @@ public class TravelApplicationView implements ViewObject {
 
     public PerDiemOverridesView getPerDiemOverrides() {
         return perDiemOverrides;
+    }
+
+    public MealPerDiemsView getMealPerDiems() {
+        return mealPerDiems;
+    }
+
+    public LodgingPerDiemsView getLodgingPerDiems() {
+        return lodgingPerDiems;
     }
 
     public TravelApplicationStatusView getStatus() {

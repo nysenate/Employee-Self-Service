@@ -67,7 +67,7 @@ public class MileagePerDiems {
      */
     public ImmutableList<Leg> requestedLegs() {
         return qualifyingLegs().stream()
-                .filter(Leg::isReimbursementRequested)
+//                .filter(Leg::isReimbursementRequested)
                 .collect(ImmutableList.toImmutableList());
     }
 
