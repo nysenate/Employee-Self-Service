@@ -12,20 +12,17 @@ public final class LodgingPerDiem {
     private final Address address;
     private final PerDiem perDiem;
     private boolean isReimbursementRequested;
-    private Dollars overrideRate;
 
     public LodgingPerDiem(Address address, PerDiem perDiem) {
         this.address = address;
         this.perDiem = perDiem;
         this.isReimbursementRequested = true;
-        this.overrideRate = Dollars.ZERO;
     }
 
-    public LodgingPerDiem(Address address, PerDiem perDiem, boolean isReimbursementRequested, Dollars overrideRate) {
+    public LodgingPerDiem(Address address, PerDiem perDiem, boolean isReimbursementRequested) {
         this.address = address;
         this.perDiem = perDiem;
         this.isReimbursementRequested = isReimbursementRequested;
-        this.overrideRate = overrideRate;
     }
 
     public Dollars maximumPerDiem() {
@@ -58,7 +55,6 @@ public final class LodgingPerDiem {
                 "address=" + address +
                 ", perDiem=" + perDiem +
                 ", isReimbursementRequested=" + isReimbursementRequested +
-                ", overrideRate=" + overrideRate +
                 '}';
     }
 
@@ -69,12 +65,11 @@ public final class LodgingPerDiem {
         LodgingPerDiem that = (LodgingPerDiem) o;
         return isReimbursementRequested == that.isReimbursementRequested &&
                 Objects.equals(address, that.address) &&
-                Objects.equals(perDiem, that.perDiem) &&
-                Objects.equals(overrideRate, that.overrideRate);
+                Objects.equals(perDiem, that.perDiem);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, perDiem, isReimbursementRequested, overrideRate);
+        return Objects.hash(address, perDiem, isReimbursementRequested);
     }
 }

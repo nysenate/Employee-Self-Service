@@ -37,8 +37,7 @@ public class MealPerDiemView implements ViewObject {
         return new MealPerDiem(
                 address.toAddress(),
                 new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new Dollars(rate)),
-                isReimbursementRequested,
-                new Dollars(rate)
+                isReimbursementRequested
         );
     }
 

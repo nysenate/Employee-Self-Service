@@ -38,8 +38,7 @@ public class LodgingPerDiemView implements ViewObject {
         return new LodgingPerDiem(
                 address.toAddress(),
                 new PerDiem(LocalDate.parse(date, ISO_DATE), new Dollars(rate)),
-                isReimbursementRequested,
-                new Dollars(rate)
+                isReimbursementRequested
         );
     }
 

@@ -7,8 +7,6 @@ import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.travel.EventType;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
 import gov.nysenate.ess.travel.application.allowances.SqlAllowancesDao;
-import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
-import gov.nysenate.ess.travel.application.overrides.perdiem.SqlPerDiemOverridesDao;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteDao;
 import org.slf4j.Logger;
@@ -35,7 +33,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
 
     @Autowired private RouteDao routeDao;
     @Autowired private SqlAllowancesDao allowancesDao;
-    @Autowired private SqlPerDiemOverridesDao perDiemOverridesDao;
     @Autowired private SqlAmendmentStatusDao statusDao;
     @Autowired private EmployeeInfoService employeeInfoService;
 
@@ -63,7 +60,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                 insertAmendment(amd, app.appId);
                 routeDao.saveRoute(app.activeAmendment().route(), amd.amendmentId());
                 allowancesDao.saveAllowances(app.activeAmendment().allowances(), amd.amendmentId());
-                perDiemOverridesDao.savePerDiemOverrides(app.activeAmendment().perDiemOverrides(), amd.amendmentId());
                 statusDao.saveAmendmentStatus(app.activeAmendment().status(), amd.amendmentId());
             }
         }
@@ -73,7 +69,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     public TravelApplication selectTravelApplication(int appId) {
         MapSqlParameterSource params = new MapSqlParameterSource("appId", appId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_ID.getSql(schemaMap());
-        AmendmentRowMapper amdRowMapper = new AmendmentRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
+        AmendmentRowMapper amdRowMapper = new AmendmentRowMapper(routeDao, allowancesDao, employeeInfoService);
         TravelApplicationHandler handler = new TravelApplicationHandler(amdRowMapper, employeeInfoService);
         localNamedJdbc.query(sql, params, handler);
         return handler.results();
@@ -83,7 +79,7 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     public List<TravelApplication> selectTravelApplications(int userId) {
         MapSqlParameterSource params = new MapSqlParameterSource("userId", userId);
         String sql = SqlTravelApplicationQuery.SELECT_APP_BY_TRAVELER.getSql(schemaMap());
-        AmendmentRowMapper amdHandler = new AmendmentRowMapper(routeDao, allowancesDao, perDiemOverridesDao, employeeInfoService);
+        AmendmentRowMapper amdHandler = new AmendmentRowMapper(routeDao, allowancesDao, employeeInfoService);
         TravelApplicationListHandler handler = new TravelApplicationListHandler(amdHandler, employeeInfoService);
         localNamedJdbc.query(sql, params, handler);
         return handler.getApplications();
@@ -237,14 +233,11 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
     private class AmendmentRowMapper extends BaseRowMapper<Amendment> {
         private RouteDao routeDao;
         private SqlAllowancesDao allowancesDao;
-        private SqlPerDiemOverridesDao perDiemOverridesDao;
         private EmployeeInfoService employeeInfoService;
 
-        public AmendmentRowMapper(RouteDao routeDao, SqlAllowancesDao allowancesDao,
-                                  SqlPerDiemOverridesDao perDiemOverridesDao, EmployeeInfoService employeeInfoService) {
+        public AmendmentRowMapper(RouteDao routeDao, SqlAllowancesDao allowancesDao, EmployeeInfoService employeeInfoService) {
             this.routeDao = routeDao;
             this.allowancesDao = allowancesDao;
-            this.perDiemOverridesDao = perDiemOverridesDao;
             this.employeeInfoService = employeeInfoService;
         }
 
@@ -262,7 +255,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
             Employee createdBy = employeeInfoService.getEmployee(rs.getInt("created_by"));
             Route route = routeDao.selectRoute(amdId);
             Allowances allowances = allowancesDao.selectAllowances(amdId);
-            PerDiemOverrides pdOverrides = perDiemOverridesDao.selectPerDiemOverrides(amdId);
             TravelApplicationStatus status = new TravelApplicationStatus(
                     rs.getInt("amendment_status_id"),
                     rs.getString("status"),
@@ -276,7 +268,6 @@ public class SqlTravelApplicationDao extends SqlBaseDao implements TravelApplica
                     .withPurposeOfTravel(pot)
                     .withRoute(route)
                     .withAllowances(allowances)
-                    .withPerDiemOverrides(pdOverrides)
                     .withStatus(status)
                     .withCreatedDateTime(createdDateTime)
                     .withCreatedBy(createdBy)

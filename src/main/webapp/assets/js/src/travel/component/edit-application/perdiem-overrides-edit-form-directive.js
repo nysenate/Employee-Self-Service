@@ -20,9 +20,9 @@ function perDiemOverrideEditForm(appProps) {
             scope.dirtyApp = angular.copy(scope.app);
 
             // Convert overrides of 0 to undefined.
-            scope.dirtyApp.perDiemOverrides.mileageOverride = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mileageOverride);
-            scope.dirtyApp.perDiemOverrides.mealsOverride = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mealsOverride);
-            scope.dirtyApp.perDiemOverrides.lodgingOverride = zeroToUndefined(scope.dirtyApp.perDiemOverrides.lodgingOverride);
+            scope.dirtyApp.mileagePerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mileageOverride);
+            scope.dirtyApp.mealPerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.mealsOverride);
+            scope.dirtyApp.lodgingPerDiems.overrideRate = zeroToUndefined(scope.dirtyApp.perDiemOverrides.lodgingOverride);
 
             scope.next = function () {
                 scope.positiveCallback({app: scope.dirtyApp});

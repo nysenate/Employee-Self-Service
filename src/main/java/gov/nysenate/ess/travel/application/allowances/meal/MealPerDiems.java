@@ -11,22 +11,36 @@ public class MealPerDiems {
 
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
+    private Dollars overrideRate;
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
+        this(mealPerDiems, Dollars.ZERO);
+    }
+
+    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(mealPerDiems)
                 .build();
+        this.overrideRate = overrideRate;
     }
 
-    public Dollars maximumPerDiem() {
-        return allMealPerDiems().stream()
-                .map(MealPerDiem::maximumPerDiem)
-                .reduce(Dollars.ZERO, Dollars::add);
+    public void setOverrideRate(Dollars rate) {
+        this.overrideRate = rate;
     }
 
-    public Dollars requestedPerDiem() {
-        return requestedMealPerDiems().stream()
+    public Dollars overrideRate() {
+        return this.overrideRate;
+    }
+
+    public boolean isOverridden() {
+        return !overrideRate.equals(Dollars.ZERO);
+    }
+
+    public Dollars totalPerDiem() {
+        return isOverridden() ?
+                overrideRate
+                : requestedMealPerDiems().stream()
                 .map(MealPerDiem::requestedPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }

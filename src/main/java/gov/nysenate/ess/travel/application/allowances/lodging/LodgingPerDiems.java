@@ -11,22 +11,36 @@ public class LodgingPerDiems {
 
     private final static Comparator<LodgingPerDiem> dateComparator = Comparator.comparing(LodgingPerDiem::date);
     private final ImmutableSortedSet<LodgingPerDiem> lodgingPerDiems;
+    private Dollars overrideRate;
 
     public LodgingPerDiems(Collection<LodgingPerDiem> lodgingPerDiems) {
+        this(lodgingPerDiems, Dollars.ZERO);
+    }
+
+    public LodgingPerDiems(Collection<LodgingPerDiem> lodgingPerDiems, Dollars overrideRate) {
         this.lodgingPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
                 .addAll(lodgingPerDiems)
                 .build();
+        this.overrideRate = overrideRate;
     }
 
-    public Dollars maximumPerDiem() {
-        return allLodgingPerDiems().stream()
-                .map(LodgingPerDiem::maximumPerDiem)
-                .reduce(Dollars.ZERO, Dollars::add);
+    public void setOverrideRate(Dollars rate) {
+        this.overrideRate = rate;
     }
 
-    public Dollars requestedPerDiem() {
-        return requestedLodgingPerDiems().stream()
+    public Dollars overrideRate() {
+        return this.overrideRate;
+    }
+
+    public boolean isOverridden() {
+        return !overrideRate.equals(Dollars.ZERO);
+    }
+
+    public Dollars totalPerDiem() {
+        return isOverridden() ?
+                overrideRate
+                : requestedLodgingPerDiems().stream()
                 .map(LodgingPerDiem::requestedPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }

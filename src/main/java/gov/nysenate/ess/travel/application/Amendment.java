@@ -7,7 +7,6 @@ import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
-import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -29,7 +28,6 @@ public class Amendment {
     private PurposeOfTravel purposeOfTravel;
     private Route route;
     private Allowances allowances;
-    private PerDiemOverrides perDiemOverrides;
     private TravelApplicationStatus status;
     private List<TravelAttachment> attachments;
     private LocalDateTime createdDateTime;
@@ -43,7 +41,6 @@ public class Amendment {
         purposeOfTravel = builder.purposeOfTravel;
         route = builder.route;
         allowances = builder.allowances;
-        perDiemOverrides = builder.perDiemOverrides;
         mealPerDiems = builder.mealPerDiems;
         lodgingPerDiems = builder.lodgingPerDiems;
         status = builder.status;
@@ -61,21 +58,15 @@ public class Amendment {
     }
 
     public Dollars mileageAllowance() {
-        return perDiemOverrides().isMileageOverridden()
-                ? perDiemOverrides().mileageOverride()
-                : route().mileagePerDiems().requestedPerDiem();
+        return route().mileagePerDiems().requestedPerDiem();
     }
 
     public Dollars mealAllowance() {
-        return perDiemOverrides().isMealsOverridden()
-                ? perDiemOverrides().mealsOverride()
-                : mealPerDiems.requestedPerDiem();
+        return mealPerDiems().totalPerDiem();
     }
 
     public Dollars lodgingAllowance() {
-        return perDiemOverrides().isLodgingOverridden()
-                ? perDiemOverrides().lodgingOverride()
-                : lodgingPerDiems.requestedPerDiem();
+        return lodgingPerDiems().totalPerDiem();
     }
 
     public Dollars tollsAllowance() {
@@ -212,10 +203,6 @@ public class Amendment {
         this.allowances = allowances;
     }
 
-    public PerDiemOverrides perDiemOverrides() {
-        return perDiemOverrides;
-    }
-
     public TravelApplicationStatus status() {
         return status;
     }
@@ -230,10 +217,6 @@ public class Amendment {
 
     public Employee createdBy() {
         return createdBy;
-    }
-
-    public void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
-        this.perDiemOverrides = perDiemOverrides;
     }
 
     public void setCreatedDateTime(LocalDateTime createdDateTime) {
@@ -258,7 +241,6 @@ public class Amendment {
         private PurposeOfTravel purposeOfTravel = null;
         private Route route = Route.EMPTY_ROUTE;
         private Allowances allowances = new Allowances();
-        private PerDiemOverrides perDiemOverrides = new PerDiemOverrides();
         private MealPerDiems mealPerDiems = new MealPerDiems(new HashSet<>());
         private LodgingPerDiems lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
         private TravelApplicationStatus status = new TravelApplicationStatus();
@@ -291,11 +273,6 @@ public class Amendment {
 
         public Builder withAllowances(Allowances allowances) {
             this.allowances = allowances;
-            return this;
-        }
-
-        public Builder withPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
-            this.perDiemOverrides = perDiemOverrides;
             return this;
         }
 
