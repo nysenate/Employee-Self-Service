@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class MealPerDiemsView implements ViewObject {
 
+    private int id;
     private List<MealPerDiemView> allMealPerDiems;
     private List<MealPerDiemView> requestedMealPerDiems;
     private String totalPerDiem;
@@ -20,6 +21,7 @@ public class MealPerDiemsView implements ViewObject {
     }
 
     public MealPerDiemsView(MealPerDiems ma) {
+        this.id = ma.id();
         this.allMealPerDiems = ma.allMealPerDiems().stream()
                 .map(MealPerDiemView::new)
                 .collect(Collectors.toList());
@@ -32,9 +34,13 @@ public class MealPerDiemsView implements ViewObject {
     }
 
     public MealPerDiems toMealPerDiems() {
-        return new MealPerDiems(allMealPerDiems.stream()
+        return new MealPerDiems(id, allMealPerDiems.stream()
                 .map(MealPerDiemView::toMealPerDiem)
                 .collect(Collectors.toList()), new Dollars(overrideRate));
+    }
+
+    public int getId() {
+        return id;
     }
 
     public List<MealPerDiemView> getAllMealPerDiems() {

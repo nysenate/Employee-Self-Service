@@ -12,11 +12,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class SqlGoogleAddressDao extends SqlBaseDao {
 
+    public GoogleAddress selectGoogleAddress(int googleAddressId) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("googleAddressId", googleAddressId);
+        String sql = SqlGoogleAddressQuery.SELECT_ADDRESS.getSql(schemaMap());
+        return localNamedJdbc.queryForObject(sql, params, new GoogleAddressRowMapper());
+    }
+
     /**
      * Save a GoogleAddress.
      * If this address does not yet exist in the database it will be inserted and its id will
      * be updated with the generated id from the database.
      * If this address already exists in the database its id will be set to the matching address's id.
+     *
      * @param address
      */
     public void saveGoogleAddress(GoogleAddress address) {
@@ -24,8 +32,7 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
             GoogleAddress savedAddr = selectMatchingAddress(address);
             // Make sure the id is set so its available when inserting the destination.
             address.setId(savedAddr.getId());
-        }
-        catch (IncorrectResultSizeDataAccessException ex) {
+        } catch (IncorrectResultSizeDataAccessException ex) {
             // A record did not exist, lets insert it.
             insertGoogleAddress(address);
         }
@@ -62,6 +69,10 @@ public class SqlGoogleAddressDao extends SqlBaseDao {
     }
 
     private enum SqlGoogleAddressQuery implements BasicSqlQuery {
+        SELECT_ADDRESS(
+                "SELECT * from ${travelSchema}.google_address\n" +
+                        "WHERE google_address_id = :googleAddressId"
+        ),
         INSERT_ADDRESS(
                 "INSERT INTO ${travelSchema}.google_address(street_1, street_2, city, state,\n" +
                         "zip_5, zip_4, county, country, place_id, name, formatted_address)\n" +

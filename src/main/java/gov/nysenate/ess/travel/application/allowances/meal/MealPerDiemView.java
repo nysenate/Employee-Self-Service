@@ -2,8 +2,8 @@ package gov.nysenate.ess.travel.application.allowances.meal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.address.GoogleAddressView;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -13,9 +13,10 @@ import java.time.format.DateTimeFormatter;
 
 public class MealPerDiemView implements ViewObject {
 
+    private int id;
     private String date;
     private String rate;
-    private AddressView address;
+    private GoogleAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
     private String requestedPerDiem;
@@ -25,8 +26,9 @@ public class MealPerDiemView implements ViewObject {
     }
 
     public MealPerDiemView(MealPerDiem mpd) {
+        this.id = mpd.id();
         this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
-        this.address = new AddressView(mpd.address());
+        this.address = new GoogleAddressView(mpd.address());
         this.rate = mpd.rate().toString();
         this.isReimbursementRequested = mpd.isReimbursementRequested();
         this.requestedPerDiem = mpd.requestedPerDiem().toString();
@@ -35,7 +37,8 @@ public class MealPerDiemView implements ViewObject {
 
     public MealPerDiem toMealPerDiem() {
         return new MealPerDiem(
-                address.toAddress(),
+                id,
+                address.toGoogleAddress(),
                 new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new Dollars(rate)),
                 isReimbursementRequested
         );
@@ -51,12 +54,15 @@ public class MealPerDiemView implements ViewObject {
         return new BigDecimal(rate);
     }
 
+    public int getId() {
+        return id;
+    }
 
     public String getDate() {
         return date;
     }
 
-    public AddressView getAddress() {
+    public GoogleAddressView getAddress() {
         return address;
     }
 

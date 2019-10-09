@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public final class PerDiem {
+public final class PerDiem implements Comparable<PerDiem> {
 
     private final LocalDate date;
     private final BigDecimal rate;
@@ -49,5 +49,15 @@ public final class PerDiem {
     @Override
     public int hashCode() {
         return Objects.hash(date, rate);
+    }
+
+    @Override
+    public int compareTo(PerDiem o) {
+        if (this.date.equals(o.date)) {
+            return this.rate.compareTo(o.rate);
+        }
+        else {
+            return this.date.compareTo(o.date);
+        }
     }
 }

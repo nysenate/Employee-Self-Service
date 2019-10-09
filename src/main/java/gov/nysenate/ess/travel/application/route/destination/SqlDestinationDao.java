@@ -60,8 +60,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
                     .addValue("date", toDate(mealPerDiem.getDate()))
-                    .addValue("value", mealPerDiem.getRate().toString())
-                    .addValue("isReimbursementRequested", true); // FIXME
+                    .addValue("value", mealPerDiem.getRate().toString());
             paramList.add(params);
         }
 
@@ -77,8 +76,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
                     .addValue("date", toDate(lodgingPerDiem.getDate()))
-                    .addValue("value", lodgingPerDiem.getRate().toString())
-                    .addValue("isReimbursementRequested", true); // FIXME
+                    .addValue("value", lodgingPerDiem.getRate().toString());
             paramList.add(params);
         }
 
@@ -103,26 +101,26 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                         " VALUES (:arrivalDate, :departureDate, :googleAddressId)"
         ),
         INSERT_MEAL_PER_DIEMS(
-                "INSERT INTO ${travelSchema}.destination_meal_perdiem" +
-                        " (destination_id, date, value, is_reimbursement_requested)\n" +
-                        " VALUES (:destinationId, :date, :value, :isReimbursementRequested)"
+                "INSERT INTO ${travelSchema}.destination_meal_per_diem" +
+                        " (destination_id, date, value)\n" +
+                        " VALUES (:destinationId, :date, :value)"
         ),
         INSERT_LODGING_PER_DIEMS(
-                "INSERT INTO ${travelSchema}.destination_lodging_perdiem" +
-                        " (destination_id, date, value, is_reimbursement_requested)\n" +
-                        " VALUES (:destinationId, :date, :value, :isReimbursementRequested)"
+                "INSERT INTO ${travelSchema}.destination_lodging_per_diem" +
+                        " (destination_id, date, value)\n" +
+                        " VALUES (:destinationId, :date, :value)"
         ),
         SELECT_DESTINATION(
                 "SELECT dest.destination_id, dest.arrival_date, dest.departure_date,\n" +
                         " addr.google_address_id, addr.street_1, addr.street_2, addr.city, addr.state,\n" +
                         " addr.zip_5, addr.zip_4, addr.county, addr.country,\n" +
                         " addr.place_id, addr.name, addr.formatted_address,\n" +
-                        " m.date as meal_date, m.value as meal_value, m.is_reimbursement_requested as meal_requested,\n" +
-                        " l.date as lodging_date, l.value as lodging_value, l.is_reimbursement_requested as lodging_requested\n" +
+                        " m.date as meal_date, m.value as meal_value,\n" +
+                        " l.date as lodging_date, l.value as lodging_value\n" +
                         " FROM ${travelSchema}.destination dest\n" +
                         "   LEFT JOIN ${travelSchema}.google_address addr ON addr.google_address_id = dest.google_address_id\n" +
-                        "   LEFT JOIN ${travelSchema}.destination_meal_perdiem m ON dest.destination_id = m.destination_id\n" +
-                        "   LEFT JOIN ${travelSchema}.destination_lodging_perdiem l ON dest.destination_id = l.destination_id\n" +
+                        "   LEFT JOIN ${travelSchema}.destination_meal_per_diem m ON dest.destination_id = m.destination_id\n" +
+                        "   LEFT JOIN ${travelSchema}.destination_lodging_per_diem l ON dest.destination_id = l.destination_id\n" +
                         " WHERE dest.destination_id = :destinationId"
         );
 

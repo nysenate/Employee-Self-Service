@@ -3,26 +3,56 @@ package gov.nysenate.ess.travel.application.allowances.meal;
 import com.google.common.collect.ImmutableSortedSet;
 import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
+/**
+ * A collection of MealPerDiem's for a Travel Application Amendment.
+ * Only uses the highest rate MealPerDiem for each day.
+ *
+ * If these per diems are overridden, {@code overrideRate} will be non zero.
+ */
 public class MealPerDiems {
 
     private final static Comparator<MealPerDiem> dateComparator = Comparator.comparing(MealPerDiem::date);
+
+    private int id;
     private final ImmutableSortedSet<MealPerDiem> mealPerDiems;
     private Dollars overrideRate;
 
     public MealPerDiems(Collection<MealPerDiem> mealPerDiems) {
-        this(mealPerDiems, Dollars.ZERO);
+        this(0, mealPerDiems, Dollars.ZERO);
     }
 
-    public MealPerDiems(Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
+    public MealPerDiems(int id, Collection<MealPerDiem> mealPerDiems, Dollars overrideRate) {
+        // If multiple MealPerDiem's for the same date, only keep the one with the highest rate.
+        Map<LocalDate, MealPerDiem> dateToPerDiems = new HashMap<>();
+        for (MealPerDiem mpd : mealPerDiems) {
+            if (dateToPerDiems.containsKey(mpd.date())) {
+                // Replace if this rate is higher.
+                if (mpd.rate().compareTo(dateToPerDiems.get(mpd.date()).rate()) > 0) {
+                    dateToPerDiems.put(mpd.date(), mpd);
+                }
+            }
+            else {
+                dateToPerDiems.put(mpd.date(), mpd);
+            }
+        }
+
+        this.id = id;
         this.mealPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
-                .addAll(mealPerDiems)
+                .addAll(dateToPerDiems.values())
                 .build();
-        this.overrideRate = overrideRate;
+        this.overrideRate = overrideRate ==  null ? Dollars.ZERO : overrideRate;
+    }
+
+    public int id() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setOverrideRate(Dollars rate) {

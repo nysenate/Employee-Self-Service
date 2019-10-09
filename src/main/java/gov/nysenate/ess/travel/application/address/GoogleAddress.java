@@ -13,7 +13,7 @@ public class GoogleAddress extends Address {
 
     public GoogleAddress(int id, String placeId, String name, String formattedAddress) {
         this.id = id;
-        // If we dont have a placeId, use empty string instead of null so that db unique constraint works.
+        // If we dont have values, use empty string instead of null so that db unique constraint works.
         this.placeId = placeId == null ? "" : placeId;
         this.name = name == null ? "" : name.trim();
         this.formattedAddress = formattedAddress == null ? "" : formattedAddress.trim();
