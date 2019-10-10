@@ -74,7 +74,7 @@ public class TravelApplicationService {
                 if (appLeg.fromAddress().equals(qualifyingLeg.fromAddress())
                         && appLeg.toAddress().equals(qualifyingLeg.toAddress())
                         && appLeg.travelDate().equals(qualifyingLeg.travelDate())) {
-//                    appLeg.setPerDiem(new PerDiem(qualifyingLeg.travelDate(), qualifyingLeg.mileageRate(), qualifyingLeg.isReimbursementRequested()));
+                    appLeg.setIsReimbursementRequested(qualifyingLeg.isReimbursementRequested());
                 }
             }
         }

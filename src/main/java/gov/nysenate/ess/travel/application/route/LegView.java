@@ -56,7 +56,8 @@ public class LegView implements ViewObject {
                 new ModeOfTransportation(this.methodOfTravelDisplayName, this.methodOfTravelDescription),
                 miles == null ? Double.valueOf(0) : Double.valueOf(miles),
                 createPerDiem(),
-                isOutbound
+                isOutbound,
+                isReimbursementRequested
         );
     }
 

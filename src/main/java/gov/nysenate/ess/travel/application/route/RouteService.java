@@ -71,7 +71,7 @@ public class RouteService {
         PerDiem perDiem = new PerDiem(currentLeg.travelDate(), mileageRate);
         return new Leg(0, from, to,
                 new ModeOfTransportation(currentLeg.methodOfTravel(), currentLeg.methodOfTravelDescription()),
-                miles, perDiem, isOutbound);
+                miles, perDiem, isOutbound, true);
     }
 
     private Leg getLegOrNull(Route simpleRoute, int legIndex) {
@@ -115,36 +115,4 @@ public class RouteService {
             }
         }
     }
-
-//        LocalDate start = route.startDate();
-//        LocalDate end = route.endDate().plusDays(1);
-//
-//        // Meal Rates
-//        for (LocalDate date = start; date.isBefore(end); date = date.plusDays(1)) {
-//            Set<Destination> dests = destinationsVisitedOn(route, date);
-//            Map<Destination, Dollars> destToMealExpense = new HashMap<>();
-//            for (Destination dest : dests) {
-//                destToMealExpense.put(dest, serviceProviderFactory.fetchMealRate(date, dest.getAddress()));
-//            }
-//            Destination highestDest = null;
-//            Dollars highestMealRate = null;
-//            for (Map.Entry<Destination, Dollars> entry : destToMealExpense.entrySet()) {
-//                if (highestMealRate == null || entry.getValue().compareTo(highestMealRate) > 0) {
-//                    highestMealRate = entry.getValue();
-//                    highestDest = entry.getKey();
-//                }
-//            }
-//            PerDiem pd = new PerDiem(date, highestMealRate, true);
-//            highestDest.addMealPerDiem(pd);
-//        }
-//
-//        // Lodging Rates
-//        for (Destination dest : route.destinations()) {
-//            for (LocalDate night : dest.nights()) {
-//                Dollars lodgingPerDiem = serviceProviderFactory.fetchLodgingRate(night, dest.getAddress());
-//                PerDiem pd = new PerDiem(night, lodgingPerDiem, true);
-//                dest.addLodgingPerDiem(pd);
-//            }
-//        }
-//    }
 }

@@ -9,8 +9,7 @@ import java.util.stream.Collectors;
 
 public class MileagePerDiemsView implements ViewObject {
 
-    private String requestedPerDiem;
-    private String maximumPerDiem;
+    private String totalPerDiem;
     private List<LegView> allLegs;
     private List<LegView> qualifyingLegs;
     private List<LegView> requestedLegs;
@@ -21,8 +20,7 @@ public class MileagePerDiemsView implements ViewObject {
     }
 
     public MileagePerDiemsView(MileagePerDiems ma) {
-        this.maximumPerDiem = ma.maximumPerDiem().toString();
-        this.requestedPerDiem = ma.requestedPerDiem().toString();
+        this.totalPerDiem = ma.totalPerDiem().toString();
         this.allLegs = ma.allLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
@@ -39,12 +37,8 @@ public class MileagePerDiemsView implements ViewObject {
         return new MileagePerDiems(allLegs.stream().map(LegView::toLeg).collect(Collectors.toList()));
     }
 
-    public String getRequestedPerDiem() {
-        return requestedPerDiem;
-    }
-
-    public String getMaximumPerDiem() {
-        return maximumPerDiem;
+    public String getTotalPerDiem() {
+        return totalPerDiem;
     }
 
     public List<LegView> getAllLegs() {

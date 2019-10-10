@@ -18,9 +18,10 @@ public class Leg {
     private final double miles;
     private PerDiem perDiem;
     private final boolean isOutbound;
+    private boolean isReimbursementRequested;
 
     public Leg(int id, Destination from, Destination to, ModeOfTransportation modeOfTransportation,
-               double miles, PerDiem perDiem, boolean isOutbound) {
+               double miles, PerDiem perDiem, boolean isOutbound, boolean isReimbursementRequested) {
         this.id = id;
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
@@ -28,6 +29,7 @@ public class Leg {
         this.miles = miles;
         this.perDiem = perDiem;
         this.isOutbound = isOutbound;
+        this.isReimbursementRequested = isReimbursementRequested;
     }
 
     /**
@@ -51,6 +53,10 @@ public class Leg {
 //                ? maximumPerDiem()
 //                : Dollars.ZERO;
         return maximumPerDiem();
+    }
+
+    public void setIsReimbursementRequested(boolean isReimbursementRequested) {
+        this.isReimbursementRequested = isReimbursementRequested;
     }
 
     public int getId() {
@@ -98,8 +104,7 @@ public class Leg {
     }
 
     public boolean isReimbursementRequested() {
-        // TODO Fix this
-        return true;
+        return this.isReimbursementRequested;
     }
 
     public boolean isOutbound() {

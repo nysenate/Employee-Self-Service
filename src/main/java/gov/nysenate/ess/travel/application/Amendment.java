@@ -58,7 +58,7 @@ public class Amendment {
     }
 
     public Dollars mileageAllowance() {
-        return route().mileagePerDiems().requestedPerDiem();
+        return route().mileagePerDiems().totalPerDiem();
     }
 
     public Dollars mealAllowance() {

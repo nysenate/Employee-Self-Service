@@ -180,9 +180,10 @@ public class SqlRouteDao extends SqlBaseDao implements RouteDao {
                     destinationDao.selectDestination(rs.getInt("from_destination_id")),
                     destinationDao.selectDestination(rs.getInt("to_destination_id")),
                     new ModeOfTransportation(MethodOfTravel.of(rs.getString("method_of_travel")), rs.getString("method_of_travel_description")),
-                    Double.valueOf(rs.getString("miles")),
+                    Double.parseDouble(rs.getString("miles")),
                     perDiem,
-                    rs.getBoolean("is_outbound"));
+                    rs.getBoolean("is_outbound"),
+                    rs.getBoolean("is_reimbursement_requested"));
         }
     }
 }
