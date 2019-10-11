@@ -64,3 +64,5 @@ ALTER TABLE travel.amendment_lodging_per_diem
     REFERENCES travel.google_address(google_address_id);
 
 DROP TABLE IF EXISTS travel.amendment_perdiem_overrides;
+DROP TABLE IF EXISTS travel.perdiem_override;
+DROP TABLE IF EXISTS travel.travel_requestors;
