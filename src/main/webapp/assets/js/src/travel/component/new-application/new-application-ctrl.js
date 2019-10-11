@@ -115,6 +115,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                     .then(function () {
                         modals.open("submit-results").then(function () {
                             locationService.go("/travel", true);
+                        }, function () {
+                            locationService.logout();
                         });
                     })
                     .catch($scope.handleErrorResponse);

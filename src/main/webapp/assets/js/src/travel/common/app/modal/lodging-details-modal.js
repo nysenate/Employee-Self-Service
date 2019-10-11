@@ -12,7 +12,7 @@ function lodgingDetailsModalCtrl($scope, modals) {
 
     this.$onInit = function () {
         $scope.app = modals.params().app;
-        $scope.isOverridden = $scope.app.perDiemOverrides.isLodgingOverridden;
+        $scope.isOverridden = $scope.app.lodgingPerDiems.isOverridden;
     };
 
     $scope.closeModal = function () {
