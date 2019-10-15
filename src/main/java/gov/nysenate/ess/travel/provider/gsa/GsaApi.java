@@ -3,8 +3,8 @@ package gov.nysenate.ess.travel.provider.gsa;
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.HttpUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMealIncidentalExpenses;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMealIncidentalExpensesView;
+import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
+import gov.nysenate.ess.travel.provider.gsa.meal.GsaMieView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,15 +75,15 @@ public class GsaApi {
     }
 
     /**
-     * Queries all meal and incidental rates for a given fiscal year.
-     * @param fiscalYear
-     * @return
+     * Queries the GSA API for mie(meal and incidental) rates for a given fiscal year.
+     * @param fiscalYear The year to get mie rates for.
+     * @return List of {@link GsaMie}
      * @throws IOException
      */
-    public List<GsaMealIncidentalExpenses> queryGsaMealRates(int fiscalYear) throws IOException {
+    public List<GsaMie> queryGsaMie(int fiscalYear) throws IOException {
         String url = String.format(baseUrl + miePathTemplate, String.valueOf(fiscalYear));
         String content = httpUtils.urlToString(url);
-        GsaMealIncidentalExpensesView[] res = OutputUtils.jsonToObject(content, GsaMealIncidentalExpensesView[].class);
-        return Arrays.stream(res).map(mie -> mie.toGsaMealRate(fiscalYear)).collect(Collectors.toList());
+        GsaMieView[] res = OutputUtils.jsonToObject(content, GsaMieView[].class);
+        return Arrays.stream(res).map(mie -> mie.toGsaMie(fiscalYear)).collect(Collectors.toList());
     }
 }

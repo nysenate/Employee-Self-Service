@@ -4,7 +4,11 @@ import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.Objects;
 
-public class GsaMealIncidentalExpenses {
+/**
+ * A Gsa MIE(meal and incidental expenses). These are the rates used to determine
+ * breakfast, dinner, and total meal reimbursements.
+ */
+public class GsaMie {
 
     private final int fiscalYear;
     private final Dollars total;
@@ -14,8 +18,8 @@ public class GsaMealIncidentalExpenses {
     private final Dollars gsaIncidental;
     private final Dollars gsaFirstLastDay;
 
-    public GsaMealIncidentalExpenses(int fiscalYear, Dollars total, Dollars gsaBreakfast, Dollars gsaLunch,
-                                     Dollars gsaDinner, Dollars gsaIncidental, Dollars gsaFirstLastDay) {
+    public GsaMie(int fiscalYear, Dollars total, Dollars gsaBreakfast, Dollars gsaLunch,
+                  Dollars gsaDinner, Dollars gsaIncidental, Dollars gsaFirstLastDay) {
         this.fiscalYear = fiscalYear;
         this.total = total;
         this.gsaBreakfast = gsaBreakfast;
@@ -41,6 +45,34 @@ public class GsaMealIncidentalExpenses {
         return gsaLunch.add(gsaDinner).add(gsaIncidental);
     }
 
+    public int getFiscalYear() {
+        return fiscalYear;
+    }
+
+    public Dollars getTotal() {
+        return total;
+    }
+
+    protected Dollars getGsaBreakfast() {
+        return gsaBreakfast;
+    }
+
+    protected Dollars getGsaLunch() {
+        return gsaLunch;
+    }
+
+    protected Dollars getGsaDinner() {
+        return gsaDinner;
+    }
+
+    protected Dollars getGsaIncidental() {
+        return gsaIncidental;
+    }
+
+    protected Dollars getGsaFirstLastDay() {
+        return gsaFirstLastDay;
+    }
+
     @Override
     public String toString() {
         return "GsaMealRate{" +
@@ -58,7 +90,7 @@ public class GsaMealIncidentalExpenses {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GsaMealIncidentalExpenses that = (GsaMealIncidentalExpenses) o;
+        GsaMie that = (GsaMie) o;
         return fiscalYear == that.fiscalYear &&
                 Objects.equals(total, that.total) &&
                 Objects.equals(gsaBreakfast, that.gsaBreakfast) &&
