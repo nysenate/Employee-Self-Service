@@ -4,14 +4,15 @@ import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Objects;
 
 public final class MealPerDiem {
 
     private int id;
     private final GoogleAddress address;
-    private final PerDiem perDiem;
+    private final LocalDate date;
+    private final BigDecimal rate;
     private boolean isReimbursementRequested;
 
     public MealPerDiem(GoogleAddress address, PerDiem perDiem) {
@@ -21,7 +22,8 @@ public final class MealPerDiem {
     public MealPerDiem(int id, GoogleAddress address, PerDiem perDiem, boolean isReimbursementRequested) {
         this.id = id;
         this.address = address;
-        this.perDiem = perDiem;
+        this.date = perDiem.getDate();
+        this.rate = perDiem.getRate();
         this.isReimbursementRequested = isReimbursementRequested;
     }
 
@@ -46,38 +48,16 @@ public final class MealPerDiem {
     }
 
     public LocalDate date() {
-        return perDiem.getDate();
+        return date;
     }
 
     public Dollars rate() {
-        return new Dollars(perDiem.getRate());
+        return new Dollars(rate);
     }
 
     public boolean isReimbursementRequested() {
         return isReimbursementRequested;
     }
 
-    @Override
-    public String toString() {
-        return "MealPerDiem{" +
-                "address=" + address +
-                ", perDiem=" + perDiem +
-                ", isReimbursementRequested=" + isReimbursementRequested +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MealPerDiem that = (MealPerDiem) o;
-        return isReimbursementRequested == that.isReimbursementRequested &&
-                Objects.equals(address, that.address) &&
-                Objects.equals(perDiem, that.perDiem);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(address, perDiem, isReimbursementRequested);
-    }
+    // TODO toString, equals, hashcode
 }

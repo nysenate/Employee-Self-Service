@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.address.GoogleAddressView;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,7 +38,7 @@ public class MealPerDiemView implements ViewObject {
         return new MealPerDiem(
                 id,
                 address.toGoogleAddress(),
-                new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new Dollars(rate)),
+                new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new BigDecimal(rate)),
                 isReimbursementRequested
         );
     }

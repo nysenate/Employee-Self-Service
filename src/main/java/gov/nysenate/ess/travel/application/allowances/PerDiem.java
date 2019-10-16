@@ -11,7 +11,6 @@ public final class PerDiem implements Comparable<PerDiem> {
     private final LocalDate date;
     private final BigDecimal rate;
 
-    // TODO I think Dollars in this constructor can loose accuracy in the rate. Consider removing.
     public PerDiem(LocalDate date, Dollars rate) {
         this(date, new BigDecimal(rate.toString()));
     }

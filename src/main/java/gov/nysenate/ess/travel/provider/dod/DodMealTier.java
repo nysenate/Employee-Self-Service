@@ -1,11 +1,12 @@
 package gov.nysenate.ess.travel.provider.dod;
 
 import com.google.common.collect.Range;
+import gov.nysenate.ess.travel.provider.MealIncidentalExpense;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 
-public class DodMealTier {
+public class DodMealTier implements MealIncidentalExpense {
 
     private Dollars incidental;
     private Dollars total; //bfast + lunch + dinner
@@ -26,6 +27,32 @@ public class DodMealTier {
         this.tier = (this.incidental.add(this.total)).toString();
         this.effectiveDate = effectiveDate;
 
+    }
+
+    /**
+     * DOD does not separate out meals into breakfast, lunch, dinner.
+     * Need to figure out what to use for this, for now use zero.
+     * @return
+     */
+    @Override
+    public Dollars breakfast() {
+        return Dollars.ZERO;
+    }
+
+    /**
+     * DOD does not separate out meals into breakfast, lunch, dinner.
+     * Need to figure out what to use for this, for now use zero.l
+     * @return
+     */
+    @Override
+    public Dollars dinner() {
+        return Dollars.ZERO;
+    }
+
+    @Override
+    public Dollars total() {
+        // TODO difference between total and tier? where does total come from?
+        return new Dollars(tier);
     }
 
     public Dollars getIncidental() {

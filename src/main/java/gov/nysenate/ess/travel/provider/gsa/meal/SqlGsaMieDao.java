@@ -24,7 +24,7 @@ public class SqlGsaMieDao extends SqlBaseDao {
         for (GsaMie mie : mies) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("fiscalYear", mie.getFiscalYear())
-                    .addValue("total", mie.getTotal().toString())
+                    .addValue("total", mie.total().toString())
                     .addValue("gsaBreakfast", mie.getGsaBreakfast().toString())
                     .addValue("gsaLunch", mie.getGsaLunch().toString())
                     .addValue("gsaDinner", mie.getGsaDinner().toString())

@@ -1,5 +1,6 @@
 package gov.nysenate.ess.travel.provider.gsa.meal;
 
+import gov.nysenate.ess.travel.provider.MealIncidentalExpense;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.Objects;
@@ -8,7 +9,7 @@ import java.util.Objects;
  * A Gsa MIE(meal and incidental expenses). These are the rates used to determine
  * breakfast, dinner, and total meal reimbursements.
  */
-public class GsaMie {
+public class GsaMie implements MealIncidentalExpense {
 
     private final int fiscalYear;
     private final Dollars total;
@@ -33,6 +34,7 @@ public class GsaMie {
      * The Senate's breakfast rate.
      * @return
      */
+    @Override
     public Dollars breakfast() {
         return this.gsaBreakfast;
     }
@@ -41,16 +43,18 @@ public class GsaMie {
      * The Senate's dinner rate. NOT the same as GSA's dinner rate!
      * @return
      */
+    @Override
     public Dollars dinner() {
         return gsaLunch.add(gsaDinner).add(gsaIncidental);
     }
 
-    public int getFiscalYear() {
-        return fiscalYear;
+    @Override
+    public Dollars total() {
+        return total;
     }
 
-    public Dollars getTotal() {
-        return total;
+    public int getFiscalYear() {
+        return fiscalYear;
     }
 
     protected Dollars getGsaBreakfast() {
