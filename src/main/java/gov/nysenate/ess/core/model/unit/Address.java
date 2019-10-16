@@ -8,19 +8,20 @@ import java.util.Arrays;
 /**
  * Basic model for a street address
  */
-public class Address
-{
+public class Address {
     protected String addr1 = "";
     protected String addr2 = "";
     protected String city = "";
+    protected String county = "";
     protected String state = "";
     protected String zip5 = "";
     protected String zip4 = "";
+    protected String country = "";
 
     public Address() {}
 
     public Address(String addr1) {
-        this(addr1, "","","","","");
+        this(addr1, "", "", "", "", "");
     }
 
     public Address(String addr1, String city, String state, String postal) {
@@ -54,7 +55,21 @@ public class Address
             return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
                     + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
                     + (!city.isEmpty() ? " " + city + "," : "") + (!state.isEmpty() ? " " + state : "")
-                    + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-"+zip4 : "")).trim();
+                    + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-" + zip4 : "")).trim();
+        }
+        else {
+            return addr1;
+        }
+    }
+
+    public String getFromattedAddressWithCounty() {
+        if (isParsed()) {
+            return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
+                    + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
+                    + (!city.isEmpty() ? " " + city + "," : "")
+                    + (!county.isEmpty() ? " " + county + " County" + "," : "")
+                    + (!state.isEmpty() ? " " + state : "")
+                    + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-" + zip4 : "")).trim();
         }
         else {
             return addr1;
@@ -64,10 +79,11 @@ public class Address
     /**
      * Normalization applied:
      * - Remove the dash within the building number
+     *
      * @return String
      */
     public String toStringStripBuildingNumber() {
-        return toString().replaceFirst("^(\\d+)(-)(\\d+)","$1$3");
+        return toString().replaceFirst("^(\\d+)(-)(\\d+)", "$1$3");
     }
 
     public String getAddr1() {
@@ -75,7 +91,7 @@ public class Address
     }
 
     public void setAddr1(String addr1) {
-        if (addr1 != null){
+        if (addr1 != null) {
             this.addr1 = addr1;
         }
     }
@@ -85,7 +101,7 @@ public class Address
     }
 
     public void setAddr2(String addr2) {
-        if (addr2 != null){
+        if (addr2 != null) {
             this.addr2 = addr2;
         }
     }
@@ -100,12 +116,28 @@ public class Address
         }
     }
 
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     public String getState() {
         return state;
     }
 
     public void setState(String state) {
-        if (state != null){
+        if (state != null) {
             this.state = state;
         }
     }
@@ -115,7 +147,7 @@ public class Address
     }
 
     public void setZip5(String zip5) {
-        if (zip5 != null && !zip5.isEmpty() && !zip5.equalsIgnoreCase("null")){
+        if (zip5 != null && !zip5.isEmpty() && !zip5.equalsIgnoreCase("null")) {
             this.zip5 = StringUtils.leftPad(zip5, 5, "0");
         }
     }
@@ -125,12 +157,14 @@ public class Address
     }
 
     public void setZip4(String zip4) {
-        if (zip4 != null && !zip4.isEmpty() && !zip5.equalsIgnoreCase("null")){
+        if (zip4 != null && !zip4.isEmpty() && !zip5.equalsIgnoreCase("null")) {
             this.zip4 = StringUtils.leftPad(zip4, 4, "0");
         }
     }
 
-    /** Stores 12345-1234 style postal codes into zip5 and zip4 parts */
+    /**
+     * Stores 12345-1234 style postal codes into zip5 and zip4 parts
+     */
     public void setPostal(String postal) {
         if (postal != null) {
             ArrayList<String> zipParts = new ArrayList<>(Arrays.asList(postal.split("-")));
@@ -141,16 +175,16 @@ public class Address
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
 
         Address address = (Address) o;
 
-        if (addr1 != null ? !addr1.equals(address.addr1) : address.addr1 != null) return false;
-        if (addr2 != null ? !addr2.equals(address.addr2) : address.addr2 != null) return false;
-        if (city != null ? !city.equals(address.city) : address.city != null) return false;
-        if (state != null ? !state.equals(address.state) : address.state != null) return false;
-        if (zip5 != null ? !zip5.equals(address.zip5) : address.zip5 != null) return false;
+        if (addr1 != null ? !addr1.equals(address.addr1) : address.addr1 != null) { return false; }
+        if (addr2 != null ? !addr2.equals(address.addr2) : address.addr2 != null) { return false; }
+        if (city != null ? !city.equals(address.city) : address.city != null) { return false; }
+        if (state != null ? !state.equals(address.state) : address.state != null) { return false; }
+        if (zip5 != null ? !zip5.equals(address.zip5) : address.zip5 != null) { return false; }
         return !(zip4 != null ? !zip4.equals(address.zip4) : address.zip4 != null);
 
     }

@@ -10,6 +10,10 @@
             <option name="TAB_SIZE" value="2" />
           </indentOptions>
         </codeStyleSettings>
+        <codeStyleSettings language="JAVA">
+          <option name="CLASS_ANNOTATION_WRAP" value="1" />
+          <option name="FIELD_ANNOTATION_WRAP" value="1" />
+        </codeStyleSettings>
         <codeStyleSettings language="JSP">
           <indentOptions>
             <option name="INDENT_SIZE" value="2" />

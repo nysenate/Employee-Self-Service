@@ -67,7 +67,7 @@ public class DateUtils
      * @param localDate LocalDate
      * @return int - fiscal year of given date
      */
-    public static int getFiscalYear(LocalDate localDate) {
+    public static int getSenateFiscalYear(LocalDate localDate) {
         return localDate.plus(SENATE_FISCAL_YEAR_OFFSET).getYear();
     }
 
@@ -90,11 +90,11 @@ public class DateUtils
         Range<LocalDate> canonicalRange = dateRange.canonical(getLocalDateDiscreteDomain());
         if (canonicalRange.hasLowerBound()) {
             LocalDate lowerEndpoint = canonicalRange.lowerEndpoint();
-            lowerEndpointYear = fiscalYears ? getFiscalYear(lowerEndpoint) : lowerEndpoint.getYear();
+            lowerEndpointYear = fiscalYears ? getSenateFiscalYear(lowerEndpoint) : lowerEndpoint.getYear();
         }
         if (canonicalRange.hasUpperBound()) {
             LocalDate upperEndpoint = canonicalRange.upperEndpoint().minusDays(1);
-            upperEndpointYear = fiscalYears ? getFiscalYear(upperEndpoint) : upperEndpoint.getYear();
+            upperEndpointYear = fiscalYears ? getSenateFiscalYear(upperEndpoint) : upperEndpoint.getYear();
             upperEndpointYear += 1;  // the upper endpoint is closed
         }
         if (upperEndpointYear == null && lowerEndpointYear == null) {

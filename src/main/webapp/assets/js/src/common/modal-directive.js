@@ -41,38 +41,9 @@ function ($rootScope, $document, modals) {
             }
         });
 
-        // Set subview upon modal open event
-        $rootScope.$on('modals.open', function (event, modalId) {
-            console.log('showing modal ', modalId);
-            onModalUpdate();
-        });
-
-        // Remove subview upon modal close event
-        $rootScope.$on('modals.close', function(event) {
-            onModalUpdate();
-        });
-
         $scope.isOpen = function () {
             return modals.isOpen();
         };
-
-        function onModalUpdate() {
-            if ($scope.isOpen()) {
-                lockScrollbar();
-            } else {
-                unlockScrollbar();
-            }
-        }
-
-        function lockScrollbar() {
-            var rootEle = angular.element('html');
-            rootEle.addClass('overflow-hidden');
-        }
-
-        function unlockScrollbar() {
-            var rootEle = angular.element('html');
-            rootEle.removeClass('overflow-hidden');
-        }
     }
 }]);
 

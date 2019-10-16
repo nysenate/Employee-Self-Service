@@ -40,6 +40,7 @@ public class AddressTest
     public void testIsEmpty() throws Exception {
         assertTrue(addressList.get(7).isEmpty());
         assertTrue(new Address(" ").isEmpty());
+        assertFalse(addressList.get(6).isEmpty());
     }
 
     /** If the address is parse, the toString should display the address in a standard format. */

@@ -1,0 +1,605 @@
+@import "common/include";
+
+/**
+ * Styles for ESS Travel
+ */
+
+/**
+ * Basic Theme
+ */
+
+@travelPrimaryColor: @orange;
+@travelSecondaryColor: @teal;
+@travelLightGray: #e4e6e8;
+@travelDarkGray: #3b4045;
+
+.travel-hero {
+  .page-hero(@travelPrimaryColor, white);
+}
+
+.white-text {
+  color: white;
+}
+
+.travel-text {
+  color: @travelDarkGray;
+}
+
+.travel-text-bold {
+  .travel-text;
+  .bold;
+}
+
+.travel-highlight-text {
+  color: @travelPrimaryColor;
+  .bold;
+}
+
+.travel-secondary-text {
+  color: @travelSecondaryColor;
+  .bold;
+}
+
+.approved-text {
+  color: @green;
+  .bold;
+}
+
+.disapproved-text {
+  color: @redorange;
+  .bold;
+}
+
+.travel-background {
+  background: @travelPrimaryColor;
+}
+
+.travel-secondary-background {
+  background: @travelSecondaryColor;
+}
+
+.travel-neutral-background {
+  background: @travelLightGray;
+}
+
+.travel-content-info {
+  .content-info;
+  border-bottom: 1px solid @travelLightGray;
+}
+
+.travel-content-controls {
+  .content-controls;
+
+  p, label {
+    .travel-text-bold;
+  }
+}
+
+.travel-inner-container {
+  margin: 10px 10px 20px;
+  border: solid @travelLightGray 1px;
+}
+
+.travel-inner-container-content {
+  margin: 15px;
+}
+
+h2.travel-subheader {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 10px;
+  color: white;
+}
+
+.travel-button-container {
+  .text-align-center;
+  .margin-top-20;
+  padding: 10px;
+  background: #f9f9f9;
+
+  input[type="button"] {
+    margin-right: 5px;
+  }
+}
+
+.expenses-opt-out-list {
+  .clear;
+  padding-top: 15px;
+
+  div {
+    margin-top: 3px;
+    .travel-text;
+
+    &.col-6-12 {
+      .travel-text-bold;
+    }
+  }
+}
+
+.travel-notification {
+  color: @green;
+  font-weight: bold;
+  padding-top: 5px;
+  // Fade in and out
+  &.ng-hide {
+    opacity: 0;
+  }
+  &.ng-hide-add {
+    transition: all linear 0.75s
+  }
+}
+
+/**
+  * Validation
+ */
+
+// Only highlight fields once they have been touched.
+// Prevents highlighting them before the user even starts to fill out the info.
+#purposeForm, #outboundForm, #returnForm, #allowancesForm {
+  input, select, textarea {
+    &.ng-invalid {
+      border: 1px solid #ccc;
+
+      &.ng-touched {
+        border: 1px solid @redorange;
+      }
+
+      &.ng-dirty {
+        border: 1px solid @redorange;
+      }
+    }
+  }
+}
+
+
+@travel-location-box-core: {
+  display: inline-block;
+  width: 100%;
+  padding: 5px;
+  height: 50px;
+  text-align: center;
+  line-height: 20px;
+  background: #F6F6F6;
+  border-radius: 5px;
+  div {
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+  }
+};
+
+.travel-origin-display-box {
+  @travel-location-box-core();
+}
+
+.travel-destination-display-box {
+  @travel-location-box-core();
+
+  :nth-child(1) {
+    float: left;
+    width: 25%;
+    font-size: 0.8em;
+  }
+
+  :nth-child(2) {
+    width: 50%
+  }
+
+  :nth-child(3) {
+    float: right;
+    width: 25%;
+    font-size: 0.8em;
+  }
+}
+
+.travel-table {
+  width: 100%;
+  .text-align-center;
+
+  thead {
+    background: white;
+
+    tr {
+      color: #333;
+      font-size: .9em;
+      border-bottom: 1px solid #155C69;
+
+      th {
+        padding: 10px 5px;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background: #fafafa;
+      }
+
+      td {
+        .padding-10;
+      }
+
+      &.notes {
+        font-size: .9em;
+        text-align: left;
+        padding-left: 50px;
+      }
+
+      &.highlight-row {
+        background-color:  #ffbcbc !important;
+      }
+    }
+  }
+}
+
+.purpose-row {
+  //width: 80%;
+  margin-bottom: 10px;
+  label {
+    display: inline-block;
+    width: 350px;
+    text-align: right;
+  }
+  select {
+    width: 150px;
+  }
+  input {
+    width: 350px;
+  }
+  textarea {
+    width: 350px;
+  }
+}
+
+.review-additional-purpose {
+  white-space: pre-wrap;
+  width: 500px;
+  display: inline-block;
+  text-align: left;
+}
+
+.travel-allowance-label {
+  display: inline-block;
+  width: 120px;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.travel-hover {
+  tbody {
+    tr:hover {
+      background-color: darken(color(#fafafa), 10%);
+      cursor: pointer;
+
+      &.highlight-row {
+        background-color: darken(color(#ffbcbc), 10%) !important;
+      }
+    }
+  }
+}
+
+.travel-loading {
+  width: 220px;
+  height: 30px;
+  margin: 0;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.travel-container {
+  background: #fafafa;
+  position: relative;
+  //.box-shadow(0px 1px 2px #aaa);
+  border: solid @travelLightGray 1px;
+
+  h3 {
+    color: @travelDarkGray;
+    //padding: 10px;
+    margin: 10px;
+  }
+
+  > .outbound {
+    //color: @green;
+    //border-bottom: solid @green 1px;
+    border-bottom: solid @travelLightGray 1px;
+    //background: @travelPrimaryColor;
+  }
+
+  > .return {
+    //color: @teal;
+    border-bottom: solid @travelLightGray 1px;
+    //border: solid @travelLightGray 1px;
+    //border-bottom: solid @teal 1px;
+    //background: @travelSecondaryColor;
+  }
+
+  input {
+    background: #ffffff;
+  }
+}
+
+.travel-container-cross {
+  float: right;
+  margin: 10px;
+  font-size: large;
+  color: white;
+  cursor: pointer;
+}
+
+/**
+  * Attachment styling
+  */
+
+.travel-attachment-container {
+  .margin-10;
+
+  & > .travel-attachment-filename {
+    .margin-5;
+    color: darken(@gray, 15%);
+    font-family: monospace;
+
+    & > .icon-cross {
+      .margin-5;
+      vertical-align: middle;
+      color: @dark-red;
+      font-size: large;
+    }
+  }
+}
+
+/**
+  * Travel Itinerary styling
+  */
+
+.itinerary-address {
+  width: 55%;
+  margin: 1%;
+  float: left;
+}
+
+.itinerary-date {
+  width: 40%;
+  margin: 1%;
+  float: right;
+}
+
+.itinerary-mot-container {
+  width: 40%;
+  margin: 1%;
+  float: right;
+
+  .itinerary-mot {
+    float: left;
+  }
+
+  .itinerary-mot-write-in {
+    float: right;
+    margin-right: 10px;
+  }
+}
+
+/**
+  * Travel app print page styling
+  */
+
+#app-form-print {
+  font-size: 16px;
+  @page {
+    margin: 0.4in 0.4in 0.4in 0.4in;
+  }
+}
+
+.app-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-form-grid {
+  display: flex;
+  padding: 3px;
+}
+
+.app-form-label {
+  width: 125px;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.app-form-s-col {
+  width: 150px;
+  margin-right: 10px;
+}
+
+.app-form-m-col {
+  width: 380px;
+  margin-right: 10px;
+}
+
+.app-form-l-col {
+  width: 650px;
+  margin-right: 10px;
+}
+
+.app-form-mot-box {
+  width: 220px;
+  margin: 10px 30px 10px 100px;
+  border: 1px solid grey;
+  .padding-10;
+
+  input {
+    float: right;
+  }
+}
+
+.app-form-allowances-box {
+  width: 275px;
+  margin: 10px 30px 10px 100px;
+  border: 1px solid grey;
+  .padding-10;
+
+  span {
+    float: right;
+  }
+}
+
+.print-signature {
+  width: 350px;
+  border-top: 1px solid black;
+
+  > .signature-name {
+    float: left;
+  }
+
+  > .signature-date {
+    float: right;
+  }
+}
+
+#traveler-signature {
+  float: left;
+  margin: 50px 20px 0 20px;
+}
+
+#depthead-signature {
+  float: right;
+  margin: 50px 20px 0 20px;
+}
+
+#secretary-signature {
+  margin: 100px 20px 0 232px;
+}
+
+/**
+  * App Edit Perdiem Overrides styling
+  */
+
+.perdiem-overrides-edit-form-row {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: baseline;
+}
+
+.perdiem-overrides-edit-form-calculated {
+  width: 200px;
+  margin-right: 50px;
+}
+
+.perdiem-overrides-edit-form-override {
+  label {
+    width: 120px;
+    display: inline-block;
+    text-align: right;
+  }
+  input {
+    width: 75px;
+  }
+}
+
+/**
+  * Step Indicator
+  */
+
+@stepColor: @white;
+@stepColorCompleted: @travelSecondaryColor;
+@textColor: #666;
+@textColorCompleted: #fff;
+
+.step-indicator {
+  display: table;
+  margin: 18px auto 18px auto;
+}
+
+.step {
+  display: block;
+  float: left;
+  font-weight: bold;
+  background: @stepColor;
+  padding-right: 10px;
+  height: 30px;
+  line-height: 32px;
+  margin-right: 33px;
+  position: relative;
+  text-decoration: none;
+  color: @textColor;
+  cursor: default;
+
+  &:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 0;
+    left: -30px;
+    border: 15px solid transparent;
+    border-color: @stepColor;
+    border-left-color: transparent;
+  }
+
+  &:after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    top: 0;
+    right: -30px;
+    border: 15px solid transparent;
+    border-left-color: @stepColor;
+  }
+
+  &:first-of-type {
+    border-radius: 2px 0 0 2px;
+    padding-left: 15px;
+
+    &:before {
+      display: none;
+    }
+  }
+
+  &:last-of-type {
+    border-radius: 0 2px 2px 0;
+    margin-right: 25px;
+    padding-right: 15px;
+
+    &:after {
+      display: none;
+    }
+  }
+
+  &.completed {
+    background: @stepColorCompleted;
+    color: @textColorCompleted;
+
+    &:before {
+      border-color: @stepColorCompleted;
+      border-left-color: transparent;
+    }
+
+    &:after {
+      border-left-color: @stepColorCompleted;
+    }
+  }
+
+  &.navigable {
+    @navigableColor: lighten(@stepColorCompleted, 10%);
+    cursor: pointer;
+
+    &:hover {
+      background: @navigableColor;
+
+      &:before {
+        border-color: @navigableColor;
+        border-left-color: transparent;
+      }
+
+      &:after {
+        border-left-color: @navigableColor;
+      }
+    }
+  }
+}

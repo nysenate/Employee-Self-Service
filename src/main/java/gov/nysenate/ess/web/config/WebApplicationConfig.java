@@ -16,12 +16,15 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.MultipartConfigElement;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -108,5 +111,16 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter
     @Bean
     public MappingJackson2XmlHttpMessageConverter jackson2XmlConverter() {
         return new MappingJackson2XmlHttpMessageConverter(xmlObjectMapper);
+    }
+
+    /**
+     * Configuration for handling file uploads
+     */
+    @Bean
+    public MultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(10485760); // 10MB
+        multipartResolver.setMaxUploadSizePerFile(5242880); // 5MB
+        return multipartResolver;
     }
 }

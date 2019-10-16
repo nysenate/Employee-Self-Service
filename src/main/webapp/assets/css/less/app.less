@@ -51,6 +51,7 @@
   .align-parent;
   width: 100%;
   height: 100%;
+
   & .ess-notification {
     position: absolute;
     .center-align;
@@ -65,7 +66,7 @@
   width: 100%;
   background: #fafafa;
   box-shadow: 0 1px 1px #ccc;
-  height:45px;
+  height: 45px;
   z-index: 1002;
   color: white;
   overflow: hidden;
@@ -78,72 +79,86 @@
 
     .left-header-area {
       display: inline-block;
+
       .nysslogo {
         .nysslogo(35px);
         float: left;
         margin-top: 2px;
         margin-left: 10px;
       }
+
       .nysslogo-text-container {
         padding: 0;
         margin-top: 0;
         display: inline-block;
+
         .nysslogo-text {
           .font-weight-light;
           color: #333;
           font-size: 1.6em;
           line-height: 40px;
           margin-left: 10px;
+
           .highlight {
             .font-weight-normal;
           }
         }
       }
+
       .top-nav-list {
         padding: 0;
         display: inline-block;
         vertical-align: top;
         margin: 0 0 0 20px;
+
         li {
           display: inline-block;
-          line-height:40px;
+          line-height: 40px;
           cursor: pointer;
+
           &.active {
             font-weight: 600;
           }
+
           &.teal {
             &.active, &:hover {
               border-bottom: 3px solid @light-teal;
             }
           }
+
           &.green {
             &.active, &:hover {
               border-bottom: 3px solid @green;
             }
           }
+
           &.orange {
             &.active, &:hover {
               border-bottom: 3px solid @orange;
             }
           }
+
           &.blue-purple {
             &.active, &:hover {
               border-bottom: 3px solid @blue-purple;
             }
           }
+
           &.gray {
             &.active, &:hover {
               border-bottom: 3px solid @gray;
             }
           }
+
           .nav-icon {
-            margin-right:5px;
+            margin-right: 5px;
             vertical-align: middle;
             height: 16px;
             position: relative;
             top: -1px;
-            display: none;    /** Hidden for now.. */
+            display: none; /** Hidden for now.. */
           }
+
           a {
             color: rgb(66, 81, 81);
             font-size: 1.1em;
@@ -151,6 +166,7 @@
             padding: 0 20px;
             width: 100%;
             height: 100%;
+
             &:hover {
               color: teal;
             }
@@ -171,21 +187,25 @@
       background: #fafafa;
 
       .header-label-segment {
-        float:left;
+        float: left;
         font-weight: bold;
         padding: 11px;
         display: block;
         text-decoration: none !important;
         color: #333;
       }
+
       .header-link:hover {
         background: #ddd;
+
         a .logout-icon {
           .transform(rotateY(-40deg));
         }
       }
+
       #logoutSection {
-        float:left;
+        float: left;
+
         a {
           padding: 11px;
           display: block;
@@ -193,8 +213,10 @@
           color: #333;
         }
       }
+
       #help-link {
         float: left;
+
         a {
           padding: 11px;
           display: block;
@@ -203,6 +225,7 @@
         }
       }
     }
+
     a:focus {
       text-decoration: underline;
     }
@@ -237,9 +260,9 @@
   @media print {
     display: none;
   }
-  background:#fafafa;
+  background: #fafafa;
   border: 1px solid #f1f1f1;
-  width:250px;
+  width: 250px;
   position: fixed;
   height: auto;
   z-index: 1000;
@@ -285,25 +308,32 @@
 
   li {
     padding: 5px 5px 5px 20px;
+
     &.sub-topic.active {
       &.teal {
         border-left: 4px solid @teal;
       }
+
       &.green {
         border-left: 4px solid @green;
       }
+
       &.blue-purple {
         border-left: 4px solid @blue-purple;
       }
+
       &.orange {
         border-left: 4px solid @orange;
       }
+
       padding-left: 16px;
       background: #F4F4F4;
+
       a {
         .font-weight-bold;
       }
     }
+
     a:focus {
       text-decoration: underline;
     }
@@ -327,15 +357,19 @@
   &.teal {
     background: darken(@teal, 5%);
   }
+
   &.green {
     background: darken(@green, 10%);
   }
+
   &.orange {
     background: darken(@orange, 5%);
   }
+
   &.blue-purple {
     background: darken(@blue-purple, 5%);
   }
+
   &.gray {
     background: darken(@gray, 5%);
   }
@@ -363,8 +397,8 @@
   }
 
   h1 {
-    font-size:1.1em;
-    margin:0;
+    font-size: 1.1em;
+    margin: 0;
     text-align: center;
     padding: 4px 10px;
     border-width: 1px;
@@ -378,6 +412,7 @@
     &.olive {
       border-color: @green;
     }
+
     &.orange {
       border-color: @orange;
     }
@@ -387,7 +422,7 @@
     overflow: hidden; //fixes 0 container height issue
     div, section {
       &.left-container, &.right-container {
-        float:left;
+        float: left;
         width: 400px;
         padding-bottom: 10px;
       }
@@ -402,7 +437,7 @@
   .box-shadow(none);
   text-align: center;
 
-  p,label {
+  p, label {
     .font-weight-bold;
     color: @teal;
   }
@@ -418,10 +453,12 @@
   color: #222;
   text-align: center;
   border-bottom: 1px solid fade(@teal, 25%);
+
   &.no-bottom-margin {
     margin-bottom: 0;
     border-bottom: none;
   }
+
   @media print {
     border-bottom: 0;
   }
@@ -582,5 +619,8 @@ badge, [badge] {
       }
     }
   }
+}
 
+.pointer {
+  cursor: pointer;
 }
