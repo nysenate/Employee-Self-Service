@@ -3,30 +3,67 @@ package gov.nysenate.ess.travel.application.allowances.lodging;
 import com.google.common.collect.ImmutableSortedSet;
 import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
 public class LodgingPerDiems {
 
     private final static Comparator<LodgingPerDiem> dateComparator = Comparator.comparing(LodgingPerDiem::date);
+
+    private int id;
     private final ImmutableSortedSet<LodgingPerDiem> lodgingPerDiems;
+    private Dollars overrideRate;
 
     public LodgingPerDiems(Collection<LodgingPerDiem> lodgingPerDiems) {
+        this(0, lodgingPerDiems, Dollars.ZERO);
+    }
+
+    public LodgingPerDiems(int id, Collection<LodgingPerDiem> lodgingPerDiems, Dollars overrideRate) {
+        // If multiple LodgingPerDiem's for the same date, only keep the one with the highest rate.
+        Map<LocalDate, LodgingPerDiem> dateToPerDiems = new HashMap<>();
+        for (LodgingPerDiem lpd : lodgingPerDiems) {
+            if (dateToPerDiems.containsKey(lpd.date())) {
+                // Replace if this rate is higher.
+                if (lpd.rate().compareTo(dateToPerDiems.get(lpd.date()).rate()) > 0) {
+                    dateToPerDiems.put(lpd.date(), lpd);
+                }
+            }
+            else {
+                dateToPerDiems.put(lpd.date(), lpd);
+            }
+        }
+        this.id = id;
         this.lodgingPerDiems = ImmutableSortedSet
                 .orderedBy(dateComparator)
-                .addAll(lodgingPerDiems)
+                .addAll(dateToPerDiems.values())
                 .build();
+        this.overrideRate = overrideRate == null ? Dollars.ZERO : overrideRate;
     }
 
-    public Dollars maximumPerDiem() {
-        return allLodgingPerDiems().stream()
-                .map(LodgingPerDiem::maximumPerDiem)
-                .reduce(Dollars.ZERO, Dollars::add);
+    public int id() {
+        return id;
     }
 
-    public Dollars requestedPerDiem() {
-        return requestedLodgingPerDiems().stream()
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setOverrideRate(Dollars rate) {
+        this.overrideRate = rate;
+    }
+
+    public Dollars overrideRate() {
+        return this.overrideRate;
+    }
+
+    public boolean isOverridden() {
+        return !overrideRate.equals(Dollars.ZERO);
+    }
+
+    public Dollars totalPerDiem() {
+        return isOverridden() ?
+                overrideRate
+                : requestedLodgingPerDiems().stream()
                 .map(LodgingPerDiem::requestedPerDiem)
                 .reduce(Dollars.ZERO, Dollars::add);
     }

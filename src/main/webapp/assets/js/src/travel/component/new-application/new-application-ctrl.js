@@ -91,8 +91,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
     $scope.saveAllowances = function (app) {
         var patches = {
             allowances: JSON.stringify(app.allowances),
-            mealPerDiems: JSON.stringify(app.route.mealPerDiems),
-            lodgingPerDiems: JSON.stringify(app.route.lodgingPerDiems),
+            mealPerDiems: JSON.stringify(app.mealPerDiems),
+            lodgingPerDiems: JSON.stringify(app.lodgingPerDiems),
             mileagePerDiems: JSON.stringify(app.route.mileagePerDiems),
             traveler: $scope.data.app.traveler.employeeId
         };
@@ -115,6 +115,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
                     .then(function () {
                         modals.open("submit-results").then(function () {
                             locationService.go("/travel", true);
+                        }, function () {
+                            locationService.logout();
                         });
                     })
                     .catch($scope.handleErrorResponse);

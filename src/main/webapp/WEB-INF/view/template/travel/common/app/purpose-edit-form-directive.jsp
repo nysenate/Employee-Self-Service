@@ -1,7 +1,7 @@
 <div class="content-container">
   <p class="travel-content-info travel-text-bold" ng-bind="::title"></p>
 
-  <form name="purpose.form" id="purposeForm" novalidate>
+  <form ng-cloak name="purpose.form" id="purposeForm" novalidate>
 
     <div ng-show="purpose.form.$submitted && !purpose.form.$valid" class="margin-10">
       <ess-notification level="error" title="Purpose of Travel has errors">

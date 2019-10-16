@@ -2,14 +2,21 @@ package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
-import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverrides;
+import gov.nysenate.ess.travel.application.allowances.PerDiem;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
+import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
+import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.application.route.Route;
+import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A set of changes to a Application.
@@ -21,11 +28,12 @@ public class Amendment {
     private PurposeOfTravel purposeOfTravel;
     private Route route;
     private Allowances allowances;
-    private PerDiemOverrides perDiemOverrides;
     private TravelApplicationStatus status;
     private List<TravelAttachment> attachments;
     private LocalDateTime createdDateTime;
     private Employee createdBy;
+    private MealPerDiems mealPerDiems;
+    private LodgingPerDiems lodgingPerDiems;
 
     public Amendment(Builder builder) {
         amendmentId = builder.amendmentId;
@@ -33,7 +41,8 @@ public class Amendment {
         purposeOfTravel = builder.purposeOfTravel;
         route = builder.route;
         allowances = builder.allowances;
-        perDiemOverrides = builder.perDiemOverrides;
+        mealPerDiems = builder.mealPerDiems;
+        lodgingPerDiems = builder.lodgingPerDiems;
         status = builder.status;
         attachments = builder.attachments;
         createdDateTime = builder.createdDateTime;
@@ -49,21 +58,15 @@ public class Amendment {
     }
 
     public Dollars mileageAllowance() {
-        return perDiemOverrides().isMileageOverridden()
-                ? perDiemOverrides().mileageOverride()
-                : route().mileagePerDiems().requestedPerDiem();
+        return route().mileagePerDiems().totalPerDiem();
     }
 
     public Dollars mealAllowance() {
-        return perDiemOverrides().isMealsOverridden()
-                ? perDiemOverrides().mealsOverride()
-                : route().mealPerDiems().requestedPerDiem();
+        return mealPerDiems().totalPerDiem();
     }
 
     public Dollars lodgingAllowance() {
-        return perDiemOverrides().isLodgingOverridden()
-                ? perDiemOverrides().lodgingOverride()
-                : route().lodgingPerDiems().requestedPerDiem();
+        return lodgingPerDiems().totalPerDiem();
     }
 
     public Dollars tollsAllowance() {
@@ -143,7 +146,7 @@ public class Amendment {
     }
 
     public void setPurposeOfTravel(PurposeOfTravel purposeOfTravel) {
-        this.purposeOfTravel =  purposeOfTravel;
+        this.purposeOfTravel = purposeOfTravel;
     }
 
     public Route route() {
@@ -152,6 +155,44 @@ public class Amendment {
 
     public void setRoute(Route route) {
         this.route = route;
+        updateMealPerDiems();
+        updateLodgingPerDiems();
+    }
+
+    public MealPerDiems mealPerDiems() {
+        return this.mealPerDiems;
+    }
+
+    public void setMealPerDiems(MealPerDiems mpds) {
+        this.mealPerDiems = mpds;
+    }
+
+    private void updateMealPerDiems() {
+        Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
+        for (Destination d : route().destinations()) {
+            for (PerDiem pd : d.mealPerDiems()) {
+                mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd));
+            }
+        }
+        this.mealPerDiems = new MealPerDiems(mealPerDiemSet);
+    }
+
+    public LodgingPerDiems lodgingPerDiems() {
+        return this.lodgingPerDiems;
+    }
+
+    public void setLodingPerDiems(LodgingPerDiems lpds) {
+        this.lodgingPerDiems = lpds;
+    }
+
+    private void updateLodgingPerDiems() {
+        Set<LodgingPerDiem> lodgingPerDiemSet = new HashSet<>();
+        for (Destination d : route().destinations()) {
+            for (PerDiem pd : d.lodgingPerDiems()) {
+                lodgingPerDiemSet.add(new LodgingPerDiem(d.getAddress(), pd));
+            }
+        }
+        this.lodgingPerDiems = new LodgingPerDiems(lodgingPerDiemSet);
     }
 
     protected Allowances allowances() {
@@ -160,10 +201,6 @@ public class Amendment {
 
     public void setAllowances(Allowances allowances) {
         this.allowances = allowances;
-    }
-
-    public PerDiemOverrides perDiemOverrides() {
-        return perDiemOverrides;
     }
 
     public TravelApplicationStatus status() {
@@ -180,10 +217,6 @@ public class Amendment {
 
     public Employee createdBy() {
         return createdBy;
-    }
-
-    public void setPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
-        this.perDiemOverrides = perDiemOverrides;
     }
 
     public void setCreatedDateTime(LocalDateTime createdDateTime) {
@@ -208,13 +241,15 @@ public class Amendment {
         private PurposeOfTravel purposeOfTravel = null;
         private Route route = Route.EMPTY_ROUTE;
         private Allowances allowances = new Allowances();
-        private PerDiemOverrides perDiemOverrides = new PerDiemOverrides();
+        private MealPerDiems mealPerDiems = new MealPerDiems(new HashSet<>());
+        private LodgingPerDiems lodgingPerDiems = new LodgingPerDiems(new HashSet<>());
         private TravelApplicationStatus status = new TravelApplicationStatus();
         private List<TravelAttachment> attachments = new ArrayList<>();
         private LocalDateTime createdDateTime;
         private Employee createdBy;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         public Builder withAmendmentId(int id) {
             this.amendmentId = id;
@@ -241,8 +276,13 @@ public class Amendment {
             return this;
         }
 
-        public Builder withPerDiemOverrides(PerDiemOverrides perDiemOverrides) {
-            this.perDiemOverrides = perDiemOverrides;
+        public Builder withMealPerDiems(MealPerDiems mpds) {
+            this.mealPerDiems = mpds;
+            return this;
+        }
+
+        public Builder withLodgingPerDiems(LodgingPerDiems lpds) {
+            this.lodgingPerDiems = lpds;
             return this;
         }
 

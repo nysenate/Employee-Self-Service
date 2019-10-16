@@ -2,8 +2,8 @@ package gov.nysenate.ess.travel.application.allowances.lodging;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.application.address.GoogleAddressView;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -14,9 +14,10 @@ import static java.time.format.DateTimeFormatter.ISO_DATE;
 
 public class LodgingPerDiemView implements ViewObject {
 
+    private int id;
     private String date;
-    private AddressView address;
     private String rate;
+    private GoogleAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
     private String requestedPerDiem;
@@ -26,8 +27,9 @@ public class LodgingPerDiemView implements ViewObject {
     }
 
     public LodgingPerDiemView(LodgingPerDiem lpd) {
+        this.id = lpd.id();
         this.date = lpd.date().format(ISO_DATE);
-        this.address = new AddressView(lpd.address());
+        this.address = new GoogleAddressView(lpd.address());
         this.rate = lpd.rate().toString();
         this.isReimbursementRequested = lpd.isReimbursementRequested();
         this.requestedPerDiem = lpd.requestedPerDiem().toString();
@@ -36,12 +38,10 @@ public class LodgingPerDiemView implements ViewObject {
 
     public LodgingPerDiem toLodgingPerDiem() {
         return new LodgingPerDiem(
-                address.toAddress(),
-                new PerDiem(
-                        LocalDate.parse(date, ISO_DATE),
-                        new Dollars(rate),
-                        isReimbursementRequested
-                )
+                id,
+                address.toGoogleAddress(),
+                new PerDiem(LocalDate.parse(date, ISO_DATE), new Dollars(rate)),
+                isReimbursementRequested
         );
     }
 
@@ -55,11 +55,15 @@ public class LodgingPerDiemView implements ViewObject {
         return new BigDecimal(rate);
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getDate() {
         return date;
     }
 
-    public AddressView getAddress() {
+    public GoogleAddressView getAddress() {
         return address;
     }
 

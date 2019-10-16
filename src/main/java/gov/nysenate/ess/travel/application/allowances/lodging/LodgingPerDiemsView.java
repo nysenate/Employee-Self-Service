@@ -1,35 +1,46 @@
 package gov.nysenate.ess.travel.application.allowances.lodging;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
+import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class LodgingPerDiemsView implements ViewObject {
 
+    private int id;
     private List<LodgingPerDiemView> allLodgingPerDiems;
     private List<LodgingPerDiemView> requestedLodgingPerDiems;
-    private String requestedPerDiem;
-    private String maximumPerDiem;
+    private String totalPerDiem;
+    @JsonProperty("isOverridden")
+    private boolean isOverridden;
+    private String overrideRate;
 
     public LodgingPerDiemsView() {
     }
 
     public LodgingPerDiemsView(LodgingPerDiems la) {
+        this.id = la.id();
         this.allLodgingPerDiems = la.allLodgingPerDiems().stream()
                 .map(LodgingPerDiemView::new)
                 .collect(Collectors.toList());
         this.requestedLodgingPerDiems = la.requestedLodgingPerDiems().stream()
                 .map(LodgingPerDiemView::new)
                 .collect(Collectors.toList());
-        this.requestedPerDiem = la.requestedPerDiem().toString();
-        this.maximumPerDiem = la.maximumPerDiem().toString();
+        this.totalPerDiem = la.totalPerDiem().toString();
+        this.isOverridden = la.isOverridden();
+        this.overrideRate = la.overrideRate().toString();
     }
 
     public LodgingPerDiems toLodgingPerDiems() {
-        return new LodgingPerDiems(allLodgingPerDiems.stream()
+        return new LodgingPerDiems(id, allLodgingPerDiems.stream()
                 .map(LodgingPerDiemView::toLodgingPerDiem)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()), new Dollars(overrideRate));
+    }
+
+    public int getId() {
+        return id;
     }
 
     public List<LodgingPerDiemView> getAllLodgingPerDiems() {
@@ -40,12 +51,16 @@ public class LodgingPerDiemsView implements ViewObject {
         return requestedLodgingPerDiems;
     }
 
-    public String getRequestedPerDiem() {
-        return requestedPerDiem;
+    public String getTotalPerDiem() {
+        return totalPerDiem;
     }
 
-    public String getMaximumPerDiem() {
-        return maximumPerDiem;
+    public boolean isOverridden() {
+        return isOverridden;
+    }
+
+    public String getOverrideRate() {
+        return overrideRate;
     }
 
     @Override

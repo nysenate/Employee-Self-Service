@@ -65,7 +65,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="perDiem in dirtyApp.route.mealPerDiems.allMealPerDiems">
+        <tr ng-repeat="perDiem in dirtyApp.mealPerDiems.allMealPerDiems">
           <td>{{perDiem.address.formattedAddressWithCounty}}</td>
           <td>{{perDiem.date | date: 'shortDate'}}</td>
           <td><label>Request Meals: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>
@@ -90,7 +90,7 @@
           </tr>
           </thead>
           <tbody>
-          <tr ng-repeat="perDiem in dirtyApp.route.lodgingPerDiems.allLodgingPerDiems">
+          <tr ng-repeat="perDiem in dirtyApp.lodgingPerDiems.allLodgingPerDiems">
             <td>{{perDiem.address.formattedAddressWithCounty}}</td>
             <td>{{previousDay(perDiem.date) | date: 'shortDate'}} - {{perDiem.date | date: 'shortDate'}}</td>
             <td><label>Request Lodging: </label><input type="checkbox" ng-model="perDiem.isReimbursementRequested"></td>

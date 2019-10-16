@@ -16,29 +16,13 @@ public class MileagePerDiems {
     }
 
     /**
-     * The maximum mileage allowance allowed for this trip.
-     *
-     * @return
-     */
-    public Dollars maximumPerDiem() {
-        if (tripQualifiesForReimbursement()) {
-            return allLegs().stream()
-                    .map(Leg::maximumPerDiem)
-                    .reduce(Dollars.ZERO, Dollars::add);
-        } else {
-            return Dollars.ZERO;
-        }
-    }
-
-    /**
-     * The requested mileage allowance.
+     * The mileage allowance this trip is qualified for and requested.
      * <p>
      * Outbound mileage must be > 35 miles to qualify for any mileage allowance.
      * Must be traveling via personal auto for a leg to qualify.
-     *
      * @return
      */
-    public Dollars requestedPerDiem() {
+    public Dollars totalPerDiem() {
         if (tripQualifiesForReimbursement()) {
             return requestedLegs().stream()
                     .map(Leg::requestedPerDiem)

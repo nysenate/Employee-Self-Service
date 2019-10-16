@@ -29,7 +29,7 @@ function allowancesEditForm(appProps) {
             };
 
             scope.tripHasLodging = function () {
-                return scope.dirtyApp.route.lodgingPerDiems.allLodgingPerDiems.length > 0;
+                return scope.dirtyApp.lodgingPerDiems.allLodgingPerDiems.length > 0;
             };
 
             scope.back = function () {

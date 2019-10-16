@@ -1,6 +1,6 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
-import gov.nysenate.ess.core.model.unit.Address;
+import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.utils.Dollars;
 
@@ -9,12 +9,28 @@ import java.util.Objects;
 
 public final class MealPerDiem {
 
-    private final Address address;
+    private int id;
+    private final GoogleAddress address;
     private final PerDiem perDiem;
+    private boolean isReimbursementRequested;
 
-    public MealPerDiem(Address address, PerDiem perDiem) {
+    public MealPerDiem(GoogleAddress address, PerDiem perDiem) {
+        this(0, address, perDiem, true);
+    }
+
+    public MealPerDiem(int id, GoogleAddress address, PerDiem perDiem, boolean isReimbursementRequested) {
+        this.id = id;
         this.address = address;
         this.perDiem = perDiem;
+        this.isReimbursementRequested = isReimbursementRequested;
+    }
+
+    public int id() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Dollars maximumPerDiem() {
@@ -25,7 +41,7 @@ public final class MealPerDiem {
         return isReimbursementRequested() ? maximumPerDiem() : Dollars.ZERO;
     }
 
-    public Address address() {
+    public GoogleAddress address() {
         return address;
     }
 
@@ -38,7 +54,7 @@ public final class MealPerDiem {
     }
 
     public boolean isReimbursementRequested() {
-        return perDiem.isReimbursementRequested();
+        return isReimbursementRequested;
     }
 
     @Override
@@ -46,6 +62,7 @@ public final class MealPerDiem {
         return "MealPerDiem{" +
                 "address=" + address +
                 ", perDiem=" + perDiem +
+                ", isReimbursementRequested=" + isReimbursementRequested +
                 '}';
     }
 
@@ -54,12 +71,13 @@ public final class MealPerDiem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MealPerDiem that = (MealPerDiem) o;
-        return Objects.equals(address, that.address) &&
+        return isReimbursementRequested == that.isReimbursementRequested &&
+                Objects.equals(address, that.address) &&
                 Objects.equals(perDiem, that.perDiem);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, perDiem);
+        return Objects.hash(address, perDiem, isReimbursementRequested);
     }
 }

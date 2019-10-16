@@ -56,15 +56,15 @@ public class LegView implements ViewObject {
                 new ModeOfTransportation(this.methodOfTravelDisplayName, this.methodOfTravelDescription),
                 miles == null ? Double.valueOf(0) : Double.valueOf(miles),
                 createPerDiem(),
-                isOutbound
+                isOutbound,
+                isReimbursementRequested
         );
     }
 
     private PerDiem createPerDiem() {
         return new PerDiem(
                 LocalDate.parse(travelDate, DATEPICKER_FORMAT),
-                mileageRate == null ? new BigDecimal(0) : new BigDecimal(mileageRate),
-                isReimbursementRequested
+                mileageRate == null ? new BigDecimal(0) : new BigDecimal(mileageRate)
         );
     }
 

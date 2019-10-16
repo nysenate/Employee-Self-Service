@@ -18,32 +18,32 @@
 
           <div class="perdiem-overrides-edit-form-row">
             <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Mileage: {{::dirtyApp.mileagePerDiems.requestedPerDiem | currency}}
+              Calculated Mileage: {{::dirtyApp.mileagePerDiems.totalPerDiem | currency}}
             </div>
             <div class="perdiem-overrides-edit-form-override">
               <label>Mileage Override $</label>
-              <input ng-model="dirtyApp.perDiemOverrides.mileageOverride"
+              <input ng-model="dirtyApp.mileagePerDiems.overrideRate"
                      type="number" step="0.01" min="0">
             </div>
           </div>
 
           <div class="perdiem-overrides-edit-form-row">
             <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Meals: {{::dirtyApp.mealPerDiems.requestedPerDiem | currency}}
+              Calculated Meals: {{::dirtyApp.mealPerDiems.totalPerDiem | currency}}
             </div>
             <div class="perdiem-overrides-edit-form-override">
               <label>Meals Override $</label>
-              <input ng-model="dirtyApp.perDiemOverrides.mealsOverride" type="number" step="0.01" min="0">
+              <input ng-model="dirtyApp.mealPerDiems.overrideRate" type="number" step="0.01" min="0">
             </div>
           </div>
 
           <div class="perdiem-overrides-edit-form-row">
             <div class="perdiem-overrides-edit-form-calculated">
-              Calculated Lodging: {{::dirtyApp.lodgingPerDiems.requestedPerDiem | currency}}
+              Calculated Lodging: {{::dirtyApp.lodgingPerDiems.totalPerDiem | currency}}
             </div>
             <div class="perdiem-overrides-edit-form-override">
               <label>Lodging Override $</label>
-              <input ng-model="dirtyApp.perDiemOverrides.lodgingOverride" type="number" step="0.01" min="0">
+              <input ng-model="dirtyApp.lodgingPerDiems.overrideRate" type="number" step="0.01" min="0">
             </div>
           </div>
 

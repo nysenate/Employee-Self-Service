@@ -15,7 +15,6 @@ import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
-import gov.nysenate.ess.travel.application.overrides.perdiem.PerDiemOverridesView;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.RouteService;
 import gov.nysenate.ess.travel.application.route.RouteView;
@@ -150,19 +149,15 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     break;
                 case "mealPerDiems":
                     MealPerDiemsView mealPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), MealPerDiemsView.class);
-                    travelApplicationService.updateMealPerDiems(app, mealPerDiemsView.toMealPerDiems());
+                    app.activeAmendment().setMealPerDiems(mealPerDiemsView.toMealPerDiems());
                     break;
                 case "lodgingPerDiems":
                     LodgingPerDiemsView lodgingPerDiemsView = OutputUtils.jsonToObject(patch.getValue(), LodgingPerDiemsView.class);
-                    travelApplicationService.updateLodgingPerDiems(app, lodgingPerDiemsView.toLodgingPerDiems());
+                    app.activeAmendment().setLodingPerDiems(lodgingPerDiemsView.toLodgingPerDiems());
                     break;
                 case "mileagePerDiems":
                     MileagePerDiemsView mileagePerDiemView = OutputUtils.jsonToObject(patch.getValue(), MileagePerDiemsView.class);
                     travelApplicationService.updateMileagePerDiems(app, mileagePerDiemView.toMileagePerDiems());
-                    break;
-                case "perDiemOverrides":
-                    PerDiemOverridesView overridesView = OutputUtils.jsonToObject(patch.getValue(), PerDiemOverridesView.class);
-                    app.activeAmendment().setPerDiemOverrides(overridesView.toPerDiemOverrides());
                     break;
                 default:
                     logger.info("Call to travel application patch API did not contain a valid patch key. Patches were: " + patches.toString());
