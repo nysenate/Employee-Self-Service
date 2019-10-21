@@ -1,7 +1,7 @@
 <%@tag description="Includes ess-travel assets based on the runtime level" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<script type="text/javascript" src='http://maps.google.com/maps/api/js?libraries=places&key=${googleApiKey}'></script>
+<script type="text/javascript" src='https://maps.google.com/maps/api/js?libraries=places&key=${googleApiKey}'></script>
 
 <c:choose>
     <c:when test="${runtimeLevel eq 'dev'}">
