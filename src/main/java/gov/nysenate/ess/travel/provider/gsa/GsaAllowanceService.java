@@ -36,6 +36,11 @@ public class GsaAllowanceService {
         this.gsaMieDao = gsaMieDao;
     }
 
+    public GsaMie fetchGsaMie(LocalDate date, Address address) throws IOException {
+        GsaResponse res = fetchGsaResponse(date, address);
+        return gsaMieDao.selectGsaMie(res.getId().getFiscalYear(), new Dollars(res.getMealTier()));
+    }
+
     /**
      * Returns the MealTier for the given date and address.
      *

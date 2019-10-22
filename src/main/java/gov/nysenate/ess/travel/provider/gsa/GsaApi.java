@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.HttpUtils;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMieView;
+import gov.nysenate.ess.travel.provider.gsa.meal.GsaMieApiView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +83,7 @@ public class GsaApi {
     public List<GsaMie> queryGsaMie(int fiscalYear) throws IOException {
         String url = String.format(baseUrl + miePathTemplate, String.valueOf(fiscalYear));
         String content = httpUtils.urlToString(url);
-        GsaMieView[] res = OutputUtils.jsonToObject(content, GsaMieView[].class);
+        GsaMieApiView[] res = OutputUtils.jsonToObject(content, GsaMieApiView[].class);
         return Arrays.stream(res).map(mie -> mie.toGsaMie(fiscalYear)).collect(Collectors.toList());
     }
 }

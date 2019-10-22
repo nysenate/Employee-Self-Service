@@ -1,55 +1,92 @@
 package gov.nysenate.ess.travel.provider.gsa.meal;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.utils.Dollars;
 
-/**
- * This view is used for deserializing the GSA mie json response from the mie api endpoint.
- */
-public class GsaMieView {
+public class GsaMieView implements ViewObject {
 
-    private double total;
-    private double breakfast;
-    private double lunch;
-    private double dinner;
-    private double incidental;
-    @JsonProperty("FirstLastDay ") // Note the space at the end.
-    private double FirstLastDay;
+    private int id;
+    private int fiscalYear;
+    private String breakfast;
+    private String dinner;
+    private String total;
+    private String gsaBreakfast;
+    private String gsaLunch;
+    private String gsaDinner;
+    private String gsaIncidental;
+    private String gsaFirstLastDay;
 
     public GsaMieView() {
     }
 
-    /**
-     * Convert to a {@link GsaMie}
-     * @param fiscalYear The fiscal year of this rate.
-     * @return
-     */
-    public GsaMie toGsaMie(int fiscalYear) {
-        return new GsaMie(fiscalYear, new Dollars(total), new Dollars(breakfast), new Dollars(lunch),
-                new Dollars(dinner), new Dollars(incidental), new Dollars(FirstLastDay));
+    public GsaMieView(GsaMie mie) {
+        this.id = mie.getId();
+        this.fiscalYear = mie.getFiscalYear();
+        this.breakfast = mie.breakfast().toString();
+        this.dinner = mie.dinner().toString();
+        this.total = mie.total().toString();
+        this.gsaBreakfast = mie.getGsaBreakfast().toString();
+        this.gsaLunch = mie.getGsaLunch().toString();
+        this.gsaDinner = mie.getGsaDinner().toString();
+        this.gsaIncidental = mie.getGsaIncidental().toString();
+        this.gsaFirstLastDay = mie.getGsaFirstLastDay().toString();
     }
 
-    public double getTotal() {
-        return total;
+    public GsaMie toGsaMie() {
+        return new GsaMie(
+                id,
+                fiscalYear,
+                new Dollars(total),
+                new Dollars(gsaBreakfast),
+                new Dollars(gsaLunch),
+                new Dollars(gsaDinner),
+                new Dollars(gsaIncidental),
+                new Dollars(gsaFirstLastDay)
+        );
     }
 
-    public double getBreakfast() {
+    public int getId() {
+        return id;
+    }
+
+    public int getFiscalYear() {
+        return fiscalYear;
+    }
+
+    public String getBreakfast() {
         return breakfast;
     }
 
-    public double getLunch() {
-        return lunch;
-    }
-
-    public double getDinner() {
+    public String getDinner() {
         return dinner;
     }
 
-    public double getIncidental() {
-        return incidental;
+    public String getTotal() {
+        return total;
     }
 
-    public double getFirstLastDay() {
-        return FirstLastDay;
+    public String getGsaBreakfast() {
+        return gsaBreakfast;
+    }
+
+    public String getGsaLunch() {
+        return gsaLunch;
+    }
+
+    public String getGsaDinner() {
+        return gsaDinner;
+    }
+
+    public String getGsaIncidental() {
+        return gsaIncidental;
+    }
+
+    public String getGsaFirstLastDay() {
+        return gsaFirstLastDay;
+    }
+
+    @Override
+    public String getViewType() {
+        return "gsa-mie";
     }
 }
