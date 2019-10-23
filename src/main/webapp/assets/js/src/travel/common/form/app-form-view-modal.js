@@ -16,4 +16,9 @@ function appFormView($scope, modals) {
     $scope.exit = function () {
         modals.resolve();
     };
+
+    $scope.viewExpenseSummary = function (app) {
+        modals.open("app-expense-summary-modal", app, true)
+            .catch(function () {});
+    }
 }
