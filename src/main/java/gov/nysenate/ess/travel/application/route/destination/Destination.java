@@ -121,5 +121,31 @@ public class Destination {
         return dateRange.upperEndpoint();
     }
 
-    // TODO toString, equals, hashcode
+    @Override
+    public String toString() {
+        return "Destination{" +
+                "id=" + id +
+                ", address=" + address +
+                ", dateRange=" + dateRange +
+                ", dateToMie=" + dateToMie +
+                ", lodgingPerDiems=" + lodgingPerDiems +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Destination that = (Destination) o;
+        return id == that.id &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(dateRange, that.dateRange) &&
+                Objects.equals(dateToMie, that.dateToMie) &&
+                Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, address, dateRange, dateToMie, lodgingPerDiems);
+    }
 }

@@ -20,7 +20,7 @@ public class SqlGsaMieDao extends SqlBaseDao {
 
     public GsaMie selectGsaMie(int gsaMieId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("gsaMidId", gsaMieId);
+                .addValue("gsaMieId", gsaMieId);
         String sql = SqlGsaMieQuery.SELECT_GSA_MIE_BY_ID.getSql(schemaMap());
         return localNamedJdbc.queryForObject(sql, params, new GsaMieRowMapper());
     }

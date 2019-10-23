@@ -187,7 +187,6 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
             if (lodgingDate != null) {
                 String lodgingDollarsString = rs.getString("lodging_value");
                 BigDecimal lodgingDollars = lodgingDollarsString == null ? new BigDecimal("0") : new BigDecimal(lodgingDollarsString);
-                boolean isLodgingRequested = rs.getBoolean("lodging_requested");
                 lodgingPerDiems.put(lodgingDate, new PerDiem(lodgingDate, lodgingDollars));
             }
         }

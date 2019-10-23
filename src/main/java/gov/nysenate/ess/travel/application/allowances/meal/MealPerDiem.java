@@ -1,10 +1,9 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
-import gov.nysenate.ess.travel.application.allowances.PerDiem;
+import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
 import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public final class MealPerDiem {
@@ -12,18 +11,18 @@ public final class MealPerDiem {
     private int id;
     private final GoogleAddress address;
     private final LocalDate date;
-    private final BigDecimal rate;
+    private final GsaMie mie;
     private boolean isReimbursementRequested;
 
-    public MealPerDiem(GoogleAddress address, PerDiem perDiem) {
-        this(0, address, perDiem, true);
+    public MealPerDiem(GoogleAddress address, LocalDate date, GsaMie mie) {
+        this(0, address, date, mie, true);
     }
 
-    public MealPerDiem(int id, GoogleAddress address, PerDiem perDiem, boolean isReimbursementRequested) {
+    public MealPerDiem(int id, GoogleAddress address, LocalDate date, GsaMie mie, boolean isReimbursementRequested) {
         this.id = id;
         this.address = address;
-        this.date = perDiem.getDate();
-        this.rate = perDiem.getRate();
+        this.date = date;
+        this.mie = mie;
         this.isReimbursementRequested = isReimbursementRequested;
     }
 
@@ -43,6 +42,10 @@ public final class MealPerDiem {
         return isReimbursementRequested() ? maximumPerDiem() : Dollars.ZERO;
     }
 
+    public GsaMie mie() {
+        return mie;
+    }
+
     public GoogleAddress address() {
         return address;
     }
@@ -52,7 +55,7 @@ public final class MealPerDiem {
     }
 
     public Dollars rate() {
-        return new Dollars(rate);
+        return mie.total();
     }
 
     public boolean isReimbursementRequested() {

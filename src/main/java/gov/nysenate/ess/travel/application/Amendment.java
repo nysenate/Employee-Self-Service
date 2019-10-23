@@ -9,14 +9,12 @@ import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.application.route.Route;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
+import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A set of changes to a Application.
@@ -170,8 +168,8 @@ public class Amendment {
     private void updateMealPerDiems() {
         Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
         for (Destination d : route().destinations()) {
-            for (PerDiem pd : d.mealPerDiems()) {
-                mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd));
+            for (Map.Entry<LocalDate, GsaMie> entry : d.mealPerDiems().entrySet()) {
+                mealPerDiemSet.add(new MealPerDiem(d.getAddress(), entry.getKey(), entry.getValue()));
             }
         }
         this.mealPerDiems = new MealPerDiems(mealPerDiemSet);

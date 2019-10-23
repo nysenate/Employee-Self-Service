@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.address.GoogleAddressView;
-import gov.nysenate.ess.travel.application.allowances.PerDiem;
+import gov.nysenate.ess.travel.provider.gsa.meal.GsaMieView;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +15,7 @@ public class MealPerDiemView implements ViewObject {
     private int id;
     private String date;
     private String rate;
+    private GsaMieView mie;
     private GoogleAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
@@ -29,6 +30,7 @@ public class MealPerDiemView implements ViewObject {
         this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
         this.address = new GoogleAddressView(mpd.address());
         this.rate = mpd.rate().toString();
+        this.mie = new GsaMieView(mpd.mie());
         this.isReimbursementRequested = mpd.isReimbursementRequested();
         this.requestedPerDiem = mpd.requestedPerDiem().toString();
         this.maximumPerDiem = mpd.maximumPerDiem().toString();
@@ -38,7 +40,8 @@ public class MealPerDiemView implements ViewObject {
         return new MealPerDiem(
                 id,
                 address.toGoogleAddress(),
-                new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new BigDecimal(rate)),
+                LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
+                mie.toGsaMie(),
                 isReimbursementRequested
         );
     }
@@ -59,6 +62,10 @@ public class MealPerDiemView implements ViewObject {
 
     public String getDate() {
         return date;
+    }
+
+    public GsaMieView getMie() {
+        return mie;
     }
 
     public GoogleAddressView getAddress() {
