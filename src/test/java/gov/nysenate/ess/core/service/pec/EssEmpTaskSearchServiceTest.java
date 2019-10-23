@@ -4,11 +4,12 @@ import com.google.common.base.Stopwatch;
 import com.google.common.eventbus.EventBus;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.SillyTest;
-import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
+import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.model.cache.CacheWarmEvent;
 import gov.nysenate.ess.core.model.cache.ContentCache;
-import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.service.pec.search.*;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
 import gov.nysenate.ess.core.util.PaginatedList;
@@ -41,14 +42,14 @@ public class EssEmpTaskSearchServiceTest extends BaseTest {
     @Test
     public void speedTest() {
         EmployeeSearchBuilder esb = new EmployeeSearchBuilder();
-        PATQueryBuilder pqb = new PATQueryBuilder();
+        PTAQueryBuilder pqb = new PTAQueryBuilder();
         EmpTaskOrderBy orderBy = EmpTaskOrderBy.NAME;
         List<EmpTaskSort> sortDirectives = Arrays.asList(
                 new EmpTaskSort(EmpTaskOrderBy.COMPLETED, DESC),
 //                new EmpTaskSort(EmpTaskOrderBy.OFFICE, DESC),
                 new EmpTaskSort(EmpTaskOrderBy.NAME, ASC)
         );
-        EmpPATQuery query = new EmpPATQuery(esb, pqb, sortDirectives);
+        EmpPTAQuery query = new EmpPTAQuery(esb, pqb, sortDirectives);
         Stopwatch sw = Stopwatch.createStarted();
         PaginatedList<EmployeeTaskSearchResult> result = taskSearchService.searchForEmpTasks(query, LimitOffset.ALL);
         List<EmployeeTaskSearchResult> results = result.getResults();
@@ -57,7 +58,7 @@ public class EssEmpTaskSearchServiceTest extends BaseTest {
                 .map(EmployeeTaskSearchResult::getEmployee)
                 .map(Employee::getEmployeeId)
                 .collect(Collectors.toSet());
-        List<PersonnelAssignedTask> tasks = results.stream()
+        List<PersonnelTaskAssignment> tasks = results.stream()
                 .map(EmployeeTaskSearchResult::getTasks)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());

@@ -9,13 +9,12 @@ import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.AckDocView;
 import gov.nysenate.ess.core.client.view.pec.acknowledgment.DetailedAckDocView;
 import gov.nysenate.ess.core.dao.acknowledgment.AckDocDao;
-import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
-import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
-import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.pec.acknowledgment.DuplicateAckEx;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -53,12 +51,12 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
 
     private final AckDocDao ackDocDao;
     private final AcknowledgmentReportService ackReportService;
-    private final PersonnelAssignedTaskDao assignedTaskDao;
+    private final PersonnelTaskAssignmentDao assignedTaskDao;
 
     @Autowired
     public AcknowledgmentApiCtrl(AckDocDao ackDocDao,
                                  AcknowledgmentReportService ackReportService,
-                                 PersonnelAssignedTaskDao assignedTaskDao,
+                                 PersonnelTaskAssignmentDao assignedTaskDao,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
@@ -167,31 +165,29 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
      *
      * RequestParams
      * @param empId int - the employee id of the employee completeing an acknowledgement
-     * @param ackDocId int - the ack doc id that the employee is acknowledging
+     * @param taskId int - the ack doc id that the employee is acknowledging
      *
      * @return SimpleResponse
      * */
     @RequestMapping(value = "", method = POST)
     public SimpleResponse acknowledgeDocument(@RequestParam int empId,
-                                              @RequestParam int ackDocId) {
+                                              @RequestParam int taskId) {
         checkPermission(new CorePermission(empId, CorePermissionObject.PERSONNEL_TASK, POST));
 
         int authedEmpId = ShiroUtils.getAuthenticatedEmpId();
 
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
-        ackDocDao.getAckDoc(ackDocId);
+        ackDocDao.getAckDoc(taskId);
         // Make sure empId is valid
         ensureEmpIdExists(empId, "empId");
 
-        PersonnelTaskId taskId = new PersonnelTaskId(DOCUMENT_ACKNOWLEDGMENT, ackDocId);
-
         // Make sure this document hasn't already been ack'd.  If so, throw an error.
         try {
-            PersonnelAssignedTask task = assignedTaskDao.getTaskForEmp(empId, taskId);
+            PersonnelTaskAssignment task = assignedTaskDao.getTaskForEmp(empId, taskId);
             if (task.isCompleted()) {
-                throw new DuplicateAckEx(ackDocId);
+                throw new DuplicateAckEx(taskId);
             }
-        } catch (PersonnelAssignedTaskNotFoundEx ignored) {}
+        } catch (PersonnelTaskAssignmentNotFoundEx ignored) {}
 
         // Mark the acknowledgment task as completed
         assignedTaskDao.setTaskComplete(empId, taskId, authedEmpId);

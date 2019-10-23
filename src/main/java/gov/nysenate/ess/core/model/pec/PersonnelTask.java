@@ -1,30 +1,113 @@
 package gov.nysenate.ess.core.model.pec;
 
-import java.util.Comparator;
+import com.google.common.base.Objects;
+import com.google.common.collect.ComparisonChain;
+
+import java.time.LocalDateTime;
+import java.util.StringJoiner;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * Interface representing a personnel task.
+ * A general task assigned to employees by personnel
  */
-public interface PersonnelTask extends Comparable<PersonnelTask> {
+public class PersonnelTask implements Comparable<PersonnelTask> {
 
-    Comparator<PersonnelTask> personnelTaskComparator = Comparator.comparing(PersonnelTask::getTaskId);
+    private final int taskId;
+    private final PersonnelTaskType taskType;
+    private final String title;
+    private final LocalDateTime effectiveDateTime;
+    private final LocalDateTime endDateTime;
+    private final boolean active;
 
-    /** Get a unique identifier for the task */
-    PersonnelTaskId getTaskId();
-
-    /** Whether or not this task is currently active */
-    boolean isActive();
-
-    /** Get the task type */
-    default PersonnelTaskType getTaskType() {
-        return getTaskId().getTaskType();
+    public PersonnelTask(int taskId,
+                         PersonnelTaskType taskType,
+                         String title,
+                         LocalDateTime effectiveDateTime,
+                         LocalDateTime endDateTime,
+                         boolean active) {
+        this.taskId = taskId;
+        this.taskType = requireNonNull(taskType);
+        this.title = requireNonNull(title);
+        this.effectiveDateTime = effectiveDateTime;
+        this.endDateTime = endDateTime;
+        this.active = active;
     }
 
-    /** Get a title describing the task */
-    String getTitle();
+    public PersonnelTask(PersonnelTask other) {
+        this(
+                other.taskId,
+                other.taskType,
+                other.title,
+                other.effectiveDateTime,
+                other.endDateTime,
+                other.active
+        );
+    }
+
+    /* --- Overrides --- */
 
     @Override
-    default int compareTo(PersonnelTask o) {
-        return personnelTaskComparator.compare(this, o);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PersonnelTask)) return false;
+        PersonnelTask that = (PersonnelTask) o;
+        return taskId == that.taskId &&
+                active == that.active &&
+                taskType == that.taskType &&
+                Objects.equal(title, that.title) &&
+                Objects.equal(effectiveDateTime, that.effectiveDateTime) &&
+                Objects.equal(endDateTime, that.endDateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(taskId, taskType, title, effectiveDateTime, endDateTime, active);
+    }
+
+    @Override
+    public int compareTo(PersonnelTask o) {
+        return ComparisonChain.start()
+                .compare(this.taskType, o.taskType)
+                .compare(this.title, o.title)
+                .result();
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PersonnelTask.class.getSimpleName() + "[", "]")
+                .add("taskId=" + taskId)
+                .add("taskType=" + taskType)
+                .add("title='" + title + "'")
+                .add("effectiveDateTime=" + effectiveDateTime)
+                .add("endDateTime=" + endDateTime)
+                .add("active=" + active)
+                .toString();
+    }
+
+    /* --- Getters --- */
+
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public PersonnelTaskType getTaskType() {
+        return taskType;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public LocalDateTime getEffectiveDateTime() {
+        return effectiveDateTime;
+    }
+
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

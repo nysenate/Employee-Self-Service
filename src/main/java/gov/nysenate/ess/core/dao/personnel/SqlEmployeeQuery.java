@@ -67,8 +67,11 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
             GET_EMP_SQL_TABLES.getSql() +
             "WHERE (:empStatus IS NULL OR per.CDEMPSTATUS = :empStatus)\n" +
             "  AND (:name IS NULL OR \n" +
-            "    UPPER(TRIM(per.FFNALAST) || ' ' || TRIM(per.NAFIRST) || ' ' || TRIM(per.FFNAMIDINIT))\n" +
-            "      LIKE UPPER('%' || :name || '%')\n" +
+            "    REGEXP_REPLACE(\n" +
+            "      UPPER(TRIM(per.FFNALAST) || ' ' || TRIM(per.FFNAFIRST) || ' ' || TRIM(per.FFNAMIDINIT)),\n" +
+            "      '[^A-Z ]', ''\n" +
+            "    )\n" +
+            "      LIKE UPPER(:name || '%')\n" +
             "  )\n" +
             "  AND (:respCtrHeadCodesEmpty = 1 OR rctrhd.CDRESPCTRHD IN (:respCtrHeadCodes))\n" +
             "  AND (:contServFrom IS NULL OR DTCONTSERV >= :contServFrom)\n" +

@@ -8,7 +8,7 @@ import java.util.List;
 public class PECVideoCodeSubmission {
 
     private int empId;
-    private int videoId;
+    private int taskId;
     private List<String> codes;
 
     private PECVideoCodeSubmission() {}
@@ -17,8 +17,8 @@ public class PECVideoCodeSubmission {
         return empId;
     }
 
-    public int getVideoId() {
-        return videoId;
+    public int getTaskId() {
+        return taskId;
     }
 
     public List<String> getCodes() {

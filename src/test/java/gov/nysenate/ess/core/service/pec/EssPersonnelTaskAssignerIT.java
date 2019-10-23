@@ -6,12 +6,13 @@ import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.config.DatabaseConfig;
-import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
-import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
-import gov.nysenate.ess.core.model.pec.PersonnelAssignedTask;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -33,8 +34,8 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(EssPersonnelTaskAssignerIT.class);
 
     @Autowired private PersonnelTaskAssigner taskAssigner;
-    @Autowired private PersonnelTaskSource taskSource;
-    @Autowired private PersonnelAssignedTaskDao taskDao;
+    @Autowired private PersonnelTaskService taskService;
+    @Autowired private PersonnelTaskAssignmentDao taskDao;
     @Autowired private EmployeeInfoService empInfoService;
 
     @Test
@@ -45,50 +46,51 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
 
         taskAssigner.assignTasks(bogusEmpId);
 
-        Set<PersonnelTaskId> tasksPresent = taskDao.getTasksForEmp(bogusEmpId).stream()
-                .map(PersonnelAssignedTask::getTaskId)
+        Set<Integer> tasksPresent = taskDao.getTasksForEmp(bogusEmpId).stream()
+                .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
 
-        Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds(true);
+        Set<Integer> allTaskIds = taskService.getAllTaskIds(true);
 
         assertEquals("Test employee is assigned all active tasks", allTaskIds, tasksPresent);
     }
 
+    @Ignore("Don't yet have the means to generate bogus tasks...")
     @Test
     public void deactivateTaskTest() {
         final int bogusEmpId = 1122334455;
         assertTrue("Test employee has no initial assignments",
                 taskDao.getTasksForEmp(bogusEmpId).isEmpty());
 
-        final PersonnelTaskId bogusTask = new PersonnelTaskId(PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT, 999);
-        final PersonnelAssignedTask bogusTaskAssigment = PersonnelAssignedTask.newTask(bogusEmpId, bogusTask);
-        final Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds(true);
+        final int bogusTaskId = 1189998819;
+        final PersonnelTaskAssignment bogusTaskAssigment = PersonnelTaskAssignment.newTask(bogusEmpId, bogusTaskId);
+        final Set<Integer> allTaskIds = taskService.getAllTaskIds(true);
 
         // Assign all tasks
         taskAssigner.assignTasks(bogusEmpId);
         // Manually add a bogus task
-        taskDao.updatePersonnelAssignedTask(bogusTaskAssigment);
+        taskDao.updateAssignment(bogusTaskAssigment);
 
-        Set<PersonnelTaskId> preDeactivateTasks = taskDao.getTasksForEmp(bogusEmpId).stream()
-                .map(PersonnelAssignedTask::getTaskId)
+        Set<Integer> preDeactivateTasks = taskDao.getTasksForEmp(bogusEmpId).stream()
+                .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
 
         assertEquals("Bogus task + all tasks should be assigned to employee before deactivation",
-                Sets.union(allTaskIds, Collections.singleton(bogusTask)), preDeactivateTasks);
+                Sets.union(allTaskIds, Collections.singleton(bogusTaskId)), preDeactivateTasks);
 
         // Run task assignment (the bogus task assignment should be deactivated here)
         taskAssigner.assignTasks(bogusEmpId);
 
-        Set<PersonnelTaskId> postDeactivateTasks = taskDao.getTasksForEmp(bogusEmpId).stream()
-                .map(PersonnelAssignedTask::getTaskId)
+        Set<Integer> postDeactivateTasks = taskDao.getTasksForEmp(bogusEmpId).stream()
+                .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
         assertEquals("All tasks should be assigned to employee", allTaskIds, postDeactivateTasks);
-        assertFalse("Employee should no longer be assigned bogus task", postDeactivateTasks.contains(bogusTask));
+        assertFalse("Employee should no longer be assigned bogus task", postDeactivateTasks.contains(bogusTaskId));
     }
 
     @Test
     public void assignAllEmpsTest() {
-        Set<PersonnelTaskId> allTaskIds = taskSource.getAllPersonnelTaskIds(true);
+        final Set<Integer> allTaskIds = taskService.getAllTaskIds(true);
         if (allTaskIds.isEmpty()) {
             // If there are no tasks to assign this test won't work properly.
             logger.warn("Skipping \"assignAllEmpsTest\" due to lack of active tasks.");
@@ -98,10 +100,10 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
         taskAssigner.assignTasks();
         logger.info("done assigning tasks");
 
-        List<PersonnelAssignedTask> allTasks = taskDao.getTasks(new PATQueryBuilder());
-        HashMultimap<Integer, PersonnelTaskId> empTaskMultimap = allTasks.stream().collect(Multimaps.toMultimap(
-                PersonnelAssignedTask::getEmpId,
-                PersonnelAssignedTask::getTaskId,
+        List<PersonnelTaskAssignment> allTasks = taskDao.getTasks(new PTAQueryBuilder());
+        HashMultimap<Integer, Integer> empTaskMultimap = allTasks.stream().collect(Multimaps.toMultimap(
+                PersonnelTaskAssignment::getEmpId,
+                PersonnelTaskAssignment::getTaskId,
                 HashMultimap::create
         ));
 

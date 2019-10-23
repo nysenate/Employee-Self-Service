@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.client.view.pec.acknowledgment;
 
-import gov.nysenate.ess.core.client.view.pec.PersonnelTaskView;
 import gov.nysenate.ess.core.client.view.pec.PersonnelTaskViewFactory;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,7 @@ public class AckDocViewFactory implements PersonnelTaskViewFactory<AckDoc> {
     }
 
     @Override
-    public PersonnelTaskView getView(AckDoc ackDoc) {
+    public AckDocView getView(AckDoc ackDoc) {
         return new AckDocView(ackDoc, ackDocResPath);
     }
 

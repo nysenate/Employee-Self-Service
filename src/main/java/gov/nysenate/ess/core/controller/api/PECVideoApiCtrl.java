@@ -4,16 +4,15 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.client.view.pec.video.PECVideoCodeSubmission;
-import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
-import gov.nysenate.ess.core.dao.pec.video.PECVideoDao;
-import gov.nysenate.ess.core.dao.pec.video.PECVideoNotFoundEx;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskId;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.video.IncorrectPECVideoCodeEx;
-import gov.nysenate.ess.core.model.pec.video.PECVideo;
+import gov.nysenate.ess.core.model.pec.video.VideoTask;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,12 +26,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/video")
 public class PECVideoApiCtrl extends BaseRestApiCtrl {
 
-    private final PECVideoDao videoDao;
-    private final PersonnelAssignedTaskDao assignedTaskDao;
+    private final PersonnelTaskService personnelTaskService;
+    private final PersonnelTaskAssignmentDao assignedTaskDao;
 
-    public PECVideoApiCtrl(PECVideoDao videoDao,
-                           PersonnelAssignedTaskDao assignedTaskDao) {
-        this.videoDao = videoDao;
+    public PECVideoApiCtrl(PersonnelTaskService personnelTaskService,
+                           PersonnelTaskAssignmentDao assignedTaskDao) {
+        this.personnelTaskService = personnelTaskService;
         this.assignedTaskDao = assignedTaskDao;
     }
 
@@ -56,14 +55,13 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
 
         ensureEmpIdExists(submission.getEmpId(), "empId");
 
-        PECVideo video = getVideoFromIdParams(submission.getVideoId(), "videoId");
+        VideoTask videoTask = getVideoFromIdParams(submission.getTaskId(), "taskId");
 
-        validateCodeFormat(submission.getCodes(), video, "codes");
+        validateCodeFormat(submission.getCodes(), videoTask, "codes");
 
-        video.verifyCodes(submission.getCodes());
+        videoTask.verifyCodes(submission.getCodes());
         int authenticatedEmpId = ShiroUtils.getAuthenticatedEmpId();
-        PersonnelTaskId taskId = new PersonnelTaskId(PersonnelTaskType.VIDEO_CODE_ENTRY, submission.getVideoId());
-        assignedTaskDao.setTaskComplete(submission.getEmpId(), taskId, authenticatedEmpId);
+        assignedTaskDao.setTaskComplete(submission.getEmpId(), videoTask.getTaskId(), authenticatedEmpId);
         return new SimpleResponse(true, "codes submitted successfully", "code-submission-success");
     }
 
@@ -80,20 +78,29 @@ public class PECVideoApiCtrl extends BaseRestApiCtrl {
         return new ErrorResponse(ErrorCode.INVALID_PEC_VIDEO_CODE);
     }
 
-    private PECVideo getVideoFromIdParams(int videoId, String paramName) {
+    private VideoTask getVideoFromIdParams(int taskId, String paramName) {
+        // Exception that may be thrown for multiple reasons
+        InvalidRequestParamEx invalidTaskIdEx = new InvalidRequestParamEx(
+                taskId,
+                paramName,
+                "int",
+                "Task id must correspond to active Video code entry task."
+        );
         try {
-            return videoDao.getVideo(videoId);
-        } catch (PECVideoNotFoundEx ex) {
-            throw new InvalidRequestParamEx(
-                    videoId,
-                    paramName,
-                    "int",
-                    "Video id must correspond to active PEC Video."
-            );
+            PersonnelTask task = personnelTaskService.getPersonnelTask(taskId);
+
+            if (!(task instanceof VideoTask)) {
+                throw invalidTaskIdEx;
+            }
+
+            return (VideoTask) task;
+        } catch (PersonnelTaskNotFoundEx ex) {
+            throw invalidTaskIdEx;
         }
     }
 
-    private void validateCodeFormat(List<String> codeSubmission, PECVideo video, String codeParamName) {
+
+    private void validateCodeFormat(List<String> codeSubmission, VideoTask video, String codeParamName) {
         if (codeSubmission == null || codeSubmission.size() != video.getCodes().size()) {
             throw new InvalidRequestParamEx(
                     codeSubmission, codeParamName, "string list",

@@ -1,0 +1,69 @@
+package gov.nysenate.ess.core.dao.pec.task.detail;
+
+import gov.nysenate.ess.core.dao.base.BasicSqlQuery;
+import gov.nysenate.ess.core.dao.base.DbVendor;
+import gov.nysenate.ess.core.dao.base.SqlBaseDao;
+import gov.nysenate.ess.core.model.pec.MoodleCourseTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+/**
+ * {@link PersonnelTaskDetailDao} for {@link MoodleCourseTask}s
+ */
+@Repository
+public class MoodleTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetailDao<MoodleCourseTask> {
+
+    @Override
+    public PersonnelTaskType taskType() {
+        return PersonnelTaskType.MOODLE_COURSE;
+    }
+
+    @Override
+    public MoodleCourseTask getTaskDetails(PersonnelTask task) {
+        return localNamedJdbc.queryForObject(
+                Query.SELECT_MOODLE_COURSE.getSql(schemaMap()),
+                new MapSqlParameterSource("taskId", task.getTaskId()),
+                new MoodleCourseRowMapper(task)
+        );
+    }
+
+    private static class MoodleCourseRowMapper implements RowMapper<MoodleCourseTask> {
+        private final PersonnelTask personnelTask;
+
+        private MoodleCourseRowMapper(PersonnelTask personnelTask) {
+            this.personnelTask = personnelTask;
+        }
+
+        @Override
+        public MoodleCourseTask mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new MoodleCourseTask(personnelTask, rs.getString("url"));
+        }
+    }
+
+    private enum Query implements BasicSqlQuery {
+        SELECT_MOODLE_COURSE("SELECT * FROM ${essSchema}.moodle_course WHERE task_id = :taskId"),
+        ;
+
+        private final String sql;
+
+        Query(String sql) {
+            this.sql = sql;
+        }
+
+        @Override
+        public String getSql() {
+            return sql;
+        }
+
+        @Override
+        public DbVendor getVendor() {
+            return DbVendor.POSTGRES;
+        }
+    }
+}

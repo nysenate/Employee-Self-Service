@@ -1,6 +1,5 @@
 package gov.nysenate.ess.core.controller.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
@@ -8,19 +7,18 @@ import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.client.view.DetailedEmployeeView;
 import gov.nysenate.ess.core.client.view.pec.*;
-import gov.nysenate.ess.core.dao.pec.PATQueryBuilder;
-import gov.nysenate.ess.core.dao.pec.PATQueryCompletionStatus;
-import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskDao;
-import gov.nysenate.ess.core.dao.pec.PersonnelAssignedTaskNotFoundEx;
+import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
+import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryCompletionStatus;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundEx;
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.pec.*;
-import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.service.pec.*;
+import gov.nysenate.ess.core.service.pec.search.*;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeSearchBuilder;
 import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.PaginatedList;
 import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.commons.csv.CSVFormat;
@@ -50,19 +48,19 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task")
 public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
-    private static final Pattern taskIdPattern = Pattern.compile("^(?<taskType>[a-zA-Z_]+)-(?<taskNumber>[0-9]+)$");
     private static final Pattern sortPattern = Pattern.compile("^(?<orderBy>[a-zA-Z_]+):(?<sortOrder>[a-zA-Z]+)$");
 
-    private final PersonnelTaskSource taskSource;
-    private final PersonnelAssignedTaskDao taskDao;
+    private final PersonnelTaskService taskService;
+    private final PersonnelTaskAssignmentDao taskDao;
     private final EmpTaskSearchService empTaskSearchService;
 
     private final Map<Class, PersonnelTaskViewFactory> viewFactoryMap;
 
-    public PersonnelTaskApiCtrl(PersonnelTaskSource taskSource,
-                                PersonnelAssignedTaskDao taskDao,
-                                EmpTaskSearchService empTaskSearchService, List<PersonnelTaskViewFactory> taskViewFactories) {
-        this.taskSource = taskSource;
+    public PersonnelTaskApiCtrl(PersonnelTaskService taskService,
+                                PersonnelTaskAssignmentDao taskDao,
+                                EmpTaskSearchService empTaskSearchService,
+                                List<PersonnelTaskViewFactory> taskViewFactories) {
+        this.taskService = taskService;
         this.taskDao = taskDao;
         this.empTaskSearchService = empTaskSearchService;
         this.viewFactoryMap = Maps.uniqueIndex(taskViewFactories, PersonnelTaskViewFactory::getTaskClass);
@@ -81,7 +79,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "", method = {GET, HEAD})
     public ListViewResponse<PersonnelTaskView> getTasks(@RequestParam(defaultValue = "false") boolean activeOnly) {
         return ListViewResponse.of(
-                taskSource.getPersonnelTasks(activeOnly).stream()
+                taskService.getPersonnelTasks(activeOnly).stream()
                         .map(this::getPersonnelTaskView)
                         .collect(Collectors.toList()),
                 "tasks"
@@ -100,21 +98,21 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Path params:
      * @param empId int - employee id
      *
-     * @return {@link ListViewResponse<PersonnelAssignedTaskView>} list of tasks assigned to given emp.
+     * @return {@link ListViewResponse< PersonnelTaskAssignmentView >} list of tasks assigned to given emp.
      */
     @RequestMapping(value = "/emp/{empId:\\d+}", method = {GET, HEAD})
-    public ListViewResponse<PersonnelAssignedTaskView> getTasksForEmployee(
+    public ListViewResponse<PersonnelTaskAssignmentView> getTasksForEmployee(
             @PathVariable int empId,
             @RequestParam(defaultValue = "false") boolean detail) {
 
         checkPermission(new CorePermission(empId, PERSONNEL_TASK, GET));
 
         // Determine method to use to generate view objects.
-        Function<PersonnelAssignedTask, PersonnelAssignedTaskView> viewMapper =
-                detail ? this::getDetailedTaskView : PersonnelAssignedTaskView::new;
+        Function<PersonnelTaskAssignment, PersonnelTaskAssignmentView> viewMapper =
+                detail ? this::getDetailedTaskView : PersonnelTaskAssignmentView::new;
 
-        List<PersonnelAssignedTask> tasks = taskDao.getTasksForEmp(empId);
-        List<PersonnelAssignedTaskView> taskViews = tasks.stream()
+        List<PersonnelTaskAssignment> tasks = taskDao.getTasksForEmp(empId);
+        List<PersonnelTaskAssignmentView> taskViews = tasks.stream()
                 .map(viewMapper)
                 .collect(Collectors.toList());
         return ListViewResponse.of(taskViews, "tasks");
@@ -127,31 +125,24 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Gets a list of all tasks for a specific employee.
      *
      * Usage:
-     * (GET)    /api/v1/personnel/task/emp/{empId}/{taskType}/{taskNumber}
+     * (GET)    /api/v1/personnel/task/emp/{empId}/{taskId}
      *
      * Path params:
      * @param empId int - employee id
-     * @param taskType {@link PersonnelTaskType}
-     * @param taskNumber int - task number
+     * @param taskId int - task id
      *
-     * @return {@link ViewObjectResponse<PersonnelAssignedTaskView>}
+     * @return {@link ViewObjectResponse< PersonnelTaskAssignmentView >}
      */
-    @RequestMapping(value = "/emp/{empId}/{taskType}/{taskNumber}", method = {GET, HEAD})
-    public ViewObjectResponse<DetailPersonnelAssignedTaskView> getSpecificTaskForEmployee(
+    @RequestMapping(value = "/emp/{empId}/{taskId}", method = {GET, HEAD})
+    public ViewObjectResponse<DetailPersonnelTaskAssignmentView> getSpecificTaskForEmployee(
             @PathVariable int empId,
-            @PathVariable String taskType,
-            @PathVariable int taskNumber) {
+            @PathVariable int taskId) {
 
         checkPermission(new CorePermission(empId, PERSONNEL_TASK, GET));
 
-        PersonnelTaskType parsedTaskType =
-                getEnumParameter("taskType", taskType, PersonnelTaskType.class);
+        PersonnelTaskAssignment assignment = taskDao.getTaskForEmp(empId, taskId);
 
-        PersonnelTaskId taskId = new PersonnelTaskId(parsedTaskType, taskNumber);
-
-        PersonnelAssignedTask task = taskDao.getTaskForEmp(empId, taskId);
-
-        DetailPersonnelAssignedTaskView detailedTaskView = getDetailedTaskView(task);
+        DetailPersonnelTaskAssignmentView detailedTaskView = getDetailedTaskView(assignment);
 
         return new ViewObjectResponse<>(detailedTaskView, "task");
     }
@@ -170,7 +161,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * limit - int - default 10 - limit the number of results
      * offset - int - default 1 - start the result list from this result.
      *
-     * @return {@link ViewObjectResponse<PersonnelAssignedTaskView>}
+     * @return {@link ViewObjectResponse< PersonnelTaskAssignmentView >}
      */
     @RequestMapping(value = "/emp/search", method = {GET, HEAD})
     public ListViewResponse<EmpPATSearchResultView> empTaskSearch(WebRequest request) {
@@ -179,9 +170,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
 
         LimitOffset limitOffset = getLimitOffset(request, 10);
 
-        EmpPATQuery empPatQuery = extractEmpPATQuery(request);
+        EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
 
-        PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPatQuery, limitOffset);
+        PaginatedList<EmployeeTaskSearchResult> results = empTaskSearchService.searchForEmpTasks(empPTAQuery, limitOffset);
         List<EmpPATSearchResultView> resultViews = results.getResults().stream()
                 .map(EmpPATSearchResultView::new)
                 .collect(Collectors.toList());
@@ -215,9 +206,9 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         response.setContentType("text/csv");
         response.setStatus(200);
         //Get Search Results
-        EmpPATQuery empPatQuery = extractEmpPATQuery(request);
+        EmpPTAQuery empPTAQuery = extractEmpPATQuery(request);
         PaginatedList<EmployeeTaskSearchResult> results =
-                empTaskSearchService.searchForEmpTasks(empPatQuery, LimitOffset.ALL);
+                empTaskSearchService.searchForEmpTasks(empPTAQuery, LimitOffset.ALL);
         List<EmpPATSearchResultView> resultViews = results.getResults().stream()
                 .map(EmpPATSearchResultView::new)
                 .collect(Collectors.toList());
@@ -234,30 +225,27 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         csvPrinter.close();
     }
 
-    @ExceptionHandler(PersonnelAssignedTaskNotFoundEx.class)
+    @ExceptionHandler(PersonnelTaskAssignmentNotFoundEx.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     @ResponseBody
-    protected ViewObjectErrorResponse handleAssignedTaskNotFoundEx(PersonnelAssignedTaskNotFoundEx ex) {
+    protected ViewObjectErrorResponse handleAssignmentNotFoundEx(PersonnelTaskAssignmentNotFoundEx ex) {
         return new ViewObjectErrorResponse(
                 ErrorCode.PERSONNEL_ASSIGNED_TASK_NOT_FOUND,
-                new PersonnelAssignedTaskIdView(ex.getEmpId(), ex.getTaskId())
+                new PersonnelTaskAssignmentIdView(ex.getEmpId(), ex.getTaskId())
         );
     }
 
-    /*
-    Get a map of all personnel tasks and their ids
+    /**
+     * Get a map of all personnel tasks and their ids
      */
-    private HashMap<PersonnelTaskId, PersonnelTask> getPersonnelTaskIdMap() {
-        List<PersonnelTask> personnelTasks = taskSource.getPersonnelTasks(false);
-        HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = new HashMap<>();
-        for (PersonnelTask personnelTask : personnelTasks) {
-            personnelTaskMap.put(personnelTask.getTaskId(), personnelTask);
-        }
-        return personnelTaskMap;
+    private Map<Integer, PersonnelTaskView> getPersonnelTaskIdMap() {
+        return taskService.getPersonnelTasks(false).stream()
+                .map(this::getPersonnelTaskView)
+                .collect(Collectors.toMap(PersonnelTaskView::getTaskId, Function.identity()));
     }
 
-    /*
-    return the maximum number of tasks so we can provide the right amount of headers for the CSV report
+    /**
+     * return the maximum number of tasks so we can provide the right amount of headers for the CSV report
      */
     private int getMaxNumOfTasks(List<EmpPATSearchResultView> resultViews) {
         int max = 1;
@@ -270,8 +258,8 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         return max;
     }
 
-    /*
-    Returns a complete CSV printer with the header set
+    /**
+     * Returns a complete CSV printer with the header set
      */
     private CSVPrinter createProperCSVPrinter(int maxNumOfTasks, HttpServletResponse response) throws IOException {
         String testOriginalTaskString = "EmpId, Name, Email, Work Phone, Resp Center, Continuous Service, ";
@@ -284,20 +272,20 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
                     .withHeader(testOriginalTaskString.split(",")));
     }
 
-    /*
-    Creates additional sections of the csv header relating to the tasks.
-    The number is required because each value in the header must be unique
+    /**
+     * Creates additional sections of the csv header relating to the tasks.
+     * The number is required because each value in the header must be unique
      */
     private String createTaskStrings(int taskNumber) {
         return "Task " + taskNumber + " Title," + "Task " + taskNumber + " Type," + "Task " + taskNumber + " Completion Time," + "Task " + taskNumber + " Update EmpId,";
     }
 
-    /*
-    Creates the record that will be printed in the downloadable CSV
+    /**
+     * Creates the record that will be printed in the downloadable CSV
      */
     private void handleCSVPrinting(CSVPrinter csvPrinter, DetailedEmployeeView currentEmployee, String respCenter,
-                                   List<PersonnelAssignedTaskView> tasks, int maxNumOfTasks) throws IOException {
-        HashMap<PersonnelTaskId, PersonnelTask> personnelTaskMap = getPersonnelTaskIdMap();
+                                   List<PersonnelTaskAssignmentView> assignments, int maxNumOfTasks) throws IOException {
+        Map<Integer, PersonnelTaskView> personnelTaskMap = getPersonnelTaskIdMap();
 
         ArrayList<Object> recordToPrint = new ArrayList<>();
         recordToPrint.add(currentEmployee.getEmployeeId());
@@ -307,16 +295,16 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         recordToPrint.add(getRespCenter(currentEmployee));
         recordToPrint.add(currentEmployee.getContServiceDate());
 
-        for (PersonnelAssignedTaskView task : tasks) {
-            String taskTitle = personnelTaskMap.get(task.getTaskId().toPersonnelTaskId()).getTitle();
+        for (PersonnelTaskAssignmentView assignment : assignments) {
+            PersonnelTaskView applicableTask = personnelTaskMap.get(assignment.getTaskId());
 
-            recordToPrint.add(taskTitle);
-            recordToPrint.add(task.getTaskId().getTaskType().toString());
-            recordToPrint.add(task.getTimestamp());
-            recordToPrint.add(task.getUpdateUserId());
+            recordToPrint.add(applicableTask.getTitle());
+            recordToPrint.add(applicableTask.getTaskType());
+            recordToPrint.add(assignment.getTimestamp());
+            recordToPrint.add(assignment.getUpdateUserId());
         }
 
-        int emptyTasksToFill = maxNumOfTasks - tasks.size();
+        int emptyTasksToFill = maxNumOfTasks - assignments.size();
         if (emptyTasksToFill >= 1) {
             for (int i = 0; i < emptyTasksToFill; i++) {
                 addEmptyTask(recordToPrint);
@@ -355,10 +343,11 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Generate a detailed task view from the given task.
      * This involves loading task details and packinging it with the task.
      */
-    private DetailPersonnelAssignedTaskView getDetailedTaskView(PersonnelAssignedTask assignedTask) {
-        PersonnelTask personnelTask = taskSource.getPersonnelTask(assignedTask.getTaskId());
+    private DetailPersonnelTaskAssignmentView getDetailedTaskView(
+            PersonnelTaskAssignment taskAssignment) {
+        PersonnelTask personnelTask = taskService.getPersonnelTask(taskAssignment.getTaskId());
         PersonnelTaskView taskView = getPersonnelTaskView(personnelTask);
-        return new DetailPersonnelAssignedTaskView(assignedTask, taskView);
+        return new DetailPersonnelTaskAssignmentView(taskAssignment, taskView);
     }
 
 
@@ -373,13 +362,13 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Build an {@link EmpPATQuery} from request parameters.
+     * Build an {@link EmpPTAQuery} from request parameters.
      *
      * @see #extractEmpSearchParams(WebRequest)
      * @see #extractEmpPATQuery(WebRequest)
      */
-    private EmpPATQuery extractEmpPATQuery(WebRequest request) {
-        return new EmpPATQuery(
+    private EmpPTAQuery extractEmpPATQuery(WebRequest request) {
+        return new EmpPTAQuery(
                 extractEmpSearchParams(request),
                 extractPATSearchParams(request),
                 extractSortDirectives(request)
@@ -413,53 +402,40 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
     }
 
     /**
-     * Build an {@link PATQueryBuilder} from request parameters
+     * Build an {@link PTAQueryBuilder} from request parameters
      */
-    private PATQueryBuilder extractPATSearchParams(WebRequest request) {
-        PATQueryBuilder patQueryBuilder = new PATQueryBuilder();
+    private PTAQueryBuilder extractPATSearchParams(WebRequest request) {
+        PTAQueryBuilder PTAQueryBuilder = new PTAQueryBuilder();
 
-        patQueryBuilder.setEmpId(getIntegerParam(request, "empId", null));
-        patQueryBuilder.setActive(getBooleanParam(request, "taskActive", null));
-        patQueryBuilder.setTaskType(
+        PTAQueryBuilder.setEmpId(getIntegerParam(request, "empId", null));
+        PTAQueryBuilder.setActive(getBooleanParam(request, "taskActive", null));
+        PTAQueryBuilder.setTaskType(
                 Optional.ofNullable(request.getParameter("taskType"))
                         .map(ts -> getEnumParameter("taskType", ts, PersonnelTaskType.class))
                         .orElse(null)
         );
-        patQueryBuilder.setCompleted(getBooleanParam(request, "completed", null));
-        patQueryBuilder.setCompletedFrom(Optional.ofNullable(request.getParameter("completedFrom"))
+        PTAQueryBuilder.setCompleted(getBooleanParam(request, "completed", null));
+        PTAQueryBuilder.setCompletedFrom(Optional.ofNullable(request.getParameter("completedFrom"))
                 .map(val -> parseISODateTime(val, "completedFrom"))
                 .orElse(null));
-        patQueryBuilder.setCompletedTo(Optional.ofNullable(request.getParameter("completedTo"))
+        PTAQueryBuilder.setCompletedTo(Optional.ofNullable(request.getParameter("completedTo"))
                 .map(val -> parseISODateTime(val, "completedTo"))
                 .orElse(null));
-        patQueryBuilder.setTaskIds(
+        PTAQueryBuilder.setTaskIds(
                 Optional.ofNullable(request.getParameterValues("taskId"))
                         .map(tids -> Arrays.stream(tids)
-                                .map(this::parseTaskId)
+                                .map(Integer::parseInt)
                                 .collect(Collectors.toList())
                         )
                         .orElse(null)
         );
-        patQueryBuilder.setTotalCompletionStatus(
+        PTAQueryBuilder.setTotalCompletionStatus(
                 Optional.ofNullable(request.getParameter("totalCompletion"))
-                        .map(val -> getEnumParameter("totalCompletion", val, PATQueryCompletionStatus.class))
+                        .map(val -> getEnumParameter("totalCompletion", val, PTAQueryCompletionStatus.class))
                         .orElse(null)
         );
 
-        return patQueryBuilder;
-    }
-
-    /**
-     * Parse a {@link PersonnelTaskId} from a parameter string.
-     */
-    private PersonnelTaskId parseTaskId(String idStr) {
-        Matcher matcher = taskIdPattern.matcher(idStr);
-        if (!matcher.matches()) {
-            throw new InvalidRequestParamEx(idStr, "taskId", "personnel-task-id", taskIdPattern.pattern());
-        }
-        PersonnelTaskType taskType = getEnumParameter("taskId", matcher.group("taskType"), PersonnelTaskType.class);
-        int taskNumber = parseIntegerParam("taskId", matcher.group("taskNumber"));
-        return new PersonnelTaskId(taskType, taskNumber);
+        return PTAQueryBuilder;
     }
 
     /**

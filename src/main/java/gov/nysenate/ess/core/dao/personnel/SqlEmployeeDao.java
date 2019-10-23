@@ -157,7 +157,8 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", Optional.ofNullable(searchBuilder.getName())
                 .map(name -> name.trim()
-                        .replaceAll("[^a-zA-Z ]+", "")
+                        .toUpperCase()
+                        .replaceAll("[^A-Z ]", "")
                         .replaceAll(" +", " "))
                 .orElse(null));
         params.addValue("empStatus",

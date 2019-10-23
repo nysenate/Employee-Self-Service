@@ -1,8 +1,8 @@
 package gov.nysenate.ess.core.controller.api;
 
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
-import gov.nysenate.ess.core.service.pec.PECVideoCSVService;
-import gov.nysenate.ess.core.service.pec.PersonnelTaskAssigner;
+import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
+import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

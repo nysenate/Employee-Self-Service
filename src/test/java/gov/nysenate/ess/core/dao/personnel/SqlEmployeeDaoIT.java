@@ -124,7 +124,7 @@ public class SqlEmployeeDaoIT extends BaseTest
 
         // Generate search text using fragments of employee's name
         Employee employee = employeeDao.getEmployeeById(expectedEmpId);
-        String searchText = employee.getLastName().substring(1) + ", " + employee.getFirstName().substring(0, 1);
+        String searchText = employee.getLastName() + ", " + employee.getFirstName().substring(0, 1);
         EmployeeSearchBuilder esb = new EmployeeSearchBuilder()
                 .setName(searchText);
 
