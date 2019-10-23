@@ -1,8 +1,9 @@
 var essTravel = angular.module('essTravel');
 
-essTravel.controller('TravelApplicationController', ['$scope', 'TravelActiveApplicationApi', travelController]);
+essTravel.controller('UpcomingTravelController',
+                     ['$scope', 'appProps', 'LocationService', 'TravelActiveApplicationApi', upcomingTravelController]);
 
-function travelController($scope, activeApplicationApi) {
+function upcomingTravelController($scope, appProps, locationService, activeApplicationApi) {
 
     $scope.applications = [];
     $scope.savedApplications = [];
@@ -23,6 +24,12 @@ function travelController($scope, activeApplicationApi) {
         $scope.applications = response.result;
         console.log($scope.applications);
     }
+
+    // $scope.startNewApplication = function() {
+    //     currentApplication.setApplicant(appProps.user);
+    //     locationService.go("/travel/travel-application/locations");
+    //
+    // };
 
     $scope.init();
 }
