@@ -10,7 +10,7 @@ flyway.user = postgres
 flyway.password =
 
 # Schemas managed by flyway
-flyway.schemas = ess, supply
+flyway.schemas = ess, supply, travel
 
 # Version set when using flyway:baseline
 flyway.baselineVersion = 4

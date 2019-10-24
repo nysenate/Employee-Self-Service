@@ -1,12 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.5.6</version>
+  <version>1.6</version>
   <packaging>war</packaging>
 
   <build>
@@ -56,7 +56,7 @@
           <target>1.8</target>
           <!-- avoid possible encoding issues -->
           <encoding>utf-8</encoding>
-          </configuration>
+        </configuration>
       </plugin>
       <!-- Maven Jar Plugin -->
       <plugin>
@@ -97,9 +97,11 @@
       <plugin>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-maven-plugin</artifactId>
-        <version>5.2.0</version>
+        <version>6.0.1</version>
         <configuration>
-          <configFile>src/main/resources/flyway.conf</configFile>
+          <configFiles>
+            <configFile>src/main/resources/flyway.conf</configFile>
+          </configFiles>
         </configuration>
         <executions>
           <execution>
@@ -120,13 +122,14 @@
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.validator.version>1.6</commons.validator.version>
     <commons-csv.version>1.5</commons-csv.version>
+    <commons-fileupload.version>1.3.3</commons-fileupload.version>
     <c3p0.version>0.9.5.3</c3p0.version>
     <eh-cache.version>2.10.0</eh-cache.version>
     <freemarker.version>2.3.23</freemarker.version>
     <guava.version>22.0</guava.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hierarchicalcontextrunner.version>4.12.1</hierarchicalcontextrunner.version>
-    <jackson.version>2.9.9</jackson.version>
+    <jackson.version>2.9.10</jackson.version>
     <jstl.version>1.2</jstl.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
@@ -397,7 +400,7 @@
       <version>${guava.version}</version>
     </dependency>
 
-     <!--https://mvnrepository.com/artifact/org.freemarker/freemarker-->
+    <!--https://mvnrepository.com/artifact/org.freemarker/freemarker-->
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
@@ -462,6 +465,33 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.7</version>
+    </dependency>
+
+    <!-- Httpclient -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.3</version>
+    </dependency>
+
+    <!-- google maps services-->
+    <dependency>
+      <groupId>com.google.maps</groupId>
+      <artifactId>google-maps-services</artifactId>
+      <version>0.2.4</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.11.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>${commons-fileupload.version}</version>
     </dependency>
 
   </dependencies>

@@ -1,0 +1,5 @@
+ALTER TABLE IF EXISTS travel.app_version
+ADD COLUMN status text NOT NULL DEFAULT 'PENDING';
+
+ALTER TABLE IF EXISTS travel.app_version
+ALTER COLUMN status DROP DEFAULT;

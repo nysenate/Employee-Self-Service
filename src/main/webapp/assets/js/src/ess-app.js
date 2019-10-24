@@ -4,13 +4,14 @@ var essApi = angular.module('essApi', ['essCore']);
 var essMyInfo = angular.module('essMyInfo', ['essApi']);
 var essTime = angular.module('essTime', ['essApi']);
 var essSupply = angular.module('essSupply', ['essApi', 'ngCookies']);
+var essTravel = angular.module('essTravel', ['essApi']);
 var essHelp = angular.module('essHelp', ['essApi']);
 
 var essApp = angular.module('ess', [
     // Angular modules
     'ngRoute', 'ngResource', 'ngAnimate', 'ngSanitize',
     // Local modules
-    'essCore', 'essMyInfo', 'essTime', 'essSupply', 'essHelp',
+    'essCore', 'essMyInfo', 'essTime', 'essSupply', 'essTravel', 'essHelp',
     // Third party modules
     'floatThead', 'angularUtils.directives.dirPagination', 'nsPopover', 'infinite-scroll',
     'jlareau.bowser', 'ui.select']);

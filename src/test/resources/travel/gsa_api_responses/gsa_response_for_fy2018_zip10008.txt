@@ -1,0 +1,98 @@
+{
+  "request": null,
+  "errors": null,
+  "rates": [
+    {
+      "oconusInfo": null,
+      "rate": [
+        {
+          "months": {
+            "month": [
+              {
+                "value": 164,
+                "number": 1,
+                "short": "Jan",
+                "long": "January"
+              },
+              {
+                "value": 164,
+                "number": 2,
+                "short": "Feb",
+                "long": "February"
+              },
+              {
+                "value": 253,
+                "number": 3,
+                "short": "Mar",
+                "long": "March"
+              },
+              {
+                "value": 253,
+                "number": 4,
+                "short": "Apr",
+                "long": "April"
+              },
+              {
+                "value": 253,
+                "number": 5,
+                "short": "May",
+                "long": "May"
+              },
+              {
+                "value": 253,
+                "number": 6,
+                "short": "Jun",
+                "long": "June"
+              },
+              {
+                "value": 230,
+                "number": 7,
+                "short": "Jul",
+                "long": "July"
+              },
+              {
+                "value": 230,
+                "number": 8,
+                "short": "Aug",
+                "long": "August"
+              },
+              {
+                "value": 291,
+                "number": 9,
+                "short": "Sep",
+                "long": "September"
+              },
+              {
+                "value": 291,
+                "number": 10,
+                "short": "Oct",
+                "long": "October"
+              },
+              {
+                "value": 291,
+                "number": 11,
+                "short": "Nov",
+                "long": "November"
+              },
+              {
+                "value": 291,
+                "number": 12,
+                "short": "Dec",
+                "long": "December"
+              }
+            ]
+          },
+          "meals": 74,
+          "zip": "10008",
+          "county": "Bronx \/ Kings \/ New York \/ Queens \/ Richmond",
+          "city": "New York City",
+          "standardRate": "false"
+        }
+      ],
+      "state": "NY",
+      "year": 2018,
+      "isOconus": "false"
+    }
+  ],
+  "version": null
+}

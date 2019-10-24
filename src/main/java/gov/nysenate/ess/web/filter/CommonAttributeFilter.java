@@ -31,6 +31,7 @@ public class CommonAttributeFilter implements Filter
     private static final String IMAGE_URL_ATTRIBUTE = "imageUrl";
     private static final String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
     private static final String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
+    private static final String GOOGLE_API_KEY = "googleApiKey";
 
     private final XsrfValidator xsrfValidator;
 
@@ -39,19 +40,22 @@ public class CommonAttributeFilter implements Filter
     private final String loginUrl;
     private final String imageUrl;
     private final String releaseVersion;
+    private final String googleApiKey;
 
     @Autowired
     public CommonAttributeFilter(XsrfValidator xsrfValidator,
                                  @Value("${runtime.level}") String runtimeLevel,
                                  @Value("${login.url}") String loginUrl,
                                  @Value("${image.url}") String imageUrl,
-                                 @Value("${application.version}") String releaseVersion
+                                 @Value("${application.version}") String releaseVersion,
+                                 @Value("${google.maps.api.key}") String googleApiKey
     ) {
         this.xsrfValidator = xsrfValidator;
         this.runtimeLevel = RuntimeLevel.of(runtimeLevel);
         this.loginUrl = loginUrl;
         this.imageUrl = imageUrl;
         this.releaseVersion = releaseVersion;
+        this.googleApiKey = googleApiKey;
     }
 
     @Override
@@ -68,6 +72,7 @@ public class CommonAttributeFilter implements Filter
         setXsrfTokenAttribute(httpServletRequest);
         setMiscLeaveAttribute(httpServletRequest);
         setReleaseVersionAttribute(httpServletRequest);
+        setGoogleApiKey(httpServletRequest);
         setImageUrl(request);
         chain.doFilter(request, response);
     }
@@ -100,6 +105,10 @@ public class CommonAttributeFilter implements Filter
 
     private void setReleaseVersionAttribute(HttpServletRequest request) {
         request.setAttribute(RELEASEVERSION_ATTRIBUTE, releaseVersion);
+    }
+
+    private void setGoogleApiKey(HttpServletRequest request) {
+        request.setAttribute(GOOGLE_API_KEY, googleApiKey);
     }
 
     /** Life-cycle is maintained by Spring. The init method is not used. */

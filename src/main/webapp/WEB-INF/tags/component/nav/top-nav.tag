@@ -23,6 +23,9 @@
                 <li id="supplyLink" class="main-topic blue-purple <c:if test='${activeTopic == "supply"}'>active</c:if>">
                     <a target="_self" href="${ctxPath}/supply"><img class="nav-icon" src="${ctxPath}/assets/img/20px-ffffff/clock.png"/>Supply</a>
                 </li>
+                <li id="travelLink" class="main-topic orange <c:if test='${activeTopic == "travel"}'>active</c:if>">
+                    <a target="_self" href="${ctxPath}/travel"><img class="nav-icon" src="${ctxPath}/assets/img/20px-ffffff/clock.png"/>Travel</a>
+                </li>
             </ul>
         </div>
         <div class="right-header-area">

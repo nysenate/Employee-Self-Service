@@ -1,0 +1,1 @@
+ALTER TABLE travel.unsubmitted_app DROP COLUMN IF EXISTS traveler_id;

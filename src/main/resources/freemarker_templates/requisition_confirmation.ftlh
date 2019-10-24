@@ -12,6 +12,12 @@ Hi ${requisition.customer.firstName},
 Your requisition request has been received by Senate Supply.
 </p>
 
+<#if requisition.deliveryMethod.name() == "PICKUP">
+  <p>
+    Please pickup your order from LC100 at your earliest convenience.
+  </p>
+</#if>
+
 <div style="background-color: #efefef; padding: 10px; width: 500px; border-radius: 2px;">
 <p>
 <b>Id:</b> ${(requisition.requisitionId)?c}

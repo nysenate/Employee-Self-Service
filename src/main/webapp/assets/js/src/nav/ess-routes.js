@@ -9,7 +9,7 @@ var essApp = angular.module('ess');
  *
  * {@link http://docs.angularjs.org/api/ngRoute.$route}
  */
-essApp.config(function($routeProvider, $locationProvider) {
+essApp.config(function ($routeProvider, $locationProvider) {
     var ctxPath = globalProps.ctxPath;
 
     /** My Info */
@@ -52,15 +52,15 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     /** Time and Attendance */
     $routeProvider.when(ctxPath + '/time', {
-       redirectTo: function () {
-           if (globalProps.userIsSenator) {
-               if (globalProps.userIsSupervisor) {
-                   return ctxPath + '/time/record/manage'
-               }
-               return ctxPath + '/time/period/calendar'
-           }
-           return ctxPath + '/time/record/entry';
-       }
+        redirectTo: function () {
+            if (globalProps.userIsSenator) {
+                if (globalProps.userIsSupervisor) {
+                    return ctxPath + '/time/record/manage'
+                }
+                return ctxPath + '/time/period/calendar'
+            }
+            return ctxPath + '/time/record/entry';
+        }
     });
 
     $routeProvider.when(ctxPath + '/time/record/entry', {
@@ -174,6 +174,45 @@ essApp.config(function($routeProvider, $locationProvider) {
         templateUrl: ctxPath + '/template/supply/requisition/requisition-view'
     });
 
+    /** Travel */
+
+    $routeProvider.when(ctxPath + '/travel', {
+        redirectTo: ctxPath + 'travel/applications'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/application/new', {
+        templateUrl: ctxPath + '/template/travel/component/new-application/new-application'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/application/edit', {
+        templateUrl: ctxPath + '/template/travel/component/edit-application/edit-application'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/applications', {
+        templateUrl: ctxPath + '/template/travel/component/view-applications/view-applications'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/application/print', {
+        templateUrl: ctxPath + '/template/travel/component/print-app/print-app'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/config', {
+        templateUrl: ctxPath + '/template/travel/component/user-config/user-config'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/review', {
+        templateUrl: ctxPath + '/template/travel/component/review/app-review',
+        reloadOnSearch: false
+    });
+
+    $routeProvider.when(ctxPath + '/travel/review/history', {
+        templateUrl: ctxPath + '/template/travel/component/review-history/review-history'
+    });
+
+    $routeProvider.when(ctxPath + '/travel/delegation', {
+        templateUrl: ctxPath + '/template/travel/component/delegation/delegation'
+    });
+
     /** Help */
 
     $routeProvider.when(ctxPath + '/help/ta/plan', {
@@ -193,8 +232,8 @@ essApp.config(function($routeProvider, $locationProvider) {
 
     /** 404 */
     $routeProvider.otherwise({
-        templateUrl: ctxPath + '/template/404'
-    });
+                                 templateUrl: ctxPath + '/template/404'
+                             });
 
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix('!');
@@ -203,18 +242,18 @@ essApp.config(function($routeProvider, $locationProvider) {
 /**
  * Create a smooth fade transition for the ng-view.
  */
-essApp.animation('.view-animate', function() {
+essApp.animation('.view-animate', function () {
     return {
-        enter: function(element, done) {
+        enter: function (element, done) {
             element.hide();
             element.delay(150).fadeIn(300, done);
-            return function() {
+            return function () {
                 element.stop();
             }
         },
-        leave: function(element, done) {
+        leave: function (element, done) {
             element.fadeOut(100, done);
-            return function() {
+            return function () {
                 element.stop();
             }
         }

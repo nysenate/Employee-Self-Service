@@ -14,6 +14,9 @@ data.dir = /data/ess/
 # Used to determine fs location and request routing for ack docs.
 data.ackdoc_subdir = ack_docs/
 
+# Subdirectory where travel request attachments are stored.
+data.travel.attachments.dir = travel_request_attachments/
+
 # --- Domain Configuration ----------------------------------------------------
 
 # The domain url and context path that ess is hosted on (used for generating links)
@@ -90,6 +93,9 @@ ess.schema = ess
 # Supply's schema
 supply.schema = supply
 
+# Travel's schema
+travel.schema = travel
+
 # --- Mail Configuration ------------------------------------------------------
 
 # Connection information for sending emails
@@ -144,6 +150,12 @@ cache.cron.period = 0 0 0 * * *
 # Locations cache
 cache.cron.location = 0 0 0 * * *
 
+# Travel Mileage Rate cache
+cache.cron.mileage.rate = 0 0 0 * * *
+
+# GSA Data Cron
+gsa.cron.data = 0 0 0 1 * *
+
 # Delay (ms) during which the transactions cache is refreshed from the DB.
 cache.poll.delay.transactions = 60000
 # Delay (ms) during which the employee cache is refreshed from the DB.
@@ -188,6 +200,9 @@ scheduler.supply.sfms_synchronization.enabled = false
 # Determines when to run the supply SFMS synchronization process
 scheduler.supply.sfms_synchronization.cron = 0 0 0 * * *
 
+# Updates travel application values taken from the web
+scheduler.travel.scrape.cron = 0 0 2 * * *
+
 # --- Timeout Configuration ---------------------------------------------------
 
 #timeout in secs
@@ -225,3 +240,17 @@ supply.requisition.notification.list =
 
 # Comma separated list of commodity codes which do not need to be reconciled.
 supply.reconciliation.ignore.list = E69, E710, E912, E1013, E1015, E1215
+
+# --- Google Maps Configuration -------------------------------------------------------
+google.maps.api.key =
+
+# --- Travel Integration links --------------------------------------------------------
+# GSA API base url
+travel.gsa.api.url_base = https://api.gsa.gov/travel/perdiem/v2/rates/
+travel.gsa.api.key =
+
+# Url used to scrape IRS mileage rates
+travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
+
+# Sage API base url
+sage.api.url = https://pubgeo.nysenate.gov/api/v2

@@ -79,7 +79,7 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      *
      * @return {@link ListViewResponse<EmployeeSearchView>}
      */
-    @RequestMapping(value = "", method = {GET, HEAD})
+    @RequestMapping(value = "/active", method = {GET, HEAD})
     public ListViewResponse<EmployeeSearchView> getAllEmployees(
             @RequestParam(defaultValue = "false") boolean activeOnly) {
 
@@ -96,12 +96,12 @@ public class EmployeeRestApiCtrl extends BaseRestApiCtrl
      * Employee Search API
      * -----------------------
      *
-     * Get a list of all currently active employees
+     * Search active employees by their full name.
      *
-     * Usage:       (GET) /api/v1/employees/active
+     * Usage:       (GET) /api/v1/employees/search
      *
      * Request Params:
-     * @param term String - The search term
+     * @param term String - The search term. Matched against employee full names.
      * @param empId int - default 0 - an optional param that overrides term and will return an employee
      *              with the given employee id, if one exists
      * @return {@link ListViewResponse<EmployeeSearchView>}

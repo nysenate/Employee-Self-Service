@@ -6,8 +6,10 @@ import gov.nysenate.ess.core.client.response.base.ListViewResponse;
 import gov.nysenate.ess.core.client.view.LocationView;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.model.unit.Location;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.destination.DestinationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +44,6 @@ public class SupplyDestinationApiCtrl extends BaseRestApiCtrl {
     public BaseResponse getDestinationsForEmployee(@PathVariable int empId) {
         Employee employee = employeeService.getEmployee(empId);
         List<Location> locations = Lists.newArrayList(destinationService.employeeDestinations(employee));
-
         Collections.sort(locations, (l1, l2) -> (l1.getLocId().getCode().compareTo(l2.getLocId().getCode())));
 
         return ListViewResponse.of(locations.stream()

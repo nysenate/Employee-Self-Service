@@ -58,6 +58,10 @@ public class Employee extends Person
                 .orElse(false);
     }
 
+    public boolean isEmpty() {
+        return employeeId == 0;
+    }
+
     /* --- Overrides --- */
 
     @Override

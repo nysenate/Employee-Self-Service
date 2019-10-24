@@ -10,7 +10,7 @@ angular.module('ess').service('RestErrorService', [
         };
 
         function handleErrorResponse(resp) {
-            var errorCode = (resp.data.status || {}).code;
+            var errorCode = (resp && resp.data && resp.data.status || {}).code;
             if (errorCode === "UNAUTHENTICATED") {
                 console.error('user unauthenticated, redirecting to login');
                 $location.path(appProps.loginUrl);

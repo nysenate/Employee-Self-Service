@@ -32,6 +32,10 @@ public class ListView<ViewType> implements ViewObject
         this.items = items != null ? ImmutableList.copyOf(items) : ImmutableList.of();
     }
 
+    private ListView() {
+        items = ImmutableList.of();
+    }
+
     @Override
     public String getViewType() {
         String listContentType = items.size()>0 ? ViewObject.getViewTypeOf(items.get(0)) : "empty";

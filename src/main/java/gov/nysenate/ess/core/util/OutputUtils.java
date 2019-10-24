@@ -10,8 +10,11 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import gov.nysenate.ess.travel.application.TravelApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class OutputUtils
 {
@@ -64,6 +67,18 @@ public class OutputUtils
             logger.error("ObjectMapper exception: " + ex.getMessage());
         }
         return "";
+    }
+
+    /**
+     * Deserialize a json string into the given class.
+     * @param json
+     * @param clazz
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    public static <T> T jsonToObject(String json, Class<T> clazz) throws IOException {
+        return jsonMapper.readValue(json, clazz);
     }
 
     /* --- Internal Methods --- */
