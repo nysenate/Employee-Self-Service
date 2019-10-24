@@ -134,7 +134,9 @@ module.exports = function(grunt) {
                     //supply
                     '<%= jsDest %>/ess-supply.min.js': ['<%= jsSource %>/supply/**/*.js'],
                     //time
-                    '<%= jsDest %>/ess-time.min.js': ['<%= jsSource %>/time/**/*.js']
+                    '<%= jsDest %>/ess-time.min.js': ['<%= jsSource %>/time/**/*.js'],
+                    //travel
+                    '<%= jsDest %>/ess-travel.min.js': ['<%= jsSource %>/travel/**/*.js']
                 }
             }
         },

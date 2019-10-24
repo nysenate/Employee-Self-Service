@@ -73,6 +73,7 @@ public class DatabaseConfig {
         schemaMap.put("tsSchema", TS_SCHEMA);
         schemaMap.put("essSchema", ESS_SCHEMA);
         schemaMap.put("supplySchema", SUPPLY_SCHEMA);
+        schemaMap.put("travelSchema", TRAVEL_SCHEMA);
         return schemaMap;
     }
 
@@ -91,6 +92,10 @@ public class DatabaseConfig {
     /** The schema for the Supply app. */
     @Value("${supply.schema}")
     protected String SUPPLY_SCHEMA;
+
+    /** The schema for the Travel app. */
+    @Value("${travel.schema}")
+    protected String TRAVEL_SCHEMA;
 
     /** Configures the supply sync procedure name prefixed with the correct schema. */
     @Bean(name = "supplySyncProcedureName")

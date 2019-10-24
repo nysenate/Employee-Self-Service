@@ -10,7 +10,7 @@ public enum SqlLocationQuery implements BasicSqlQuery {
             "loc.CDLOCAT AS LOC_CDLOCAT, loc.CDLOCTYPE AS LOC_CDLOCTYPE,\n" +
             "loc.FFADSTREET1 AS LOC_FFADSTREET1, loc.FFADSTREET2 AS LOC_FFADSTREET2,\n" +
             "loc.FFADCITY AS LOC_FFADCITY, loc.ADSTATE AS LOC_ADSTATE,\n" +
-            "loc.ADZIPCODE AS LOC_ADZIPCODE, loc.DTTXNUPDATE AS LOC_DTTXNUPDATE, loc.CDSTATUS AS LOC_CDSTATUS"
+            "loc.ADZIPCODE AS LOC_ADZIPCODE, loc.CDSTATUS AS LOC_CDSTATUS"
     ),
     RCTRHD_COLUMNS(
             "rctrhd.CDRESPCTRHD AS RCTRHD_CDRESPCTRHD, rctrhd.CDSTATUS AS RCTRHD_CDSTATUS, " +
@@ -35,9 +35,6 @@ public enum SqlLocationQuery implements BasicSqlQuery {
     SEARCH_LOCATIONS(
             GET_LOCATIONS.getSql() + " \n" +
             "AND loc.cdlocat like :term"
-    ),
-    GET_LOCATIONS_BY_RESPONSIBILITY_HEADS(
-            GET_LOCATIONS.getSql() + " AND loc.CDRESPCTRHD IN (:rchCodes)"
     )
     ;
 

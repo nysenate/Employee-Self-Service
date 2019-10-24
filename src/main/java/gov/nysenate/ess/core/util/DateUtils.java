@@ -26,6 +26,8 @@ public class DateUtils
      */
     public static final Period SENATE_FISCAL_YEAR_OFFSET = Period.ofMonths(9);
 
+    public static final Period FEDERAL_FISCAL_YEAR_OFFSET = Period.ofMonths(3);
+
     public static final ImmutableSet<DayOfWeek> WEEKEND = ImmutableSet.copyOf(
             EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
     );
@@ -69,6 +71,15 @@ public class DateUtils
      */
     public static int getSenateFiscalYear(LocalDate localDate) {
         return localDate.plus(SENATE_FISCAL_YEAR_OFFSET).getYear();
+    }
+
+    /**
+     * Gets the federal fiscal year of the given date.
+     * @param date
+     * @return int - federal fiscal year of given date.
+     */
+    public static int getFederalFiscalYear(LocalDate date) {
+        return date.plus(FEDERAL_FISCAL_YEAR_OFFSET).getYear();
     }
 
     /**
