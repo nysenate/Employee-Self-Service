@@ -135,17 +135,16 @@ essApi.factory('EmpPATSearchApi', ['$resource', 'appProps', function ($resource,
     return $resource(appProps.apiPath + '/personnel/task/emp/search');
 }]);
 
-essApi.factory('PersonnelTasksForEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/personnel/task/emp/:empId', {
+essApi.factory('PersonnelAssignmentsForEmpApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/assignment/:empId', {
         empId: '@empId'
     });
 }]);
 
-essApi.factory('PersonnelAssignedTaskApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/personnel/task/emp/:empId/:taskType/:taskNumber', {
+essApi.factory('PersonnelAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/personnel/task/assignment/:empId/:taskId', {
         empId: '@empId',
-        taskType: '@taskType',
-        taskNumber: '@taskNumber'
+        taskId: '@taskId'
     });
 }]);
 

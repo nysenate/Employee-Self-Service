@@ -14,12 +14,16 @@ import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentNotFoundE
 import gov.nysenate.ess.core.model.auth.CorePermission;
 import gov.nysenate.ess.core.model.auth.CorePermissionObject;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
+import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.pec.acknowledgment.DuplicateAckEx;
 import gov.nysenate.ess.core.model.pec.acknowledgment.EmpAckReport;
 import gov.nysenate.ess.core.service.acknowledgment.AcknowledgmentReportService;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
+import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.util.OutputUtils;
 import gov.nysenate.ess.core.util.ShiroUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -49,21 +53,24 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     /** The uri path where ack docs are requested */
     private final String ackDocResPath;
 
+    private final PersonnelTaskService taskService;
     private final AckDocDao ackDocDao;
     private final AcknowledgmentReportService ackReportService;
-    private final PersonnelTaskAssignmentDao assignedTaskDao;
+    private final PersonnelTaskAssignmentDao assignmentDao;
 
     @Autowired
-    public AcknowledgmentApiCtrl(AckDocDao ackDocDao,
+    public AcknowledgmentApiCtrl(PersonnelTaskService taskService,
+                                 AckDocDao ackDocDao,
                                  AcknowledgmentReportService ackReportService,
-                                 PersonnelTaskAssignmentDao assignedTaskDao,
+                                 PersonnelTaskAssignmentDao assignmentDao,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
     ) {
+        this.taskService = taskService;
         this.ackDocDao = ackDocDao;
         this.ackReportService = ackReportService;
-        this.assignedTaskDao = assignedTaskDao;
+        this.assignmentDao = assignmentDao;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -149,7 +156,7 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/documents/{ackDocId:\\d+}", method = {GET, HEAD})
     public ViewObjectResponse<AckDocView> getAckDoc(@PathVariable int ackDocId) throws IOException {
         //check id exists
-        AckDoc ackDoc = ackDocDao.getAckDoc(ackDocId);
+        AckDoc ackDoc = getAckDoc(ackDocId, "ackDocId");
         DetailedAckDocView detailedAckDocView = new DetailedAckDocView(ackDoc, ackDocResPath, ackDocDir);
         return new ViewObjectResponse<>(detailedAckDocView, "document");
     }
@@ -177,20 +184,20 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         int authedEmpId = ShiroUtils.getAuthenticatedEmpId();
 
         //check id if exists. Will throw an AckNotFoundEx if the document does not exist
-        ackDocDao.getAckDoc(taskId);
+        getAckDoc(taskId, "taskId");
         // Make sure empId is valid
         ensureEmpIdExists(empId, "empId");
 
         // Make sure this document hasn't already been ack'd.  If so, throw an error.
         try {
-            PersonnelTaskAssignment task = assignedTaskDao.getTaskForEmp(empId, taskId);
-            if (task.isCompleted()) {
+            PersonnelTaskAssignment assignment = assignmentDao.getTaskForEmp(empId, taskId);
+            if (assignment.isCompleted()) {
                 throw new DuplicateAckEx(taskId);
             }
         } catch (PersonnelTaskAssignmentNotFoundEx ignored) {}
 
         // Mark the acknowledgment task as completed
-        assignedTaskDao.setTaskComplete(empId, taskId, authedEmpId);
+        assignmentDao.setTaskComplete(empId, taskId, authedEmpId);
 
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
@@ -284,8 +291,8 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @ExceptionHandler(AckDocNotFoundEx.class)
     @ResponseStatus(value = NOT_FOUND)
     @ResponseBody
-    public ViewObjectErrorResponse handleAckDocNotFoundEx(AckDocNotFoundEx ex) {
-        return new ViewObjectErrorResponse(ErrorCode.ACK_DOC_NOT_FOUND, ex.getAckDocid());
+    public ViewObjectErrorResponse handleAckDocNotFoundEx(PersonnelTaskNotFoundEx ex) {
+        return new ViewObjectErrorResponse(ErrorCode.ACK_DOC_NOT_FOUND, ex.getTaskId());
     }
 
     @ExceptionHandler(DuplicateAckEx.class)
@@ -293,6 +300,17 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public ViewObjectErrorResponse handleDuplicateAckEx(DuplicateAckEx ex) {
         return new ViewObjectErrorResponse(ErrorCode.DUPLICATE_ACK, ex.getAckDocid());
+    }
+
+    /* --- Internal Methods --- */
+
+    private AckDoc getAckDoc(int taskId, String paramName) {
+        PersonnelTask task = taskService.getPersonnelTask(taskId);
+        if (!(task instanceof AckDoc)) {
+            throw new InvalidRequestParamEx(taskId, paramName, "int",
+                    "id must reference a personnel task of type ack doc");
+        }
+        return (AckDoc) task;
     }
 
 }

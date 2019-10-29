@@ -1,15 +1,13 @@
 (function () {
     angular.module('essMyInfo')
-        .controller('LegEthicsCtrl', ['$scope', 'appProps', 'TaskUtils', legEthicsCtrl]);
+        .controller('LegEthicsCtrl', ['$scope', '$routeParams', 'appProps', 'TaskUtils', legEthicsCtrl]);
 
-    var legEthicsTaskType = 'MOODLE_COURSE';
-    var legEthicsTaskNum = 1;
-
-    function legEthicsCtrl($scope, appProps, taskUtils) {
+    function legEthicsCtrl($scope, $routeParams, appProps, taskUtils) {
 
         $scope.todoPageUrl = appProps.ctxPath + '/myinfo/personnel/todo';
 
         var initState = {
+            taskId: $routeParams.taskId,
             task: null,
             loading: false
         };
@@ -23,10 +21,8 @@
 
         function getLegEthicsTask() {
             $scope.state.loading = true;
-            var empId = appProps.user.employeeId,
-                taskType = legEthicsTaskType,
-                taskNum = legEthicsTaskNum;
-            taskUtils.getPersonnelAssignedTask(empId, taskType, taskNum)
+            var empId = appProps.user.employeeId;
+            taskUtils.getPersonnelTaskAssignment(empId, $scope.state.taskId)
                 .then(setTask)
                 .finally(function () {
                     $scope.state.loading = false;
@@ -34,7 +30,9 @@
         }
 
         function setTask(task) {
-            $scope.state.task = task;
+            if (task.taskDetails.taskType === 'MOODLE_COURSE') {
+                $scope.state.task = task;
+            }
         }
     }
 })();

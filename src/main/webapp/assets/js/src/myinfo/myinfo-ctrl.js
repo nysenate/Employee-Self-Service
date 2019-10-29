@@ -1,29 +1,32 @@
-var essTime = angular.module('essMyInfo');
+(function () {
 
-/**
- * The wrapping controller that is the parent of the nav menu and view content.
- */
-essApp.controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'PersonnelTasksForEmpApi',
-                                     function($scope, $q, appProps, badgeService, empTaskApi) {
+    angular.module('essMyInfo')
+        .controller('MyInfoMainCtrl', ['$scope', '$q', 'appProps', 'badgeService', 'TaskUtils', myInfoCtrl])
+    ;
 
-       $scope.updatePersonnelTaskBadge = function () {
-           var params = {
-               empId: appProps.user.employeeId,
-               detail: true
-           };
+    /**
+     * The wrapping controller that is the parent of the nav menu and view content.
+     */
+    function myInfoCtrl($scope, $q, appProps, badgeService, taskUtils) {
 
-           return empTaskApi.get(params, setCount, $scope.handleErrorResponse);
+        $scope.updatePersonnelTaskBadge = function () {
 
-           function setCount(resp) {
-               var count = resp.tasks
-                   .filter(function (task) {
-                       return task.hasOwnProperty('completed') && !task.completed
-                   })
-                   .length;
-               badgeService.setBadgeValue('incompleteTasks', count);
-           }
-       };
+            return taskUtils.getEmpAssignments(appProps.user.employeeId, true)
+                .then(setCount)
+                .catch($scope.handleErrorResponse)
+            ;
 
-       $scope.updatePersonnelTaskBadge();
-   }
-]);
+            function setCount(assignments) {
+                var count = assignments
+                    .filter(function (task) {
+                        return task.hasOwnProperty('completed') && !task.completed
+                    })
+                    .length;
+                badgeService.setBadgeValue('incompleteTasks', count);
+            }
+        };
+
+        $scope.updatePersonnelTaskBadge();
+    }
+
+})();

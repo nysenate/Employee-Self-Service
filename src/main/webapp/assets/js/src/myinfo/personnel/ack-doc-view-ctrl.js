@@ -17,7 +17,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     pdfjsLib.GlobalWorkerOptions.workerSrc =  appProps.ctxPath + '/assets/js/dest/pdf.worker.min.js';
 
     var initialState = {
-        docId: null,
+        taskId: null,
         document: null,
         task: null,
         taskFound: false,
@@ -39,10 +39,10 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     function init() {
         bindWindowScrollHandler();
         $scope.state = angular.copy(initialState);
-        $scope.state.docId = parseInt($routeParams.ackDocId);
+        $scope.state.taskId = parseInt($routeParams.ackDocId);
         $q.all([
                    getDocument(),
-                   getTask()
+                   getTaskAssignment()
                ])
             .then(processAcknowledgment)
             .then(showPdf)
@@ -100,7 +100,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         $scope.state.document = null;
 
         var params = {
-            ackDocId: $scope.state.docId
+            ackDocId: $scope.state.taskId
         };
 
         $scope.state.request.document = true;
@@ -132,13 +132,12 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     /**
      * Get the task that corresponds to this ack doc
      */
-    function getTask() {
+    function getTaskAssignment() {
         $scope.state.request.ackGet = true;
         $scope.state.taskFound = false;
         var empId = appProps.user.employeeId,
-            taskType = 'DOCUMENT_ACKNOWLEDGMENT',
-            taskNumber = $scope.state.docId;
-        return taskUtils.getPersonnelAssignedTask(empId, taskType, taskNumber)
+            taskId = $scope.state.taskId;
+        return taskUtils.getPersonnelTaskAssignment(empId, taskId)
             .then(setAckTask)
             .finally(function () {
                 $scope.state.request.ackGet = false;
@@ -153,7 +152,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     function postAcknowledgment() {
         var params = {
             empId: appProps.user.employeeId,
-            ackDocId: $scope.state.docId
+            taskId: $scope.state.taskId
         };
 
         $scope.state.request.ackPost = true;

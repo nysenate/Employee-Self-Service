@@ -40,7 +40,7 @@
          */
         function init() {
             $scope.state = angular.copy(initialState);
-            $scope.state.videoId = parseInt($routeParams.videoId);
+            $scope.state.taskId = parseInt($routeParams.videoId);
             fetchVideoTask();
         }
 
@@ -50,7 +50,7 @@
         function fetchVideoTask() {
             clearTask();
             $scope.state.request.task = true;
-            taskUtils.getPersonnelAssignedTask($scope.state.empId, 'VIDEO_CODE_ENTRY', $scope.state.videoId)
+            taskUtils.getPersonnelTaskAssignment($scope.state.empId, $scope.state.taskId)
                 .then(setVideoTask)
                 .finally(function () {
                     $scope.state.request.task = false;
@@ -87,7 +87,7 @@
                 });
             var body = {
                 empId: $scope.state.empId,
-                videoId: $scope.state.videoId,
+                taskId: $scope.state.taskId,
                 codes: codes
             };
             $scope.state.request.code = true;

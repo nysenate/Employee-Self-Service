@@ -1,19 +1,19 @@
 (function () {
 
     angular.module('essMyInfo')
-        .service('TaskUtils', ['PersonnelTaskApi', 'PersonnelTasksForEmpApi', 'PersonnelAssignedTaskApi', 'appProps', 'RestErrorService',
+        .service('TaskUtils', ['PersonnelTaskApi', 'PersonnelAssignmentsForEmpApi', 'PersonnelAssignmentApi', 'appProps', 'RestErrorService',
                                taskUtils]);
 
-    function taskUtils(taskApi, tasksForEmpApi, patApi, appProps, restErrorService) {
+    function taskUtils(taskApi, assignmentsForEmpApi, assignmentApi, appProps, restErrorService) {
 
         AcknowledgmentTask.prototype = new PersonnelTask();
         MoodleTask.prototype = new PersonnelTask();
         VideoCodeTask.prototype = new PersonnelTask();
 
         return {
-            parseTask: parseTask,
-            getEmpTasks: getEmpTasks,
-            getPersonnelAssignedTask: getPersonnelAssignedTask,
+            parseTaskAssignment: parseTaskAssignment,
+            getEmpAssignments: getEmpAssignments,
+            getPersonnelTaskAssignment: getPersonnelTaskAssignment,
             getAllTasks: getAllTasks
         };
 
@@ -67,7 +67,7 @@
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
-                return ackBaseUrl + task.taskId.taskNumber;
+                return ackBaseUrl + task.taskId;
             };
 
             this.getIconClass = function () {
@@ -84,7 +84,7 @@
 
             this.getActionUrl = function () {
                 // fixme this only works for the legethics course
-                return appProps.ctxPath + "/myinfo/personnel/todo/legethics";
+                return appProps.ctxPath + "/myinfo/personnel/todo/legethics/" + task.taskId;
             };
 
             this.getCourseUrl = function () {
@@ -100,7 +100,7 @@
             PersonnelTask.apply(this, arguments);
 
             this.getActionUrl = function () {
-                return appProps.ctxPath + "/myinfo/personnel/todo/video/" + task.taskId.taskNumber;
+                return appProps.ctxPath + "/myinfo/personnel/todo/video/" + task.taskId;
             };
 
             this.getActionVerb = function () {
@@ -119,8 +119,8 @@
          * @param task
          * @return PersonnelTask
          */
-        function parseTask(task) {
-            var taskType = task.taskId.taskType;
+        function parseTaskAssignment(task) {
+            var taskType = task.taskDetails.taskType;
             switch (taskType) {
                 case 'DOCUMENT_ACKNOWLEDGMENT':
                     return new AcknowledgmentTask(task);
@@ -141,17 +141,17 @@
          * @param detail
          * @return a promise that passes the task list to the callback.
          */
-        function getEmpTasks(empId, detail) {
+        function getEmpAssignments(empId, detail) {
             var params = {
                 empId: empId,
                 detail: detail
             };
 
-            return tasksForEmpApi.get(params).$promise
+            return assignmentsForEmpApi.get(params).$promise
                 .then(processTasks);
 
             function processTasks(resp) {
-                return resp.tasks.map(parseTask);
+                return resp.assignments.map(parseTaskAssignment);
             }
         }
 
@@ -159,23 +159,21 @@
          * Get a single personnel assigned task.
          *
          * @param empId
-         * @param taskType
-         * @param taskNumber
+         * @param taskId
          * @return a promise that passes the loaded task to the callback.
          */
-        function getPersonnelAssignedTask(empId, taskType, taskNumber) {
+        function getPersonnelTaskAssignment(empId, taskId) {
             var params = {
                 empId: empId,
-                taskType: taskType,
-                taskNumber: taskNumber
+                taskId: taskId
             };
 
-            return patApi.get(params).$promise
-                .then(processTask)
+            return assignmentApi.get(params).$promise
+                .then(processAssignment)
                 .catch(onError);
 
-            function processTask(resp) {
-                return parseTask(resp.task);
+            function processAssignment(resp) {
+                return parseTaskAssignment(resp.task);
             }
 
             function onError(resp) {
@@ -197,7 +195,7 @@
                 .then(processTasks);
 
             function processTasks(resp) {
-                return resp.tasks.map(parseTask);
+                return resp.tasks.map(parseTaskAssignment);
             }
         }
     }

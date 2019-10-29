@@ -5,6 +5,7 @@ import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.nio.file.Paths;
 
 @XmlRootElement
 public class AckDocView extends PersonnelTaskView {
@@ -13,7 +14,7 @@ public class AckDocView extends PersonnelTaskView {
 
     public AckDocView(AckDoc ackDoc, String ackDocResPath) {
         super(ackDoc);
-        this.path = ackDocResPath + ackDoc.getFilename();
+        this.path = Paths.get(ackDocResPath, ackDoc.getFilename()).toString();
     }
 
     @XmlElement

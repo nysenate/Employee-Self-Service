@@ -57,7 +57,7 @@ function todoCtrl($scope, $q, appProps, modals, taskUtils) {
         };
 
         $scope.state.request.tasks = true;
-        return taskUtils.getEmpTasks(appProps.user.employeeId, true)
+        return taskUtils.getEmpAssignments(appProps.user.employeeId, true)
             .then(categorizeTasks, $scope.handleErrorResponse)
             .finally(function () {
                 $scope.state.request.tasks = false;

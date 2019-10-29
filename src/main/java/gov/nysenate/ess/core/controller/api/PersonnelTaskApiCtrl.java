@@ -93,15 +93,15 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      * Gets a list of all tasks for a specific employee.
      *
      * Usage:
-     * (GET)    /api/v1/personnel/task/emp/{empId}
+     * (GET)    /api/v1/personnel/task/assignment/{empId}
      *
      * Path params:
      * @param empId int - employee id
      *
      * @return {@link ListViewResponse< PersonnelTaskAssignmentView >} list of tasks assigned to given emp.
      */
-    @RequestMapping(value = "/emp/{empId:\\d+}", method = {GET, HEAD})
-    public ListViewResponse<PersonnelTaskAssignmentView> getTasksForEmployee(
+    @RequestMapping(value = "/assignment/{empId:\\d+}", method = {GET, HEAD})
+    public ListViewResponse<PersonnelTaskAssignmentView> getAssignmentsForEmployee(
             @PathVariable int empId,
             @RequestParam(defaultValue = "false") boolean detail) {
 
@@ -115,17 +115,17 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         List<PersonnelTaskAssignmentView> taskViews = tasks.stream()
                 .map(viewMapper)
                 .collect(Collectors.toList());
-        return ListViewResponse.of(taskViews, "tasks");
+        return ListViewResponse.of(taskViews, "assignments");
     }
 
     /**
      * Get Task for Emp API
      * --------------------
      *
-     * Gets a list of all tasks for a specific employee.
+     * Gets a specific task assignment.
      *
      * Usage:
-     * (GET)    /api/v1/personnel/task/emp/{empId}/{taskId}
+     * (GET)    /api/v1/personnel/task/assignment/{empId}/{taskId}
      *
      * Path params:
      * @param empId int - employee id
@@ -133,7 +133,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
      *
      * @return {@link ViewObjectResponse< PersonnelTaskAssignmentView >}
      */
-    @RequestMapping(value = "/emp/{empId}/{taskId}", method = {GET, HEAD})
+    @RequestMapping(value = "/assignment/{empId}/{taskId}", method = {GET, HEAD})
     public ViewObjectResponse<DetailPersonnelTaskAssignmentView> getSpecificTaskForEmployee(
             @PathVariable int empId,
             @PathVariable int taskId) {
