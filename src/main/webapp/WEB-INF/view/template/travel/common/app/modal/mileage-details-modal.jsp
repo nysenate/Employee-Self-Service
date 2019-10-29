@@ -24,7 +24,7 @@
         <td class="bold">Total:</td>
         <td></td>
         <td></td>
-        <td class="bold">{{app.route.mileagePerDiems.requestedPerDiem | currency}}</td>
+        <td class="bold">{{app.route.mileagePerDiems.totalPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
         <td></td>

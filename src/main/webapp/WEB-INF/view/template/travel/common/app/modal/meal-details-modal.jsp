@@ -6,7 +6,7 @@
       <tr>
         <td>Date</td>
         <td>Address</td>
-        <td>Meal PerDiem</td>
+        <td>Meal Per Diem</td>
       </tr>
       </thead>
       <tbody>
@@ -18,7 +18,7 @@
       <tr ng-class="{'line-through': isOverridden}">
         <td></td>
         <td class="bold">Total:</td>
-        <td class="bold">{{app.mealPerDiems.requestedPerDiem | currency}}</td>
+        <td class="bold">{{app.mealPerDiems.totalPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
         <td></td>
