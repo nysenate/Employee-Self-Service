@@ -3,7 +3,6 @@ package gov.nysenate.ess.travel.application.route.destination;
 import com.google.common.collect.Range;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -13,7 +12,7 @@ public class Destination {
     protected int id;
     protected final GoogleAddress address;
     protected final Range<LocalDate> dateRange;
-    protected Map<LocalDate, GsaMie> dateToMie;
+    protected Set<PerDiem> mealPerDiems;
     protected Set<PerDiem> lodgingPerDiems;
 
     public Destination(GoogleAddress address, LocalDate arrival, LocalDate departure) {
@@ -21,27 +20,26 @@ public class Destination {
     }
 
     public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
-                       Map<LocalDate, GsaMie> dateToMie,
+                       Map<LocalDate, PerDiem> dateToMealPerDiems,
                        Map<LocalDate, PerDiem> dateToLodgingPerDiems) {
         this.id = id;
         this.address = address;
         this.dateRange = arrival != null && departure != null ? Range.closed(arrival, departure) : null;
-        this.dateToMie = dateToMie;
+        this.mealPerDiems = new HashSet<>(dateToMealPerDiems.values());
         this.lodgingPerDiems = new HashSet<>(dateToLodgingPerDiems.values());
     }
 
     public Destination(int id, GoogleAddress address, LocalDate arrival, LocalDate departure,
-                       Map<LocalDate, GsaMie> mealPerDiems, Collection<PerDiem> lodgingPerDiems) {
+                       Collection<PerDiem> mealPerDiems, Collection<PerDiem> lodgingPerDiems) {
         this.id = id;
         this.address = address;
         this.dateRange = arrival != null && departure != null ? Range.closed(arrival, departure) : null;
-        this.dateToMie = new HashMap<>();
-        this.dateToMie = mealPerDiems == null ? new HashMap<>() : new HashMap<>(mealPerDiems);
+        this.mealPerDiems = mealPerDiems == null ? new HashSet<>() : new HashSet<>(mealPerDiems);
         this.lodgingPerDiems = lodgingPerDiems == null ? new HashSet<>() : new HashSet<>(lodgingPerDiems);
     }
 
-    public Map<LocalDate, GsaMie> mealPerDiems() {
-        return dateToMie;
+    public Set<PerDiem> mealPerDiems() {
+        return mealPerDiems;
     }
 
     public Set<PerDiem> lodgingPerDiems() {
@@ -91,8 +89,8 @@ public class Destination {
         return nights;
     }
 
-    public void addGsaMie(LocalDate date, GsaMie mie) {
-        dateToMie.put(date, mie);
+    public void addMealPerDiem(PerDiem perDiem) {
+        mealPerDiems.add(perDiem);
     }
 
     public void addLodgingPerDiem(PerDiem perDiem) {
@@ -127,7 +125,7 @@ public class Destination {
                 "id=" + id +
                 ", address=" + address +
                 ", dateRange=" + dateRange +
-                ", dateToMie=" + dateToMie +
+                ", mealPerDiems=" + mealPerDiems +
                 ", lodgingPerDiems=" + lodgingPerDiems +
                 '}';
     }
@@ -140,12 +138,12 @@ public class Destination {
         return id == that.id &&
                 Objects.equals(address, that.address) &&
                 Objects.equals(dateRange, that.dateRange) &&
-                Objects.equals(dateToMie, that.dateToMie) &&
+                Objects.equals(mealPerDiems, that.mealPerDiems) &&
                 Objects.equals(lodgingPerDiems, that.lodgingPerDiems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, address, dateRange, dateToMie, lodgingPerDiems);
+        return Objects.hash(id, address, dateRange, mealPerDiems, lodgingPerDiems);
     }
 }

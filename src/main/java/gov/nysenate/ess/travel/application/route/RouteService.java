@@ -4,7 +4,6 @@ import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +103,9 @@ public class RouteService {
         for (Destination d : route.destinations()) {
             // Meal Rates
             for (LocalDate date : d.days()) {
-                GsaMie mie = gsaAllowanceService.fetchGsaMie(date, d.getAddress());
-                d.addGsaMie(date, mie);
+                Dollars mealRate = gsaAllowanceService.fetchMealRate(date, d.getAddress());
+                PerDiem mealPerDiem = new PerDiem(date, mealRate);
+                d.addMealPerDiem(mealPerDiem);
             }
 
             // Lodging Rates

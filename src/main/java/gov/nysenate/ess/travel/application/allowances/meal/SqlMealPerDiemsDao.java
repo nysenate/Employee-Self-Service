@@ -6,8 +6,8 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.address.SqlGoogleAddressDao;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
-import gov.nysenate.ess.travel.provider.gsa.meal.SqlGsaMieDao;
+import gov.nysenate.ess.travel.provider.senate.SenateMie;
+import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,13 +25,13 @@ import java.util.Set;
 public class SqlMealPerDiemsDao extends SqlBaseDao {
 
     @Autowired private SqlGoogleAddressDao googleAddressDao;
-    @Autowired private SqlGsaMieDao gsaMieDao;
+    @Autowired private SqlSenateMieDao senateMieDao;
 
     public MealPerDiems selectMealPerDiems(int amendmentId) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("amendmentId", amendmentId);
         String sql = SqlMealPerDiemsQuery.SELECT_MEAL_PER_DIEM.getSql(schemaMap());
-        MealPerDiemsHandler handler = new MealPerDiemsHandler(googleAddressDao, gsaMieDao);
+        MealPerDiemsHandler handler = new MealPerDiemsHandler(googleAddressDao, senateMieDao);
         localNamedJdbc.query(sql, params, handler);
         return handler.getResult();
     }
@@ -53,7 +53,8 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("googleAddressId", mpd.address().getId())
                 .addValue("date", toDate(mpd.date()))
-                .addValue("gsaMieId", mpd.mie().getId())
+                .addValue("rate", mpd.rate().toString())
+                .addValue("senateMieId", mpd.mie().getId())
                 .addValue("isReimbursementRequested", mpd.isReimbursementRequested());
 
         String sql = SqlMealPerDiemsQuery.INSERT_MEAL_PER_DIEM.getSql(schemaMap());
@@ -76,15 +77,15 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
     private enum SqlMealPerDiemsQuery implements BasicSqlQuery {
         SELECT_MEAL_PER_DIEM(
                 "SELECT mpds.amendment_meal_per_diems_id, mpds.amendment_meal_per_diem_id, mpds.override_rate,\n" +
-                        " mpd.google_address_id, mpd.date, mpd.gsa_mie_id, mpd.is_reimbursement_requested\n" +
+                        " mpd.google_address_id, mpd.date, mpd.rate, mpd.senate_mie_id, mpd.is_reimbursement_requested\n" +
                         " FROM ${travelSchema}.amendment_meal_per_diems mpds\n" +
                         " INNER JOIN ${travelSchema}.amendment_meal_per_diem mpd ON mpds.amendment_meal_per_diem_id = mpd.amendment_meal_per_diem_id\n" +
                         " WHERE mpds.amendment_id = :amendmentId"
         ),
         INSERT_MEAL_PER_DIEM(
                 "INSERT INTO ${travelSchema}.amendment_meal_per_diem(google_address_id," +
-                        " date, gsa_mie_id, is_reimbursement_requested) \n" +
-                        "VALUES (:googleAddressId, :date, :gsaMieId, :isReimbursementRequested)"
+                        " date, rate, senate_mie_id, is_reimbursement_requested) \n" +
+                        "VALUES (:googleAddressId, :date, :rate, :senateMieId, :isReimbursementRequested)"
         ),
         INSERT_JOIN_TABLE(
                 "INSERT INTO ${travelSchema}.amendment_meal_per_diems(amendment_id," +
@@ -117,11 +118,11 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
         private Set<MealPerDiem> mealPerDiems;
 
         private SqlGoogleAddressDao addressDao;
-        private SqlGsaMieDao gsaMieDao;
+        private SqlSenateMieDao senateMieDao;
 
-        public MealPerDiemsHandler(SqlGoogleAddressDao addressDao, SqlGsaMieDao gsaMieDao) {
+        public MealPerDiemsHandler(SqlGoogleAddressDao addressDao, SqlSenateMieDao senateMieDao) {
             this.addressDao = addressDao;
-            this.gsaMieDao = gsaMieDao;
+            this.senateMieDao = senateMieDao;
             this.mealPerDiems = new HashSet<>();
         }
 
@@ -133,9 +134,10 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
             int mpdId = rs.getInt("amendment_meal_per_diem_id");
             GoogleAddress address = addressDao.selectGoogleAddress(rs.getInt("google_address_id"));
             LocalDate date = getLocalDate(rs, "date");
-            GsaMie mie = gsaMieDao.selectGsaMie(rs.getInt("gsa_mie_id"));
+            Dollars rate = new Dollars(rs.getString("rate"));
+            SenateMie mie = senateMieDao.selectSenateMie(rs.getInt("senate_mie_id"));
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
-            MealPerDiem mpd = new MealPerDiem(mpdId, address, date, mie, isReimbursementRequested);
+            MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isReimbursementRequested);
             mealPerDiems.add(mpd);
         }
 

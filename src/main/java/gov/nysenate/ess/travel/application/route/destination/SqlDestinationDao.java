@@ -8,8 +8,6 @@ import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.address.GoogleAddressRowMapper;
 import gov.nysenate.ess.travel.application.address.SqlGoogleAddressDao;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
-import gov.nysenate.ess.travel.provider.gsa.meal.SqlGsaMieDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -21,18 +19,19 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeMap;
 
 @Repository
 public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private SqlGoogleAddressDao googleAddressDao;
-    private SqlGsaMieDao gsaMieDao;
 
     @Autowired
-    public SqlDestinationDao(SqlGoogleAddressDao googleAddressDao, SqlGsaMieDao gsaMieDao) {
+    public SqlDestinationDao(SqlGoogleAddressDao googleAddressDao) {
         this.googleAddressDao = googleAddressDao;
-        this.gsaMieDao = gsaMieDao;
     }
 
     @Override
@@ -60,11 +59,11 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertMealPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (Map.Entry<LocalDate, GsaMie> entry : destination.mealPerDiems().entrySet()) {
+        for (PerDiem pd : destination.mealPerDiems()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
-                    .addValue("date", toDate(entry.getKey()))
-                    .addValue("gsaMieId", entry.getValue().getId());
+                    .addValue("date", toDate(pd.getDate()))
+                    .addValue("value", pd.getRate().toString());
             paramList.add(params);
         }
 
@@ -106,8 +105,8 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         ),
         INSERT_MEAL_PER_DIEMS(
                 "INSERT INTO ${travelSchema}.destination_meal_per_diem" +
-                        " (destination_id, date, gsa_mie_id)\n" +
-                        " VALUES (:destinationId, :date, :gsaMieId)"
+                        " (destination_id, date, value)\n" +
+                        " VALUES (:destinationId, :date, :value)"
         ),
         INSERT_LODGING_PER_DIEMS(
                 "INSERT INTO ${travelSchema}.destination_lodging_per_diem" +
@@ -119,7 +118,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
                         " addr.google_address_id, addr.street_1, addr.street_2, addr.city, addr.state,\n" +
                         " addr.zip_5, addr.zip_4, addr.county, addr.country,\n" +
                         " addr.place_id, addr.name, addr.formatted_address,\n" +
-                        " m.date as meal_date, m.gsa_mie_id,\n" +
+                        " m.date as meal_date, m.value as meal_value,\n" +
                         " l.date as lodging_date, l.value as lodging_value\n" +
                         " FROM ${travelSchema}.destination dest\n" +
                         "   LEFT JOIN ${travelSchema}.google_address addr ON addr.google_address_id = dest.google_address_id\n" +
@@ -151,12 +150,12 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         private LocalDate arrivalDate;
         private LocalDate departureDate;
         private GoogleAddress address;
-        private TreeMap<LocalDate, GsaMie> dateToMie;
+        private TreeMap<LocalDate, PerDiem> mealPerDiems;
         private TreeMap<LocalDate, PerDiem> lodgingPerDiems;
         private GoogleAddressRowMapper addressRowMapper;
 
         DestinationHandler(GoogleAddressRowMapper addressRowMapper) {
-            this.dateToMie = new TreeMap<>();
+            this.mealPerDiems = new TreeMap<>();
             this.lodgingPerDiems = new TreeMap<>();
             this.addressRowMapper = addressRowMapper;
         }
@@ -178,9 +177,9 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
             LocalDate mealDate = getLocalDate(rs, "meal_date");
             if (mealDate != null) {
-                int gsaMieId = rs.getInt("gsa_mie_id");
-                GsaMie mie = gsaMieDao.selectGsaMie(gsaMieId);
-                dateToMie.put(mealDate, mie);
+                String mealValueString = rs.getString("meal_value");
+                BigDecimal mealValue = mealValueString == null ? new BigDecimal("0") : new BigDecimal(mealValueString);
+                mealPerDiems.put(mealDate, new PerDiem(mealDate, mealValue));
             }
 
             LocalDate lodgingDate = getLocalDate(rs, "lodging_date");
@@ -192,7 +191,7 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
         }
 
         Destination getDestination() {
-            return new Destination(id, address, arrivalDate, departureDate, dateToMie, lodgingPerDiems);
+            return new Destination(id, address, arrivalDate, departureDate, mealPerDiems, lodgingPerDiems);
         }
     }
 }

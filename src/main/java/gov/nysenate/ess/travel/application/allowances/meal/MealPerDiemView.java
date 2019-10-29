@@ -1,12 +1,11 @@
 package gov.nysenate.ess.travel.application.allowances.meal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.address.GoogleAddressView;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMieView;
+import gov.nysenate.ess.travel.provider.senate.SenateMieView;
+import gov.nysenate.ess.travel.utils.Dollars;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -15,7 +14,7 @@ public class MealPerDiemView implements ViewObject {
     private int id;
     private String date;
     private String rate;
-    private GsaMieView mie;
+    private SenateMieView mie;
     private GoogleAddressView address;
     @JsonProperty("isReimbursementRequested")
     private boolean isReimbursementRequested;
@@ -30,7 +29,7 @@ public class MealPerDiemView implements ViewObject {
         this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
         this.address = new GoogleAddressView(mpd.address());
         this.rate = mpd.rate().toString();
-        this.mie = new GsaMieView(mpd.mie());
+        this.mie = new SenateMieView(mpd.mie());
         this.isReimbursementRequested = mpd.isReimbursementRequested();
         this.requestedPerDiem = mpd.requestedPerDiem().toString();
         this.maximumPerDiem = mpd.maximumPerDiem().toString();
@@ -41,19 +40,10 @@ public class MealPerDiemView implements ViewObject {
                 id,
                 address.toGoogleAddress(),
                 LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
-                mie.toGsaMie(),
+                new Dollars(rate),
+                mie.toSenateMie(),
                 isReimbursementRequested
         );
-    }
-
-    @JsonIgnore
-    public LocalDate date() {
-        return LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
-    }
-
-    @JsonIgnore
-    public BigDecimal rate() {
-        return new BigDecimal(rate);
     }
 
     public int getId() {
@@ -64,16 +54,16 @@ public class MealPerDiemView implements ViewObject {
         return date;
     }
 
-    public GsaMieView getMie() {
+    public String getRate() {
+        return rate;
+    }
+
+    public SenateMieView getMie() {
         return mie;
     }
 
     public GoogleAddressView getAddress() {
         return address;
-    }
-
-    public String getRate() {
-        return rate;
     }
 
     public boolean isReimbursementRequested() {

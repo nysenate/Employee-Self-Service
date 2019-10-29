@@ -2,19 +2,16 @@ package gov.nysenate.ess.travel.application;
 
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.travel.application.allowances.Allowances;
-import gov.nysenate.ess.travel.application.allowances.PerDiem;
-import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiem;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiems;
-import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiem;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiems;
 import gov.nysenate.ess.travel.application.route.Route;
-import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
 import gov.nysenate.ess.travel.utils.Dollars;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * A set of changes to a Application.
@@ -151,10 +148,12 @@ public class Amendment {
         return route;
     }
 
+    /**
+     * Setting of the route should be done with {@link AmendmentService}, Not this setter.
+     * @param route
+     */
     public void setRoute(Route route) {
         this.route = route;
-        updateMealPerDiems();
-        updateLodgingPerDiems();
     }
 
     public MealPerDiems mealPerDiems() {
@@ -165,32 +164,12 @@ public class Amendment {
         this.mealPerDiems = mpds;
     }
 
-    private void updateMealPerDiems() {
-        Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
-        for (Destination d : route().destinations()) {
-            for (Map.Entry<LocalDate, GsaMie> entry : d.mealPerDiems().entrySet()) {
-                mealPerDiemSet.add(new MealPerDiem(d.getAddress(), entry.getKey(), entry.getValue()));
-            }
-        }
-        this.mealPerDiems = new MealPerDiems(mealPerDiemSet);
-    }
-
     public LodgingPerDiems lodgingPerDiems() {
         return this.lodgingPerDiems;
     }
 
     public void setLodingPerDiems(LodgingPerDiems lpds) {
         this.lodgingPerDiems = lpds;
-    }
-
-    private void updateLodgingPerDiems() {
-        Set<LodgingPerDiem> lodgingPerDiemSet = new HashSet<>();
-        for (Destination d : route().destinations()) {
-            for (PerDiem pd : d.lodgingPerDiems()) {
-                lodgingPerDiemSet.add(new LodgingPerDiem(d.getAddress(), pd));
-            }
-        }
-        this.lodgingPerDiems = new LodgingPerDiems(lodgingPerDiemSet);
     }
 
     protected Allowances allowances() {

@@ -3,8 +3,8 @@ package gov.nysenate.ess.travel.provider.gsa;
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
 import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMie;
-import gov.nysenate.ess.travel.provider.gsa.meal.SqlGsaMieDao;
+import gov.nysenate.ess.travel.provider.senate.SenateMie;
+import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +25,20 @@ public class GsaAllowanceService {
     private GsaBatchResponseDao gsaBatchResponseDao;
     private GsaApi gsaApi;
     private DefaultSlackChatService slackChatService;
-    private SqlGsaMieDao gsaMieDao;
+    private SqlSenateMieDao gsaMieDao;
 
     @Autowired
     public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi,
-                               DefaultSlackChatService slackChatService, SqlGsaMieDao gsaMieDao) {
+                               DefaultSlackChatService slackChatService, SqlSenateMieDao gsaMieDao) {
         this.gsaBatchResponseDao = gsaBatchResponseDao;
         this.gsaApi = gsaApi;
         this.slackChatService = slackChatService;
         this.gsaMieDao = gsaMieDao;
     }
 
-    public GsaMie fetchGsaMie(LocalDate date, Address address) throws IOException {
+    public SenateMie fetchGsaMie(LocalDate date, Address address) throws IOException {
         GsaResponse res = fetchGsaResponse(date, address);
-        return gsaMieDao.selectGsaMie(res.getId().getFiscalYear(), new Dollars(res.getMealTier()));
+        return gsaMieDao.selectSenateMie(res.getId().getFiscalYear(), new Dollars(res.getMealTier()));
     }
 
     /**
@@ -68,7 +68,7 @@ public class GsaAllowanceService {
 
     public void refreshGsaMieData(int fiscalYear) throws IOException {
         logger.info("Refreshing GSA mie data for fiscal year: " + fiscalYear + " and " + (fiscalYear + 1));
-        List<GsaMie> mies = new ArrayList<>();
+        List<SenateMie> mies = new ArrayList<>();
         // Query rates for the given fiscal year.
         mies.addAll(gsaApi.queryGsaMie(fiscalYear));
         // See if next years rates are available.
