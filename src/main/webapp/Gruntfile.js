@@ -205,6 +205,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-beep');
     grunt.loadNpmTasks('grunt-file-exists');
 
-    grunt.registerTask('compile', ['less', 'cssmin', 'uglify']);
+    grunt.registerTask('compile', ['less', 'cssmin', 'uglify', 'copy:pdfjs']);
     grunt.registerTask('default', ['compile', 'fileExists', 'copy', 'beep:*-*---*-**-**-*-']);
 };
