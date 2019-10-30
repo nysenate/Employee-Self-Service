@@ -91,8 +91,7 @@ module.exports = function(grunt) {
                         '<%= bowerRoot %>/ngInfiniteScroll/build/ng-infinite-scroll.min.js',
                         '<%= bowerRoot %>/sockjs-client/dist/sockjs.min.js',
                         '<%= bowerRoot %>/stomp-websocket/lib/stomp.min.js',
-                        '<%= bowerRoot %>/angular-ui-select/dist/select.min.js',
-                        '<%= bowerRoot %>/angular-bowser/src/angular-bowser.js' // Dont try to load anything after this. An error occurs and stops execution.
+                        '<%= bowerRoot %>/angular-ui-select/dist/select.min.js'
                         ],
                     '<%= jsDest %>/ess-vendor-ie.min.js':
                         ['<%= bowerRoot %>/json2/json2.js']
@@ -172,6 +171,12 @@ module.exports = function(grunt) {
                     dest: '<%= tomcatWeb %>/assets/css/dest/'
                 }]
             },
+            pdfjs: {
+                files: [{
+                    expand: true, cwd: '<%= bowerRoot %>/pdfjs-dist/build/', src: ['**'], filter: 'isFile',
+                    dest: '<%= jsDest %>/'
+                }]
+            },
             js: {
                 files: [{
                     expand: true, src: ['<%= jsSource %>/**', '<%= jsDest %>/**'], filter: 'isFile',
@@ -200,6 +205,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-beep');
     grunt.loadNpmTasks('grunt-file-exists');
 
-    grunt.registerTask('compile', ['less', 'cssmin', 'uglify']);
+    grunt.registerTask('compile', ['less', 'cssmin', 'uglify', 'copy:pdfjs']);
     grunt.registerTask('default', ['compile', 'fileExists', 'copy', 'beep:*-*---*-**-**-*-']);
 };
