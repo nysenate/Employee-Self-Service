@@ -2,9 +2,6 @@ package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.core.util.HttpUtils;
-import gov.nysenate.ess.core.util.OutputUtils;
-import gov.nysenate.ess.travel.provider.senate.SenateMie;
-import gov.nysenate.ess.travel.provider.gsa.meal.GsaMieApiView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
@@ -72,18 +66,5 @@ public class GsaApi {
     private boolean dateTooFarInFuture(GsaResponseId id, String content) throws IOException {
         return gsaResponseParser.isResponseEmpty(content)
                 && id.getFiscalYear() > DateUtils.getFederalFiscalYear(LocalDate.now());
-    }
-
-    /**
-     * Queries the GSA API for mie(meal and incidental) rates for a given fiscal year.
-     * @param fiscalYear The year to get mie rates for.
-     * @return List of {@link SenateMie}
-     * @throws IOException
-     */
-    public List<SenateMie> queryGsaMie(int fiscalYear) throws IOException {
-        String url = String.format(baseUrl + miePathTemplate, String.valueOf(fiscalYear));
-        String content = httpUtils.urlToString(url);
-        GsaMieApiView[] res = OutputUtils.jsonToObject(content, GsaMieApiView[].class);
-        return Arrays.stream(res).map(mie -> mie.toGsaMie(fiscalYear)).collect(Collectors.toList());
     }
 }

@@ -6,7 +6,6 @@ import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -54,18 +53,5 @@ public class GsaCtrl extends BaseRestApiCtrl {
             responseText = "Failure: The GSA data was not updated";
         }
         return new StringView(responseText);
-    }
-
-    @RequestMapping(value = "/refresh/mie")
-    public StringView refreshGsaMie(@RequestParam(required = false) Integer fiscalYear) throws IOException {
-        checkPermission(SimpleEssPermission.ADMIN.getPermission());
-
-        if (fiscalYear == null) {
-            gsaAllowanceService.refreshGsaMieData();
-        }
-        else {
-            gsaAllowanceService.refreshGsaMieData(fiscalYear);
-        }
-        return new StringView("GSA MIE data has been refreshed.");
     }
 }

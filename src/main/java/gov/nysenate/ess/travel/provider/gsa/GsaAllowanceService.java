@@ -2,20 +2,15 @@ package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
-import gov.nysenate.ess.core.util.DateUtils;
-import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class GsaAllowanceService {
@@ -36,11 +31,6 @@ public class GsaAllowanceService {
         this.gsaMieDao = gsaMieDao;
     }
 
-    public SenateMie fetchGsaMie(LocalDate date, Address address) throws IOException {
-        GsaResponse res = fetchGsaResponse(date, address);
-        return gsaMieDao.selectSenateMie(res.getId().getFiscalYear(), new Dollars(res.getMealTier()));
-    }
-
     /**
      * Returns the MealTier for the given date and address.
      *
@@ -59,22 +49,6 @@ public class GsaAllowanceService {
     public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
         GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
-    }
-
-    @Scheduled(cron = "${gsa.cron.data:0 0 7 1,7,14,21,28 * *}")
-    public void refreshGsaMieData() throws IOException {
-        refreshGsaMieData(DateUtils.getFederalFiscalYear(LocalDate.now()));
-    }
-
-    public void refreshGsaMieData(int fiscalYear) throws IOException {
-        logger.info("Refreshing GSA mie data for fiscal year: " + fiscalYear + " and " + (fiscalYear + 1));
-        List<SenateMie> mies = new ArrayList<>();
-        // Query rates for the given fiscal year.
-        mies.addAll(gsaApi.queryGsaMie(fiscalYear));
-        // See if next years rates are available.
-        mies.addAll(gsaApi.queryGsaMie(fiscalYear + 1));
-
-        gsaMieDao.saveGsaMies(mies);
     }
 
     private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
