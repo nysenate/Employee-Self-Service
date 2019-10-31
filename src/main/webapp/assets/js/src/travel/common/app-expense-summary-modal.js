@@ -12,7 +12,7 @@ essTravel.directive('appExpenseSummaryModal', ['appProps', function (appProps) {
 function appExpenseSummaryCtrl($scope, modals) {
 
     $scope.app = modals.params();
-    console.log($scope.app);
+    $scope.NOT_AVAILABLE = "N/A";
 
     $scope.closeModal = function () {
         modals.resolve();

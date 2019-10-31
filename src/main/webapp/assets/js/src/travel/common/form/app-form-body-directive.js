@@ -10,7 +10,7 @@ travel.directive('essAppFormBody', ['appProps', 'TravelModeOfTransportationApi',
         link: function ($scope, $elem, $attrs) {
 
             console.log($scope.app);
-            $scope.NOT_AVAILABLE = "N/A";
+
 
             $scope.containsMot = function (mot) {
                 var appModesOfTransportation = [];

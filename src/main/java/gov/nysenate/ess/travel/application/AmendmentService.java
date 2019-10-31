@@ -11,7 +11,10 @@ import gov.nysenate.ess.travel.application.route.destination.Destination;
 import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -20,6 +23,7 @@ import java.util.Set;
 @Service
 public class AmendmentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AmendmentService.class);
     private SqlSenateMieDao senateMieDao;
 
     @Autowired
@@ -49,7 +53,12 @@ public class AmendmentService {
         Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
         for (Destination d : route.destinations()) {
             for (PerDiem pd : d.mealPerDiems()) {
-                SenateMie mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
+                SenateMie mie = null;
+                try {
+                    mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
+                } catch (IncorrectResultSizeDataAccessException ex) {
+                    logger.warn("Unable to find Senate mie for date: " + pd.getDate().toString() + " and total: " + pd.getRate().toString());
+                }
                 mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd.getDate(), new Dollars(pd.getRate()), mie));
             }
         }

@@ -54,7 +54,7 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
                 .addValue("googleAddressId", mpd.address().getId())
                 .addValue("date", toDate(mpd.date()))
                 .addValue("rate", mpd.rate().toString())
-                .addValue("senateMieId", mpd.mie().getId())
+                .addValue("senateMieId", mpd.mie() == null ? null : mpd.mie().getId())
                 .addValue("isReimbursementRequested", mpd.isReimbursementRequested());
 
         String sql = SqlMealPerDiemsQuery.INSERT_MEAL_PER_DIEM.getSql(schemaMap());
@@ -135,7 +135,11 @@ public class SqlMealPerDiemsDao extends SqlBaseDao {
             GoogleAddress address = addressDao.selectGoogleAddress(rs.getInt("google_address_id"));
             LocalDate date = getLocalDate(rs, "date");
             Dollars rate = new Dollars(rs.getString("rate"));
-            SenateMie mie = senateMieDao.selectSenateMie(rs.getInt("senate_mie_id"));
+            SenateMie mie = null;
+            int senateMieId = rs.getInt("senate_mie_id");
+            if (senateMieId != 0) { // not null
+                mie = senateMieDao.selectSenateMie(senateMieId);
+            }
             boolean isReimbursementRequested = rs.getBoolean("is_reimbursement_requested");
             MealPerDiem mpd = new MealPerDiem(mpdId, address, date, rate, mie, isReimbursementRequested);
             mealPerDiems.add(mpd);

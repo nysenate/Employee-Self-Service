@@ -29,7 +29,7 @@ public class MealPerDiemView implements ViewObject {
         this.date = mpd.date().format(DateTimeFormatter.ISO_DATE);
         this.address = new GoogleAddressView(mpd.address());
         this.rate = mpd.rate().toString();
-        this.mie = new SenateMieView(mpd.mie());
+        this.mie = mpd.mie() == null ? null : new SenateMieView(mpd.mie());
         this.isReimbursementRequested = mpd.isReimbursementRequested();
         this.requestedPerDiem = mpd.requestedPerDiem().toString();
         this.maximumPerDiem = mpd.maximumPerDiem().toString();
@@ -41,7 +41,7 @@ public class MealPerDiemView implements ViewObject {
                 address.toGoogleAddress(),
                 LocalDate.parse(date, DateTimeFormatter.ISO_DATE),
                 new Dollars(rate),
-                mie.toSenateMie(),
+                mie == null ? null : mie.toSenateMie(),
                 isReimbursementRequested
         );
     }
