@@ -59,9 +59,9 @@
         </tr>
         <tr>
           <td></td>
-          <td></td>
-          <td></td>
           <td class="bold">Total:</td>
+          <td></td>
+          <td></td>
           <td class="bold">{{app.mealPerDiems.totalPerDiem | currency}}</td>
         </tr>
         </tbody>

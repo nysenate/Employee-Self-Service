@@ -6,18 +6,24 @@
       <tr>
         <td>Date</td>
         <td>Address</td>
-        <td>Meal Per Diem</td>
+        <td>Breakfast</td>
+        <td>Dinner</td>
+        <td>Total</td>
       </tr>
       </thead>
       <tbody>
       <tr ng-repeat="perDiem in app.mealPerDiems.requestedMealPerDiems">
         <td>{{perDiem.date | date: 'shortDate'}}</td>
         <td>{{perDiem.address.formattedAddressWithCounty}}</td>
+        <td>{{::perDiem.mie.breakfast | currency}}</td>
+        <td>{{::perDiem.mie.dinner | currency}}</td>
         <td ng-class="{'line-through': isOverridden}">{{perDiem.rate | currency}}</td>
       </tr>
       <tr ng-class="{'line-through': isOverridden}">
         <td></td>
         <td class="bold">Total:</td>
+        <td></td>
+        <td></td>
         <td class="bold">{{app.mealPerDiems.totalPerDiem | currency}}</td>
       </tr>
       <tr ng-show="isOverridden">
