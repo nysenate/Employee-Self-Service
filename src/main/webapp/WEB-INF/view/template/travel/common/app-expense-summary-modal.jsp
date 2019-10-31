@@ -1,4 +1,4 @@
-<div class="content-container no-top-margin padding-top-5">
+<div class="content-container no-top-margin padding-top-5" style="padding-left: 20px; padding-right: 20px;">
   <h3 class="content-info">Expense Summary</h3>
   <ess-travel-inner-container title="Miscellaneous Expenses">
     <div>
@@ -37,7 +37,7 @@
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Meal Expenses">
+  <ess-travel-inner-container title="Meal Expenses" ng-if="app.mealPerDiems.totalPerDiem > 0">
     <div class="margin-20">
       <table class="travel-table">
         <thead>
@@ -69,7 +69,7 @@
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Lodging Expenses">
+  <ess-travel-inner-container title="Lodging Expenses" ng-if="app.lodgingPerDiems.totalPerDiem > 0">
     <div class="margin-20">
       <table class="travel-table">
         <thead>
@@ -100,7 +100,7 @@
     </div>
   </ess-travel-inner-container>
 
-  <ess-travel-inner-container title="Mileage Expenses">
+  <ess-travel-inner-container title="Mileage Expenses" ng-if="app.route.mileagePerDiems.totalPerDiem > 0">
     <div class="margin-20">
       <table class="travel-table">
         <thead>
