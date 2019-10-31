@@ -51,7 +51,7 @@ function googlePlaceService() {
 
         function parseFormattedAddressWithCounty(address) {
             var formatted = address.name || address.addr1;
-            formatted += ", " + address.city + ", " + address.county + ", " + address.state + " " + address.zip5;
+            formatted += ", " + address.city + ", " + address.state + " " + address.zip5 + " (" + address.county + " County)";
             return formatted;
         }
         /**

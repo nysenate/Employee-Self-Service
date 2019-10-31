@@ -20,20 +20,21 @@ public class GoogleAddress extends Address {
     }
 
     /**
-     * A formatted version of this address. Usually just the address but for some types of addresses, like establishments,
-     * it will use the name of the establishment instead of street1.
+     * A formatted version of this address including county info in parenthesis.
+     * Usually just the address but for some types of addresses, like establishments, it will use
+     * the name of the establishment instead of street1.
      *
      * Overrides a method in {@link Address} to provide a more accurate description for GooglgeAddress's.
      *
      * @return
      */
     @Override
-    public String getFromattedAddressWithCounty() {
+    public String getFormattedAddressWithCounty() {
         String desc = getName().isEmpty() ? getAddr1() : getName();
         desc += getCity().isEmpty() ? "" : ", " + getCity();
-        desc += getCounty().isEmpty() ? "" : ", " + getCounty();
         desc += getState().isEmpty() ? "" : ", " + getState();
         desc += getZip5().isEmpty() ? "" : " " + getZip5();
+        desc += getCounty().isEmpty() ? "" : " (" + getCounty() + " County)";
         desc.trim();
         return desc;
     }

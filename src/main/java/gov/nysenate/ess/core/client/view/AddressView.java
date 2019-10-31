@@ -30,7 +30,7 @@ public class AddressView implements ViewObject
         this.country = address.getCountry();
         this.zip5 = address.getZip5();
         this.zip4 = address.getZip4();
-        formattedAddressWithCounty = address.getFromattedAddressWithCounty();
+        formattedAddressWithCounty = address.getFormattedAddressWithCounty();
     }
 
     public Address toAddress() {
