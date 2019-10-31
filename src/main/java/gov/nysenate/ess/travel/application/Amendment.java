@@ -152,7 +152,17 @@ public class Amendment {
      * Setting of the route should be done with {@link AmendmentService}, Not this setter.
      * @param route
      */
-    public void setRoute(Route route) {
+    protected void setRoute(Route route) {
+        this.route = route;
+    }
+
+    /**
+     * This is used to save the outbound portion of the route while a user is filling out the form.
+     * Should not be used for anything else.
+     * See {@link AmendmentService} for updating a full route.
+     * @param route
+     */
+    public void setOutboundRoute(Route route) {
         this.route = route;
     }
 
