@@ -154,20 +154,6 @@ essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resourc
     return $resource(appProps.apiPath + '/personnel/task/acknowledgment');
 }]);
 
-essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/personnel/task/acknowledgment/documents/:ackDocId', {
-            ackDocId: '@ackDocId'
-        });
-}]);
-
-essApi.factory('AcknowledgmentYearApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/personnel/task/acknowledgment/documents/years');
-}]);
-
-essApi.factory('EmpAckReportApi', ['$resource', 'appProps', function ($resource, appProps) {
-    return $resource(appProps.apiPath + '/personnel/task/acknowledgment/report/acks/emp');
-}]);
-
 /** --- PEC Video Code API --- */
 
 essApi.factory('PECVidCodeApi', ['$resource', 'appProps', function ($resource, appProps) {

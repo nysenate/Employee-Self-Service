@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core.model.pec;
+package gov.nysenate.ess.core.model.pec.moodle;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

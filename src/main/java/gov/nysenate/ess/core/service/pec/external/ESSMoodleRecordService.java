@@ -1,7 +1,7 @@
 package gov.nysenate.ess.core.service.pec.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import gov.nysenate.ess.core.model.pec.MoodleEmployeeRecord;
+import gov.nysenate.ess.core.model.pec.moodle.MoodleEmployeeRecord;
 
 import java.io.IOException;
 import java.io.InputStream;

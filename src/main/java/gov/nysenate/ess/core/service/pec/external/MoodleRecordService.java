@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
-import gov.nysenate.ess.core.model.pec.MoodleEmployeeRecord;
+import gov.nysenate.ess.core.model.pec.moodle.MoodleEmployeeRecord;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.personnel.Employee;

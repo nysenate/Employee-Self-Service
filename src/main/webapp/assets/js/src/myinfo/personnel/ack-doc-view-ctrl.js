@@ -2,11 +2,11 @@
 
 angular.module('essMyInfo')
     .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce',
-                                   'appProps', 'modals', 'AckDocApi', 'TaskUtils', 'AcknowledgmentApi',
+                                   'appProps', 'modals', 'TaskUtils', 'AcknowledgmentApi',
                                         acknowledgmentCtrl]);
 
 function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce,
-                            appProps, modals, documentApi, taskUtils, ackApi) {
+                            appProps, modals, taskUtils, ackApi) {
 
     $scope.todoPageUrl = appProps.ctxPath + '/myinfo/personnel/todo';
 
@@ -24,7 +24,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
-        docHeight: 500,
         docReady: false,
         docRead: false,
         pages: [],
@@ -40,12 +39,10 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         bindWindowScrollHandler();
         $scope.state = angular.copy(initialState);
         $scope.state.taskId = parseInt($routeParams.ackDocId);
-        $q.all([
-                   getDocument(),
-                   getTaskAssignment()
-               ])
+        getTaskAssignment()
             .then(processAcknowledgment)
             .then(showPdf)
+            .catch($scope.handleErrorResponse)
         ;
     }
 
@@ -94,42 +91,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     /* --- Request Methods --- */
 
     /**
-     * Get a list of active documents from the server
-     */
-    function getDocument() {
-        $scope.state.document = null;
-
-        var params = {
-            ackDocId: $scope.state.taskId
-        };
-
-        $scope.state.request.document = true;
-        return documentApi.get(params, onSuccess, onFail)
-            .$promise.finally(function () {
-                $scope.state.request.document = false;
-            });
-
-        function onSuccess(resp) {
-            $scope.state.document = resp.document;
-            $scope.state.docFound = true;
-            $scope.state.docRead = false;
-            setDocEmbedHeight();
-            // Potentially set the doc as read if the doc happens to fit in the window
-            $timeout(checkIfDocRead, 500);
-        }
-
-        function onFail(resp) {
-            $scope.state.docFound = false;
-            if (resp && resp.data && resp.data.errorCode === 'ACK_DOC_NOT_FOUND') {
-                console.warn("Couldn't find ack doc:", $scope.state.docId);
-            } else {
-                $scope.handleErrorResponse(resp);
-            }
-        }
-
-    }
-
-    /**
      * Get the task that corresponds to this ack doc
      */
     function getTaskAssignment() {
@@ -145,7 +106,13 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
 
         function setAckTask(task) {
             $scope.state.task = task;
+            $scope.state.document = task.taskDetails;
+
             $scope.state.taskFound = true;
+            $scope.state.docFound = true;
+            $scope.state.docRead = false;
+            // Potentially set the doc as read if the doc happens to fit in the window
+            $timeout(checkIfDocRead, 500);
         }
     }
 
@@ -174,16 +141,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
             console.warn('No task found for ack doc');
             throw 'No corresponding task for ack doc!';
         }
-    }
-
-    /**
-     * Set the height of the embedded document
-     */
-    function setDocEmbedHeight() {
-        var document = $scope.state.document;
-        var width = 840;
-        var heightFactor = document.totalHeight / document.maxWidth;
-        $scope.state.docHeight = width * heightFactor;
     }
 
     /**
@@ -238,7 +195,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
             .then(function () {
                 $scope.state.docReady = true;
             })
-            .catch($scope.handleErrorResponse)
     }
 
     /**

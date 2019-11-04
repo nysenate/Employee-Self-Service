@@ -1,4 +1,6 @@
-package gov.nysenate.ess.core.model.pec;
+package gov.nysenate.ess.core.model.pec.moodle;
+
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 
 import java.net.MalformedURLException;
 import java.net.URL;
