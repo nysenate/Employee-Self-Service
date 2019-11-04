@@ -8,7 +8,7 @@
 
         var initState = {
             taskId: $routeParams.taskId,
-            task: null,
+            assignment: null,
             loading: false
         };
 
@@ -16,22 +16,24 @@
 
         function init() {
             $scope.state = angular.copy(initState);
-            getLegEthicsTask();
+            getLegEthicsAssignment();
         }
 
-        function getLegEthicsTask() {
+        function getLegEthicsAssignment() {
             $scope.state.loading = true;
             var empId = appProps.user.employeeId;
             taskUtils.getPersonnelTaskAssignment(empId, $scope.state.taskId)
-                .then(setTask)
+                .then(setAssignment)
                 .finally(function () {
                     $scope.state.loading = false;
                 })
         }
 
-        function setTask(task) {
-            if (task.taskDetails.taskType === 'MOODLE_COURSE') {
-                $scope.state.task = task;
+        function setAssignment(assignment) {
+            if (assignment.task.taskType === 'MOODLE_COURSE') {
+                $scope.state.assignment = assignment;
+            } else {
+                $scope.handleErrorResponse(assignment);
             }
         }
     }

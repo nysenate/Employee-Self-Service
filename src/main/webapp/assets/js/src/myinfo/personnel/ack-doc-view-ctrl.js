@@ -19,8 +19,8 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     var initialState = {
         taskId: null,
         document: null,
-        task: null,
-        taskFound: false,
+        assignment: null,
+        assignmentFound: false,
         acknowledged: false,
         ackTimestamp: null,
         docFound: false,
@@ -91,11 +91,11 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
     /* --- Request Methods --- */
 
     /**
-     * Get the task that corresponds to this ack doc
+     * Get the assignment that corresponds to this ack doc
      */
     function getTaskAssignment() {
         $scope.state.request.ackGet = true;
-        $scope.state.taskFound = false;
+        $scope.state.assignmentFound = false;
         var empId = appProps.user.employeeId,
             taskId = $scope.state.taskId;
         return taskUtils.getPersonnelTaskAssignment(empId, taskId)
@@ -104,11 +104,11 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
                 $scope.state.request.ackGet = false;
             });
 
-        function setAckTask(task) {
-            $scope.state.task = task;
-            $scope.state.document = task.taskDetails;
+        function setAckTask(assignment) {
+            $scope.state.assignment = assignment;
+            $scope.state.document = assignment.task;
 
-            $scope.state.taskFound = true;
+            $scope.state.assignmentFound = true;
             $scope.state.docFound = true;
             $scope.state.docRead = false;
             // Potentially set the doc as read if the doc happens to fit in the window
@@ -133,13 +133,13 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
      * Determine whether the document was acknowledged based on received task
      */
     function processAcknowledgment() {
-        var task = $scope.state.task;
-        if (task && task.hasOwnProperty('completed')) {
-            $scope.state.acknowledged = task.completed;
-            $scope.state.ackTimestamp = task.timestamp;
+        var assignment = $scope.state.assignment;
+        if (assignment && assignment.hasOwnProperty('completed')) {
+            $scope.state.acknowledged = assignment.completed;
+            $scope.state.ackTimestamp = assignment.timestamp;
         } else {
-            console.warn('No task found for ack doc');
-            throw 'No corresponding task for ack doc!';
+            console.warn('No assignment found for ack doc');
+            throw 'No corresponding assignment for ack doc!';
         }
     }
 

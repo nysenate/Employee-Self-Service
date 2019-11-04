@@ -7,19 +7,19 @@ angular.module('essMyInfo')
 function todoCtrl($scope, $q, appProps, modals, taskUtils) {
 
     var initialState = {
-        tasks: {
+        assignments: {
             incomplete: [],
             complete: []
         },
 
         request: {
-            tasks: false
+            assignments: false
         }
     };
 
     function init() {
         $scope.state = angular.copy(initialState);
-        getTasks();
+        getAssignments();
     }
 
     /* --- Display methods --- */
@@ -39,36 +39,36 @@ function todoCtrl($scope, $q, appProps, modals, taskUtils) {
     /**
      * Return true if there are any tasks, complete or otherwise
      */
-    $scope.anyTasks = function () {
-        var tasks = $scope.state.tasks;
-        return tasks.complete.length > 0 || tasks.incomplete.length > 0;
+    $scope.anyAssignments = function () {
+        var assignments = $scope.state.assignments;
+        return assignments.complete.length > 0 || assignments.incomplete.length > 0;
     };
 
     /* --- Request Methods --- */
 
     /**
-     * Load all tasks for the user.  Categorize them as complete or incomplete.
+     * Load all assignments for the user.  Categorize them as complete or incomplete.
      * @return {*}
      */
-    function getTasks() {
-        var stateTasks = $scope.state.tasks = {
+    function getAssignments() {
+        var stateAssignments = $scope.state.assignments = {
             complete: [],
             incomplete: []
         };
 
-        $scope.state.request.tasks = true;
+        $scope.state.request.assignments = true;
         return taskUtils.getEmpAssignments(appProps.user.employeeId, true)
-            .then(categorizeTasks, $scope.handleErrorResponse)
+            .then(categorizeAssignments, $scope.handleErrorResponse)
             .finally(function () {
-                $scope.state.request.tasks = false;
+                $scope.state.request.assignments = false;
             });
 
-        function categorizeTasks(tasks) {
-            angular.forEach(tasks, function(task) {
-                if (task.completed) {
-                    stateTasks.complete.push(task);
+        function categorizeAssignments(assignments) {
+            angular.forEach(assignments, function(assignment) {
+                if (assignment.completed) {
+                    stateAssignments.complete.push(assignment);
                 } else {
-                    stateTasks.incomplete.push(task);
+                    stateAssignments.incomplete.push(assignment);
                 }
             })
         }

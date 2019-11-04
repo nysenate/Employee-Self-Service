@@ -18,8 +18,8 @@
 
             function setCount(assignments) {
                 var count = assignments
-                    .filter(function (task) {
-                        return task.hasOwnProperty('completed') && !task.completed
+                    .filter(function (assignment) {
+                        return assignment.hasOwnProperty('completed') && !assignment.completed
                     })
                     .length;
                 badgeService.setBadgeValue('incompleteTasks', count);

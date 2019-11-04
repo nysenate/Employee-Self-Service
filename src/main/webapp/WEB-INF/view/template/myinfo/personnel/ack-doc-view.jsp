@@ -16,13 +16,13 @@
 
   <ess-notification level="warn"
                     title="Acknowledgment task not found"
-                    ng-show="!isLoading() && state.docFound && !state.taskFound">
+                    ng-show="!isLoading() && state.docFound && !state.assignmentFound">
     No acknowledgment task record exists for the given document.  Please contact the helpline.
   </ess-notification>
 
   <div class="content-container ack-doc-container"
        ng-cloak
-       ng-if="!isLoading() && state.docFound && state.taskFound">
+       ng-if="!isLoading() && state.docFound && state.assignmentFound">
 
     <p class="content-info personnel-todo-instructions" ng-hide="state.acknowledged">
       Please review this policy/document and click the button to acknowledge it.

@@ -15,14 +15,14 @@
             empId: appProps.user.employeeId,
             videoId: null,
             videoUrl: null,
-            task: null,
-            taskFound: false,
+            assignment: null,
+            assignmentFound: false,
             acknowledged: false,
             codes: [],
             incorrectCode: false,
 
             request: {
-                task: false,
+                assignment: false,
                 code: false
             }
         };
@@ -41,19 +41,19 @@
         function init() {
             $scope.state = angular.copy(initialState);
             $scope.state.taskId = parseInt($routeParams.videoId);
-            fetchVideoTask();
+            fetchVideoTaskAssignment();
         }
 
         /**
          * Load updated information for the selected video task.
          */
-        function fetchVideoTask() {
+        function fetchVideoTaskAssignment() {
             clearTask();
-            $scope.state.request.task = true;
+            $scope.state.request.assignment = true;
             taskUtils.getPersonnelTaskAssignment($scope.state.empId, $scope.state.taskId)
-                .then(setVideoTask)
+                .then(setVideoAssignment)
                 .finally(function () {
-                    $scope.state.request.task = false;
+                    $scope.state.request.assignment = false;
                 })
         }
 
@@ -61,8 +61,8 @@
          * Reset information for the current task.
          */
         function clearTask() {
-            $scope.state.task = null;
-            $scope.state.taskFound = false;
+            $scope.state.assignment = null;
+            $scope.state.assignmentFound = false;
             $scope.state.videoUrl = null;
             $scope.state.codes = [];
         }
@@ -70,11 +70,11 @@
         /**
          * Set information for the current task using the given task object.
          */
-        function setVideoTask(task) {
-            $scope.state.taskFound = true;
-            $scope.state.task = task;
-            $scope.state.videoUrl = $sce.trustAsResourceUrl(appProps.ctxPath + $scope.state.task.taskDetails.path);
-            $scope.state.codes = task.taskDetails.codes;
+        function setVideoAssignment(assignment) {
+            $scope.state.assignmentFound = true;
+            $scope.state.assignment = assignment;
+            $scope.state.videoUrl = $sce.trustAsResourceUrl(appProps.ctxPath + $scope.state.assignment.task.path);
+            $scope.state.codes = assignment.task.codes;
         }
 
         /**

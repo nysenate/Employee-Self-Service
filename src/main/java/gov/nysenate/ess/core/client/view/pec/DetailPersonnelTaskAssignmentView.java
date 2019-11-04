@@ -7,15 +7,15 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
  */
 public class DetailPersonnelTaskAssignmentView extends PersonnelTaskAssignmentView {
 
-    private final PersonnelTaskView taskDetails;
+    private final PersonnelTaskView task;
 
     public DetailPersonnelTaskAssignmentView(PersonnelTaskAssignment task, PersonnelTaskView taskDetails) {
         super(task);
-        this.taskDetails = taskDetails;
+        this.task = taskDetails;
     }
 
-    public PersonnelTaskView getTaskDetails() {
-        return taskDetails;
+    public PersonnelTaskView getTask() {
+        return task;
     }
 
     @Override

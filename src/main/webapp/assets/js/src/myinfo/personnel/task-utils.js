@@ -11,7 +11,6 @@
         VideoCodeTask.prototype = new PersonnelTask();
 
         return {
-            parseTaskAssignment: parseTaskAssignment,
             getEmpAssignments: getEmpAssignments,
             getPersonnelTaskAssignment: getPersonnelTaskAssignment,
             getAllTasks: getAllTasks
@@ -88,7 +87,7 @@
             };
 
             this.getCourseUrl = function () {
-                return task.taskDetails.url;
+                return task.url;
             };
 
             this.getIconClass = function () {
@@ -119,8 +118,8 @@
          * @param task
          * @return PersonnelTask
          */
-        function parseTaskAssignment(task) {
-            var taskType = task.taskDetails.taskType;
+        function parseTask(task) {
+            var taskType = task.taskType;
             switch (taskType) {
                 case 'DOCUMENT_ACKNOWLEDGMENT':
                     return new AcknowledgmentTask(task);
@@ -132,6 +131,20 @@
                     console.error("Unknown task type '" + taskType + "'!");
                     return new PersonnelTask(task);
             }
+        }
+
+        /**
+         * Parse a task assignment by replacing the contained task with an enhanced version.
+         * @param assignment
+         * @return {*}
+         */
+        function parseAssignment(assignment) {
+            if (!assignment.task) {
+                return assignment;
+            }
+            var parsedTask = parseTask(assignment.task);
+            assignment.task = parsedTask;
+            return assignment;
         }
 
         /**
@@ -151,7 +164,7 @@
                 .then(processTasks);
 
             function processTasks(resp) {
-                return resp.assignments.map(parseTaskAssignment);
+                return resp.assignments.map(parseAssignment);
             }
         }
 
@@ -173,7 +186,7 @@
                 .catch(onError);
 
             function processAssignment(resp) {
-                return parseTaskAssignment(resp.task);
+                return parseAssignment(resp.task);
             }
 
             function onError(resp) {
@@ -195,7 +208,7 @@
                 .then(processTasks);
 
             function processTasks(resp) {
-                return resp.tasks.map(parseTaskAssignment);
+                return resp.tasks.map(parseTask);
             }
         }
     }

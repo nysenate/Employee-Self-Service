@@ -1,6 +1,6 @@
 <section ng-controller="PecVidCtrl">
   <div class="my-info-hero">
-    <h2 ng-bind="state.task.taskDetails.title"></h2>
+    <h2 ng-bind="state.assignment.task.title"></h2>
   </div>
 
   <div loader-indicator class="loader" ng-show="state.request.task"></div>
@@ -8,23 +8,23 @@
   <div class="content-container" ng-hide="state.request.task">
 
     <%-- Error message if the video task was not found --%>
-    <ess-notification ng-hide="state.taskFound"
+    <ess-notification ng-hide="state.assignmentFound"
                       level="error"
                       title="Video Task Not Found">
       The personnel task assignment associated with this video could not be retrieved.<br>
       Please contact the helpline to report this issue.
     </ess-notification>
 
-    <div ng-if="state.taskFound">
+    <div ng-if="state.assignmentFound">
       <%-- Instructions --%>
       <p class="content-info personnel-todo-instructions">
-        <span ng-show="state.task.completed">
+        <span ng-show="state.assignment.completed">
           Records indicate you have already watched this video on or before
-          {{state.task.timestamp | moment:'LL'}}.
+          {{state.assignment.timestamp | moment:'LL'}}.
           <br>
           If you would like to review the video, you may still view it below.
         </span>
-        <span ng-hide="state.task.completed">
+        <span ng-hide="state.assignment.completed">
           Please take some time to watch the video below.<br>
           Codes will appear on-screen at various points during the video.<br>
           Record these codes as they appear.<br>
@@ -44,7 +44,7 @@
         </video>
       </div>
       <%-- Form container - Show if the task isn't done.--%>
-      <div ng-hide="state.task.completed">
+      <div ng-hide="state.assignment.completed">
         <hr>
         <p class="content-info">
           In the form below, please enter the codes from the video and then click "Submit".

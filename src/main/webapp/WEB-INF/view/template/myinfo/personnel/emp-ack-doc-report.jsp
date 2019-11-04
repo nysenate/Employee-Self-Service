@@ -27,7 +27,7 @@
           Click on a pending acknowledgment to initiate an acknowledgment on behalf of the employee.
         </p>
 
-        <div class="personnel-task-display">
+        <div class="personnel-assignment-display">
 
           <h2>Pending Acknowledgments</h2>
           <ul class="personnel-task-incomplete-list">
@@ -35,7 +35,7 @@
             <li ng-repeat="status in state.unacknowledged | orderBy:'status.ackDoc.effectiveDateTime'">
               <a ng-click="initiatePersonnelAck(status)"
                  title="Click to record an acknowledgment on behalf of the employee.">
-                <p class="personnel-task-list-item">
+                <p class="personnel-assignment-list-item">
                   <span class="icon-text-document"></span>
                   <span ng-bind="status.ackDoc.title"></span>
                 </p>
@@ -47,10 +47,10 @@
           <ul>
             <li ng-show="state.acknowledged.length == 0"><p>The employee has no completed acknowledgments</p></li>
             <li ng-repeat="status in state.acknowledged | orderBy:'status.ackDoc.effectiveDateTime'">
-              <p class="personnel-task-list-item">
+              <p class="personnel-assignment-list-item">
                 <span class="icon-check"></span>
                 <span ng-bind="status.ackDoc.title"></span>
-                <span class="personnel-task-list-item-action-date">
+                <span class="personnel-assignment-list-item-action-date">
                   - acknowledged {{status.ack.timestamp | moment:'MMM D, YYYY'}}
                   <span ng-show="status.ack.personnelAcked">(Override)</span>
                 </span>
