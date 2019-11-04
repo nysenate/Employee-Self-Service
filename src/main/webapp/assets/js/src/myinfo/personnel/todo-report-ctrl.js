@@ -116,30 +116,17 @@
                 taskMap = $scope.state.taskMap = {},
                 selTasks = $scope.state.selTasks = {};
             tasks.forEach(function (task) {
-                var idStr = task.taskIdStr = getTaskIdStr(task.taskId);
                 taskList.push(task);
-                taskMap[idStr] = task;
-                selTasks[idStr] = false;
+                taskMap[task.taskId] = task;
+                selTasks[task.taskId] = false;
             });
         }
-
-        /**
-         * Get a string version of a task id object.
-         * @param taskId
-         * @return {string}
-         */
-        function getTaskIdStr(taskId) {
-            return taskId.taskType + "-" + taskId.taskNumber;
-            return taskId.taskType + "-" + taskId.taskNumber;
-        }
-
         function getTaskTitle(taskId) {
-            var taskIdStr = getTaskIdStr(taskId);
             var taskMap = $scope.state.taskMap;
-            if (taskIdStr in taskMap) {
-                return taskMap[taskIdStr].title;
+            if (taskId in taskMap) {
+                return taskMap[taskId].title;
             }
-            return '!? Unknown task "' + taskIdStr + '"';
+            return '!? Unknown task #' + taskId + '';
         }
 
         /**
@@ -150,11 +137,11 @@
                 return;
             }
             $scope.state.params.taskId = Object.keys($scope.state.selTasks)
-                .filter(function (taskIdStr) {
-                    var task = $scope.state.taskMap[taskIdStr];
+                .filter(function (taskId) {
+                    var task = $scope.state.taskMap[taskId];
                     // Include the task if it is selected.
                     // Also ensure it is active if the active task filter is on.
-                    return $scope.state.selTasks[taskIdStr] &&
+                    return $scope.state.selTasks[taskId] &&
                         (!$scope.state.params.taskActive || task.active);
                 });
         }
@@ -164,11 +151,11 @@
          */
         function clearSelectedTasks() {
             var selTasks = $scope.state.selTasks;
-            for (var taskIdStr in selTasks) {
-                if (!selTasks.hasOwnProperty(taskIdStr)) {
+            for (var taskId in selTasks) {
+                if (!selTasks.hasOwnProperty(taskId)) {
                     continue;
                 }
-                selTasks[taskIdStr] = false;
+                selTasks[taskId] = false;
             }
         }
 

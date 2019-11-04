@@ -21,7 +21,7 @@
         <div>
           <label ng-repeat="task in state.taskList | filter:{'active':true}">
             <input type="checkbox"
-                   ng-model="state.selTasks[task.taskIdStr]">
+                   ng-model="state.selTasks[task.taskId]">
             {{task.title}}
           </label>
         </div>
@@ -29,7 +29,7 @@
           <hr>
           <label ng-repeat="task in state.taskList | filter:{'active':false}">
             <input type="checkbox"
-                   ng-model="state.selTasks[task.taskIdStr]">
+                   ng-model="state.selTasks[task.taskId]">
             {{task.title}}
           </label>
         </div>
