@@ -9,13 +9,13 @@
 <!--  This template creates a view of a single time-off
       request and allows the user to edit, save, or submit the request. -->
 
-<div class="content-container"><h1>Review/Submit A Time Off Request</h1></div>
+<div class="content-container" ng-init="pageLoaded=true" ><h1>Review/Submit A Time Off Request</h1></div>
 <!--Include their accruals-->
-<p class="time-off-request-accruals">&ensp;&ensp;Available Hours: &emsp; <span class="vacation-text">Vacation: {{accruals.vacation}}&ensp;</span>
+<p class="time-off-request-accruals" >&ensp;&ensp;Available Hours: &emsp; <span class="vacation-text">Vacation: {{accruals.vacation}}&ensp;</span>
                            <span class="personal-text">Personal: {{accruals.personal}}&ensp;</span>
                            <span class="sick-text">Sick: {{accruals.sick}}&ensp;</span></p>
 <!--Go through all the days-->
-<table class="time-off-request-view-table timeoff-request-table" ng-init="onloadFn()">
+<table class="time-off-request-view-table timeoff-request-table" >
   <thead>
     <tr>
       <th class="timeoff-table-checkbox" ng-if="mode==='input'"></th>  <!-- Select check boxes -->
@@ -27,7 +27,7 @@
       <th class="timeoff-table-hours sick-text">Sick Emp</th>
       <th class="timeoff-table-hours sick-text">Sick Fam</th>
       <th class="timeoff-table-hours">Misc</th>
-      <th class="timeoff-table-misc">MIsc Leave Type</th>
+      <th class="timeoff-table-misc">Misc Leave Type</th>
       <th class="timeoff-table-hours">Total</th>
     </tr>
   </thead>
@@ -51,13 +51,34 @@
     </tr>
     <tr ng-repeat="day in data.days" ng-if="mode==='output'">
       <td>{{day.date}}</td>
-      <td>{{day.workHours}}</td>
-      <td>{{day.holidayHours}}</td>
-      <td>{{day.vacationHours}}</td>
-      <td>{{day.personalHours}}</td>
-      <td>{{day.sickEmpHours}}</td>
-      <td>{{day.sickFamHours}}</td>
-      <td>{{day.miscHours}}</td>
+      <td ng-switch="day.workHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.workHours}}</span>
+      </td>
+      <td ng-switch="day.holidayHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.holidayHours}}</span>
+      </td>
+      <td ng-switch="day.vacationHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.vacationHours}}</span>
+      </td>
+      <td ng-switch="day.personalHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.personalHours}}</span>
+      </td>
+      <td ng-switch="day.sickEmpHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.sickEmpHours}}</span>
+      </td>
+      <td ng-switch="day.sickFamHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.sickFamHours}}</span>
+      </td>
+      <td ng-switch="day.miscHours">
+        <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
+        <span ng-switch-default>{{day.miscHours}}</span>
+      </td>
       <td ng-if="day.miscType != null">{{day.miscType}}</td>
       <td ng-if="day.miscType === null">--</td>
       <td>{{day.totalHours}}</td>
@@ -66,7 +87,7 @@
 </table>
 
 <!--Accruals available after the request-->
-<p class="time-off-request-accruals" ng-if="data.days.length > 0">Hours After Request: &emsp; <span class="vacation-text">Vacation: {{accrualsPost.vacation}}&ensp;</span>
+<p class="time-off-request-accruals" ng-if="data.days.length > 0" >Hours After Request: &emsp; <span class="vacation-text">Vacation: {{accrualsPost.vacation}}&ensp;</span>
   <span class="personal-text">Personal: {{accrualsPost.personal}}&ensp;</span>
   <span class="sick-text">Sick: {{accrualsPost.sick}}&ensp;</span></p>
 
@@ -96,5 +117,7 @@
 <div class="time-off-request-buttons">
   <button ng-if="mode==='input'" ng-click="saveRequest()" class="time-off-request-save-button">SAVE</button>
   <button ng-if="mode==='input'" ng-click="submitRequest()" class="time-off-request-submit-button">SUBMIT</button>
-  <button ng-if="mode==='output'" ng-click="editMode()" class="time-off-request-edit-button">EDIT</button>
+  <!-- Cannot edit a request if it has been submitted or approved-->
+  <button ng-if="mode==='output' && !(data.status==='APPROVED' || data.status==='SUBMITTED')"
+          ng-click="editMode()" class="time-off-request-edit-button">EDIT</button>
 </div>

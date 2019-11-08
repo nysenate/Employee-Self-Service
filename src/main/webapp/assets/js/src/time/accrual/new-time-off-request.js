@@ -30,11 +30,5 @@
         $scope.goBack = function() {
              window.open(window.location.href.substring(0,window.location.href.length-4), "_self");
         };
-
-        /*
-         *  Need to make API call to update a request
-         */
-
-
     }
 })();

@@ -18,6 +18,7 @@
 table.time-record-entry-table {
   thead {
     background: white;
+
     tr {
       th {
         width: 65px;
@@ -28,6 +29,7 @@ table.time-record-entry-table {
   tbody {
     tr {
       height: 32px;
+
       &.time-record-row {
         td {
           &:nth-child(1) {
@@ -35,21 +37,26 @@ table.time-record-entry-table {
             border-right: 1px solid #ccc;
           }
         }
+
         &:hover {
           background: #f3f6ff;
         }
       }
+
       &.time-totals-row {
         border-top: 2px solid teal;
+
         td {
           font-size: 1.1em;
           text-align: center;
+
           &:first-child {
             .font-weight-bold;
             font-size: 1em;
             text-align: right;
             padding-right: 20px;
           }
+
           &:last-child {
             font-size: 1.1em;
             .font-weight-bold;
@@ -76,6 +83,7 @@ table.time-record-entry-table {
       td {
         text-align: center;
         border-right: 1px solid #dedede;
+
         input[type="text"], input[type="number"] {
           width: 100%;
           height: 35px;
@@ -84,17 +92,20 @@ table.time-record-entry-table {
           border: 0;
           background: none;
         }
+
         /** Credit css-tricks */
+
         input:disabled {
           background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==) repeat;
           cursor: not-allowed;
         }
 
         &.date-column {
-          width:180px;
+          width: 180px;
           text-align: right;
-          padding-right:20px;
+          padding-right: 20px;
         }
+
         &.entry-comment-col {
           width: 75%;
         }
@@ -133,19 +144,24 @@ table.time-record-entry-table {
     text-align: center;
     width: 90%;
     margin: auto;
+
     th {
       border-bottom: 1px solid #ccc;
     }
+
     th, td {
       padding: 5px;
     }
+
     tbody tr {
       &.active {
         background: #e7e9f6;
       }
+
       &:hover {
         background: #E4EBFF;
       }
+
       cursor: pointer;
     }
   }
@@ -154,6 +170,7 @@ table.time-record-entry-table {
     width: 185px;
     margin: 5px 10px 5px 5px;
   }
+
   .record-selection-menu-details {
     float: left;
     margin: 5px 5px 5px 25px;
@@ -190,6 +207,7 @@ ul.unsubmitted-te-rec-list {
 .sick, .personal, .vacation, .misc {
   color: white;
 }
+
 .sick {
   background: @sick-color;
   border-color: @sick-color;
@@ -245,9 +263,9 @@ ul.unsubmitted-te-rec-list {
   }
 
   .ytd-hours {
-    border-right:1px solid #ddd;
-    min-width:110px;
-    display:inline-block;
+    border-right: 1px solid #ddd;
+    min-width: 110px;
+    display: inline-block;
 
     &:last-child {
       border-right: none;
@@ -260,6 +278,7 @@ ul.unsubmitted-te-rec-list {
     text-align: center;
     margin: 10px 0;
   }
+
   .sm-loader {
     font-size: 15px;
     margin: 15.5px auto;
@@ -319,8 +338,8 @@ ul.unsubmitted-te-rec-list {
   flex-grow: 1;
 
   .hours-caption {
-    background:rgb(92, 116, 116);
-    color:white;
+    background: rgb(92, 116, 116);
+    color: white;
   }
 
   .captioned-hour-square .hours-display {
@@ -340,11 +359,13 @@ ul.unsubmitted-te-rec-list {
 
 .record-remarks-container {
   float: left;
+
   label {
     .font-weight-bold;
     margin: 0 10px 0 10px;
     line-height: 55px;
   }
+
   .record-remarks-text-area {
     margin: 5px 0;
     height: 45px;
@@ -357,6 +378,7 @@ ul.unsubmitted-te-rec-list {
 .save-record-container {
   padding: 10px;
   background: #f9f9f9;
+
   input[type="button"] {
     margin-top: 10px;
     width: 8.5em;
@@ -369,21 +391,27 @@ ul.unsubmitted-te-rec-list {
   tbody {
     tr {
       border-bottom: 1px solid #eee !important;
+
       &.e-timesheet {
         cursor: pointer;
+
         &:hover {
           background: #e9eeff;
         }
       }
+
       &:nth-child(even) {
         background: fade(#333, 5%);
+
         &.e-timesheet:hover {
           background: #e9eeff;
         }
       }
+
       td {
         padding: .5em;
         border: 0;
+
         .action-link {
           font-size: .9em;
         }
@@ -404,11 +432,14 @@ record-detail-modal, [record-detail-modal] {
 
 .record-details-section.accrual-display {
   height: 6.5em;
+
   [loader-indicator] {
     margin: 1em auto;
   }
+
   table {
     margin-left: 1em;
+
     tr td {
       padding: 0.1em;
     }
@@ -421,38 +452,46 @@ h1.attendance-entry-sub-table-title {
 }
 
 table.attendance-entry-sub-table {
-  width:100%;
-  font-size:1em;
-  border-left:1px solid #ddd;
+  width: 100%;
+  font-size: 1em;
+  border-left: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
+
   thead {
     tr {
       th.day-col {
         width: 3.4em;
       }
+
       th.date-col {
         width: 6em;
       }
+
       th.hour-col {
         width: 5em;
       }
     }
   }
+
   tbody {
     tr {
       &:nth-child(odd) {
         background: fade(#333, 5%);
       }
+
       border-bottom: none !important;
+
       td {
         padding: .4em !important;
         border-right: 1px solid #ddd;
       }
+
       &.time-totals-row {
         border-top: 2px solid teal;
       }
     }
   }
+
   &.small-text {
     tbody {
       tr {
@@ -475,39 +514,51 @@ time-off-request-list {
   flex-direction: row;
   justify-content: center;
   align-content: center;
+
   .timeoff-request-table {
     width: 96%;
     margin: 0 0 20px;
+
     thead {
       .timeoff-table-date-range {
-        width: 20%;
+        width: 22%;
         text-align: center !important;
       }
+
       .timeoff-table-status {
-        width: 15%;
+        width: 13%;
         text-align: center;
       }
+
       .timeoff-table-total-hours {
         width: 15%;
         text-align: center;
       }
+
       .timeoff-table-hour-types {
         width: 50%;
       }
+
       tr {
         border-bottom: 1px solid black;
       }
     }
+
     tbody {
       tr {
         line-height: 30px;
+        &:hover {
+          background-color: #e9eeff;
+        }
       }
     }
   }
+
   .no-requests {
     padding: 10px 0 30px;
   }
 }
+
 
 .timeoff-request-accrual-container {
   width: auto;
@@ -523,7 +574,8 @@ time-off-request-list {
   .content-container {
     .box-shadow(none) !important;
     width: 100%;
-    margin: 0 0 20px;
+    margin: 0;
+
     .time-off-history-menu {
       margin: 20px;
     }
@@ -535,6 +587,7 @@ time-off-request-list {
 
   .accrual-section {
     margin-top: 10px;
+
     .accrual-component {
       width: 100px;
     }
@@ -548,7 +601,7 @@ time-off-request-list {
 
   .label-container, .input-container {
     display: inline-block;
-    margin-bottom:10px;
+    margin-bottom: 10px;
   }
 
   .label-container {
@@ -562,9 +615,7 @@ time-off-request-list {
 
     .date-input {
       width: 220px;
-      background: url(../../img/20px-999999/calendar.png);
-      background-repeat: no-repeat;
-      background-position: 195px 2px;
+      background: url(../../img/20px-999999/calendar.png) no-repeat 195px 2px;
       background-size: 18px;
     }
   }
@@ -575,7 +626,7 @@ time-off-request-list {
 
   #reason-textarea {
     resize: none;
-    width:290px;
+    width: 290px;
     padding: 5px;
     height: 67px;
   }
@@ -586,6 +637,7 @@ time-off-request-list {
   flex-direction: row;
   align-content: center;
   justify-content: flex-start;
+
   .md-chip {
     padding: 0 12px;
     margin: 2px 2px 0;
@@ -598,6 +650,7 @@ time-off-request-list {
     background-color: @misc-color; /*Change this based on what the chips says*/
     color: white;
   }
+
   .personal {
     background-color: @personal-color;
   }
@@ -611,7 +664,7 @@ time-off-request-list {
   }
 }
 
-time-off-request-view {
+time-off-request-view, #time-off-request-details-view {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -619,41 +672,53 @@ time-off-request-view {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   .time-off-request-accruals {
     color: black;
     font-size: 12px;
     padding-right: 20%;
     margin: 0;
+    border: none !important;
   }
+
   .timeoff-request-table {
     width: 96%;
     margin: 0 0 10px 0;
+
     thead {
       .timeoff-table-checkbox {
         width: 5%;
       }
-      .timeoff-table-date{
+
+      .timeoff-table-date {
         width: 15%;
         text-align: center !important;
       }
+
       .timeoff-table-hours {
         width: 8%;
       }
+
       .timeoff-table-misc {
         width: 16%;
       }
+
       tr {
         border-bottom: 1px solid #aaa;
       }
     }
+
     tbody {
       border: 1px solid #aaa;
+
       tr {
         line-height: 30px;
+
         td {
           padding: 0;
           margin: 0;
           border: 1px solid #aaa;
+
           input {
             width: 100%;
             text-align: center;
@@ -667,6 +732,7 @@ time-off-request-view {
       }
     }
   }
+
   h3 {
     border-top: 1px solid #222;
     margin: 10px 0 0;
@@ -674,6 +740,7 @@ time-off-request-view {
     text-align: left;
     text-indent: 8%;
   }
+
   .comment-list {
     color: black;
     align-self: center;
@@ -682,49 +749,64 @@ time-off-request-view {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+
     .comment {
       color: black;
       line-height: 20px;
       margin: 3px 0 0 0;
       font-size: 16px;
+      font-weight: 400;
+      border: none !important;
     }
+
     .new-comment-container {
-      margin: 5px 0 0;
+      margin: 5px 0 5px 0;
       width: 100%;
       display: flex;
       flex-direction: row;
       align-items: flex-start;
+
+      p {
+        border: none !important;
+      }
+
       p, textarea {
         color: black;
         margin: 4px 3px 0 0;
       }
+
       textarea {
         height: 100px;
         width: 100%;
-        min-width: 40%;
+        min-width: 80%;
         min-height: 100px;
         max-height: 150px;
       }
     }
   }
 }
+
 .time-off-request-buttons {
   display: flex;
   flex-direction: row;
   justify-content: center;
   width: 98%;
+
   button {
     margin: 10px 3%;
     padding: 5px 15px;
   }
 }
+
 .time-off-request-back-button {
   align-self: flex-start;
 }
-.time-off-request-save-button{
+
+.time-off-request-save-button {
   background: #2e7db2;
   color: #fefefe;
 }
+
 .time-off-request-submit-button {
   background: #3f7506;
   color: #fefefe;
@@ -733,29 +815,219 @@ time-off-request-view {
 #time-off-request-checkbox {
   width: auto;
 }
+
 .misc-drop-down {
   height: 95%;
+
   select {
     margin: 2px;
     width: 100%;
     height: 100%;
   }
 }
-/**  --- End of time off request page --- */
 
+time-off-request-approval {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.time-off-request-approval-table {
+  width: 96%;
+  margin: 0 0 10px 0;
+
+  thead {
+    tr {
+      border-bottom: 1px solid #aaa;
+      .time-off-approval-table-emp-column {
+        width: 18%;
+      }
+      .time-off-approval-table-select-column {
+        width: 8%;
+      }
+      .time-off-approval-table-dates-column {
+        width: 22%;
+      }
+      .time-off-approval-table-hours-column {
+        width: 10%;
+      }
+      .time-off-approval-table-chips-column {
+        width: 42%;
+      }
+    }
+  } /** -- End of table head -- */
+  tbody {
+    tr {
+      border-bottom: 1px solid #aaa;
+      .time-off-approval-table-emp-column {
+        border-right: 1px solid #aaa;
+      }
+
+    }
+  }
+}
+
+#time-off-request-review-content {
+  div {
+    width: 1163px;
+    .modal-max-height;
+    display: flex;
+    flex-direction: column;
+
+    p {
+      border-bottom: 1px solid #ccc;
+      background: white;
+    }
+
+    #time-off-request-review-outer-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+
+      #time-off-request-selection-pane {
+        width: 300px !important;
+        align-self: flex-start;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        margin: 0;
+        vertical-align: top;
+        background: white;
+        overflow-x: hidden;
+
+        .pane-title {
+          text-align: center;
+          margin: 0;
+          padding: .4em;
+          font-weight: 600;
+          background: white;
+          height: 40px !important;
+          width: 100%;
+          color: #0a0a0a;
+
+          h4 {
+            margin: 0;
+            line-height: 40px;
+          }
+        }
+
+        #time-off-request-selection-table {
+          background: white;
+
+          tbody {
+            tr {
+              &:hover {
+                background: #e9eeff;
+                cursor: pointer;
+              }
+
+              &.active {
+                background: #E4EBFF;
+              }
+
+              &.approved {
+                background: rgb(207, 252, 158);
+              }
+
+              &.disapproved {
+                background: @redorange;
+              }
+
+              td {
+                text-align: center;
+
+                &.name-column {
+                  padding: 5px 0px 5px 10px;
+                  text-align: left;
+                  width: 55%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    #time-off-request-review-inner-box {
+      width: available;
+      border-left: 1px solid #ccc;
+      height: auto;
+      background: white;
+
+      #time-off-request-review-header{
+        width: 100%;
+        height: 70px;
+        border-bottom: 1px solid #ccc;
+        background: white;
+      }
+      #time-off-request-details-view {
+        border: 1px solid #ccc;
+        display: flex;
+        flex-direction: column;
+        justify-items: flex-start;
+        width: 96%;
+        height: 450px;
+        margin-top: 15px;
+        margin-left: 2%;
+        margin-right: 2%;
+        background: white;
+      }
+      #time-off-request-review-button-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 150px;
+        background: white;
+        #time-off-request-review-upper-buttons {
+          width: 100%;
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          background: white;
+          input {
+            width: auto;
+            height: 30px;
+            margin-left: 20px;
+            margin-top: 20px;
+          }
+        }
+        #time-off-request-review-lower-buttons {
+          width: 100%;
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+          background: white;
+          input {
+            width: auto;
+            height: 30px;
+            margin-right: 20px;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+/**  --- End of time off request pages --- */
 
 
 /** --- View Pay Period Calendar Page --- */
 
 @ppcHoliday: #d4ff60;
 @ppcPpe: #B8E3EB;
-@ppcPartialGradient: repeating-linear-gradient(
-        45deg,
-        @ppcHoliday,
-        @ppcHoliday 3px,
-        #fafafa 3px,
-        #fafafa 6px
-);
+@ppcPartialGradient: repeating-linear-gradient(45deg,
+@ppcHoliday,
+@ppcHoliday 3px,
+#fafafa 3px,
+#fafafa 6px);
 
 .pay-period-cal-holiday {
   background: @ppcHoliday;
@@ -773,14 +1045,14 @@ time-off-request-view {
 .pay-period-cal-container {
 
   .legend-container {
-    color:#777;
+    color: #777;
 
     .legend-block {
-      margin-left:20px;
-      display:inline-block;
-      width:25px;
-      height:20px;
-      margin-right:10px;
+      margin-left: 20px;
+      display: inline-block;
+      width: 25px;
+      height: 20px;
+      margin-right: 10px;
     }
   }
 
@@ -811,6 +1083,7 @@ time-off-request-view {
             border: 2px solid @redorange;
           }
         }
+
         .weekend-date {
           span {
             color: #aaa;
@@ -860,32 +1133,40 @@ time-off-request-view {
 .hours-table {
   margin: 10px;
   width: 860px;
+
   thead {
     background: white;
+
     tr {
       border: 0;
+
       th {
         border: 0;
         padding: 8px;
       }
+
       &:last-of-type {
         border-bottom: 1px solid @teal;
       }
     }
   }
+
   tbody {
     tr {
       &:nth-child(even) {
         background: fade(#333, 5%);
       }
+
       &.highlighted {
         border: 1px solid @teal;
         border-left-width: 3px;
       }
+
       &:not(.invalid):hover {
         background: fade(#333, 10%);
         cursor: pointer;
       }
+
       td {
         border: 0;
         border-right: 1px solid #eee;
@@ -894,6 +1175,7 @@ time-off-request-view {
 
         input {
           width: 50px;
+
           &.invalid {
             background: #FFBCBC
           }
@@ -913,12 +1195,15 @@ time-off-request-view {
     &.accrual-hours {
       border: 0;
       color: #333;
+
       &.personal {
         background: fade(@personal-color, 10%);
       }
+
       &.sick {
         background: fade(@sick-color, 10%);
       }
+
       &.vacation {
         background: fade(@vacation-color, 10%);
       }
@@ -926,24 +1211,31 @@ time-off-request-view {
 
     &.available-hours {
       font-weight: bold;
+
       &.personal {
         background: fade(@light-teal, 20%);
+
         &.changed {
           color: @light-teal;
         }
       }
+
       &.sick {
         background: fade(@sick-color, 20%);
+
         &.changed {
           color: @sick-color;
         }
       }
+
       &.vacation {
         background: fade(@vacation-color, 20%);
+
         &.changed {
           color: @vacation-color;
         }
       }
+
       &:not(.changed) {
         transition: color 0.25s ease-out;
       }
@@ -959,13 +1251,15 @@ table.accrual-detail-table {
 
   td {
     width: 7em;
-    &:first-child{
+
+    &:first-child {
       width: 13em;
     }
   }
 
   tr.total-row {
     border-top: 1px solid @teal;
+
     td {
       font-weight: bold;
     }
@@ -989,6 +1283,7 @@ div.accrual-detail-table-container {
   table td {
     text-align: right;
   }
+
   .accrual-report-link {
     text-align: center;
   }
@@ -1028,41 +1323,48 @@ div.accrual-detail-table-container {
   }
 
   .select-actions {
-    padding:.5em;
-    text-align:right;
+    padding: .5em;
+    text-align: right;
   }
 }
 
 table.approve-attendance-rec-table {
   padding: 10px;
+
   tbody {
     tr {
       &.name-row {
         border-top: 2px solid @light-teal;
       }
+
       &.active {
         &:hover {
           td {
             background: #EEF4F9;
           }
         }
+
         td {
           &:nth-child(1) {
             background: white;
           }
         }
       }
+
       &:hover {
         td {
           background: white;
         }
       }
+
       &:not([disabled]) {
         cursor: pointer;
       }
     }
+
     td {
       padding: .5em;
+
       &:nth-child(1) {
         border-right: 1px solid #ddd;
       }
@@ -1076,37 +1378,44 @@ record-review-modal, [record-review-modal] {
 
 #record-review-content {
   width: 1163px;
+
   #record-selection-pane {
     .modal-max-height;
-    float:left;
-    display:inline-block;
-    width:280px;
-    margin:0;
+    float: left;
+    display: inline-block;
+    width: 280px;
+    margin: 0;
     vertical-align: top;
     background: #f5f5f5;
     overflow-x: hidden;
+
     #record-selection-table {
-      background:white;
+      background: white;
+
       tbody {
         tr {
           &:hover {
             background: #e9eeff;
             cursor: pointer;
           }
+
           &.active {
             background: #E4EBFF;
           }
+
           &.approved {
-            background:rgb(207, 252, 158);
+            background: rgb(207, 252, 158);
           }
+
           &.disapproved {
             background: @redorange;
           }
 
           td {
             text-align: center;
+
             &.name-column {
-              text-align:left;
+              text-align: left;
             }
           }
         }
@@ -1151,10 +1460,10 @@ record-review-modal, [record-review-modal] {
 // Reject Modals
 
 .reject-modal-textarea {
-  resize:none;
+  resize: none;
   margin: 10px 10px 20px;
-  width:375px;
-  height:100px;
+  width: 375px;
+  height: 100px;
 }
 
 .reject-modal-error {
@@ -1167,22 +1476,28 @@ record-review-modal, [record-review-modal] {
 
 .approve-submit-modal-details {
   text-align: center;
+
   ul {
     padding: 0;
     margin: 0;
   }
+
   .review-listing {
     padding: 10px;
   }
+
   div.review-listing:last-child {
     margin-bottom: 20px;
   }
+
   div.approve-input-container {
     margin-bottom: 10px;
+
     input:first-child {
       margin-right: 20px;
     }
   }
+
   .acknowledged-message {
     text-align: left;
     margin: 10px 20px;
@@ -1192,23 +1507,28 @@ record-review-modal, [record-review-modal] {
 #record-reminder-prompt {
   .input-container {
     margin-bottom: 10px;
+
     input:first-child {
       margin-right: 20px;
     }
   }
+
   table.reminder-records {
     tr {
       &.first-emp-rec {
         &:not(:first-child) {
           border-top: 1px solid #bbb;
         }
+
         td {
           padding-top: 5px;
         }
       }
+
       &.last-emp-rec td {
-          padding-bottom: 5px;
+        padding-bottom: 5px;
       }
+
       td:first-child {
         padding-right: 5px;
       }
@@ -1241,6 +1561,7 @@ ul.inactive-employee-email-list {
       &:first-child {
         text-align: right;
       }
+
       &:last-child {
         text-align: left;
       }

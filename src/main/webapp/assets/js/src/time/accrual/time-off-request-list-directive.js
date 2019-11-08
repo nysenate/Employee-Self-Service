@@ -10,7 +10,19 @@
             transclude: true,
             scope: {
                 data: '='
-            }
+            },
+            link: link
+        };
+
+        function link($scope ) {
+            /* Function to open the edit page for a selected request */
+            $scope.openEditPage = function(request) {
+                var currentUrl = window.location.href;
+                var id_num = request.requestId;
+                var newUrl = currentUrl + "/" + id_num;
+                console.log(newUrl)
+                window.open(newUrl, "_self")
+            };
         }
     }
 })();

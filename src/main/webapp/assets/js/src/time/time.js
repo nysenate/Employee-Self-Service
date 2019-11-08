@@ -3,8 +3,9 @@ var essTime = angular.module('essTime');
 /**
  * The wrapping controller that is the parent of the nav menu and view content.
  */
-essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'badgeService', 'SupervisorTimeRecordCountsApi',
-    function($scope, appProps, locationService, badgeService, SupervisorTimeRecordCountsApi) {
+essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'badgeService',
+                                   'ApprovalSupervisorTimeOffRequestsApi', 'SupervisorTimeRecordCountsApi',
+    function($scope, appProps, locationService, badgeService, ApprovalSupervisorTimeOffRequestsApi, SupervisorTimeRecordCountsApi) {
 
         $scope.initializePendingRecordsBadge = function() {
             var isoDateFmt = 'YYYY-MM-DD';
@@ -19,4 +20,13 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
             });
         };
     }
+    //
+    // function($scope, appProps, locationService, badgeService, ApprovalSupervisorTimeOffRequestsApi) {
+    //     $scope.initializePendingRequestsBadge = function() {
+    //         var params = {supId: appProps.user.employeeId};
+    //         ApprovalSupervisorTimeOffRequestsApi.query(params, function(data) {
+    //            badgeService.setBadgeValue('pendingRequestCount', data.count);
+    //         });
+    //     };
+    // }
 ]);

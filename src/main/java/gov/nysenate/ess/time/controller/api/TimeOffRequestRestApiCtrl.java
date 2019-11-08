@@ -1,15 +1,19 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.Range;
+import freemarker.template.utility.DateUtil;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
+import gov.nysenate.ess.core.util.DateUtils;
 import gov.nysenate.ess.time.client.view.attendance.TimeOffRequestView;
 import gov.nysenate.ess.time.model.attendance.*;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.attendance.EssTimeOffRequestService;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
+import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,17 +69,27 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      * employee:
      * (GET) /api/v1/timeoffrequests/getemployeerequests
      *
-     * @param startRange LocalDate
-     * @param endRange LocalDate
+     * @param startRange LocalDate - @Nullable
+     *                   If startRange is null, it will be given
+     *                   the value of DateUtils.LONG_AGO
+     * @param endRange LocalDate - @Nullable
+     *                 If endRange is null, it will be given
+     *                 the value of DateUtils.THE_FUTURE
      * @param empId int
      * @return List<TimeOffRequests>
      */
     @RequestMapping(value="/employee/{empId:\\d+}", method = RequestMethod.GET)
     public List<TimeOffRequestView> getEmployeeRequestsJson(@PathVariable int empId,
-                                                            @RequestParam("startRange")
+                                                            @Nullable @RequestParam("startRange")
                                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startRange,
-                                                            @RequestParam("endRange")
+                                                            @Nullable @RequestParam("endRange")
                                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endRange) {
+        if(endRange == null) {
+            endRange = DateUtils.THE_FUTURE;
+        }
+        if(startRange == null) {
+            startRange = DateUtils.LONG_AGO;
+        }
         Range<LocalDate> dateRange = Range.closed(startRange, endRange);
         checkPermission(new EssTimePermission(empId, TIME_OFF_REQUESTS, GET, LocalDate.now()));
         List<TimeOffRequest> requests = timeOffRequestService.getAllRequestForEmpDateRange(empId, dateRange);
@@ -137,7 +153,7 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      * ---------------------------
      *
      * Review a Time Off Request:
-     *      (POST) /api/v1/accruals/request/review
+     *      (POST) /api/v1/accruals/request/review/:requestId
      *
      * Request Params:
      * @param requestId int - id of the reviewed time off request
@@ -150,7 +166,7 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
                               @RequestParam String action) {
         TimeOffRequest request = timeOffRequestService.getTimeOffRequest(requestId);
 
-        checkPermission(new EssTimePermission(request.getSupervisorId(), TIME_OFF_REQUEST_REVIEW, POST,
+        checkPermission(new EssTimePermission(request.getEmployeeId(), TIME_OFF_REQUEST_REVIEW, POST,
                 Range.closedOpen(request.getStartDate(), request.getEndDate().plusDays(1))));
 
         TimeOffRequestAction timeOffRequestAction = getEnumParameter("action", action,
@@ -171,6 +187,7 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
             request.setComments(originalComments);
         }
         if(timeOffRequestAction == TimeOffRequestAction.APPROVE) {
+            logger.info("APPRVOING REQUEST");
             request.setStatus(TimeOffStatus.APPROVED);
         } else { //supervisor did not approve the request
             request.setStatus(TimeOffStatus.DISAPPROVED);

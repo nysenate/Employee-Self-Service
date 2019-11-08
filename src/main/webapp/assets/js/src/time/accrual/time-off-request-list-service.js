@@ -6,11 +6,8 @@ var essTime = angular.module('essTime');
 essTime.service('TimeOffRequestListService', timeOffRequestListUtils);
 function timeOffRequestListUtils() {
 
-
     return {
-        formatData: formatData,
-        getApprovedRequests: getApprovedRequests,
-        getRequestsNeedingApproval: getRequestsNeedingApproval
+        formatData: formatData
     };
 
     /**
@@ -23,22 +20,21 @@ function timeOffRequestListUtils() {
         //return an array with objects that each represent a separate request
         var requestObjs = [];
         data.forEach(function (request) {
-            var obj = {};
-            obj.empId = request.employeeId;
-            obj.startDate = request.startDate.split("-").join("/");
-            obj.endDate = request.endDate.split("-").join("/");
+            request.startDatePrint = moment(request.startDate).format("MMM Do YYYY");
+            request.endDatePrint = moment(request.endDate).format("MMM Do YYYY");
+            request.timestampPrint = moment(request.timestamp).format("MMM Do YYYY");
             //get the total hours
             var totalHrs = 0;
             request.days.forEach(function(day){
                 totalHrs = totalHrs + day.totalHours;
             });
-            obj.totalHours = totalHrs;
-            obj.status = request.status;
+            request.totalHours = totalHrs;
 
             //get all the leave types for the request
             var setMiscLeaveTypes = new Set();
             var setAccrualTypes = new Set();
             request.days.forEach(function(day) {
+                day.datePrint = moment(day.date).format("ddd., MMM Do, YYYY");
                 if (day.miscType != null) {
                     setMiscLeaveTypes.add(day.miscType);
                 }
@@ -47,50 +43,13 @@ function timeOffRequestListUtils() {
                 if(day.sickFamHours > 0) { setAccrualTypes.add("SICKFAM"); }
                 if(day.sickEmpHours > 0) { setAccrualTypes.add("SICKEMP"); }
             });
-            obj.miscTypes = Array.from(setMiscLeaveTypes);
-            obj.accrualTypes = Array.from(setAccrualTypes);
+            request.miscTypes = Array.from(setMiscLeaveTypes);
+            request.accrualTypes = Array.from(setAccrualTypes);
+            request.checked = false;
 
             //add the request object to the master array of request objects
-            requestObjs.push(obj);
+            requestObjs.push(request);
         });
         return requestObjs;
-    }
-
-    /**
-     * Function that takes in request data from an API call and returns only the requests that
-     * are approved
-     * (Used on a supervisor's page for employee requests. This allows them to see upcoming
-     * time off for their employees.)
-     *
-     * @param data
-     * @returns {Array} - Array of objects representing active, approved requests
-     */
-    function getApprovedRequests(data) {
-        var approvedRequests = [];
-        data.forEach(function (request) {
-            if(request.status === "APPROVED") {
-                approvedRequests.push(request);
-            }
-        });
-        return approvedRequests;
-    }
-
-    /**
-     * Function that takes in request data from an API call and returns only the requests that
-     * need to be reviewed
-     * (Used on a supervisor's page for employee requests. This allows them to see the requests
-     * that they need to review and approve/disapprove)
-     *
-     * @param data
-     * @returns {Array} - Array of objects representing requests awaiting approval
-     */
-    function getRequestsNeedingApproval(data) {
-        var requestsNeedingApproval = [];
-        data.forEach(function (request) {
-            if(request.status === "SUBMITTED") {
-                requestsNeedingApproval.push(request);
-            }
-        });
-        return requestsNeedingApproval;
     }
 }

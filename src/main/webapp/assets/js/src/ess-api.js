@@ -85,8 +85,16 @@ essApi.factory('AccrualHistoryApi', ['$resource', 'appProps', function($resource
     return $resource(appProps.apiPath + '/accruals/history');
 }]);
 
-essApi.factory('SupervisorTimeOffRequestApi', ['$resource', 'appProps', function($resource, appProps){
-    return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId');
+essApi.factory('ActiveSupervisorTimeOffRequestApi', ['$resource', 'appProps', function($resource, appProps){
+    return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId/active');
+}]);
+
+essApi.factory('ApprovalSupervisorTimeOffRequestsApi', ['$resource', 'appProps', function($resource, appProps){
+    return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId/Approval');
+}]);
+
+essApi.factory('TimeOffRequestDateRangeApi', ['$resource', 'appProps', function($resource, appProps){
+    return $resource(appProps.apiPath + '/accruals/request/employee/:empId');
 }]);
 
 /** --- Expected Hours API --- */

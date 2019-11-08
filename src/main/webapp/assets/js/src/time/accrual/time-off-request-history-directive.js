@@ -1,10 +1,10 @@
 (function () {
 
     angular.module('essTime').directive('timeOffRequestHistory',
-                                        ['appProps', 'ActiveYearsTimeRecordsApi', 'SupervisorTimeOffRequestApi',
+                                        ['appProps', 'ActiveYearsTimeRecordsApi', 'TimeOffRequestDateRangeApi',
                                          'TimeOffRequestListService', timeOffRequestHistoryDirective]);
 
-    function timeOffRequestHistoryDirective(appProps, ActiveYearsTimeRecordsApi, SupervisorTimeOffRequestApi,
+    function timeOffRequestHistoryDirective(appProps, ActiveYearsTimeRecordsApi, TimeOffRequestDateRangeApi,
                                             TimeOffRequestListService) {
         return {
             scope: {
@@ -94,17 +94,32 @@
                  * Function that gets the requests for the selected employee and year
                  */
                 function getRequests() {
-                    if($scope.state.selectedRecYear > 0) {
-                        /*make the call to the backend to get requests for a given employee,
-                          supervisor, and year.      */
-                        SupervisorTimeOffRequestApi.query({
-                                                            supId: $scope.state.supId,
-                                                            empId: $scope.state.selectedEmp.empId,
-                                                            year: $scope.state.selectedRecYear
-                                                        }).$promise.then(
+                    if ($scope.state.selectedRecYear > 0) {
+                        /*make the call to the backend to get requests for a given employee
+                        * with the start date and end date being the first and last day of the
+                        * year selected. */
+                        var today = new Date();
+                        var yesterday = new Date();
+                        yesterday.setDate(today.getDate()-1);
+                        var startDate = new Date($scope.state.selectedRecYear + "/01/01").toISOString().substr(0, 10);
+                        var endDate = null;
+                        if(today.getFullYear() === $scope.state.selectedRecYear) {
+                            endDate = yesterday.toISOString().substr(0, 10);
+                        } else {
+                            endDate = new Date($scope.state.selectedRecYear + "/12/31").toISOString().substr(0, 10);
+
+                        }
+                        console.log("End Date: ", endDate);
+                        console.log("Start Date: ", startDate);
+                        TimeOffRequestDateRangeApi.query({
+                                                             empId: $scope.state.selectedEmp.empId,
+                                                             startRange: startDate,
+                                                             endRange: endDate
+                                                         }).$promise.then(
                             //successful query
                             function (data) {
                                 $scope.requests = TimeOffRequestListService.formatData(data);
+                                sortRequests();
                             },
                             //failed query
                             function () {
@@ -112,6 +127,17 @@
                             }
                         );
                     }
+                }
+
+                /**
+                 * function to sort the requests by date, from earliest to latest
+                 */
+                function sortRequests() {
+                    ($scope.requests).sort(function(a,b){
+                        if(a.startDate > b.startDate)
+                            return 1;
+                        return -1
+                    });
                 }
 
             }

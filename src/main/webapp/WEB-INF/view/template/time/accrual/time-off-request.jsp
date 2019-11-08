@@ -18,7 +18,7 @@
     <h2>Time Off Requests</h2>
   </div>
 
-  <div class="timeoff-request-accrual-container content-container content-controls">
+  <div class="timeoff-request-accrual-container content-container content-controls" ng-show="pageLoaded">
     <div class="content-container"><h1>Active Time Off Requests</h1></div>
 
 
@@ -30,4 +30,11 @@
       &nbsp;New Time Off Request&nbsp;
     </button>
   </div>
+
+  <div class="timeoff-request-accrual-container content-container content-controls" ng-show="pageLoaded">
+    <div class="content-container"><h1>Time Off Request History</h1></div>
+
+    <time-off-request-list data="pastRequests"></time-off-request-list>
+  </div>
+
 </div>
