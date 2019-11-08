@@ -6,6 +6,11 @@ import gov.nysenate.ess.core.dao.base.DbVendor;
 public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
 
     SELECT_ALL_TASKS("SELECT * FROM ${essSchema}.personnel_task"),
+
+    SELECT_TASK_BY_ID("" +
+            "SELECT *\n" +
+            "FROM ${essSchema}.personnel_task\n" +
+            "WHERE task_id = :taskId"),
     ;
 
     private final String sql;

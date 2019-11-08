@@ -8,11 +8,11 @@ import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.config.DatabaseConfig;
 import gov.nysenate.ess.core.dao.pec.assignment.PTAQueryBuilder;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -38,15 +38,17 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
     @Autowired private PersonnelTaskAssignmentDao taskDao;
     @Autowired private EmployeeInfoService empInfoService;
 
+    @Autowired private PersonnelTaskTestDao taskTestDao;
+
     @Test
     public void empTaskAssignTest() {
         final int bogusEmpId = 1122334455;
         assertTrue("Test employee has no initial assignments",
-                taskDao.getTasksForEmp(bogusEmpId).isEmpty());
+                taskDao.getAssignmentsForEmp(bogusEmpId).isEmpty());
 
         taskAssigner.assignTasks(bogusEmpId);
 
-        Set<Integer> tasksPresent = taskDao.getTasksForEmp(bogusEmpId).stream()
+        Set<Integer> tasksPresent = taskDao.getAssignmentsForEmp(bogusEmpId).stream()
                 .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
 
@@ -55,23 +57,24 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
         assertEquals("Test employee is assigned all active tasks", allTaskIds, tasksPresent);
     }
 
-    @Ignore("Don't yet have the means to generate bogus tasks...")
     @Test
     public void deactivateTaskTest() {
         final int bogusEmpId = 1122334455;
         assertTrue("Test employee has no initial assignments",
-                taskDao.getTasksForEmp(bogusEmpId).isEmpty());
+                taskDao.getAssignmentsForEmp(bogusEmpId).isEmpty());
 
-        final int bogusTaskId = 1189998819;
-        final PersonnelTaskAssignment bogusTaskAssigment = PersonnelTaskAssignment.newTask(bogusEmpId, bogusTaskId);
         final Set<Integer> allTaskIds = taskService.getAllTaskIds(true);
 
         // Assign all tasks
         taskAssigner.assignTasks(bogusEmpId);
+
         // Manually add a bogus task
+        final PersonnelTask bogusTask = taskTestDao.insertDummyTask();
+        final int bogusTaskId = bogusTask.getTaskId();
+        final PersonnelTaskAssignment bogusTaskAssigment = PersonnelTaskAssignment.newTask(bogusEmpId, bogusTaskId);
         taskDao.updateAssignment(bogusTaskAssigment);
 
-        Set<Integer> preDeactivateTasks = taskDao.getTasksForEmp(bogusEmpId).stream()
+        Set<Integer> preDeactivateTasks = taskDao.getAssignmentsForEmp(bogusEmpId).stream()
                 .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
 
@@ -81,7 +84,7 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
         // Run task assignment (the bogus task assignment should be deactivated here)
         taskAssigner.assignTasks(bogusEmpId);
 
-        Set<Integer> postDeactivateTasks = taskDao.getTasksForEmp(bogusEmpId).stream()
+        Set<Integer> postDeactivateTasks = taskDao.getAssignmentsForEmp(bogusEmpId).stream()
                 .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
         assertEquals("All tasks should be assigned to employee", allTaskIds, postDeactivateTasks);

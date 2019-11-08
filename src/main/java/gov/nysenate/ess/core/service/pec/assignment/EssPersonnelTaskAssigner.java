@@ -112,7 +112,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
      * Create and save new tasks for the employee based on active tasks that are currently unassigned.
      */
     private void assignTasks(int empId, Set<Integer> activeTaskIds) {
-        Set<Integer> existingTaskIds = taskDao.getTasksForEmp(empId).stream()
+        Set<Integer> existingTaskIds = taskDao.getAssignmentsForEmp(empId).stream()
                 .map(PersonnelTaskAssignment::getTaskId)
                 .collect(Collectors.toSet());
 

@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 
 import java.time.LocalDateTime;
+import java.util.StringJoiner;
 
 /**
  * An assignment of a personnel task to an employee.
@@ -50,7 +51,7 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
         PersonnelTaskAssignment that = (PersonnelTaskAssignment) o;
         return taskId == that.taskId &&
                 empId == that.empId &&
-                updateEmpId == that.updateEmpId &&
+                Objects.equal(updateEmpId, that.updateEmpId) &&
                 completed == that.completed &&
                 active == that.active &&
                 Objects.equal(updateTime, that.updateTime);
@@ -67,6 +68,18 @@ public class PersonnelTaskAssignment implements Comparable<PersonnelTaskAssignme
                 .compare(this.empId, o.empId)
                 .compare(this.taskId, o.taskId)
                 .result();
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", PersonnelTaskAssignment.class.getSimpleName() + "[", "]")
+                .add("taskId=" + taskId)
+                .add("empId=" + empId)
+                .add("updateEmpId=" + updateEmpId)
+                .add("updateTime=" + updateTime)
+                .add("completed=" + completed)
+                .add("active=" + active)
+                .toString();
     }
 
     /* --- Getters --- */

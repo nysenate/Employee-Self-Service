@@ -14,4 +14,11 @@ public interface PersonnelTaskDao {
      * @return {@link List<PersonnelTask>}
      */
     List<PersonnelTask> getAllTasks();
+
+    /**
+     * Get a task by its id.
+     * @param taskId int
+     * @return {@link PersonnelTask}
+     */
+    PersonnelTask getPersonnelTask(int taskId);
 }

@@ -111,7 +111,7 @@ public class PersonnelTaskApiCtrl extends BaseRestApiCtrl {
         Function<PersonnelTaskAssignment, PersonnelTaskAssignmentView> viewMapper =
                 detail ? this::getDetailedTaskView : PersonnelTaskAssignmentView::new;
 
-        List<PersonnelTaskAssignment> tasks = taskDao.getTasksForEmp(empId);
+        List<PersonnelTaskAssignment> tasks = taskDao.getAssignmentsForEmp(empId);
         List<PersonnelTaskAssignmentView> taskViews = tasks.stream()
                 .map(viewMapper)
                 .collect(Collectors.toList());

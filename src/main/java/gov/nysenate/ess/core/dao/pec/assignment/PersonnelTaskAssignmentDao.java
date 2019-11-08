@@ -15,7 +15,7 @@ public interface PersonnelTaskAssignmentDao {
      * @param empId int
      * @return {@link List<PersonnelTaskAssignment>}
      */
-    List<PersonnelTaskAssignment> getTasksForEmp(int empId);
+    List<PersonnelTaskAssignment> getAssignmentsForEmp(int empId);
 
     /**
      * Get a specific task assigned to the given employee.

@@ -20,7 +20,7 @@ public class SqlPersonnelTaskAssignmentDao extends SqlBaseDao implements Personn
     private static final Logger logger = LoggerFactory.getLogger(SqlPersonnelTaskAssignmentDao.class);
 
     @Override
-    public List<PersonnelTaskAssignment> getTasksForEmp(int empId) {
+    public List<PersonnelTaskAssignment> getAssignmentsForEmp(int empId) {
         return localNamedJdbc.query(
                 SELECT_TASKS_FOR_EMP.getSql(schemaMap()),
                 getEmpIdParams(empId),
