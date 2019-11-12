@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.service.pec.task;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
+import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
 
 import java.util.List;
 import java.util.Set;
@@ -33,4 +34,11 @@ public interface PersonnelTaskService {
      * @param activeOnly
      */
     List<PersonnelTask> getPersonnelTasks(boolean activeOnly);
+
+    /**
+     * Gets a list of active personnel tasks for a particular assignment group.
+     * @param assignmentGroup {@link PersonnelTaskAssignmentGroup}
+     * @return {@link List<PersonnelTask>}
+     */
+    List<PersonnelTask> getActiveTasksInGroup(PersonnelTaskAssignmentGroup assignmentGroup);
 }

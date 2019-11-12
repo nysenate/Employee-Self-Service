@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.dao.pec.task.detail.PersonnelTaskDetailDao;
 import gov.nysenate.ess.core.model.cache.ContentCache;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskType;
+import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.service.base.CachingService;
 import gov.nysenate.ess.core.service.cache.EhCacheManageService;
 import net.sf.ehcache.Cache;
@@ -70,6 +71,13 @@ public class CachedPersonnelTaskService implements PersonnelTaskService, Caching
     public List<PersonnelTask> getPersonnelTasks(boolean activeOnly) {
         return getTaskMap().values().stream()
                 .filter(task -> !activeOnly || task.isActive())
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    public List<PersonnelTask> getActiveTasksInGroup(PersonnelTaskAssignmentGroup assignmentGroup) {
+        return getPersonnelTasks(true).stream()
+                .filter(task -> task.getAssignmentGroup() == assignmentGroup)
                 .collect(ImmutableList.toImmutableList());
     }
 

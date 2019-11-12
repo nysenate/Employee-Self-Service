@@ -2,16 +2,13 @@ package gov.nysenate.ess.core.service.pec.assignment;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
-import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
+import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
 import gov.nysenate.ess.core.model.transaction.TransactionHistoryUpdateEvent;
 import gov.nysenate.ess.core.model.transaction.TransactionRecord;
-import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.service.transaction.EmpTransactionService;
 import org.slf4j.Logger;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.APP;
 import static gov.nysenate.ess.core.model.transaction.TransactionCode.RTP;
@@ -38,44 +34,42 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     private static final ImmutableSet<TransactionCode> newEmpCodes = ImmutableSet.of(APP, RTP);
 
-    private final PersonnelTaskService taskService;
-    private final PersonnelTaskAssignmentDao taskDao;
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
     private final boolean scheduledAssignmentEnabled;
 
-    public EssPersonnelTaskAssigner(PersonnelTaskService taskService,
-                                    PersonnelTaskAssignmentDao taskDao,
-                                    EmployeeInfoService empInfoService,
+    /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
+    private final List<GroupTaskAssigner> groupTaskAssigners;
+
+    public EssPersonnelTaskAssigner(EmployeeInfoService empInfoService,
                                     EmpTransactionService transactionService,
+                                    List<GroupTaskAssigner> groupTaskAssigners,
                                     @Value("${scheduler.personnel_task.assignment.enabled:true}")
                                             boolean scheduledAssignmentEnabled,
                                     EventBus eventBus) {
-        this.taskService = taskService;
-        this.taskDao = taskDao;
         this.empInfoService = empInfoService;
         this.transactionService = transactionService;
         this.scheduledAssignmentEnabled = scheduledAssignmentEnabled;
+        this.groupTaskAssigners = groupTaskAssigners;
         eventBus.register(this);
     }
 
     @Override
     public void assignTasks() {
         logger.info("Determining and assigning personnel tasks for all active employees...");
-        Set<Integer> activeTaskIds = getAllActiveTaskIds();
         Set<Integer> activeEmpIds = empInfoService.getActiveEmpIds();
-        activeEmpIds.stream()
-                .sorted()
-                .forEach(empId -> assignTasks(empId, activeTaskIds));
-        logger.info("Personnel task assignment completed...");
+        activeEmpIds.stream().sorted().forEach(this::assignTasks);
+        logger.info("Personnel task assignment completed for all active employees.");
     }
 
     @Override
     public void assignTasks(int empId) {
-        logger.info("Determining personnel tasks for emp #{} ...", empId);
-        Set<Integer> activeTaskIds = getAllActiveTaskIds();
-        assignTasks(empId, activeTaskIds);
-        logger.info("Completed task assignment for emp #{} ...", empId);
+        if (!needsTaskAssignment(empId)) {
+            logger.info("Skipping task assignment for ineligible emp #{}", empId);
+        }
+        logger.info("Performing task assignment for emp #{} ...", empId);
+        groupTaskAssigners.forEach(groupAssigner -> groupAssigner.assignGroupTasks(empId));
+        logger.info("Completed task assignment for emp #{}.", empId);
     }
 
     /**
@@ -103,45 +97,6 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     /* --- Internal Methods --- */
-
-    private Set<Integer> getAllActiveTaskIds() {
-        return taskService.getAllTaskIds(true);
-    }
-
-    /**
-     * Create and save new tasks for the employee based on active tasks that are currently unassigned.
-     */
-    private void assignTasks(int empId, Set<Integer> activeTaskIds) {
-        Set<Integer> existingTaskIds = taskDao.getAssignmentsForEmp(empId).stream()
-                .map(PersonnelTaskAssignment::getTaskId)
-                .collect(Collectors.toSet());
-
-        // Get active tasks that are not currently assigned to the employee.
-        Set<Integer> activeUnassigned = Sets.difference(activeTaskIds, existingTaskIds);
-        // Get tasks assigned to the employee that are not active.
-        Set<Integer> inactiveAssigned = Sets.difference(existingTaskIds, activeTaskIds);
-
-        // Assign new tasks for active unassigned.
-        List<PersonnelTaskAssignment> newTasks = activeUnassigned.stream()
-                .map(taskId -> PersonnelTaskAssignment.newTask(empId, taskId))
-                .collect(Collectors.toList());
-        if (!newTasks.isEmpty()) {
-            logger.info("Assigning {} personnel tasks to emp #{} : {}",
-                    newTasks.size(),
-                    empId,
-                    newTasks.stream()
-                            .map(PersonnelTaskAssignment::getTaskId)
-                            .collect(Collectors.toList()));
-        }
-        newTasks.forEach(taskDao::updateAssignment);
-
-        // Deactivate assigned tasks that are inactive.
-        if (!inactiveAssigned.isEmpty()) {
-            logger.info("Deactivating {} inactive tasks for emp #{} : {}",
-                    inactiveAssigned.size(), empId, inactiveAssigned);
-        }
-        inactiveAssigned.forEach(taskId -> taskDao.deactivatePersonnelTaskAssignment(empId, taskId));
-    }
 
     /**
      * Determine if the employee is eligible for task assignment.

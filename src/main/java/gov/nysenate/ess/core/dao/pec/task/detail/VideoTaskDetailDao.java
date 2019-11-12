@@ -63,7 +63,9 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
                         "Multiple pec video ids returned in one query: " + this.videoId + " and " + videoId,
                         1, 2);
             }
-            codes.add(codeRowMapper.mapRow(rs, rs.getRow()));
+            if (rs.getString("code") != null) {
+                codes.add(codeRowMapper.mapRow(rs, rs.getRow()));
+            }
         }
 
         public VideoTask getResult() {
@@ -86,7 +88,7 @@ public class VideoTaskDetailDao extends SqlBaseDao implements PersonnelTaskDetai
         SELECT_VIDEO_TASK("" +
                 "SELECT *\n" +
                 "FROM ${essSchema}.pec_video v\n" +
-                "JOIN ${essSchema}.pec_video_code c USING (pec_video_id)\n" +
+                "LEFT JOIN ${essSchema}.pec_video_code c USING (pec_video_id)\n" +
                 "WHERE task_id = :taskId"
         ),
         ;
