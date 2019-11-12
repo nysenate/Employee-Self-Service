@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
@@ -56,6 +57,11 @@ public class GsaApi {
         if (dateTooFarInFuture(id, content)) {
             id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());
             return queryApi(id);
+        }
+        else if (gsaResponseParser.isResponseEmpty(content)) {
+            // If no records are found, return an GsaResponse with no lodging rates and a meal tier of $0.
+            // This occurs when querying US locations outside of CONUS. i.e. Alaska, Hawaii.
+            return new GsaResponse(id, new HashMap<>(), "0");
         }
         else {
             return gsaResponseParser.parseGsaResponse(content);

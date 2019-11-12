@@ -46,7 +46,7 @@ public class GsaAllowanceService {
 
     /**
      * Returns the lodging rate for the given date and address.
-     *
+     * Returns Dollars.ZERO if there is no lodging rate.
      * @throws IOException
      */
     public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
