@@ -20,6 +20,15 @@ public final class PerDiem implements Comparable<PerDiem> {
         this.rate = rate;
     }
 
+    /**
+     * Checks if the rate for this Per Diem is zero.
+     * Uses compareTo instead of equals to check only the value for equality, not the scale.
+     * @return
+     */
+    public boolean isRateZero() {
+        return rate.compareTo(new BigDecimal("0")) == 0;
+    }
+
     public LocalDate getDate() {
         return date;
     }

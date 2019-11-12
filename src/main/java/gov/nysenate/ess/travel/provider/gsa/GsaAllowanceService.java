@@ -37,6 +37,9 @@ public class GsaAllowanceService {
      * @throws IOException
      */
     public Dollars fetchMealRate(LocalDate date, Address address) throws IOException {
+        if (addressIsOutsideUS(address)) {
+            return Dollars.ZERO;
+        }
         GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getMealTier());
     }
@@ -47,6 +50,9 @@ public class GsaAllowanceService {
      * @throws IOException
      */
     public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
+        if (addressIsOutsideUS(address)) {
+            return Dollars.ZERO;
+        }
         GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
     }
@@ -71,5 +77,9 @@ public class GsaAllowanceService {
 //            }
 //        }
         return res;
+    }
+
+    private boolean addressIsOutsideUS(Address address) {
+        return !(address.getCountry().equalsIgnoreCase("United States") || address.getCountry().equalsIgnoreCase("US"));
     }
 }

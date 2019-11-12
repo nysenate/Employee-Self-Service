@@ -53,13 +53,16 @@ public class AmendmentService {
         Set<MealPerDiem> mealPerDiemSet = new HashSet<>();
         for (Destination d : route.destinations()) {
             for (PerDiem pd : d.mealPerDiems()) {
-                SenateMie mie = null;
-                try {
-                    mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
-                } catch (IncorrectResultSizeDataAccessException ex) {
-                    logger.warn("Unable to find Senate mie for date: " + pd.getDate().toString() + " and total: " + pd.getRate().toString());
+                // Ignore Per Diem if the rate is zero - there is no meal per diem.
+                if (!pd.isRateZero()) {
+                    SenateMie mie = null;
+                    try {
+                        mie = senateMieDao.selectSenateMie(DateUtils.getFederalFiscalYear(pd.getDate()), new Dollars(pd.getRate()));
+                    } catch (IncorrectResultSizeDataAccessException ex) {
+                        logger.warn("Unable to find Senate mie for date: " + pd.getDate().toString() + " and total: " + pd.getRate().toString());
+                    }
+                    mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd.getDate(), new Dollars(pd.getRate()), mie));
                 }
-                mealPerDiemSet.add(new MealPerDiem(d.getAddress(), pd.getDate(), new Dollars(pd.getRate()), mie));
             }
         }
         amd.setMealPerDiems(new MealPerDiems(mealPerDiemSet));
@@ -74,7 +77,10 @@ public class AmendmentService {
         Set<LodgingPerDiem> lodgingPerDiemSet = new HashSet<>();
         for (Destination d : route.destinations()) {
             for (PerDiem pd : d.lodgingPerDiems()) {
-                lodgingPerDiemSet.add(new LodgingPerDiem(d.getAddress(), pd));
+                // Ignore Per Diem if the rate is zero - there is no lodging per diem.
+                if (!pd.isRateZero()) {
+                    lodgingPerDiemSet.add(new LodgingPerDiem(d.getAddress(), pd));
+                }
             }
         }
         amd.setLodingPerDiems(new LodgingPerDiems(lodgingPerDiemSet));
