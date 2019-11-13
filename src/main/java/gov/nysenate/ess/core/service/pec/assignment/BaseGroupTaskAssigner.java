@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core.service.pec.assignment;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,10 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
     }
 
     protected int assignTasks(int empId, Set<Integer> assignableTaskIds) {
-        Set<Integer> existingTaskIds = getAssignedIds(empId);
+
+        Map<Integer, PersonnelTaskAssignment> assignmentMap = getAssignmentMap(empId);
+
+        Set<Integer> existingTaskIds = assignmentMap.keySet();
 
         // Get active tasks that are not currently assigned to the employee.
         Set<Integer> activeUnassigned = Sets.difference(assignableTaskIds, existingTaskIds);
@@ -52,12 +57,16 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         }
         newAssignments.forEach(assignmentDao::updateAssignment);
 
-        // Deactivate assigned tasks that are inactive.
-        if (!inactiveAssigned.isEmpty()) {
-            logger.info("Deactivating {} inactive {} tasks for emp #{} : {}",
-                    inactiveAssigned.size(), getTargetGroup(), empId, inactiveAssigned);
+        // Deactivate inactive tasks that have not been completed.
+        Set<Integer> idsToDeactivate = inactiveAssigned.stream()
+                .filter(taskId -> !assignmentMap.get(taskId).isCompleted())
+                .collect(Collectors.toSet());
+        if (!idsToDeactivate.isEmpty()) {
+            logger.info("Deactivating {} {} tasks for emp #{} : {}",
+                    idsToDeactivate.size(), getTargetGroup(), empId, idsToDeactivate);
         }
-        inactiveAssigned.forEach(taskId -> assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId));
+        idsToDeactivate.forEach(taskId -> assignmentDao.deactivatePersonnelTaskAssignment(empId, taskId));
+
         return newAssignments.size();
     }
 
@@ -65,6 +74,10 @@ public abstract class BaseGroupTaskAssigner implements GroupTaskAssigner {
         return assignmentDao.getAssignmentsForEmp(empId).stream()
                 .filter(this::assignmentInGroup)
                 .collect(Collectors.toList());
+    }
+
+    protected Map<Integer, PersonnelTaskAssignment> getAssignmentMap(int empId) {
+        return Maps.uniqueIndex(getGroupAssignments(empId), PersonnelTaskAssignment::getTaskId);
     }
 
     protected Set<Integer> getAssignedIds(int empId) {

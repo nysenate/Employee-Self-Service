@@ -107,7 +107,7 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
 
     @Test
     public void ethicsAssignmentTest() {
-        final int testEmpId = 9001;
+        final int testEmpId = 37047734;
 
         // Pre conditions
 
@@ -158,7 +158,7 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
         );
         assignmentDao.updateAssignment(completeMoodleAssignment);
 
-        taskAssigner.assignTasks(9001);
+        taskAssigner.assignTasks(testEmpId);
 
         Set<Integer> moodleCompleteAssignments = getAssignedTaskIds(testEmpId);
 
@@ -166,6 +166,41 @@ public class EssPersonnelTaskAssignerIT extends BaseTest {
                 moodleCompleteAssignments.contains(nonMoodleEthicsTask.getTaskId()));
     }
 
+    @Test
+    public void preventCompleteDeactivationTest() {
+        PersonnelTask testTask = taskTestDao.insertDummyTask();
+        int testEmpId1 = 11223344;
+        int testEmpId2 = 44332211;
+
+        assertNotEquals(testEmpId1, testEmpId2);
+
+        assertTrue("Test employee 1 has no initial assignments",
+                assignmentDao.getAssignmentsForEmp(testEmpId1).isEmpty());
+        assertTrue("Test employee 2 has no initial assignments",
+                assignmentDao.getAssignmentsForEmp(testEmpId2).isEmpty());
+
+        taskAssigner.assignTasks(testEmpId1);
+        taskAssigner.assignTasks(testEmpId2);
+
+        assertTrue("Test emp 1 is assigned test task",
+                getAssignedTaskIds(testEmpId1).contains(testTask.getTaskId()));
+        assertTrue("Test emp 2 is assigned test task",
+                getAssignedTaskIds(testEmpId2).contains(testTask.getTaskId()));
+
+        assignmentDao.setTaskComplete(testEmpId1, testTask.getTaskId(), testEmpId1);
+
+        taskTestDao.setTaskActive(testTask.getTaskId(), false);
+
+        taskAssigner.assignTasks(testEmpId1);
+        taskAssigner.assignTasks(testEmpId2);
+
+        assertTrue("Test emp 1 is still assigned inactive test task due to prior completion.",
+                getAssignedTaskIds(testEmpId1).contains(testTask.getTaskId()));
+        assertFalse("Test emp 2 is no longer assigned inactivated test task.",
+                getAssignedTaskIds(testEmpId2).contains(testTask.getTaskId()));
+    }
+
+    // Note: When emp transaction histories are cached, complete assignment is considerably faster.
     @Ignore("EssPersonnelTaskAssignerIT#assignAllEmpsTest takes too long to run.  Still good for debugging.")
     @Test
     public void assignAllEmpsTest() {
