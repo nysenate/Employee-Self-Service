@@ -1,6 +1,6 @@
 package gov.nysenate.ess.core.service.pec.assignment;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableSet;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
@@ -27,32 +27,37 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
 
     @Override
     public int assignGroupTasks(int empId) {
-        Set<Integer> validEthicsTaskIds = new HashSet<>();
+        return assignTasks(empId, getRequiredTaskIds(empId));
+    }
+
+    private Set<Integer> getRequiredTaskIds(int empId) {
+        Optional<PersonnelTask> latestEthicsTaskOpt = getLatestEthicsTask();
+
         Optional<PersonnelTask> moodleTaskOpt = getMoodleEthicsTask();
-        List<PersonnelTask> validNonMoodleTasks = getNonMoodleEthicsTasks();
 
-        Map<Integer, PersonnelTaskAssignment> ethicsAssigns =
-                Maps.uniqueIndex(getGroupAssignments(empId), PersonnelTaskAssignment::getTaskId);
+        Optional<PersonnelTaskAssignment> latestCompletedOpt = getGroupAssignments(empId).stream()
+                .filter(PersonnelTaskAssignment::isCompleted)
+                .max(Comparator.comparing(PersonnelTaskAssignment::getUpdateTime));
 
-        if (moodleTaskOpt.isPresent()) {
-            final PersonnelTask moodleTask = moodleTaskOpt.get();
-            validEthicsTaskIds.add(moodleTask.getTaskId());
-            if (ethicsAssigns.containsKey(moodleTask.getTaskId())) {
-                final PersonnelTaskAssignment moodleAssignment = ethicsAssigns.get(moodleTask.getTaskId());
-                if (moodleAssignment.isCompleted()) {
-                    validNonMoodleTasks.stream()
-                            .filter(task -> effectiveAfterMoodleCompletion(task, moodleAssignment))
-                            .map(PersonnelTask::getTaskId)
-                            .forEach(validEthicsTaskIds::add);
-                }
+        final Set<Integer> requiredTaskIds = new HashSet<>();
+
+        // If there is already a complete ethics task, see if there is a newer task to assign
+        if (latestEthicsTaskOpt.isPresent() && latestCompletedOpt.isPresent()) {
+            PersonnelTaskAssignment latestCompleted = latestCompletedOpt.get();
+            PersonnelTask latestTask = latestEthicsTaskOpt.get();
+
+            // Require the latest task if it was mandated after the last ethics assignment was completed.
+            if (latestTask.getEffectiveDateTime().isAfter(latestCompleted.getUpdateTime())) {
+                requiredTaskIds.add(latestTask.getTaskId());
             }
         } else {
-            validNonMoodleTasks.stream()
+            // Otherwise, require the moodle course, assuming there is one.
+            moodleTaskOpt
                     .map(PersonnelTask::getTaskId)
-                    .forEach(validEthicsTaskIds::add);
+                    .ifPresent(requiredTaskIds::add);
         }
 
-        return assignTasks(empId, validEthicsTaskIds);
+        return ImmutableSet.copyOf(requiredTaskIds);
     }
 
     private Optional<PersonnelTask> getMoodleEthicsTask() {
@@ -68,6 +73,11 @@ public class EthicsGroupTaskAssigner extends BaseGroupTaskAssigner {
                 throw new IllegalStateException(
                         "Expected a single moodle ethics task, got " + moodleTasks.size() + ": " + moodleTasks);
         }
+    }
+
+    private Optional<PersonnelTask> getLatestEthicsTask() {
+        return getActiveGroupTasks().stream()
+                .max(Comparator.comparing(PersonnelTask::getEffectiveDateTime));
     }
 
     private List<PersonnelTask> getNonMoodleEthicsTasks() {
