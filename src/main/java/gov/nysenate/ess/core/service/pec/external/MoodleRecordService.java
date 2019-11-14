@@ -89,8 +89,8 @@ public class MoodleRecordService implements ESSMoodleRecordService {
             }
 
             PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
-                    employee.getEmployeeId(),
                     moodleTaskId,
+                    employee.getEmployeeId(),
                     employee.getEmployeeId(),
                     moodleEmployeeRecord.getCompletedTime(),
                     moodleEmployeeRecord.didEmployeeCompleteCourse(),

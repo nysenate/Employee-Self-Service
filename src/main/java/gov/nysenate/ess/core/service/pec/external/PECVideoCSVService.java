@@ -59,9 +59,8 @@ public class PECVideoCSVService {
     private static final Pattern csvLiveTrainingDHPReportPattern =
             Pattern.compile("LiveTrainingDHP(\\d{4})");
 
-    // TODO put these values in app.properties
-    private static final int ETHICS_VID_ID_NUM = 1;
-    private static final int HARASSMENT_VID_ID_NUM = 2;
+    private final int ETHICS_VID_ID_NUM;
+    private final int HARASSMENT_VID_ID_NUM;
 
     private static final DateTimeFormatter liveDTF = DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm");
     private static final DateTimeFormatter liveDTFAlt = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm");
@@ -73,13 +72,17 @@ public class PECVideoCSVService {
                               EmployeeInfoService employeeInfoService,
                               EmpTransactionService transactionService,
                               ResponsibilityHeadDao rchDao,
-                              @Value("${data.dir:}") String dataDir) {
+                              @Value("${data.dir:}") String dataDir,
+                              @Value("${pec.import.harassment_video_task_id:}") int harrassmentVidId,
+                              @Value("${pec.import.ethics_video_task_id:}") int ethicsVidId) {
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.employeeInfoService = employeeInfoService;
         this.transactionService = transactionService;
         this.rchDao = rchDao;
         this.csvFileDir = Paths.get(dataDir, "pec_csv_import").toString();
+        this.ETHICS_VID_ID_NUM = ethicsVidId;
+        this.HARASSMENT_VID_ID_NUM = harrassmentVidId;
     }
 
     public void processCSVReports() throws IOException {
@@ -262,8 +265,8 @@ public class PECVideoCSVService {
 
     private void updateDB(Employee employee, LocalDateTime dateTime, int id) {
         PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
-                employee.getEmployeeId(),
                 id,
+                employee.getEmployeeId(),
                 employee.getEmployeeId(),
                 dateTime,
                 true,

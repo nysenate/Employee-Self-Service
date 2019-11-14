@@ -190,6 +190,11 @@ legethics.url =
 legethics.api.path =
 legethics.key =
 
+# --- PEC Data Import Config --------------------------------------------------
+
+pec.import.harassment_video_task_id =
+pec.import.ethics_video_task_id =
+
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
