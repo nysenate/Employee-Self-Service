@@ -1,8 +1,8 @@
 package gov.nysenate.ess.travel.application.allowances;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
-import gov.nysenate.ess.travel.utils.Dollars;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -20,7 +20,7 @@ public class PerDiemView implements ViewObject {
     }
 
     public PerDiem toPerDiem() {
-        return new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new Dollars(rate));
+        return new PerDiem(LocalDate.parse(date, DateTimeFormatter.ISO_DATE), new BigDecimal(rate));
     }
 
     public String getDate() {

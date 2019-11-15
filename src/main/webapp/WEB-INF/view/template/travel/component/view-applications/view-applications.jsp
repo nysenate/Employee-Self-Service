@@ -42,5 +42,8 @@
     <modal modal-id="app-form-view-modal">
       <div app-form-view-modal></div>
     </modal>
+    <modal modal-id="app-expense-summary-modal">
+      <div app-expense-summary-modal></div>
+    </modal>
   </div>
 </div>

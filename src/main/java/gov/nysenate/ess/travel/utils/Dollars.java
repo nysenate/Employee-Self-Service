@@ -37,6 +37,10 @@ public final class Dollars implements Comparable<Dollars> {
         return new Dollars(this.getDollars().multiply(dollars.getDollars()));
     }
 
+    public Dollars divide(int divisor) {
+        return new Dollars(this.getDollars().divide(new BigDecimal(divisor)));
+    }
+
     private BigDecimal getDollars() {
         return dollars;
     }

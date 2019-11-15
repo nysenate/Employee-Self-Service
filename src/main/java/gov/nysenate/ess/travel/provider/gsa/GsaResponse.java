@@ -35,7 +35,11 @@ public class GsaResponse {
     }
 
     public BigDecimal getLodging(LocalDate date) {
-        return lodgingRates.get(date.getMonth());
+        BigDecimal rate = lodgingRates.get(date.getMonth());
+        if (rate == null) {
+            return new BigDecimal("0");
+        }
+        return rate;
     }
 
     public String getMealTier() {

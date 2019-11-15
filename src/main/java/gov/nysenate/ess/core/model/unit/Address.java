@@ -62,18 +62,12 @@ public class Address {
         }
     }
 
-    public String getFromattedAddressWithCounty() {
-        if (isParsed()) {
-            return ((!addr1.isEmpty() ? addr1 : "") + (!addr2.isEmpty() ? " " + addr2 + "" : "")
-                    + (!addr1.isEmpty() || !addr2.isEmpty() ? "," : "")
-                    + (!city.isEmpty() ? " " + city + "," : "")
-                    + (!county.isEmpty() ? " " + county + " County" + "," : "")
-                    + (!state.isEmpty() ? " " + state : "")
-                    + (!zip5.isEmpty() ? " " + zip5 : "") + (!zip4.isEmpty() ? "-" + zip4 : "")).trim();
-        }
-        else {
-            return addr1;
-        }
+    /**
+     * @return The String representation of this address with the county added in parenthesis if not empty.
+     * i.e. 100 State Street, Albany, New York, 12208 (Albany County)
+     */
+    public String getFormattedAddressWithCounty() {
+        return this.toString() + (!county.isEmpty() ? " (" + county + " County)" : "");
     }
 
     /**

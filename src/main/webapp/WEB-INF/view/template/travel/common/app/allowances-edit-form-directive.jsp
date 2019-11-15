@@ -50,7 +50,7 @@
       </div>
     </ess-travel-inner-container>
 
-    <ess-travel-inner-container title="Meals Adjustment (Optional)">
+    <ess-travel-inner-container title="Meals Adjustment (Optional)" ng-show="tripHasMeals()">
       <p class="travel-text margin-bottom-20">
         You qualify for the following meal reimbursements. Uncheck anything you would <span class="bold">not</span> like
         to be reimbursed for.

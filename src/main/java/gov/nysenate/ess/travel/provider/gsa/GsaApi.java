@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-
+import java.util.HashMap;
 
 /**
  * Responsible for getting GsaResponse objects from the official GSA Api.
@@ -23,14 +23,17 @@ public class GsaApi {
     private static final Logger logger = LoggerFactory.getLogger(GsaApi.class);
 
     private HttpUtils httpUtils;
-    private String urlTemplate;
+    private String baseUrl;
+    private String ratesPathTemplate;
+    private String miePathTemplate;
     private GsaResponseParser gsaResponseParser;
 
     @Autowired
     public GsaApi(@Value("${travel.gsa.api.url_base}") String baseUrl, @Value("${travel.gsa.api.key}") String apiKey,
                   GsaResponseParser gsaResponseParser, HttpUtils httpUtils) {
-        this.urlTemplate = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
-        this.urlTemplate += "zip/%s/year/%s?api_key=" + apiKey;
+        this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        this.ratesPathTemplate = "zip/%s/year/%s?api_key=" + apiKey;
+        this.miePathTemplate = "conus/mie/%s?api_key=" + apiKey;
         this.gsaResponseParser = gsaResponseParser;
         this.httpUtils = httpUtils;
     }
@@ -49,11 +52,16 @@ public class GsaApi {
 
     private GsaResponse queryApi(GsaResponseId id) throws IOException {
         // Format the URL with the zip code and fiscal year of the request.
-        String url = String.format(urlTemplate, id.getZipcode(), String.valueOf(id.getFiscalYear()));
+        String url = String.format(baseUrl + ratesPathTemplate, id.getZipcode(), String.valueOf(id.getFiscalYear()));
         String content = httpUtils.urlToString(url);
         if (dateTooFarInFuture(id, content)) {
             id = new GsaResponseId(id.getFiscalYear() - 1, id.getZipcode());
             return queryApi(id);
+        }
+        else if (gsaResponseParser.isResponseEmpty(content)) {
+            // If no records are found, return an GsaResponse with no lodging rates and a meal tier of $0.
+            // This occurs when querying US locations outside of CONUS. i.e. Alaska, Hawaii.
+            return new GsaResponse(id, new HashMap<>(), "0");
         }
         else {
             return gsaResponseParser.parseGsaResponse(content);

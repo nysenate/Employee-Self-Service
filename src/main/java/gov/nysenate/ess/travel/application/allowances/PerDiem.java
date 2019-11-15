@@ -11,7 +11,6 @@ public final class PerDiem implements Comparable<PerDiem> {
     private final LocalDate date;
     private final BigDecimal rate;
 
-    // TODO I think Dollars in this constructor can loose accuracy in the rate. Consider removing.
     public PerDiem(LocalDate date, Dollars rate) {
         this(date, new BigDecimal(rate.toString()));
     }
@@ -19,6 +18,15 @@ public final class PerDiem implements Comparable<PerDiem> {
     public PerDiem(LocalDate date, BigDecimal rate) {
         this.date = date;
         this.rate = rate;
+    }
+
+    /**
+     * Checks if the rate for this Per Diem is zero.
+     * Uses compareTo instead of equals to check only the value for equality, not the scale.
+     * @return
+     */
+    public boolean isRateZero() {
+        return rate.compareTo(new BigDecimal("0")) == 0;
     }
 
     public LocalDate getDate() {

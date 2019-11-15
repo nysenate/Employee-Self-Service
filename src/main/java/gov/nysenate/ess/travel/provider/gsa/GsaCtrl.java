@@ -13,15 +13,17 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/gsa")
-public class GsaBatchCtrl extends BaseRestApiCtrl {
+public class GsaCtrl extends BaseRestApiCtrl {
 
     private GsaBatchResponseService gsaBatchResponseService;
     private GsaApi gsaApi;
+    private GsaAllowanceService gsaAllowanceService;
 
     @Autowired
-    public GsaBatchCtrl(GsaBatchResponseService gsaBatchResponseService, GsaApi gsaApi) {
+    public GsaCtrl(GsaBatchResponseService gsaBatchResponseService, GsaApi gsaApi, GsaAllowanceService gsaAllowanceService) {
         this.gsaBatchResponseService = gsaBatchResponseService;
         this.gsaApi = gsaApi;
+        this.gsaAllowanceService = gsaAllowanceService;
     }
 
     @RequestMapping(value = "/batch")
