@@ -39,7 +39,7 @@
       </div>
       <%-- Video Container--%>
       <div class="pec-video-container">
-        <video controls>
+        <video id="video" controls>
           <source ng-src="{{state.videoUrl}}" type="video/mp4">
         </video>
       </div>

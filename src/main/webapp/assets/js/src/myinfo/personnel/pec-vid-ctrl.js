@@ -75,6 +75,39 @@
             $scope.state.assignment = assignment;
             $scope.state.videoUrl = $sce.trustAsResourceUrl(appProps.ctxPath + $scope.state.assignment.task.path);
             $scope.state.codes = assignment.task.codes;
+            setVideoWatches();
+        }
+
+        function setVideoWatches() {
+
+            var firstPass = false;
+            var onesecond = setInterval(function () {
+                if(document.readyState === 'complete' && firstPass === false) {
+                    // The video must be completely loaded before we can execute the following code
+
+                    var video = document.getElementById("video");
+                    var supposedCurrentTime = 0;
+
+                    video.addEventListener('timeupdate', function() {
+                        // console.log('timeupdate event');
+                        if (!video.seeking) {
+                            supposedCurrentTime = video.currentTime;
+                        }
+                    });
+
+                    video.addEventListener('seeking', function() {
+                        // console.log('seeking event');
+                        // guard against infinite recursion:
+                        var delta = video.currentTime - supposedCurrentTime;
+                        if (Math.abs(delta) > 0.01) {
+                            // console.log("Seeking is disabled");
+                            video.currentTime = supposedCurrentTime;
+                        }
+                    });
+
+                    firstPass = true;
+                }
+            }, 1000);
         }
 
         /**
