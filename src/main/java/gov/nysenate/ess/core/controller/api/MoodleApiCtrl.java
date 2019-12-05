@@ -1,29 +1,32 @@
 package gov.nysenate.ess.core.controller.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.service.pec.external.MoodleRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-@Controller
+@RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/moodle/")
 public class MoodleApiCtrl extends BaseRestApiCtrl {
 
     private MoodleRecordService moodleRecordService;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
+    final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0);
+    final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
     @Autowired
     public MoodleApiCtrl(MoodleRecordService moodleRecordService,
@@ -51,14 +54,47 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
      * */
     @RequestMapping(value = "/generate", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
-    public void runMoodleImport(HttpServletRequest request,
-                                          HttpServletResponse response,
-                                     @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                                     @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-                                     @RequestParam String organization) throws IOException {
+    public SimpleResponse runMoodleImport(HttpServletRequest request,
+                                        HttpServletResponse response ,
+                                        @RequestParam(required = false, defaultValue = "1970") String from,
+                                        @RequestParam(required = false, defaultValue = "tomorrow") String to,
+                                        @RequestParam(required = false, defaultValue = "senate") String organization)  {
+        checkPermission(ADMIN.getPermission());
 
-        //Change specifics of moodle api call once it is available
-        JsonNode json = moodleRecordService.contactMoodleForRecords(from, to, organization);
-        moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
+        LocalDateTime ldtFrom;
+        LocalDateTime ldtTo;
+
+        //Set From
+        if (from.equals("1970")) {
+            ldtFrom = jan1970;
+        }
+        else {
+            ldtFrom = stringToLocalDateTime(from);
+        }
+
+        //Set To
+        if (to.equals("tomorrow")) {
+            ldtTo = tomorrow;
+        }
+        else {
+            ldtTo = stringToLocalDateTime(to);
+        }
+
+        //Contact moodle
+        try {
+            JsonNode json = moodleRecordService.contactMoodleForRecords(ldtFrom, ldtTo, organization);
+            moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
+        }
+        catch (Exception e) {
+            return new SimpleResponse(false, "Moode Report Generation", e.getMessage());
+        }
+
+
+        return new SimpleResponse(true, "Moode Report Generation", "moodle-report-generation");
+    }
+
+    private LocalDateTime stringToLocalDateTime(String time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(time, formatter);
     }
 }
