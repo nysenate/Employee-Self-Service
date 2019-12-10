@@ -18,4 +18,9 @@ public interface PersonnelTaskAssigner {
      * @param empId int - employee id of the chosen employee.
      */
     void assignTasks(int empId);
+
+    /**
+     * Updates a tasks completion status assigned to an employee
+     */
+    void updateAssignedTask(int empID, int updateEmpID, boolean completed, int taskID);
 }

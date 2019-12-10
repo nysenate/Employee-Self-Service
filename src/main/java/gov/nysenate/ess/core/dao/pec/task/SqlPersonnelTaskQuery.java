@@ -11,6 +11,10 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_task\n" +
             "WHERE task_id = :taskId"),
+    UPDATE_TASK_COMPLETION(
+            "update ${essSchema}.personnel_task_assignment set completed = ?, " +
+                    "update_user_id = ? where emp_id = ? and task_id = ?"
+    )
     ;
 
     private final String sql;

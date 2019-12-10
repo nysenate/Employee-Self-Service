@@ -21,4 +21,10 @@ public interface PersonnelTaskDao {
      * @return {@link PersonnelTask}
      */
     PersonnelTask getPersonnelTask(int taskId);
+
+    /**
+     * Update a personnel assigned task
+     */
+    void updatePersonnelAssignedTask(int empID, int updateEmpID, boolean completed, int taskID);
+
 }

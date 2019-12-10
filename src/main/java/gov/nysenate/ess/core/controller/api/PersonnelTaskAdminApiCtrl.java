@@ -3,6 +3,10 @@ package gov.nysenate.ess.core.controller.api;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,5 +96,36 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true,
                 "Records have been parsed from the CSV files",
                 "task-assignment-complete");
+    }
+
+    /**
+     * Update Personnel Task Assignment API
+     * ------------------------------------
+     *
+     * This api call updates the assigned task of a given employee. It can make the task complete or incomplete
+     *
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/overrride/{updateEmpID}/{taskID}/{completed}/{empID}
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/overrride/{updateEmpID}/{taskID}/{completed}/{empID}", method = GET)
+    public SimpleResponse overrideTaskCompletion(@PathVariable int updateEmpID,
+                                                 @PathVariable int taskID,
+                                                 @PathVariable boolean completed,
+                                                 @PathVariable int empID) throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+            taskAssigner.updateAssignedTask(updateEmpID, taskID, completed, empID);
+            return new SimpleResponse(true,
+                    "Task assignment " + taskID + " was updated for Employee " + empID +
+                            " by employee " + updateEmpID + ". Its completion status is " + completed,
+                    "employee-task-override");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
     }
 }

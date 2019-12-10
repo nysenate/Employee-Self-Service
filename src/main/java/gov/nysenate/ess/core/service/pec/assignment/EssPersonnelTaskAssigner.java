@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.model.pec.video.PersonnelTaskAssignmentGroup;
 import gov.nysenate.ess.core.model.transaction.TransactionCode;
 import gov.nysenate.ess.core.model.transaction.TransactionHistory;
@@ -37,6 +38,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     private final EmployeeInfoService empInfoService;
     private final EmpTransactionService transactionService;
     private final boolean scheduledAssignmentEnabled;
+    private final PersonnelTaskDao personnelTaskDao;
 
     /** Classes which handle assignment for different {@link PersonnelTaskAssignmentGroup} */
     private final List<GroupTaskAssigner> groupTaskAssigners;
@@ -44,6 +46,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     public EssPersonnelTaskAssigner(EmployeeInfoService empInfoService,
                                     EmpTransactionService transactionService,
                                     List<GroupTaskAssigner> groupTaskAssigners,
+                                    PersonnelTaskDao personnelTaskDao,
                                     @Value("${scheduler.personnel_task.assignment.enabled:true}")
                                             boolean scheduledAssignmentEnabled,
                                     EventBus eventBus) {
@@ -51,6 +54,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         this.transactionService = transactionService;
         this.scheduledAssignmentEnabled = scheduledAssignmentEnabled;
         this.groupTaskAssigners = groupTaskAssigners;
+        this.personnelTaskDao = personnelTaskDao;
         eventBus.register(this);
     }
 
@@ -70,6 +74,11 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         logger.info("Performing task assignment for emp #{} ...", empId);
         groupTaskAssigners.forEach(groupAssigner -> groupAssigner.assignGroupTasks(empId));
         logger.info("Completed task assignment for emp #{}.", empId);
+    }
+
+    @Override
+    public void updateAssignedTask(int empID, int updateEmpID, boolean completed, int taskID) {
+        personnelTaskDao.updatePersonnelAssignedTask(empID, updateEmpID, completed, taskID);
     }
 
     /**
