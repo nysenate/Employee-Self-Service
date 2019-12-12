@@ -51,10 +51,10 @@ public class PECVideoCSVService {
     private final String csvFileDir;
 
     private static final Pattern csvEthicsReportPattern =
-            Pattern.compile("ExportDocsEthics(\\d{4})");
+            Pattern.compile("ExportDocsEthics(\\d{4})_V(\\d)");
 
     private static final Pattern csvHarrassmentReportPattern =
-            Pattern.compile("ExportDocsHarassment(\\d{4})");
+            Pattern.compile("ExportDocsHarassment(\\d{4})_V(\\d)");
 
     private static final Pattern csvLiveTrainingDHPReportPattern =
             Pattern.compile("LiveTrainingDHP(\\d{4})");
