@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
@@ -37,6 +37,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private RouteService routeService;
     @Autowired private AmendmentService amendmentService;
+    @Autowired private AllowedTravelersService allowedTravelersService;
 
     /**
      * Get an unsubmitted app API
@@ -65,11 +66,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
             unsubmittedAppDao.save(userId, appView);
         }
 
-        Set<Employee> allEmps = employeeInfoService.getAllEmployees(true);
-        Set<Employee> rchEmployees = allEmps.stream()
-                .filter(e -> Optional.ofNullable(e.getRespCenterHeadCode()).orElse("").equals(user.getRespCenterHeadCode()))
-                .collect(Collectors.toSet());
-        return new ViewObjectResponse<>(new NewApplicationDto(appView, rchEmployees));
+        Set<Employee> allowedTravelers = allowedTravelersService.forEmp(user);
+        return new ViewObjectResponse<>(new NewApplicationDto(appView, allowedTravelers));
     }
 
     /**
