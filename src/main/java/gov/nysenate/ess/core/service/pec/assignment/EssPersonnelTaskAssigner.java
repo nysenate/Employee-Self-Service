@@ -77,8 +77,13 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     }
 
     @Override
-    public void updateAssignedTask(int empID, int updateEmpID, boolean completed, int taskID) {
-        personnelTaskDao.updatePersonnelAssignedTask(empID, updateEmpID, completed, taskID);
+    public void updateAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID) {
+        personnelTaskDao.updatePersonnelAssignedTaskCompletion(empID, updateEmpID, completed, taskID);
+    }
+
+    @Override
+    public void updateAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
+        personnelTaskDao.updatePersonnelAssignedTaskAssignment(empID,updateEmpID,assigned,taskID);
     }
 
     /**

@@ -3,7 +3,6 @@ package gov.nysenate.ess.core.controller.api;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
-import org.apache.catalina.security.SecurityUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
@@ -118,10 +117,42 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
                                                  @PathVariable int empID) throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            taskAssigner.updateAssignedTask(updateEmpID, taskID, completed, empID);
+            taskAssigner.updateAssignedTaskCompletion(updateEmpID, taskID, completed, empID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its completion status is " + completed,
+                    "employee-task-override");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
+    }
+
+
+    /**
+     * Update Personnel Task Assignment API
+     * ------------------------------------
+     *
+     * This api call updates the assigned task of a given employee. It can assign or unassign a task
+     *
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/overrride/assign/{updateEmpID}/{taskID}/{assigned}/{empID}
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/overrride/assign/{updateEmpID}/{taskID}/{completed}/{empID}", method = GET)
+    public SimpleResponse overrideTaskAssignment(@PathVariable int updateEmpID,
+                                                 @PathVariable int taskID,
+                                                 @PathVariable boolean completed,
+                                                 @PathVariable int empID) throws AuthorizationException {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+            taskAssigner.updateAssignedTaskCompletion(updateEmpID, taskID, completed, empID);
+            return new SimpleResponse(true,
+                    "Task assignment " + taskID + " was updated for Employee " + empID +
+                            " by employee " + updateEmpID + ". Its assignment status is " + completed,
                     "employee-task-override");
         }
         return new SimpleResponse(false,

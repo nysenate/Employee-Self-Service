@@ -14,6 +14,10 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
     UPDATE_TASK_COMPLETION(
             "update ${essSchema}.personnel_task_assignment set completed = ?, " +
                     "update_user_id = ? where emp_id = ? and task_id = ?"
+    ),
+    UPDATE_TASK_ASSIGNMENT(
+            "update ${essSchema}.personnel_task_assignment set active = ?, " +
+                    "update_user_id = ? where emp_id = ? and task_id = ?"
     )
     ;
 

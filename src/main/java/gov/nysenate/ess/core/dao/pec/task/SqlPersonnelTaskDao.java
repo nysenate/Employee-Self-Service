@@ -31,8 +31,13 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
 
 
     @Override
-    public void updatePersonnelAssignedTask(int empID, int updateEmpID, boolean completed, int taskID) {
+    public void updatePersonnelAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID) {
         localJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), completed,updateEmpID,empID,taskID );
+    }
+
+    @Override
+    public void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
+        localJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), assigned,updateEmpID,empID,taskID );
     }
 
     private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
