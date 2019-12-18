@@ -38,7 +38,8 @@
                     var month = parseInt(day.date.substr(5,2),10)-1;
                     var dayOfMonth = parseInt(day.date.substr(8,2),10);
                     var temp = new Date(year, month, dayOfMonth);
-                    day.date = temp.toDateString();
+                    day.date = temp;
+                    day.dateStr = temp.toDateString();
                 });
                 console.log($scope.request);
             },

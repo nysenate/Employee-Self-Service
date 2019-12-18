@@ -49,33 +49,11 @@
                 $scope.pageLoaded = true;
 
                 /**
-                 * Converts all the dates in a request into strings in the format
-                 * 'Day Mon DD, YYYY' so they display properly when viewing a request
-                 */
-                $scope.dateToString = function () {
-                    $scope.data.days.forEach(function (day) {
-                        day.date = new Date(day.date);
-                        day.date = day.date.toDateString();
-                    });
-                };
-
-                /**
-                 * Converts all strings back into dates so they can be translated into
-                 * the date picker
-                 */
-                $scope.stringToDate = function () {
-                    $scope.data.days.forEach(function (day) {
-                        day.date = new Date(day.date);
-                    });
-                };
-
-                /**
                  * Function to be executed when the page loads.
                  */
                 $scope.onloadFn = function () {
                     $scope.pageLoaded = true;
                 };
-
 
                 $scope.empId = appProps.user.employeeId;
                 var empInfoArgs = {
@@ -134,6 +112,7 @@
                  * @param day - the day object that we are determining holiday hours for.
                  */
                 $scope.datePickerChanged = function (day) {
+                    day.dateStr = day.date.toDateString();
                     var isoDate = day.date.toISOString().substr(0, 10);
                     var params = {
                         'fromDate': isoDate,
@@ -147,7 +126,6 @@
                                 day.totalHours = holidays[0].hours;
                             } else { // the day was NOT a holiday
                                 day.holidayHours = null;
-                                day.totalHours = 0;
                             }
                         },
                         function (data) {
@@ -214,8 +192,10 @@
                 };
 
                 /**
-                 * Function to add a blank day to a request (the blank day will show up as a blank
-                 * row in the table)
+                 * Function to add a blank day to a request. The new day will be "today"
+                 * if it is the first in the request. Otherwise, it will be the day after
+                 * the last day in the request. The function will also check if the date
+                 * is a holiday and then will get the pay period for the date.
                  */
                 $scope.addDay = function () {
                     var newDate = new Date();
@@ -237,6 +217,8 @@
                             dayObj.date = newDate;
                         }
                     }
+
+                    dayObj.dateStr = dayObj.date.toDateString();
 
                     /*Check if the day is a holiday. If so, include the holiday hours.*/
                     var params = {
@@ -277,9 +259,7 @@
                  * Function that puts the directive in edit mode when the edit button is pressed.
                  */
                 $scope.editMode = function () {
-
                     $scope.pageLoaded = false;
-                    $scope.stringToDate();
                     $scope.mode = "input";
                     $scope.onloadFn();
                 };
@@ -306,7 +286,6 @@
                  */
                 $scope.getSendObject = function (statusType) {
 
-                    $scope.stringToDate();
                     $scope.data.days = $scope.data.days.sort(function (a, b) {
                         return a.date - b.date;
                     });
@@ -412,7 +391,6 @@
                                     }
 
                                     //update $scope.data to hold the request
-                                    $scope.dateToString();
                                     $scope.mode = "output";
 
                                 },
@@ -455,7 +433,6 @@
 
                                     //update $scope.data to hold the request
                                     $scope.updateData(requestId);
-                                    $scope.dateToString();
                                     $scope.mode = "output";
                                 },
                                 //on failure
@@ -480,7 +457,11 @@
                         //success
                         function (data) {
                             console.log("Successfully retrieved request #", requestId);
-                            $scope.data = data;
+                            //Note: do not set $scope.data = data, as this will erase other attributes
+                            //that have been assigned to $scope.data that aren't saved in the backend,
+                            //such as "dateStr" for days in the request
+                            $scope.data.requestId = data.requestId;
+                            $scope.data.timestamp = data.timestamp;
                             $scope.onloadFn();
                         },
                         //failure

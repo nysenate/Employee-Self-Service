@@ -59,7 +59,7 @@
       <td class="timeoff-table-hours" ng-bind="day.totalHours"></td>
     </tr>
     <tr ng-repeat="day in data.days" ng-if="mode==='output'">
-      <td>{{day.date}}</td>
+      <td>{{day.dateStr}}</td>
       <td ng-switch="day.workHours">
         <span ng-switch-when="null|0" ng-switch-when-separator="|">--</span>
         <span ng-switch-default>{{day.workHours}}</span>
