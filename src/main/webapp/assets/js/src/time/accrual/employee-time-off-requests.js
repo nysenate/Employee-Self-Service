@@ -33,13 +33,6 @@
         $scope.activeRequests = [];   //active requests
         $scope.pendingRequests = [];   //requests that need approval
         $scope.loadingRequests = true;
-        $scope.popUp = true;
-
-
-        $scope.reloadPage = function () {
-            $scope.updateLists();
-            return $route.reload().$promise.resolve();
-        };
 
         $scope.errorHandler = function () {
             $scope.errmsg = "An error occurred. Possibly because of an invalid supervisor ID";
@@ -69,7 +62,7 @@
                     if (request.checked) {
                         hasSelections = true;
                     }
-                })
+                });
             }
             return hasSelections;
         };
@@ -105,17 +98,17 @@
                     $scope.updateRequest(request.requestId, 'APPROVE', "");
                 }
             });
+            $scope.updateLists();
         };
 
         $scope.rejectSelected = function () {
-            var promises = [];
             $scope.activeRequests.forEach(function (request) {
                 if (request.checked) {
-                    promises.push($scope.updateRequest(request.requestId, 'DISAPPROVE', ""));
+                    $scope.updateRequest(request.requestId, 'DISAPPROVE', "");
                     console.log("Rejected request #", request.requestId);
                 }
             });
-            Promise.all(promises).then($route.reload());
+            $scope.updateLists();
         };
 
         $scope.reviewSelected = function (status) {
@@ -159,7 +152,7 @@
             return ReviewRequestApi.save(params).$promise.then(
                 function (data) {
                     console.log("Success!: ", data);
-                    $route.reload();
+                    $scope.updateLists();
                 },
                 function (data) {
                     console.log("ERROR", data);
@@ -169,31 +162,24 @@
 
         //make the call to the back end to get all active requests for a supervisor's employees
         $scope.updateLists = function () {
-            $scope.loadingRequests = true;
 
             ActiveRequestsApi.query({supId: $scope.supId}).$promise
                 .then(function (data) {
-                    console.log(data);
+                    $scope.loadingRequests = true;
                     $scope.handleActiveResultAndMakePendingCall(data)
                         .then(function (data2) {
-                            console.log(data2);
                             $scope.handlePendingResult(data2);
-                        })
-                        .finally(function () {
                             $scope.activeRequests.forEach(function (r) {
                                 r.checked = false;
-                                console.log(r.checked);
                             });
                             $scope.pendingRequests.forEach(function (r) {
                                 r.checked = false;
                             });
                             sortRequests();
-                            $scope.loadingRequests = false;
-                            console.log("Active: " + $scope.activeRequests);
-                            console.log("Pending: " + $scope.pendingRequests);
                         })
                     ;
                 })
+                .finally(function() {$scope.loadingRequests=false;})
                 .catch($scope.errorHandler());
         };
 

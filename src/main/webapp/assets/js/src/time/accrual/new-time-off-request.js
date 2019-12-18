@@ -9,7 +9,8 @@
         return $resource("/api/v1//accruals/request");
     }]);
 
-    essTime.controller('NewRequestCtrl', ['$scope', 'appProps', 'modals', 'UpdateRequestsApi', newRequestCtrl]);
+    essTime.controller('NewRequestCtrl', ['$scope', 'appProps', 'modals', 'UpdateRequestsApi',
+                                          newRequestCtrl]);
 
     function newRequestCtrl($scope, appProps, modals, updateRequestsApi) {
         //blank data for creating a new row

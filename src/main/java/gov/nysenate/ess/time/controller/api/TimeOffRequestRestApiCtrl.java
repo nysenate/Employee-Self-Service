@@ -1,10 +1,12 @@
 package gov.nysenate.ess.time.controller.api;
 
 import com.google.common.collect.Range;
-import freemarker.template.utility.DateUtil;
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
+import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
 import gov.nysenate.ess.core.client.response.error.ErrorCode;
 import gov.nysenate.ess.core.client.response.error.ViewObjectErrorResponse;
+import gov.nysenate.ess.core.client.view.base.StringView;
+import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.DateUtils;
@@ -12,9 +14,6 @@ import gov.nysenate.ess.time.client.view.attendance.TimeOffRequestView;
 import gov.nysenate.ess.time.model.attendance.*;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
 import gov.nysenate.ess.time.service.attendance.EssTimeOffRequestService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
-import javax.naming.AuthenticationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -140,12 +138,22 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
      * (POST) /api/v1/timeoffrequests/updaterequest
      *
      * Post Data: json TimeOffRequestView
+     * @return ViewObjectResponse - containing the requestId
      */
     @RequestMapping(value = "", method = POST)
-    public int updateRequest(@RequestBody TimeOffRequestView request) {
+    public BaseResponse updateRequest(@RequestBody TimeOffRequestView request) {
         checkPermission(new EssTimePermission(request.getEmployeeId(), TIME_OFF_REQUESTS, POST, LocalDate.now()));
         TimeOffRequest timeOffRequest = request.toTimeOffRequest();
-        return timeOffRequestService.updateRequest(timeOffRequest);
+        int requestId = timeOffRequestService.updateRequest(timeOffRequest);
+        return new ViewObjectResponse<>(new ViewObject() {
+            public Integer getRequestId() {
+                return requestId;
+            }
+            @Override
+            public String getViewType() {
+                return "request id";
+            }
+        });
     }
 
     /**

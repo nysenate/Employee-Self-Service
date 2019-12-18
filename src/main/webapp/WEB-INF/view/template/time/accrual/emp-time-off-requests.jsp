@@ -15,7 +15,7 @@
   <div class="content-container content-controls" ng-if="!loadingRequests">
     <div class="content-container"><h1>Time Off Requests Needing Approval</h1></div>
 
-    <time-off-request-approval ng-if="!loadingRequests && !loadingEmployees" format="pendingFormat"
+    <time-off-request-approval ng-if="!loadingRequests" format="pendingFormat"
                                requests="pendingRequests">
     </time-off-request-approval>
 
@@ -27,6 +27,7 @@
       </ul>
       <div class="select-actions">
         <input class="submit-button" type="button" value="Approve Selected"
+               ng-disabled = "hasSelections('SUBMITTED') === false"
                ng-disabled = "hasSelections('SUBMITTED') === false"
                ng-click="approveSelected('SUBMITTED')">
         <input class="time-neutral-button" type="button" value="Review Selected"
@@ -41,7 +42,7 @@
   <div class="content-container content-controls" ng-if="!loadingRequests">
     <div class="content-container"><h1>Approved and Upcoming Time Off Requests</h1></div>
 
-    <time-off-request-approval ng-if="!loadingRequests && !loadingEmployees" format="approvedFormat"
+    <time-off-request-approval ng-if="!loadingRequests" format="approvedFormat"
                                requests="activeRequests">
     </time-off-request-approval>
 

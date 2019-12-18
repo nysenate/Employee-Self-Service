@@ -71,6 +71,8 @@
                 src="${ctxPath}/assets/js/src/time/accrual/single-time-off-request.js?v=${releaseVersion}"></script>
         <script type="text/javascript"
                 src="${ctxPath}/assets/js/src/time/accrual/time-off-request-review-modals.js?v=${releaseVersion}"></script>
+        <script type="text/javascript"
+                src="${ctxPath}/assets/js/src/time/accrual/time-off-request-validation-service.js?v=${releaseVersion}"></script>
 
         <!-- Allowances -->
         <script type="text/javascript"

@@ -10,8 +10,7 @@
         return $resource("/api/v1/accruals/request/:requestId");
     }]);
 
-    essTime.controller('SingleRequestCtrl', ['$scope', '$routeParams', 'appProps', 'RequestApi',
-                                        singleRequestCtrl]);
+    essTime.controller('SingleRequestCtrl', ['$scope', '$routeParams', 'appProps', 'RequestApi', singleRequestCtrl]);
 
     function singleRequestCtrl ($scope, $routeParams, appProps, RequestApi) {
 
@@ -34,7 +33,12 @@
                 $scope.startDate = new Date(data.startDate).toLocaleDateString();
                 $scope.endDate = new Date(data.endDate).toLocaleDateString();
                 $scope.request.days.forEach(function(day){
-                   day.date = new Date(day.date).toDateString();
+                    console.log("day before: ", day.date);
+                    var year = parseInt(day.date.substr(0,4), 10);
+                    var month = parseInt(day.date.substr(5,2),10)-1;
+                    var dayOfMonth = parseInt(day.date.substr(8,2),10);
+                    var temp = new Date(year, month, dayOfMonth);
+                    day.date = temp.toDateString();
                 });
                 console.log($scope.request);
             },

@@ -14,7 +14,7 @@ function timeOffRequestListUtils() {
      * Function that takes in request data from an API call and
      * manipulates it into the proper format for
      * @param data
-     * @returns {Array} - Array of objects representing requests
+     * @returns [Array] - Array of objects representing requests
      */
     function formatData(data) {
         //return an array with objects that each represent a separate request

@@ -9,7 +9,15 @@
 <!--  This template creates a view of a single time-off
       request and allows the user to edit, save, or submit the request. -->
 
-<div class="content-container" ng-init="pageLoaded=true" ><h1>Review/Submit A Time Off Request</h1></div>
+<!-- Error messages that appear on submit if request invalid -->
+<div class="validationErrorContainer" ng-show="!validRequest">
+  <p><strong>Please fix the following errors in your request: </strong></p>
+  <p ng-repeat="msg in validationErrorMessages">
+    {{msg}}
+  </p>
+</div>
+
+<div class="content-container" ng-init="onloadFn()" ><h1>Review/Submit A Time Off Request</h1></div>
 <!--Include their accruals-->
 <p class="time-off-request-accruals" >&ensp;&ensp;Available Hours: &emsp; <span class="vacation-text">Vacation: {{accruals.vacation}}&ensp;</span>
                            <span class="personal-text">Personal: {{accruals.personal}}&ensp;</span>
@@ -33,15 +41,16 @@
   </thead>
   <tbody>
     <tr ng-repeat="day in data.days" ng-if="mode==='input'">
+      <!--INSERT ACCRUAL VALUES ROW HERE IF FIRST DAY IN PAY PERIOD IS TRUE-->
       <td class="timeoff-table-checkbox"><input id="time-off-request-checkbox" type="checkbox" ng-model="day.checked"/></td>
-      <td class="timeoff-table-date"><input type="date" ng-model="day.date"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.workHours" ng-change="updateTotals()"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.holidayHours" ng-change="updateTotals()"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.vacationHours" ng-change="updateTotals()"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.personalHours" ng-change="updateTotals()"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.sickEmpHours" ng-change="updateTotals()"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.sickFamHours" ng-change="updateTotals()"/></td>
-      <td class="timeoff-table-hours"><input type="number" placeholder="--" ng-model="day.miscHours" ng-change="updateTotals()"/></td>
+      <td class="timeoff-table-date"><input id="first-date-picker" type="date" ng-model="day.date" ng-change="datePickerChanged(day)"/></td>
+      <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.workHours" ng-change="updateTotals()" /></td>
+      <td class="timeoff-table-hours">{{day.holidayHours}}</td>
+      <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.vacationHours" ng-change="updateTotals()"/></td>
+      <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.personalHours" ng-change="updateTotals()"/></td>
+      <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.sickEmpHours" ng-change="updateTotals()"/></td>
+      <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.sickFamHours" ng-change="updateTotals()"/></td>
+      <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.miscHours" ng-change="updateTotals()"/></td>
       <td class="timeoff-table-misc  misc-drop-down">
         <select ng-model="day.miscType" ng-options="miscLeave.type as miscLeave.shortName for miscLeave in miscTypeList">
           <option value="" selected="selected">Choose Type...</option>
@@ -87,14 +96,16 @@
 </table>
 
 <!--Accruals available after the request-->
-<p class="time-off-request-accruals" ng-if="data.days.length > 0" >Hours After Request: &emsp; <span class="vacation-text">Vacation: {{accrualsPost.vacation}}&ensp;</span>
+<p class="time-off-request-accruals" ng-if="data.days.length > 0" >Hours After Request: &emsp;
+  <span class="vacation-text">Vacation: {{accrualsPost.vacation}}&ensp;</span>
   <span class="personal-text">Personal: {{accrualsPost.personal}}&ensp;</span>
-  <span class="sick-text">Sick: {{accrualsPost.sick}}&ensp;</span></p>
+  <span class="sick-text">Sick: {{accrualsPost.sick}}&ensp;</span>
+</p>
 
 
-<!--Add Day and Delete Selected buttons -->
-<div class="time-off-request-buttons" ng-if="mode==='input'">
-  <button ng-if="data.days.length > 0" ng-click="deleteSelected()">Delete Selected</button>
+<!-- Inital Datepicker and Add Day and Delete Selected buttons -->
+<div class="time-off-request-buttons" ng-show="mode==='input' && pageLoaded">
+  <button ng-show="pageLoaded && data.days.length > 0" ng-click="deleteSelected()">Delete Selected</button>
   <button ng-click="addDay()">+ Add Another Date</button>
 </div>
 
@@ -114,10 +125,10 @@
 </div>
 
 <!--Save and Submit buttons-->
-<div class="time-off-request-buttons">
+<div class="time-off-request-buttons" ng-if="pageLoaded">
   <button ng-if="mode==='input'" ng-click="saveRequest()" class="time-off-request-save-button">SAVE</button>
   <button ng-if="mode==='input'" ng-click="submitRequest()" class="time-off-request-submit-button">SUBMIT</button>
   <!-- Cannot edit a request if it has been submitted or approved-->
-  <button ng-if="mode==='output' && !(data.status==='APPROVED' || data.status==='SUBMITTED')"
+  <button ng-if="mode==='output' && data.status!=='APPROVED' && data.status!=='SUBMITTED'"
           ng-click="editMode()" class="time-off-request-edit-button">EDIT</button>
 </div>

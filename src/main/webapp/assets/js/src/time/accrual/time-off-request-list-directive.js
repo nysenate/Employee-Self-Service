@@ -20,8 +20,8 @@
                 var currentUrl = window.location.href;
                 var id_num = request.requestId;
                 var newUrl = currentUrl + "/" + id_num;
-                console.log(newUrl)
-                window.open(newUrl, "_self")
+                console.log(newUrl);
+                window.open(newUrl, "_self");
             };
         }
     }
