@@ -8,6 +8,7 @@ import gov.nysenate.ess.travel.application.route.destination.Destination;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,6 +81,31 @@ public class Route {
     public ImmutableList<Leg> getAllLegs() {
         return Stream.concat(getOutboundLegs().stream(), getReturnLegs().stream())
                 .collect(ImmutableList.toImmutableList());
+    }
+
+    /**
+     * Returns true if this route has any legs with a MethodOfTravel equal to the given MethodOfTravel.
+     * @return
+     */
+    public boolean hasMethodOfTravel(MethodOfTravel mot) {
+        return getAllLegs().stream().anyMatch(leg -> leg.methodOfTravel().equals(mot.name()));
+    }
+
+    /**
+     * Returns a set of all method of travel descriptions used for the given MethodOfTravel.
+     * Returns an empty Set if the given MethodOfTravel is not used in this route.
+     *
+     * Intended to be used to get user entered modes of transportation when they selected
+     * OTHER for the MethodOfTravel.
+     * @param mot
+     * @return
+     */
+    public Set<String> getMethodOfTravelDescriptions(MethodOfTravel mot) {
+        return getAllLegs().stream()
+                .filter(leg -> leg.methodOfTravel().equals(mot.name()))
+                .map(Leg::methodOfTravelDescription)
+                .collect(Collectors.toSet());
+
     }
 
     @Override
