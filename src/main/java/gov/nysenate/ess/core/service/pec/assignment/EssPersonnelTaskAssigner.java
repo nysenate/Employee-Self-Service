@@ -68,12 +68,14 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
 
     @Override
     public void assignTasks(int empId) {
-        if (!needsTaskAssignment(empId)) {
+        if (needsTaskAssignment(empId)) {
+            logger.info("Performing task assignment for emp #{} ...", empId);
+            groupTaskAssigners.forEach(groupAssigner -> groupAssigner.assignGroupTasks(empId));
+            logger.info("Completed task assignment for emp #{}.", empId);
+        }
+        else {
             logger.info("Skipping task assignment for ineligible emp #{}", empId);
         }
-        logger.info("Performing task assignment for emp #{} ...", empId);
-        groupTaskAssigners.forEach(groupAssigner -> groupAssigner.assignGroupTasks(empId));
-        logger.info("Completed task assignment for emp #{}.", empId);
     }
 
     @Override
@@ -119,7 +121,8 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         TransactionHistory transHistory = transactionService.getTransHistory(empId);
         Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
         // They are are eligible if they are currently active, or will be active in the future.
-        return transHistory.getActiveDates().intersects(presentAndFuture);
+        return transHistory.getActiveDates().intersects(presentAndFuture)
+                && !empInfoService.getEmployee(empId).isSenator();
     }
 
 }
