@@ -8,8 +8,7 @@ public enum PersonnelTaskAssignmentQuery implements BasicSqlQuery {
     SELECT_TASKS_FOR_EMP("" +
             "SELECT *\n" +
             "FROM ${essSchema}.personnel_task_assignment\n" +
-            "WHERE emp_id = :empId\n" +
-            "  AND active = TRUE"
+            "WHERE emp_id = :empId"
     ),
 
     SELECT_SPECIFIC_TASK_FOR_EMP("" +

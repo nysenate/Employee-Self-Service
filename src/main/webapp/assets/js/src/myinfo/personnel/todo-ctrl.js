@@ -65,12 +65,22 @@ function todoCtrl($scope, $q, appProps, modals, taskUtils) {
 
         function categorizeAssignments(assignments) {
             angular.forEach(assignments, function(assignment) {
+                console.log(assignment);
                 if (assignment.completed) {
                     stateAssignments.complete.push(assignment);
                 } else {
                     stateAssignments.incomplete.push(assignment);
                 }
-            })
+            });
+
+            var activeUnacknowledgedTasks = [];
+            while (stateAssignments.incomplete.length > 0) {
+                var assignedTask = stateAssignments.incomplete.shift();
+                if ( assignedTask.task.active === true ) {
+                    activeUnacknowledgedTasks.push(assignedTask);
+                }
+            }
+            stateAssignments.incomplete = activeUnacknowledgedTasks;
         }
     }
     init();

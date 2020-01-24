@@ -20,6 +20,7 @@
                 var count = assignments
                     .filter(function (assignment) {
                         return assignment.hasOwnProperty('completed') && !assignment.completed
+                            && assignment.task.active
                     })
                     .length;
                 badgeService.setBadgeValue('incompleteTasks', count);
