@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -105,6 +106,34 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value="/documents", params = {"year"})
     public ListViewResponse<AckDocView> getAckDocsForYear(@RequestParam int year) {
         List<AckDoc> ackDocs = ackDocDao.getAckDocsForYear(year);
+        List<AckDocView> ackDocViews = ackDocs.stream()
+                .map(ackDoc -> new AckDocView(ackDoc, ackDocResPath))
+                .collect(toList());
+        return ListViewResponse.of(ackDocViews, "documents");
+    }
+
+
+    /**
+     * All Ack. Docs API
+     * ----------------------
+     *
+     * Returns all ack docs in the database regardless of active status or year
+     *
+     * Usage:
+     * (GET)    /api/v1/acknowledgment/documents/all
+     *
+     *
+     * @return ListViewResponse<AckDocView>
+     * */
+    @RequestMapping(value="/documents/all")
+    public ListViewResponse<AckDocView> getAllAckDocsForYear() {
+        List<Integer> ackDocYears = ackDocDao.getAllYearsContainingAckDocs();
+        List<AckDoc> ackDocs = new ArrayList();
+
+        for (Integer year : ackDocYears) {
+            ackDocs.addAll(ackDocDao.getAckDocsForYear(year));
+        }
+
         List<AckDocView> ackDocViews = ackDocs.stream()
                 .map(ackDoc -> new AckDocView(ackDoc, ackDocResPath))
                 .collect(toList());
