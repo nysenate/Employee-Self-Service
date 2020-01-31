@@ -50,17 +50,21 @@ public class PECVideoCSVService {
 
     private final String csvFileDir;
 
-    private static final Pattern csvEthicsReportPattern =
+    private static final Pattern csvEthics2018ReportPattern =
             Pattern.compile("ExportDocsEthics(\\d{4})_V(\\d)");
 
-    private static final Pattern csvHarrassmentReportPattern =
+    private static final Pattern csvHarrassment2019ReportPattern =
             Pattern.compile("ExportDocsHarassment(\\d{4})_V(\\d)");
 
     private static final Pattern csvLiveTrainingDHPReportPattern =
             Pattern.compile("LiveTrainingDHP(\\d{4})");
 
-    private final int ETHICS_VID_ID_NUM;
-    private final int HARASSMENT_VID_ID_NUM;
+    private static final Pattern csvEthics2020ReportPattern =
+            Pattern.compile("(\\d{4})LegEthicsTraining_V(\\d)");
+
+    private final int ETHICS_VID_2018_ID_NUM;
+    private final int HARASSMENT_VID_2019_ID_NUM;
+    private final int ETHICS_VID_2020_ID_NUM;
 
     private static final DateTimeFormatter liveDTF = DateTimeFormatter.ofPattern("M/dd/yyyy HH:mm");
     private static final DateTimeFormatter liveDTFAlt = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm");
@@ -73,16 +77,18 @@ public class PECVideoCSVService {
                               EmpTransactionService transactionService,
                               ResponsibilityHeadDao rchDao,
                               @Value("${data.dir:}") String dataDir,
-                              @Value("${pec.import.harassment_video_task_id:}") int harrassmentVidId,
-                              @Value("${pec.import.ethics_video_task_id:}") int ethicsVidId) {
+                              @Value("${pec.import.harassment_2019_video_task_id:}") int harrassmentVid2019Id,
+                              @Value("${pec.import.ethics_2018_video_task_id:}") int ethicsVid2018Id,
+                              @Value("${pec.import.ethics_2020_video_task_id:}") int ethicsVid2020Id) {
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.employeeInfoService = employeeInfoService;
         this.transactionService = transactionService;
         this.rchDao = rchDao;
         this.csvFileDir = Paths.get(dataDir, "pec_csv_import").toString();
-        this.ETHICS_VID_ID_NUM = ethicsVidId;
-        this.HARASSMENT_VID_ID_NUM = harrassmentVidId;
+        this.ETHICS_VID_2018_ID_NUM = ethicsVid2018Id;
+        this.HARASSMENT_VID_2019_ID_NUM = harrassmentVid2019Id;
+        this.ETHICS_VID_2020_ID_NUM = ethicsVid2020Id;
     }
 
     public void processCSVReports() throws IOException {
@@ -90,19 +96,23 @@ public class PECVideoCSVService {
 
         for (File file : files) {
             String fileName = file.getName().replaceAll(".csv", "").replaceAll(".xlsx", "");
-            Matcher ethicsMatcher = csvEthicsReportPattern.matcher(fileName);
-            Matcher harassmentMatcher = csvHarrassmentReportPattern.matcher(fileName);
+            Matcher ethicsMatcher = csvEthics2018ReportPattern.matcher(fileName);
+            Matcher harassmentMatcher = csvHarrassment2019ReportPattern.matcher(fileName);
             Matcher liveTrainingDHPMatcher = csvLiveTrainingDHPReportPattern.matcher(fileName);
+            Matcher ethics2020Matcher = csvEthics2020ReportPattern.matcher(fileName);
 
             if (ethicsMatcher.matches()) {
-                logger.info("Processing Ethics CSV report");
-                handleGeneratedReportCSV(file, ETHICS_VID_ID_NUM, 10); //IDS may change once we get the videos
+                logger.info("Processing Ethics 2018 CSV report");
+                handleGeneratedReportCSV(file, ETHICS_VID_2018_ID_NUM, 10); //IDS may change once we get the videos
             } else if (harassmentMatcher.matches()) {
-                logger.info("Processing Harassment CSV report");
-                handleGeneratedReportCSV(file, HARASSMENT_VID_ID_NUM, 11);
+                logger.info("Processing Harassment 2019 CSV report");
+                handleGeneratedReportCSV(file, HARASSMENT_VID_2019_ID_NUM, 11);
             } else if (liveTrainingDHPMatcher.matches()) {
                 logger.info("Processing Live Training DHP CSV report");
                 handleLiveTrainingReportCSV(file);
+            } else if (ethics2020Matcher.matches()) {
+                logger.info("Processing Ethics 2020 CSV report");
+                handleGeneratedReportCSV(file, ETHICS_VID_2020_ID_NUM, 10);
             }
         }
     }
@@ -234,7 +244,7 @@ public class PECVideoCSVService {
 
             if (potentialEmployees.size() == 1) {
                 //Singular employee, insert the update to the db
-                updateDB(potentialEmployees.get(0), trainingDateTime, HARASSMENT_VID_ID_NUM);
+                updateDB(potentialEmployees.get(0), trainingDateTime, HARASSMENT_VID_2019_ID_NUM);
             }
             else if (potentialEmployees.size() == 0) {
                 //WARN of an employee that does not exist / could not be found
