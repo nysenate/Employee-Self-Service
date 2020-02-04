@@ -26,9 +26,9 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
     public float write() throws IOException {
         float currentY = y;
         final float leading = config.leadingRatio * config.fontSize;
-        float boxStartX = x + 307f;
+        float boxStartX = x + 295f;
         float boxTextStartX = boxStartX + 5f;
-        float boxWidth = 180f;
+        float boxWidth = 213f;
         float boxHeight = 145f;
         float boxRightAlignEndX = boxStartX + boxWidth - 5f;
         float lineWidth = 1f;
@@ -39,7 +39,9 @@ public class AppPdfExpensesWriter implements AppPdfWriter {
         currentY -= (1.5 * leading); // Add a little extra spacing under box title.
 
         // Transportation
-        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY, "Transportation", app.activeAmendment().transportationAllowance().toString());
+        drawEstimatedTravelCostsRow(cs, boxTextStartX, boxRightAlignEndX, currentY,
+                "Transportation (" + String.valueOf(app.activeAmendment().route().mileagePerDiems().totalMileage()) + " Miles)",
+                app.activeAmendment().transportationAllowance().toString());
         currentY -= leading;
 
         // Food
