@@ -117,7 +117,7 @@
   </build>
 
   <properties>
-    <apache.shiro.version>1.2.3</apache.shiro.version>
+    <apache.shiro.version>1.5.0</apache.shiro.version>
     <commons.io.version>2.4</commons.io.version>
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.validator.version>1.6</commons.validator.version>
