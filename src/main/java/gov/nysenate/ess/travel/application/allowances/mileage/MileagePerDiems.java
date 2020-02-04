@@ -62,6 +62,12 @@ public class MileagePerDiems {
         return outboundMiles > MILE_THRESHOLD;
     }
 
+    public double totalMileage() {
+        return qualifyingLegs().stream()
+                .mapToDouble(Leg::miles)
+                .sum();
+    }
+
     private ImmutableList<Leg> outboundLegs() {
         return allLegs().stream()
                 .filter(Leg::isOutbound)
