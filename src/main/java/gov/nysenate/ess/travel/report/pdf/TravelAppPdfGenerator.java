@@ -76,6 +76,7 @@ public class TravelAppPdfGenerator {
                 AppPdfExpensesWriter expensesWriter = new AppPdfExpensesWriter(config, cs, lineStartX, currentY, app);
                 currentY = expensesWriter.write();
             } else {
+                // Draw on current page.
                 AppPdfMotWriter motWriter = new AppPdfMotWriter(config, cs, lineStartX, currentY, app);
                 motWriter.write(); // Do not update currentY, we want this and the expenses box to start at the same y
 
