@@ -105,7 +105,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     /**
      * Handles scheduled task assignments.
      */
-    @Scheduled(cron = "${scheduler.personnel_task.assignment.cron:0 0 1 * * *}")
+    @Scheduled(cron = "${scheduler.personnel_task.assignment.cron:0 0 3 * * *}")
     public void scheduledPersonnelTaskAssignment() {
         if (scheduledAssignmentEnabled) {
             assignTasks();
