@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.controller.api;
 
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
+import gov.nysenate.ess.core.service.pec.assignment.CsvTaskAssigner;
 import gov.nysenate.ess.core.service.pec.external.PECVideoCSVService;
 import gov.nysenate.ess.core.service.pec.assignment.PersonnelTaskAssigner;
 import org.apache.shiro.SecurityUtils;
@@ -24,11 +25,14 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
 
     private final PersonnelTaskAssigner taskAssigner;
     private final PECVideoCSVService pecVideoCSVService;
+    private final CsvTaskAssigner csvTaskAssigner;
 
     @Autowired
-    public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService) {
+    public PersonnelTaskAdminApiCtrl(PersonnelTaskAssigner taskAssigner, PECVideoCSVService pecVideoCSVService,
+                                     CsvTaskAssigner csvTaskAssigner) {
         this.taskAssigner = taskAssigner;
         this.pecVideoCSVService = pecVideoCSVService;
+        this.csvTaskAssigner = csvTaskAssigner;
     }
 
     /**
@@ -101,7 +105,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
      * Update Personnel Task Assignment API
      * ------------------------------------
      *
-     * This api call updates the assigned task of a given employee. It can make the task complete or incomplete
+     * Updates the Completion status of a task for an employee
      *
      * Usage:
      * (GET)   /api/v1/admin/personnel/task/overrride/{updateEmpID}/{taskID}/{completed}/{empID}
@@ -149,10 +153,37 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
                                                  @PathVariable int empID) throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            taskAssigner.updateAssignedTaskCompletion(updateEmpID, taskID, completed, empID);
+            taskAssigner.updateAssignedTaskAssignment(updateEmpID, taskID, completed, empID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its assignment status is " + completed,
+                    "employee-task-override");
+        }
+        return new SimpleResponse(false,
+                "You do not have permission to execute this api functionality",
+                "employee-task-override");
+    }
+
+    /**
+     * Update Personnel Task Assignment API
+     * ------------------------------------
+     *
+     * This api call updates assigned tasks for multiple employees based off of a csv file
+     *
+     * Usage:
+     * (GET)   /api/v1/admin/personnel/task/overrride/csv/assign
+     *
+     * Path params:
+     *
+     * @return {@link SimpleResponse}
+     */
+    @RequestMapping(value = "/overrride/csv/assign", method = GET)
+    public SimpleResponse overrideTaskAssignmentFromCSV() throws AuthorizationException, IOException {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
+            csvTaskAssigner.processCSVForManualAssignments();
+            return new SimpleResponse(true,
+                    "The batch assignment csv was processed successfully",
                     "employee-task-override");
         }
         return new SimpleResponse(false,
