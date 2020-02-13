@@ -192,8 +192,9 @@ legethics.key =
 
 # --- PEC Data Import Config --------------------------------------------------
 
-pec.import.harassment_video_task_id =
-pec.import.ethics_video_task_id =
+pec.import.harassment_2019_video_task_id =
+pec.import.ethics_2018_video_task_id =
+pec.import.ethics_2020_video_task_id =
 
 # --- Scheduling Configuration ------------------------------------------------
 
@@ -224,7 +225,7 @@ scheduler.moodle.sync.enabled = false
 scheduler.personnel_task.assignment.enabled = true
 
 # The schedule for personnel task assigment. (Default every day at 1AM)
-scheduler.personnel_task.assignment.cron = 0 0 1 * * *
+scheduler.personnel_task.assignment.cron = 0 0 3 * * *
 
 # --- Timeout Configuration ---------------------------------------------------
 
