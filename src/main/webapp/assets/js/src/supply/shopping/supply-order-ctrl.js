@@ -116,7 +116,8 @@ function supplyOrderController($scope, appProps, locationService, supplyCart, pa
                 $scope.destinations.isWorkLocationError = false;
             }
 
-            if ($scope.employee.respCtr.respCenterHead.code === dest.respCenterHead.code) {
+            var empRchCode = $scope.employee.respCtr && $scope.employee.respCtr.respCenterHead && $scope.employee.respCtr.respCenterHead.code || '';
+            if (empRchCode === dest.respCenterHead.code) {
                 $scope.destinations.isRchLocationError = false;
             }
         });
