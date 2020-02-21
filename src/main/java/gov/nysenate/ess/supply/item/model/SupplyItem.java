@@ -7,7 +7,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class SupplyItem {
 
-    private final int id;
+    private final int id; // The items id from the oracle database.
     private final String commodityCode;
     private final String description;
     private final ItemStatus status;
