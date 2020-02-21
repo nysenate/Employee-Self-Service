@@ -355,6 +355,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleInvalidTimeRecordException(InvalidTimeRecordException ex) {
         logger.warn(ex.getMessage() + "\n" + toJson(ex.getDetectedErrors()));
+        logger.warn("Invalid time record exception", ex);
         return new InvalidTimeRecordResponse(getTimeRecordView(ex.getTimeRecord()), ex.getDetectedErrors());
     }
 
