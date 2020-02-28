@@ -121,7 +121,7 @@ public class LocationStatisticTest {
                 .withId(itemId)
                 .withCommodityCode(commodityCode)
                 .withDescription("")
-                .withStatus(new ItemStatus(true, true, true, false))
+                .withStatus(new ItemStatus(true, false, true, false))
                 .withCategory(new Category(""))
                 .withAllowance(new ItemAllowance(1, 1))
                 .withUnit(new ItemUnit("1", 1))

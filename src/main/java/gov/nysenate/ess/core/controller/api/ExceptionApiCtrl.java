@@ -10,6 +10,7 @@ import gov.nysenate.ess.core.client.view.base.ParameterView;
 import gov.nysenate.ess.core.model.auth.AuthorizationStatus;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.util.HttpResponseUtils;
+import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Optional;
 
 import static gov.nysenate.ess.core.util.OutputUtils.toJson;
@@ -114,6 +114,11 @@ public class ExceptionApiCtrl extends BaseRestApiCtrl
         final String messageTemplate = "Method %s is not supported for this request";
         final String message = String.format(messageTemplate, ex.getMethod());
         return new SimpleResponse(false, message, "method not supported");
+    }
+
+    @ExceptionHandler(ClientAbortException.class)
+    public void handleClientAbortException(ClientAbortException ex) {
+        logger.debug("Client aborted", ex);
     }
 
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)

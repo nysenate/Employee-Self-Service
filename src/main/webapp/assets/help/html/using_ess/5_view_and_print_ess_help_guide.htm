@@ -45,7 +45,7 @@ visibility:hidden; }
 
 </head>
 
-<body><script type="text/javascript" language="javascript1.2">//<![CDATA[
+<body><a name="bc-1"></a><script type="text/javascript" language="javascript1.2">//<![CDATA[
 <!--
 if (window.gbWhTopic)
 {
@@ -60,7 +60,8 @@ if (window.gbWhTopic)
 
 	if (window.addTocInfo)
 	{
-	addTocInfo("6 | Help\nView and Print ESS Help Guide");
+	addTocInfo("1 | Overview\n1.1 | About Employee Self Service\nView and Print ESS Help Guide");
+addTocInfo("7 | Printable ESS Help Guide");
 addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
 
 	}
@@ -71,9 +72,18 @@ addButton("show",BTN_TEXT,"Show","","","","",0,0,"","","");
 		writeIntopicBar(1);
 
 	
+	if(bc == 1)
+{
 	document.write("<p style=\"text-align:right\"> ");
 AddMasterBreadcrumbs("../index.htm", "", ">", "Home", "../about_employee_self_service/first_topic.htm");
-document.write("<a href=\"5_view_and_print_ess_help_guide.htm\">6 | Help<\/a> > View and Print ESS Help Guide<\/p>");
+document.write("7 | Printable ESS Help Guide<\/p>");
+}
+else{
+	document.write("<p style=\"text-align:right\"> ");
+AddMasterBreadcrumbs("../index.htm", "", ">", "Home", "../about_employee_self_service/first_topic.htm");
+document.write("<a href=\"../about_employee_self_service/first_topic.htm\">1 | Overview<\/a> > <a href=\"../about_employee_self_service/first_topic.htm\">1.1 | About Employee Self Service<\/a> > View and Print ESS Help Guide<\/p>");
+}
+
 
 }
 else
@@ -122,7 +132,7 @@ function onSetStartPage()
 	 href="../ess_help_guide.pdf" target="_blank">ESS Help Guide</a></span> 
 	 link.</p></li>
 </ol>
-<h6 class="whs7">Last Updated: 5/24/17</h6>
+<h6 class="whs7">Last Updated: 2/7/20</h6>
 <p class="whs7">&#160;</p>
 <form method="post" name="ehelpform" action="http://www.helpcommunity.com/ehelpapi.asp?cmd=WebSave" 
 		 target="_top" id="ehelpform" style="display: none;">
