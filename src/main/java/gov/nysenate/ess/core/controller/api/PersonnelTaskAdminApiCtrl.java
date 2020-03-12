@@ -120,8 +120,11 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
                                                  @PathVariable boolean completed,
                                                  @PathVariable int empID) throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
-        if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            taskAssigner.updateAssignedTaskCompletion(updateEmpID, taskID, completed, empID);
+
+        boolean isAdmin = subject.hasRole("ADMIN");
+        boolean isPecManager = subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER");
+        if ( isPecManager || isAdmin ) {
+            taskAssigner.updateAssignedTaskCompletion(empID,updateEmpID,completed,taskID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its completion status is " + completed,
@@ -153,7 +156,7 @@ public class PersonnelTaskAdminApiCtrl extends BaseRestApiCtrl {
                                                  @PathVariable int empID) throws AuthorizationException {
         Subject subject = SecurityUtils.getSubject();
         if (subject.hasRole("ADMIN") || subject.hasRole("PERSONNEL_COMPLIANCE_MANAGER") ) {
-            taskAssigner.updateAssignedTaskAssignment(updateEmpID, taskID, completed, empID);
+            taskAssigner.updateAssignedTaskAssignment(empID, updateEmpID, completed, taskID);
             return new SimpleResponse(true,
                     "Task assignment " + taskID + " was updated for Employee " + empID +
                             " by employee " + updateEmpID + ". Its assignment status is " + completed,

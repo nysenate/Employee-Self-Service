@@ -81,6 +81,9 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
     @Override
     public void updateAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID) {
         personnelTaskDao.updatePersonnelAssignedTaskCompletion(empID, updateEmpID, completed, taskID);
+
+        logger.info("Task assignment " + taskID + " was updated for Employee " + empID +
+        " by employee " + updateEmpID + ". Its completion status is " + completed);
     }
 
     @Override

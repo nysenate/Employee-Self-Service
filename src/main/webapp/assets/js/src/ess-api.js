@@ -148,6 +148,14 @@ essApi.factory('PersonnelAssignmentApi', ['$resource', 'appProps', function ($re
     });
 }]);
 
+essApi.factory('UpdatePersonnelTaskAssignmentApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/admin/personnel/task/overrride/:updateEmpID/:taskId/true/:empId', {
+        updateEmpID: '@updateEmpID',
+        taskId: '@taskId',
+        empId: '@empId'
+    });
+}]);
+
 /** --- Acknowledgment API --- */
 
 essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {

@@ -1,9 +1,9 @@
 (function () {
     angular.module('essMyInfo')
         .controller('TodoReportCtrl',
-                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', todoCtrl]);
+                    ['$scope', '$httpParamSerializer', 'TaskUtils', 'EmpPATSearchApi', 'PaginationModel', 'appProps', 'modals', 'UpdatePersonnelTaskAssignmentApi', todoCtrl]);
 
-    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination) {
+    function todoCtrl($scope, $httpParamSerializer, taskUtils, searchApi, pagination, appProps, modals, UpdatePersonnelTaskAssignmentApi) {
 
         var itemsPerPage = 10;
 
@@ -73,6 +73,11 @@
             }
         };
 
+        var selectedEmpName = "";
+        var selectedTaskName = "";
+        var selectedTaskId = "";
+
+
         init();
 
         $scope.$watch('state.selTasks', updateSelTaskParams, true);
@@ -90,6 +95,11 @@
         $scope.clearSelectedTasks = clearSelectedTasks;
         $scope.getSortClass = getSortClass;
         $scope.toggleOrder = toggleOrder;
+        $scope.overrideEmpTaskCompletion = overrideEmpTaskCompletion;
+        $scope.getOverrideTaskEmpName = getOverrideTaskEmpName;
+        $scope.getOverrideTaskTitle = getOverrideTaskTitle;
+        $scope.submitTaskOverride = submitTaskOverride;
+        $scope.rejectTaskOverride = rejectTaskOverride;
 
         function init() {
             $scope.state = angular.copy(defaultState);
@@ -303,6 +313,63 @@
                 $scope.state.orderBy = orderBy;
                 $scope.state.sortOrder = 'ASC';
             }
+        }
+
+        function getOverrideTaskEmpName() {
+            return selectedEmpName;
+        }
+
+        function getOverrideTaskTitle() {
+            return selectedTaskName;
+        }
+
+        function overrideEmpTaskCompletion(taskId, taskName) {
+            selectedEmpName = $scope.state.results[$scope.state.iSelResult].employee.fullName;
+            selectedTaskName = taskName;
+            selectedTaskId = taskId;
+            modals.open('task-override-dialog');
+        }
+
+        function submitTaskOverride() {
+            modals.resolve();
+
+            var selectedEmpId = $scope.state.results[$scope.state.iSelResult].employee.employeeId;
+            var tasks = $scope.state.results[$scope.state.iSelResult].tasks;
+            var taskToUpdate;
+
+            //Ensure task exists
+            for (i = 0; i < tasks.length; i++ ) {
+                if (tasks[i].taskId === selectedTaskId) {
+                    taskToUpdate = tasks[i];
+                }
+            }
+            // console.log(taskToUpdate);
+            if (taskToUpdate == null) {
+                resetTaskOverrideVars();
+                return;
+            }
+
+            var params = {
+                empId: selectedEmpId,
+                taskId: selectedTaskId,
+                updateEmpID: appProps.user.employeeId
+            };
+
+            UpdatePersonnelTaskAssignmentApi.get(params).$promise.catch($scope.handleErrorResponse);
+
+            resetTaskOverrideVars();
+            init();
+        }
+
+        function rejectTaskOverride() {
+            modals.reject();
+            resetTaskOverrideVars();
+        }
+
+        function resetTaskOverrideVars() {
+            selectedEmpName = "";
+            selectedTaskName = "";
+            selectedTaskId = "";
         }
 
     }

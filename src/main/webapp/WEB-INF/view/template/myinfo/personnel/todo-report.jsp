@@ -41,7 +41,7 @@
           <option ng-value="null">Any</option>
           <option value="ALL_INCOMPLETE">All Incomplete</option>
           <option value="SOME_INCOMPLETE">Some Incomplete</option>
-<%--          <option value="SOME_COMPLETE">Some Complete</option>--%>
+          <%--          <option value="SOME_COMPLETE">Some Complete</option>--%>
           <option value="ALL_COMPLETE">All Complete</option>
         </select>
       </label>
@@ -123,64 +123,68 @@
             </th>
           </tr>
           </thead>
-          <tbody>
-          <tr ng-repeat-start="result in state.results"
-              ng-click="selectResult($index)"
-              class="todo-report-result"
-              ng-class="{'todo-report-result-selected': state.iSelResult === $index}">
-            <td>
+            <tbody>
+            <tr ng-repeat-start="result in state.results"
+                ng-click="selectResult($index)"
+                class="todo-report-result"
+                ng-class="{'todo-report-result-selected': state.iSelResult === $index}">
+              <td>
               <span class="completion-icon icon-check"
                     ng-show="result.completedCount === result.tasks.length">
               </span>
-              <span class="completion-icon icon-minus"
-                    ng-show="result.completedCount > 0 && result.completedCount < result.tasks.length">
+                <span class="completion-icon icon-minus"
+                      ng-show="result.completedCount > 0 && result.completedCount < result.tasks.length">
               </span>
-              <span class="completion-icon icon-cross"
-                    ng-show="result.completedCount === 0">
+                <span class="completion-icon icon-cross"
+                      ng-show="result.completedCount === 0">
               </span>
-              {{result.completedCount}}/{{result.tasks.length}}
-            </td>
-            <td>
-              {{result.employee.lastName}},
-              {{result.employee.firstName}}{{result.employee.initial ? ',' : ''}}
-              {{result.employee.initial}}
-            </td>
-            <td>{{result.employee.respCtr.respCenterHead.name}}</td>
-          </tr>
-          <tr ng-repeat-end
-              ng-if="state.iSelResult === $index"
-              class="todo-report-result-details">
-            <td colspan="3">
-              <span class="todo-report-result-details-label">Email:</span>
-              {{result.employee.email}}<br>
-              <span class="todo-report-result-details-label">Cont. Service From:</span>
-              {{result.employee.contServiceDate | moment:'ll'}}<br>
-              <div ng-show="result.completedCount < result.tasks.length">
+                {{result.completedCount}}/{{result.tasks.length}}
+              </td>
+              <td>
+                {{result.employee.lastName}},
+                {{result.employee.firstName}}{{result.employee.initial ? ',' : ''}}
+                {{result.employee.initial}}
+              </td>
+              <td>{{result.employee.respCtr.respCenterHead.name}}</td>
+            </tr>
+            <tr ng-repeat-end
+                ng-if="state.iSelResult === $index"
+                class="todo-report-result-details">
+              <td colspan="3">
+                <span class="todo-report-result-details-label">Email:</span>
+                {{result.employee.email}}<br>
+                <span class="todo-report-result-details-label">Cont. Service From:</span>
+                {{result.employee.contServiceDate | moment:'ll'}}<br>
+                <div ng-show="result.completedCount < result.tasks.length">
                 <span class="todo-report-result-details-label">
                   Incomplete Trainings:<br>
                 </span>
-                <ul>
-                  <li ng-repeat="task in result.tasks | filter:{'completed': false}"
-                      class="todo-report-result-details-training">
-                    {{getTaskTitle(task.taskId)}}
-                  </li>
-                </ul>
-              </div>
-              <div ng-show="result.completedCount > 0">
+                  <ul>
+                    <li ng-repeat="task in result.tasks | filter:{'completed': false}"
+                        class="todo-report-result-details-training">
+                      {{getTaskTitle(task.taskId)}}
+                      <br>
+                      <button ng-click="overrideEmpTaskCompletion(task.taskId, getTaskTitle(task.taskId),
+                    principal.getEmployeeId())">Manually override
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div ng-show="result.completedCount > 0">
                 <span class="todo-report-result-details-label">
                   Completed Trainings:<br>
                 </span>
-                <ul>
-                  <li ng-repeat="task in result.tasks | filter:{'completed': true}"
-                      class="todo-report-result-details-training">
-                    {{getTaskTitle(task.taskId)}}<br>
-                    <span class="todo-result-completed-date">completed {{task.timestamp | moment:'ll'}}</span>
-                  </li>
-                </ul>
-              </div>
-            </td>
-          </tr>
-          </tbody>
+                  <ul>
+                    <li ng-repeat="task in result.tasks | filter:{'completed': true}"
+                        class="todo-report-result-details-training">
+                      {{getTaskTitle(task.taskId)}}<br>
+                      <span class="todo-result-completed-date">completed {{task.timestamp | moment:'ll'}}</span>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+            </tbody>
         </table>
 
         <div class="todo-report-pagination-controls">
@@ -190,6 +194,31 @@
         </div>
       </div>
     </div>
+
+  </div>
+
+  <div modal-container>
+
+
+    <modal modal-id="task-override-dialog">
+      <div class="confirm-modal">
+        <h3 class="content-info">
+          Personnel Task Override
+        </h3>
+        <div class="confirmation-message">
+          <p>
+            Warning: You are attempting to submit a task override for emp {{getOverrideTaskEmpName()}} concerning task
+            {{getOverrideTaskTitle()}}
+          </p>
+        </div>
+        <hr/>
+        <div class="input-container">
+          <input ng-click="submitTaskOverride()" class="submit-button" type="button" value="Proceed"/>
+          <input ng-click="rejectTaskOverride()" class="reject-button" type="button" value="Cancel"/>
+        </div>
+      </div>
+    </modal>
+
 
   </div>
 

@@ -8,8 +8,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentQuery.INSERT_TASK;
 import static gov.nysenate.ess.core.dao.pec.task.SqlPersonnelTaskQuery.*;
 
 @Repository
@@ -32,12 +34,18 @@ public class SqlPersonnelTaskDao extends SqlBaseDao implements PersonnelTaskDao 
 
     @Override
     public void updatePersonnelAssignedTaskCompletion(int empID, int updateEmpID, boolean completed, int taskID) {
-        localJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), completed,updateEmpID,empID,taskID );
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("updateUserId",updateEmpID);
+        updateParams.addValue("completed",completed);
+        updateParams.addValue("empId",empID);
+        updateParams.addValue("taskId",taskID);
+
+        int value = localNamedJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), updateParams );
     }
 
     @Override
     public void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID) {
-        localJdbc.update(UPDATE_TASK_COMPLETION.getSql(schemaMap()), assigned,updateEmpID,empID,taskID );
+        localJdbc.update(UPDATE_TASK_ASSIGNMENT.getSql(schemaMap()), assigned,updateEmpID,empID,taskID );
     }
 
     private static final RowMapper<PersonnelTask> taskRowMapper = (rs, rowNum) ->
