@@ -61,7 +61,7 @@ public enum SqlAccrualQuery implements BasicSqlQuery
         "    per.CDPERIOD, per.CDSTATUS, per.DTBEGIN, per.DTEND, per.DTPERIODYEAR, per.NUPERIOD\n" +
         "FROM ${masterSchema}.PD23ATTEND att\n" +
         "JOIN (SELECT * FROM ${masterSchema}.SL16PERIOD WHERE CDPERIOD = 'AF') per ON att.DTEND = per.DTEND\n" +
-        "WHERE att.NUXREFEM = :empId AND per.DTBEGIN >= :startDate AND per.DTEND <= :endDate\n"
+        "WHERE att.NUXREFEM = :empId AND per.DTEND BETWEEN :startDate AND :endDate\n"
     );
 
     private String sql;
