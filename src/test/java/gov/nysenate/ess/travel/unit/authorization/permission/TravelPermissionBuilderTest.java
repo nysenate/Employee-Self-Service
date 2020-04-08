@@ -6,11 +6,12 @@ import gov.nysenate.ess.travel.authorization.permission.TravelPermissionBuilder;
 import gov.nysenate.ess.travel.authorization.permission.TravelPermissionObject;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import static junit.framework.TestCase.assertEquals;
 
-@UnitTest
+@Category(UnitTest.class)
 public class TravelPermissionBuilderTest {
 
     @Test(expected = IllegalArgumentException.class)
