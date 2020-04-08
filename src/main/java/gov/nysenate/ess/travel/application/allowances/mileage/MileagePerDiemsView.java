@@ -24,7 +24,7 @@ public class MileagePerDiemsView implements ViewObject {
         this.allLegs = ma.allLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
-        this.qualifyingLegs = ma.qualifyingLegs().stream()
+        this.qualifyingLegs = ma.mileageReimbursableLegs().stream()
                 .map(LegView::new)
                 .collect(Collectors.toList());
         this.requestedLegs = ma.requestedLegs().stream()
