@@ -8,7 +8,10 @@ import java.util.Collection;
 
 public class MileagePerDiems {
 
-    private static final double MILE_THRESHOLD = 35.0;
+    /**
+     * The minimum outbound mileage needed to qualify for mileage reimbursement.
+     */
+    private static final double MILE_THRESHOLD = 15.0;
     private final ImmutableList<Leg> mileagePerDiems;
 
     public MileagePerDiems(Collection<Leg> legs) {
