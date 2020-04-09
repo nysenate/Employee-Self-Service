@@ -18,7 +18,8 @@
             imageUrl: '${imageUrl}',
             sessionId: '${sessionId}',
             releaseVersion: '${releaseVersion}',
-            miscLeaves: ${miscLeaves}
+            miscLeaves: ${miscLeaves},
+            helplinePhoneNumber: '${helplinePhoneNumber}'
         };
         <c:if test="${not empty principalJson}">
             window.globalProps.user = ${principalJson};

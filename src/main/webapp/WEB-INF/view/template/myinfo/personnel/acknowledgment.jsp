@@ -12,7 +12,7 @@
     <ess-notification level="info" title="No Active Documents" ng-hide="anyAckDocs()">
       <p>
         There are no active policies/documents for acknowledgment.<br>
-        Please contact the STS Helpline at (518) 455-2011 with any questions or concerns.
+        Please contact the STS Helpline at {{helplinePhoneNumber}} with any questions or concerns.
       </p>
     </ess-notification>
 

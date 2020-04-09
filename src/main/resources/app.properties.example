@@ -254,3 +254,7 @@ travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
 
 # Sage API base url
 sage.api.url = https://pubgeo.nysenate.gov/api/v2
+
+# --- Senate Info -----------------------------------------------------------
+
+helpline.phone.number = (518) 455-2011
