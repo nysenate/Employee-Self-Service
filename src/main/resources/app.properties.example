@@ -257,4 +257,5 @@ sage.api.url = https://pubgeo.nysenate.gov/api/v2
 
 # --- Senate Info -----------------------------------------------------------
 
-helpline.phone.number = (518) 455-2011
+# The senate helpline phone number
+helpline.phone.number =
