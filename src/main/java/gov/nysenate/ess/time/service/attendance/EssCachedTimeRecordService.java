@@ -350,8 +350,10 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
         logger.info("Checking for time record updates since {}", lastUpdateTime);
         Range<LocalDateTime> updateRange = Range.openClosed(lastUpdateTime, LocalDateTime.now());
         List<TimeRecord> updatedTRecs = timeRecordDao.getUpdatedRecords(updateRange);
+        for (TimeRecord timeRecord : updatedTRecs) {
+            updateCache(timeRecord);
+        }
         lastUpdateTime = updatedTRecs.stream()
-                .peek(this::updateCache)
                 .map(TimeRecord::getOverallUpdateDate)
                 .max(LocalDateTime::compareTo)
                 .orElse(lastUpdateTime);
@@ -373,6 +375,9 @@ public class EssCachedTimeRecordService extends SqlDaoBaseService implements Tim
             if (elem != null) {
                 TimeRecordCacheCollection cachedRecs = (TimeRecordCacheCollection) elem.getObjectValue();
                 if (record.isActive() && TimeRecordStatus.inProgress().contains(record.getRecordStatus())) {
+                    if (cachedRecs.cachedTimeRecords.containsKey(record.getTimeRecordId())) {
+                        cachedRecs.remove(record.getTimeRecordId());
+                    }
                     initializeEntries(record);
                     cachedRecs.update(record);
                 } else {
