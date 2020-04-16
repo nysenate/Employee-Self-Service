@@ -8,7 +8,10 @@ import java.util.Collection;
 
 public class MileagePerDiems {
 
-    private static final double MILE_THRESHOLD = 35.0;
+    /**
+     * The minimum outbound mileage needed to qualify for mileage reimbursement.
+     */
+    private static final double MILE_THRESHOLD = 15.0;
     private final ImmutableList<Leg> mileagePerDiems;
 
     public MileagePerDiems(Collection<Leg> legs) {
@@ -39,7 +42,7 @@ public class MileagePerDiems {
     /**
      * Legs that are allowed to be reimbursed for travel.
      */
-    public ImmutableList<Leg> qualifyingLegs() {
+    public ImmutableList<Leg> mileageReimbursableLegs() {
         return mileagePerDiems.stream()
                 .filter(Leg::qualifiesForMileageReimbursement)
                 .collect(ImmutableList.toImmutableList());
@@ -50,27 +53,22 @@ public class MileagePerDiems {
      * has requested reimbursement.
      */
     public ImmutableList<Leg> requestedLegs() {
-        return qualifyingLegs().stream()
+        return mileageReimbursableLegs().stream()
                 .filter(Leg::isReimbursementRequested)
                 .collect(ImmutableList.toImmutableList());
     }
 
     public boolean tripQualifiesForReimbursement() {
-        double outboundMiles = qualifyingLegs().stream()
+        double outboundMiles = mileageReimbursableLegs().stream()
+                .filter(Leg::isOutbound)
                 .mapToDouble(Leg::miles)
                 .sum();
         return outboundMiles > MILE_THRESHOLD;
     }
 
     public double totalMileage() {
-        return qualifyingLegs().stream()
+        return mileageReimbursableLegs().stream()
                 .mapToDouble(Leg::miles)
                 .sum();
-    }
-
-    private ImmutableList<Leg> outboundLegs() {
-        return allLegs().stream()
-                .filter(Leg::isOutbound)
-                .collect(ImmutableList.toImmutableList());
     }
 }

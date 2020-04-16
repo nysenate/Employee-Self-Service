@@ -41,7 +41,7 @@
 
         <div ng-show="destinations.isWorkLocationError || destinations.isRchLocationError" class="warning-text">
           The destinations shown may be limited due to inconsistencies in your employee data. <br/>
-          If you are missing a necessary destination, contact the STS Helpline at (518) 455-2011 for assistance.
+          If you are missing a necessary destination, contact the STS Helpline at {{helplinePhoneNumber}} for assistance.
         </div>
       </form>
     </div>
