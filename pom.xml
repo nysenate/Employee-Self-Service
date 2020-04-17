@@ -134,7 +134,7 @@
     <jstl.version>1.2</jstl.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
-    <oracle.driver.version>10.2.0.5</oracle.driver.version>
+    <oracle.driver.version>19.3.0.0</oracle.driver.version>
     <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
     <slf4j.version>1.7.5</slf4j.version>
     <log4j.version>2.11.1</log4j.version>
@@ -331,8 +331,8 @@
 
     <!-- Database Drivers -->
     <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc14</artifactId>
+      <groupId>com.oracle.ojdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
       <version>${oracle.driver.version}</version>
       <scope>runtime</scope>
     </dependency>
