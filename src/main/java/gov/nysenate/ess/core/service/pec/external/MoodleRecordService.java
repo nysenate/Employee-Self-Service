@@ -73,6 +73,8 @@ public class MoodleRecordService implements ESSMoodleRecordService {
     //process records into tasks for completion
     public void processMoodleEmployeeRecords(List<MoodleEmployeeRecord> moodleEmployeeRecords) {
 
+        logger.info("Start Processing Moodle Records");
+
         int moodleTaskId = getMoodleTaskId();
 
         for (MoodleEmployeeRecord moodleEmployeeRecord : moodleEmployeeRecords) {
@@ -98,6 +100,8 @@ public class MoodleRecordService implements ESSMoodleRecordService {
                     );
             personnelTaskAssignmentDao.updateAssignment(taskToInsert);
         }
+
+        logger.info("Completed Prcocessing of Moodle Records");
     }
 
     private String filterMoodleEmail(String email) {

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.service.pec.external.MoodleRecordService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,8 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0);
     final LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+
+    private static final Logger logger = LoggerFactory.getLogger(MoodleApiCtrl.class);
 
     @Autowired
     public MoodleApiCtrl(MoodleRecordService moodleRecordService,
@@ -86,6 +90,7 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
             moodleRecordService.processMoodleEmployeeRecords(moodleRecordService.getMoodleRecordsFromJson(json.toString()));
         }
         catch (Exception e) {
+            logger.info("Error contacting moodle for records", e);
             return new SimpleResponse(false, "Moode Report Generation", e.getMessage());
         }
 

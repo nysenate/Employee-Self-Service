@@ -92,6 +92,9 @@ public class PECVideoCSVService {
     }
 
     public void processCSVReports() throws IOException {
+
+        logger.info("Start processing of PEC CSV files");
+
         File[] files = getFilesFromDirectory(csvFileDir);
 
         for (File file : files) {
@@ -102,19 +105,21 @@ public class PECVideoCSVService {
             Matcher ethics2020Matcher = csvEthics2020ReportPattern.matcher(fileName);
 
             if (ethicsMatcher.matches()) {
-                logger.info("Processing Ethics 2018 CSV report");
+                logger.info("Processing Ethics 2018 CSV report: " + fileName);
                 handleGeneratedReportCSV(file, ETHICS_VID_2018_ID_NUM, 10); //IDS may change once we get the videos
             } else if (harassmentMatcher.matches()) {
-                logger.info("Processing Harassment 2019 CSV report");
+                logger.info("Processing Harassment 2019 CSV report: " + fileName);
                 handleGeneratedReportCSV(file, HARASSMENT_VID_2019_ID_NUM, 11);
             } else if (liveTrainingDHPMatcher.matches()) {
-                logger.info("Processing Live Training DHP CSV report");
+                logger.info("Processing Live Training DHP CSV report: " + fileName);
                 handleLiveTrainingReportCSV(file);
             } else if (ethics2020Matcher.matches()) {
-                logger.info("Processing Ethics 2020 CSV report");
+                logger.info("Processing Ethics 2020 CSV report: " + fileName);
                 handleGeneratedReportCSV(file, ETHICS_VID_2020_ID_NUM, 10);
             }
         }
+
+        logger.info("Completed processing of PEC CSV files");
     }
 
     private void handleGeneratedReportCSV(File genRepCSV, int id, int dateColumnNumber) throws IOException {
