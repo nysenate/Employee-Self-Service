@@ -95,7 +95,7 @@ public class MoodleApiCtrl extends BaseRestApiCtrl {
         }
 
 
-        return new SimpleResponse(true, "Moode Report Generation", "moodle-report-generation");
+        return new SimpleResponse(true, "Moodle Report Generation", "moodle-report-generation");
     }
 
     private LocalDateTime stringToLocalDateTime(String time) {

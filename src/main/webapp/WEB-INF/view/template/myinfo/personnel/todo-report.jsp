@@ -164,7 +164,7 @@
                         class="todo-report-result-details-training">
                       {{getTaskTitle(task.taskId)}}
                       <br>
-                      <button ng-click="overrideEmpTaskCompletion(task.taskId, getTaskTitle(task.taskId),
+                      <button style="margin-top: 10px; margin-bottom: 15px;" ng-click="overrideEmpTaskCompletion(task.taskId, getTaskTitle(task.taskId),
                     principal.getEmployeeId())">Manually override
                       </button>
                     </li>
@@ -207,7 +207,10 @@
         </h3>
         <div class="confirmation-message">
           <p>
-            Warning: You are attempting to submit a task override for emp {{getOverrideTaskEmpName()}} concerning task
+            Warning: You are attempting to submit a task override for employee
+            <br>
+            {{getOverrideTaskEmpName()}}
+            <br> for task <br>
             {{getOverrideTaskTitle()}}
           </p>
         </div>
