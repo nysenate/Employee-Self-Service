@@ -83,6 +83,7 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                 }
                 $scope.allEmps = supEmpGroupService.getEmpInfos($scope.iSelEmpGroup, !$scope.showSenators);
                 $scope.allEmps = $scope.allEmps.filter(employeeFilter);
+                $scope.allEmps = $scope.allEmps.sort(compareStrings);
                 setEmpLabels();
 
                 $scope.selectedSup = $scope.supEmpGroups[$scope.iSelEmpGroup];
@@ -212,6 +213,20 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                     return true;
                 }
                 return $scope.payTypeRegex.test(empInfo.payType);
+            }
+
+            function compareStrings(a, b) {
+                // Use toUpperCase() to ignore character casing
+                const personA = a.empLastName.toUpperCase();
+                const personB = b.empLastName.toUpperCase();
+
+                let comparison = 0;
+                if (personA > personB) {
+                    comparison = 1;
+                } else if (personA < personB) {
+                    comparison = -1;
+                }
+                return comparison;
             }
 
         }
