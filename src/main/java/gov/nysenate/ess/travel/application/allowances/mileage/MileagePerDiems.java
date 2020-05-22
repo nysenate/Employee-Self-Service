@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.application.allowances.mileage;
 import com.google.common.collect.ImmutableList;
 import gov.nysenate.ess.travel.application.route.Leg;
 import gov.nysenate.ess.travel.utils.Dollars;
+import gov.nysenate.ess.travel.utils.UnitUtils;
 
 import java.util.Collection;
 
@@ -66,9 +67,13 @@ public class MileagePerDiems {
         return outboundMiles > MILE_THRESHOLD;
     }
 
+    /**
+     * Total mileage rounded to the tenth of a mile.
+     * @return
+     */
     public double totalMileage() {
-        return mileageReimbursableLegs().stream()
+        return UnitUtils.round(mileageReimbursableLegs().stream()
                 .mapToDouble(Leg::miles)
-                .sum();
+                .sum(), 1);
     }
 }
