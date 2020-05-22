@@ -18,4 +18,20 @@ public class UnitUtils {
         // Round to tenth. Rounded required when dividing.
         return BigDecimal.valueOf(meters).divide(METERS_PER_MILE, 1, RoundingMode.HALF_UP);
     }
+
+    /**
+     * Round a double to the given number of places.
+     * @param value The value to be rounded.
+     * @param places The number of decimal places to round to.
+     * @return
+     */
+    public static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 }
