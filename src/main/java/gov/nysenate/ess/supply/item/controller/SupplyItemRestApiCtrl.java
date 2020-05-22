@@ -7,6 +7,7 @@ import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.unit.LocationId;
+import gov.nysenate.ess.supply.authorization.permission.SupplyPermission;
 import gov.nysenate.ess.supply.item.OrderableItems;
 import gov.nysenate.ess.supply.item.dao.SupplyItemDao;
 import gov.nysenate.ess.supply.item.model.SupplyItem;
@@ -66,8 +67,15 @@ public class SupplyItemRestApiCtrl extends BaseRestApiCtrl {
         if (locationDao.getLocation(locationId) == null) {
             throw new InvalidRequestParamEx(locId, "locId", "String", "locId must represent a valid location with the format: locCode-locType. e.g. A42FB-W");
         }
+
         Set<SupplyItem> items = supplyItemDao.getSupplyItems();
-        return sortedItemViews(OrderableItems.forItemsAndLoc(items, locationId));
+        if (getSubject().isPermitted(SupplyPermission.SUPPLY_EMPLOYEE.getPermission())) {
+            // Supply staff are allowed to order all items at any location.
+            return sortedItemViews(items);
+        }
+        else {
+            return sortedItemViews(OrderableItems.forItemsAndLoc(items, locationId));
+        }
     }
 
     private ListViewResponse<SupplyItemView> sortedItemViews(Set<SupplyItem> items) {
