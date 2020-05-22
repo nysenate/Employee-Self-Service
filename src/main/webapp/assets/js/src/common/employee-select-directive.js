@@ -220,7 +220,7 @@ function employeeSelectDirective(appProps, $filter, supEmpGroupService) {
                 const personA = a.empLastName.toUpperCase();
                 const personB = b.empLastName.toUpperCase();
 
-                let comparison = 0;
+                var comparison = 0;
                 if (personA > personB) {
                     comparison = 1;
                 } else if (personA < personB) {
