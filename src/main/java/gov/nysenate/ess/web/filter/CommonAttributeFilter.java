@@ -32,6 +32,7 @@ public class CommonAttributeFilter implements Filter
     private static final String MISC_LEAVE_ATTRIBUTE = "miscLeaves";
     private static final String RELEASEVERSION_ATTRIBUTE = "releaseVersion";
     private static final String GOOGLE_API_KEY = "googleApiKey";
+    private static final String HELPLINE_PHONE_NUM = "helplinePhoneNumber";
 
     private final XsrfValidator xsrfValidator;
 
@@ -41,6 +42,7 @@ public class CommonAttributeFilter implements Filter
     private final String imageUrl;
     private final String releaseVersion;
     private final String googleApiKey;
+    private final String helplinePhoneNumber;
 
     @Autowired
     public CommonAttributeFilter(XsrfValidator xsrfValidator,
@@ -48,7 +50,8 @@ public class CommonAttributeFilter implements Filter
                                  @Value("${login.url}") String loginUrl,
                                  @Value("${image.url}") String imageUrl,
                                  @Value("${application.version}") String releaseVersion,
-                                 @Value("${google.maps.api.key}") String googleApiKey
+                                 @Value("${google.maps.api.key}") String googleApiKey,
+                                 @Value("${helpline.phone.number}") String helplinePhoneNumber
     ) {
         this.xsrfValidator = xsrfValidator;
         this.runtimeLevel = RuntimeLevel.of(runtimeLevel);
@@ -56,6 +59,7 @@ public class CommonAttributeFilter implements Filter
         this.imageUrl = imageUrl;
         this.releaseVersion = releaseVersion;
         this.googleApiKey = googleApiKey;
+        this.helplinePhoneNumber = helplinePhoneNumber;
     }
 
     @Override
@@ -73,6 +77,7 @@ public class CommonAttributeFilter implements Filter
         setMiscLeaveAttribute(httpServletRequest);
         setReleaseVersionAttribute(httpServletRequest);
         setGoogleApiKey(httpServletRequest);
+        setHelplinePhoneNumber(httpServletRequest);
         setImageUrl(request);
         chain.doFilter(request, response);
     }
@@ -109,6 +114,10 @@ public class CommonAttributeFilter implements Filter
 
     private void setGoogleApiKey(HttpServletRequest request) {
         request.setAttribute(GOOGLE_API_KEY, googleApiKey);
+    }
+
+    private void setHelplinePhoneNumber(HttpServletRequest request) {
+        request.setAttribute(HELPLINE_PHONE_NUM, helplinePhoneNumber);
     }
 
     /** Life-cycle is maintained by Spring. The init method is not used. */

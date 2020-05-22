@@ -16,18 +16,18 @@ public class Leg {
     private final Destination to;
     private final ModeOfTransportation modeOfTransportation;
     private final double miles;
-    private PerDiem perDiem;
+    private PerDiem mileagePerDiem;
     private final boolean isOutbound;
     private boolean isReimbursementRequested;
 
     public Leg(int id, Destination from, Destination to, ModeOfTransportation modeOfTransportation,
-               double miles, PerDiem perDiem, boolean isOutbound, boolean isReimbursementRequested) {
+               double miles, PerDiem mileagePerDiem, boolean isOutbound, boolean isReimbursementRequested) {
         this.id = id;
         this.from = Objects.requireNonNull(from);
         this.to = Objects.requireNonNull(to);
         this.modeOfTransportation = Objects.requireNonNull(modeOfTransportation);
         this.miles = miles;
-        this.perDiem = perDiem;
+        this.mileagePerDiem = mileagePerDiem;
         this.isOutbound = isOutbound;
         this.isReimbursementRequested = isReimbursementRequested;
     }
@@ -80,7 +80,7 @@ public class Leg {
     }
 
     public LocalDate travelDate() {
-        return perDiem.getDate();
+        return mileagePerDiem.getDate();
     }
 
     public double miles() {
@@ -88,7 +88,7 @@ public class Leg {
     }
 
     public BigDecimal mileageRate() {
-        return perDiem.getRate();
+        return mileagePerDiem.getRate();
     }
 
     public String methodOfTravel() {
@@ -115,8 +115,8 @@ public class Leg {
         return modeOfTransportation.qualifiesForMileageReimbursement();
     }
 
-    public void setPerDiem(PerDiem perDiem) {
-        this.perDiem = perDiem;
+    public void setMileagePerDiem(PerDiem mileagePerDiem) {
+        this.mileagePerDiem = mileagePerDiem;
     }
 
     void setId(int id) {
@@ -131,7 +131,7 @@ public class Leg {
                 ", to=" + to +
                 ", modeOfTransportation=" + modeOfTransportation +
                 ", miles=" + miles +
-                ", perDiem=" + perDiem +
+                ", perDiem=" + mileagePerDiem +
                 ", isOutbound=" + isOutbound +
                 '}';
     }
@@ -147,12 +147,12 @@ public class Leg {
                 Objects.equals(from, leg.from) &&
                 Objects.equals(to, leg.to) &&
                 Objects.equals(modeOfTransportation, leg.modeOfTransportation) &&
-                Objects.equals(perDiem, leg.perDiem);
+                Objects.equals(mileagePerDiem, leg.mileagePerDiem);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, from, to, modeOfTransportation, miles, perDiem, isOutbound);
+        return Objects.hash(id, from, to, modeOfTransportation, miles, mileagePerDiem, isOutbound);
     }
 }
 

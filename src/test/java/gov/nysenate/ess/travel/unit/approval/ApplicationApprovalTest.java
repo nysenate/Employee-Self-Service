@@ -1,8 +1,9 @@
 package gov.nysenate.ess.travel.unit.approval;
 
 import gov.nysenate.ess.core.annotation.UnitTest;
+import org.junit.experimental.categories.Category;
 
-@UnitTest
+@Category(UnitTest.class)
 public class ApplicationApprovalTest {
 
 }

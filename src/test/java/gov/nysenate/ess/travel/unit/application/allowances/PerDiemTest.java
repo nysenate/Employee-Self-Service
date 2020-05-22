@@ -3,13 +3,14 @@ package gov.nysenate.ess.travel.unit.application.allowances;
 import gov.nysenate.ess.core.annotation.UnitTest;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 
-@UnitTest
+@Category(UnitTest.class)
 public class PerDiemTest {
 
     @Test

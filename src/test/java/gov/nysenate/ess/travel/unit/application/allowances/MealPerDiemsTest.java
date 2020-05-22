@@ -10,13 +10,14 @@ import gov.nysenate.ess.travel.provider.senate.SenateMie;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UnitTest
+@Category(UnitTest.class)
 public class MealPerDiemsTest {
 
     private static GoogleAddress CAPITOL = new GoogleAddress(1, "", "", "");
