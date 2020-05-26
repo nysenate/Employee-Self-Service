@@ -81,7 +81,7 @@ public class TransactionRecordTest {
     @Test
     public void getLocalDateValueTest() {
         LocalDate date = LocalDate.now();
-        String dateVal = date.atStartOfDay().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")).toUpperCase();
+        String dateVal = date.atStartOfDay().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toUpperCase();
         TransactionRecord rec = new TransactionRecord();
         Map<String, String> dateValMap = ImmutableMap.of(testCol, dateVal);
         rec.setValueMap(dateValMap);
