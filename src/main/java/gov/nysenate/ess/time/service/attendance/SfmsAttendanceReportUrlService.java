@@ -5,22 +5,24 @@ import gov.nysenate.ess.time.model.accrual.PeriodAccSummary;
 import gov.nysenate.ess.time.model.accrual.PeriodAccUsage;
 import gov.nysenate.ess.time.service.accrual.AccrualComputeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.format.DateTimeFormatter;
 
-@Service
+@Service("sfmsurlservice")
 public class SfmsAttendanceReportUrlService implements AttendanceReportUrlService {
 
-    private static final String accrualReportBaseUrl = "http://nysasprd.senate.state.ny.us:7778/reports/rwservlet";
+    private final String accrualReportBaseUrl;
     private static final DateTimeFormatter paramDateFmt = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
 
     private final AccrualComputeService accrualComputeService;
 
     @Autowired
-    public SfmsAttendanceReportUrlService(AccrualComputeService accrualComputeService) {
+    public SfmsAttendanceReportUrlService(@Value("${sfms.report.base.url}") String accrualReportBaseUrl, AccrualComputeService accrualComputeService) {
+        this.accrualReportBaseUrl = accrualReportBaseUrl.trim();
         this.accrualComputeService = accrualComputeService;
     }
 
@@ -84,5 +86,9 @@ public class SfmsAttendanceReportUrlService implements AttendanceReportUrlServic
                 .queryParam("p_nuhrsexpect", accruals.getExpectedTotalHours())
                 .queryParam("p_nutotalhrs", accruals.getTotalHoursYtd())
                 ;
+    }
+
+    public String getAccrualReportBaseUrl() {
+        return accrualReportBaseUrl;
     }
 }

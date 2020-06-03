@@ -181,6 +181,9 @@ resource.location = /assets/
 login.url = /login
 login.success.url = /time/record/entry
 
+# Sfms Report Base Url
+sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
+
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
