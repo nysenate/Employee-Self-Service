@@ -184,6 +184,9 @@ resource.location = /assets/
 login.url = /login
 login.success.url = /time/record/entry
 
+# Sfms Report Base Url
+sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
+
 # LegEthics Training URL
 # A URL that points to the LegEthics training site.
 legethics.url =
