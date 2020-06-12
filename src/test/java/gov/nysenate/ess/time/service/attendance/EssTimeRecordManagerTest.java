@@ -62,7 +62,7 @@ public class EssTimeRecordManagerTest extends BaseTest
     @Test
     @Transactional(value = DatabaseConfig.remoteTxManager)
     public void ensureRecordsTest() {
-        int empId = 12045;
+        int empId = 9896;
 
         RangeSet<LocalDate> openDates = attendanceDao.getOpenDates(empId);
         List<PayPeriod> payPeriods = openDates.asRanges().stream()
