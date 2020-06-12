@@ -24,7 +24,7 @@ public class SqlHoursDao extends SqlBaseDao implements HoursDao
 
     protected static final String LAST_SFMS_HOURS_SQL =
         "SELECT a.DTEND, a.nutothrslast, b.nutotalhrs\n" +
-        "FROM PD23ACCUSAGE a, PD23ATTEND b\n" +
+        "FROM ${masterSchema}.PD23ACCUSAGE a, ${masterSchema}.PD23ATTEND b\n" +
         "WHERE a.NUXREFEM = :empId\n" +
         "AND a.nuxrefem = b.nuxrefem\n" +
         "AND a.dtend = b.dtend\n" +
@@ -55,13 +55,13 @@ public class SqlHoursDao extends SqlBaseDao implements HoursDao
                     "                    OR a2.dtbegin BETWEEN a.dtbegin AND a.dtend)\n" +
                     "           )\n" +*/
         "AND NOT EXISTS (SELECT 1\n" +
-        "                FROM pd23accusage b\n" +
+        "                FROM ${masterSchema}.pd23accusage b\n" +
         "                WHERE b.dtend = a.dtend\n" +
         "                AND b.nuxrefem = a.nuxrefem)\n";
 
     protected static final String TIMESHEET_HOURS_SQL =
         "SELECT  MAX(dtend), SUM(NVL(NUWORK,0)) + SUM(NVL(NUTRAVEL,0)) + SUM(NVL(NUHOLIDAY,0)) + SUM(NVL(nuvacation,0)) + SUM(NVL(nupersonal, 0)) + SUM(NVL(nusickemp,0)) + SUM(NVL(nusickfam,0)) + SUM(NVL(numisc, 0)) nutotal\n" +
-        "FROM pd23timesheet a, pm23timesheet b\n" +
+        "FROM ${tsSchema}.pd23timesheet a, ${tsSchema}.pm23timesheet b\n" +
         "WHERE b.nuxrtimesheet = a.nuxrtimesheet\n" +
         "AND b.nuxrefem = :empId\n" +
         "AND a.cdstatus = 'A'\n" +
@@ -69,12 +69,12 @@ public class SqlHoursDao extends SqlBaseDao implements HoursDao
         "AND b.dtend < :endDate\n" +
         "AND b.dtend >= :beginDate\n" +
         "AND NOT EXISTS (SELECT 1\n" +
-        "FROM PD23ACCUSAGE c\n" +
+        "FROM ${masterSchema}.PD23ACCUSAGE c\n" +
         "WHERE c.nuxrefem = b.nuxrefem\n" +
         "AND c.dtend < :endDate\n" +
         "AND b.dtend BETWEEN c.dtend-13 AND c.dtend)\n" +
         "AND NOT EXISTS (SELECT 1\n" +
-        "FROM PD23ATTEND c\n" +
+        "FROM ${masterSchema}.PD23ATTEND c\n" +
         "WHERE c.nuxrefem = b.nuxrefem\n" +
         "AND c.dtend < :endDate\n" +
         "AND b.dtend BETWEEN c.dtend-13 AND c.dtend\n" +
