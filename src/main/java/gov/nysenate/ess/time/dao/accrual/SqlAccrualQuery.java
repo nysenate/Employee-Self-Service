@@ -47,10 +47,11 @@ public enum SqlAccrualQuery implements BasicSqlQuery
         "    att.NUEMPHRS AS BW_EMP_HRS_USED, att.NUFAMHRS AS BW_FAM_HRS_USED, att.NUVACHRS AS BW_VAC_HRS_USED,\n" +
         "    att.NUMISCHRS AS BW_MISC_HRS_USED, att.DTPERIODYEAR AS BW_YEAR\n" +
         "FROM ${masterSchema}.PD23ACCUSAGE acc\n" +
-        "JOIN (SELECT * FROM ${masterSchema}.SL16PERIOD WHERE CDPERIOD = 'AF') per ON acc.DTEND = per.DTEND\n" +
+        "JOIN (SELECT * FROM ${masterSchema}.SL16PERIOD WHERE CDPERIOD = 'AF' AND CDSTATUS = 'A') per ON acc.DTEND = per.DTEND\n" +
         "JOIN ${masterSchema}.PD23ATTEND att\n" +
         "  ON acc.NUXREFEM = att.NUXREFEM AND acc.DTEND = att.DTEND\n" +
-        "WHERE acc.NUXREFEM = :empId AND acc.DTEND < :beforeDate\n"
+        "WHERE acc.NUXREFEM = :empId AND acc.DTEND < :beforeDate\n" +
+        "  AND att.cdstatus = 'A'\n"
     ),
 
     GET_PERIOD_ACCRUAL_USAGE(
@@ -61,7 +62,8 @@ public enum SqlAccrualQuery implements BasicSqlQuery
         "    per.CDPERIOD, per.CDSTATUS, per.DTBEGIN, per.DTEND, per.DTPERIODYEAR, per.NUPERIOD\n" +
         "FROM ${masterSchema}.PD23ATTEND att\n" +
         "JOIN (SELECT * FROM ${masterSchema}.SL16PERIOD WHERE CDPERIOD = 'AF') per ON att.DTEND = per.DTEND\n" +
-        "WHERE att.NUXREFEM = :empId AND per.DTEND BETWEEN :startDate AND :endDate\n"
+        "WHERE att.NUXREFEM = :empId AND per.DTEND BETWEEN :startDate AND :endDate\n" +
+        "  AND att.cdstatus = 'A'\n"
     );
 
     private String sql;
