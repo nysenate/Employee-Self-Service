@@ -178,6 +178,7 @@
                     <li ng-repeat="task in result.tasks | filter:{'completed': true}"
                         class="todo-report-result-details-training">
                       {{getTaskTitle(task.taskId)}}<br>
+                      <button style="margin-top: 10px; margin-bottom: 15px;" ng-click="">  <a target="_blank" href="{{ctxPath}}/api/v1/personnel/task/acknowledgment/download?taskId={{task.taskId}}&empId={{result.employee.employeeId}}">Download signed pdf</a>  </button>
                       <span class="todo-result-completed-date">completed {{task.timestamp | moment:'ll'}}</span>
                     </li>
                   </ul>

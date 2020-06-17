@@ -124,8 +124,7 @@ public class EssPersonnelTaskAssigner implements PersonnelTaskAssigner {
         TransactionHistory transHistory = transactionService.getTransHistory(empId);
         Range<LocalDate> presentAndFuture = Range.atLeast(LocalDate.now());
         // They are are eligible if they are currently active, or will be active in the future.
-        return transHistory.getActiveDates().intersects(presentAndFuture)
-                && !empInfoService.getEmployee(empId).isSenator();
+        return transHistory.getActiveDates().intersects(presentAndFuture);
     }
 
 }

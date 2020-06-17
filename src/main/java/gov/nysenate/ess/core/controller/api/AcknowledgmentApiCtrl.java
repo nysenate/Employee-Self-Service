@@ -15,13 +15,27 @@ import gov.nysenate.ess.core.model.pec.acknowledgment.AckDocNotFoundEx;
 import gov.nysenate.ess.core.model.pec.acknowledgment.DuplicateAckEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskNotFoundEx;
 import gov.nysenate.ess.core.service.pec.task.PersonnelTaskService;
+import gov.nysenate.ess.core.service.pec.task.TaskPDFSignatureService;
 import gov.nysenate.ess.core.util.ShiroUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -35,18 +49,24 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
     /** The uri path where ack docs are requested */
     private final String ackDocResPath;
 
+    @Value("${data.dir}") String dataDir;
+    @Value("${data.ackdoc_subdir}") String ackDocSubDir;
+
     private final PersonnelTaskService taskService;
     private final PersonnelTaskAssignmentDao assignmentDao;
+    private final TaskPDFSignatureService signatureService;
 
     @Autowired
     public AcknowledgmentApiCtrl(PersonnelTaskService taskService,
                                  PersonnelTaskAssignmentDao assignmentDao,
+                                 TaskPDFSignatureService signatureService,
                                  @Value("${data.dir}") String dataDir,
                                  @Value("${data.ackdoc_subdir}") String ackDocSubdir,
                                  @Value("${resource.path}") String resPath
     ) {
         this.taskService = taskService;
         this.assignmentDao = assignmentDao;
+        this.signatureService = signatureService;
         this.ackDocDir = dataDir + ackDocSubdir;
         this.ackDocResPath = resPath + ackDocSubdir;
     }
@@ -92,6 +112,39 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
         return new SimpleResponse(true, "Document Acknowledged", "document-acknowledged");
     }
 
+    /**
+     * Signed PDF download api
+     *
+     * Usage:
+     *      * (GET)    /api/v1/personnel/task/acknowledgment/download/
+     *
+     * Employees and Personnel should be able to download a signed copy of their completed acknowledgments.
+     *
+     *
+     * @return
+     */
+    @RequestMapping(value = "/download", method = GET)
+    public ResponseEntity<Resource> downloadAcknowledgedDocument(HttpServletRequest request, @RequestParam int empId, @RequestParam int taskId) throws IOException {
+        File signatureFile =  signatureService.createEmployeeSignatureForTask(empId,taskId);
+        // Try to determine file's content type
+
+        Resource resource = loadFileAsResource(signatureFile);
+
+        String contentType = null;
+        contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+
     /* --- Exception Handlers --- */
 
     @ExceptionHandler(AckDocNotFoundEx.class)
@@ -117,6 +170,21 @@ public class AcknowledgmentApiCtrl extends BaseRestApiCtrl {
                     "id must reference a personnel task of type ack doc");
         }
         return (AckDoc) task;
+    }
+
+    private Resource loadFileAsResource(File file) throws IOException {
+        String fileName = file.getName();
+        try {
+            Path filePath = file.toPath().toAbsolutePath().normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if(resource.exists()) {
+                return resource;
+            } else {
+                throw new IOException("File not found " + fileName);
+            }
+        } catch (MalformedURLException ex) {
+            throw new IOException("File not found " + fileName, ex);
+        }
     }
 
 }
