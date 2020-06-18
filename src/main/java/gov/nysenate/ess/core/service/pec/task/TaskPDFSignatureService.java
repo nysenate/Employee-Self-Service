@@ -37,7 +37,7 @@ public class TaskPDFSignatureService {
 
     @Value("${data.dir}") String dataDir;
     @Value("${data.ackdoc_subdir}") String ackDocSubDir;
-    @Value("${data.pdf-subdir}") String pdfSubDir;
+    @Value("${data.pdf_subdir}") String pdfSubDir;
 
     private final EmployeeInfoService empInfoService;
     private final SqlPersonnelTaskAssignmentDao taskAssignmentDao;
@@ -98,17 +98,18 @@ public class TaskPDFSignatureService {
                 writeToPDF(pdPageContentStream, 135, 656, PDType1Font.HELVETICA, 12, reasonLine1);
                 writeToPDF(pdPageContentStream, 85, 642, PDType1Font.HELVETICA, 12, reasonLine2);
                 writeToPDF(pdPageContentStream, 85, 628, PDType1Font.HELVETICA, 12, reasonLine3);
-                writeToPDF(pdPageContentStream, 85, 614, PDType1Font.HELVETICA_BOLD, 12,
-                        "Employee's Signature: " + employee.getFullName().toUpperCase());
+                writeToPDF(pdPageContentStream, 85, 614, PDType1Font.HELVETICA, 12, " ");
                 writeToPDF(pdPageContentStream, 85, 600, PDType1Font.HELVETICA_BOLD, 12,
-                        "Date Signed: " + taskAssignment.getUpdateTime());
-                writeToPDF(pdPageContentStream, 85, 586, PDType1Font.HELVETICA_BOLD, 12,
                         "Task: " + task.getTitle());
+                writeToPDF(pdPageContentStream, 85, 586, PDType1Font.HELVETICA_BOLD, 12,
+                        "Date Signed: " + taskAssignment.getUpdateTime());
+                writeToPDF(pdPageContentStream, 85, 572, PDType1Font.HELVETICA_BOLD, 12,
+                        "Employee's Signature: " + employee.getFullName().toUpperCase());
 
                 // Set a Color for the Rectangle
                 pdPageContentStream.setStrokingColor(Color.BLACK);
                 // Give the X, Y coordinates and height and width
-                pdPageContentStream.addRect(60, 577, 500, 94);
+                pdPageContentStream.addRect(60, 564, 500, 108);
                 pdPageContentStream.stroke();
 
                 // Once all the content is written, close the stream

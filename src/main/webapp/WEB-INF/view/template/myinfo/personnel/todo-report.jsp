@@ -216,7 +216,7 @@
           </p>
         </div>
         <hr/>
-        <div class="input-container">
+        <div class="todo-input-container">
           <input ng-click="submitTaskOverride()" class="submit-button" type="button" value="Proceed"/>
           <input ng-click="rejectTaskOverride()" class="reject-button" type="button" value="Cancel"/>
         </div>

@@ -21,7 +21,7 @@ data.travel.attachments.dir = travel_request_attachments/
 data.pecvid_subdir = pec_videos/
 
 #Subdirectory where downloaded Personnel Employee Compliance pdfs are stored
-data.pdf-subdir = pec_pdfs/
+data.pdf_subdir = pec_pdfs/
 
 # --- Domain Configuration ----------------------------------------------------
 
