@@ -7,14 +7,13 @@ import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
 import gov.nysenate.ess.core.model.pec.acknowledgment.AckDoc;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import org.apache.catalina.Loader;
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
 
 import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.DOCUMENT_ACKNOWLEDGMENT;
 
@@ -38,6 +36,7 @@ public class TaskPDFSignatureService {
     @Value("${data.dir}") String dataDir;
     @Value("${data.ackdoc_subdir}") String ackDocSubDir;
     @Value("${data.pdf_subdir}") String pdfSubDir;
+    @Value("${pec.nysenate.seal}") String nysenateSeal;
 
     private final EmployeeInfoService empInfoService;
     private final SqlPersonnelTaskAssignmentDao taskAssignmentDao;
@@ -90,30 +89,36 @@ public class TaskPDFSignatureService {
             }
 
             try {
+                //Create Page and Open Document
                 PDPage sigPage = new PDPage();
                 document.addPage(sigPage);
-
                 PDPageContentStream pdPageContentStream = new PDPageContentStream(document, sigPage);
 
-                writeToPDF(pdPageContentStream, 135, 656, PDType1Font.HELVETICA, 12, reasonLine1);
-                writeToPDF(pdPageContentStream, 85, 642, PDType1Font.HELVETICA, 12, reasonLine2);
-                writeToPDF(pdPageContentStream, 85, 628, PDType1Font.HELVETICA, 12, reasonLine3);
-                writeToPDF(pdPageContentStream, 85, 614, PDType1Font.HELVETICA, 12, " ");
-                writeToPDF(pdPageContentStream, 85, 600, PDType1Font.HELVETICA_BOLD, 12,
+                //Write image to PDF
+                PDImageXObject pdImage = PDImageXObject.createFromFile(nysenateSeal, document);
+                pdPageContentStream.drawImage(pdImage, 230, 620, pdImage.getWidth() / 4, pdImage.getHeight() / 4);
+
+                //Write Text to PDF
+                writeToPDF(pdPageContentStream, 135, 556, PDType1Font.HELVETICA, 12, reasonLine1);
+                writeToPDF(pdPageContentStream, 85, 542, PDType1Font.HELVETICA, 12, reasonLine2);
+                writeToPDF(pdPageContentStream, 85, 528, PDType1Font.HELVETICA, 12, reasonLine3);
+                writeToPDF(pdPageContentStream, 85, 514, PDType1Font.HELVETICA, 12, " ");
+                writeToPDF(pdPageContentStream, 85, 500, PDType1Font.HELVETICA_BOLD, 12,
                         "Task: " + task.getTitle());
-                writeToPDF(pdPageContentStream, 85, 586, PDType1Font.HELVETICA_BOLD, 12,
-                        "Date Signed: " + taskAssignment.getUpdateTime());
-                writeToPDF(pdPageContentStream, 85, 572, PDType1Font.HELVETICA_BOLD, 12,
+                writeToPDF(pdPageContentStream, 85, 486, PDType1Font.HELVETICA_BOLD, 12,
                         "Employee's Signature: " + employee.getFullName().toUpperCase());
+                writeToPDF(pdPageContentStream, 85, 472, PDType1Font.HELVETICA_BOLD, 12,
+                        "Date Signed: " + taskAssignment.getUpdateTime());
 
                 // Set a Color for the Rectangle
                 pdPageContentStream.setStrokingColor(Color.BLACK);
-                // Give the X, Y coordinates and height and width
-                pdPageContentStream.addRect(60, 564, 500, 108);
+                pdPageContentStream.addRect(60, 464, 500, 108);
                 pdPageContentStream.stroke();
 
                 // Once all the content is written, close the stream
                 pdPageContentStream.close();
+
+                //Create Signature
                 PDSignature signature = new PDSignature();
                 signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
                 signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
@@ -123,7 +128,7 @@ public class TaskPDFSignatureService {
                 signature.setSignDate(localDateTimeToCalendar(taskAssignment.getUpdateTime()));
                 document.addSignature(signature);
 
-
+                //Save and return
                 document.save(newFileName);
                 document.close();
 
