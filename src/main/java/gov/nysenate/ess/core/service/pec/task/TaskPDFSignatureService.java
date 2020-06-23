@@ -75,7 +75,7 @@ public class TaskPDFSignatureService {
 
             if (task.getTaskType().equals(DOCUMENT_ACKNOWLEDGMENT)) {
                 AckDoc ackDoc = ackDocTaskDetailDao.getTaskDetails(task);
-                newFileName = pdfDir + employee.getFirstName() + "_" + employee.getLastName() + "_" + ackDoc.getFilename();
+                newFileName = pdfDir + employee.getFirstName() + "_" + employee.getLastName() + "_" + ackDoc.getFilename().replaceAll(" ", "_");
                 orignalFileName = ackDocDir + ackDoc.getFilename();
                 File originalDoc = new File(orignalFileName);
                 signatureDocument = new File(newFileName);
@@ -83,7 +83,7 @@ public class TaskPDFSignatureService {
                 document = PDDocument.load(signatureDocument);
             }
             else {
-                newFileName = pdfDir + employee.getFirstName() + "_" + employee.getLastName() + "_" + task.getTitle() + ".pdf";
+                newFileName = pdfDir + employee.getFirstName() + "_" + employee.getLastName() + "_" + task.getTitle().replaceAll(" ", "_") + ".pdf";
                 // create new file
                 document = new PDDocument();
             }
