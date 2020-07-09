@@ -421,7 +421,10 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
         else {
             accrualState.setYtdHoursExpected(BigDecimal.ZERO);
         }
-        accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).firstEntry().getValue());
+        TreeMap<LocalDate, PayType> payTypesMap = transHistory.getEffectivePayTypes(initialRange);
+        if (!payTypesMap.isEmpty()) {
+            accrualState.setPayType(transHistory.getEffectivePayTypes(initialRange).firstEntry().getValue());
+        }
         accrualState.setMinTotalHours(transHistory.getEffectiveMinHours(initialRange).firstEntry().getValue());
         accrualState.computeRates();
         return accrualState;
@@ -441,9 +444,17 @@ public class EssAccrualComputeService extends SqlDaoBaseService implements Accru
                                           RangeSet<LocalDate> expectedHoursDates) {
         Range<LocalDate> gapPeriodRange = gapPeriod.getDateRange();
 
-        PersonnelStatus lastStatus = Optional.ofNullable(
-                transHistory.getEffectivePersonnelStatus(gapPeriodRange).lastEntry().getValue())
-                .orElse(PersonnelStatus.NONE);
+        TreeMap<LocalDate, PersonnelStatus> statusTreeMap = transHistory.getEffectivePersonnelStatus(gapPeriodRange);
+        PersonnelStatus lastStatus;
+        if (statusTreeMap.isEmpty()) {
+            lastStatus = PersonnelStatus.NONE;
+        }
+        else {
+            lastStatus = Optional.ofNullable(
+                    transHistory.getEffectivePersonnelStatus(gapPeriodRange).lastEntry().getValue())
+                    .orElse(PersonnelStatus.NONE);
+        }
+
 
         // If the employee was not allowed to accrue during the gap period, don't increment accruals
         // Also, do not allow accrual if the effective personnel status at pay period end prevents it.
