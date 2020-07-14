@@ -29,6 +29,7 @@ public enum ErrorCode
 
     /** Travel Errors */
     DATA_PROVIDER_ERROR(301, "An error occurred while communicating with 3rd party data providers."),
+    INVALID_TRAVEL_DATES(302, "One or more of your travel dates are invalid.");
     ;
 
     /** Unique ID for error code */
