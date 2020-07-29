@@ -181,6 +181,9 @@ resource.location = /assets/
 login.url = /login
 login.success.url = /time/record/entry
 
+# Sfms Report Base Url
+sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
+
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
@@ -254,3 +257,8 @@ travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
 
 # Sage API base url
 sage.api.url = https://pubgeo.nysenate.gov/api/v2
+
+# --- Senate Info -----------------------------------------------------------
+
+# The senate helpline phone number
+helpline.phone.number =

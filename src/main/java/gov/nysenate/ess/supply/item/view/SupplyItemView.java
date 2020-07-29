@@ -49,7 +49,7 @@ public class SupplyItemView implements Comparable<SupplyItemView>, ViewObject {
                 .withId(id)
                 .withCommodityCode(commodityCode)
                 .withDescription(description)
-                .withStatus(new ItemStatus(isExpendable, isInventoryTracked, isVisible, isSpecialRequest))
+                .withStatus(new ItemStatus(isExpendable, !isInventoryTracked, isVisible, isSpecialRequest))
                 .withCategory(new Category(category))
                 .withAllowance(new ItemAllowance(perOrderAllowance, perMonthAllowance))
                 .withUnit(new ItemUnit(unit, unitQuantity))

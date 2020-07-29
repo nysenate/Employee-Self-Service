@@ -6,7 +6,7 @@
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.6.1</version>
+  <version>1.6.5</version>
   <packaging>war</packaging>
 
   <build>
@@ -117,7 +117,7 @@
   </build>
 
   <properties>
-    <apache.shiro.version>1.2.3</apache.shiro.version>
+    <apache.shiro.version>1.5.0</apache.shiro.version>
     <commons.io.version>2.4</commons.io.version>
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.validator.version>1.6</commons.validator.version>
@@ -129,11 +129,11 @@
     <guava.version>22.0</guava.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hierarchicalcontextrunner.version>4.12.1</hierarchicalcontextrunner.version>
-    <jackson.version>2.9.10</jackson.version>
+    <jackson.version>2.10.1</jackson.version>
     <jstl.version>1.2</jstl.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
-    <oracle.driver.version>10.2.0.5</oracle.driver.version>
+    <oracle.driver.version>19.3.0.0</oracle.driver.version>
     <postgres.driver.version>9.4-1201-jdbc41</postgres.driver.version>
     <slf4j.version>1.7.5</slf4j.version>
     <log4j.version>2.11.1</log4j.version>
@@ -142,6 +142,8 @@
     <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
     <woodstox.version>4.4.1</woodstox.version>
     <org.apache.pdfbox.version>2.0.15</org.apache.pdfbox.version>
+    <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
+
   </properties>
 
   <dependencies>
@@ -295,6 +297,12 @@
       <version>${woodstox.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>${javax.xml.bind.version}</version>
+    </dependency>
+
     <!-- Apache Shiro | Authentication/authorization. -->
     <dependency>
       <groupId>org.apache.shiro</groupId>
@@ -316,8 +324,8 @@
 
     <!-- Database Drivers -->
     <dependency>
-      <groupId>com.oracle</groupId>
-      <artifactId>ojdbc14</artifactId>
+      <groupId>com.oracle.ojdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
       <version>${oracle.driver.version}</version>
       <scope>runtime</scope>
     </dependency>

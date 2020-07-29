@@ -8,10 +8,11 @@ import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.Version;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 
-@UnitTest
+@Category(UnitTest.class)
 public class TravelApplicationTest {
 
     @Test

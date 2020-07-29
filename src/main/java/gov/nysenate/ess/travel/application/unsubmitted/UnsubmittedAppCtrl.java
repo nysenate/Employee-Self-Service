@@ -2,22 +2,25 @@ package gov.nysenate.ess.travel.application.unsubmitted;
 
 import gov.nysenate.ess.core.client.response.base.BaseResponse;
 import gov.nysenate.ess.core.client.response.base.ViewObjectResponse;
+import gov.nysenate.ess.core.client.response.error.ErrorCode;
+import gov.nysenate.ess.core.client.response.error.ErrorResponse;
 import gov.nysenate.ess.core.controller.api.BaseRestApiCtrl;
 import gov.nysenate.ess.core.model.base.InvalidRequestParamEx;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import gov.nysenate.ess.core.util.OutputUtils;
+import gov.nysenate.ess.time.service.attendance.validation.InvalidTimeRecordException;
+import gov.nysenate.ess.travel.allowedtravelers.AllowedTravelersService;
 import gov.nysenate.ess.travel.application.*;
 import gov.nysenate.ess.travel.application.allowances.AllowancesView;
 import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
-import gov.nysenate.ess.travel.application.route.Route;
-import gov.nysenate.ess.travel.application.route.RouteService;
-import gov.nysenate.ess.travel.application.route.RouteView;
+import gov.nysenate.ess.travel.application.route.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/travel/unsubmitted")
@@ -37,6 +39,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @Autowired private TravelApplicationService travelApplicationService;
     @Autowired private RouteService routeService;
     @Autowired private AmendmentService amendmentService;
+    @Autowired private AllowedTravelersService allowedTravelersService;
+    @Autowired private RouteViewValidator routeViewValidator;
 
     /**
      * Get an unsubmitted app API
@@ -65,11 +69,8 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
             unsubmittedAppDao.save(userId, appView);
         }
 
-        Set<Employee> allEmps = employeeInfoService.getAllEmployees(true);
-        Set<Employee> rchEmployees = allEmps.stream()
-                .filter(e -> Optional.ofNullable(e.getRespCenterHeadCode()).orElse("").equals(user.getRespCenterHeadCode()))
-                .collect(Collectors.toSet());
-        return new ViewObjectResponse<>(new NewApplicationDto(appView, rchEmployees));
+        Set<Employee> allowedTravelers = allowedTravelersService.forEmp(user);
+        return new ViewObjectResponse<>(new NewApplicationDto(appView, allowedTravelers));
     }
 
     /**
@@ -138,6 +139,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
                     break;
                 case "route":
                     RouteView routeView = OutputUtils.jsonToObject(patch.getValue(), RouteView.class);
+                    routeViewValidator.validateTravelDates(routeView);
                     Route fullRoute = routeService.createRoute(routeView.toRoute());
                     amendmentService.setRoute(app.activeAmendment(), fullRoute);
                     break;
@@ -202,4 +204,12 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
         return () -> new InvalidRequestParamEx(String.valueOf(userId), "userId", "int",
                 "No Unsubmitted travel app found with provided userId");
     }
+
+    @ExceptionHandler(InvalidTravelDatesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse invalidTravelDates(InvalidTravelDatesException ex) {
+        return new ErrorResponse(ErrorCode.INVALID_TRAVEL_DATES);
+    }
 }
+

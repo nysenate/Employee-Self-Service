@@ -1,1 +1,1 @@
-gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><cki><ck fm=\"Available Programs\" to=\"Enter and Submit a Requisition Form\" num=\"41\"/><ck fm=\"Display a Previous Shopping Cart Not Submitted\" to=\"ess_help_guide.pdf\" num=\"8\"/></cki>";
+gXMLBuffer="<?xml version=\"1.0\" encoding=\"UTF-8\"?><cki><ck fm=\"Available Programs\" to=\"Project Accrual Balances for Employee Under a Supervisor You Supervise\" num=\"42\"/><ck fm=\"Temporarily Transfer Supervisor Privileges\" to=\"ess_help_guide.pdf\" num=\"17\"/></cki>";

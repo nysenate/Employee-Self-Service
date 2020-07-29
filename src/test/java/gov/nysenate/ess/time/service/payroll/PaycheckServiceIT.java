@@ -26,7 +26,7 @@ public class PaycheckServiceIT extends BaseTest
     @Autowired
     PaycheckService paycheckService;
     private final int empId = 11168;
-    private final int year = 2018;
+    private final int year = 2019;
     private List<Paycheck> paychecks;
 
     @Before
@@ -62,6 +62,6 @@ public class PaycheckServiceIT extends BaseTest
                         " - " + paycheck.getTotalDeductions() +
                         " != " + paycheck.getNetIncome() +
                         "\tGot: " + calculatedNet,
-                   calculatedNet.compareTo(paycheck.getNetIncome()) == 0);
+                calculatedNet.compareTo(paycheck.getNetIncome()) == 0);
     }
 }

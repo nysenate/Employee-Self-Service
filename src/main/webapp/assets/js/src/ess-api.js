@@ -139,6 +139,10 @@ essApi.factory('AckDocApi', ['$resource', 'appProps', function ($resource, appPr
         });
 }]);
 
+essApi.factory('AllAckDocApi', ['$resource', 'appProps', function ($resource, appProps) {
+    return $resource(appProps.apiPath + '/acknowledgment/documents/all');
+}]);
+
 essApi.factory('AcknowledgmentApi', ['$resource', 'appProps', function ($resource, appProps) {
     return $resource(appProps.apiPath + '/acknowledgment/acks');
 }]);

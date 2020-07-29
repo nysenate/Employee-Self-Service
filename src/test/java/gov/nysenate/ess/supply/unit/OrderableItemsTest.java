@@ -12,11 +12,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 @org.junit.experimental.categories.Category(UnitTest.class)
 public class OrderableItemsTest {
@@ -39,7 +35,7 @@ public class OrderableItemsTest {
 
     @Test
     public void nonExpendableItems_notOrderable() {
-        ImmutableSet<SupplyItem> items = ImmutableSet.of(SupplyItemFixture.getDefaultBuilder().withStatus(new ItemStatus(false, true, true, false)).build());
+        ImmutableSet<SupplyItem> items = ImmutableSet.of(SupplyItemFixture.getDefaultBuilder().withStatus(new ItemStatus(false, false, true, false)).build());
         assertTrue(OrderableItems.forItems(items).isEmpty());
     }
 
@@ -51,7 +47,7 @@ public class OrderableItemsTest {
 
     @Test
     public void hiddenItems_notOrderable() {
-        ImmutableSet<SupplyItem> items = ImmutableSet.of(SupplyItemFixture.getDefaultBuilder().withStatus(new ItemStatus(true, true, false, false)).build());
+        ImmutableSet<SupplyItem> items = ImmutableSet.of(SupplyItemFixture.getDefaultBuilder().withStatus(new ItemStatus(true, false, false, false)).build());
         assertTrue(OrderableItems.forItems(items).isEmpty());
     }
 
@@ -66,7 +62,7 @@ public class OrderableItemsTest {
 
     @Test
     public void givenNullLocationAndHiddenItems_returnEmptyList() {
-        ImmutableSet<SupplyItem> items = ImmutableSet.of(SupplyItemFixture.getDefaultBuilder().withStatus(new ItemStatus(true, true, false, false)).build());
+        ImmutableSet<SupplyItem> items = ImmutableSet.of(SupplyItemFixture.getDefaultBuilder().withStatus(new ItemStatus(true, false, false, false)).build());
         assertTrue(OrderableItems.forItemsAndLoc(items, null).isEmpty());
     }
 

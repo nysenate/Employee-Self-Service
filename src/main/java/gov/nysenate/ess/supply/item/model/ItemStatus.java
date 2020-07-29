@@ -6,13 +6,17 @@ public final class ItemStatus {
     private final boolean isExpendable;
 
     /**
-     * Is this item ordered by the supply department (Maintenance and Operations).
-     * Items supply does not order do not have their inventories tracked in SFMS.
-     * Non ordered items are made by the senate. e.g. Commodity codes: PML, PM, SL
+     * Is this item made by the senate.
      *
-     * This equals the opposite of column "cdsensuppieditem" in SFMS.
+     * If true, this item does not need to be synchronized. Inventory counts are not tracked
+     * for items made by the senate.
+     * If false, this item needs to by synchronized.
+     *
+     * Examples: Commodity codes: PML, PM, SL
+     *
+     * This is determined by the column "cdsensuppieditem" in SFMS.
      */
-    private final boolean isOrderedBySupply;
+    private final boolean isMadeBySenate;
 
     /** Are non supply staff able to view and order this item. */
     private final boolean isVisible;
@@ -20,10 +24,10 @@ public final class ItemStatus {
     /** Does this item require manager approval to be ordered. */
     private final boolean isSpecialRequest;
 
-    public ItemStatus(boolean isExpendable, boolean isOrderedBySupply,
+    public ItemStatus(boolean isExpendable, boolean isMadeBySenate,
                       boolean isVisible, boolean isSpecialRequest) {
         this.isExpendable = isExpendable;
-        this.isOrderedBySupply = isOrderedBySupply;
+        this.isMadeBySenate = isMadeBySenate;
         this.isVisible = isVisible;
         this.isSpecialRequest = isSpecialRequest;
     }
@@ -36,7 +40,7 @@ public final class ItemStatus {
      * Should this item be synchronized in SFMS.
      */
     boolean requiresSynchronization() {
-        return isExpendable && isOrderedBySupply;
+        return isExpendable && !isMadeBySenate;
     }
 
     boolean isVisible() {
@@ -51,7 +55,7 @@ public final class ItemStatus {
     public String toString() {
         return "ItemStatus{" +
                 "isExpendable=" + isExpendable +
-                ", orderedBySupply=" + isOrderedBySupply +
+                ", isMadeBySenate=" + isMadeBySenate +
                 ", isVisible=" + isVisible +
                 ", isSpecialRequest=" + isSpecialRequest +
                 '}';
@@ -63,7 +67,7 @@ public final class ItemStatus {
         if (o == null || getClass() != o.getClass()) return false;
         ItemStatus that = (ItemStatus) o;
         if (isExpendable != that.isExpendable) return false;
-        if (isOrderedBySupply != that.isOrderedBySupply) return false;
+        if (isMadeBySenate != that.isMadeBySenate) return false;
         if (isVisible != that.isVisible) return false;
         return isSpecialRequest == that.isSpecialRequest;
     }
@@ -71,7 +75,7 @@ public final class ItemStatus {
     @Override
     public int hashCode() {
         int result = (isExpendable ? 1 : 0);
-        result = 31 * result + (isOrderedBySupply ? 1 : 0);
+        result = 31 * result + (isMadeBySenate ? 1 : 0);
         result = 31 * result + (isVisible ? 1 : 0);
         result = 31 * result + (isSpecialRequest ? 1 : 0);
         return result;

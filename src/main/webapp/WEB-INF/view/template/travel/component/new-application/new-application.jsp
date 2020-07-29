@@ -135,7 +135,7 @@
         <div style="padding-bottom: 20px;">
           <p>
             You must <a class="bold" target="_blank"
-                              ng-href="${ctxPath}/travel/application/print?id={{data.app.id}}&print=true">print</a>,
+                              ng-href="${ctxPath}/api/v1/travel/application/{{data.app.id}}.pdf">print</a>,
             sign, and deliver this travel application to your department head.
           </p>
         </div>
@@ -171,6 +171,10 @@
           </h4>
         </div>
       </div>
+    </modal>
+
+    <modal modal-id="travel-date-error-modal">
+      <div travel-date-error-modal></div>
     </modal>
 
   </div>
