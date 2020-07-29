@@ -173,6 +173,10 @@
       </div>
     </modal>
 
+    <modal modal-id="travel-date-error-modal">
+      <div travel-date-error-modal></div>
+    </modal>
+
   </div>
 
 </div>

@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.report.pdf;
 import com.google.common.base.Preconditions;
 import gov.nysenate.ess.travel.application.TravelApplication;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import java.io.IOException;
@@ -62,8 +63,11 @@ public class AppPdfTravelInfoWriter implements AppPdfWriter {
 
         // Additional purpose
         if (!app.activeAmendment().purposeOfTravel().additionalPurpose().isEmpty()) {
-            currentY -= leading;
-            drawText(column1DataX, currentY, config.font, config.fontSize, app.activeAmendment().purposeOfTravel().additionalPurpose());
+            String text = app.activeAmendment().purposeOfTravel().additionalPurpose();
+            for (String line : WordUtils.wrap(text, 80).split("\\n")) {
+                currentY -= leading;
+                drawText(column1DataX, currentY, config.font, config.fontSize, line);
+            }
         }
 
         return currentY;
