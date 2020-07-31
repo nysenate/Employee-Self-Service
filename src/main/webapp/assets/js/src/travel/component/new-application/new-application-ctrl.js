@@ -82,6 +82,8 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             $scope.closeLoadingModal();
             if (error.status === 502) {
                 $scope.handleDataProviderError();
+            } else if (error.status === 400) {
+                $scope.handleTravelDateError();
             } else {
                 $scope.handleErrorResponse(error);
             }
@@ -176,6 +178,12 @@ function travelAppController($scope, $window, appProps, modals, locationService,
             .catch(function () {
                 locationService.go("/logout", true);
             });
+    };
+
+    $scope.handleTravelDateError = function () {
+        modals.open("travel-date-error-modal")
+            .then(function () {
+            })
     };
 
     /**
