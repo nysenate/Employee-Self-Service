@@ -1,6 +1,7 @@
 package gov.nysenate.ess.core.util;
 
 import gov.nysenate.ess.core.model.util.UnsuccessfulHttpReqException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
