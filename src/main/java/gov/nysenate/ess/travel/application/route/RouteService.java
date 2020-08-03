@@ -3,6 +3,7 @@ package gov.nysenate.ess.travel.application.route;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.utils.Dollars;
@@ -33,7 +34,7 @@ public class RouteService {
      *
      * @return
      */
-    public Route createRoute(Route route) throws IOException {
+    public Route createRoute(Route route) throws ProviderException {
         List<Leg> outboundLegs = new ArrayList<>();
         for (int i = 0; i < route.getOutboundLegs().size(); i++) {
             Leg leg = createLeg(route, i, true);
@@ -99,7 +100,7 @@ public class RouteService {
         return new Destination(address, arrival, departure);
     }
 
-    private void setDestinationPerDiems(Route route) throws IOException {
+    private void setDestinationPerDiems(Route route) throws ProviderException {
         for (Destination d : route.destinations()) {
             // Meal Rates
             for (LocalDate date : d.days()) {
