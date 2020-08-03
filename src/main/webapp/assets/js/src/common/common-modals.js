@@ -1,6 +1,7 @@
 angular.module('ess')
     .directive('progressModal', [progressModal])
     .directive('confirmModal', ['modals', confirmModal])
+    .directive('errorModal', ['modals', errorModal])
 ;
 
 function progressModal () {
@@ -58,6 +59,30 @@ function confirmModal (modals) {
         $scope.resolveClass = $attrs.resolveClass || 'submit-button';
         $scope.rejectClass = $attrs.rejectClass || 'reject-button';
         $scope.confirmClass = $attrs.confirmClass || 'time-neutral-button';
+    }
+}
+
+function errorModal (modals) {
+    return {
+        template:
+        '<div class="error-modal">' +
+        '<h1 ng-bind="title"></h1>' +
+        '<div class=error-description>' +
+        '<ng-transclude></ng-transclude>' +
+        '</div>' +
+        '<div class="button-container">' +
+        '<input type="button" ng-click="resolve()" class="{{buttonClass}}" value="{{buttonValue}}" title="{{buttonValue}}"}>' +
+        '</div>' +
+        '</div>',
+        transclude: true,
+        link: link
+    };
+    function link($scope, $elem, $attrs) {
+        $scope.resolve = modals.resolve;
+
+        $scope.title = $attrs.title;
+        $scope.buttonValue = $attrs.buttonValue || "Ok";
+        $scope.buttonClass = $attrs.buttonClass || "reject-button";
     }
 }
 

@@ -2,6 +2,7 @@ package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
@@ -34,9 +35,9 @@ public class GsaAllowanceService {
     /**
      * Returns the MealTier for the given date and address.
      *
-     * @throws IOException
+     * @throws ProviderException
      */
-    public Dollars fetchMealRate(LocalDate date, Address address) throws IOException {
+    public Dollars fetchMealRate(LocalDate date, Address address) throws ProviderException {
         if (addressIsOutsideUS(address)) {
             return Dollars.ZERO;
         }
@@ -47,9 +48,9 @@ public class GsaAllowanceService {
     /**
      * Returns the lodging rate for the given date and address.
      * Returns Dollars.ZERO if there is no lodging rate.
-     * @throws IOException
+     * @throws ProviderException
      */
-    public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
+    public Dollars fetchLodgingRate(LocalDate date, Address address) throws ProviderException {
         if (addressIsOutsideUS(address)) {
             return Dollars.ZERO;
         }
@@ -57,7 +58,7 @@ public class GsaAllowanceService {
         return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
     }
 
-    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
+    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws ProviderException {
         GsaResponse res = gsaApi.queryGsa(date, address.getZip5());
         // TODO Batch/bulk data will have to be refactored due to new GSA API. For now query the API every time.
 //        try {

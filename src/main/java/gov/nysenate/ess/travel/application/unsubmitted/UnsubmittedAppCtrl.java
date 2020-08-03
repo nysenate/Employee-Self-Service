@@ -17,6 +17,7 @@ import gov.nysenate.ess.travel.application.allowances.lodging.LodgingPerDiemsVie
 import gov.nysenate.ess.travel.application.allowances.meal.MealPerDiemsView;
 import gov.nysenate.ess.travel.application.allowances.mileage.MileagePerDiemsView;
 import gov.nysenate.ess.travel.application.route.*;
+import gov.nysenate.ess.travel.provider.ProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +112,7 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
      */
     @RequestMapping(value = "", method = RequestMethod.PATCH)
     public BaseResponse patchUnsubmittedApp(@RequestParam int userId,
-                                            @RequestBody Map<String, String> patches) throws IOException {
+                                            @RequestBody Map<String, String> patches) throws ProviderException, IOException {
         TravelApplicationView view = findApp(userId);
         TravelApplication app = view.toTravelApplication();
         checkTravelAppPermission(app, RequestMethod.POST);
@@ -210,6 +211,13 @@ public class UnsubmittedAppCtrl extends BaseRestApiCtrl {
     @ResponseBody
     public ErrorResponse invalidTravelDates(InvalidTravelDatesException ex) {
         return new ErrorResponse(ErrorCode.INVALID_TRAVEL_DATES);
+    }
+
+    @ExceptionHandler(ProviderException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ResponseBody
+    public ErrorResponse providerException(ProviderException ex) {
+        return new ErrorResponse(ErrorCode.DATA_PROVIDER_ERROR);
     }
 }
 
