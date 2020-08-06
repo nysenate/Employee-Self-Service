@@ -156,21 +156,32 @@
     </modal>
 
     <modal modal-id="external-api-error">
-      <div confirm-modal rejectable="true"
-           title="Failed to Create Travel Request"
-           resolve-button="Go back to ESS"
-           reject-button="Log out of ESS">
-        <div>
-          <p style="text-align: left;">
-            ESS is unable to communicate with some 3rd party services required to create the travel estimate.
-            Please try submitting your travel application again later. If you continue to get this error please contact
-            STS.
-          </p>
-          <h4>
-            What would you like to do next?
-          </h4>
-        </div>
+      <div error-modal
+      title="Communication Error"
+      buttonValue="Ok"
+      buttonClass="reject-button">
+        <p>
+          ESS is unable to communicate with some 3rd party services used to create the travel estimate.
+          Please try submitting your travel application again later. If you continue to get this error, please contact
+          STS at {{helplinePhoneNumber}}.
+        </p>
+
       </div>
+      <%--<div confirm-modal rejectable="true"--%>
+           <%--title="Failed to Create Travel Request"--%>
+           <%--resolve-button="Go back to ESS"--%>
+           <%--reject-button="Log out of ESS">--%>
+        <%--<div>--%>
+          <%--<p style="text-align: left;">--%>
+            <%--ESS is unable to communicate with some 3rd party services required to create the travel estimate.--%>
+            <%--Please try submitting your travel application again later. If you continue to get this error please contact--%>
+            <%--STS.--%>
+          <%--</p>--%>
+          <%--<h4>--%>
+            <%--What would you like to do next?--%>
+          <%--</h4>--%>
+        <%--</div>--%>
+      <%--</div>--%>
     </modal>
 
     <modal modal-id="travel-date-error-modal">
