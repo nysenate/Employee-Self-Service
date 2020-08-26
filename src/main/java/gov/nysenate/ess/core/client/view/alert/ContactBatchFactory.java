@@ -39,7 +39,6 @@ public class ContactBatchFactory {
         BatchProcessingDirectives directives = new BatchProcessingDirectives();
         directives.setAccountID(createAccountId());
         directives.addBatchProcessingOptions(createBatchProcessingOptions());
-
         return directives;
     }
 
@@ -136,15 +135,16 @@ public class ContactBatchFactory {
                 cpl.addContactPoint(voiceContactPoint("Home", alertInfo.getHomePhone()));
             }
             if (StringUtils.isNotBlank(alertInfo.getAlternatePhone())) {
-                cpl.addContactPoint(voiceContactPoint("Alternate", alertInfo.getAlternatePhone()));
+                if (alertInfo.getAlternateOptions().isCallable())
+                    cpl.addContactPoint(voiceContactPoint("Alternate", alertInfo.getAlternatePhone()));
+                if (alertInfo.getAlternateOptions().isTextable())
+                    cpl.addContactPoint(textMessageContactPoint(alertInfo.getAlternatePhone()));
             }
-            if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
-                    alertInfo.getMobileOptions().isCallable()) {
-                cpl.addContactPoint(voiceContactPoint("Mobile", alertInfo.getMobilePhone()));
-            }
-            if (StringUtils.isNotBlank(alertInfo.getMobilePhone()) &&
-                    alertInfo.getMobileOptions().isTextable()) {
-                cpl.addContactPoint(textMessageContactPoint(alertInfo.getMobilePhone()));
+            if (StringUtils.isNotBlank(alertInfo.getMobilePhone())) {
+                if (alertInfo.getMobileOptions().isCallable())
+                    cpl.addContactPoint(voiceContactPoint("Mobile", alertInfo.getMobilePhone()));
+                if (alertInfo.getMobileOptions().isTextable())
+                    cpl.addContactPoint(textMessageContactPoint(alertInfo.getMobilePhone()));
             }
             if (StringUtils.isNotBlank(alertInfo.getPersonalEmail())) {
                 cpl.addContactPoint(emailContactPoint("Personal", alertInfo.getPersonalEmail()));

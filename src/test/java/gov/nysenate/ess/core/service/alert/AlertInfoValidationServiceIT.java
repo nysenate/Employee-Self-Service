@@ -4,7 +4,7 @@ import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.annotation.IntegrationTest;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
 import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
-import gov.nysenate.ess.core.model.alert.MobileContactOptions;
+import gov.nysenate.ess.core.model.alert.ContactOptions;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.junit.Before;
@@ -42,7 +42,7 @@ public class AlertInfoValidationServiceIT extends BaseTest {
                 .setHomePhone(homePhone)
                 .setAlternatePhone(altPhone)
                 .setMobilePhone(mobilePhone)
-                .setMobileOptions(MobileContactOptions.EVERYTHING)
+                .setMobileOptions(ContactOptions.EVERYTHING)
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(altEmail);
     }

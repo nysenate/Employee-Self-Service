@@ -16,7 +16,8 @@ public class AlertInfo {
     private String mobilePhone;
     private String alternatePhone;
 
-    private MobileContactOptions mobileOptions = MobileContactOptions.EVERYTHING;
+    private ContactOptions mobileOptions = ContactOptions.EVERYTHING;
+    private ContactOptions alternateOptions = ContactOptions.EVERYTHING;
 
     private String personalEmail;
     private String alternateEmail;
@@ -33,6 +34,7 @@ public class AlertInfo {
         AlertInfo that = (AlertInfo) o;
         return empId == that.empId &&
                 mobileOptions == that.mobileOptions &&
+                alternateOptions == that.alternateOptions &&
                 Objects.equal(homePhone, that.homePhone) &&
                 Objects.equal(mobilePhone, that.mobilePhone) &&
                 Objects.equal(alternatePhone, that.alternatePhone) &&
@@ -43,7 +45,7 @@ public class AlertInfo {
     @Override
     public int hashCode() {
         return Objects.hashCode(empId, homePhone, mobilePhone, alternatePhone,
-                mobileOptions, personalEmail, alternateEmail);
+                mobileOptions, alternateOptions, personalEmail, alternateEmail);
     }
 
     /* --- Builder --- */
@@ -84,8 +86,13 @@ public class AlertInfo {
             return this;
         }
 
-        public Builder setMobileOptions(MobileContactOptions mobileOptions) {
+        public Builder setMobileOptions(ContactOptions mobileOptions) {
             alertInfo.mobileOptions = mobileOptions;
+            return this;
+        }
+
+        public Builder setAlternateOptions(ContactOptions alternateOptions) {
+            alertInfo.alternateOptions = alternateOptions;
             return this;
         }
 
@@ -109,8 +116,7 @@ public class AlertInfo {
                     .map(phoneNo -> phoneNo.replaceAll("[^0-9]", ""))
                     .orElse(null);
             return StringUtils.isBlank(formattedPhoneNumber)
-                    ? null
-                    : formattedPhoneNumber;
+                    ? null : formattedPhoneNumber;
         }
 
         /**
@@ -147,8 +153,12 @@ public class AlertInfo {
         return alternatePhone;
     }
 
-    public MobileContactOptions getMobileOptions() {
+    public ContactOptions getMobileOptions() {
         return mobileOptions;
+    }
+
+    public ContactOptions getAlternateOptions() {
+        return alternateOptions;
     }
 
     public String getPersonalEmail() {

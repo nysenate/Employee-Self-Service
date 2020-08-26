@@ -2,7 +2,7 @@ package gov.nysenate.ess.core.client.view;
 
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.core.model.alert.AlertInfo;
-import gov.nysenate.ess.core.model.alert.MobileContactOptions;
+import gov.nysenate.ess.core.model.alert.ContactOptions;
 import gov.nysenate.ess.core.model.personnel.Employee;
 
 public class AlertInfoView implements ViewObject {
@@ -17,6 +17,9 @@ public class AlertInfoView implements ViewObject {
 
     private boolean mobileCallable;
     private boolean mobileTextable;
+
+    private boolean alternateCallable;
+    private boolean alternateTextable;
 
     private String workEmail;
 
@@ -34,9 +37,13 @@ public class AlertInfoView implements ViewObject {
         this.mobilePhone = alertInfo.getMobilePhone();
         this.alternatePhone = alertInfo.getAlternatePhone();
 
-        MobileContactOptions mobileOptions = alertInfo.getMobileOptions();
+        ContactOptions mobileOptions = alertInfo.getMobileOptions();
         this.mobileCallable = mobileOptions.isCallable();
         this.mobileTextable = mobileOptions.isTextable();
+
+        ContactOptions alternateOptions = alertInfo.getAlternateOptions();
+        this.alternateCallable = alternateOptions.isCallable();
+        this.alternateTextable = alternateOptions.isTextable();
 
         this.workEmail = employee.getEmail();
         this.personalEmail = alertInfo.getPersonalEmail();
@@ -49,7 +56,8 @@ public class AlertInfoView implements ViewObject {
                 .setHomePhone(homePhone)
                 .setMobilePhone(mobilePhone)
                 .setAlternatePhone(alternatePhone)
-                .setMobileOptions(MobileContactOptions.getMobileContactOption(mobileCallable, mobileTextable))
+                .setMobileOptions(ContactOptions.getContactOptions(mobileCallable, mobileTextable))
+                .setAlternateOptions(ContactOptions.getContactOptions(alternateCallable, alternateTextable))
                 .setPersonalEmail(personalEmail)
                 .setAlternateEmail(alternateEmail)
                 .build();
@@ -86,6 +94,14 @@ public class AlertInfoView implements ViewObject {
 
     public boolean isMobileTextable() {
         return mobileTextable;
+    }
+
+    public boolean isAlternateCallable() {
+        return alternateCallable;
+    }
+
+    public boolean isAlternateTextable() {
+        return alternateTextable;
     }
 
     public String getWorkEmail() {
