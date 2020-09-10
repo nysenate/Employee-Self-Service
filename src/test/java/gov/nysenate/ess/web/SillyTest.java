@@ -2,8 +2,8 @@ package gov.nysenate.ess.web;
 
 import gov.nysenate.ess.core.BaseTest;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
-import gov.nysenate.ess.core.service.pec.external.everfi.EverfiAssignment;
-import gov.nysenate.ess.core.service.pec.external.everfi.EverfiAssignmentsGetRequest;
+import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentAndProgress;
+import gov.nysenate.ess.core.service.pec.external.everfi.assignment.EverfiAssignmentsAndProgressRequest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
 
 /**
  * A sample file to run misc tests.
@@ -29,14 +28,16 @@ public class SillyTest extends BaseTest {
     public void everfiApiClientDemo() throws IOException {
 
         // Create the desired request and provide it an instance of the everfi api client.
-        // Here we are creating an request for the get user assignments and progress endpoint.
-        // Each API endpoint would eventually have its own Request class.
-        EverfiAssignmentsGetRequest request = new EverfiAssignmentsGetRequest(client);
-        // Get the first 'page' of Assignment And Progress results.
-        List<EverfiAssignment> assignments = request.getAssignments();
-        // Get a new request, setup to call for the next 'page' of results.
-        request = request.next();
-        // This would get the 2nd 'page' of results.
-        assignments = request.getAssignments();
+        EverfiAssignmentsAndProgressRequest request = new EverfiAssignmentsAndProgressRequest(client);
+
+        // Loop through all assigment and progress results.
+        List<EverfiAssignmentAndProgress> assignmentsAndProgress;
+        while (request != null) {
+            // Call method on the request and get back the model object created from Everfi json.
+            // Authentication and deserialization is handled by the request object.
+            assignmentsAndProgress = request.getAssignmentsAndProgress();
+            // Move on to the next 'page' of results.
+            request = request.next();
+        }
     }
 }

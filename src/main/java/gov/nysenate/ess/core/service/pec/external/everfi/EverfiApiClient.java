@@ -23,8 +23,8 @@ public class EverfiApiClient {
     private String clientId;
     private String clientSecret;
 
-    public EverfiApiClient(@Value("${pec.everfi.client.id}") String clientId,
-                           @Value("${pec.everfi.client.secret}") String clientSecret) {
+    public EverfiApiClient(@Value("${pec.everfi.client.id:}") String clientId,
+                           @Value("${pec.everfi.client.secret:}") String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
