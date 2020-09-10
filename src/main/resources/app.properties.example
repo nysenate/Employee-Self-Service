@@ -203,6 +203,12 @@ pec.import.ethics_2018_video_task_id =
 pec.import.ethics_2020_video_task_id =
 pec.nysenate.seal =
 
+# --- PEC Everfi Config --------------------------------------------------
+
+# The client id and client secret needed for accessing the Everfi API.
+pec.everfi.client.id =
+pec.everfi.client.secret =
+
 # --- Scheduling Configuration ------------------------------------------------
 
 # Determines if the scheduled ensure all time records function will run
