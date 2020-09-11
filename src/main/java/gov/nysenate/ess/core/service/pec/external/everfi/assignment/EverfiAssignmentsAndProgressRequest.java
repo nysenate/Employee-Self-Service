@@ -12,39 +12,85 @@ import java.util.List;
  */
 public class EverfiAssignmentsAndProgressRequest {
 
-    private static final String GET_ASSIGNMENTS_ENDPOINT = "/v1/progress/user_assignments";
+    private static final String BASE_ENDPOINT = "/v1/progress/user_assignments";
+    private String fullEndpoint;
     private EverfiApiClient httpClient;
     private String scrollId;
     private String since;
     private int limit;
     private EverfiAssignmentsAndProgressResponse response;
 
-    public EverfiAssignmentsAndProgressRequest(EverfiApiClient httpClient) {
-        this(httpClient, "", "", 100);
-    }
-
-    public EverfiAssignmentsAndProgressRequest(EverfiApiClient httpClient, String scrollId, String since, int limit) {
+    private EverfiAssignmentsAndProgressRequest(String fullEndpoint, EverfiApiClient httpClient, String scrollId,
+                                               String since, int limit) {
+        this.fullEndpoint = fullEndpoint;
         this.httpClient = httpClient;
         this.scrollId = scrollId;
         this.since = since;
         this.limit = limit;
     }
 
-    public List<EverfiAssignmentAndProgress> getAssignmentsAndProgress() throws IOException {
+    public static EverfiAssignmentsAndProgressRequest allUserAssignments(EverfiApiClient everfiClient) {
+        return EverfiAssignmentsAndProgressRequest.allUserAssignments(everfiClient, "", 100);
+    }
+
+    /**
+     * Static Factory Constructor - constructs a request for getting all user assignments and progress.
+     * @param everfiClient
+     * @param since Optional, ISO date time string representing where we left off querying last time. Can be
+     *              used to prevent importing duplicate records.
+     * @param limit How many results to get in each request.
+     * @return
+     */
+    public static EverfiAssignmentsAndProgressRequest allUserAssignments(EverfiApiClient everfiClient,
+                                                                         String since, int limit) {
+        return new EverfiAssignmentsAndProgressRequest(BASE_ENDPOINT, everfiClient, null, since, limit);
+    }
+
+    public static EverfiAssignmentsAndProgressRequest userAssignments(EverfiApiClient everfiClient, String userUuid) {
+        return EverfiAssignmentsAndProgressRequest.userAssignments(everfiClient, userUuid, "", 100);
+    }
+
+    /**
+     * Static Factory Constructor - constructs a request for getting a single user's assignments and progress.
+     * @param everfiClient
+     * @param userUuid The everfi user uuid.
+     * @param since Optional, ISO date time string representing where we left off querying last time. Can be
+     *              used to prevent importing duplicate records.
+     * @param limit How many results to get in each request.
+     * @return
+     */
+    public static EverfiAssignmentsAndProgressRequest userAssignments(EverfiApiClient everfiClient, String userUuid,
+                                                                      String since, int limit) {
+        String endpoint = BASE_ENDPOINT + "/" + userUuid;
+        return new EverfiAssignmentsAndProgressRequest(endpoint, everfiClient, null, since, limit);
+    }
+
+    /**
+     * Get a page of results for this request
+     * @return A list of {@link EverfiAssignmentAndProgress} or an empty list if there are no more results.
+     * @throws IOException
+     */
+    public List<EverfiAssignmentAndProgress> fetch() throws IOException {
+        // TODO how to handle unexpected errors from the API?
         String data = httpClient.get(endpoint());
-        System.out.println(data);
         response = OutputUtils.jsonToObject(data, EverfiAssignmentsAndProgressResponse.class);
-        System.out.println(response);
         return response.getAssignmentsAndProgress();
     }
 
+    /**
+     * @return a new {@code EverfiAssignmentsAndProgressRequest} that can fetch the next page of results,
+     *         or null if there are no more pages to fetch.
+     * @throws IllegalStateException if this method is called before a successful call to {@code fetch()}.
+     */
     public EverfiAssignmentsAndProgressRequest next() {
-        // TODO when next.scroll_id is null, we have iterated through all responses... how should we handle this?
-        if (StringUtils.isEmpty(response.getNext().getScrollId())) {
-            // TODO Should save since value so we can restart there on next update
+        if (response == null) {
+            throw new IllegalStateException("'next()' can only be called after a successful call to 'fetch()'");
+        }
+        if (response.getNext().getScrollId() == null) {
             return null;
         }
-        return new EverfiAssignmentsAndProgressRequest(httpClient, response.getNext().getScrollId(), response.getNext().getSince(), this.limit);
+        return new EverfiAssignmentsAndProgressRequest(fullEndpoint, httpClient, response.getNext().getScrollId(),
+                response.getNext().getSince(), this.limit);
     }
 
     public String getSince() {
@@ -52,12 +98,12 @@ public class EverfiAssignmentsAndProgressRequest {
     }
 
     private String endpoint() {
-        StringBuilder builder = new StringBuilder(GET_ASSIGNMENTS_ENDPOINT);
+        StringBuilder builder = new StringBuilder(fullEndpoint);
         builder.append("?scroll_size=" + limit);
-        if (!scrollId.equals("")) {
+        if (StringUtils.isNotEmpty(scrollId)) {
             builder.append("&scroll_id=" + scrollId);
         }
-        if (!since.equals("")) {
+        if (StringUtils.isNotEmpty(since)) {
             builder.append("&since=" + since);
         }
 
