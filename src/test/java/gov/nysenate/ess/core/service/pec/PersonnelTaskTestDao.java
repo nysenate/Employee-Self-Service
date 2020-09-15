@@ -52,6 +52,8 @@ public class PersonnelTaskTestDao extends SqlBaseDao {
                             "INSERT INTO ess.pec_video(task_id, filename) VALUES(:taskId, 'test')")
                     .put(MOODLE_COURSE,
                             "INSERT INTO ess.moodle_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
+                    .put(EVERFI_COURSE,
+                            "INSERT INTO ess.everfi_course(task_id, url) VALUES(:taskId, 'https://www.example.com')")
                     .build();
 
     private final EventBus eventBus;
