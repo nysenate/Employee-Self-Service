@@ -234,6 +234,12 @@ scheduler.travel.scrape.cron = 0 0 2 * * *
 # Determines if scheduled polling of course completion records from moodle is enabled.
 scheduler.moodle.sync.enabled = false
 
+#Determines whether or not we automatically scrape from Everfi
+scheduler.everfi.sync.enabled = false
+
+#Default of every hour on the top of the hour to pull Everfi records
+scheduler.everfi.task.sync.cron = 0 0 * * * *
+
 # Determines if scheduled personnel task assignment is enabled.
 scheduler.personnel_task.assignment.enabled = true
 
