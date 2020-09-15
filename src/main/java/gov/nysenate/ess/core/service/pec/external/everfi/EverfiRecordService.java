@@ -63,12 +63,8 @@ public class EverfiRecordService implements ESSEverfiRecordService {
 
     public void contactEverfiForUserRecords(String since) throws IOException {
 
-        logger.info("Contacting Everfi for Authentication");
-        everfiApiClient.authenticate();
-        logger.info("Authenticated");
         EverfiAssignmentsAndProgressRequest request =
-                new EverfiAssignmentsAndProgressRequest(EverfiAssignmentsAndProgressRequest.BASE_ENDPOINT,
-                        everfiApiClient, null, since, 100);
+                EverfiAssignmentsAndProgressRequest.allUserAssignments(everfiApiClient, since, 100);
         List<EverfiAssignmentAndProgress> assignmentsAndProgress;
         logger.info("Contacting Everfi for records");
         while (request != null) {
