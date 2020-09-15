@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class EverfiAssignmentsAndProgressRequest {
 
-    private static final String BASE_ENDPOINT = "/v1/progress/user_assignments";
+    public static final String BASE_ENDPOINT = "/v1/progress/user_assignments";
     private String fullEndpoint;
     private EverfiApiClient httpClient;
     private String scrollId;
@@ -20,7 +20,7 @@ public class EverfiAssignmentsAndProgressRequest {
     private int limit;
     private EverfiAssignmentsAndProgressResponse response;
 
-    private EverfiAssignmentsAndProgressRequest(String fullEndpoint, EverfiApiClient httpClient, String scrollId,
+    public EverfiAssignmentsAndProgressRequest(String fullEndpoint, EverfiApiClient httpClient, String scrollId,
                                                String since, int limit) {
         this.fullEndpoint = fullEndpoint;
         this.httpClient = httpClient;

@@ -9,7 +9,8 @@ import java.time.format.DateTimeFormatter;
 public class EverfiAssignmentProgress {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd'T'hh:mm:ss.SSSx");
+    private static final DateTimeFormatter DUE_ON_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSSz");
 
     private String id;
     private String name;
@@ -40,7 +41,7 @@ public class EverfiAssignmentProgress {
     }
 
     public LocalDate getDueOn() {
-        return LocalDate.parse(dueOn, DATE_FORMATTER);
+        return LocalDate.parse(dueOn, DUE_ON_DATE_FORMATTER);
     }
 
     public String getContentId() {
@@ -52,7 +53,12 @@ public class EverfiAssignmentProgress {
     }
 
     public ZonedDateTime getCompletedAt() {
-        return ZonedDateTime.parse(completedAt, DATE_TIME_FORMATTER);
+        try {
+            return ZonedDateTime.parse(completedAt);
+        }
+        catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public String getContentStatus() {

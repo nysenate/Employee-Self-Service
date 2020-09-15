@@ -24,20 +24,20 @@ public class SillyTest extends BaseTest {
 
     @Autowired private EverfiApiClient client;
 
-    @Test
-    public void everfiApiClientDemo() throws IOException {
-
-        // Create the desired request and provide it an instance of the everfi api client.
-        EverfiAssignmentsAndProgressRequest request = new EverfiAssignmentsAndProgressRequest(client);
-
-        // Loop through all assigment and progress results.
-        List<EverfiAssignmentAndProgress> assignmentsAndProgress;
-        while (request != null) {
-            // Call method on the request and get back the model object created from Everfi json.
-            // Authentication and deserialization is handled by the request object.
-            assignmentsAndProgress = request.getAssignmentsAndProgress();
-            // Move on to the next 'page' of results.
-            request = request.next();
-        }
-    }
+//    @Test
+//    public void everfiApiClientDemo() throws IOException {
+//
+//        // Create the desired request and provide it an instance of the everfi api client.
+//        EverfiAssignmentsAndProgressRequest request = new EverfiAssignmentsAndProgressRequest(client);
+//
+//        // Loop through all assigment and progress results.
+//        List<EverfiAssignmentAndProgress> assignmentsAndProgress;
+//        while (request != null) {
+//            // Call method on the request and get back the model object created from Everfi json.
+//            // Authentication and deserialization is handled by the request object.
+//            assignmentsAndProgress = request.getAssignmentsAndProgress();
+//            // Move on to the next 'page' of results.
+//            request = request.next();
+//        }
+//    }
 }
