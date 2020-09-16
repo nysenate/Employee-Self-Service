@@ -53,7 +53,7 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     }
 
     @Scheduled(cron="${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
-    public void getUpdatesFromMoodle() throws IOException {
+    public void getUpdatesFromEverfi() throws IOException {
         if (!everfiSyncEnabled) {
             return;
         }
