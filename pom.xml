@@ -6,7 +6,7 @@
 
   <groupId>gov.nysenate</groupId>
   <artifactId>ess</artifactId>
-  <version>1.6.5</version>
+  <version>1.6.6</version>
   <packaging>war</packaging>
 
   <build>
@@ -22,7 +22,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19</version>
+        <version>3.0.0-M5</version>
         <configuration>
           <argLine>-Dlog4j.configurationFile=test.log4j2.xml</argLine>
           <skipTests>false</skipTests>
@@ -31,8 +31,9 @@
       </plugin>
       <!-- Failsafe Plugin -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.19</version>
+        <version>3.0.0-M5</version>
         <configuration>
           <argLine>-Dlog4j.configurationFile=test.log4j2.xml</argLine>
           <groups>gov.nysenate.ess.core.annotation.IntegrationTest</groups>
@@ -142,8 +143,8 @@
     <tomcat.servlet.version>8.0.23</tomcat.servlet.version>
     <woodstox.version>4.4.1</woodstox.version>
     <org.apache.pdfbox.version>2.0.15</org.apache.pdfbox.version>
-    <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
-
+    <javax.xml.bind.version>2.3.1</javax.xml.bind.version>
+    <javax.activation.version>1.1.1</javax.activation.version>
   </properties>
 
   <dependencies>
@@ -301,6 +302,21 @@
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
       <version>${javax.xml.bind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${javax.xml.bind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${javax.xml.bind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>${javax.activation.version}</version>
     </dependency>
 
     <!-- Apache Shiro | Authentication/authorization. -->

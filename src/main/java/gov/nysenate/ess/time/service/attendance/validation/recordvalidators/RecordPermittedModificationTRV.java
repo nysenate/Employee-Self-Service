@@ -58,9 +58,13 @@ public class RecordPermittedModificationTRV implements TimeRecordValidator
     private static void checkField(Object newVal, Object prevVal, String fieldName, String fieldType)
             throws TimeRecordErrorException {
         if (!Objects.equals(prevVal, newVal)) {
-            throw new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_MODIFICATION,
+            logger.warn("prevVal is " + prevVal + " , newVal is " + newVal );
+            logger.warn("fieldName is " + fieldName + " , fieldType is " + fieldType);
+            TimeRecordErrorException exception =  new TimeRecordErrorException(TimeRecordErrorCode.UNAUTHORIZED_MODIFICATION,
                     new InvalidParameterView(fieldName, fieldType,
                             fieldName + " is immutable to users", String.valueOf(newVal)));
+            logger.error("Time record validation failed ", exception);
+            throw exception;
         }
     }
 
