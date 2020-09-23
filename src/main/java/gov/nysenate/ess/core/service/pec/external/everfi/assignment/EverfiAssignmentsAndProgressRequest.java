@@ -13,12 +13,14 @@ import java.util.List;
 public class EverfiAssignmentsAndProgressRequest {
 
     private static final String BASE_ENDPOINT = "/v1/progress/user_assignments";
-    private String fullEndpoint;
-    private EverfiApiClient httpClient;
-    private String scrollId;
-    private String since;
-    private int limit;
+    private final String fullEndpoint;
+    private final EverfiApiClient httpClient;
+    private final String scrollId;
+    private final String since;
+    private final int limit;
     private EverfiAssignmentsAndProgressResponse response;
+
+    // TODO enforce the max limit size? (1000?)
 
     private EverfiAssignmentsAndProgressRequest(String fullEndpoint, EverfiApiClient httpClient, String scrollId,
                                                String since, int limit) {
