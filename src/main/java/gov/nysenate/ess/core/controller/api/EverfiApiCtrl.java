@@ -35,6 +35,14 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
     }
 
+    @RequestMapping(value = "/cache/refresh", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse refreshEverfiCaches(HttpServletRequest request,
+                                          HttpServletResponse response) {
+        everfiRecordService.refreshCaches();
+        return new SimpleResponse(true, "Everfi Caches Refreshed", "everfi-cache-refresh");
+    }
+
 
     /**
      * Personnel Employee Task - Everfi Import
@@ -57,7 +65,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     public SimpleResponse runEverfiImport(HttpServletRequest request,
                                           HttpServletResponse response,
                                           @RequestParam(required = false, defaultValue = "1970") String since) {
-//        checkPermission(ADMIN.getPermission());
+        checkPermission(ADMIN.getPermission());
 
         LocalDateTime ldtsince;
 

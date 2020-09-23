@@ -1,8 +1,7 @@
 package gov.nysenate.ess.core.service.pec.external.everfi;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import gov.nysenate.ess.core.controller.api.EverfiApiCtrl;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.dao.pec.task.PersonnelTaskDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 import gov.nysenate.ess.core.model.pec.PersonnelTaskAssignment;
@@ -20,8 +19,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,42 +28,51 @@ import static gov.nysenate.ess.core.model.pec.PersonnelTaskType.EVERFI_COURSE;
 
 @Service
 public class EverfiRecordService implements ESSEverfiRecordService {
-    //TODO must be eventually updated to handle multiple tasks. It only supports Sexual Harrassment 2020 training for now
-
-    final static int sexualHarrassment2020EverfiCourseID = 42954;
-    final static String sexualHarrassment2020EverfiContentID = "9cd9c7d9-8f20-4e8a-8509-da07fc2ae3a2";
+    
     private EverfiApiClient everfiApiClient;
     private EmployeeDao employeeDao;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private PersonnelTaskService taskService;
+    private PersonnelTaskDao personnelTaskDao;
+    private HashMap<Integer, Integer> everfiAssignmentIDMap;
+    private HashMap<String, Integer> everfiContentIDMap;
 
     private static final Logger logger = LoggerFactory.getLogger(EverfiRecordService.class);
 
-    @Value("${scheduler.everfi.sync.enabled:false}") private boolean everfiSyncEnabled;
+    @Value("${scheduler.everfi.sync.enabled:false}")
+    private boolean everfiSyncEnabled;
 
     @Autowired
     public EverfiRecordService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao,
                                PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                               PersonnelTaskService taskService) {
+                               PersonnelTaskService taskService, PersonnelTaskDao personnelTaskDao) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.taskService = taskService;
+        this.personnelTaskDao = personnelTaskDao;
+        this.everfiAssignmentIDMap = personnelTaskDao.getEverfiAssignmentIDs();
+        this.everfiContentIDMap = personnelTaskDao.getEverfiContentIDs();
     }
 
-    @Scheduled(cron="${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
+    public void refreshCaches() {
+        this.everfiAssignmentIDMap = personnelTaskDao.getEverfiAssignmentIDs();
+        this.everfiContentIDMap = personnelTaskDao.getEverfiContentIDs();
+    }
+
+    @Scheduled(cron = "${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
     public void getUpdatesFromEverfi() throws IOException {
         if (!everfiSyncEnabled) {
             return;
         }
-        final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0,0,0);
+        final LocalDateTime jan1970 = LocalDateTime.of(1970, 1, 1, 0, 0, 0, 0);
         contactEverfiForUserRecords(jan1970.toString() + ":00.000");
     }
 
     public void contactEverfiForUserRecords(String since) throws IOException {
 
         EverfiAssignmentsAndProgressRequest request =
-                EverfiAssignmentsAndProgressRequest.allUserAssignments(everfiApiClient, since, 100);
+                EverfiAssignmentsAndProgressRequest.allUserAssignments(everfiApiClient, since, 1000);
         List<EverfiAssignmentAndProgress> assignmentsAndProgress;
         logger.info("Contacting Everfi for records");
         while (request != null) {
@@ -79,7 +87,8 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     }
 
     private void handleRecords(List<EverfiAssignmentAndProgress> assignmentAndProgresses) {
-        int everfiTaskID = getEverfiTaskID();
+
+        List<PersonnelTask> everfiPersonnelTasks = getEverfiPersonnelTasks();
 
         for (EverfiAssignmentAndProgress assignmentAndProgress : assignmentAndProgresses) {
 
@@ -88,33 +97,54 @@ public class EverfiRecordService implements ESSEverfiRecordService {
             try {
                 int empID = getEmployeeId(user);
                 if (empID != 99999) {
+                    //assignment id from the json object
                     int assignmentID = assignmentAndProgress.getAssignment().getId();
-                    EverfiAssignmentProgress progress = getCorrectProgress(assignmentAndProgress.getProgress());
-                    LocalDateTime completedAt = null;
-                    if (progress != null) {
-                        try {
-                            completedAt = progress.getCompletedAt().toLocalDateTime();
-                        }
-                        catch (NullPointerException e) {
-                            //Do nothing completedAt is already null
-                        }
-                        boolean completed = progress.getContentStatus().equals("completed");
 
-                        if (assignmentID == sexualHarrassment2020EverfiCourseID ) {
+                    //this is personnel taskid that should correspond with the everfi assignment id
+                    Integer everfiTaskID = getEverfiTaskID(assignmentID);
+
+                    //There is a max of 1 progress object in the progress array at any point
+
+                    if (!assignmentAndProgress.getProgress().isEmpty()) {
+                        EverfiAssignmentProgress progress = assignmentAndProgress.getProgress().get(0);
+                        String contentID = progress.getContentId();
+                        Integer potentialTaskID = everfiContentIDMap.get(contentID);
+
+                        //Each progress has a content id which should suggest a certain task.
+                        // We check here that the progress and the assignment both correspond to the same task
+                        if (potentialTaskID != null && everfiTaskID != null
+                                && potentialTaskID.intValue() == everfiTaskID.intValue()) {
+
+                            LocalDateTime completedAt = null; //not completed by default
+                            boolean active = true; //true by default
+
+                            try {
+                                completedAt = progress.getCompletedAt().toLocalDateTime();
+
+                                //for loop to get task active status
+                                for (PersonnelTask everfiPersonnelTask : everfiPersonnelTasks) {
+                                    if (everfiPersonnelTask.getTaskId() == everfiTaskID) {
+                                        active = everfiPersonnelTask.isActive();
+                                    }
+                                }
+                            } catch (NullPointerException e) {
+                                //Do nothing completedAt is already null
+                            }
+                            boolean completed = progress.getContentStatus().equals("completed");
+
                             PersonnelTaskAssignment taskToInsert = new PersonnelTaskAssignment(
                                     everfiTaskID,
                                     empID,
                                     empID,
                                     completedAt,
                                     completed,
-                                    true
+                                    active
                             );
                             personnelTaskAssignmentDao.updateAssignment(taskToInsert);
                         }
                     }
                 }
-            }
-            catch (EmployeeNotFoundEx e) {
+            } catch (EmployeeNotFoundEx e) {
                 logger.error("Could not match employee " + e.getMessage());
             }
         }
@@ -123,48 +153,35 @@ public class EverfiRecordService implements ESSEverfiRecordService {
     private int getEmployeeId(EverfiAssignmentUser everfiAssignmentUser) throws EmployeeNotFoundEx {
         int empid = 99999;
 
-        if (everfiAssignmentUser.employeeId != null && !everfiAssignmentUser.employeeId.isEmpty() ) {
+        if (everfiAssignmentUser.employeeId != null && !everfiAssignmentUser.employeeId.isEmpty()) {
             try {
-                empid = employeeDao.getEmployeeById(Integer.parseInt( everfiAssignmentUser.employeeId )).getEmployeeId();
-            }
-            catch (Exception e) {
+                empid = employeeDao.getEmployeeById(Integer.parseInt(everfiAssignmentUser.employeeId)).getEmployeeId();
+            } catch (Exception e) {
                 logger.error("Problem with Everfi EMP ID : " + e.getMessage());
             }
-        }
-        else if (everfiAssignmentUser.email != null && !everfiAssignmentUser.email.isEmpty() ) {
+        } else if (everfiAssignmentUser.email != null && !everfiAssignmentUser.email.isEmpty()) {
 
             try {
-                empid = employeeDao.getEmployeeByEmail(everfiAssignmentUser.email ).getEmployeeId();
-            }
-            catch (Exception e) {
+                empid = employeeDao.getEmployeeByEmail(everfiAssignmentUser.email).getEmployeeId();
+            } catch (Exception e) {
                 logger.error("Problem with Everfi email : " + e.getMessage());
             }
-        }
-        else {
+        } else {
             throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser.toString());
         }
         return empid;
     }
 
-    private EverfiAssignmentProgress getCorrectProgress(List<EverfiAssignmentProgress> progresses) {
-        EverfiAssignmentProgress correctProgress = null;
-        for (EverfiAssignmentProgress progress: progresses) {
-            if (progress.getContentId().equals(sexualHarrassment2020EverfiContentID)
-                    && progress.getDueOn().equals(LocalDate.of(2020,10,1))) {
-                correctProgress = progress;
-            }
-        }
-        return correctProgress;
+    //TODO TEST
+    //TODO API integration for caches
+
+    private Integer getEverfiTaskID(Integer assignmentID) {
+        return everfiAssignmentIDMap.get(assignmentID);
     }
 
-    private int getEverfiTaskID() {
-        List<PersonnelTask> everfiTasks = taskService.getPersonnelTasks(true).stream()
+    private List<PersonnelTask> getEverfiPersonnelTasks() {
+        return taskService.getPersonnelTasks(false).stream()
                 .filter(task -> EVERFI_COURSE == task.getTaskType())
                 .collect(Collectors.toList());
-        if (everfiTasks.size() != 1) {
-            throw new IllegalStateException("Expected a single moodle course in the db, found " +
-                    everfiTasks.size() + ": " + everfiTasks);
-        }
-        return everfiTasks.get(0).getTaskId();
     }
 }

@@ -24,6 +24,15 @@ public enum SqlPersonnelTaskQuery implements BasicSqlQuery {
     UPDATE_TASK_ASSIGNMENT(
             "update ${essSchema}.personnel_task_assignment set active = ?, " +
                     "update_user_id = ? where emp_id = ? and task_id = ?"
+    ),
+    SELECT_EVERFI_CONTENT_IDS(
+            "SELECT *\n" +
+                    "FROM ${essSchema}.everfi_course_content_id"
+    ),
+
+    SELECT_EVERFI_ASSIGNMENT_IDS(
+            "SELECT *\n" +
+                    "FROM ${essSchema}.everfi_course_assignment_id"
     );
 
     private final String sql;

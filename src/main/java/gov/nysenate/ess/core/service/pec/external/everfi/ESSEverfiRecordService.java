@@ -18,5 +18,11 @@ public interface ESSEverfiRecordService {
      */
     public void contactEverfiForUserRecords(String since) throws IOException;
 
+    /**
+     * Refreshes the assignment id and content id caches.
+     * This is important for adding a task to be processed by pec without restarting ess
+     */
+    public void refreshCaches();
+
 
 }

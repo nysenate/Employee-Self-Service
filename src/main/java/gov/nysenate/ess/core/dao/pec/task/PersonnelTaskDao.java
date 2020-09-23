@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.dao.pec.task;
 
 import gov.nysenate.ess.core.model.pec.PersonnelTask;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,4 +32,14 @@ public interface PersonnelTaskDao {
      * Update a personnel assigned task
      */
     void updatePersonnelAssignedTaskAssignment(int empID, int updateEmpID, boolean assigned, int taskID);
+
+    /**
+     * Get a hash map of everfi content ID's to personnel task ids
+     */
+    HashMap<String, Integer> getEverfiContentIDs();
+
+    /**
+     * Get a hash map of everfi Assignment ID's to personnel task ids
+     */
+    HashMap<Integer, Integer> getEverfiAssignmentIDs();
 }
