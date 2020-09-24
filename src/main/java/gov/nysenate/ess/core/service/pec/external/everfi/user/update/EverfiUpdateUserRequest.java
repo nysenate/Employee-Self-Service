@@ -25,10 +25,11 @@ public class EverfiUpdateUserRequest {
     private final int employeeId;
     private static final int LOCATION_ID = 9820; // We put everyone in the same location.
     private final List<EverfiCategoryLabel> categoryLabels;
+    private final boolean isActive;
 
     // TODO builder pattern?
     public EverfiUpdateUserRequest(EverfiApiClient everfiClient, String empUuid, int employeeId, String firstName, String lastName,
-                                   String email, String ssoId, List<EverfiCategoryLabel> categoryLabels) {
+                                   String email, String ssoId, List<EverfiCategoryLabel> categoryLabels, boolean isActive) {
         this.everfiClient = everfiClient;
         this.empUuid = empUuid;
         this.firstName = firstName;
@@ -37,6 +38,7 @@ public class EverfiUpdateUserRequest {
         this.ssoId = ssoId;
         this.employeeId = employeeId;
         this.categoryLabels = categoryLabels;
+        this.isActive = isActive;
     }
 
     /**
@@ -81,7 +83,7 @@ public class EverfiUpdateUserRequest {
             registrationsObj.put("sso_id", ssoId);
         }
         registrationsObj.put("employee_id", employeeId);
-//        registrationsObj.put("active", false);
+        registrationsObj.put("active", isActive);
 
         attributesNode.set("registrations", registrationsNode);
 
