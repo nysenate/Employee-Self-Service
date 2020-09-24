@@ -58,30 +58,37 @@ public class EverfiUpdateUserRequest {
     private String generateJsonEntity() throws IOException {
         ObjectMapper mapper = OutputUtils.jsonMapper;
 
-        ArrayNode categoryLabelsNode = mapper.createArrayNode();
-        for (EverfiCategoryLabel label : categoryLabels) {
-            categoryLabelsNode.add(String.valueOf(label.getId()));
-        }
-
+        // Create all Nodes.
         ArrayNode registrationsNode = mapper.createArrayNode();
         ObjectNode registrationsObj = registrationsNode.addObject();
+        ObjectNode attributesNode = mapper.createObjectNode();
+        ObjectNode dataNode = mapper.createObjectNode();
+        ObjectNode rootNode = mapper.createObjectNode();
+
+        if (categoryLabels != null && !categoryLabels.isEmpty()) {
+            ArrayNode categoryLabelsNode = mapper.createArrayNode();
+            for (EverfiCategoryLabel label : categoryLabels) {
+                categoryLabelsNode.add(String.valueOf(label.getId()));
+            }
+            registrationsObj.set("category_labels", categoryLabelsNode);
+        }
+
         registrationsObj.put("rule_set", "user_rule_set");
         registrationsObj.put("first_name", firstName);
         registrationsObj.put("last_name", lastName);
         registrationsObj.put("email", email);
-        registrationsObj.put("sso_id", ssoId);
+        if (ssoId != null) {
+            registrationsObj.put("sso_id", ssoId);
+        }
         registrationsObj.put("employee_id", employeeId);
-        registrationsObj.set("category_labels", categoryLabelsNode);
+//        registrationsObj.put("active", false);
 
-        ObjectNode attributesNode = mapper.createObjectNode();
         attributesNode.set("registrations", registrationsNode);
 
-        ObjectNode dataNode = mapper.createObjectNode();
         dataNode.put("type", "registration_sets");
         dataNode.put("id", empUuid);
         dataNode.set("attributes", attributesNode);
 
-        ObjectNode rootNode = mapper.createObjectNode();
         rootNode.set("data", dataNode);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);

@@ -48,10 +48,9 @@ public class EverfiApiClient {
         String url = HOST + endpoint;
         System.out.println(url);
 
-        // TODO url encode
         HttpGet req = new HttpGet(url);
         addHeaders(req);
-        req.addHeader("Authorization", "Bearer " + accessToken);
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(req)) {
 
@@ -170,5 +169,6 @@ public class EverfiApiClient {
     private void addHeaders(AbstractHttpMessage req) {
         req.addHeader("Accept", "application/json");
         req.addHeader("Content-Type", "application/json");
+        req.addHeader("Authorization", "Bearer " + accessToken);
     }
 }

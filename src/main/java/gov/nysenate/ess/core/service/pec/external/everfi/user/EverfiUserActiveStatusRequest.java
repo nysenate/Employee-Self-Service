@@ -12,9 +12,9 @@ import java.io.IOException;
 /**
  * Activates or Deactivates Everfi Users.
  */
-public class EverfiDeactivateUserRequest {
+public class EverfiUserActiveStatusRequest {
 
-    private static final String DEACTIVATE_USER_END_POINT = "/v1/admin/registration_sets/:%s";
+    private static final String DEACTIVATE_USER_END_POINT = "/v1/admin/registration_sets/%s";
     private final EverfiApiClient everfiClient;
 
     private final String empUuid;
@@ -24,8 +24,8 @@ public class EverfiDeactivateUserRequest {
     private final String email;
     private final boolean active; // true to activate an emp, false to deactivate.
 
-    public EverfiDeactivateUserRequest(EverfiApiClient everfiClient, String empUuid, int employeeId,
-                                       String firstName, String lastName, String email, boolean active) {
+    public EverfiUserActiveStatusRequest(EverfiApiClient everfiClient, String empUuid, int employeeId,
+                                         String firstName, String lastName, String email, boolean active) {
         this.everfiClient = everfiClient;
         this.empUuid = empUuid;
         this.employeeId = employeeId;
