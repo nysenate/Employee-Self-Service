@@ -1,50 +1,46 @@
-package gov.nysenate.ess.core.service.pec.external.everfi.user.update;
+package gov.nysenate.ess.core.service.pec.external.everfi.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
-import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
-import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.util.OutputUtils;
 
 import java.io.IOException;
-import java.util.List;
 
-public class EverfiUpdateUserRequest {
+/**
+ * Activates or Deactivates Everfi Users.
+ */
+public class EverfiDeactivateUserRequest {
 
-    private static final String UPDATE_USER_END_POINT = "/v1/admin/registration_sets/%s";
+    private static final String DEACTIVATE_USER_END_POINT = "/v1/admin/registration_sets/:%s";
     private final EverfiApiClient everfiClient;
 
     private final String empUuid;
-    private final String firstName; // Required, even if not changing.
-    private final String lastName; // Required, even if not changing.
-    private final String email; // Required, even if not changing.
-    private final String ssoId;
     private final int employeeId;
-    private static final int LOCATION_ID = 9820; // We put everyone in the same location.
-    private final List<EverfiCategoryLabel> categoryLabels;
+    private final String firstName;
+    private final String lastName;
+    private final String email;
+    private final boolean active; // true to activate an emp, false to deactivate.
 
-    // TODO builder pattern?
-    public EverfiUpdateUserRequest(EverfiApiClient everfiClient, String empUuid, int employeeId, String firstName, String lastName,
-                                   String email, String ssoId, List<EverfiCategoryLabel> categoryLabels) {
+    public EverfiDeactivateUserRequest(EverfiApiClient everfiClient, String empUuid, int employeeId,
+                                       String firstName, String lastName, String email, boolean active) {
         this.everfiClient = everfiClient;
         this.empUuid = empUuid;
+        this.employeeId = employeeId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.ssoId = ssoId;
-        this.employeeId = employeeId;
-        this.categoryLabels = categoryLabels;
+        this.active = active;
     }
 
     /**
-     * Updates the user represented by the feilds in this class.
+     * Activates or deactivates an employee based on the {@code active} field.
      * @return The updated user from Everfi.
      * @throws IOException
      */
-    public EverfiUser updateUser() throws IOException {
+    public EverfiUser updateActiveStatus() throws IOException {
         String entity = generateJsonEntity();
         String data = everfiClient.patch(endpoint(), entity);
 
@@ -58,20 +54,14 @@ public class EverfiUpdateUserRequest {
     private String generateJsonEntity() throws IOException {
         ObjectMapper mapper = OutputUtils.jsonMapper;
 
-        ArrayNode categoryLabelsNode = mapper.createArrayNode();
-        for (EverfiCategoryLabel label : categoryLabels) {
-            categoryLabelsNode.add(String.valueOf(label.getId()));
-        }
-
         ArrayNode registrationsNode = mapper.createArrayNode();
         ObjectNode registrationsObj = registrationsNode.addObject();
         registrationsObj.put("rule_set", "user_rule_set");
         registrationsObj.put("first_name", firstName);
         registrationsObj.put("last_name", lastName);
         registrationsObj.put("email", email);
-        registrationsObj.put("sso_id", ssoId);
         registrationsObj.put("employee_id", employeeId);
-        registrationsObj.set("category_labels", categoryLabelsNode);
+        registrationsObj.put("active", active);
 
         ObjectNode attributesNode = mapper.createObjectNode();
         attributesNode.set("registrations", registrationsNode);
@@ -87,7 +77,7 @@ public class EverfiUpdateUserRequest {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
     }
 
-    private String endpoint() {
-        return String.format(UPDATE_USER_END_POINT, empUuid);
+    public String endpoint() {
+        return String.format(DEACTIVATE_USER_END_POINT, empUuid);
     }
 }
