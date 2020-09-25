@@ -10,33 +10,23 @@ import gov.nysenate.ess.core.util.OutputUtils;
 import java.io.IOException;
 
 /**
- * A request to add a new category label in Everfi.
+ * Request to update the name of an Everfi Category Label.
  */
-public class EverfiAddCategoryLabelRequest {
+public class EverfiUpdateCategoryLabelRequest {
 
-    private static final String END_POINT = "/v1/admin/category_labels";
+    private static final String END_POINT = "/v1/admin/category_labels/%s";
     private final EverfiApiClient client;
-    private final int categoryId;
-    private final String labelName;
+    private final int labelId;
+    private final String newLabelName;
 
-    /**
-     * @param client
-     * @param categoryId The id of the category this label should belong to.
-     * @param labelName The name this label should have.
-     */
-    public EverfiAddCategoryLabelRequest(EverfiApiClient client, int categoryId, String labelName) {
+    public EverfiUpdateCategoryLabelRequest(EverfiApiClient client, int labelId, String newLabelName) {
         this.client = client;
-        this.categoryId = categoryId;
-        this.labelName = labelName;
+        this.labelId = labelId;
+        this.newLabelName = newLabelName;
     }
 
-    /**
-     * Adds a category label to a category in Everfi.
-     * @return The newly added CategoryLabel.
-     * @throws IOException
-     */
-    public EverfiCategoryLabel addLabel() throws IOException {
-        String data = client.post(END_POINT, generateJsonEntity());
+    public EverfiCategoryLabel updateLabel() throws IOException {
+        String data = client.patch(endpoint(), generateJsonEntity());
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);
@@ -51,9 +41,9 @@ public class EverfiAddCategoryLabelRequest {
         ObjectNode dataNode = mapper.createObjectNode();
         ObjectNode attributesNode = mapper.createObjectNode();
 
-        attributesNode.put("name", labelName);
-        attributesNode.put("category_id", String.valueOf(categoryId));
+        attributesNode.put("name", newLabelName);
 
+        dataNode.put("id", labelId);
         dataNode.put("type", "category_labels");
         dataNode.set("attributes", attributesNode);
 
@@ -61,5 +51,8 @@ public class EverfiAddCategoryLabelRequest {
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
     }
-}
 
+    private String endpoint() {
+        return String.format(END_POINT, labelId);
+    }
+}
