@@ -6,14 +6,14 @@ import gov.nysenate.ess.core.util.OutputUtils;
 import java.io.IOException;
 import java.util.List;
 
-public class EverfiCategoriesRequest {
+public class EverfiGetCategoriesRequest {
 
     private static final String CATEGORIES_ENDPOINT = "/v1/admin/categories/?include=category_labels";
     private static final String CATEGORY_BY_ID_ENDPOINT = "/v1/admin/categories/%s?include=category_labels";
     private final EverfiApiClient everfiClient;
     private EverfiCategoriesResponse response;
 
-    public EverfiCategoriesRequest(EverfiApiClient everfiClient) {
+    public EverfiGetCategoriesRequest(EverfiApiClient everfiClient) {
         this.everfiClient = everfiClient;
     }
 

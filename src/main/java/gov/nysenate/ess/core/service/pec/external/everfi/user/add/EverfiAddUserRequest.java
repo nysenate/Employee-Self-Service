@@ -57,7 +57,7 @@ public class EverfiAddUserRequest {
 
         ArrayNode categoryLabelsNode = mapper.createArrayNode();
         for (EverfiCategoryLabel label : categoryLabels) {
-            categoryLabelsNode.add(String.valueOf(label.getId()));
+            categoryLabelsNode.add(String.valueOf(label.getLabelId()));
         }
 
         ArrayNode registrationsNode = mapper.createArrayNode();
