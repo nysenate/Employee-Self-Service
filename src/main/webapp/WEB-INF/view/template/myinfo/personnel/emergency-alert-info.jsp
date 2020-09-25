@@ -31,6 +31,15 @@
                ng-pattern="telPattern" ng-model="state.alertInfo.alternatePhone">
         <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
 
+        <div class="dropdown" ng-class="{'ng-invalid': !validMobileOptions()}">
+        <label for="alternateOptions">Choose alternate contact option:</label>
+            <select id="alternateOptions"
+                    ng-model="state.alertInfo.alternateOptions"
+                    ng-disabled="!state.alertInfo.alternatePhone">
+              <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
+            </select>
+        </div>
+
         <label for="mobile-phone">Mobile</label>
         <input type="text" id="mobile-phone" autocomplete="mobile tel-national"
                ng-pattern="telPattern" ng-model="state.alertInfo.mobilePhone">

@@ -2,8 +2,8 @@
 angular.module('essMyInfo')
     .controller('AlertCtrl', ['$scope', '$timeout', '$filter',
                               'appProps', 'modals', 'AlertInfoApi',
-                                              alertCtrl])
-    ;
+                              alertCtrl])
+;
 
 function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
 
@@ -12,6 +12,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
     $scope.emailPattern = /^.*@.*\.[A-z]{2,}$/;
     $scope.phoneErrorMsg = "Please enter a valid phone number";
     $scope.emailErrorMsg = "Please enter a valid email address";
+    $scope.CONTACT_OPTIONS = {CALLS_ONLY: "Calls", TEXTS_ONLY: "Texts", EVERYTHING: "Both"};
 
     var phoneNumberFields = [
         'workPhone',
@@ -131,8 +132,8 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      */
     $scope.validAlertInfo = function () {
         return $scope.validMobileOptions() &&
-                $scope.noDuplicatePhoneNumbers() &&
-                $scope.noDuplicateEmails();
+            $scope.noDuplicatePhoneNumbers() &&
+            $scope.noDuplicateEmails();
     };
 
     /* --- Api Methods --- */
@@ -167,7 +168,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
     function saveAlertInfo() {
         $scope.state.request.savingAlertInfo = true;
 
-        ensureMobileOptions();
+        ensureContactOptions();
 
         return alertInfoApi.save({}, $scope.state.alertInfo, onSuccess, onFail)
             .$promise
@@ -180,7 +181,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
 
         function onFail(resp) {
             if (resp.data.errorCode === 'INVALID_ALERT_INFO' &&
-                    resp.data.errorData.alertErrorCode === 'INVALID_EMAIL') {
+                resp.data.errorData.alertErrorCode === 'INVALID_EMAIL') {
                 $scope.errorData = resp.data.errorData.alertErrorData;
                 modals.open('invalid-email-dialog');
             } else {
@@ -210,7 +211,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      * If no mobile number is specified, and the alert options are valid, then they should be set to default
      * to prevent errors on the backend.
      */
-    function ensureMobileOptions() {
+    function ensureContactOptions() {
         var alertInfo = $scope.state.alertInfo;
 
         if (!$scope.validMobileOptions()) {
