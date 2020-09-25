@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class EverfiAssignmentUser {
-    public String id;
+    @JsonProperty("id")
+    public String uuid;
     public String email;
     public boolean active;
     @JsonProperty("sso_id")
@@ -21,8 +22,8 @@ public class EverfiAssignmentUser {
     public EverfiAssignmentUser() {
     }
 
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
     public String getEmail() {
@@ -60,7 +61,7 @@ public class EverfiAssignmentUser {
     @Override
     public String toString() {
         return "EverfiAssignmentUser{" +
-                "id='" + id + '\'' +
+                "id='" + uuid + '\'' +
                 ", email='" + email + '\'' +
                 ", active=" + active +
                 ", ssoId='" + ssoId + '\'' +

@@ -12,7 +12,8 @@ public class EverfiAssignmentProgress {
     private static final DateTimeFormatter DUE_ON_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss.SSSz");
 
-    private String id;
+    @JsonProperty("id")
+    private String uuid;
     private String name;
     @JsonProperty("due_on")
     private String dueOn;
@@ -32,8 +33,8 @@ public class EverfiAssignmentProgress {
     public EverfiAssignmentProgress() {
     }
 
-    public String getId() {
-        return id;
+    public String getUuid() {
+        return uuid;
     }
 
     public String getName() {
@@ -76,7 +77,7 @@ public class EverfiAssignmentProgress {
     @Override
     public String toString() {
         return "EverfiAssignmentProgress{" +
-                "id='" + id + '\'' +
+                "id='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", dueOn='" + dueOn + '\'' +
                 ", contentId='" + contentId + '\'' +
