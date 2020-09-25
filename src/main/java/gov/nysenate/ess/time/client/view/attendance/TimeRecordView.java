@@ -19,6 +19,11 @@ public class TimeRecordView extends SimpleTimeRecordView
 
     protected TimeRecordView() {}
 
+
+    public TimeRecordView(TimeRecord record, Employee emp) {
+        this(record, emp, null);
+    }
+
     public TimeRecordView(TimeRecord record, Employee emp, Employee sup) {
         super(record);
         if (record != null) {

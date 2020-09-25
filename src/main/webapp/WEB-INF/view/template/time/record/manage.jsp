@@ -230,7 +230,7 @@
       <div progress-modal title="Sending Email Reminders"></div>
     </modal>
     <modal modal-id="record-reminder-posted">
-      <div confirm-modal title="Email reminders were sent successfully."></div>
+      <div record-reminder-posted-modal></div>
     </modal>
     <modal modal-id="record-review-close">
       <div confirm-modal rejectable="true" title="Unsubmitted Records"
