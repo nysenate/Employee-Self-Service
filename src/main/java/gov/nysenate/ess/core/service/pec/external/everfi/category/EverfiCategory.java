@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.service.pec.external.everfi.category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public class EverfiCategory {
     private List<EverfiCategoryLabel> labels;
 
     public EverfiCategory() {
+        labels = new ArrayList<>();
     }
 
     public EverfiCategory(int id, String name, List<EverfiCategoryLabel> labels) {
