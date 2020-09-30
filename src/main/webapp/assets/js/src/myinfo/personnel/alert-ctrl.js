@@ -14,20 +14,20 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
     $scope.emailErrorMsg = "Please enter a valid email address";
     $scope.CONTACT_OPTIONS = {CALLS_ONLY: "Calls", TEXTS_ONLY: "Texts", EVERYTHING: "Both"};
 
-    var phoneNumberFields = [
+    const phoneNumberFields = [
         'workPhone',
         'homePhone',
         'alternatePhone',
         'mobilePhone'
     ];
 
-    var emailFields = [
+    const emailFields = [
         'workEmail',
         'personalEmail',
         'alternateEmail'
     ];
 
-    var initialState = {
+    let initialState = {
         name: appProps.user.fullName,
         empId: appProps.user.employeeId,
         request: {},
@@ -48,24 +48,11 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
     $scope.saveAlertInfo = saveAlertInfo;
 
     $scope.isLoading = function () {
-        var loading = false;
+        let loading = false;
         angular.forEach($scope.state.request, function (status) {
             loading = loading || status;
         });
         return loading;
-    };
-
-    /**
-     * Checks for valid mobile options
-     * @returns {boolean} true if at least one mobile option is selected
-     */
-    $scope.validMobileOptions = function () {
-        var alertInfo = $scope.state.alertInfo;
-        if (!alertInfo.mobilePhone) {
-            return true;
-        }
-
-        return !alertInfo.mobilePhone || alertInfo.mobileCallable || alertInfo.mobileTextable;
     };
 
     /**
@@ -74,15 +61,15 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      * @returns {boolean} true if there are no duplicate phone numbers
      */
     $scope.noDuplicatePhoneNumbers = function () {
-        var phoneNumberSet = {};
-        for (var i in phoneNumberFields) {
+        const phoneNumberSet = {};
+        for (const i in phoneNumberFields) {
             if (!phoneNumberFields.hasOwnProperty(i)) {
                 continue;
             }
 
-            var phoneNumber = $scope.state.alertInfo[phoneNumberFields[i]];
+            const phoneNumber = $scope.state.alertInfo[phoneNumberFields[i]];
 
-            var formattedPhoneNumber = (phoneNumber || '').replace(/[^\d]+/g, '');
+            const formattedPhoneNumber = (phoneNumber || '').replace(/[^\d]+/g, '');
 
             if (!formattedPhoneNumber) {
                 continue;
@@ -103,15 +90,15 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      * @returns {boolean} true if there are no duplicate email addresses
      */
     $scope.noDuplicateEmails = function () {
-        var emailSet = {};
-        for (var i in emailFields) {
+        const emailSet = {};
+        for (const i in emailFields) {
             if (!emailFields.hasOwnProperty(i)) {
                 continue;
             }
 
-            var email = $scope.state.alertInfo[emailFields[i]];
+            const email = $scope.state.alertInfo[emailFields[i]];
 
-            var formattedEmail = (email || '').replace(/^\s+|\s+$/g, '').toLowerCase();
+            const formattedEmail = (email || '').replace(/^\s+|\s+$/g, '').toLowerCase();
 
             if (!formattedEmail) {
                 continue;
@@ -131,8 +118,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      * returning true if it is valid
      */
     $scope.validAlertInfo = function () {
-        return $scope.validMobileOptions() &&
-            $scope.noDuplicatePhoneNumbers() &&
+        return $scope.noDuplicatePhoneNumbers() &&
             $scope.noDuplicateEmails();
     };
 
@@ -142,7 +128,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      * Retrieves the user's alert info
      */
     function getAlertInfo() {
-        var params = {
+        const params = {
             empId: $scope.state.empId
         };
         $scope.state.request.loadingAlertInfo = true;
@@ -167,9 +153,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      */
     function saveAlertInfo() {
         $scope.state.request.savingAlertInfo = true;
-
         ensureContactOptions();
-
         return alertInfoApi.save({}, $scope.state.alertInfo, onSuccess, onFail)
             .$promise
             .then(init)
@@ -212,18 +196,13 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      * to prevent errors on the backend.
      */
     function ensureContactOptions() {
-        var alertInfo = $scope.state.alertInfo;
+        const alertInfo = $scope.state.alertInfo;
 
-        if (!$scope.validMobileOptions()) {
-            throw {
-                message: "Attempt to post alert info with invalid mobile options",
-                alertInfo: alertInfo
-            };
+        if (!alertInfo.mobileOptions) {
+            alertInfo.mobileOptions = alertInfo.CONTACT_OPTIONS.EVERYTHING;
         }
-
-        if (!(alertInfo.mobileCallable || alertInfo.mobileTextable)) {
-            alertInfo.mobileCallable = true;
-            alertInfo.mobileTextable = true;
+        if (!alertInfo.alternateOptions) {
+            alertInfo.alternateOptions = alertInfo.CONTACT_OPTIONS.EVERYTHING;
         }
     }
 

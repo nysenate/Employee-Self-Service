@@ -31,7 +31,7 @@
                ng-pattern="telPattern" ng-model="state.alertInfo.alternatePhone">
         <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
 
-        <div class="dropdown" ng-class="{'ng-invalid': !validMobileOptions()}">
+        <div class="dropdown" ng-class="{'ng-invalid': !state.alertInfo.alternateOptions}">
         <label for="alternateOptions">Choose alternate contact option:</label>
             <select id="alternateOptions"
                     ng-model="state.alertInfo.alternateOptions"
@@ -46,18 +46,15 @@
         <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
 
         <label></label>
-        <div class="check-box-container"
-             ng-class="{'ng-invalid': !validMobileOptions()}">
-          <input type="checkbox" id="mobile-callable"
-                 ng-model="state.alertInfo.mobileCallable"
-                 ng-disabled="!state.alertInfo.mobilePhone">
-          <label for="mobile-callable">Receive Calls on Mobile</label>
-          <br>
-          <input type="checkbox" id="mobile-textable"
-                 ng-model="state.alertInfo.mobileTextable"
-                 ng-disabled="!state.alertInfo.mobilePhone">
-          <label for="mobile-textable">Receive Texts on Mobile</label>
+        <div class="dropdown" ng-class="{'ng-invalid': !state.alertInfo.mobileOptions}">
+        <label for="mobileOptions">Choose mobile contact option:</label>
+            <select id="mobileOptions"
+                    ng-model="state.alertInfo.mobileOptions"
+                    ng-disabled="!state.alertInfo.mobilePhone">
+              <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
+            </select>
         </div>
+
         <p class="alert-info-error-text">
           You must receive calls and/or texts<br>
           if a mobile number is provided.

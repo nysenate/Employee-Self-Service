@@ -41,21 +41,4 @@ public enum ContactOptions {
     public String getJsString() {
         return jsString;
     }
-
-    /**
-     * Get a {@link ContactOptions} with callable and textable flags equal to the parameters.
-     *
-     * @param callable boolean
-     * @param textable boolean
-     * @return {@link ContactOptions}
-     */
-    public static ContactOptions getContactOptions(boolean callable, boolean textable) {
-        for (ContactOptions option : values()) {
-            if (option.callable == callable && option.textable == textable)
-                return option;
-        }
-        throw new IllegalArgumentException("No contact option exists with " +
-                "callable = " + callable + " and textable = " + textable);
-    }
-
 }
