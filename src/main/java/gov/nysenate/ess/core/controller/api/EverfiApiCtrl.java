@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.controller.api;
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +22,37 @@ import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-@RequestMapping(BaseRestApiCtrl.REST_PATH + "/personnel/task/everfi/")
+@RequestMapping(BaseRestApiCtrl.REST_PATH + "/everfi/")
 public class EverfiApiCtrl extends BaseRestApiCtrl {
 
     private EverfiRecordService everfiRecordService;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
+    private EverfiUserService everfiUserService;
     final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0,0,0);
     private static final Logger logger = LoggerFactory.getLogger(EverfiApiCtrl.class);
 
     @Autowired
-    public EverfiApiCtrl(EverfiRecordService everfiRecordService, PersonnelTaskAssignmentDao personnelTaskAssignmentDao) {
+    public EverfiApiCtrl(EverfiRecordService everfiRecordService, PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
+                         EverfiUserService everfiUserService) {
         this.everfiRecordService = everfiRecordService;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
+        this.everfiUserService = everfiUserService;
     }
 
+    /**
+     * Everfi - Cache Refresh
+     * ---------------------------------------
+     *
+     * ESS refreshes its everfi content id cache and its assignment id cache
+     *
+     * This is necessary for handling a new task without restarting ESS
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/cache/refresh
+     *
+     *
+     * @return String
+     * */
     @RequestMapping(value = "/cache/refresh", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse refreshEverfiCaches(HttpServletRequest request,
@@ -45,13 +63,13 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
 
     /**
-     * Personnel Employee Task - Everfi Import
-     * ---------------------------------------
+     * Everfi - Personnel Employee Task Data Import
+     * --------------------------------------------
      *
      * ESS contacts Everfi for course data
      *
      * Usage:
-     * (GET)    /api/v1/personnel/task/everfi/generate
+     * (GET)    /api/v1/everfi/personnel/task/generate
      *
      * @Param from, the beginning of the date range needed for the records
      *
@@ -60,7 +78,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
      *
      * @return String
      * */
-    @RequestMapping(value = "/generate", method = {GET})
+    @RequestMapping(value = "/personnel/task/generate", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse runEverfiImport(HttpServletRequest request,
                                           HttpServletResponse response,
@@ -79,15 +97,44 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
         //Contact everfi
         try {
-            logger.info(ldtsince.toString() + ":00.000");
+            logger.debug(ldtsince.toString() + ":00.000");
             everfiRecordService.contactEverfiForUserRecords(ldtsince.toString() + ":00.000");
         }
         catch (Exception e) {
             logger.info("Error contacting Everfi for records", e);
-            return new SimpleResponse(false, "Everfi Report Generation", e.getMessage());
+            return new SimpleResponse(false, e.getMessage(), "everfi-report-generation");
         }
 
         return new SimpleResponse(true, "Everfi Report Generation", "everfi-report-generation");
+    }
+
+
+    /**
+     * Everfi - User Records Import
+     * ---------------------------------------
+     *
+     * ESS contacts Everfi for user data and imports it into our database
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/import/users
+     *
+     *
+     * @return String
+     * */
+    @RequestMapping(value = "/import/users", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse importEverfiUserRecords(HttpServletRequest request, HttpServletResponse response) {
+//        checkPermission(ADMIN.getPermission());
+        
+        try {
+            everfiUserService.getEverfiUserIds();
+        }
+        catch (Exception e) {
+            logger.info("Error contacting Everfi for records", e);
+            return new SimpleResponse(false, e.getMessage(), "everfi-user-import");
+        }
+
+        return new SimpleResponse(true, "Everfi User Import", "everfi-user-import");
     }
 
 

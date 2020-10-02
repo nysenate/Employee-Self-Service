@@ -55,11 +55,13 @@ public class EverfiRecordService implements ESSEverfiRecordService {
         this.everfiContentIDMap = personnelTaskDao.getEverfiContentIDs();
     }
 
+    /** {@inheritDoc} */
     public void refreshCaches() {
         this.everfiAssignmentIDMap = personnelTaskDao.getEverfiAssignmentIDs();
         this.everfiContentIDMap = personnelTaskDao.getEverfiContentIDs();
     }
 
+    /** {@inheritDoc} */
     @Scheduled(cron = "${scheduler.everfi.task.sync.cron}") //At the top of every hour every day
     public void getUpdatesFromEverfi() throws IOException {
         if (!everfiSyncEnabled) {
@@ -69,12 +71,13 @@ public class EverfiRecordService implements ESSEverfiRecordService {
         contactEverfiForUserRecords(jan1970.toString() + ":00.000");
     }
 
+    /** {@inheritDoc} */
     public void contactEverfiForUserRecords(String since) throws IOException {
 
         EverfiAssignmentsAndProgressRequest request =
                 EverfiAssignmentsAndProgressRequest.allUserAssignments(everfiApiClient, since, 1000);
         List<EverfiAssignmentAndProgress> assignmentsAndProgress;
-        logger.info("Contacting Everfi for records");
+        logger.info("Contacting Everfi for assignment records");
         while (request != null) {
             // Call method on the request and get back the model object created from Everfi json.
             // Authentication and deserialization is handled by the request object.
@@ -86,6 +89,36 @@ public class EverfiRecordService implements ESSEverfiRecordService {
         logger.info("Handled Everfi records");
     }
 
+    /**
+     * Gets the employee object and then their id base off of the everfi email or emp id on file
+     */
+    private int getEmployeeId(EverfiAssignmentUser everfiAssignmentUser) throws EmployeeNotFoundEx {
+        int empid = 99999;
+
+        if (everfiAssignmentUser.employeeId != null && !everfiAssignmentUser.employeeId.isEmpty()) {
+            try {
+                empid = employeeDao.getEmployeeById(Integer.parseInt(everfiAssignmentUser.employeeId)).getEmployeeId();
+            } catch (Exception e) {
+                logger.error("Problem with Everfi EMP ID : " + e.getMessage());
+            }
+        } else if (everfiAssignmentUser.email != null && !everfiAssignmentUser.email.isEmpty()) {
+
+            try {
+                empid = employeeDao.getEmployeeByEmail(everfiAssignmentUser.email).getEmployeeId();
+            } catch (Exception e) {
+                logger.error("Problem with Everfi email : " + e.getMessage());
+            }
+        } else {
+            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser.toString());
+        }
+        return empid;
+    }
+
+    /**
+     * Goes through assignment records and inserts personnel tasks into the database for the proper employees
+     * on the certain tasks that we care about from everfi
+     * @param assignmentAndProgresses
+     */
     private void handleRecords(List<EverfiAssignmentAndProgress> assignmentAndProgresses) {
 
         List<PersonnelTask> everfiPersonnelTasks = getEverfiPersonnelTasks();
@@ -150,35 +183,19 @@ public class EverfiRecordService implements ESSEverfiRecordService {
         }
     }
 
-    private int getEmployeeId(EverfiAssignmentUser everfiAssignmentUser) throws EmployeeNotFoundEx {
-        int empid = 99999;
-
-        if (everfiAssignmentUser.employeeId != null && !everfiAssignmentUser.employeeId.isEmpty()) {
-            try {
-                empid = employeeDao.getEmployeeById(Integer.parseInt(everfiAssignmentUser.employeeId)).getEmployeeId();
-            } catch (Exception e) {
-                logger.error("Problem with Everfi EMP ID : " + e.getMessage());
-            }
-        } else if (everfiAssignmentUser.email != null && !everfiAssignmentUser.email.isEmpty()) {
-
-            try {
-                empid = employeeDao.getEmployeeByEmail(everfiAssignmentUser.email).getEmployeeId();
-            } catch (Exception e) {
-                logger.error("Problem with Everfi email : " + e.getMessage());
-            }
-        } else {
-            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiAssignmentUser.toString());
-        }
-        return empid;
-    }
-
-    //TODO TEST
-    //TODO API integration for caches
-
+    /**
+     * Gets the id of the personnel task that corresponds with the right assignment ID
+     * @param assignmentID
+     * @return
+     */
     private Integer getEverfiTaskID(Integer assignmentID) {
         return everfiAssignmentIDMap.get(assignmentID);
     }
 
+    /**
+     * Gets all personnel tasks with the everfi course enum
+     * @return
+     */
     private List<PersonnelTask> getEverfiPersonnelTasks() {
         return taskService.getPersonnelTasks(false).stream()
                 .filter(task -> EVERFI_COURSE == task.getTaskType())
