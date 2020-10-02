@@ -27,7 +27,6 @@ public class EverfiUpdateUserRequest {
     private final List<EverfiCategoryLabel> categoryLabels;
     private final boolean isActive;
 
-    // TODO builder pattern?
     public EverfiUpdateUserRequest(EverfiApiClient everfiClient, String empUuid, int employeeId, String firstName, String lastName,
                                    String email, String ssoId, List<EverfiCategoryLabel> categoryLabels, boolean isActive) {
         this.everfiClient = everfiClient;

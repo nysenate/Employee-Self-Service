@@ -39,8 +39,6 @@ public class EverfiAddUserRequest {
      * @return The added user returned from Everfi.
      * @throws IOException
      */
-    // TODO not yet tested
-    // TODO return a response indicating success/failure.
     public EverfiUser addUser() throws IOException {
         String entity = generateJsonEntity();
         String data = everfiClient.post(ADD_USER_END_POINT, entity);

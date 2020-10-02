@@ -20,8 +20,6 @@ public class EverfiAssignmentsAndProgressRequest {
     private final int limit;
     private EverfiAssignmentsAndProgressResponse response;
 
-    // TODO enforce the max limit size? (1000?)
-
     private EverfiAssignmentsAndProgressRequest(String fullEndpoint, EverfiApiClient httpClient, String scrollId,
                                                String since, int limit) {
         this.fullEndpoint = fullEndpoint;
@@ -73,7 +71,6 @@ public class EverfiAssignmentsAndProgressRequest {
      * @throws IOException
      */
     public List<EverfiAssignmentAndProgress> fetch() throws IOException {
-        // TODO how to handle unexpected errors from the API?
         String data = httpClient.get(endpoint());
         response = OutputUtils.jsonToObject(data, EverfiAssignmentsAndProgressResponse.class);
         return response.getAssignmentsAndProgress();
