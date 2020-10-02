@@ -5,7 +5,6 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import java.io.IOException;
 
 /**
  * This class is responsible for making API requests to the Everfi API.
- *
+ * <p>
  * It will automatically re-authenticate with Everfi as necessary.
  */
 @Service
@@ -27,7 +26,10 @@ public class EverfiApiClient {
 
     private static final String HOST = "https://api.fifoundry.net";
     private static String accessToken = "";
+    private static final int SUCCESS = 200;
     private static final int EXPIRED_TOKEN_CODE = 401;
+    private static final int RATE_LIMIT_EXCEEDED = 429;
+    private static final int MAX_RETRIES = 10;
     private String clientId;
     private String clientSecret;
 
@@ -46,28 +48,8 @@ public class EverfiApiClient {
      */
     public String get(String endpoint) throws IOException {
         String url = HOST + endpoint;
-        System.out.println(url);
-
-        HttpGet req = new HttpGet(url);
-        addHeaders(req);
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(req)) {
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            String data = EntityUtils.toString(response.getEntity());
-
-            if (statusCode == EXPIRED_TOKEN_CODE) {
-                if (authenticate()) {
-                    return get(endpoint);
-                } else {
-                    logger.error("Unable to make get request to Everfi. Error authenticating.");
-                    return null;
-                }
-            } else {
-                return data;
-            }
-        }
+        HttpUriRequest req = new HttpGet(url);
+        return makeRequest(req, null);
     }
 
     /**
@@ -81,27 +63,8 @@ public class EverfiApiClient {
     public String post(String endpoint, String body) throws IOException {
         String url = HOST + endpoint;
 
-        HttpPost post = new HttpPost(url);
-        post.setEntity(new StringEntity(body));
-        addHeaders(post);
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(post)) {
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            String data = EntityUtils.toString(response.getEntity());
-
-            if (statusCode == EXPIRED_TOKEN_CODE) {
-                if (authenticate()) {
-                    return post(endpoint, body);
-                } else {
-                    logger.error("Unable to make post request to Everfi. Error authenticating.");
-                    return null;
-                }
-            } else {
-                return data;
-            }
-        }
+        HttpUriRequest post = new HttpPost(url);
+        return makeRequest(post, body);
     }
 
     /**
@@ -115,34 +78,73 @@ public class EverfiApiClient {
     public String patch(String endpoint, String body) throws IOException {
         String url = HOST + endpoint;
 
-        HttpPatch patch = new HttpPatch(url);
-        patch.setEntity(new StringEntity(body));
-        addHeaders(patch);
+        HttpUriRequest patch = new HttpPatch(url);
+        return makeRequest(patch, body);
+    }
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-             CloseableHttpResponse response = httpClient.execute(patch)) {
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            String data = EntityUtils.toString(response.getEntity());
-
-            if (statusCode == EXPIRED_TOKEN_CODE) {
-                if (authenticate()) {
-                    return patch(endpoint, body);
-                } else {
-                    logger.error("Unable to make patch request to Everfi. Error authenticating.");
-                    return null;
-                }
-            } else {
-                return data;
-            }
+    private String makeRequest(HttpUriRequest req, String entity) throws IOException {
+        if (req instanceof HttpPost) {
+            ((HttpPost) req).setEntity(new StringEntity(entity));
         }
+        else if (req instanceof  HttpPatch) {
+            ((HttpPatch) req).setEntity(new StringEntity(entity));
+        }
+
+        boolean retry = true;
+        int retryCount = 0;
+        String data = null;
+
+        do {
+            updateHeaders(req); // Update headers so the auth token is updated if authentication was needed.
+
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                 CloseableHttpResponse response = httpClient.execute(req)) {
+
+                int statusCode = response.getStatusLine().getStatusCode();
+
+                if (statusCode == SUCCESS) {
+                    retry = false;
+                    data = EntityUtils.toString(response.getEntity());
+                } else if (statusCode == EXPIRED_TOKEN_CODE) {
+                    if (!authenticate()) {
+                        logger.error("Unable to make get request to Everfi. Error authenticating.");
+                        retry = false;
+                    }
+                } else if (statusCode == RATE_LIMIT_EXCEEDED){
+                    // Increment the retry count and sleep.
+                    retryCount++;
+                    Thread.sleep(getWaitTimeExp(retryCount));
+                    retry = true;
+                } else {
+                    logger.error("Received unknown status code from Everfi API: '" + statusCode + "'");
+                    retry = false;
+                }
+            } catch (InterruptedException e) {
+                retry = false;
+                logger.error("Error sleeping thread after Everfi client exceeded the rate limit.");
+            }
+        } while (retry && (retryCount < MAX_RETRIES));
+
+        return data;
+    }
+
+    /**
+     * Returns the next wait interval, in milliseconds, using an exponential
+     * backoff algorithm.
+     * First retry waits 400ms, next 800ms, then 1,600ms, etc...
+     */
+    private long getWaitTimeExp(int retryCount) {
+        if (0 == retryCount) {
+            return 0;
+        }
+        return ((long) Math.pow(2, retryCount) * 200L);
     }
 
     private boolean authenticate() throws IOException {
         String authEndpoint = "https://api.fifoundry.net/oauth/token?grant_type=client_credentials&client_id=" + clientId + "&client_secret=" + clientSecret;
 
         HttpPost req = new HttpPost(authEndpoint);
-        addHeaders(req);
+        updateHeaders(req);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(req)) {
@@ -150,7 +152,9 @@ public class EverfiApiClient {
             int statusCode = response.getStatusLine().getStatusCode();
             String body = EntityUtils.toString(response.getEntity());
 
-            if (statusCode == 200) {
+            logger.info("AUTHENTICATING stausCode: " + statusCode);
+
+            if (statusCode == SUCCESS) {
                 // Use the new access token for future requests
                 EverfiAuthResponse authRes = OutputUtils.jsonToObject(body, EverfiAuthResponse.class);
                 accessToken = authRes.access_token;
@@ -162,11 +166,14 @@ public class EverfiApiClient {
                 logger.error("Error authenticating with Everfi.");
                 return false;
             }
-
         }
     }
 
-    private void addHeaders(AbstractHttpMessage req) {
+    private void updateHeaders(HttpUriRequest req) {
+        req.removeHeaders("Accept");
+        req.removeHeaders("Content-Type");
+        req.removeHeaders("Authorization");
+
         req.addHeader("Accept", "application/json");
         req.addHeader("Content-Type", "application/json");
         req.addHeader("Authorization", "Bearer " + accessToken);
