@@ -179,7 +179,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
                 params, keyHolder, keyCols);
         int requestId = (Integer) keyHolder.getKeys().get(column);
 
-        //add each day in the request
+        //add each comment in the request
         if (request.getComments() != null) {
             for (TimeOffRequestComment comment : request.getComments()) {
                 comment.setRequestId(requestId);
@@ -187,7 +187,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
             }
         }
 
-        //add each comment in the request
+        //add each day in the request
         if (request.getDays() != null) {
             for (TimeOffRequestDay day : request.getDays()) {
                 day.setRequestId(requestId);
