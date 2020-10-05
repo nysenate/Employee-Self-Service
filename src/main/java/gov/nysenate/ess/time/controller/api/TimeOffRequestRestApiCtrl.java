@@ -195,7 +195,7 @@ public class TimeOffRequestRestApiCtrl extends BaseRestApiCtrl {
             request.setComments(originalComments);
         }
         if(timeOffRequestAction == TimeOffRequestAction.APPROVE) {
-            logger.info("APPRVOING REQUEST");
+            logger.info("APPROVING REQUEST");
             request.setStatus(TimeOffStatus.APPROVED);
         } else { //supervisor did not approve the request
             request.setStatus(TimeOffStatus.DISAPPROVED);
