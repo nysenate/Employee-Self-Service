@@ -1,4 +1,4 @@
-package gov.nysenate.ess.core;
+package gov.nysenate.ess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +25,15 @@ public class TestConfig
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
-        logger.info("Test property file loaded");
         PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
         Resource[] resources = new ClassPathResource[]{
                 new ClassPathResource(TEST_PROPERTY_FILENAME),
                 new ClassPathResource(TEST_DATA_PROPERTY_FILENAME),
                 new ClassPathResource(SHIRO_PROPERTY_FILENAME)
         };
-
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
+        logger.info("Test property file loaded");
         return pspc;
     }
-
-
 }

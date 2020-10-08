@@ -1,5 +1,6 @@
 package gov.nysenate.ess.core;
 
+import gov.nysenate.ess.TestConfig;
 import gov.nysenate.ess.web.config.WebApplicationConfig;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,5 +16,4 @@ import org.springframework.test.context.web.WebAppConfiguration;
         @ContextConfiguration(classes = {WebApplicationConfig.class})
 })
 @ActiveProfiles("test")
-public abstract class BaseTest {
-}
+public abstract class BaseTest {}
