@@ -37,18 +37,16 @@ public abstract class AlertInfoValidation {
      * Ensures that the alert info has a valid emp id
      */
     private static void validateEmpId(AlertInfo alertInfo) {
-        if (alertInfo.getEmpId() <= 0) {
+        if (alertInfo.getEmpId() <= 0)
             throw new InvalidAlertInfoEx(INVALID_EMP_ID, String.valueOf(alertInfo.getEmpId()), alertInfo);
-        }
     }
 
     /**
      * Ensures that the alert info has a non null mobile contact options
      */
     private static void validateContactOptions(AlertInfo alertInfo) {
-        if (alertInfo.getMobileOptions() == null || alertInfo.getAlternateOptions() == null) {
+        if (alertInfo.getMobileOptions() == null || alertInfo.getAlternateOptions() == null)
             throw new InvalidAlertInfoEx(NULL_CONTACT_OPTIONS, null, alertInfo);
-        }
     }
 
     /**
@@ -63,16 +61,13 @@ public abstract class AlertInfoValidation {
         );
         Set<String> phoneNumberSet = new HashSet<>();
         for (String phoneNumber : phoneNumbers) {
-            if (phoneNumber == null) {
+            if (phoneNumber == null)
                 continue;
-            }
             String formattedPhoneNumber = phoneNumber.replaceAll("[^0-9]+", "");
-            if (!phoneNumberPredicate.test(formattedPhoneNumber)) {
+            if (!phoneNumberPredicate.test(formattedPhoneNumber))
                 throw new InvalidAlertInfoEx(INVALID_PHONE_NUMBER, formattedPhoneNumber, alertInfo);
-            }
-            if (!phoneNumberSet.add(formattedPhoneNumber)) {
+            if (!phoneNumberSet.add(formattedPhoneNumber))
                 throw new InvalidAlertInfoEx(DUPLICATE_PHONE_NUMVER, formattedPhoneNumber, alertInfo);
-            }
         }
     }
 
@@ -88,16 +83,13 @@ public abstract class AlertInfoValidation {
         );
         Set<String> emailSet = new HashSet<>();
         for (String email : emails) {
-            if (email == null) {
+            if (email == null)
                 continue;
-            }
-            if (!emailValidator.isValid(email)) {
+            if (!emailValidator.isValid(email))
                 throw new InvalidAlertInfoEx(INVALID_EMAIL, email, alertInfo);
-            }
             String formattedEmail = StringUtils.lowerCase(email);
-            if (!emailSet.add(formattedEmail)) {
+            if (!emailSet.add(formattedEmail))
                 throw new InvalidAlertInfoEx(DUPLICATE_EMAIL, formattedEmail, alertInfo);
-            }
         }
     }
 }

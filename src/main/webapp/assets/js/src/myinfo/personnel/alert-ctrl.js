@@ -27,7 +27,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
         'alternateEmail'
     ];
 
-    let initialState = {
+    const initialState = {
         name: appProps.user.fullName,
         empId: appProps.user.employeeId,
         request: {},
@@ -48,7 +48,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
     $scope.saveAlertInfo = saveAlertInfo;
 
     $scope.isLoading = function () {
-        let loading = false;
+        var loading = false;
         angular.forEach($scope.state.request, function (status) {
             loading = loading || status;
         });
@@ -62,7 +62,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      */
     $scope.noDuplicatePhoneNumbers = function () {
         const phoneNumberSet = {};
-        for (const i in phoneNumberFields) {
+        for (var i in phoneNumberFields) {
             if (!phoneNumberFields.hasOwnProperty(i)) {
                 continue;
             }
@@ -91,7 +91,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
      */
     $scope.noDuplicateEmails = function () {
         const emailSet = {};
-        for (const i in emailFields) {
+        for (var i in emailFields) {
             if (!emailFields.hasOwnProperty(i)) {
                 continue;
             }
