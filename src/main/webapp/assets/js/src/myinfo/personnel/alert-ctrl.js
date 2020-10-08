@@ -160,8 +160,7 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
             .then(setSaved)
             .finally(postRequest);
 
-        function onSuccess() {
-        }
+        function onSuccess() {}
 
         function onFail(resp) {
             if (resp.data.errorCode === 'INVALID_ALERT_INFO' &&

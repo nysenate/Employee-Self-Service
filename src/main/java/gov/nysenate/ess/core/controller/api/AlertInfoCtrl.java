@@ -17,8 +17,8 @@ import gov.nysenate.ess.core.model.alert.AlertInfoNotFound;
 import gov.nysenate.ess.core.model.auth.SimpleEssPermission;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
-import gov.nysenate.ess.core.service.alert.AlertInfoValidationService;
 import gov.nysenate.ess.core.model.alert.InvalidAlertInfoEx;
+import gov.nysenate.ess.core.service.alert.AlertInfoValidation;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class AlertInfoCtrl extends BaseRestApiCtrl {
 
     @Autowired private AlertInfoDao alertInfoDao;
-    @Autowired private AlertInfoValidationService alertInfoValidationService;
     @Autowired private EmployeeInfoService employeeInfoService;
 
     /**
@@ -53,7 +52,7 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
      *      (POST) /api/v1/alert-info
      *
      * Request Params:
-     * @param empId int - required - the employee id whose emerg. notif. info will be retrieved
+     * @param empId int - required - the employee id whose alert info will be retrieved
      */
     @RequestMapping(value = "", method = {GET, HEAD})
     public ViewObjectResponse<AlertInfoView> getAlertInfo(
@@ -90,8 +89,8 @@ public class AlertInfoCtrl extends BaseRestApiCtrl {
         checkPermission(new CorePermission(alertInfoView.getEmpId(), CorePermissionObject.EMPLOYEE_INFO, POST));
 
         AlertInfo alertInfo = alertInfoView.toAlertInfo();
-
-        alertInfoValidationService.validateAlertInfo(alertInfo);
+        Employee employee = employeeInfoService.getEmployee(alertInfo.getEmpId());
+        AlertInfoValidation.validateAlertInfo(alertInfo, employee);
         alertInfoDao.updateAlertInfo(alertInfo);
 
         return new SimpleResponse(

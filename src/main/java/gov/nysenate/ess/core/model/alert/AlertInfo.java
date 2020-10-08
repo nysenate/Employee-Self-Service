@@ -56,11 +56,9 @@ public class AlertInfo {
 
     public static class Builder {
 
-        private AlertInfo alertInfo;
+        private final AlertInfo alertInfo = new AlertInfo();
 
-        private Builder() {
-            alertInfo = new AlertInfo();
-        }
+        private Builder() {}
 
         public AlertInfo build() {
             return alertInfo;

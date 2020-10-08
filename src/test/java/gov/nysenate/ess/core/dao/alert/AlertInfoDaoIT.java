@@ -38,7 +38,6 @@ public class AlertInfoDaoIT extends BaseTest {
     }
 
     @Test
-    @Transactional(value = DatabaseConfig.localTxManager)
     public void getAllAlertInfo() {
         List<AlertInfo> initialAlertInfoList = alertInfoDao.getAllAlertInfo();
         Set<AlertInfo> initialAlertInfoSet = new HashSet<>(initialAlertInfoList);
@@ -63,7 +62,6 @@ public class AlertInfoDaoIT extends BaseTest {
     }
 
     @Test
-    @Transactional(value = DatabaseConfig.localTxManager)
     public void updateAlertInfo() {
         int empId = improbableEmpId;
         AlertInfo firstAlertInfo = makeRandomAlertInfo(empId);

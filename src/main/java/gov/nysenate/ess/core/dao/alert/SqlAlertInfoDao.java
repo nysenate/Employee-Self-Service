@@ -56,16 +56,16 @@ public class SqlAlertInfoDao extends SqlBaseDao implements AlertInfoDao {
 
     private static final RowMapper<AlertInfo> alertInfoRowMapper = ((rs, rowNum) -> {
         Builder builder = AlertInfo.builder();
-        builder.setEmpId(rs.getInt("employee_id"));
-        builder.setHomePhone(rs.getString("phone_home"));
-        builder.setMobilePhone(rs.getString("phone_mobile"));
-        builder.setMobileOptions(Optional.ofNullable(rs.getString("mobile_options"))
-                .map(ContactOptions::valueOf).orElse(null));
-        builder.setAlternatePhone(rs.getString("phone_alternate"));
-        builder.setAlternateOptions(Optional.ofNullable(rs.getString("alternate_options"))
-                .map(ContactOptions::valueOf).orElse(null));
-        builder.setPersonalEmail(rs.getString("email_personal"));
-        builder.setAlternateEmail(rs.getString("email_alternate"));
+        builder.setEmpId(rs.getInt("employee_id"))
+                .setHomePhone(rs.getString("phone_home"))
+                .setMobilePhone(rs.getString("phone_mobile"))
+                .setMobileOptions(Optional.ofNullable(rs.getString("mobile_options"))
+                .map(ContactOptions::valueOf).orElse(null))
+                .setAlternatePhone(rs.getString("phone_alternate"))
+                .setAlternateOptions(Optional.ofNullable(rs.getString("alternate_options"))
+                .map(ContactOptions::valueOf).orElse(null))
+                .setPersonalEmail(rs.getString("email_personal"))
+                .setAlternateEmail(rs.getString("email_alternate"));
         return builder.build();
     });
 
