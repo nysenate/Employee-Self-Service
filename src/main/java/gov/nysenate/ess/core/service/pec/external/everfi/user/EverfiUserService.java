@@ -2,10 +2,12 @@ package gov.nysenate.ess.core.service.pec.external.everfi.user;
 
 import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.update.EverfiUpdateUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,9 @@ public class EverfiUserService {
     private EverfiRecordService everfiRecordService;
     private SendMailService sendMailService;
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserService.class);
-    private ArrayList<String> badUUIDs = new ArrayList<>();
+    private ArrayList<EverfiUser> badEmpIDEverfiUsers = new ArrayList<>();
+    private ArrayList<EverfiUser> badEmailEverfiUsers = new ArrayList<>();
+    ArrayList<String> manualReviewUUIDs = new ArrayList<>();
 
     @Value("${mail.smtp.from}")
     private String mailFromAddress;
@@ -55,7 +59,9 @@ public class EverfiUserService {
         EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
         List<EverfiUser> everfiUsers;
         logger.info("Contacting Everfi for User records");
-        this.badUUIDs.clear();
+        this.badEmpIDEverfiUsers.clear();
+        this.badEmailEverfiUsers.clear();
+        this.manualReviewUUIDs.clear();
 
         while (request != null) {
             //Contact everfi api
@@ -68,11 +74,16 @@ public class EverfiUserService {
             request = request.next();
         }
         logger.info("Handled Everfi user records");
-        String everfiIDWarning = "There are " + this.badUUIDs.size() + " UUID's that have bad data. The list of UUID's with bad data in the EMPID or EMAIL fields are: "
-                + this.badUUIDs.toString();
+        String everfiIDWarning = "There are " + this.badEmpIDEverfiUsers.size() +
+                " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.toString() + "\n"
+                + "There are " + this.badEmailEverfiUsers.size() + " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.toString() + "\n";
         logger.warn(everfiIDWarning);
         MimeMessage message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users", everfiIDWarning);
         sendMailService.send(message);
+//        handleEverfiUsersWithBadEmail();
+//        handleEverfiUsersWithBadEmpID();
+//        message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.toString());
+//        sendMailService.send(message);
     }
 
     /**
@@ -89,16 +100,14 @@ public class EverfiUserService {
                     everfiUserDao.insertEverfiUserIDs(UUID,empid);
                 }
                 else {
-                    addUUIDtoBadList(UUID);
-                    logger.warn("Everfi user with UUID " + UUID + " empid was improperly retrieved");
+                    logger.debug("Everfi user with UUID " + UUID + " empid was improperly retrieved");
                 }
             }
             catch (DuplicateKeyException e) {
                 //Do nothing, it means we already have the user stored in the DB
             }
             catch (EmployeeNotFoundEx e) {
-                addUUIDtoBadList(UUID);
-                logger.warn("Everfi user with UUID " + UUID + " cannot be matched");
+                logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
             }
         }
     }
@@ -108,38 +117,93 @@ public class EverfiUserService {
      */
     private int getEmployeeId(EverfiUser everfiUser) throws EmployeeNotFoundEx {
         int empid = 99999;
+        //We have to test both cases because they could be different / then we must correct that
+        int empidByID = getEmpIDByID(everfiUser);
+        int empidByEmail = getEmpIDByEmail(everfiUser);
+
+        if (empidByID != empidByEmail) {
+            //WE NEED MANUAL REVIEW ON THIS CASE
+            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiUser.toString());
+        }
+        if (empidByID == empidByEmail) {
+            return empidByID;
+        }
+
+        return empid;
+    }
+
+    private int getEmpIDByID(EverfiUser everfiUser) {
+        int empid = 99999;
         Integer everfiUserEmpID = (Integer) everfiUser.getEmployeeId();
 
         if ( !isNullorZero(everfiUserEmpID) ) {
             try {
                 empid = employeeDao.getEmployeeById(everfiUserEmpID).getEmployeeId();
             } catch (Exception e) {
-                addUUIDtoBadList(everfiUser.getUuid());
+                addBadEverfiUser(everfiUser, this.badEmpIDEverfiUsers);
             }
         }
         else {
-            addUUIDtoBadList(everfiUser.getUuid());
+            addBadEverfiUser(everfiUser, this.badEmpIDEverfiUsers);
         }
+        return empid;
+    }
+
+    private int getEmpIDByEmail(EverfiUser everfiUser) {
+        int empid = 99999;
 
         if (everfiUser.getEmail() != null && !everfiUser.getEmail().isEmpty()) {
 
             try {
                 empid = employeeDao.getEmployeeByEmail(everfiUser.getEmail()).getEmployeeId();
             } catch (Exception e) {
-                addUUIDtoBadList(everfiUser.getUuid());
+                addBadEverfiUser(everfiUser, this.badEmailEverfiUsers);
             }
         } else {
-            addUUIDtoBadList(everfiUser.getUuid());
-            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiUser.toString());
+            addBadEverfiUser(everfiUser, this.badEmailEverfiUsers);
         }
-
         return empid;
     }
 
-    private void addUUIDtoBadList(String UUID) {
-        //There is a potential for the same UUID to get here multiple times. We only want it reported once
-        if (!this.badUUIDs.contains(UUID)) {
-            this.badUUIDs.add(UUID);
+    public void handleEverfiUsersWithBadEmpID() {
+        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers ) {
+            updateEverfiUserWithEmpData(getEmpIDByEmail(everfiUser), everfiUser);
+        }
+    }
+
+    public void handleEverfiUsersWithBadEmail() {
+        for (EverfiUser everfiUser : this.badEmailEverfiUsers ) {
+            updateEverfiUserWithEmpData(getEmpIDByID(everfiUser), everfiUser);
+        }
+    }
+
+    private void updateEverfiUserWithEmpData(int empID, EverfiUser everfiUser) {
+        if (empID != 99999) {
+            try {
+                Employee emp = employeeDao.getEmployeeById(empID);
+                EverfiUpdateUserRequest updateUserRequest =
+                        new EverfiUpdateUserRequest(everfiApiClient,everfiUser.getUuid(),emp.getEmployeeId(),
+                                emp.getFirstName(), emp.getLastName(),emp.getEmail(),null,
+                                everfiUser.getUserCategoryLabels(), emp.isActive());
+                updateUserRequest.updateUser();
+
+            }
+            catch (Exception e) {
+                this.manualReviewUUIDs.add(everfiUser.getUuid());
+                logger.warn("error" + e);
+            }
+        }
+    }
+
+    private void addBadEverfiUser(EverfiUser everfiUser, List<EverfiUser> badList) {
+        boolean recorded = false;
+        for (EverfiUser badDataUser: badList) {
+            if (badDataUser.getUuid().equals(everfiUser.getUuid())) {
+                recorded = true;
+            }
+        }
+        if (!recorded) {
+            badList.add(everfiUser);
         }
     }
 
