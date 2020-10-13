@@ -11,19 +11,21 @@ import java.io.IOException;
 
 /**
  * Request to add a new Category in Everfi.
+ *
+ * This class's functionality should not be used directly. To add a category, use {@link EverfiCategoryService}.
  */
-public class EverfiAddCategoryRequest {
+class EverfiAddCategoryRequest {
 
     private static final String END_POINT = "/v1/admin/categories";
     private final EverfiApiClient client;
     private final String categoryName;
 
-    public EverfiAddCategoryRequest(EverfiApiClient client, String categoryName) {
+    EverfiAddCategoryRequest(EverfiApiClient client, String categoryName) {
         this.client = client;
         this.categoryName = categoryName;
     }
 
-    public EverfiCategory addCategory() throws IOException {
+    EverfiCategory addCategory() throws IOException {
         String data = client.post(END_POINT, generateJsonEntity());
 
         ObjectMapper mapper = OutputUtils.jsonMapper;

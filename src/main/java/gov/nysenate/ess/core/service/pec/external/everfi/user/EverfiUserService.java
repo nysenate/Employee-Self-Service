@@ -7,6 +7,9 @@ import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.mail.SendMailService;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryLabel;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
+import gov.nysenate.ess.core.service.pec.external.everfi.user.add.EverfiAddUserRequest;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.update.EverfiUpdateUserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,7 @@ public class EverfiUserService {
     private ArrayList<EverfiUser> badEmpIDEverfiUsers = new ArrayList<>();
     private ArrayList<EverfiUser> badEmailEverfiUsers = new ArrayList<>();
     ArrayList<String> manualReviewUUIDs = new ArrayList<>();
+    private EverfiCategoryService categoryService;
 
     @Value("${mail.smtp.from}")
     private String mailFromAddress;
@@ -43,12 +48,14 @@ public class EverfiUserService {
 
     @Autowired
     public EverfiUserService(EverfiApiClient everfiApiClient, EmployeeDao employeeDao, EverfiUserDao everfiUserDao,
-                             EverfiRecordService everfiRecordService, SendMailService sendMailService) {
+                             EverfiRecordService everfiRecordService, SendMailService sendMailService,
+                             EverfiCategoryService categoryService) {
         this.everfiApiClient = everfiApiClient;
         this.employeeDao = employeeDao;
         this.everfiUserDao = everfiUserDao;
         this.everfiRecordService = everfiRecordService;
         this.sendMailService = sendMailService;
+        this.categoryService = categoryService;
     }
 
     /**
@@ -184,7 +191,7 @@ public class EverfiUserService {
                 EverfiUpdateUserRequest updateUserRequest =
                         new EverfiUpdateUserRequest(everfiApiClient,everfiUser.getUuid(),emp.getEmployeeId(),
                                 emp.getFirstName(), emp.getLastName(),emp.getEmail(),null,
-                                everfiUser.getUserCategoryLabels(), emp.isActive());
+                                getOrCreateEmpCategoryLabels(emp, everfiUser), emp.isActive());
                 updateUserRequest.updateUser();
 
             }
@@ -211,4 +218,62 @@ public class EverfiUserService {
         return 0 == ( i == null ? 0 : i);
     }
 
+    /**
+     * Adds the given Employees to Everfi.
+     * These employees should not already exist in Everfi. There are separate methods for updating employee data.
+     * @param emps
+     */
+    public void addEmployeesToEverfi(List<Employee> emps) throws IOException {
+        for (Employee emp: emps) {
+            EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
+                    everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
+                    emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
+            addUserRequest.addUser();
+        }
+    }
+
+    private List<EverfiCategoryLabel> getOrCreateEmpCategoryLabels(Employee emp, EverfiUser user) throws IOException {
+        List<EverfiCategoryLabel> labels = new ArrayList<>();
+        labels.add(categoryService.getAttendLiveLabel(emp)); // This label is always "No" so it will never need to be created.
+        labels.add(getOrCreateDepartmentLabel(emp));
+        labels.add(categoryService.getRoleLabel(emp)); // All possible roles already exist.
+        labels.add(getOrCreateUploadListLabel(user));
+        return labels;
+    }
+
+    /*
+     * Returns a Label for this employee's RCH code. If the label does not exist in Everfi it is created.
+     */
+    private EverfiCategoryLabel getOrCreateDepartmentLabel(Employee emp) throws IOException {
+        EverfiCategoryLabel label = categoryService.getDepartmentLabel(emp);
+        if (label == null) {
+            return categoryService.createDepartmentLabel(emp.getRespCenterHeadCode());
+        } else {
+            return label;
+        }
+    }
+
+    /*
+     * Returns a Upload List Label. If "user" has an Upload List label, that label will be returned,
+     * otherwise a new one is created and returned.
+     *
+     * Note: if user is null, a new Upload List will be created.
+     */
+    private EverfiCategoryLabel getOrCreateUploadListLabel(EverfiUser user) throws IOException {
+        EverfiCategoryLabel label = user == null ? null : categoryService.getUserUploadListLabel(user);
+        if (label == null) {
+            // user was null or user does not have a Upload List label.
+
+            // Check if a label already exists for today.
+            label = categoryService.getUploadListLabel(LocalDate.now());
+            if (label == null) {
+                // No label exists
+
+                // Create a new Upload List label for today.
+                label = categoryService.createUploadListLabel(LocalDate.now());
+            }
+        }
+
+        return label;
+    }
 }
