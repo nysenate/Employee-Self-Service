@@ -22,12 +22,11 @@
     <!--Select Buttons-->
     <div class="record-manage-controls">
       <ul class="horizontal">
-        <li><a ng-click="selectAll('SUBMITTED')">SelectAll</a></li>
+        <li><a ng-click="selectAll('SUBMITTED')">Select All</a></li>
         <li><a ng-click="selectNone('SUBMITTED')">Select None</a></li>
       </ul>
       <div class="select-actions">
         <input class="submit-button" type="button" value="Approve Selected"
-               ng-disabled = "hasSelections('SUBMITTED') === false"
                ng-disabled = "hasSelections('SUBMITTED') === false"
                ng-click="approveSelected('SUBMITTED')">
         <input class="time-neutral-button" type="button" value="Review Selected"
@@ -49,7 +48,7 @@
     <!--Select Buttons-->
     <div class="record-manage-controls">
       <ul class="horizontal">
-        <li><a ng-click="selectAll('APPROVED')">SelectAll</a></li>
+        <li><a ng-click="selectAll('APPROVED')">Select All</a></li>
         <li><a ng-click="selectNone('APPROVED')">Select None</a></li>
       </ul>
       <div class="select-actions">
