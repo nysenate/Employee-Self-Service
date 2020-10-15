@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.dao.personnel;
 import gov.nysenate.ess.core.dao.base.PaginatedRowHandler;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.dao.personnel.mapper.EmployeeRowMapper;
+import gov.nysenate.ess.core.dao.personnel.mapper.MinimalEmployeeRowMapper;
 import gov.nysenate.ess.core.dao.unit.LocationDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeException;
@@ -153,6 +154,11 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
                 new MapSqlParameterSource("lastUpdate", toDate(fromDateTime)), getEmployeeRowMapper());
     }
 
+    @Override
+    public List<Employee> getNewEmployees() {
+        return remoteJdbc.query(SqlEmployeeQuery.GET_NEW_EMPLOYEES.getSql(schemaMap()), getMinimalEmployeeRowMapper());
+    }
+
     private MapSqlParameterSource getEmpSearchParams(EmployeeSearchBuilder searchBuilder) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name", Optional.ofNullable(searchBuilder.getName())
@@ -192,5 +198,9 @@ public class SqlEmployeeDao extends SqlBaseDao implements EmployeeDao
     /** Returns a EmployeeRowMapper that's configured for use in this dao */
     private EmployeeRowMapper getEmployeeRowMapper() {
         return new EmployeeRowMapper("", "RCTR_", "RCTRHD_", "AGCY_", "LOC_", locationDao);
+    }
+
+    private MinimalEmployeeRowMapper getMinimalEmployeeRowMapper() {
+        return new MinimalEmployeeRowMapper("");
     }
 }

@@ -99,4 +99,10 @@ public interface EmployeeDao extends BaseDao
      * @return List<Employee>
      */
     List<Employee> getUpdatedEmployees(LocalDateTime fromDateTime);
+
+    /**
+     * Get all new employees over the last few days
+     * @return List<Employee>
+     */
+    List<Employee> getNewEmployees();
 }

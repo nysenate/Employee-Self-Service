@@ -3,6 +3,7 @@ package gov.nysenate.ess.core.dao.pec.everfi;
 import gov.nysenate.ess.core.dao.base.SqlBaseDao;
 import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -14,19 +15,29 @@ import static gov.nysenate.ess.core.dao.pec.everfi.SqlEverfiUserQuery.*;
 public class SqlEverfiUserDao extends SqlBaseDao implements EverfiUserDao {
 
     public EverfiUserIDs getEverfiUserIDsWithEmpID(int empID) {
-        return localNamedJdbc.queryForObject(
-                SELECT_EMP_BY_EMP_ID.getSql(schemaMap()),
-                new MapSqlParameterSource("empID", empID),
-                everfiUserIDsRowMapper
-        );
+        try {
+            return localNamedJdbc.queryForObject(
+                    SELECT_EMP_BY_EMP_ID.getSql(schemaMap()),
+                    new MapSqlParameterSource("emp_id", empID),
+                    everfiUserIDsRowMapper
+            );
+        }
+        catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public EverfiUserIDs getEverfiUserIDsWithEverfiUUID(String everfiUUID) {
-        return localNamedJdbc.queryForObject(
-                SELECT_EMP_BY_EVERFI_ID.getSql(schemaMap()),
-                new MapSqlParameterSource("everfi_UUID", everfiUUID),
-                everfiUserIDsRowMapper
-        );
+        try {
+            return localNamedJdbc.queryForObject(
+                    SELECT_EMP_BY_EVERFI_ID.getSql(schemaMap()),
+                    new MapSqlParameterSource("everfi_UUID", everfiUUID),
+                    everfiUserIDsRowMapper
+            );
+        }
+        catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public int insertEverfiUserIDs(String everfiUUID, Integer empID) throws DuplicateKeyException {

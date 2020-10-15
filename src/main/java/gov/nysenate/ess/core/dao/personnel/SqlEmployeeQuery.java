@@ -103,6 +103,17 @@ public enum SqlEmployeeQuery implements BasicSqlQuery
         "    MAX(agcy.DTTXNUPDATE)\n" +
         ") AS MAX_UPDATE_DATE\n" +
         GET_EMP_SQL_TABLES.getSql()
+    ),
+
+    GET_NEW_EMPLOYEES(
+            "SELECT *\n" +
+                    "FROM  ${masterSchema}.pm21personn\n" +
+                    "WHERE cdempstatus = 'A'\n" +
+                    "AND nuxrefem IN (SELECT nuxrefem\n" +
+                    "                   FROM  ${masterSchema}.pd21ptxncode\n" +
+                    "                 WHERE cdtrans IN ('APP', 'RTP')\n" +
+                    "                   AND dteffect >= TRUNC(SYSDATE)- 30\n" +
+                    "                   AND cdstatus = 'A')"
     )
     ;
 

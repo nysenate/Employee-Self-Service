@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.controller.api;
 
 import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
+import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static gov.nysenate.ess.core.model.auth.SimpleEssPermission.ADMIN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -124,7 +126,7 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     @RequestMapping(value = "/import/users", method = {GET})
     @ResponseStatus(value = HttpStatus.OK)
     public SimpleResponse importEverfiUserRecords(HttpServletRequest request, HttpServletResponse response) {
-//        checkPermission(ADMIN.getPermission());
+        checkPermission(ADMIN.getPermission());
         
         try {
             everfiUserService.getEverfiUserIds();
@@ -135,6 +137,34 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
         }
 
         return new SimpleResponse(true, "Everfi User Import", "everfi-user-import");
+    }
+
+    /**
+     * Everfi - Get New Employees
+     * ---------------------------------------
+     *
+     * Returns a list of new employees that will need to be added to Everfi
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/new/emp
+     *
+     *
+     * @return String
+     * */
+    @RequestMapping(value = "/new/emp", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse getNewEmployees(HttpServletRequest request, HttpServletResponse response) {
+        checkPermission(ADMIN.getPermission());
+
+        try {
+            List<Employee> newEmployees = everfiUserService.getNewEmployeesToAddToEverfi();
+            return new SimpleResponse(true, "Number of new employees to be added to Everfi "
+                    + newEmployees.size(), "everfi-new-employees");
+        }
+        catch (Exception e) {
+            logger.info("Error contacting Everfi for records", e);
+            return new SimpleResponse(false, e.getMessage(), "everfi-user-import");
+        }
     }
 
 

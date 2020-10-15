@@ -2,6 +2,7 @@ package gov.nysenate.ess.core.service.pec.external.everfi.user;
 
 import gov.nysenate.ess.core.dao.pec.everfi.EverfiUserDao;
 import gov.nysenate.ess.core.dao.personnel.EmployeeDao;
+import gov.nysenate.ess.core.model.pec.everfi.EverfiUserIDs;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.model.personnel.EmployeeNotFoundEx;
 import gov.nysenate.ess.core.service.mail.SendMailService;
@@ -58,6 +59,30 @@ public class EverfiUserService {
         this.categoryService = categoryService;
     }
 
+    public List<Employee> getNewEmployeesToAddToEverfi() {
+        //Minimal Employee Objects -- Must be converted to full employees
+        List<Employee> newEmployees = employeeDao.getNewEmployees();
+        List<Employee> completeNewEmployees = new ArrayList<>();
+        List<Employee> empsToAddToEverfi = new ArrayList<>();
+
+        for (Employee newEmp: newEmployees) {
+            completeNewEmployees.add( employeeDao.getEmployeeById(newEmp.getEmployeeId()) );
+        }
+
+        for (Employee completeNewEmp: completeNewEmployees) {
+
+            EverfiUserIDs potentialEverfiUserID =
+                    everfiUserDao.getEverfiUserIDsWithEmpID(completeNewEmp.getEmployeeId());
+
+            if (potentialEverfiUserID == null) {
+                empsToAddToEverfi.add(completeNewEmp);
+            }
+
+        }
+
+        return empsToAddToEverfi;
+    }
+
     /**
      * Entry point to get all Everfi UUID's and EmpIds in the database for future use
      * @throws IOException
@@ -87,10 +112,22 @@ public class EverfiUserService {
         logger.warn(everfiIDWarning);
         MimeMessage message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users", everfiIDWarning);
         sendMailService.send(message);
-//        handleEverfiUsersWithBadEmail();
-//        handleEverfiUsersWithBadEmpID();
-//        message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.toString());
-//        sendMailService.send(message);
+        handleEverfiUsersWithBadEmail();
+        handleEverfiUsersWithBadEmpID();
+        message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.toString());
+        sendMailService.send(message);
+    }
+
+    public void handleEverfiUsersWithBadEmpID() {
+        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers ) {
+            updateEverfiUserWithEmpData(getEmpIDByEmail(everfiUser), everfiUser);
+        }
+    }
+
+    public void handleEverfiUsersWithBadEmail() {
+        for (EverfiUser everfiUser : this.badEmailEverfiUsers ) {
+            updateEverfiUserWithEmpData(getEmpIDByID(everfiUser), everfiUser);
+        }
     }
 
     /**
@@ -172,18 +209,6 @@ public class EverfiUserService {
         return empid;
     }
 
-    public void handleEverfiUsersWithBadEmpID() {
-        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers ) {
-            updateEverfiUserWithEmpData(getEmpIDByEmail(everfiUser), everfiUser);
-        }
-    }
-
-    public void handleEverfiUsersWithBadEmail() {
-        for (EverfiUser everfiUser : this.badEmailEverfiUsers ) {
-            updateEverfiUserWithEmpData(getEmpIDByID(everfiUser), everfiUser);
-        }
-    }
-
     private void updateEverfiUserWithEmpData(int empID, EverfiUser everfiUser) {
         if (empID != 99999) {
             try {
@@ -214,7 +239,7 @@ public class EverfiUserService {
         }
     }
 
-    public static boolean isNullorZero(Integer i){
+    private static boolean isNullorZero(Integer i){
         return 0 == ( i == null ? 0 : i);
     }
 
