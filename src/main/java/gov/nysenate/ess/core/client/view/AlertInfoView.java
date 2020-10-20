@@ -28,17 +28,12 @@ public class AlertInfoView implements ViewObject {
 
     public AlertInfoView(AlertInfo alertInfo, Employee employee) {
         this.empId = alertInfo.getEmpId();
-
         this.workPhone = employee.getWorkPhone();
-
         this.homePhone = alertInfo.getHomePhone();
         this.mobilePhone = alertInfo.getMobilePhone();
         this.alternatePhone = alertInfo.getAlternatePhone();
-
         this.mobileOptions = alertInfo.getMobileOptions().getJsString();
-
         this.alternateOptions = alertInfo.getAlternateOptions().getJsString();
-
         this.workEmail = employee.getEmail();
         this.personalEmail = alertInfo.getPersonalEmail();
         this.alternateEmail = alertInfo.getAlternateEmail();

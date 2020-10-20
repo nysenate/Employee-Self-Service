@@ -7,9 +7,9 @@ package gov.nysenate.ess.core.model.alert;
 public enum ContactOptions {
 
     //          Calls   Texts
-    CALLS_ONLY( true,   false, "Calls"),
-    TEXTS_ONLY( false,  true, "Texts"),
-    EVERYTHING( true,   true, "Both"),
+    CALLS_ONLY( true,   false, "Only calls"),
+    TEXTS_ONLY( false,  true, "Only texts"),
+    EVERYTHING( true,   true, "Both calls and texts"),
     ;
 
     private final boolean callable;

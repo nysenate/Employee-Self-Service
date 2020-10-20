@@ -12,7 +12,8 @@ function alertCtrl($scope, $timeout, $filter, appProps, modals, alertInfoApi) {
     $scope.emailPattern = /^.*@.*\.[A-z]{2,}$/;
     $scope.phoneErrorMsg = "Please enter a valid phone number";
     $scope.emailErrorMsg = "Please enter a valid email address";
-    $scope.CONTACT_OPTIONS = {CALLS_ONLY: "Calls", TEXTS_ONLY: "Texts", EVERYTHING: "Both"};
+    $scope.CONTACT_OPTIONS = {CALLS_ONLY: "Only calls", TEXTS_ONLY: "Only texts",
+        EVERYTHING: "Both calls and texts"};
 
     const phoneNumberFields = [
         'workPhone',

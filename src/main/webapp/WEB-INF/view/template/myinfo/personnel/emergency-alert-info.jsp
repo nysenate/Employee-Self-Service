@@ -25,41 +25,35 @@
         <input type="text" id="home-phone" autocomplete="home tel-national"
                ng-pattern="telPattern" ng-model="state.alertInfo.homePhone">
         <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
+        <label></label>
 
         <label for="alternate-phone">Alternate</label>
         <input type="text" id="alternate-phone" autocomplete="off"
                ng-pattern="telPattern" ng-model="state.alertInfo.alternatePhone">
-        <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
+
+        <div class="dropdown">
+          <label for="alternateOptions"></label>
+          <select id="alternateOptions"
+                  ng-model="state.alertInfo.alternateOptions"
+                  ng-disabled="!state.alertInfo.alternatePhone">
+            <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
+          </select>
+        </div>
+        <div class="alert-info-error-text" ng-bind="phoneErrorMsg"></div>
 
         <label for="mobile-phone">Mobile</label>
         <input type="text" id="mobile-phone" autocomplete="mobile tel-national"
                ng-pattern="telPattern" ng-model="state.alertInfo.mobilePhone">
-        <p class="alert-info-error-text" ng-bind="phoneErrorMsg"></p>
 
-        <div class="dropdown" ng-class="{'ng-invalid': !state.alertInfo.alternateOptions}">
-        <label for="alternateOptions">Choose alternate contact option:</label>
-            <select id="alternateOptions"
-                    ng-model="state.alertInfo.alternateOptions"
-                    ng-disabled="!state.alertInfo.alternatePhone">
-              <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
-            </select>
-        </div>
-
-        <label></label><label></label><label></label>
-
-        <div class="dropdown" ng-class="{'ng-invalid': !state.alertInfo.mobileOptions}">
-        <label for="mobileOptions">Choose mobile contact option:</label>
+        <div class="dropdown">
+        <label for="mobileOptions"></label>
             <select id="mobileOptions"
                     ng-model="state.alertInfo.mobileOptions"
                     ng-disabled="!state.alertInfo.mobilePhone">
               <option ng-repeat="contactOption in CONTACT_OPTIONS">{{contactOption}}</option>
             </select>
         </div>
-
-        <p class="alert-info-error-text">
-          You must receive calls and/or texts<br>
-          if a mobile number is provided.
-        </p>
+        <div class="alert-info-error-text" ng-bind="phoneErrorMsg"></div>
       </div>
 
       <div class="push-1-4 col-9-12 alert-info-error-container">
@@ -78,6 +72,7 @@
                ng-pattern="emailPattern"
                ng-model="state.alertInfo.personalEmail">
         <p class="alert-info-error-text" ng-bind="emailErrorMsg"></p>
+        <label></label>
 
         <label for="alternate-email">Alternate</label>
         <input type="email" id="alternate-email" autocomplete="off"
