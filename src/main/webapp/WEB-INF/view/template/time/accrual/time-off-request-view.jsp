@@ -45,7 +45,7 @@
       <td class="timeoff-table-checkbox"><input id="time-off-request-checkbox" type="checkbox" ng-model="day.checked"/></td>
       <td class="timeoff-table-date"><input id="first-date-picker" type="date" ng-model="day.date" ng-change="datePickerChanged(day)"/></td>
       <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.workHours" ng-change="updateTotals()" /></td>
-      <td class="timeoff-table-hours">{{day.holidayHours}}</td>
+      <td class="timeoff-table-hours holiday-hours-disable">{{day.holidayHours}}</td>
       <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.vacationHours" ng-change="updateTotals()"/></td>
       <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.personalHours" ng-change="updateTotals()"/></td>
       <td class="timeoff-table-hours"><input type="number" min="0" max="24" step="0.5" placeholder="--" onpaste="return false;" ng-model="day.sickEmpHours" ng-change="updateTotals()"/></td>
