@@ -1,16 +1,29 @@
 package gov.nysenate.ess.core.service.pec.external.everfi.category;
 
+import gov.nysenate.ess.core.dao.personnel.rch.ResponsibilityHeadDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
+import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
+import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
+import gov.nysenate.ess.core.util.LimitOffset;
+import gov.nysenate.ess.core.util.PaginatedList;
+import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.shiro.util.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class EverfiCategoryService {
@@ -20,10 +33,21 @@ public class EverfiCategoryService {
     private final EverfiApiClient client;
     // Im memory storage of categories.
     private List<EverfiCategory> categories;
+    private final ResponsibilityHeadDao respHeadDao;
+    private final EmployeeInfoService employeeInfoService;
+
+    private static final Logger logger = LoggerFactory.getLogger(EverfiCategoryService.class);
+
+    @Value("${scheduler.everfi.sync.enabled:false}")
+    private boolean everfiSyncEnabled;
 
     @Autowired
-    public EverfiCategoryService(EverfiApiClient client) {
+    public EverfiCategoryService(EverfiApiClient client, ResponsibilityHeadDao respHeadDao,
+                                 EmployeeInfoService employeeInfoService) throws IOException {
         this.client = client;
+        this.respHeadDao = respHeadDao;
+        this.employeeInfoService = employeeInfoService;
+        loadCategories();
     }
 
     /**
@@ -64,6 +88,38 @@ public class EverfiCategoryService {
         EverfiCategoryLabel label = addLabelRequest.addLabel();
         loadCategories();
         return label;
+    }
+
+    @Scheduled(cron = "${scheduler.everfi.category.update.cron}")
+    public void ensureDepartmentIsUpToDate() throws IOException {
+        if (everfiSyncEnabled) {
+            logger.info("Beginning Everfi department category label update");
+            try {
+                EverfiCategory category = getCategory("Department");
+                ArrayList<String> departmentLabels = new ArrayList<>();
+                for (EverfiCategoryLabel label : category.getLabels()) {
+                    departmentLabels.add(label.getLabelName());
+                }
+
+                Set<Employee> emps = employeeInfoService.getAllEmployees(true);
+                Set<String> respHeadCodes = emps.stream().map(Employee::getRespCenterHeadCode).collect(Collectors.toSet());
+                while (respHeadCodes.remove(null)) { }
+
+                for (String respHeadCode : respHeadCodes) {
+                    if ( !departmentLabels.contains(respHeadCode) && !respHeadCode.equals("null")) {
+                        logger.warn("Everfi is missing RespCenterHeadCode " + respHeadCode);
+                        createDepartmentLabel(respHeadCode);
+                        logger.info("Created Department label " + respHeadCode);
+                    }
+                }
+
+            }
+            catch (Exception e) {
+                logger.warn("Error updating department category label " + e);
+            }
+            logger.info("Beginning Everfi department category label update");
+
+        }
     }
 
     /**

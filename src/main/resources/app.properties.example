@@ -240,6 +240,12 @@ scheduler.everfi.sync.enabled = false
 #Default of every hour on the top of the hour to pull Everfi records
 scheduler.everfi.task.sync.cron = 0 0 * * * *
 
+# Schedules when users are added to everfi / ids stored in the db
+scheduler.everfi.user.update.cron = 0 0 23 * * *
+
+# Schedules when the Department category label is updated. Should be done before users are updated
+scheduler.everfi.category.update.cron = 0 0 22 * * *
+
 # Determines if scheduled personnel task assignment is enabled.
 scheduler.personnel_task.assignment.enabled = true
 

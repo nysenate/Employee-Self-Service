@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
@@ -45,6 +46,8 @@ public class EverfiUserService {
     @Value("${report.email}")
     private String mailToAddress;
 
+    @Value("${scheduler.everfi.sync.enabled:false}")
+    private boolean everfiSyncEnabled;
 
 
     @Autowired
@@ -59,17 +62,28 @@ public class EverfiUserService {
         this.categoryService = categoryService;
     }
 
+    @Scheduled(cron = "${scheduler.everfi.user.update.cron}")
+    public void runUpdateMethods() throws IOException {
+        if (everfiSyncEnabled) {
+            //Add new employees to Everfi
+            addEmployeesToEverfi(getNewEmployeesToAddToEverfi());
+            //Update our db with their UUID from Everfi
+            getEverfiUserIds();
+        }
+    }
+
     public List<Employee> getNewEmployeesToAddToEverfi() {
+        
         //Minimal Employee Objects -- Must be converted to full employees
         List<Employee> newEmployees = employeeDao.getNewEmployees();
         List<Employee> completeNewEmployees = new ArrayList<>();
         List<Employee> empsToAddToEverfi = new ArrayList<>();
 
-        for (Employee newEmp: newEmployees) {
-            completeNewEmployees.add( employeeDao.getEmployeeById(newEmp.getEmployeeId()) );
+        for (Employee newEmp : newEmployees) {
+            completeNewEmployees.add(employeeDao.getEmployeeById(newEmp.getEmployeeId()));
         }
 
-        for (Employee completeNewEmp: completeNewEmployees) {
+        for (Employee completeNewEmp : completeNewEmployees) {
 
             EverfiUserIDs potentialEverfiUserID =
                     everfiUserDao.getEverfiUserIDsWithEmpID(completeNewEmp.getEmployeeId());
@@ -81,57 +95,82 @@ public class EverfiUserService {
         }
 
         return empsToAddToEverfi;
+
     }
 
     /**
      * Entry point to get all Everfi UUID's and EmpIds in the database for future use
+     *
      * @throws IOException
      */
     public void getEverfiUserIds() throws IOException {
-        EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
-        List<EverfiUser> everfiUsers;
-        logger.info("Contacting Everfi for User records");
-        this.badEmpIDEverfiUsers.clear();
-        this.badEmailEverfiUsers.clear();
-        this.manualReviewUUIDs.clear();
+        if (everfiSyncEnabled) {
+            EverfiUsersRequest request = new EverfiUsersRequest(everfiApiClient, 1, 1000);
+            List<EverfiUser> everfiUsers;
+            logger.info("Contacting Everfi for User records");
+            this.badEmpIDEverfiUsers.clear();
+            this.badEmailEverfiUsers.clear();
+            this.manualReviewUUIDs.clear();
 
-        while (request != null) {
-            //Contact everfi api
-            everfiUsers = request.getUsers();
+            while (request != null) {
+                //Contact everfi api
+                everfiUsers = request.getUsers();
 
-            //Process records / insert into db
-            handleUserRecords(everfiUsers);
+                //Process records / insert into db
+                handleUserRecords(everfiUsers);
 
-            //Get next batch of records
-            request = request.next();
+                //Get next batch of records
+                request = request.next();
+            }
+            logger.info("Handled Everfi user records");
+            String everfiIDWarning = "There are " + this.badEmpIDEverfiUsers.size() +
+                    " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.toString() + "\n"
+                    + "There are " + this.badEmailEverfiUsers.size() + " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.toString() + "\n";
+            logger.warn(everfiIDWarning);
+            MimeMessage message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users", everfiIDWarning);
+            sendMailService.send(message);
+
+            logger.info("Beginning bad data correction");
+            handleEverfiUsersWithBadEmail();
+            handleEverfiUsersWithBadEmpID();
+            message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.toString());
+            sendMailService.send(message);
+            logger.info("Finished bad data correction. Check report email");
         }
-        logger.info("Handled Everfi user records");
-        String everfiIDWarning = "There are " + this.badEmpIDEverfiUsers.size() +
-                " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.toString() + "\n"
-                + "There are " + this.badEmailEverfiUsers.size() + " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.toString() + "\n";
-        logger.warn(everfiIDWarning);
-        MimeMessage message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users", everfiIDWarning);
-        sendMailService.send(message);
-        handleEverfiUsersWithBadEmail();
-        handleEverfiUsersWithBadEmpID();
-        message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.toString());
-        sendMailService.send(message);
+
+
     }
 
     public void handleEverfiUsersWithBadEmpID() {
-        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers ) {
+        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers) {
             updateEverfiUserWithEmpData(getEmpIDByEmail(everfiUser), everfiUser);
         }
     }
 
     public void handleEverfiUsersWithBadEmail() {
-        for (EverfiUser everfiUser : this.badEmailEverfiUsers ) {
+        for (EverfiUser everfiUser : this.badEmailEverfiUsers) {
             updateEverfiUserWithEmpData(getEmpIDByID(everfiUser), everfiUser);
         }
     }
 
     /**
+     * Adds the given Employees to Everfi.
+     * These employees should not already exist in Everfi. There are separate methods for updating employee data.
+     *
+     * @param emps
+     */
+    public void addEmployeesToEverfi(List<Employee> emps) throws IOException {
+        for (Employee emp : emps) {
+            EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
+                    everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
+                    emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
+            addUserRequest.addUser();
+        }
+    }
+
+    /**
      * This method finds and inserts an everfi user UUID with a Senate Emp ID into the database
+     *
      * @param everfiUsers
      */
     private void handleUserRecords(List<EverfiUser> everfiUsers) {
@@ -141,16 +180,13 @@ public class EverfiUserService {
             try {
                 Integer empid = getEmployeeId(everfiUser);
                 if (empid.intValue() != 99999) {
-                    everfiUserDao.insertEverfiUserIDs(UUID,empid);
-                }
-                else {
+                    everfiUserDao.insertEverfiUserIDs(UUID, empid);
+                } else {
                     logger.debug("Everfi user with UUID " + UUID + " empid was improperly retrieved");
                 }
-            }
-            catch (DuplicateKeyException e) {
+            } catch (DuplicateKeyException e) {
                 //Do nothing, it means we already have the user stored in the DB
-            }
-            catch (EmployeeNotFoundEx e) {
+            } catch (EmployeeNotFoundEx e) {
                 logger.debug("Everfi user with UUID " + UUID + " cannot be matched");
             }
         }
@@ -180,14 +216,13 @@ public class EverfiUserService {
         int empid = 99999;
         Integer everfiUserEmpID = (Integer) everfiUser.getEmployeeId();
 
-        if ( !isNullorZero(everfiUserEmpID) ) {
+        if (!isNullorZero(everfiUserEmpID)) {
             try {
                 empid = employeeDao.getEmployeeById(everfiUserEmpID).getEmployeeId();
             } catch (Exception e) {
                 addBadEverfiUser(everfiUser, this.badEmpIDEverfiUsers);
             }
-        }
-        else {
+        } else {
             addBadEverfiUser(everfiUser, this.badEmpIDEverfiUsers);
         }
         return empid;
@@ -214,13 +249,12 @@ public class EverfiUserService {
             try {
                 Employee emp = employeeDao.getEmployeeById(empID);
                 EverfiUpdateUserRequest updateUserRequest =
-                        new EverfiUpdateUserRequest(everfiApiClient,everfiUser.getUuid(),emp.getEmployeeId(),
-                                emp.getFirstName(), emp.getLastName(),emp.getEmail(),null,
+                        new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(), emp.getEmployeeId(),
+                                emp.getFirstName(), emp.getLastName(), emp.getEmail(), null,
                                 getOrCreateEmpCategoryLabels(emp, everfiUser), emp.isActive());
                 updateUserRequest.updateUser();
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 this.manualReviewUUIDs.add(everfiUser.getUuid());
                 logger.warn("error" + e);
             }
@@ -229,7 +263,7 @@ public class EverfiUserService {
 
     private void addBadEverfiUser(EverfiUser everfiUser, List<EverfiUser> badList) {
         boolean recorded = false;
-        for (EverfiUser badDataUser: badList) {
+        for (EverfiUser badDataUser : badList) {
             if (badDataUser.getUuid().equals(everfiUser.getUuid())) {
                 recorded = true;
             }
@@ -239,22 +273,8 @@ public class EverfiUserService {
         }
     }
 
-    private static boolean isNullorZero(Integer i){
-        return 0 == ( i == null ? 0 : i);
-    }
-
-    /**
-     * Adds the given Employees to Everfi.
-     * These employees should not already exist in Everfi. There are separate methods for updating employee data.
-     * @param emps
-     */
-    public void addEmployeesToEverfi(List<Employee> emps) throws IOException {
-        for (Employee emp: emps) {
-            EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
-                    everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
-                    emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
-            addUserRequest.addUser();
-        }
+    private static boolean isNullorZero(Integer i) {
+        return 0 == (i == null ? 0 : i);
     }
 
     private List<EverfiCategoryLabel> getOrCreateEmpCategoryLabels(Employee emp, EverfiUser user) throws IOException {

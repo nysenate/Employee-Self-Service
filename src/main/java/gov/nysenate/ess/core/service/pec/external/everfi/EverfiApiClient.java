@@ -27,6 +27,7 @@ public class EverfiApiClient {
     private static final String HOST = "https://api.fifoundry.net";
     private static String accessToken = "";
     private static final int SUCCESS = 200;
+    private static final int CREATED = 201;
     private static final int EXPIRED_TOKEN_CODE = 401;
     private static final int RATE_LIMIT_EXCEEDED = 429;
     private static final int MAX_RETRIES = 10;
@@ -102,7 +103,7 @@ public class EverfiApiClient {
 
                 int statusCode = response.getStatusLine().getStatusCode();
 
-                if (statusCode == SUCCESS) {
+                if (statusCode == SUCCESS || statusCode == CREATED) {
                     retry = false;
                     data = EntityUtils.toString(response.getEntity());
                 } else if (statusCode == EXPIRED_TOKEN_CODE) {
@@ -154,7 +155,7 @@ public class EverfiApiClient {
 
             logger.info("AUTHENTICATING stausCode: " + statusCode);
 
-            if (statusCode == SUCCESS) {
+            if (statusCode == SUCCESS || statusCode == CREATED) {
                 // Use the new access token for future requests
                 EverfiAuthResponse authRes = OutputUtils.jsonToObject(body, EverfiAuthResponse.class);
                 accessToken = authRes.access_token;

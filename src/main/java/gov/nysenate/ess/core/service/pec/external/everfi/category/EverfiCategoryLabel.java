@@ -57,4 +57,9 @@ public class EverfiCategoryLabel {
         this.categoryId = (Integer) attributes.get("category_id");
         this.categoryName = (String) attributes.get("category_name");
     }
+
+    @JsonProperty("id")
+    private void upackLabelId(String labelId) {
+        this.labelId = Integer.parseInt(labelId);
+    }
 }

@@ -4,6 +4,7 @@ import gov.nysenate.ess.core.client.response.base.SimpleResponse;
 import gov.nysenate.ess.core.dao.pec.assignment.PersonnelTaskAssignmentDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiRecordService;
+import gov.nysenate.ess.core.service.pec.external.everfi.category.EverfiCategoryService;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -30,15 +32,17 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
     private EverfiRecordService everfiRecordService;
     private PersonnelTaskAssignmentDao personnelTaskAssignmentDao;
     private EverfiUserService everfiUserService;
+    private EverfiCategoryService everfiCategoryService;
     final LocalDateTime jan1970 = LocalDateTime.of(1970,1,1,0,0,0,0);
     private static final Logger logger = LoggerFactory.getLogger(EverfiApiCtrl.class);
 
     @Autowired
     public EverfiApiCtrl(EverfiRecordService everfiRecordService, PersonnelTaskAssignmentDao personnelTaskAssignmentDao,
-                         EverfiUserService everfiUserService) {
+                         EverfiUserService everfiUserService, EverfiCategoryService everfiCategoryService) {
         this.everfiRecordService = everfiRecordService;
         this.personnelTaskAssignmentDao = personnelTaskAssignmentDao;
         this.everfiUserService = everfiUserService;
+        this.everfiCategoryService = everfiCategoryService;
     }
 
     /**
@@ -158,13 +162,37 @@ public class EverfiApiCtrl extends BaseRestApiCtrl {
 
         try {
             List<Employee> newEmployees = everfiUserService.getNewEmployeesToAddToEverfi();
+            everfiUserService.addEmployeesToEverfi(newEmployees);
             return new SimpleResponse(true, "Number of new employees to be added to Everfi "
                     + newEmployees.size(), "everfi-new-employees");
         }
         catch (Exception e) {
-            logger.info("Error contacting Everfi for records", e);
+            logger.info("Error adding new employees to everfi", e);
             return new SimpleResponse(false, e.getMessage(), "everfi-user-import");
         }
+    }
+
+    /**
+     * Everfi - Update Department Category
+     * ---------------------------------------
+     *
+     * ESS refreshes its everfi content id cache and its assignment id cache
+     *
+     * This is necessary for ensuring departments exist for the new employees
+     *
+     * Usage:
+     * (GET)    /api/v1/everfi/department/update
+     *
+     *
+     * @return String
+     * */
+    @RequestMapping(value = "/department/update", method = {GET})
+    @ResponseStatus(value = HttpStatus.OK)
+    public SimpleResponse updateDepartmentCategeoryLabel(HttpServletRequest request,
+                                              HttpServletResponse response) throws IOException {
+        everfiCategoryService.ensureDepartmentIsUpToDate();
+        return new SimpleResponse(true, "Everfi Department Category Updated",
+                "everfi-department-update");
     }
 
 
