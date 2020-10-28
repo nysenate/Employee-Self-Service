@@ -34,11 +34,14 @@ class EverfiAddCategoryLabelRequest {
 
     /**
      * Adds a category label to a category in Everfi.
-     * @return The newly added CategoryLabel.
+     * @return The newly added CategoryLabel or null if an error occurred.
      * @throws IOException
      */
     EverfiCategoryLabel addLabel() throws IOException {
         String data = client.post(END_POINT, generateJsonEntity());
+        if (data == null) {
+            return null;
+        }
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);

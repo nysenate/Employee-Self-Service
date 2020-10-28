@@ -36,12 +36,15 @@ public class EverfiAddUserRequest {
 
     /**
      * Adds a user represented by the fields in this class.
-     * @return The added user returned from Everfi.
+     * @return The added user returned from Everfi or null if an error occurred.
      * @throws IOException
      */
     public EverfiUser addUser() throws IOException {
         String entity = generateJsonEntity();
         String data = everfiClient.post(ADD_USER_END_POINT, entity);
+        if (data == null) {
+            return null;
+        }
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);

@@ -27,6 +27,9 @@ class EverfiAddCategoryRequest {
 
     EverfiCategory addCategory() throws IOException {
         String data = client.post(END_POINT, generateJsonEntity());
+        if (data == null) {
+            return null;
+        }
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);

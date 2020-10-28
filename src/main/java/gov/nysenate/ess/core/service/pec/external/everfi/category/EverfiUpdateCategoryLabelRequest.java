@@ -25,8 +25,16 @@ public class EverfiUpdateCategoryLabelRequest {
         this.newLabelName = newLabelName;
     }
 
+    /**
+     * Updates a Everfi Category Label.
+     * @return The updated label or null if an error occurred.
+     * @throws IOException
+     */
     public EverfiCategoryLabel updateLabel() throws IOException {
         String data = client.patch(endpoint(), generateJsonEntity());
+        if (data == null) {
+            return null;
+        }
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);

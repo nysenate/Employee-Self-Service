@@ -42,12 +42,15 @@ public class EverfiUpdateUserRequest {
 
     /**
      * Updates the user represented by the feilds in this class.
-     * @return The updated user from Everfi.
+     * @return The updated user from Everfi or null if an error occurred.
      * @throws IOException
      */
     public EverfiUser updateUser() throws IOException {
         String entity = generateJsonEntity();
         String data = everfiClient.patch(endpoint(), entity);
+        if (data == null) {
+            return null;
+        }
 
         ObjectMapper mapper = OutputUtils.jsonMapper;
         JsonNode rootNode = mapper.readTree(data);

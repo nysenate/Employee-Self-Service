@@ -117,7 +117,8 @@ public class EverfiApiClient {
                     Thread.sleep(getWaitTimeExp(retryCount));
                     retry = true;
                 } else {
-                    logger.error("Received unknown status code from Everfi API: '" + statusCode + "'");
+                    logger.info(String.format("Received unknown response from Everfi: '%s %s'",
+                            statusCode, EntityUtils.toString(response.getEntity())));
                     retry = false;
                 }
             } catch (InterruptedException e) {
