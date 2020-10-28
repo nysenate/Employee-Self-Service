@@ -171,6 +171,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * @return int - The requestId of the newly added request
      */
     private int addNewRequest(TimeOffRequest request) {
+        System.out.println("Adding new TOR");
         MapSqlParameterSource params = getAddRequestParams(request);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         final String column = "request_id";
@@ -180,15 +181,19 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
         int requestId = (Integer) keyHolder.getKeys().get(column);
 
         //add each comment in the request
-        if (request.getComments() != null) {
+        if (request.getComments() != null && request.getComments().size() > 0) {
+            System.out.println("There are comments for this TOR");
             for (TimeOffRequestComment comment : request.getComments()) {
                 comment.setRequestId(requestId);
+                System.out.println("comment text: " + comment.getText());
+                System.out.println("comment ID: " + comment.getRequestId());
+                System.out.println("comment Author ID:" + comment.getAuthorId());
                 addCommentToRequest(comment);
             }
         }
 
         //add each day in the request
-        if (request.getDays() != null) {
+        if (request.getDays() != null && request.getDays().size() > 0) {
             for (TimeOffRequestDay day : request.getDays()) {
                 day.setRequestId(requestId);
                 addDayToRequest(day);
@@ -214,6 +219,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * @param requestId int
      */
     private void removeAllComments(int requestId) {
+        System.out.println("removed all comments for request id " + requestId);
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("requestId", requestId);
         localNamedJdbc.update(SqlTimeOffRequestQuery.REMOVE_ALL_COMMENTS_FOR_REQUEST.getSql(schemaMap()), params);

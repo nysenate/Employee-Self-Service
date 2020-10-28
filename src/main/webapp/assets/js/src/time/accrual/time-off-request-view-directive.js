@@ -99,7 +99,7 @@
                 $scope.userType = "";
                 $scope.userType = $scope.empId === $scope.data.employeeId ? "E" : "S";
                 $scope.otherContact = $scope.userType === "E" ? "Supervisor" : "Employee";
-                $scope.addedComment = "";
+                //$scope.addedComment = "";
                 $scope.miscTypeList = appProps.miscLeaves;
                 $scope.validRequest = true;
                 $scope.validationErrorMessages = [];
@@ -289,12 +289,20 @@
                     $scope.data.days = $scope.data.days.sort(function (a, b) {
                         return a.date - b.date;
                     });
+                    if (!Array.isArray($scope.data.comments)) {
+                        $scope.data.comments = [];
+                    }
                     if ($scope.addedComment !== "") {
+                        console.log("comment exists, pushing to scope.data.comments");
                         $scope.data.comments.push({
                                                       text: $scope.addedComment,
                                                       authorId: $scope.data.employeeId
                                                   });
                     }
+                    else {
+                        console.log("comment does not exist");
+                    }
+                    console.log(JSON.stringify($scope.data.comments));
                     return {
                         requestId: $scope.data.requestId,
                         status: statusType,
