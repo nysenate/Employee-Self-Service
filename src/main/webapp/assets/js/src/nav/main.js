@@ -15,6 +15,7 @@ essApp.controller('MainCtrl', ['$scope', '$http', '$route', '$routeParams', '$lo
 
         /** Url pointing to help page */
         $scope.helpPageUrl = appProps.ctxPath + '/assets/help/html/index.htm';
+        $scope.helplinePhoneNumber = appProps.helplinePhoneNumber;
 
         // Options for opening the help document in a new window
         var helpWindowName = 'helpWindow';

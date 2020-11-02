@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -39,7 +38,8 @@ public class GsaBatchResponseService {
         this.httpUtils = httpUtils;
     }
 
-    @Scheduled(cron = "${gsa.cron.data:0 0 0 1 * *}")
+    // Turn off this schedule for now. Needs to be updated for new GSA API.
+//    @Scheduled(cron = "${gsa.cron.data:0 0 0 1 * *}")
     public void scheduledCycleThroughGsaInfo() throws IOException {
         cycleThroughGsaInfo();
     }

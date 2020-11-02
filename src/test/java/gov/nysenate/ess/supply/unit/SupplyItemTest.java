@@ -25,27 +25,27 @@ public class SupplyItemTest {
     }
 
     @Test
-    public void itemNotOrderedBySupply_DoesNotRequireSynchronization() {
-        SupplyItem item = builder.withStatus(new ItemStatus(true, false, true, false)).build();
-        assertSynchronizationNotRequired(item);
-
-        item = builder.withStatus(new ItemStatus(false, false, true, false)).build();
+    public void expendableSenateMadeItems_doNotRequireSynchronization() {
+        SupplyItem item = builder.withStatus(new ItemStatus(true, true, true, false)).build();
         assertSynchronizationNotRequired(item);
     }
 
     @Test
-    public void nonExpendableItem_DoesNotRequireSynchronization() {
+    public void expendableNonSenateMadeItems_requireSynchronization() {
+        SupplyItem item = builder.withStatus(new ItemStatus(true, false, true, false)).build();
+        assertSynchronizationRequired(item);
+    }
+
+    @Test
+    public void nonExpendableSenateMadeItems_doNotRequireSynchronization() {
         SupplyItem item = builder.withStatus(new ItemStatus(false, true, true, false)).build();
         assertSynchronizationNotRequired(item);
-
-        item = builder.withStatus(new ItemStatus(false, false, true, false)).build();
-        assertSynchronizationNotRequired(item);
     }
 
     @Test
-    public void expendableItemsOrderedBySupply_RequireSynchronization() {
-        SupplyItem item = builder.withStatus(new ItemStatus(true, true, true, false)).build();
-        assertSynchronizationRequired(item);
+    public void nonExpendableItem_doesNotRequireSynchronization() {
+        SupplyItem item = builder.withStatus(new ItemStatus(false, false, true, false)).build();
+        assertSynchronizationNotRequired(item);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class SupplyItemTest {
     }
 
     @Test
-    public void givenEmptyRestriction_notRestricted() {
+    public void givenEmptyRestriction_assumeNotRestricted() {
         SupplyItem item = builder.build();
         item.setRestriction(new ItemRestriction(null));
         assertFalse(item.isRestricted());

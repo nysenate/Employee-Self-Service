@@ -2,6 +2,8 @@ package gov.nysenate.ess.travel.provider.gsa;
 
 import gov.nysenate.ess.core.model.unit.Address;
 import gov.nysenate.ess.core.service.notification.slack.service.DefaultSlackChatService;
+import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.provider.senate.SqlSenateMieDao;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,35 +21,44 @@ public class GsaAllowanceService {
     private GsaBatchResponseDao gsaBatchResponseDao;
     private GsaApi gsaApi;
     private DefaultSlackChatService slackChatService;
+    private SqlSenateMieDao gsaMieDao;
 
     @Autowired
-    public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi, DefaultSlackChatService slackChatService) {
+    public GsaAllowanceService(GsaBatchResponseDao gsaBatchResponseDao, GsaApi gsaApi,
+                               DefaultSlackChatService slackChatService, SqlSenateMieDao gsaMieDao) {
         this.gsaBatchResponseDao = gsaBatchResponseDao;
         this.gsaApi = gsaApi;
         this.slackChatService = slackChatService;
+        this.gsaMieDao = gsaMieDao;
     }
 
     /**
      * Returns the MealTier for the given date and address.
      *
-     * @throws IOException
+     * @throws ProviderException
      */
-    public Dollars fetchMealRate(LocalDate date, Address address) throws IOException {
+    public Dollars fetchMealRate(LocalDate date, Address address) throws ProviderException {
+        if (addressIsOutsideUS(address)) {
+            return Dollars.ZERO;
+        }
         GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getMealTier());
     }
 
     /**
      * Returns the lodging rate for the given date and address.
-     *
-     * @throws IOException
+     * Returns Dollars.ZERO if there is no lodging rate.
+     * @throws ProviderException
      */
-    public Dollars fetchLodgingRate(LocalDate date, Address address) throws IOException {
+    public Dollars fetchLodgingRate(LocalDate date, Address address) throws ProviderException {
+        if (addressIsOutsideUS(address)) {
+            return Dollars.ZERO;
+        }
         GsaResponse res = fetchGsaResponse(date, address);
         return new Dollars(res.getLodging(date)); // TODO use dollars in GsaResponse
     }
 
-    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws IOException {
+    private GsaResponse fetchGsaResponse(LocalDate date, Address address) throws ProviderException {
         GsaResponse res = gsaApi.queryGsa(date, address.getZip5());
         // TODO Batch/bulk data will have to be refactored due to new GSA API. For now query the API every time.
 //        try {
@@ -67,5 +78,9 @@ public class GsaAllowanceService {
 //            }
 //        }
         return res;
+    }
+
+    private boolean addressIsOutsideUS(Address address) {
+        return !(address.getCountry().equalsIgnoreCase("United States") || address.getCountry().equalsIgnoreCase("US"));
     }
 }

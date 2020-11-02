@@ -10,7 +10,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import gov.nysenate.ess.travel.application.TravelApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

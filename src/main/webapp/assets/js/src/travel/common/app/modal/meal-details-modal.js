@@ -13,6 +13,7 @@ function mealDetailsModalCtrl($scope, modals) {
     this.$onInit = function () {
         $scope.app = modals.params().app;
         $scope.isOverridden = $scope.app.mealPerDiems.isOverridden;
+        $scope.NOT_AVAILABLE = "N/A";
     };
 
     $scope.closeModal = function () {

@@ -28,6 +28,10 @@ function allowancesEditForm(appProps) {
                 return moment(date).subtract(1, 'days').toDate();
             };
 
+            scope.tripHasMeals = function () {
+                return scope.dirtyApp.mealPerDiems.allMealPerDiems.length > 0;
+            };
+
             scope.tripHasLodging = function () {
                 return scope.dirtyApp.lodgingPerDiems.allLodgingPerDiems.length > 0;
             };

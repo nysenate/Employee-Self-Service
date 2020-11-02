@@ -8,7 +8,7 @@ public class SupplyItemFixture {
         return new SupplyItem.Builder().withId(1)
                 .withCommodityCode("A")
                 .withDescription("desc")
-                .withStatus(new ItemStatus(true, true, true, false))
+                .withStatus(new ItemStatus(true, false, true, false))
                 .withCategory(new Category(""))
                 .withAllowance(new ItemAllowance(2, 4))
                 .withUnit(new ItemUnit("1", 1));

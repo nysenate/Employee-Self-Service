@@ -22,7 +22,7 @@ public class GoogleAddressView extends AddressView implements ViewObject {
         this.placeId = addr.getPlaceId();
         this.name = addr.getName();
         this.formattedAddress = addr.getName();
-        this.formattedAddressWithCounty = addr.getFromattedAddressWithCounty();
+        this.formattedAddressWithCounty = addr.getFormattedAddressWithCounty();
     }
 
     public GoogleAddress toGoogleAddress() {

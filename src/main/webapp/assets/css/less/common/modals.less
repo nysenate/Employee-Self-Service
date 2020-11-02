@@ -53,7 +53,7 @@
 
 /** --- Common Modals --- */
 
-#internal-error-modal {
+.error-modal {
   padding: 20px;
   text-align: center;
   z-index: 9001;
@@ -62,10 +62,10 @@
     margin-top: 0;
     color: @redorange;
   }
-  & p.internal-error-text {
+  & .error-description {
     width:45em;
   }
-  & pre.internal-error-details {
+  & pre.error-details {
     text-align: initial;
     max-height: 45vh;
     max-width:45em;

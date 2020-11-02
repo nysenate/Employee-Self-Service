@@ -1,7 +1,7 @@
 (function () {
 
 angular.module('essMyInfo')
-    .controller('AcknowledgmentCtrl', ['$scope', '$q', 'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
+    .controller('AcknowledgmentCtrl', ['$scope', '$q', 'appProps', 'modals', 'AllAckDocApi', 'AcknowledgmentApi',
                                    acknowledgmentCtrl]);
 
 function acknowledgmentCtrl($scope, $q, appProps, modals, documentApi, ackApi) {
@@ -119,6 +119,15 @@ function acknowledgmentCtrl($scope, $q, appProps, modals, documentApi, ackApi) {
                 documents.unacknowledged.push(doc);
             }
         }
+
+        var activeUnacknowledgedDocs = [];
+        while (documents.unacknowledged.length > 0) {
+            var doc = documents.unacknowledged.shift();
+            if ( doc.active === true ) {
+                activeUnacknowledgedDocs.push(doc);
+            }
+        }
+        documents.unacknowledged = activeUnacknowledgedDocs;
     }
 
     init();

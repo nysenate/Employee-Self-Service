@@ -128,7 +128,8 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
     @Override
     public boolean saveRecord(TimeRecord record) {
         boolean isUpdate = true;
-        int updated;
+        int updated = 0;
+        int skipped = 0;
         if (record.getTimeRecordId() == null) {
             // Attempt to find existing record for employee with matching begin date
             // If that record exists, use that record id
@@ -145,10 +146,21 @@ public class SqlTimeRecordDao extends SqlBaseDao implements TimeRecordDao
             record.setTimeRecordId(((BigDecimal) tsIdHolder.getKeys().get(tsIdCol)).toBigInteger());
             record.setUpdateDate(LocalDateTime.now());
         } else {
-            updated = remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params);
+
+            // Skip updating any records already marked as Approved By Personnel since those records are
+            // not changeable. Once scenario that can occur, if database records are imported but were updated
+            // to Approved by Personnel early enough to not be refreshed in the cache Unexpected number of updates for time record update: 0 updates for id=
+            // exception will occur. This will prevent that exception for this scenario.
+
+            if (this.getTimeRecord(record.getTimeRecordId()).getRecordStatus() == APPROVED_PERSONNEL) {
+                skipped = 1;
+                logger.warn("Skipping Time Record id#{} for emp #{} since it's existing record is already APPROCVED BY PERSONNEL.", record.getTimeRecordId(), record.getEmployeeId());
+            } else {
+                updated = remoteNamedJdbc.update(UPDATE_TIME_REC_SQL.getSql(schemaMap()), params);
+            }
         }
 
-        if (updated != 1) {
+        if (skipped == 0 && updated != 1) {
             throw new IllegalStateException("Unexpected number of updates for time record " +
                     (isUpdate ? "update" : "insert") + ": " +
                     updated + " updates for id=" + record.getTimeRecordId() + " " +

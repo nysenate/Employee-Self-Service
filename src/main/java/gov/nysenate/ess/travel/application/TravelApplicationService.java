@@ -71,7 +71,7 @@ public class TravelApplicationService {
     }
 
     public void updateMileagePerDiems(TravelApplication app, MileagePerDiems mileagePerDiem) {
-        for (Leg qualifyingLeg : mileagePerDiem.qualifyingLegs()) {
+        for (Leg qualifyingLeg : mileagePerDiem.mileageReimbursableLegs()) {
             for (Leg appLeg : app.activeAmendment().route().getAllLegs()) {
                 if (appLeg.fromAddress().equals(qualifyingLeg.fromAddress())
                         && appLeg.toAddress().equals(qualifyingLeg.toAddress())

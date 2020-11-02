@@ -18,18 +18,19 @@ import gov.nysenate.ess.core.model.period.PayPeriodType;
 import gov.nysenate.ess.core.model.personnel.Employee;
 import gov.nysenate.ess.core.service.period.PayPeriodService;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.util.ShiroUtils;
 import gov.nysenate.ess.core.util.SortOrder;
 import gov.nysenate.ess.time.client.response.InvalidTimeRecordResponse;
 import gov.nysenate.ess.time.client.view.attendance.TimeRecordCreationNotPermittedData;
 import gov.nysenate.ess.time.client.view.attendance.TimeRecordNotFoundData;
 import gov.nysenate.ess.time.client.view.attendance.TimeRecordView;
+import gov.nysenate.ess.time.client.view.notification.EssTimeRecordEmailReminderView;
 import gov.nysenate.ess.time.dao.attendance.AttendanceDao;
 import gov.nysenate.ess.time.model.attendance.TimeRecord;
 import gov.nysenate.ess.time.model.attendance.TimeRecordAction;
 import gov.nysenate.ess.time.model.attendance.TimeRecordScope;
 import gov.nysenate.ess.time.model.attendance.TimeRecordStatus;
 import gov.nysenate.ess.time.model.auth.EssTimePermission;
+import gov.nysenate.ess.time.model.notification.EssTimeRecordEmailReminder;
 import gov.nysenate.ess.time.model.personnel.SupervisorException;
 import gov.nysenate.ess.time.service.accrual.AccrualInfoService;
 import gov.nysenate.ess.time.service.attendance.TimeRecordManager;
@@ -64,8 +65,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping(BaseRestApiCtrl.REST_PATH + "/timerecords")
-public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
-{
+public class TimeRecordRestApiCtrl extends BaseRestApiCtrl {
     private static final Logger logger = LoggerFactory.getLogger(TimeRecordRestApiCtrl.class);
 
     @Autowired EmployeeInfoService employeeInfoService;
@@ -83,14 +83,14 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     /**
      * Get Time Record API
      * -------------------
-     *
+     * <p>
      * Get time records for one or more employees:
      * (GET) /api/v1/timerecords[.json]
-     *
+     * <p>
      * Request Parameters: empId - int[] - required - Records will be retrieved for these employee ids
-     *                     to - Date - default current date - Gets time records that end before or on this date
-     *                     from - Date - default Jan 1 on year of 'to' Date - Gets time records that begin on or after this date
-     *                     status - String[] - default all statuses - Will only get time records with one of these statuses
+     * to - Date - default current date - Gets time records that end before or on this date
+     * from - Date - default Jan 1 on year of 'to' Date - Gets time records that begin on or after this date
+     * status - String[] - default all statuses - Will only get time records with one of these statuses
      */
     @RequestMapping(value = "", method = {GET, HEAD}, produces = "application/json")
     public BaseResponse getRecordsJson(@RequestParam Integer[] empId,
@@ -120,23 +120,23 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
                 .forEach(this::checkPermission);
 
         Set<TimeRecordScope> scopes = (scope != null)
-            ? Stream.of(scope).map(TimeRecordScope::getScopeFromCode).collect(Collectors.toSet())
-            : Sets.newHashSet(TimeRecordScope.EMPLOYEE, TimeRecordScope.SUPERVISOR);
+                ? Stream.of(scope).map(TimeRecordScope::getScopeFromCode).collect(Collectors.toSet())
+                : Sets.newHashSet(TimeRecordScope.EMPLOYEE, TimeRecordScope.SUPERVISOR);
         ListMultimap<Integer, TimeRecord> activeRecsPerEmp = ArrayListMultimap.create();
         Set<Integer> empIdSet = new HashSet<>(Arrays.asList(empId));
         empIdSet.forEach(eid ->
-            activeRecsPerEmp.putAll(eid, timeRecordService.getActiveTimeRecords(eid).stream()
-                .filter(tr -> scopes.contains(tr.getRecordStatus().getScope()))
-                .collect(toList())));
+                activeRecsPerEmp.putAll(eid, timeRecordService.getActiveTimeRecords(eid).stream()
+                        .filter(tr -> scopes.contains(tr.getRecordStatus().getScope()))
+                        .collect(toList())));
         return getRecordResponse(activeRecsPerEmp, false);
     }
 
     /**
      * Get Time Record Years API
      * -------------------------
-     *
+     * <p>
      * Returns the years during which the given employee has at least one time record during.
-     *
+     * <p>
      * Request Params: empId - employeeId
      */
     @RequestMapping(value = "activeYears")
@@ -152,13 +152,14 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * Get Active Supervisor Record Count API
      * --------------------------------------
      * Get the number of records needing action for a specific supervisor
-     *
+     * <p>
      * Usage:       (GET) /api/v1/timerecords/supervisor/count
-     *
+     * <p>
      * Request Params:
-     * @param supId int - supervisor id
-     * @param from String - ISO 8601 Date formatted
-     * @param to String - ISO 8601 Date formatted
+     *
+     * @param supId  int - supervisor id
+     * @param from   String - ISO 8601 Date formatted
+     * @param to     String - ISO 8601 Date formatted
      * @param status String - {@link TimeRecordStatus}
      * @return ViewObjectResponse
      */
@@ -176,6 +177,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
             public Integer getCount() throws SupervisorException {
                 return timeRecordService.getActiveSupervisorRecords(supId, dateRange, statuses).size();
             }
+
             @Override
             public String getViewType() {
                 return "supervisor record count";
@@ -212,69 +214,50 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * Send Time Record Reminder
      * -------------------------
      * Send email reminders to employees requesting that they submit a time record
-     *
+     * <p>
      * Usage:       (POST) /api/3/timerecords/reminder
+     * <p>
+     * RequestBody is a collection of TimeRecords for which reminder emails should be sent.
      *
-     * Request Params:
-     * <code>empId</code> and <code>beginDate</code> will be multi-mapped together using common indexes
-     * e.g. <code>{empId: [11423, 11168], beginDate: ['2016-07-28', '2016-08-11', '2016-08-11']}</code>
-     *  will result in <code>{11423: ['2016-07-28', '2016-08-11'], 11168: ['2016-08-11']}</code>
-     * This will send an email to each employee for the records with the begin dates mapped to that employee
-     *
-     * @param empId Integer[] - employee ids
-     * @param beginDate String[] - ISO 8601 formatted date - time record begin dates
-     *
-     * @return {@link SimpleResponse} indicating message send success
-     * @see #handleInactiveEmployeeEmailEx(InactiveEmployeeEmailEx) for handling cases where passed in emps are inactive
+     * @return
      */
     @RequestMapping(value = "/reminder", method = POST)
-    public BaseResponse sendReminderEmails(@RequestParam Integer[] empId,
-                                           @RequestParam String[] beginDate) {
-        // Convert array parameters to usable forms
-        List<Integer> empIdList = Arrays.asList(empId);
-        List<LocalDate> beginDateList = Arrays.stream(beginDate)
-                .map(dateString -> parseISODate(dateString, "beginDate"))
-                .collect(Collectors.toList());
+    public BaseResponse sendReminderEmails(@RequestBody TimeRecordView[] records) {
 
-        // Ensure empId -> beginDate mapping is valid
-        if (empIdList.size() != beginDateList.size()) {
-            throw new InvalidRequestParamEx(
-                    toJson(ImmutableMap.of("empId", empId, "beginDate", beginDate)),
-                    "empId, beginDate", "Integer, String",
-                    "must pass the same number of 'empId' and 'beginDate' parameters"
-            );
+        // Group time record notifications by employee.
+        Multimap<Integer, TimeRecord> empTimeRecords = TreeMultimap.create();
+        for (TimeRecordView trView : records) {
+            empTimeRecords.put(trView.getEmployeeId(), trView.toTimeRecord());
         }
 
-        Multimap<Integer, LocalDate> empIdDateMap = TreeMultimap.create();
-
-        // Simultaneously iterate through employee ids and begin dates to check permissions
-        // and organize parameters into a map
-        Iterator<Integer> empIdIterator = empIdList.iterator();
-        Iterator<LocalDate> beginDateIterator = beginDateList.iterator();
-        while (empIdIterator.hasNext() && beginDateIterator.hasNext()) {
-            Integer eId = empIdIterator.next();
-            LocalDate bDate = beginDateIterator.next();
-            // Check for notification permissions for each time record that will be included in the notification
-            checkPermission(new EssTimePermission(eId, TIME_RECORD_NOTIFICATION, POST, bDate));
-            // add id and date to map
-            empIdDateMap.put(eId, bDate);
+        // Convert into EssTimeRecordEmailReminder objects.
+        List<EssTimeRecordEmailReminder> emailReminders = new ArrayList<>();
+        for (int empId : empTimeRecords.keySet()) {
+            Employee emp = employeeInfoService.getEmployee(empId);
+            List<TimeRecord> timeRecords = new ArrayList<>();
+            for (TimeRecord tr : empTimeRecords.get(empId)) {
+                checkPermission(new EssTimePermission(empId, TIME_RECORD_NOTIFICATION, POST, tr.getBeginDate()));
+                TimeRecord timeRecord = timeRecordService.getTimeRecord(tr.getTimeRecordId());
+                timeRecords.add(timeRecord);
+            }
+            emailReminders.add(new EssTimeRecordEmailReminder(emp, timeRecords));
         }
 
-        emailService.sendEmailReminders(
-                ShiroUtils.getAuthenticatedEmpId(), empIdDateMap);
-
-        return new SimpleResponse(true, "Sent time record email reminders", "time-record-reminder-success");
+        emailReminders = emailService.sendEmailReminders(emailReminders);
+        return ListViewResponse.of(emailReminders.stream()
+                .map(EssTimeRecordEmailReminderView::new)
+                .collect(Collectors.toList()));
     }
 
     /**
      * Create Time Record API
      * --------------------
-     *
+     * <p>
      * Create a new time record for the given pay period:
-     *      (POST) /api/v1/timerecords/new
+     * (POST) /api/v1/timerecords/new
      *
      * @param empId int - employee id
-     * @param date String - iso date formatted - will select the pay period containing this date
+     * @param date  String - iso date formatted - will select the pay period containing this date
      * @throws TimeRecordCreationNotPermittedEx - if a record cannot be created for the given period
      */
     @RequestMapping(value = "/new", method = RequestMethod.POST, consumes = "application/json")
@@ -298,10 +281,10 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     /**
      * Save Time Record API
      * --------------------
-     *
+     * <p>
      * Save a time record:
-     *      (POST) /api/v1/timerecords
-     *
+     * (POST) /api/v1/timerecords
+     * <p>
      * Post Data: json TimeRecordView
      */
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
@@ -318,14 +301,15 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     /**
      * Review Time Record API
      * ----------------------
-     *
+     * <p>
      * Review a time record:
-     *     (POST) /api/v1/timerecords/review
-     *
+     * (POST) /api/v1/timerecords/review
+     * <p>
      * Request Params:
+     *
      * @param timeRecordId Integer - id of the reviewed time record
-     * @param remarks - String - any remarks attached to the review
-     * @param action - String - {@link TimeRecordAction} - action to take on the record
+     * @param remarks      - String - any remarks attached to the review
+     * @param action       - String - {@link TimeRecordAction} - action to take on the record
      */
     @RequestMapping(value = "/review", method = POST)
     public void reviewRecord(@RequestParam BigInteger timeRecordId,
@@ -348,6 +332,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     /**
      * Handle cases where an invalid time record is posted
      * Return a response indicating time record errors
+     *
      * @param ex {@link InvalidTimeRecordException}
      * @return {@link InvalidTimeRecordResponse}
      */
@@ -355,11 +340,13 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public BaseResponse handleInvalidTimeRecordException(InvalidTimeRecordException ex) {
         logger.warn(ex.getMessage() + "\n" + toJson(ex.getDetectedErrors()));
+        logger.warn("Invalid time record exception", ex);
         return new InvalidTimeRecordResponse(getTimeRecordView(ex.getTimeRecord()), ex.getDetectedErrors());
     }
 
     /**
      * Handle cases where a requested time record was not found based on empId and begin Date
+     *
      * @param ex {@link TimeRecordNotFoundEidBeginDateEx}
      * @return {@link ViewObjectErrorResponse}
      */
@@ -373,6 +360,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
     /**
      * Handle cases where a specifically requested time record was not found
+     *
      * @param ex {@link TimeRecordNotFoundException}
      * @return {@link ViewObjectErrorResponse}
      */
@@ -386,6 +374,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
     /**
      * Handle cases where a specifically requested time record was not found
+     *
      * @param ex {@link TimeRecordCreationNotPermittedEx}
      * @return {@link ViewObjectErrorResponse}
      */
@@ -399,6 +388,7 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
 
     /**
      * Handle cases where a supervisor attempts to send a reminder email to an inactive employee
+     *
      * @param ex {@link InactiveEmployeeEmailEx}
      * @return {@link ViewObjectErrorResponse<ListViewResponse<SimpleEmployeeView>>>}
      */
@@ -454,8 +444,8 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
      * Construct a json or xml response from a timerecord multimap.  The response consists of a map of employee ids to
      * time records
      *
-     * @param records ListMultimap<Integer, TimeRecord> records
-     * @param xml boolean
+     * @param records    ListMultimap<Integer, TimeRecord> records
+     * @param xml        boolean
      * @param supervisor boolean
      * @return ViewObjectResponse
      */
@@ -469,10 +459,10 @@ public class TimeRecordRestApiCtrl extends BaseRestApiCtrl
         return new ViewObjectResponse<>(MapView.of(
                 records.keySet().stream()
                         .map(id -> new AbstractMap.SimpleEntry<>((xml) ? (supervisor ? "sup" : "emp") + "Id-" + id : id,
-                                        ListView.of(records.get(id).stream()
-                                                .sorted()
-                                                .map(tr -> new TimeRecordView(tr, empMap.get(tr.getEmployeeId()), empMap.get(tr.getSupervisorId())))
-                                                .collect(toList())))
+                                ListView.of(records.get(id).stream()
+                                        .sorted()
+                                        .map(tr -> new TimeRecordView(tr, empMap.get(tr.getEmployeeId()), empMap.get(tr.getSupervisorId())))
+                                        .collect(toList())))
                         )
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
         ));

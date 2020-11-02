@@ -3,12 +3,14 @@ package gov.nysenate.ess.travel.application.route;
 import gov.nysenate.ess.travel.application.address.GoogleAddress;
 import gov.nysenate.ess.travel.application.allowances.PerDiem;
 import gov.nysenate.ess.travel.application.route.destination.Destination;
-import gov.nysenate.ess.travel.provider.ServiceProviderFactory;
+import gov.nysenate.ess.travel.provider.ProviderException;
+import gov.nysenate.ess.travel.provider.gsa.GsaAllowanceService;
 import gov.nysenate.ess.travel.provider.miles.MileageAllowanceService;
 import gov.nysenate.ess.travel.utils.Dollars;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class RouteService {
 
-    @Autowired private ServiceProviderFactory serviceProviderFactory;
+    @Autowired private GsaAllowanceService gsaAllowanceService;
     @Autowired private MileageAllowanceService mileageService;
 
     /**
@@ -32,7 +34,7 @@ public class RouteService {
      *
      * @return
      */
-    public Route createRoute(Route route) {
+    public Route createRoute(Route route) throws ProviderException {
         List<Leg> outboundLegs = new ArrayList<>();
         for (int i = 0; i < route.getOutboundLegs().size(); i++) {
             Leg leg = createLeg(route, i, true);
@@ -98,18 +100,18 @@ public class RouteService {
         return new Destination(address, arrival, departure);
     }
 
-    private void setDestinationPerDiems(Route route) {
+    private void setDestinationPerDiems(Route route) throws ProviderException {
         for (Destination d : route.destinations()) {
             // Meal Rates
             for (LocalDate date : d.days()) {
-                Dollars mealRate = serviceProviderFactory.fetchMealRate(date, d.getAddress());
+                Dollars mealRate = gsaAllowanceService.fetchMealRate(date, d.getAddress());
                 PerDiem mealPerDiem = new PerDiem(date, mealRate);
                 d.addMealPerDiem(mealPerDiem);
             }
 
             // Lodging Rates
             for (LocalDate night : d.nights()) {
-                Dollars lodgingRate = serviceProviderFactory.fetchLodgingRate(night, d.getAddress());
+                Dollars lodgingRate = gsaAllowanceService.fetchLodgingRate(night, d.getAddress());
                 PerDiem lodgingPerDiem = new PerDiem(night, lodgingRate);
                 d.addLodgingPerDiem(lodgingPerDiem);
             }

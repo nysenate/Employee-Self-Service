@@ -1,17 +1,20 @@
 (function () {
 
 angular.module('essMyInfo')
-    .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce', 'bowser',
+    .controller('AckDocViewCtrl', ['$scope', '$routeParams', '$q', '$location', '$window', '$timeout', '$sce',
                                    'appProps', 'modals', 'AckDocApi', 'AcknowledgmentApi',
                                         acknowledgmentCtrl]);
 
-function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce, bowser,
+function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeout, $sce,
                             appProps, modals, documentApi, ackApi) {
 
     $scope.ackDocPageUrl = appProps.ctxPath + '/myinfo/personnel/acknowledgments';
 
     /** Flag indicating that the window scroll handler was bound */
     var windowScrollBound = false;
+
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc =  appProps.ctxPath + '/assets/js/dest/pdf.worker.min.js';
 
     var initialState = {
         docId: null,
@@ -21,7 +24,9 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         ackTimestamp: null,
         docFound: false,
         docHeight: 500,
+        docReady: false,
         docRead: false,
+        pages: [],
 
         request: {
             document: false,
@@ -37,7 +42,10 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         $q.all([
                    getDocument(),
                    getAcknowledgments()
-               ]).then(processAcknowledgment);
+               ])
+            .then(processAcknowledgment)
+            .then(showPdf)
+        ;
     }
 
     /* --- Display methods --- */
@@ -73,36 +81,6 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
             .then(function () {
                 $location.url($scope.ackDocPageUrl)
             })
-    };
-
-    /**
-     * Indicates if an iframe should be used instead of embed tag
-     * Some browsers do not support embed, while others work better with embed vs iframe.
-     * @return {*}
-     */
-    $scope.useIframe = function () {
-        // Microsoft edge doesn't support embed
-        return bowser.msedge;
-    };
-
-    /**
-     * Indicates if an overlay should be placed over the embedded pdf.
-     * In some browsers, you cannot scroll the parent container when th
-     * @return {boolean|*}
-     */
-    $scope.useOverlay = function () {
-        return bowser.chrome;
-    };
-
-    /**
-     * Returns true if the embedded pdf document should be hidden.
-     *
-     * This is intended for IE, where embedded pdfs are always in front of all other elements,
-     * causing the pdf to block modal windows.
-     * This function will return true if a modal is open and the user is using IE.
-     */
-    $scope.hideEmbed = function () {
-        return bowser.msie && modals.isOpen();
     };
 
     $scope.getDocUrl = function () {
@@ -222,7 +200,8 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         angular.element($window).on('scroll', checkIfDocRead);
         $scope.$on('$destroy', function () {
             angular.element($window).off('scroll', checkIfDocRead);
-        })
+        });
+        windowScrollBound = true;
     }
 
     /**
@@ -231,7 +210,7 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
      * Sets docRead = true if the window is scrolled all the way down.
      */
     function checkIfDocRead () {
-        if (windowAtBottom()) {
+        if ($scope.state.docReady && windowAtBottom()) {
             console.log('Window is scrolled');
             $scope.state.docRead = true;
             $scope.$apply();
@@ -249,6 +228,108 @@ function acknowledgmentCtrl($scope, $routeParams, $q, $location, $window, $timeo
         var windowBottom = windowHeight + window.pageYOffset;
 
         return windowBottom >= docHeight;
+    }
+
+    /**
+     * Renders the pdf from the loaded document
+     */
+    function showPdf() {
+        var url = $scope.ctxPath + $scope.state.document.path;
+        $scope.state.docReady = false;
+        return loadPdf(url)
+            .then(renderPdf)
+            .then(function () {
+                $scope.state.docReady = true;
+            })
+            .catch($scope.handleErrorResponse)
+    }
+
+    /**
+     * Requests the pdf from the server
+     * @param url
+     * @return promise resolved when the pdf is loaded
+     */
+    function loadPdf(url) {
+        var deferred = $q.defer();
+        pdfjsLib.getDocument(url).promise
+            .then(deferred.resolve, deferred.reject);
+        return deferred.promise;
+    }
+
+    /**
+     * Initializes pdf rendering by generating canvas elements for each page.
+     * Then render each page on its own canvas.
+     * @param pdf
+     * @return {*|PromiseLike<T>|Promise<T>}
+     */
+    function renderPdf(pdf) {
+        var numPages = pdf.numPages;
+        return setPages(numPages)
+            .then(getRenderAllPagesFn(pdf))
+    }
+
+    /**
+     * Returns a function that kicks off rendering of all pages for the given pdf.
+     * @param pdf
+     * @return function returning promise that is resolved when all pages are rendered.
+     */
+    function getRenderAllPagesFn(pdf) {
+        return function () {
+            var promises = [];
+            for (var pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                var deferred = $q.defer();
+                pdf.getPage(pageNum)
+                    .then(getPageRenderFn(pageNum))
+                    .then(deferred.resolve, deferred.reject);
+                promises.push(deferred.promise);
+            }
+            return $q.all(promises);
+        }
+    }
+
+    /**
+     * Get a function for rendering a page with the given number.
+     * @param pageNum
+     * @return {function(*): *} starts rendering the page and returns a promise when rendering is done.
+     */
+    function getPageRenderFn(pageNum) {
+        return function (page) {
+            var canvasId = 'ack-pdf-page-' + pageNum;
+            var canvas = document.getElementById(canvasId);
+
+            // Get a viewport scaled to the canvas width;
+            var defaultVp = page.getViewport({scale: 1});
+            var scale = canvas.width / defaultVp.width;
+            var viewport = page.getViewport({scale: scale});
+
+            var context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            var renderContext = {
+                canvasContext: context,
+                viewport: viewport
+            };
+            return page.render(renderContext).promise
+        }
+    }
+
+    /**
+     * Set pages according to the number of pages.
+     *
+     * These pages are used to generate canvas elements.
+     * @param numPages
+     * @return {f}
+     */
+    function setPages(numPages) {
+        var deferred = $q.defer();
+        $scope.state.pages = [];
+        for (var pageNum = 1; pageNum <= numPages; pageNum++) {
+            $scope.state.pages.push(pageNum)
+        }
+        // $scope.apply(function () {
+            deferred.resolve();
+        // });
+        return deferred.promise;
     }
 
     init();

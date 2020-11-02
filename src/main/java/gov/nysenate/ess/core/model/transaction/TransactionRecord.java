@@ -23,7 +23,7 @@ public class TransactionRecord extends TransactionInfo implements Comparable<Tra
 {
     private static final Logger logger = LoggerFactory.getLogger(TransactionRecord.class);
 
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /** A mapping of the transaction's database column names to their values. */
     protected Map<String, String> valueMap;

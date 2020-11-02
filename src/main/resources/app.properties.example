@@ -154,7 +154,7 @@ cache.cron.location = 0 0 0 * * *
 cache.cron.mileage.rate = 0 0 0 * * *
 
 # GSA Data Cron
-gsa.cron.data = 0 0 0 1 * *
+gsa.cron.data = 0 0 7 1,7,14,21,28 * *
 
 # Delay (ms) during which the transactions cache is refreshed from the DB.
 cache.poll.delay.transactions = 60000
@@ -180,6 +180,9 @@ resource.location = /assets/
 
 login.url = /login
 login.success.url = /time/record/entry
+
+# Sfms Report Base Url
+sfms.report.base.url = http://nysasprd.nysenate.gov:7778/reports/rwservlet
 
 # --- Scheduling Configuration ------------------------------------------------
 
@@ -254,3 +257,8 @@ travel.irs.url = https://www.irs.gov/tax-professionals/standard-mileage-rates
 
 # Sage API base url
 sage.api.url = https://pubgeo.nysenate.gov/api/v2
+
+# --- Senate Info -----------------------------------------------------------
+
+# The senate helpline phone number
+helpline.phone.number =

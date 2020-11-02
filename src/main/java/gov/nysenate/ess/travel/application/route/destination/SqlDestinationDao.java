@@ -19,7 +19,10 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeMap;
 
 @Repository
 public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
@@ -56,11 +59,11 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
     private void insertMealPerDiems(Destination destination) {
         List<SqlParameterSource> paramList = new ArrayList<>();
-        for (PerDiem mealPerDiem : destination.mealPerDiems) {
+        for (PerDiem pd : destination.mealPerDiems()) {
             MapSqlParameterSource params = new MapSqlParameterSource()
                     .addValue("destinationId", destination.getId())
-                    .addValue("date", toDate(mealPerDiem.getDate()))
-                    .addValue("value", mealPerDiem.getRate().toString());
+                    .addValue("date", toDate(pd.getDate()))
+                    .addValue("value", pd.getRate().toString());
             paramList.add(params);
         }
 
@@ -174,17 +177,15 @@ public class SqlDestinationDao extends SqlBaseDao implements DestinationDao {
 
             LocalDate mealDate = getLocalDate(rs, "meal_date");
             if (mealDate != null) {
-                String mealDollarsString = rs.getString("meal_value");
-                BigDecimal mealDollars = mealDollarsString == null ? new BigDecimal("0") : new BigDecimal(mealDollarsString);
-                boolean isMealRequested = rs.getBoolean("meal_requested");
-                mealPerDiems.put(mealDate, new PerDiem(mealDate, mealDollars));
+                String mealValueString = rs.getString("meal_value");
+                BigDecimal mealValue = mealValueString == null ? new BigDecimal("0") : new BigDecimal(mealValueString);
+                mealPerDiems.put(mealDate, new PerDiem(mealDate, mealValue));
             }
 
             LocalDate lodgingDate = getLocalDate(rs, "lodging_date");
             if (lodgingDate != null) {
                 String lodgingDollarsString = rs.getString("lodging_value");
                 BigDecimal lodgingDollars = lodgingDollarsString == null ? new BigDecimal("0") : new BigDecimal(lodgingDollarsString);
-                boolean isLodgingRequested = rs.getBoolean("lodging_requested");
                 lodgingPerDiems.put(lodgingDate, new PerDiem(lodgingDate, lodgingDollars));
             }
         }

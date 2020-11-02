@@ -14,6 +14,11 @@ essTravel.directive('essAppSummaryTable', ['appProps', function (appProps) {
                 // Include a 'show-status' attribute on this directive to display the status column.
                 showStatus: $attrs.hasOwnProperty('showStatus')
             };
-        }
+        },
+        controller: 'AppSummaryTableCtrl'
     }
-}]);
+}])
+    .controller('AppSummaryTableCtrl', ['$scope', 'modals', appSummaryTableCtrl]);
+
+function appSummaryTableCtrl($scope, modals) {
+}

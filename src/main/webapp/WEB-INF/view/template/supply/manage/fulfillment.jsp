@@ -41,7 +41,7 @@
       <tr ng-repeat="requisition in data.reqs.pending | orderBy:'requisitionId':true"
           ng-class="calculateHighlighting(requisition)"
           ng-click="setRequisitionSearchParam(requisition.requisitionId)">
-        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}"></td>
+        <td ng-class="{'supply-pickup-icon': requisition.deliveryMethod === 'PICKUP'}" ng-attr-title="{{requisition.deliveryMethod}}"></td>
         <td>{{requisition.requisitionId}}</td>
         <td>{{requisition.destination.locId}}</td>
         <td>{{requisition.customer.lastName}}</td>

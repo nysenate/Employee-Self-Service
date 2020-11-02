@@ -1,6 +1,5 @@
 package gov.nysenate.ess.travel.application.route.destination;
 
-import gov.nysenate.ess.core.client.view.AddressView;
 import gov.nysenate.ess.core.client.view.base.ViewObject;
 import gov.nysenate.ess.travel.application.address.GoogleAddressView;
 import gov.nysenate.ess.travel.application.allowances.PerDiemView;
@@ -28,7 +27,7 @@ public class DestinationView implements ViewObject {
         this.address = new GoogleAddressView(d.getAddress());
         this.arrivalDate = d.arrivalDate() == null ? null : d.arrivalDate().format(ISO_DATE);
         this.departureDate = d.departureDate() == null ? null : d.departureDate().format(ISO_DATE);
-        this.mealPerDiems = d.mealPerDiems().stream().map(PerDiemView::new).collect(Collectors.toList());
+        this.mealPerDiems = d.mealPerDiems.stream().map(PerDiemView::new).collect(Collectors.toList());
         this.lodgingPerDiems = d.lodgingPerDiems().stream().map(PerDiemView::new).collect(Collectors.toList());
     }
 
@@ -47,7 +46,7 @@ public class DestinationView implements ViewObject {
         return id;
     }
 
-    public AddressView getAddress() {
+    public GoogleAddressView getAddress() {
         return address;
     }
 
@@ -57,6 +56,14 @@ public class DestinationView implements ViewObject {
 
     public String getDepartureDate() {
         return departureDate;
+    }
+
+    public List<PerDiemView> getMealPerDiems() {
+        return mealPerDiems;
+    }
+
+    public List<PerDiemView> getLodgingPerDiems() {
+        return lodgingPerDiems;
     }
 
     @Override

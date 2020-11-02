@@ -5,10 +5,11 @@ import gov.nysenate.ess.travel.review.strategy.SupervisorReviewerStrategy;
 import gov.nysenate.ess.travel.authorization.role.TravelRole;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 
-@UnitTest
+@Category(UnitTest.class)
 public class SupervisorReviewerStrategyTest {
 
     private SupervisorReviewerStrategy strategy;
