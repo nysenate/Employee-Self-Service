@@ -292,17 +292,12 @@
                     if (!Array.isArray($scope.data.comments)) {
                         $scope.data.comments = [];
                     }
-                    if ($scope.addedComment !== "") {
-                        console.log("comment exists, pushing to scope.data.comments");
+                    if ($scope.data.addedComment !== "") {   
                         $scope.data.comments.push({
-                                                      text: $scope.addedComment,
+                                                      text: $scope.data.addedComment,
                                                       authorId: $scope.data.employeeId
                                                   });
                     }
-                    else {
-                        console.log("comment does not exist");
-                    }
-                    console.log(JSON.stringify($scope.data.comments));
                     return {
                         requestId: $scope.data.requestId,
                         status: statusType,

@@ -120,7 +120,7 @@
   </p>
   <div ng-if="mode==='input'" class="new-comment-container">
     <p><strong class="comment">Me: </strong>{{comment.text}}</p>
-    <textarea ng-model="addedComment"></textarea>
+    <textarea ng-model="data.addedComment"></textarea>
   </div>
 </div>
 

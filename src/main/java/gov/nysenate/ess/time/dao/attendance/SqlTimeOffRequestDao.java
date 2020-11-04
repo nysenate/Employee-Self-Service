@@ -171,7 +171,7 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
      * @return int - The requestId of the newly added request
      */
     private int addNewRequest(TimeOffRequest request) {
-        System.out.println("Adding new TOR");
+        //System.out.println("Adding new TOR");
         MapSqlParameterSource params = getAddRequestParams(request);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         final String column = "request_id";
@@ -182,12 +182,12 @@ public class SqlTimeOffRequestDao extends SqlBaseDao implements TimeOffRequestDa
 
         //add each comment in the request
         if (request.getComments() != null && request.getComments().size() > 0) {
-            System.out.println("There are comments for this TOR");
+            //System.out.println("There are comments for this TOR");
             for (TimeOffRequestComment comment : request.getComments()) {
                 comment.setRequestId(requestId);
-                System.out.println("comment text: " + comment.getText());
-                System.out.println("comment ID: " + comment.getRequestId());
-                System.out.println("comment Author ID:" + comment.getAuthorId());
+                //System.out.println("comment text: " + comment.getText());
+                //System.out.println("comment ID: " + comment.getRequestId());
+                //System.out.println("comment Author ID:" + comment.getAuthorId());
                 addCommentToRequest(comment);
             }
         }
