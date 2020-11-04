@@ -44,7 +44,8 @@ angular.module('essTime').factory('supEmpGroupService', [
          * @returns {*} a promise that is resolved once the service is initialized
          */
         function init() {
-            if (!empGroupPromise) {
+            console.log("a");
+            if (true) {//!empGroupPromise) {
                 empGroupPromise = $q.all([
                                              loadSupEmpGroup(),
                                              loadSupOverrides()
@@ -183,8 +184,6 @@ angular.module('essTime').factory('supEmpGroupService', [
          */
         function loadSupOverrides() {
             var params = {supId: appProps.user.employeeId};
-
-            console.log('helloooo');
 
             function onSuccess(response) {
                 response.overrides.forEach(function (override) {
