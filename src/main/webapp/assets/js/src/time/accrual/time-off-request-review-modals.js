@@ -22,6 +22,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
     };
 
     function link($scope, $elem, $attrs) {
+        console.log("a");
         $scope.addedComments = {};
 
         $scope.accruals = {
@@ -78,6 +79,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * categories
          */
         $scope.cancelRequest = function () {
+            console.log("b");
             var request = $scope.requests[$scope.iSelectedRequest];
             delete approved[request.requestId];
             delete disapproved[request.requestId];
@@ -87,6 +89,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * Adds the selected request to the 'approved' category
          */
         $scope.approveRequest = function () {
+            console.log("c");
             var request = $scope.requests[$scope.iSelectedRequest];
             $scope.cancelRequest();
             approved[request.requestId] = request;
@@ -97,6 +100,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * Reject the selected request, add it to'disapproved' category
          */
         $scope.rejectRequest = function () {
+            console.log("d");
             var request = $scope.requests[$scope.iSelectedRequest];
             $scope.cancelRequest();
             disapproved[request.requestId] = request;
@@ -104,6 +108,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
         };
 
         $scope.submissionEmpty = function () {
+            console.log("e");
             return Object.keys(approved).length === 0 && Object.keys(disapproved).length === 0;
         };
 
@@ -112,6 +117,8 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * disapproved or neither
          */
         $scope.getApprovalStatus = function (request) {
+            console.trace();
+            console.log("f");
             if (request.requestId in approved) {
                 return 'approved';
             }
@@ -125,6 +132,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * Submit changes
          */
         $scope.submitChanges = function () {
+            console.log("g");
             modals.open('time-off-request-approve-submit-modal', {
                 approved: approved,
                 disapproved: disapproved,
@@ -165,6 +173,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * before the selected request;
          */
         function selectNextPendingRequest() {
+            console.log("h");
             for (var i = 0; i < $scope.requests.length; i++) {
                 var iAdj = (i + $scope.iSelectedRequest) % $scope.requests.length;
                 if ($scope.getApprovalStatus($scope.requests[iAdj]) === 'untouched') {
@@ -179,6 +188,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * Selects the next request.  For a smarter approach see selectNextPendingRequest()
          */
         function selectNextRequest() {
+            console.log("i");
             var nextIndex = $scope.iSelectedRequest + 1;
             if (nextIndex < $scope.requests.length) {
                 $scope.iSelectedRequest = nextIndex;
@@ -189,6 +199,7 @@ function timeOffRequestReviewModal(appProps, modals, locationService) {
          * Selects the previous request. For a smarter approach see selectNextPendingRequest()
          */
         function selectPreviousRequest() {
+            console.log("j");
             var previousIndex = $scope.iSelectedRequest - 1;
             if (previousIndex >= 0) {
                 $scope.iSelectedRequest = previousIndex;
@@ -223,6 +234,7 @@ function timeOffRequestApproveSubmitModal(modals, appProps, ReviewRequestApi) {
             $scope.addedComments = modals.params().comments;
 
             $scope.resolve = function () {
+                console.log("k");
                 //Supervisor has agreed to submit changes
                 //Submit the changes to the database via api call
                 console.log($scope.addedComments);
@@ -248,6 +260,7 @@ function timeOffRequestApproveSubmitModal(modals, appProps, ReviewRequestApi) {
 
                 //disapproved requests
                 angular.forEach($scope.disapproved, function (disapprovedRequest) {
+                    console.log("l");
                     var params = {
                         requestId: disapprovedRequest.requestId,
                         action: "DISAPPROVE"

@@ -26,6 +26,10 @@ function disapproveConfirmCtrl($scope, modals, appReviewApi) {
     };
 
     $scope.cancel = function () {
+        console.log("A");
         modals.reject();
+        console.log("B");
+        modals.reject();
+        console.log("C");
     };
 }
