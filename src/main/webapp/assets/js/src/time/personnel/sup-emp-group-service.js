@@ -44,7 +44,6 @@ angular.module('essTime').factory('supEmpGroupService', [
          * @returns {*} a promise that is resolved once the service is initialized
          */
         function init() {
-            console.log("a");
             if (true) {//!empGroupPromise) {
                 empGroupPromise = $q.all([
                                              loadSupEmpGroup(),
