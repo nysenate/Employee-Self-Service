@@ -8,6 +8,7 @@ essApp.directive('recordReviewModal', ['appProps', 'modals', 'LocationService', 
 essApp.directive('recordReviewRejectModal', ['modals', 'appProps', recordReviewRejectModal]);
 essApp.directive('recordApproveSubmitModal', ['modals', 'appProps', recordApproveSubmitModal]);
 essApp.directive('recordReminderPromptModal', ['modals', 'appProps', recordReminderPromptModal]);
+essApp.directive('recordReminderPostedModal', ['modals', 'appProps', recordReminderPostedModal]);
 
 function recordReviewModal(appProps, modals, locationService) {
     return {
@@ -249,6 +250,43 @@ function recordReminderPromptModal(modals, appProps) {
                 $scope.empIdRecordMap[empId].push(record);
             });
             
+            $scope.reject = modals.reject;
+            $scope.resolve = modals.resolve;
+        }
+    };
+}
+
+/**
+ * Modal that displays the results of sending reminder emails.
+ */
+function recordReminderPostedModal(modals, appProps) {
+    return {
+        templateUrl: appProps.ctxPath + '/template/time/record/record-reminder-posted-modal',
+        link: function ($scope, $elem, $attrs) {
+            var params = modals.params();
+            $scope.reminders = params.reminders;
+            $scope.records = [];
+            $scope.reminders.forEach(function (reminder) {
+                reminder.timeRecords.forEach(function (record) {
+                    record.wasReminderSent = reminder.wasReminderSent;
+                    $scope.records.push(record);
+                })
+            });
+
+            $scope.empIds = [];
+            $scope.empIdRecordMap = {};
+
+            $scope.records.forEach(function (record) {
+                var empId = record.employeeId;
+                if ($scope.empIds.indexOf(empId) === -1) {
+                    $scope.empIds.push(empId);
+                }
+                if (!$scope.empIdRecordMap.hasOwnProperty(empId)) {
+                    $scope.empIdRecordMap[empId] = [];
+                }
+                $scope.empIdRecordMap[empId].push(record);
+            });
+
             $scope.reject = modals.reject;
             $scope.resolve = modals.resolve;
         }

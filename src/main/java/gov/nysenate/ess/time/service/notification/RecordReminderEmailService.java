@@ -1,8 +1,10 @@
 package gov.nysenate.ess.time.service.notification;
 
 import com.google.common.collect.Multimap;
+import gov.nysenate.ess.time.model.notification.EssTimeRecordEmailReminder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * A service responsible for sending email reminders from a supervisor to an employee
@@ -11,13 +13,11 @@ import java.time.LocalDate;
 public interface RecordReminderEmailService {
 
     /**
-     * Sends an email to each employee with a time record on the given list.
-     * The email will contain a reminder to submit each time record on the list that belongs to the employee.
+     * Sends a email for each emailReminder.
+     * The email will contain a reminder to submit each time record in the {@code emailReminder}.
      *
-     * @param supId Integer
-     * @param recordDates Multimap<Integer, LocalDate>
-     *
-     * @throws InactiveEmployeeEmailEx if any of the given empIds are for inactive employees
+     * @param emailReminders A collection of email reminders to be sent.
+     * @return A List of reminders with the 'wasReminderSent' field updated.
      */
-    void sendEmailReminders(Integer supId, Multimap<Integer, LocalDate> recordDates) throws InactiveEmployeeEmailEx;
+    List<EssTimeRecordEmailReminder> sendEmailReminders(List<EssTimeRecordEmailReminder> emailReminders);
 }
