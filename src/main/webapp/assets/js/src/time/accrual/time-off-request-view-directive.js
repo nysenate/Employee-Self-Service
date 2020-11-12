@@ -292,7 +292,7 @@
                     if (!Array.isArray($scope.data.comments)) {
                         $scope.data.comments = [];
                     }
-                    if ($scope.data.addedComment !== "") {   
+                    if ($scope.data.addedComment !== "" && $scope.data.addedComment !== null && $scope.data.addedComment !== undefined) {   
                         $scope.data.comments.push({
                                                       text: $scope.data.addedComment,
                                                       authorId: $scope.data.employeeId
