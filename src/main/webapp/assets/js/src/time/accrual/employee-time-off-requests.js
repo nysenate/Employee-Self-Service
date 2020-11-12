@@ -23,10 +23,10 @@
 
     essTime.controller('RequestApprovalCtrl', ['$scope', '$route', 'appProps', 'ActiveRequestsApi',
                                                'PendingRequestsApi', 'ReviewRequestApi',
-                                               'TimeOffRequestListService', 'modals', requestApprovalCtrl]);
+                                               'TimeOffRequestListService', 'modals', 'badgeService', requestApprovalCtrl]);
 
     function requestApprovalCtrl($scope, $route, appProps, ActiveRequestsApi, PendingRequestsApi,
-                                 ReviewRequestApi, TimeOffRequestListService, modals) {
+                                 ReviewRequestApi, TimeOffRequestListService, modals, badgeService) {
         $scope.pendingFormat = "pending";
         $scope.approvedFormat = "approved";
         $scope.supId = appProps.user.employeeId;
@@ -175,6 +175,8 @@
                             $scope.pendingRequests.forEach(function (r) {
                                 r.checked = false;
                             });
+                            badgeService.setBadgeValue('pendingRecordCount', $scope.pendingRequests.length);
+                            console.log("setBadgeValue" + $scope.pendingRequests.length);
                             sortRequests();
                         })
                     ;
