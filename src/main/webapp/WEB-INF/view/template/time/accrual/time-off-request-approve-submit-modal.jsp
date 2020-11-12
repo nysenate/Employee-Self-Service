@@ -28,7 +28,7 @@
   </div>
   <hr/>
   <div class="approve-input-container">
-    <input ng-click="resolve()" class="submit-button" style="" type="button" value="I agree"/>
-    <input ng-click="cancel()" class="reject-button" type="button" value="Cancel"/>
+    <input ng-click="resolve()" class="submit-button" type="button" value="I agree" />
+    <input ng-click="cancel()" class="reject-button" type="button" value="Cancel" />
   </div>
 </div>

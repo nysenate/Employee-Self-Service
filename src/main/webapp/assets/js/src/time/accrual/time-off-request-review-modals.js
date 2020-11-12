@@ -233,6 +233,10 @@ function timeOffRequestApproveSubmitModal(modals, appProps, ReviewRequestApi) {
             $scope.disapprovedCount = ($scope.disapproved) ? Object.keys($scope.disapproved).length : 0;
             $scope.addedComments = modals.params().comments;
 
+            $scope.cancel = function() {
+                modals.reject(null);
+            }
+
             $scope.resolve = function () {
                 console.log("k");
                 //Supervisor has agreed to submit changes
