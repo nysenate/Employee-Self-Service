@@ -2,13 +2,9 @@ package gov.nysenate.ess.core.service.pec.external.everfi.category;
 
 import gov.nysenate.ess.core.dao.personnel.rch.ResponsibilityHeadDao;
 import gov.nysenate.ess.core.model.personnel.Employee;
-import gov.nysenate.ess.core.model.personnel.ResponsibilityHead;
 import gov.nysenate.ess.core.service.pec.external.everfi.EverfiApiClient;
 import gov.nysenate.ess.core.service.pec.external.everfi.user.EverfiUser;
 import gov.nysenate.ess.core.service.personnel.EmployeeInfoService;
-import gov.nysenate.ess.core.util.LimitOffset;
-import gov.nysenate.ess.core.util.PaginatedList;
-import gov.nysenate.ess.core.util.SortOrder;
 import org.apache.shiro.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +146,7 @@ public class EverfiCategoryService {
      * @return The users "Upload List" category label or null if they don't have one.
      */
     public EverfiCategoryLabel getUserUploadListLabel(EverfiUser user) {
-        for (EverfiCategoryLabel label : user.getCategoryLabels()) {
+        for (EverfiCategoryLabel label : user.getUserCategoryLabels()) {
             if (label.getCategoryName().equals(UPLOAD_LIST)) {
                 return label;
             }
@@ -225,7 +221,7 @@ public class EverfiCategoryService {
         return null;
     }
 
-    private List<EverfiCategory> getCategories() throws IOException {
+    public List<EverfiCategory> getCategories() throws IOException {
         if (CollectionUtils.isEmpty(this.categories)) {
             loadCategories();
         }

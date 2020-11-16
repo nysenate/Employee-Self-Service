@@ -23,8 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EverfiUserService {
@@ -35,9 +34,9 @@ public class EverfiUserService {
     private EverfiRecordService everfiRecordService;
     private SendMailService sendMailService;
     private static final Logger logger = LoggerFactory.getLogger(EverfiUserService.class);
-    private ArrayList<EverfiUser> badEmpIDEverfiUsers = new ArrayList<>();
-    private ArrayList<EverfiUser> badEmailEverfiUsers = new ArrayList<>();
-    ArrayList<String> manualReviewUUIDs = new ArrayList<>();
+    private HashMap<String,EverfiUser> badEmpIDEverfiUsers = new HashMap<>();
+    private HashMap<String,EverfiUser> badEmailEverfiUsers = new HashMap<>();
+    private HashMap<String,EverfiUser> manualReviewUUIDs = new HashMap<>();
     private EverfiCategoryService categoryService;
 
     @Value("${mail.smtp.from}")
@@ -72,8 +71,12 @@ public class EverfiUserService {
         }
     }
 
+    /**
+     * Returns a list of all new employees that must be added to Everfi. Usually called thru cron
+     * @return
+     */
     public List<Employee> getNewEmployeesToAddToEverfi() {
-        
+
         //Minimal Employee Objects -- Must be converted to full employees
         List<Employee> newEmployees = employeeDao.getNewEmployees();
         List<Employee> completeNewEmployees = new ArrayList<>();
@@ -122,18 +125,20 @@ public class EverfiUserService {
                 //Get next batch of records
                 request = request.next();
             }
+            ensureNonManualReviewIDs();
             logger.info("Handled Everfi user records");
             String everfiIDWarning = "There are " + this.badEmpIDEverfiUsers.size() +
-                    " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.toString() + "\n"
-                    + "There are " + this.badEmailEverfiUsers.size() + " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.toString() + "\n";
+                    " UUID's that have bad EMP IDs.\n" + this.badEmpIDEverfiUsers.values().toString() + "\n"
+                    + "There are " + this.badEmailEverfiUsers.size() + " UUID's that have bad emails. \n" + this.badEmailEverfiUsers.values().toString() + "\n";
             logger.warn(everfiIDWarning);
             MimeMessage message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users", everfiIDWarning);
             sendMailService.send(message);
 
             logger.info("Beginning bad data correction");
-            handleEverfiUsersWithBadEmail();
             handleEverfiUsersWithBadEmpID();
-            message = sendMailService.newHtmlMessage(mailToAddress.trim(), "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.toString());
+            handleEverfiUsersWithBadEmail();
+            message = sendMailService.newHtmlMessage(mailToAddress.trim(),
+                    "Bad data in Everfi Users that REQUIRE manual review", this.manualReviewUUIDs.values().toString());
             sendMailService.send(message);
             logger.info("Finished bad data correction. Check report email");
         }
@@ -141,14 +146,25 @@ public class EverfiUserService {
 
     }
 
+    /**
+     * Ensure manual review ID's are not included with the automated data correction attempts
+     */
+    private void ensureNonManualReviewIDs() {
+        this.badEmpIDEverfiUsers.entrySet()
+                .removeIf( entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
+
+        this.badEmailEverfiUsers.entrySet()
+                .removeIf( entry -> (this.manualReviewUUIDs.containsKey(entry.getKey())));
+    }
+
     public void handleEverfiUsersWithBadEmpID() {
-        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers) {
+        for (EverfiUser everfiUser : this.badEmpIDEverfiUsers.values()) {
             updateEverfiUserWithEmpData(getEmpIDByEmail(everfiUser), everfiUser);
         }
     }
 
     public void handleEverfiUsersWithBadEmail() {
-        for (EverfiUser everfiUser : this.badEmailEverfiUsers) {
+        for (EverfiUser everfiUser : this.badEmailEverfiUsers.values()) {
             updateEverfiUserWithEmpData(getEmpIDByID(everfiUser), everfiUser);
         }
     }
@@ -164,7 +180,11 @@ public class EverfiUserService {
             EverfiAddUserRequest addUserRequest = new EverfiAddUserRequest(
                     everfiApiClient, emp.getEmployeeId(), emp.getFirstName(), emp.getLastName(),
                     emp.getEmail(), getOrCreateEmpCategoryLabels(emp, null));
-            addUserRequest.addUser();
+            EverfiUser newestEverfiUser = addUserRequest.addUser();
+            if (newestEverfiUser != null) {
+                everfiUserDao.insertEverfiUserIDs(newestEverfiUser.getUuid(), emp.getEmployeeId());
+            }
+
         }
     }
 
@@ -179,6 +199,7 @@ public class EverfiUserService {
             String UUID = everfiUser.getUuid();
             try {
                 Integer empid = getEmployeeId(everfiUser);
+
                 if (empid.intValue() != 99999) {
                     everfiUserDao.insertEverfiUserIDs(UUID, empid);
                 } else {
@@ -197,19 +218,53 @@ public class EverfiUserService {
      */
     private int getEmployeeId(EverfiUser everfiUser) throws EmployeeNotFoundEx {
         int empid = 99999;
+        boolean successByEmail = false;
+        boolean successByEmpID = false;
+
         //We have to test both cases because they could be different / then we must correct that
         int empidByID = getEmpIDByID(everfiUser);
         int empidByEmail = getEmpIDByEmail(everfiUser);
 
-        if (empidByID != empidByEmail) {
-            //WE NEED MANUAL REVIEW ON THIS CASE
+        if (empidByID != 99999) {
+            successByEmpID = true;
+        }
+        if (empidByEmail != 99999) {
+            successByEmail = true;
+        }
+
+        //Both bad needs manual review
+        if (successByEmpID == false && successByEmail == false) {
+            addBadEverfiUser(everfiUser, this.manualReviewUUIDs);
             throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiUser.toString());
         }
+
+        //Both conflicting needs manual review
+        if (empidByID != 99999 && (empidByID != empidByEmail) && empidByEmail != 99999) {
+            addBadEverfiUser(everfiUser, this.manualReviewUUIDs);
+            throw new EmployeeNotFoundEx("Everfi user record cannot be matched" + everfiUser.toString());
+        }
+
+        //They agree, Good Data, return either
         if (empidByID == empidByEmail) {
             return empidByID;
         }
 
+        //Good empid but bad email
+        if (successByEmpID == true && successByEmail == false) {
+            return empidByID;
+        }
+        //Good email but bad empid
+        else if (successByEmpID == false && successByEmail == true) {
+            return empidByEmail;
+        }
+
         return empid;
+    }
+
+    private void addBadEverfiUser(EverfiUser everfiUser, HashMap<String,EverfiUser> badList) {
+        if (!badList.containsKey(everfiUser.getUuid())) {
+            badList.put(everfiUser.getUuid(), everfiUser);
+        }
     }
 
     private int getEmpIDByID(EverfiUser everfiUser) {
@@ -232,7 +287,6 @@ public class EverfiUserService {
         int empid = 99999;
 
         if (everfiUser.getEmail() != null && !everfiUser.getEmail().isEmpty()) {
-
             try {
                 empid = employeeDao.getEmployeeByEmail(everfiUser.getEmail()).getEmployeeId();
             } catch (Exception e) {
@@ -245,31 +299,31 @@ public class EverfiUserService {
     }
 
     private void updateEverfiUserWithEmpData(int empID, EverfiUser everfiUser) {
-        if (empID != 99999) {
-            try {
-                Employee emp = employeeDao.getEmployeeById(empID);
-                EverfiUpdateUserRequest updateUserRequest =
-                        new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(), emp.getEmployeeId(),
-                                emp.getFirstName(), emp.getLastName(), emp.getEmail(), null,
-                                getOrCreateEmpCategoryLabels(emp, everfiUser), emp.isActive());
-                updateUserRequest.updateUser();
+        try {
+            Employee emp = employeeDao.getEmployeeById(empID);
+            EverfiUpdateUserRequest updateUserRequest =
+                    new EverfiUpdateUserRequest(everfiApiClient, everfiUser.getUuid(), emp.getEmployeeId(),
+                            emp.getFirstName(), emp.getLastName(), emp.getEmail(), "",
+                            getOrCreateEmpCategoryLabels(emp, everfiUser), emp.isActive());
+            updateUserRequest.updateUser();
 
-            } catch (Exception e) {
-                this.manualReviewUUIDs.add(everfiUser.getUuid());
-                logger.warn("error" + e);
-            }
+        } catch (Exception e) {
+            logger.warn("error " + e);
         }
+
     }
 
-    private void addBadEverfiUser(EverfiUser everfiUser, List<EverfiUser> badList) {
-        boolean recorded = false;
-        for (EverfiUser badDataUser : badList) {
-            if (badDataUser.getUuid().equals(everfiUser.getUuid())) {
-                recorded = true;
+    private void updateAllEverfiUsers(List<EverfiUser> everfiUsers) {
+        for (EverfiUser everfiUser : everfiUsers) {
+            try {
+                Integer empid = getEmployeeId(everfiUser);
+                if (empid.intValue() != 99999) {
+                    updateEverfiUserWithEmpData(empid, everfiUser);
+                }
             }
-        }
-        if (!recorded) {
-            badList.add(everfiUser);
+            catch (Exception e) {
+                logger.warn("error " + e);
+            }
         }
     }
 
@@ -282,7 +336,7 @@ public class EverfiUserService {
         labels.add(categoryService.getAttendLiveLabel(emp)); // This label is always "No" so it will never need to be created.
         labels.add(getOrCreateDepartmentLabel(emp));
         labels.add(categoryService.getRoleLabel(emp)); // All possible roles already exist.
-        labels.add(getOrCreateUploadListLabel(user));
+//        labels.add(getOrCreateUploadListLabel(user));
         return labels;
     }
 
