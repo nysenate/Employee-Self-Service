@@ -43,7 +43,6 @@ public class EverfiCategoryService {
         this.client = client;
         this.respHeadDao = respHeadDao;
         this.employeeInfoService = employeeInfoService;
-        loadCategories();
     }
 
     /**
