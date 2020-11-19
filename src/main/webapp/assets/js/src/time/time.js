@@ -19,14 +19,11 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
                 badgeService.setBadgeValue('pendingRecordCount', resp.result.count);
             });
         };
+        $scope.initializePendingRequestsBadge = function() {
+            var params = {supId: appProps.user.employeeId};
+            ApprovalSupervisorTimeOffRequestsApi.query(params, function(data) {
+               badgeService.setBadgeValue('pendingRequestCount', data.count);
+            });
+        };
     }
-    //
-    // function($scope, appProps, locationService, badgeService, ApprovalSupervisorTimeOffRequestsApi) {
-    //     $scope.initializePendingRequestsBadge = function() {
-    //         var params = {supId: appProps.user.employeeId};
-    //         ApprovalSupervisorTimeOffRequestsApi.query(params, function(data) {
-    //            badgeService.setBadgeValue('pendingRequestCount', data.count);
-    //         });
-    //     };
-    // }
 ]);
