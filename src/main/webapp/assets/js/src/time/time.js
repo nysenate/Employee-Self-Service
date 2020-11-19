@@ -18,11 +18,14 @@ essApp.controller('TimeMainCtrl', ['$scope', 'appProps', 'LocationService', 'bad
             SupervisorTimeRecordCountsApi.get(params, function(resp) {
                 badgeService.setBadgeValue('pendingRecordCount', resp.result.count);
             });
+            $scope.initializePendingRequestsBadge();
         };
         $scope.initializePendingRequestsBadge = function() {
-            var params = {supId: appProps.user.employeeId};
+            var params = {
+                supId: appProps.user.employeeId
+            };
             ApprovalSupervisorTimeOffRequestsApi.query(params, function(data) {
-               badgeService.setBadgeValue('pendingRequestCount', data.count);
+                badgeService.setBadgeValue('pendingRequestCount', data.length);
             });
         };
     }

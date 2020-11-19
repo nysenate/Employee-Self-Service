@@ -90,7 +90,7 @@ essApi.factory('ActiveSupervisorTimeOffRequestApi', ['$resource', 'appProps', fu
 }]);
 
 essApi.factory('ApprovalSupervisorTimeOffRequestsApi', ['$resource', 'appProps', function($resource, appProps){
-    return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId/Approval');
+    return $resource(appProps.apiPath + '/accruals/request/supervisor/:supId/approval');
 }]);
 
 essApi.factory('TimeOffRequestDateRangeApi', ['$resource', 'appProps', function($resource, appProps){
