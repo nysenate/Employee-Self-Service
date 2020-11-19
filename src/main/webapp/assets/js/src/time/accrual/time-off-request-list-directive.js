@@ -17,9 +17,9 @@
         function link($scope ) {
             /* Function to open the edit page for a selected request */
             $scope.openEditPage = function(request) {
-                var currentUrl = window.location.href;
+                var currentUrl = window.location.origin;
                 var id_num = request.requestId;
-                var newUrl = currentUrl + "/" + id_num;
+                var newUrl = currentUrl + "/time/accrual/time-off-request/" + id_num;
                 console.log(newUrl);
                 window.open(newUrl, "_self");
             };
